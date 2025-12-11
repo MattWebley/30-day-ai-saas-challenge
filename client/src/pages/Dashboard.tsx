@@ -255,32 +255,18 @@ export default function Dashboard() {
 
           {/* Right Column: Progress & Info */}
           <div className="space-y-6">
-            <Card className="p-6 bg-slate-900 text-white border-none shadow-2xl rounded-2xl relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl pointer-events-none"></div>
+            <Card className="p-6 border-2 border-slate-100 shadow-none rounded-2xl">
+               <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-4">Your Progress</h3>
                
-               <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
-                 <Trophy className="w-4 h-4 text-yellow-500" />
-                 Next Milestone
-               </h3>
-               
-               <div className="relative z-10 space-y-6">
-                 <div className="flex items-center gap-4">
-                   <div className="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center text-white border border-white/10 shadow-inner">
-                     <Trophy className="w-7 h-7 text-yellow-500" />
-                   </div>
-                   <div>
-                     <div className="font-bold text-xl">Initiator</div>
-                     <div className="text-sm text-slate-400 font-medium">Badge Reward</div>
-                   </div>
+               <div className="space-y-4">
+                 <div className="flex items-center justify-between">
+                   <span className="text-sm font-medium text-slate-600">Challenge Completion</span>
+                   <span className="text-sm font-bold text-primary">{stats ? Math.round(((stats as any).lastCompletedDay || 0) / 30 * 100) : 0}%</span>
                  </div>
-                 
-                 <div className="space-y-2">
-                   <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
-                     <span>Current Progress</span>
-                     <span>{stats ? Math.round(((stats as any).lastCompletedDay || 0) / 30 * 100) : 0}%</span>
-                   </div>
-                   <Progress value={stats ? ((stats as any).lastCompletedDay || 0) / 30 * 100 : 0} className="h-3 bg-white/10" indicatorClassName="bg-primary" />
-                 </div>
+                 <Progress value={stats ? ((stats as any).lastCompletedDay || 0) / 30 * 100 : 0} className="h-3 bg-slate-100" />
+                 <p className="text-xs text-slate-400">
+                   Day {(stats as any)?.lastCompletedDay || 0} of 30 completed
+                 </p>
                </div>
             </Card>
 
