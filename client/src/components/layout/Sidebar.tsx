@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -14,12 +14,72 @@ import {
   Settings,
   LogOut,
   X,
-  Shield
+  Shield,
+  Lightbulb,
+  Target,
+  Rocket
 } from "lucide-react";
 
 interface SidebarProps {
   currentDay: number;
   onClose?: () => void;
+}
+
+function MyJourneySection({ userProgress }: { userProgress: any[] | undefined }) {
+  const journey = useMemo(() => {
+    if (!Array.isArray(userProgress)) return null;
+    
+    const day1 = userProgress.find((p: any) => p.day === 1);
+    const day2 = userProgress.find((p: any) => p.day === 2);
+    
+    const shortlistedIdeas = day1?.generatedIdeas?.filter((_: any, i: number) => 
+      day1?.shortlistedIdeas?.includes(i)
+    ) || [];
+    
+    const chosenIdea = day2?.chosenIdea !== undefined && shortlistedIdeas[day2.chosenIdea]
+      ? shortlistedIdeas[day2.chosenIdea]
+      : null;
+    
+    return {
+      hasShortlist: shortlistedIdeas.length > 0,
+      shortlistCount: shortlistedIdeas.length,
+      chosenIdea,
+      shortlistedIdeas,
+    };
+  }, [userProgress]);
+
+  if (!journey || (!journey.hasShortlist && !journey.chosenIdea)) {
+    return null;
+  }
+
+  return (
+    <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+      <div className="flex items-center gap-2 mb-2">
+        <Rocket className="w-4 h-4 text-blue-600" />
+        <p className="text-xs font-bold text-blue-800 uppercase tracking-wide">My Journey</p>
+      </div>
+      
+      {journey.chosenIdea ? (
+        <div className="space-y-1">
+          <div className="flex items-start gap-2">
+            <Target className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-xs text-slate-500">Building:</p>
+              <p className="text-sm font-semibold text-slate-900 leading-tight">{journey.chosenIdea.title}</p>
+            </div>
+          </div>
+        </div>
+      ) : journey.hasShortlist ? (
+        <div className="flex items-start gap-2">
+          <Lightbulb className="w-3 h-3 text-amber-500 mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="text-xs text-slate-500">Shortlisted:</p>
+            <p className="text-sm font-medium text-slate-700">{journey.shortlistCount} ideas</p>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 export function Sidebar({ currentDay, onClose }: SidebarProps) {
@@ -93,6 +153,9 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
             <p className="text-xs text-amber-600">Keep it going!</p>
           </div>
         </div>
+
+        {/* My Journey Section */}
+        <MyJourneySection userProgress={userProgress} />
 
         <button
           onClick={() => setTestMode(!testMode)}
