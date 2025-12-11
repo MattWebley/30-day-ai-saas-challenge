@@ -181,7 +181,7 @@ Give me exactly 6 ideas, one per line:`;
       const data = await res.json();
       const features = data.response
         .split('\n')
-        .map((line: string) => line.replace(/^[-•*\d.]\s*/, '').trim())
+        .map((line: string) => line.replace(/^[-•*\d.]+\s*/, '').replace(/^\.\s*/, '').trim())
         .filter((line: string) => line.length > 5 && line.length < 150);
       setUspSuggestions(features.slice(0, 6));
       setSelectedUspIndexes([]);
