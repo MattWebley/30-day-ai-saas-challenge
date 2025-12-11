@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress } from "@/hooks/useProgress";
@@ -153,7 +152,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   };
 
   return (
-    <div className="w-80 h-screen bg-sidebar border-r border-sidebar-border flex flex-col">
+    <div className="w-80 bg-sidebar border-r border-sidebar-border">
       {/* Header */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center justify-between mb-6">
@@ -215,7 +214,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
       </div>
 
       {/* Navigation */}
-      <ScrollArea className="flex-1 px-4 py-4">
+      <div className="px-4 py-4">
         <div className="space-y-8">
           <div className="space-y-1">
             <Link href="/dashboard" onClick={handleNavClick}>
@@ -319,7 +318,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
             </a>
           </div>
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }
