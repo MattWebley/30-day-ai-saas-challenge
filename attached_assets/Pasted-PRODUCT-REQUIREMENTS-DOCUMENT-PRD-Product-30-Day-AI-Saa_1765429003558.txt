@@ -1,0 +1,732 @@
+PRODUCT REQUIREMENTS DOCUMENT (PRD)
+Product: 30 Day AI SaaS Challenge
+Platform: Replit
+Brand Styling: MattWebley.com (Poppins, white, black, soft greys, blue accent)
+Core Philosophy: Fast, fun, gamified, 5-minute micro-tasks that feel meaningful AND frictionless.
+1. PRODUCT SUMMARY
+
+The 30 Day AI SaaS Challenge is a daily, gamified app experience that guides beginners from zero to a working AI SaaS MVP in 30 days.
+
+Each day delivers a structured micro-task that takes 5 minutes or less, powered by:
+
+AI-generated suggestions
+
+Pre-filled templates
+
+Done-For-You outputs
+
+A micro-decision
+
+A micro-reflection
+
+A micro-personalisation step
+
+The app includes:
+
+Auto-name generator
+
+Domain availability checker
+
+Keyword generator
+
+Auto-legal builder
+
+Tool setup wizard (with affiliate links)
+
+MVP builder tools
+
+Landing page generator
+
+Daily reminder emails
+
+A premium badge system
+
+An admin dashboard for editing everything
+
+Optional daily video lessons managed through admin panel
+
+By Day 30 the user has:
+
+a validated idea
+
+a structured MVP
+
+three generated core screens
+
+a complete logic prompt
+
+keywords
+
+a name + domain
+
+legal documentation
+
+tool setup completed
+
+a polished landing page
+
+a fully summarised MVP
+
+2. PRODUCT EXPERIENCE PRINCIPLES
+Micro-Tasks, Macro Progress
+
+Every day requires < 5 minutes and always progresses the user toward something real.
+
+AI Does 80 Percent
+
+Every task includes:
+
+3 suggestions
+
+a template
+
+a Done-For-You option
+
+User Adds 20 Percent
+
+To avoid gimmick feel, each day includes:
+
+one micro personal decision
+
+one micro reflection
+
+one micro customisation
+
+No Blank States
+
+Everything is pre-filled or suggested.
+
+Premium, Minimalist, Rewarding
+
+Badges instead of confetti, sleek UI, clean achievement tracking.
+
+3. USER FLOW OVERVIEW
+User Onboarding
+
+Brief explanation of how challenge works
+
+Optional welcome video
+
+Create account
+
+Start Day 1
+
+Badge system introduced
+
+Streak + XP activated
+
+Daily Flow
+
+Each day includes:
+
+Optional embedded video lesson (admin adds via dashboard)
+
+Short description
+
+AI-generated suggestions
+
+Template
+
+Done-For-You
+
+Micro-decision
+
+Micro-reflection
+
+Micro-personalisation
+
+XP reward
+
+Progression toward next badge
+
+End of Challenge
+
+Full badge collection displayed
+
+Shareable badge card export
+
+MVP summary
+
+CTA to book your strategy call
+
+4. GAMIFICATION SYSTEM (BADGE-BASED)
+
+Confetti removed completely.
+
+Badges (9 total)
+
+Awarded at major milestones:
+
+Initiator – Day 1 completed
+
+Clarifier – Days 1–7 completed
+
+Blueprint Architect – Days 8–14 completed
+
+Maker Mode – Auto Setup Day completed
+
+MVP Builder – Days 16–23 completed
+
+Refinement Specialist – Days 24–27 completed
+
+Product Creator – Days 28–29 completed
+
+The Finisher – Day 30 completed
+
+Elite Consistency – no missed days
+
+Badges should be:
+
+minimal
+
+geometric
+
+monochrome with a blue accent
+
+screenshot-worthy
+
+End-of-Challenge Badge Grid
+
+3x3 grid, exportable.
+
+5. DAILY TASK STRUCTURE (MANDATORY FORMAT)
+
+Each day uses the 4-step meaningful + frictionless model:
+
+1. AI Output (80 percent done)
+
+Done-For-You output
+
+3 suggested alternatives
+
+Shuffle button
+
+2. Micro Decision
+
+User picks ONE option that personalises the path.
+
+3. Micro Reflection
+
+Short introspective question (tap selection) to build ownership.
+
+4. Micro Personalisation
+
+Tiny tweak such as:
+
+tone
+
+colour
+
+one word change
+
+small feature preference
+
+5. Completion Reward
+
+XP
+
+Day marked complete
+
+Streak updated
+
+Badge if triggered
+
+6. FEATURES (FULL LIST)
+
+Everything below must exist in the app.
+
+IDEA & MVP FEATURES
+
+Idea generator
+
+Problem scorer
+
+Avatar builder
+
+Transformation writer
+
+Feature selector
+
+MVP one-sentence writer
+
+User flow mapper
+
+Screen sketch prompts
+
+Wireframe generator
+
+UI style picker
+
+BRANDING FEATURES
+
+Name generator
+
+Domain availability checker
+
+Keyword generator
+
+SETUP FEATURES
+
+Auto-legal builder
+
+Terms of Service
+
+Privacy Policy
+
+Refund Policy (or no-refunds)
+
+AI disclaimer
+
+Cookie notice
+
+HTML + text + ZIP export
+
+Tool setup wizard
+
+Replit
+
+OpenAI
+
+Claude
+
+Cloudflare Workers
+
+Stripe
+
+Figma/Excalidraw
+
+Affiliate links integrated
+
+MVP BUILDING FEATURES
+
+Input/Output mapper
+
+Sample questions generator
+
+Sample answers generator
+
+Screen builder (3 layouts)
+
+Logic builder
+
+Output screen builder
+
+POLISHING FEATURES
+
+Bug fixer
+
+UI improver
+
+Delight generator
+
+Cleanup assistant
+
+FINAL PRESENTATION
+
+Landing page builder (sales-letter lite)
+
+HTML export
+
+MVP summary generator
+
+Badge collection
+
+Certificate
+
+7. VIDEO LESSON SUPPORT (NEW)
+Admin Panel Requirements
+
+You can add a video to ANY day easily:
+
+Paste video URL (YouTube, Vimeo, Loom, or direct MP4)
+
+Toggle visibility ON/OFF
+
+Replace video instantly
+
+Preview video before publishing
+
+User Experience
+
+Video appears as the first section of the day
+
+Optional: user must “mark video watched”
+
+Video does NOT increase task duration past 5 minutes (user can skip)
+
+8. AUTO SETUP DAY (DAY 15)
+
+One of the key milestones.
+
+User taps:
+
+app name
+
+email
+
+refund preference
+
+AI instantly generates:
+
+ToS
+
+Privacy
+
+Refund or no-refund
+
+AI disclaimer
+
+Cookie notice
+
+Downloadable legal ZIP
+
+On-screen HTML snippets
+
+Setup wizard connects:
+
+Replit
+
+OpenAI
+
+Claude
+
+Optional deployment
+
+Stripe
+
+Massive badge & XP.
+
+9. ADMIN DASHBOARD
+
+This is essential.
+
+A. Day Manager
+
+View all 30 days
+
+Reorder days (drag)
+
+Edit day title
+
+Edit description
+
+Toggle day ON/OFF
+
+Attach video lesson
+
+Edit time estimate
+
+B. Task Editor
+
+For each day you can edit:
+
+task description
+
+template
+
+Done-For-You prompt
+
+suggestion seeds
+
+shuffle prompts
+
+micro decisions
+
+micro reflection
+
+micro personalisation items
+
+XP reward
+
+badge trigger
+
+C. Template Library
+
+Central editable library for:
+
+naming
+
+keywords
+
+landing pages
+
+prompts
+
+legal templates
+
+UI styles
+
+wireframes
+
+D. Prompt Editor
+
+Edit:
+
+system prompts
+
+user prompts
+
+refinement prompts
+
+shuffle prompts
+
+done-for-you prompts
+
+E. Email Automation Panel
+
+For all 30 days:
+
+edit subject
+
+edit body
+
+add preview text
+
+add CTA link
+
+set delivery time
+
+resend if unopened
+
+F. Badge Editor
+
+rename badges
+
+change descriptions
+
+edit triggers
+
+reorder
+
+add new badges
+
+G. Safe Mode
+
+versioning
+
+drafts
+
+publish/rollback
+
+Zero risk of breaking live users.
+
+10. DAILY EMAIL REMINDERS
+
+Automatically sent every morning:
+
+Subject: Your Day X Task Is Ready
+Body:
+
+what today’s task accomplishes
+
+5-minute reminder
+
+tease of micro-decision
+
+XP + badge progress indicator
+
+CTA back into app
+
+If user skips:
+
+A polite nudge email (editable) is sent.
+
+If user completes:
+
+A “Strong progress today” email is sent.
+
+11. 30-DAY STRUCTURE (FINAL)
+WEEK 1 – Clarity
+
+Problems
+
+Money problems
+
+Top 3
+
+Avatar
+
+Validation
+
+Idea lock
+
+Transformation
+
+WEEK 2 – MVP Blueprint
+
+Dream features
+
+Core feature
+
+MVP statement
+
+User flow
+
+Sketch
+
+Wireframes
+
+UI theme
+
+Name + domain
+
+Keywords
+
+WEEK 3 – Build
+
+Auto Setup Day
+
+In/Out
+
+Sample questions
+
+Sample answers
+
+Screen 1
+
+Screen 2
+
+Output screen
+
+WEEK 4 – Polish + Present
+
+Test MVP
+
+Fix issues
+
+UI improvement
+
+Add delight
+
+Landing page
+
+Cleanup
+
+MVP summary + badge grid + certificate + CTA
+
+12. DESIGN SYSTEM
+Fonts:
+
+Poppins (Bold, Semibold, Regular)
+
+Colours:
+
+#000000
+
+#FFFFFF
+
+#FAFAFA
+
+#F2F2F2
+
+#333333
+
+#888888
+
+#007BFF
+
+#0056CC
+
+UI:
+
+clean
+
+minimal
+
+round 6px corners
+
+white background
+
+black text
+
+blue CTA
+
+minimal animations
+
+badge icons premium and geometric
+
+13. AI REQUIREMENTS
+
+AI must support:
+
+fast generation of 3 suggestions per task
+
+Done-For-You mode
+
+refinement based on micro-decisions & reflections
+
+legal doc generation
+
+landing page generation
+
+keyword generation
+
+name generation
+
+wireframe generation
+
+bug fixing
+
+UI improvement
+
+system prompt editing via admin panel
+
+Must be low latency for smooth UX.
+
+14. ANALYTICS
+
+Track:
+
+daily completion
+
+streak
+
+XP earned
+
+badge unlocks
+
+template use
+
+Done-For-You use
+
+shuffle use
+
+micro-decision choices
+
+completion rate per day
+
+email opens
+
+CTA clicks
+
+affiliate link clicks
+
+final strategy call clicks
+
+THIS IS THE FINAL COMPLETE PRD
+
+This includes:
+
+frictionless experience
+
+meaningful engagement
+
+badges (no confetti)
+
+admin control
+
+daily emails
+
+video lessons
+
+auto legal
+
+naming + domain
+
+keyword generation
+
+landing page
+
+full MVP building flow
+
+Totally ready for development.
