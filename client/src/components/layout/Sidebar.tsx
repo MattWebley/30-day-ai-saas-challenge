@@ -26,6 +26,8 @@ interface SidebarProps {
 }
 
 function MyJourneySection({ userProgress }: { userProgress: any[] | undefined }) {
+  const [isHovered, setIsHovered] = useState(false);
+  
   const journey = useMemo(() => {
     if (!Array.isArray(userProgress)) return null;
     
@@ -40,11 +42,14 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
       ? shortlistedIdeas[day2.chosenIdea]
       : null;
     
+    const userInputs = day1?.userInputs;
+    
     return {
       hasShortlist: shortlistedIdeas.length > 0,
       shortlistCount: shortlistedIdeas.length,
       chosenIdea,
       shortlistedIdeas,
+      userInputs,
     };
   }, [userProgress]);
 
@@ -53,7 +58,11 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
   }
 
   return (
-    <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+    <div 
+      className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 relative cursor-pointer transition-all hover:shadow-md"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="flex items-center gap-2 mb-2">
         <Rocket className="w-4 h-4 text-blue-600" />
         <p className="text-xs font-bold text-blue-800 uppercase tracking-wide">My Journey</p>
@@ -78,6 +87,40 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
           </div>
         </div>
       ) : null}
+
+      {isHovered && (
+        <div className="absolute left-full top-0 ml-2 w-64 p-4 bg-white rounded-xl shadow-xl border border-slate-200 z-50">
+          <h4 className="font-bold text-sm text-slate-900 mb-3 flex items-center gap-2">
+            <span className="text-lg">📝</span> Journey Notes
+          </h4>
+          <div className="space-y-3 text-xs">
+            {journey.userInputs && (
+              <div className="p-2 bg-slate-50 rounded-lg">
+                <p className="font-semibold text-slate-700 mb-1">Day 1: About You</p>
+                <p className="text-slate-600">Skills: {journey.userInputs.skills || 'Not set'}</p>
+                <p className="text-slate-600">Interests: {journey.userInputs.interests || 'Not set'}</p>
+              </div>
+            )}
+            {journey.hasShortlist && (
+              <div className="p-2 bg-amber-50 rounded-lg">
+                <p className="font-semibold text-amber-800 mb-1">Day 1: Top 5 Ideas</p>
+                <ul className="text-amber-700 space-y-0.5">
+                  {journey.shortlistedIdeas.slice(0, 5).map((idea: any, i: number) => (
+                    <li key={i} className="truncate">• {idea.title}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {journey.chosenIdea && (
+              <div className="p-2 bg-green-50 rounded-lg">
+                <p className="font-semibold text-green-800 mb-1">Day 2: Final Choice</p>
+                <p className="text-green-700 font-medium">{journey.chosenIdea.title}</p>
+                <p className="text-green-600 text-[10px] mt-1">{journey.chosenIdea.desc}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
