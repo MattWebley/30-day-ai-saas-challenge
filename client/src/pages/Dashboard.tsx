@@ -22,6 +22,7 @@ import { Day1IdeaGenerator } from "@/components/Day1IdeaGenerator";
 import { Day2IdeaValidator } from "@/components/Day2IdeaValidator";
 import { Day3FeatureBuilder } from "@/components/Day3FeatureBuilder";
 import { Day4PitchBuilder } from "@/components/Day4PitchBuilder";
+import { Day5MVPPrioritizer } from "@/components/Day5MVPPrioritizer";
 import { DayChat } from "@/components/DayChat";
 import { toast } from "sonner";
 
@@ -277,6 +278,15 @@ export default function Dashboard() {
                 <div className="space-y-4">
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day4PitchBuilder onComplete={handleComplete} />
+                  </Card>
+                </div>
+              </>
+            ) : currentDay === 5 ? (
+              <>
+                {/* Day 5: MVP Prioritizer */}
+                <div className="space-y-4">
+                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    <Day5MVPPrioritizer onComplete={handleComplete} />
                   </Card>
                 </div>
               </>

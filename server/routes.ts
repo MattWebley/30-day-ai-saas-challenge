@@ -439,6 +439,35 @@ Format: { "ideas": [...] }`;
     }
   });
 
+  // Save Day 5 progress with MVP prioritization
+  app.post("/api/progress/day5", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { mustHaveFeatures, niceToHaveFeatures, cutFeatures, killerFeature, aiSuggestion } = req.body;
+      
+      const existing = await storage.getUserProgressForDay(userId, 5);
+      
+      const progressData = {
+        userInputs: { mustHaveFeatures, niceToHaveFeatures, cutFeatures, killerFeature, aiSuggestion },
+      };
+      
+      if (existing) {
+        const updated = await storage.updateUserProgress(existing.id, progressData);
+        res.json(updated);
+      } else {
+        const created = await storage.createUserProgress({
+          userId,
+          day: 5,
+          ...progressData,
+        });
+        res.json(created);
+      }
+    } catch (error: any) {
+      console.error("Error saving Day 5 progress:", error);
+      res.status(500).json({ message: error.message || "Failed to save progress" });
+    }
+  });
+
   // Generic AI prompt endpoint for Day 2 validation
   app.post("/api/ai-prompt", isAuthenticated, async (req: any, res) => {
     try {
