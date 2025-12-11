@@ -301,10 +301,43 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
             </div>
 
             <Card className="p-6 border-2 border-slate-200">
-              {coreFeatures.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-slate-400 mb-4">No features yet. Generate or add manually.</p>
+              <div className="space-y-3">
+                {coreFeatures.map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg group">
+                    <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                    <span className="flex-1 text-slate-800">{feature}</span>
+                    <button
+                      onClick={() => removeFeature('core', i)}
+                      className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Type a feature and press Enter..."
+                    value={newFeature}
+                    onChange={(e) => setNewFeature(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && addFeature('core')}
+                    className="flex-1"
+                    data-testid="input-core-feature"
+                  />
+                  <Button variant="outline" onClick={() => addFeature('core')}>
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <div className="flex-1 h-px bg-slate-200" />
+                  <span className="text-xs text-slate-400 uppercase">or</span>
+                  <div className="flex-1 h-px bg-slate-200" />
+                </div>
+
+                <div className="text-center">
                   <Button
+                    variant="outline"
                     className="gap-2"
                     onClick={generateCoreFeatures}
                     disabled={isGenerating}
@@ -313,38 +346,11 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
                     {isGenerating ? (
                       <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing competitors...</>
                     ) : (
-                      <><Sparkles className="w-4 h-4" /> Generate Core Features</>
+                      <><Sparkles className="w-4 h-4" /> Generate with AI</>
                     )}
                   </Button>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {coreFeatures.map((feature, i) => (
-                    <div key={i} className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg group">
-                      <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
-                      <span className="flex-1 text-slate-800">{feature}</span>
-                      <button
-                        onClick={() => removeFeature('core', i)}
-                        className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity cursor-pointer"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                  <div className="flex gap-2 pt-2">
-                    <Input
-                      placeholder="Add another feature..."
-                      value={newFeature}
-                      onChange={(e) => setNewFeature(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && addFeature('core')}
-                      className="flex-1"
-                    />
-                    <Button variant="outline" onClick={() => addFeature('core')}>
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
+              </div>
             </Card>
 
             <div className="flex justify-between">
@@ -388,10 +394,43 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
             </div>
 
             <Card className="p-6 border-2 border-slate-200">
-              {uspFeatures.length === 0 ? (
-                <div className="text-center py-8">
-                  <p className="text-slate-400 mb-4">No USP features yet. Generate based on your skills.</p>
+              <div className="space-y-3">
+                {uspFeatures.map((feature, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg group">
+                    <Star className="w-4 h-4 text-purple-600 flex-shrink-0" />
+                    <span className="flex-1 text-slate-800">{feature}</span>
+                    <button
+                      onClick={() => removeFeature('usp', i)}
+                      className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity cursor-pointer"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+                
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Type your unique feature and press Enter..."
+                    value={newFeature}
+                    onChange={(e) => setNewFeature(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && addFeature('usp')}
+                    className="flex-1"
+                    data-testid="input-usp-feature"
+                  />
+                  <Button variant="outline" onClick={() => addFeature('usp')}>
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <div className="flex items-center gap-3 pt-2">
+                  <div className="flex-1 h-px bg-slate-200" />
+                  <span className="text-xs text-slate-400 uppercase">or</span>
+                  <div className="flex-1 h-px bg-slate-200" />
+                </div>
+
+                <div className="text-center">
                   <Button
+                    variant="outline"
                     className="gap-2"
                     onClick={generateUSPFeatures}
                     disabled={isGenerating}
@@ -400,38 +439,11 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
                     {isGenerating ? (
                       <><Loader2 className="w-4 h-4 animate-spin" /> Finding your edge...</>
                     ) : (
-                      <><Sparkles className="w-4 h-4" /> Generate USP Features</>
+                      <><Sparkles className="w-4 h-4" /> Generate with AI</>
                     )}
                   </Button>
                 </div>
-              ) : (
-                <div className="space-y-3">
-                  {uspFeatures.map((feature, i) => (
-                    <div key={i} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg group">
-                      <Star className="w-4 h-4 text-purple-600 flex-shrink-0" />
-                      <span className="flex-1 text-slate-800">{feature}</span>
-                      <button
-                        onClick={() => removeFeature('usp', i)}
-                        className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity cursor-pointer"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                  <div className="flex gap-2 pt-2">
-                    <Input
-                      placeholder="Add your own USP..."
-                      value={newFeature}
-                      onChange={(e) => setNewFeature(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && addFeature('usp')}
-                      className="flex-1"
-                    />
-                    <Button variant="outline" onClick={() => addFeature('usp')}>
-                      <Plus className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
+              </div>
             </Card>
 
             <div className="flex justify-between">
