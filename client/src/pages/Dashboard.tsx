@@ -21,6 +21,7 @@ import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
 import { Day1IdeaGenerator } from "@/components/Day1IdeaGenerator";
 import { Day2IdeaValidator } from "@/components/Day2IdeaValidator";
 import { Day3FeatureBuilder } from "@/components/Day3FeatureBuilder";
+import { Day4PitchBuilder } from "@/components/Day4PitchBuilder";
 import { DayChat } from "@/components/DayChat";
 import { toast } from "sonner";
 
@@ -267,6 +268,15 @@ export default function Dashboard() {
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day3FeatureBuilder onComplete={handleComplete} />
+                  </Card>
+                </div>
+              </>
+            ) : currentDay === 4 ? (
+              <>
+                {/* Day 4: 10-Second Pitch Builder */}
+                <div className="space-y-4">
+                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    <Day4PitchBuilder onComplete={handleComplete} />
                   </Card>
                 </div>
               </>

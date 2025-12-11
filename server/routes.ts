@@ -410,6 +410,35 @@ Format: { "ideas": [...] }`;
     }
   });
 
+  // Save Day 4 progress with pitch
+  app.post("/api/progress/day4", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { who, what, benefit, finalPitch, pitchVariations } = req.body;
+      
+      const existing = await storage.getUserProgressForDay(userId, 4);
+      
+      const progressData = {
+        userInputs: { who, what, benefit, finalPitch, pitchVariations },
+      };
+      
+      if (existing) {
+        const updated = await storage.updateUserProgress(existing.id, progressData);
+        res.json(updated);
+      } else {
+        const created = await storage.createUserProgress({
+          userId,
+          day: 4,
+          ...progressData,
+        });
+        res.json(created);
+      }
+    } catch (error: any) {
+      console.error("Error saving Day 4 progress:", error);
+      res.status(500).json({ message: error.message || "Failed to save progress" });
+    }
+  });
+
   // Generic AI prompt endpoint for Day 2 validation
   app.post("/api/ai-prompt", isAuthenticated, async (req: any, res) => {
     try {
