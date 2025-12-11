@@ -156,10 +156,7 @@ export default function Dashboard() {
         )}
 
         {/* Main Task Area */}
-        <div className="grid lg:grid-cols-3 gap-8">
-          
-          {/* Left Column: Task Steps */}
-          <div className="lg:col-span-2 space-y-8">
+        <div className="space-y-8">
             
             {/* Day 1 Special: Idea Generator */}
             {currentDay === 1 ? (
@@ -299,63 +296,6 @@ export default function Dashboard() {
             <div className="pt-8 border-t border-slate-200 mt-8">
               <DayChat day={currentDay} />
             </div>
-
-          </div>
-
-          {/* Right Column: Progress & Info */}
-          <div className="space-y-6">
-            <Card className="p-6 border-2 border-slate-100 shadow-none rounded-2xl">
-               <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-4">Your Progress</h3>
-               
-               <div className="space-y-4">
-                 <div className="flex items-center justify-between">
-                   <span className="text-sm font-medium text-slate-600">Challenge Completion</span>
-                   <span className="text-sm font-bold text-primary">{stats ? Math.round(((stats as any).lastCompletedDay || 0) / 30 * 100) : 0}%</span>
-                 </div>
-                 <Progress value={stats ? ((stats as any).lastCompletedDay || 0) / 30 * 100 : 0} className="h-3 bg-slate-100" />
-                 <p className="text-xs text-slate-400">
-                   Day {(stats as any)?.lastCompletedDay || 0} of 30 completed
-                 </p>
-               </div>
-            </Card>
-
-            <Card className="p-6 border-2 border-slate-100 shadow-none rounded-2xl">
-              <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-4">Current Streak</h3>
-              <div className="flex items-end gap-3">
-                <div className="text-5xl font-black text-slate-900 leading-none" data-testid="text-streak">{(stats as any)?.currentStreak || 0}</div>
-                <div className="text-sm text-slate-500 font-bold uppercase tracking-wide mb-1">
-                  Days<br/>Active
-                </div>
-              </div>
-            </Card>
-
-            {/* Badges Section */}
-            <Card className="p-6 border-2 border-slate-100 shadow-none rounded-2xl">
-              <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-4">Your Badges</h3>
-              <div className="grid grid-cols-4 gap-2">
-                {Array.isArray(allBadges) && allBadges.map((badge: any) => {
-                  const isEarned = earnedBadgeIds.has(badge.id);
-                  return (
-                    <div 
-                      key={badge.id} 
-                      className={`relative group flex flex-col items-center justify-center p-2 rounded-lg transition-all ${isEarned ? 'bg-amber-50' : 'bg-slate-100 opacity-40'}`}
-                      title={`${badge.name}: ${badge.description}`}
-                      data-testid={`badge-${badge.id}`}
-                    >
-                      <span className="text-2xl">{badge.icon}</span>
-                      {isEarned && (
-                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              <p className="text-xs text-slate-400 mt-3 text-center">
-                {earnedBadgeIds.size} / {Array.isArray(allBadges) ? allBadges.length : 0} earned
-              </p>
-            </Card>
-            
-          </div>
 
         </div>
       </div>

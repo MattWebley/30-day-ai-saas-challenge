@@ -83,6 +83,17 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
           <Progress value={progress} className="h-2" />
         </div>
 
+        {/* Streak Display */}
+        <div className="mt-4 flex items-center gap-3 p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+            <span className="text-white font-black text-lg">{(stats as any)?.currentStreak || 0}</span>
+          </div>
+          <div>
+            <p className="text-xs font-bold text-amber-800 uppercase tracking-wide">Day Streak</p>
+            <p className="text-xs text-amber-600">Keep it going!</p>
+          </div>
+        </div>
+
         <button
           onClick={() => setTestMode(!testMode)}
           className={cn(
