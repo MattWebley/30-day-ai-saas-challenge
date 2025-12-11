@@ -139,8 +139,10 @@ export async function registerRoutes(
 
         // Check for badge awards
         const allBadges = await storage.getAllBadges();
-        const userBadges = await storage.getUserBadges(userId);
-        const earnedBadgeIds = new Set(userBadges.map(ub => ub.badgeId));
+        const userBadgesEarned = await storage.getUserBadges(userId);
+        const earnedBadgeIds = new Set(userBadgesEarned.map(ub => ub.badgeId));
+        const updatedStats = await storage.getUserStats(userId);
+        const totalXp = updatedStats?.totalXp || 0;
 
         for (const badge of allBadges) {
           if (earnedBadgeIds.has(badge.id)) continue;
@@ -150,6 +152,8 @@ export async function registerRoutes(
           if (badge.triggerType === 'day_completed' && badge.triggerValue === day) {
             shouldAward = true;
           } else if (badge.triggerType === 'streak' && newStreak >= (badge.triggerValue || 0)) {
+            shouldAward = true;
+          } else if (badge.triggerType === 'xp' && totalXp >= (badge.triggerValue || 0)) {
             shouldAward = true;
           }
 
