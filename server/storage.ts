@@ -53,6 +53,7 @@ export interface IStorage {
     reflectionAnswer?: string;
   }): Promise<UserProgress>;
   getAllUserProgress(): Promise<UserProgress[]>;
+  deleteAllUserProgress(userId: string): Promise<void>;
   
   // Badge operations
   getAllBadges(): Promise<Badge[]>;
@@ -207,6 +208,10 @@ export class DatabaseStorage implements IStorage {
 
   async getAllUserProgress(): Promise<UserProgress[]> {
     return await db.select().from(userProgress);
+  }
+
+  async deleteAllUserProgress(userId: string): Promise<void> {
+    await db.delete(userProgress).where(eq(userProgress.userId, userId));
   }
 
   // Badge operations

@@ -439,6 +439,18 @@ Format: { "ideas": [...] }`;
     }
   });
 
+  // Reset all progress (for testing)
+  app.post("/api/progress/reset-all", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      await storage.deleteAllUserProgress(userId);
+      res.json({ success: true, message: "All progress reset" });
+    } catch (error: any) {
+      console.error("Error resetting progress:", error);
+      res.status(500).json({ message: error.message || "Failed to reset progress" });
+    }
+  });
+
   // Save Day 5 progress with MVP prioritization
   app.post("/api/progress/day5", isAuthenticated, async (req: any, res) => {
     try {
