@@ -36,8 +36,8 @@ export function Sidebar({ currentDay }: SidebarProps) {
   const progress = stats ? Math.round(((stats.lastCompletedDay || 0) / 30) * 100) : 0;
   const lastCompleted = (stats as any)?.lastCompletedDay || 0;
   
-  // Only show completed days + current + next 2 days (limit visibility)
-  const maxVisibleDay = Math.max(lastCompleted + 3, currentDay + 2, 3);
+  // TESTING MODE: Show all 30 days (change back to limited visibility later)
+  const maxVisibleDay = 30; // Was: Math.max(lastCompleted + 3, currentDay + 2, 3);
   const visibleDays = challengeDays.filter((d: any) => d.day <= maxVisibleDay);
 
   // Group visible days by phase
