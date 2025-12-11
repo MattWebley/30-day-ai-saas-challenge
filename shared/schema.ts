@@ -80,6 +80,10 @@ export const userProgress = pgTable("user_progress", {
   selectedSuggestion: integer("selected_suggestion"),
   microDecisionChoice: text("micro_decision_choice"),
   reflectionAnswer: text("reflection_answer"),
+  // Day 1 specific fields
+  userInputs: jsonb("user_inputs"), // {knowledge, skills, interests, experience}
+  generatedIdeas: jsonb("generated_ideas"), // Array of {title, desc, scores, totalScore}
+  shortlistedIdeas: jsonb("shortlisted_ideas"), // Array of selected idea indices
   completedAt: timestamp("completed_at"),
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
