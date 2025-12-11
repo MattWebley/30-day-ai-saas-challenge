@@ -17,6 +17,7 @@ import { useRoute, useLocation } from "wouter";
 import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress, useCompleteDay } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
+import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
 import { toast } from "sonner";
 
 export default function Dashboard() {
@@ -33,7 +34,12 @@ export default function Dashboard() {
   const { dayContent: allDays, isLoading: daysLoading } = useDayContent();
   const { progress, isLoading: progressLoading } = useUserProgress();
   const { stats, isLoading: statsLoading } = useUserStats();
+  const { badges: allBadges } = useAllBadges();
+  const { userBadges } = useUserBadges();
   const completeDay = useCompleteDay();
+
+  // Get earned badge IDs
+  const earnedBadgeIds = new Set((userBadges as any[])?.map((ub: any) => ub.badgeId) || []);
 
   const dayData = Array.isArray(allDays) ? allDays.find((d: any) => d.day === currentDay) : null;
   const dayProgress = Array.isArray(progress) ? progress.find((p: any) => p.day === currentDay) : null;
@@ -286,6 +292,32 @@ export default function Dashboard() {
                   Days<br/>Active
                 </div>
               </div>
+            </Card>
+
+            {/* Badges Section */}
+            <Card className="p-6 border-2 border-slate-100 shadow-none rounded-2xl">
+              <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-4">Your Badges</h3>
+              <div className="grid grid-cols-4 gap-2">
+                {Array.isArray(allBadges) && allBadges.map((badge: any) => {
+                  const isEarned = earnedBadgeIds.has(badge.id);
+                  return (
+                    <div 
+                      key={badge.id} 
+                      className={`relative group flex flex-col items-center justify-center p-2 rounded-lg transition-all ${isEarned ? 'bg-amber-50' : 'bg-slate-100 opacity-40'}`}
+                      title={`${badge.name}: ${badge.description}`}
+                      data-testid={`badge-${badge.id}`}
+                    >
+                      <span className="text-2xl">{badge.icon}</span>
+                      {isEarned && (
+                        <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="text-xs text-slate-400 mt-3 text-center">
+                {earnedBadgeIds.size} / {Array.isArray(allBadges) ? allBadges.length : 0} earned
+              </p>
             </Card>
             
             {/* Locked Future Days Preview */}
