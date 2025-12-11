@@ -51,7 +51,7 @@ export default function Landing() {
             </h1>
             
             <p className="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
-              No code. No confusion. Just 5-minute daily micro-tasks that guide you from idea to paying customers.
+              No code. No confusion. Just 5-minute daily micro-tasks that take you from idea to a product ready for paying customers.
             </p>
 
             <div className="pt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
