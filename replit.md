@@ -6,7 +6,42 @@ A gamified daily challenge application that guides users from zero to a working 
 
 ## User Preferences
 
-Preferred communication style: Simple, everyday language.
+- **Design Style**: Clean black and white aesthetic like MattWebley.com
+- **Font**: Poppins
+- **Colors**: Pure black (#000000) text on white (#FFFFFF) backgrounds, blue (#007BFF) accents
+- **Border Radius**: 6px
+- **Communication**: Simple, everyday language
+- **No AI-generated gradient styles** - use intentional, curated color palettes for special elements
+
+## Recent Changes
+
+### Day 3: Core Features & USP Generator (Dec 11, 2025)
+- Created Day3FeatureBuilder component with competitor analysis prompts
+- Step 1: Find Core Features from competitor analysis
+- Step 2: Generate USP features based on user skills + competitor gaps
+- Editable feature checklist for core + USP features
+- Integrated into Dashboard
+
+### Brand Pack in Admin Panel (Dec 11, 2025)
+- Added brand settings table to database (brandSettings)
+- Admin can customize: primary color, accent color, text color, background color, font family, border radius, logo URL, app name
+- BrandProvider component applies settings globally via CSS variables
+- Settings persist to database and apply on page load
+
+### Sidebar Improvements (Dec 11, 2025)
+- Removed fixed sidebar scroll - now scrolls with page
+- Progressive fade on future days (1 ahead = 70%, 2 ahead = 50%, 3+ ahead = 35% opacity)
+- Day Streak: warm cream/caramel palette (#FFF8E7 bg, #D4A574 circle)
+- My Journey: sage/forest green palette (#E8F4F0 bg, #2D6A4F text)
+- Settings and Logout moved inside scrollable area
+
+### Navigation & UX (Dec 11, 2025)
+- ScrollToTop component - pages scroll to top on navigation
+- All buttons have cursor pointer on hover
+
+### Matt Webley's Tip Box (Dec 11, 2025)
+- Added Matt Webley photo (matt-webley.png in client/public)
+- Clean black/white design with photo, "Matt Webley's Tip" header
 
 ## System Architecture
 
@@ -42,21 +77,62 @@ Preferred communication style: Simple, everyday language.
 - **User Progress**: Per-day completion tracking with micro-decisions and reflections
 - **Badges**: Achievement system with triggers based on day completion
 - **User Stats**: Aggregate statistics (streaks, completed days)
+- **Day Comments**: Discussion system on each lesson with moderation
+- **Brand Settings**: Global app theming (colors, fonts, border radius, logo, app name)
 
 ### Project Structure
 ```
 ├── client/src/          # React frontend
-│   ├── components/ui/   # shadcn/ui components
+│   ├── components/
+│   │   ├── ui/          # shadcn/ui components
+│   │   ├── layout/      # Layout, Sidebar components
+│   │   ├── BrandProvider.tsx  # Global brand settings
+│   │   ├── Day1IdeaGenerator.tsx
+│   │   ├── Day2IdeaValidator.tsx
+│   │   ├── Day3FeatureBuilder.tsx
+│   │   └── DayChat.tsx
 │   ├── hooks/           # Custom React hooks
-│   ├── pages/           # Route components
+│   ├── pages/           # Route components (Dashboard, Admin, Badges, Settings)
 │   └── lib/             # Utilities and API client
+├── client/public/       # Static assets (matt-webley.png)
 ├── server/              # Express backend
 │   ├── routes.ts        # API route definitions
 │   ├── storage.ts       # Database operations interface
 │   └── replitAuth.ts    # Authentication setup
 ├── shared/              # Shared code (schema, types)
-└── migrations/          # Drizzle database migrations
+└── attached_assets/     # User uploaded files
 ```
+
+## Key Components
+
+### Day 1: Idea Generator
+- 28 AI-scored ideas (number of wealth)
+- Color-coded cards: green (20+), orange (15-19), red (lower)
+- Custom idea input option
+- Shortlist top 5 ideas
+
+### Day 2: Idea Validator
+- Interactive validator with shortlisted ideas from Day 1
+- Copy-pastable AI prompts for validation
+- "Use Our AI" buttons to run prompts
+- Narrow from 5 ideas to 1 final choice
+
+### Day 3: Core Features & USP Generator
+- Competitor analysis to identify shared "core" features
+- USP generator based on user skills + market gaps
+- Editable feature checklist
+- Finalize feature list for MVP
+
+### My Journey Section (Sidebar)
+- Shows user's chosen idea and key decisions
+- Hover tooltip with detailed journey notes
+- Sage/forest green color palette
+
+### Admin Panel
+- Student progress tracking
+- Comment moderation queue
+- Brand Pack settings (colors, fonts, logo, etc.)
+- Day-by-day completion heatmap
 
 ## External Dependencies
 
@@ -78,4 +154,3 @@ Preferred communication style: Simple, everyday language.
 ### Replit Integration
 - `@replit/vite-plugin-runtime-error-modal` for error display
 - `@replit/vite-plugin-cartographer` and `@replit/vite-plugin-dev-banner` in development
-- Custom `vite-plugin-meta-images` for OpenGraph image handling
