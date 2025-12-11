@@ -36,8 +36,11 @@ export function Sidebar({ currentDay }: SidebarProps) {
   const progress = stats ? Math.round(((stats.lastCompletedDay || 0) / 30) * 100) : 0;
   const lastCompleted = (stats as any)?.lastCompletedDay || 0;
   
-  // Only show completed days + current + next 2 days (limit visibility)
-  const maxVisibleDay = Math.max(lastCompleted + 3, currentDay + 2, 3);
+  // Test mode toggle
+  const [testMode, setTestMode] = useState(false);
+  
+  // Only show completed days + current + next 2 days (limit visibility) unless test mode
+  const maxVisibleDay = testMode ? 30 : Math.max(lastCompleted + 3, currentDay + 2, 3);
   const visibleDays = challengeDays.filter((d: any) => d.day <= maxVisibleDay);
 
   // Group visible days by phase
@@ -65,6 +68,19 @@ export function Sidebar({ currentDay }: SidebarProps) {
           </div>
           <Progress value={progress} className="h-2" />
         </div>
+
+        <button
+          onClick={() => setTestMode(!testMode)}
+          className={cn(
+            "mt-4 w-full text-xs py-1.5 px-3 rounded-md transition-colors",
+            testMode 
+              ? "bg-blue-500 text-white" 
+              : "bg-muted text-muted-foreground hover:bg-muted/80"
+          )}
+          data-testid="button-test-mode"
+        >
+          {testMode ? "Test Mode: ON" : "Test Mode: OFF"}
+        </button>
       </div>
 
       {/* Navigation */}
