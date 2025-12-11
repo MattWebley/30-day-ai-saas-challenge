@@ -9,6 +9,7 @@ import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import Badges from "@/pages/Badges";
 import Settings from "@/pages/Settings";
+import Admin from "@/pages/Admin";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -35,6 +36,7 @@ function Router() {
           <Route path="/dashboard/:day" component={Dashboard} />
           <Route path="/badges" component={Badges} />
           <Route path="/settings" component={Settings} />
+          <Route path="/admin" component={Admin} />
         </>
       )}
       <Route component={NotFound} />

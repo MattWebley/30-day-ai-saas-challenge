@@ -13,7 +13,8 @@ import {
   LayoutDashboard,
   Settings,
   LogOut,
-  X
+  X,
+  Shield
 } from "lucide-react";
 
 interface SidebarProps {
@@ -120,6 +121,17 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
               )}>
                 <Trophy className="w-4 h-4" />
                 Badge Collection
+              </span>
+            </Link>
+            <Link href="/admin" onClick={handleNavClick}>
+              <span className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                location === "/admin" 
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground" 
+                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}>
+                <Shield className="w-4 h-4" />
+                Admin Panel
               </span>
             </Link>
           </div>

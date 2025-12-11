@@ -25,6 +25,7 @@ export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
   
   // Day content operations
   getDayContent(day: number): Promise<DayContent | undefined>;
@@ -42,6 +43,7 @@ export interface IStorage {
     microDecisionChoice?: string;
     reflectionAnswer?: string;
   }): Promise<UserProgress>;
+  getAllUserProgress(): Promise<UserProgress[]>;
   
   // Badge operations
   getAllBadges(): Promise<Badge[]>;
@@ -55,6 +57,7 @@ export interface IStorage {
   getUserStats(userId: string): Promise<UserStats | undefined>;
   createUserStats(stats: InsertUserStats): Promise<UserStats>;
   updateUserStats(userId: string, stats: Partial<InsertUserStats>): Promise<UserStats | undefined>;
+  getAllUserStats(): Promise<UserStats[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -84,6 +87,10 @@ export class DatabaseStorage implements IStorage {
     }
     
     return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
   }
 
   // Day content operations
@@ -175,6 +182,10 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async getAllUserProgress(): Promise<UserProgress[]> {
+    return await db.select().from(userProgress);
+  }
+
   // Badge operations
   async getAllBadges(): Promise<Badge[]> {
     return await db.select().from(badges);
@@ -220,6 +231,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(userStats.userId, userId))
       .returning();
     return updated;
+  }
+
+  async getAllUserStats(): Promise<UserStats[]> {
+    return await db.select().from(userStats);
   }
 }
 

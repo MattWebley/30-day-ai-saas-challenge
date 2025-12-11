@@ -183,6 +183,66 @@ export async function registerRoutes(
     }
   });
 
+  // Admin stats route
+  app.get("/api/admin/stats", isAuthenticated, async (req: any, res) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      const allStats = await storage.getAllUserStats();
+      const allProgress = await storage.getAllUserProgress();
+      
+      // Calculate metrics
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      const activeUsers = allStats.filter((s: any) => 
+        s.lastActivityDate && new Date(s.lastActivityDate) > sevenDaysAgo
+      ).length;
+      
+      const completedChallenges = allStats.filter((s: any) => 
+        s.lastCompletedDay && s.lastCompletedDay >= 30
+      ).length;
+      
+      const avgProgress = allStats.length > 0
+        ? allStats.reduce((sum: number, s: any) => sum + ((s.lastCompletedDay || 0) / 30) * 100, 0) / allStats.length
+        : 0;
+      
+      // Day completion counts
+      const dayCompletions: Record<number, number> = {};
+      allProgress.forEach((p: any) => {
+        if (p.completed) {
+          dayCompletions[p.day] = (dayCompletions[p.day] || 0) + 1;
+        }
+      });
+      
+      // User progress list
+      const userProgress = allUsers.map((user: any) => {
+        const stats = allStats.find((s: any) => s.userId === user.id);
+        return {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          currentDay: (stats?.lastCompletedDay || 0) + 1,
+          totalXp: stats?.totalXp || 0,
+          lastActive: stats?.lastActivityDate,
+          isActive: stats?.lastActivityDate && new Date(stats.lastActivityDate) > sevenDaysAgo,
+        };
+      });
+      
+      res.json({
+        totalUsers: allUsers.length,
+        activeUsers,
+        completedChallenges,
+        avgProgress,
+        dayCompletions,
+        userProgress,
+      });
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
   // Badge routes
   app.get("/api/badges", async (req, res) => {
     try {
