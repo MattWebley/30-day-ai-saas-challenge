@@ -124,7 +124,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
       <div className="space-y-6">
         <div className="text-center mb-8">
           <h2 className="text-2xl font-bold text-slate-900 mb-2">Let's Find Your Perfect SaaS Idea</h2>
-          <p className="text-slate-500">Tell us about yourself and we'll generate 20 personalized ideas scored against Matt's criteria</p>
+          <p className="text-slate-500">Tell us about yourself and we'll generate 28 personalized ideas scored against Matt's criteria</p>
         </div>
 
         <div className="grid gap-6">
@@ -188,7 +188,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
           data-testid="button-generate-ideas"
         >
           <Sparkles className="w-5 h-5" />
-          Generate 20 SaaS Ideas
+          Generate 28 SaaS Ideas
         </Button>
       </div>
     );

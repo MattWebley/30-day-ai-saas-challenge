@@ -278,7 +278,7 @@ export async function registerRoutes(
     try {
       const { knowledge, skills, interests, experience } = req.body;
       
-      const prompt = `You are a SaaS business idea expert. Based on the user's profile, generate exactly 20 B2B SaaS product ideas.
+      const prompt = `You are a SaaS business idea expert. Based on the user's profile, generate exactly 28 B2B SaaS product ideas.
 
 USER PROFILE:
 - Knowledge/Expertise: ${knowledge}
@@ -301,7 +301,7 @@ For each idea, provide:
 - totalScore: Sum of all scores (out of 25)
 - whyThisWorks: One sentence explaining the opportunity
 
-Return JSON array of 20 ideas, sorted by totalScore descending.
+Return JSON array of 28 ideas, sorted by totalScore descending.
 Format: { "ideas": [...] }`;
 
       const response = await openai.chat.completions.create({
