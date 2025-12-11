@@ -20,6 +20,7 @@ import { useUserStats } from "@/hooks/useStats";
 import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
 import { Day1IdeaGenerator } from "@/components/Day1IdeaGenerator";
 import { Day2IdeaValidator } from "@/components/Day2IdeaValidator";
+import { Day3FeatureBuilder } from "@/components/Day3FeatureBuilder";
 import { DayChat } from "@/components/DayChat";
 import { toast } from "sonner";
 
@@ -228,6 +229,40 @@ export default function Dashboard() {
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day2IdeaValidator onComplete={handleComplete} />
+                  </Card>
+                </div>
+              </>
+            ) : currentDay === 3 ? (
+              <>
+                {/* Step 1: Today's Lesson */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                    <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                  </div>
+                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    {dayData.lesson ? (
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">
+                            {paragraph}
+                          </p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-slate-500">{dayData.description}</p>
+                    )}
+                  </Card>
+                </div>
+
+                {/* Step 2: Feature Builder */}
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Define Your Features</h2>
+                  </div>
+                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    <Day3FeatureBuilder onComplete={handleComplete} />
                   </Card>
                 </div>
               </>
