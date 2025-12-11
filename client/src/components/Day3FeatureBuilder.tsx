@@ -58,6 +58,8 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   const [bleedingNeckProblem, setBleedingNeckProblem] = useState("");
   const [coreFeatures, setCoreFeatures] = useState<string[]>([]);
   const [uspFeatures, setUspFeatures] = useState<string[]>([]);
+  const [uspSuggestions, setUspSuggestions] = useState<string[]>([]);
+  const [selectedUspIndexes, setSelectedUspIndexes] = useState<number[]>([]);
   const [newFeature, setNewFeature] = useState("");
 
   const { data: allProgress } = useQuery({
@@ -151,25 +153,49 @@ Bleeding neck problem: ${bleedingNeckProblem}
 My skills: ${userInputs?.skills || 'Not specified'}
 My knowledge: ${userInputs?.knowledge || 'Not specified'}
 
-What are 2 unique USP features I could add that:
+Generate 6 unique USP feature ideas that:
 1. Competitors DON'T have
 2. Leverage my unique skills/knowledge
-3. Would make customers choose ME
+3. Would make customers choose ME over alternatives
 
-List exactly 2 features as bullet points. Just the feature name and a short benefit. Example:
-- AI-powered suggestions (saves 2 hours/day)`;
+Format each as: Feature Name - Short benefit (10 words max)
+
+Example:
+- AI Writing Coach - Personalized feedback improves copy quality
+- Smart A/B Testing - Automatically finds winning variations
+
+Give me exactly 6 ideas, one per line:`;
 
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
       const data = await res.json();
       const features = data.response
         .split('\n')
-        .map((line: string) => line.replace(/^[-•*]\s*/, '').trim())
-        .filter((line: string) => line.length > 0 && line.length < 150);
-      setUspFeatures(features.slice(0, 2));
+        .map((line: string) => line.replace(/^[-•*\d.]\s*/, '').trim())
+        .filter((line: string) => line.length > 5 && line.length < 150);
+      setUspSuggestions(features.slice(0, 6));
+      setSelectedUspIndexes([]);
     } catch {
       toast.error("Failed to generate. Try again.");
     }
     setIsGenerating(false);
+  };
+
+  const toggleUspSelection = (index: number) => {
+    setSelectedUspIndexes(prev => {
+      if (prev.includes(index)) {
+        return prev.filter(i => i !== index);
+      } else if (prev.length < 2) {
+        return [...prev, index];
+      }
+      return prev;
+    });
+  };
+
+  const confirmUspSelection = () => {
+    const selected = selectedUspIndexes.map(i => uspSuggestions[i]);
+    setUspFeatures(prev => [...prev, ...selected]);
+    setUspSuggestions([]);
+    setSelectedUspIndexes([]);
   };
 
   const addFeature = (type: 'core' | 'usp') => {
@@ -417,55 +443,95 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
             </div>
 
             <Card className="p-6 border-2 border-slate-200">
-              <div className="space-y-3">
-                {uspFeatures.map((feature, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg group border border-slate-200">
-                    <UniqueFeatureIcon className="w-4 h-4 text-black flex-shrink-0" />
-                    <span className="flex-1 text-slate-800">{feature}</span>
-                    <button
-                      onClick={() => removeFeature('usp', i)}
-                      className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity cursor-pointer"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
+              <div className="space-y-4">
+                {uspFeatures.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-xs font-bold text-slate-500 uppercase">Your USP Features:</p>
+                    {uspFeatures.map((feature, i) => (
+                      <div key={i} className="flex items-center gap-3 p-3 bg-black text-white rounded-lg group">
+                        <UniqueFeatureIcon className="w-4 h-4 flex-shrink-0" />
+                        <span className="flex-1">{feature}</span>
+                        <button
+                          onClick={() => removeFeature('usp', i)}
+                          className="opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ))}
-                
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Type your unique feature and press Enter..."
-                    value={newFeature}
-                    onChange={(e) => setNewFeature(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && addFeature('usp')}
-                    className="flex-1"
-                    data-testid="input-usp-feature"
-                  />
-                  <Button variant="outline" onClick={() => addFeature('usp')}>
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
+                )}
 
-                <div className="flex items-center gap-3 pt-2">
-                  <div className="flex-1 h-px bg-slate-200" />
-                  <span className="text-xs text-slate-400 uppercase">or</span>
-                  <div className="flex-1 h-px bg-slate-200" />
-                </div>
+                {uspSuggestions.length > 0 ? (
+                  <div className="space-y-3">
+                    <p className="text-sm font-medium text-slate-700">Pick 1-2 features that excite you:</p>
+                    <div className="grid gap-2">
+                      {uspSuggestions.map((suggestion, i) => (
+                        <button
+                          key={i}
+                          onClick={() => toggleUspSelection(i)}
+                          className={`p-4 rounded-lg border-2 text-left transition-all cursor-pointer ${
+                            selectedUspIndexes.includes(i)
+                              ? 'border-black bg-slate-50'
+                              : 'border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                              selectedUspIndexes.includes(i) ? 'border-black bg-black' : 'border-slate-300'
+                            }`}>
+                              {selectedUspIndexes.includes(i) && <Check className="w-3 h-3 text-white" />}
+                            </div>
+                            <span className="text-slate-800">{suggestion}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    <Button 
+                      className="w-full" 
+                      onClick={confirmUspSelection}
+                      disabled={selectedUspIndexes.length === 0}
+                    >
+                      Add Selected ({selectedUspIndexes.length}/2)
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Type your unique feature and press Enter..."
+                        value={newFeature}
+                        onChange={(e) => setNewFeature(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && addFeature('usp')}
+                        className="flex-1"
+                        data-testid="input-usp-feature"
+                      />
+                      <Button variant="outline" onClick={() => addFeature('usp')}>
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </div>
 
-                <div className="text-center">
-                  <Button
-                    variant="outline"
-                    className="gap-2"
-                    onClick={generateUSPFeatures}
-                    disabled={isGenerating}
-                    data-testid="button-generate-usp"
-                  >
-                    {isGenerating ? (
-                      <><Loader2 className="w-4 h-4 animate-spin" /> Finding your edge...</>
-                    ) : (
-                      <><Sparkles className="w-4 h-4" /> Generate with AI</>
-                    )}
-                  </Button>
-                </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-px bg-slate-200" />
+                      <span className="text-xs text-slate-400 uppercase">or</span>
+                      <div className="flex-1 h-px bg-slate-200" />
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      className="w-full gap-2"
+                      onClick={generateUSPFeatures}
+                      disabled={isGenerating}
+                      data-testid="button-generate-usp"
+                    >
+                      {isGenerating ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> Generating ideas...</>
+                      ) : (
+                        <><Sparkles className="w-4 h-4" /> Generate 6 Ideas with AI</>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             </Card>
 
