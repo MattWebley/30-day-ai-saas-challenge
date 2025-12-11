@@ -18,6 +18,7 @@ import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress, useCompleteDay } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
 import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
+import { Day1IdeaGenerator } from "@/components/Day1IdeaGenerator";
 import { toast } from "sonner";
 
 export default function Dashboard() {
@@ -159,27 +160,67 @@ export default function Dashboard() {
           {/* Left Column: Task Steps */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* Step 1: Today's Lesson */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
-              </div>
-
-              <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                {dayData.lesson ? (
-                  <div className="prose prose-slate max-w-none">
-                    {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                      <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">
-                        {paragraph}
-                      </p>
-                    ))}
+            {/* Day 1 Special: Idea Generator */}
+            {currentDay === 1 ? (
+              <>
+                {/* Step 1: Today's Lesson */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                    <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                   </div>
-                ) : (
-                  <p className="text-slate-500">{dayData.description}</p>
-                )}
-              </Card>
-            </div>
+                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    {dayData.lesson ? (
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">
+                            {paragraph}
+                          </p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-slate-500">{dayData.description}</p>
+                    )}
+                  </Card>
+                </div>
+
+                {/* Step 2: Idea Generator */}
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Find Your Winning Idea</h2>
+                  </div>
+                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    <Day1IdeaGenerator 
+                      existingProgress={dayProgress}
+                      onComplete={handleComplete}
+                    />
+                  </Card>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Step 1: Today's Lesson */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                    <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                  </div>
+
+                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    {dayData.lesson ? (
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">
+                            {paragraph}
+                          </p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-slate-500">{dayData.description}</p>
+                    )}
+                  </Card>
+                </div>
 
             {/* Step 2: Micro Decision */}
             <div className="space-y-4 pt-4">
@@ -250,6 +291,8 @@ export default function Dashboard() {
                 )}
               </Button>
             </div>
+              </>
+            )}
 
           </div>
 

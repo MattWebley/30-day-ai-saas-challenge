@@ -3,6 +3,10 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertUserProgressSchema, insertDayContentSchema } from "@shared/schema";
+import OpenAI from "openai";
+
+// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function registerRoutes(
   httpServer: Server,
@@ -266,6 +270,85 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching user badges:", error);
       res.status(500).json({ message: "Failed to fetch user badges" });
+    }
+  });
+
+  // Day 1: Generate SaaS ideas based on user inputs
+  app.post("/api/generate-ideas", isAuthenticated, async (req: any, res) => {
+    try {
+      const { knowledge, skills, interests, experience } = req.body;
+      
+      const prompt = `You are a SaaS business idea expert. Based on the user's profile, generate exactly 20 B2B SaaS product ideas.
+
+USER PROFILE:
+- Knowledge/Expertise: ${knowledge}
+- Skills: ${skills}
+- Interests/Passions: ${interests}
+- Work Experience: ${experience}
+
+SCORING CRITERIA (rate each 1-5):
+1. Market Demand - Is there proven demand? Are competitors making money?
+2. Skill Match - Does it align with their skills and knowledge?
+3. Passion Fit - Will they enjoy working on this?
+4. Speed to MVP - Can they build an MVP in 30 days?
+5. Monetization - Clear path to $1k+ MRR?
+
+For each idea, provide:
+- title: Short catchy name (2-4 words)
+- desc: One sentence description of what it does
+- targetCustomer: Who would pay for this
+- scores: Object with marketDemand, skillMatch, passionFit, speedToMvp, monetization (each 1-5)
+- totalScore: Sum of all scores (out of 25)
+- whyThisWorks: One sentence explaining the opportunity
+
+Return JSON array of 20 ideas, sorted by totalScore descending.
+Format: { "ideas": [...] }`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+      });
+
+      const result = JSON.parse(response.choices[0].message.content || "{}");
+      res.json(result.ideas || []);
+    } catch (error: any) {
+      console.error("Error generating ideas:", error);
+      res.status(500).json({ message: error.message || "Failed to generate ideas" });
+    }
+  });
+
+  // Save Day 1 progress with ideas
+  app.post("/api/progress/day1", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { userInputs, generatedIdeas, shortlistedIdeas } = req.body;
+      
+      // Check if progress exists
+      const existing = await storage.getUserProgressForDay(userId, 1);
+      
+      if (existing) {
+        // Update existing progress
+        const updated = await storage.updateUserProgress(existing.id, {
+          userInputs,
+          generatedIdeas,
+          shortlistedIdeas,
+        });
+        res.json(updated);
+      } else {
+        // Create new progress
+        const created = await storage.createUserProgress({
+          userId,
+          day: 1,
+          userInputs,
+          generatedIdeas,
+          shortlistedIdeas,
+        });
+        res.json(created);
+      }
+    } catch (error: any) {
+      console.error("Error saving Day 1 progress:", error);
+      res.status(500).json({ message: error.message || "Failed to save progress" });
     }
   });
 
