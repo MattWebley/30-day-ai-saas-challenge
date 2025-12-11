@@ -26,11 +26,13 @@ export function Sidebar() {
       {/* Header */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold font-mono">
-            30
-          </div>
-          <h1 className="font-bold text-lg tracking-tight text-sidebar-foreground">
-            SaaS Challenge
+          <img 
+            src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png" 
+            alt="Matt Webley" 
+            className="w-10 h-10 rounded-full"
+          />
+          <h1 className="font-bold text-sm tracking-tight text-sidebar-foreground leading-tight">
+            30 Day AI<br/>SaaS Challenge
           </h1>
         </div>
 

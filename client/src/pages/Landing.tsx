@@ -12,10 +12,12 @@ export default function Landing() {
       <header className="border-b border-slate-100 bg-white sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-primary/20">
-              30
-            </div>
-            <span className="font-bold text-xl tracking-tight">SaaS Challenge</span>
+            <img 
+              src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png" 
+              alt="Matt Webley" 
+              className="w-10 h-10 rounded-full"
+            />
+            <span className="font-bold text-xl tracking-tight">30 Day AI SaaS Challenge</span>
           </div>
           <div className="flex gap-4 items-center">
             <span className="hidden md:inline text-sm font-medium text-slate-500">Already a member?</span>
