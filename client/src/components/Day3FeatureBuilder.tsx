@@ -399,40 +399,54 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
               <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
                 <div className="flex items-center justify-between mb-2">
                   <label className="block text-sm font-bold text-amber-900">
-                    Write Your Bleeding Neck Problem Statement:
+                    Your Bleeding Neck Problem Statement:
                   </label>
-                  {aiResponse && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs gap-1 border-amber-300 text-amber-700 hover:bg-amber-100"
-                      onClick={() => {
-                        const match = aiResponse.match(/(?:bleeding neck problem[^:]*:|one-sentence statement[^:]*:)\s*["']?([^"'\n]+)/i);
-                        if (match) {
-                          setBleedingNeckProblem(match[1].trim());
-                        } else {
-                          const lines = aiResponse.split('\n').filter(l => l.trim());
-                          const lastLine = lines[lines.length - 1]?.trim();
-                          if (lastLine) setBleedingNeckProblem(lastLine);
-                        }
-                      }}
-                      data-testid="button-use-ai-statement"
-                    >
-                      <Sparkles className="w-3 h-3" />
-                      Use AI Suggestion
-                    </Button>
-                  )}
                 </div>
                 <Textarea
-                  placeholder="Read the AI response above, then write your one-sentence problem statement here..."
+                  placeholder="The ONE critical problem my product solves is..."
                   value={bleedingNeckProblem}
                   onChange={(e) => setBleedingNeckProblem(e.target.value)}
                   className="min-h-[80px] bg-white border-amber-200 focus:border-amber-400"
                   data-testid="input-bleeding-neck"
                 />
-                <p className="text-xs text-amber-700 mt-2">
-                  This will be used in the next prompts to keep your features focused.
-                </p>
+                <div className="flex items-center justify-between mt-3">
+                  <p className="text-xs text-amber-700">
+                    This will be used in the next prompts to keep your features focused.
+                  </p>
+                  <Button
+                    size="sm"
+                    className="gap-1 bg-amber-600 hover:bg-amber-700 text-white"
+                    onClick={() => {
+                      setLoadingPrompt('bleeding_statement');
+                      const statementPrompt = `Based on this SaaS product: "${chosenIdea?.title}" - ${chosenIdea?.desc}
+
+Write a ONE sentence "bleeding neck problem" statement. This should be the critical problem customers are DESPERATE to solve - so painful they'd pay almost anything to fix it.
+
+Format: "[Target customers] are desperately seeking to [solve specific pain] because [why it's critical], and [product name] provides [unique solution]."
+
+Just give me the one-sentence statement, nothing else.`;
+                      
+                      apiRequest("POST", "/api/ai-prompt", { prompt: statementPrompt })
+                        .then(res => res.json())
+                        .then(data => {
+                          setBleedingNeckProblem(data.response.trim());
+                          setLoadingPrompt(null);
+                        })
+                        .catch(() => {
+                          toast.error("Failed to generate statement");
+                          setLoadingPrompt(null);
+                        });
+                    }}
+                    disabled={loadingPrompt === 'bleeding_statement'}
+                    data-testid="button-write-bleeding-neck"
+                  >
+                    {loadingPrompt === 'bleeding_statement' ? (
+                      <><Loader2 className="w-3 h-3 animate-spin" /> Writing...</>
+                    ) : (
+                      <><Sparkles className="w-3 h-3" /> Write It For Me</>
+                    )}
+                  </Button>
+                </div>
               </div>
             )}
           </Card>
