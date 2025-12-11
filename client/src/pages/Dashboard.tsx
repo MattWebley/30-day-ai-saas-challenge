@@ -154,7 +154,7 @@ export default function Dashboard() {
                 className="w-14 h-14 rounded-full object-cover flex-shrink-0"
               />
               <div>
-                <p className="font-bold text-black text-sm uppercase tracking-wide mb-1">Matt's Tip</p>
+                <p className="font-bold text-black text-sm uppercase tracking-wide mb-1">Matt Webley's Tip</p>
                 <p className="text-slate-700 font-medium leading-relaxed">{dayData.tip}</p>
               </div>
             </div>
