@@ -61,6 +61,11 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   const [uspSuggestions, setUspSuggestions] = useState<string[]>([]);
   const [selectedUspIndexes, setSelectedUspIndexes] = useState<number[]>([]);
   const [newFeature, setNewFeature] = useState("");
+  
+  const [bleedingNeckAttempts, setBleedingNeckAttempts] = useState(0);
+  const [coreAttempts, setCoreAttempts] = useState(0);
+  const [uspAttempts, setUspAttempts] = useState(0);
+  const MAX_AI_ATTEMPTS = 3;
 
   const { data: allProgress } = useQuery({
     queryKey: ["/api/progress"],
@@ -96,6 +101,8 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   });
 
   const generateBleedingNeck = async () => {
+    if (bleedingNeckAttempts >= MAX_AI_ATTEMPTS) return;
+    setBleedingNeckAttempts(prev => prev + 1);
     setIsGenerating(true);
     try {
       const prompt = `I'm building: "${chosenIdea?.title}" - ${chosenIdea?.desc}
@@ -117,6 +124,8 @@ Just the one sentence, nothing else.`;
   };
 
   const generateCoreFeatures = async () => {
+    if (coreAttempts >= MAX_AI_ATTEMPTS) return;
+    setCoreAttempts(prev => prev + 1);
     setIsGenerating(true);
     try {
       const prompt = `I'm building: "${chosenIdea?.title}" - ${chosenIdea?.desc}
@@ -144,6 +153,8 @@ List them as simple bullet points, one feature per line. Just the feature names,
   };
 
   const generateUSPFeatures = async () => {
+    if (uspAttempts >= MAX_AI_ATTEMPTS) return;
+    setUspAttempts(prev => prev + 1);
     setIsGenerating(true);
     try {
       const prompt = `I'm building: "${chosenIdea?.title}" - ${chosenIdea?.desc}
@@ -305,13 +316,15 @@ Give me exactly 6 ideas, one per line:`;
                   variant="outline"
                   className="gap-2"
                   onClick={generateBleedingNeck}
-                  disabled={isGenerating}
+                  disabled={isGenerating || bleedingNeckAttempts >= MAX_AI_ATTEMPTS}
                   data-testid="button-generate-problem"
                 >
                   {isGenerating ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> Thinking...</>
+                  ) : bleedingNeckAttempts >= MAX_AI_ATTEMPTS ? (
+                    <>No attempts left</>
                   ) : (
-                    <><Sparkles className="w-4 h-4" /> Write It For Me</>
+                    <><Sparkles className="w-4 h-4" /> Write It For Me ({MAX_AI_ATTEMPTS - bleedingNeckAttempts} left)</>
                   )}
                 </Button>
               </div>
@@ -389,13 +402,15 @@ Give me exactly 6 ideas, one per line:`;
                     variant="outline"
                     className="gap-2"
                     onClick={generateCoreFeatures}
-                    disabled={isGenerating}
+                    disabled={isGenerating || coreAttempts >= MAX_AI_ATTEMPTS}
                     data-testid="button-generate-core"
                   >
                     {isGenerating ? (
                       <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing competitors...</>
+                    ) : coreAttempts >= MAX_AI_ATTEMPTS ? (
+                      <>No attempts left</>
                     ) : (
-                      <><Sparkles className="w-4 h-4" /> Generate with AI</>
+                      <><Sparkles className="w-4 h-4" /> Generate with AI ({MAX_AI_ATTEMPTS - coreAttempts} left)</>
                     )}
                   </Button>
                 </div>
@@ -521,13 +536,15 @@ Give me exactly 6 ideas, one per line:`;
                       variant="outline"
                       className="w-full gap-2"
                       onClick={generateUSPFeatures}
-                      disabled={isGenerating}
+                      disabled={isGenerating || uspAttempts >= MAX_AI_ATTEMPTS}
                       data-testid="button-generate-usp"
                     >
                       {isGenerating ? (
                         <><Loader2 className="w-4 h-4 animate-spin" /> Generating ideas...</>
+                      ) : uspAttempts >= MAX_AI_ATTEMPTS ? (
+                        <>No attempts left</>
                       ) : (
-                        <><Sparkles className="w-4 h-4" /> Generate 6 Ideas with AI</>
+                        <><Sparkles className="w-4 h-4" /> Generate 6 Ideas ({MAX_AI_ATTEMPTS - uspAttempts} left)</>
                       )}
                     </Button>
                   </div>
