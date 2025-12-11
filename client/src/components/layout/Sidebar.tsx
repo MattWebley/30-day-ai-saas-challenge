@@ -34,9 +34,14 @@ export function Sidebar({ currentDay }: SidebarProps) {
   );
 
   const progress = stats ? Math.round(((stats.lastCompletedDay || 0) / 30) * 100) : 0;
+  const lastCompleted = (stats as any)?.lastCompletedDay || 0;
+  
+  // Only show completed days + current + next 2 days (limit visibility)
+  const maxVisibleDay = Math.max(lastCompleted + 3, currentDay + 2, 3);
+  const visibleDays = challengeDays.filter((d: any) => d.day <= maxVisibleDay);
 
-  // Group days by phase
-  const phases = Array.from(new Set(challengeDays.map((d: any) => d.phase)));
+  // Group visible days by phase
+  const phases = Array.from(new Set(visibleDays.map((d: any) => d.phase)));
 
   return (
     <div className="w-80 h-screen bg-sidebar border-r border-sidebar-border flex flex-col fixed left-0 top-0 z-50">
@@ -96,7 +101,7 @@ export function Sidebar({ currentDay }: SidebarProps) {
                 {phase}
               </h3>
               <div className="space-y-0.5">
-                {challengeDays.filter((d: any) => d.phase === phase).map((day: any) => {
+                {visibleDays.filter((d: any) => d.phase === phase).map((day: any) => {
                   const isCompleted = completedDays.has(day.day);
                   const isLocked = day.day > (stats?.lastCompletedDay || 0) + 1 && !isCompleted;
                   
