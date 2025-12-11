@@ -58,31 +58,32 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
 
   return (
     <div 
-      className="mt-4 p-3 bg-white rounded-md border border-slate-200 relative cursor-pointer transition-all hover:border-slate-300"
+      className="mt-4 p-3 rounded-md relative cursor-pointer transition-all"
+      style={{ backgroundColor: '#E8F4F0', border: '1px solid #B8D4CA' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-center gap-2 mb-2">
-        <Rocket className="w-4 h-4 text-black" />
-        <p className="text-xs font-bold text-black uppercase tracking-wide">My Journey</p>
+        <Rocket className="w-4 h-4" style={{ color: '#2D6A4F' }} />
+        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#2D6A4F' }}>My Journey</p>
       </div>
       
       {journey.chosenIdea ? (
         <div className="space-y-1">
           <div className="flex items-start gap-2">
-            <Target className="w-3 h-3 text-black mt-0.5 flex-shrink-0" />
+            <Target className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: '#40916C' }} />
             <div>
-              <p className="text-xs text-slate-500">Building:</p>
-              <p className="text-sm font-semibold text-black leading-tight">{journey.chosenIdea.title}</p>
+              <p className="text-xs" style={{ color: '#52796F' }}>Building:</p>
+              <p className="text-sm font-semibold leading-tight" style={{ color: '#1B4332' }}>{journey.chosenIdea.title}</p>
             </div>
           </div>
         </div>
       ) : journey.hasShortlist ? (
         <div className="flex items-start gap-2">
-          <Lightbulb className="w-3 h-3 text-black mt-0.5 flex-shrink-0" />
+          <Lightbulb className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: '#40916C' }} />
           <div>
-            <p className="text-xs text-slate-500">Shortlisted:</p>
-            <p className="text-sm font-medium text-black">{journey.shortlistCount} ideas</p>
+            <p className="text-xs" style={{ color: '#52796F' }}>Shortlisted:</p>
+            <p className="text-sm font-medium" style={{ color: '#1B4332' }}>{journey.shortlistCount} ideas</p>
           </div>
         </div>
       ) : null}
@@ -184,13 +185,13 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
         </div>
 
         {/* Streak Display */}
-        <div className="mt-4 flex items-center gap-3 p-3 bg-white rounded-md border border-slate-200">
-          <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center">
+        <div className="mt-4 flex items-center gap-3 p-3 rounded-md" style={{ backgroundColor: '#FFF8E7', border: '1px solid #E8DCC8' }}>
+          <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ backgroundColor: '#D4A574' }}>
             <span className="text-white font-black text-lg">{(stats as any)?.currentStreak || 0}</span>
           </div>
           <div>
-            <p className="text-xs font-bold text-black uppercase tracking-wide">Day Streak</p>
-            <p className="text-xs text-slate-500">Keep it going!</p>
+            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#8B6914' }}>Day Streak</p>
+            <p className="text-xs" style={{ color: '#A67C52' }}>Keep it going!</p>
           </div>
         </div>
 
