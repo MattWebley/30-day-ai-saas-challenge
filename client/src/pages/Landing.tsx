@@ -21,10 +21,12 @@ export default function Landing() {
           </div>
           <div className="flex gap-4 items-center">
             <span className="hidden md:inline text-sm font-medium text-slate-500">Already a member?</span>
-            <Button variant="ghost" className="font-medium text-slate-900 hover:text-primary hover:bg-blue-50">Login</Button>
-            <Link href="/dashboard">
+            <a href="/api/login">
+              <Button variant="ghost" className="font-medium text-slate-900 hover:text-primary hover:bg-blue-50">Login</Button>
+            </a>
+            <a href="/api/login">
               <Button className="rounded-lg px-6 font-semibold shadow-none">Start Now</Button>
-            </Link>
+            </a>
           </div>
         </div>
       </header>
@@ -53,11 +55,11 @@ export default function Landing() {
             </p>
 
             <div className="pt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link href="/dashboard">
+              <a href="/api/login">
                 <Button size="lg" className="h-16 px-10 text-lg rounded-xl font-bold gap-3 shadow-xl shadow-primary/20 hover:translate-y-[-2px] transition-all">
                   Start Day 1 for Free <ArrowRight className="w-6 h-6" />
                 </Button>
-              </Link>
+              </a>
             </div>
             
             <div className="pt-6 flex items-center justify-center gap-6 text-sm font-medium text-slate-500">

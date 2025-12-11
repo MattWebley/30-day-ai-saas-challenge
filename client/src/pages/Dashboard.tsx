@@ -16,36 +16,96 @@ import {
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRoute, useLocation } from "wouter";
-import { challengeDays } from "@/lib/mock-data";
+import { useDayContent } from "@/hooks/useDays";
+import { useUserProgress, useCompleteDay } from "@/hooks/useProgress";
+import { useUserStats } from "@/hooks/useStats";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const [match, params] = useRoute("/dashboard/:day");
   const [location, setLocation] = useLocation();
-  const [completed, setCompleted] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState<number | undefined>();
+  const [microDecisionChoice, setMicroDecisionChoice] = useState<string>("");
+  const [reflectionAnswer, setReflectionAnswer] = useState<string>("");
   const [loadingAI, setLoadingAI] = useState(false);
 
   // Determine current day from URL or default to 1
   const currentDay = params?.day ? parseInt(params.day) : 1;
-  const dayData = challengeDays.find(d => d.day === currentDay) || challengeDays[0];
+  
+  // Fetch data
+  const { dayContent: allDays, isLoading: daysLoading } = useDayContent();
+  const { progress, isLoading: progressLoading } = useUserProgress();
+  const { stats, isLoading: statsLoading } = useUserStats();
+  const completeDay = useCompleteDay();
+
+  const dayData = Array.isArray(allDays) ? allDays.find((d: any) => d.day === currentDay) : null;
+  const dayProgress = Array.isArray(progress) ? progress.find((p: any) => p.day === currentDay) : null;
+
+  // Reset form when day changes
+  useEffect(() => {
+    if (dayProgress) {
+      setSelectedSuggestion(dayProgress.selectedSuggestion || undefined);
+      setMicroDecisionChoice(dayProgress.microDecisionChoice || "");
+      setReflectionAnswer(dayProgress.reflectionAnswer || "");
+    } else {
+      setSelectedSuggestion(undefined);
+      setMicroDecisionChoice("");
+      setReflectionAnswer("");
+    }
+  }, [currentDay, dayProgress]);
 
   // Handle completion
-  const handleComplete = () => {
-    setCompleted(true);
-    // In a real app, we would update state/backend here
-    // For prototype, we just animate/show feedback
-    setTimeout(() => {
-        // Navigate to next day if not the last day
+  const handleComplete = async () => {
+    if (!dayData) return;
+    
+    try {
+      await completeDay.mutateAsync({
+        day: currentDay,
+        data: {
+          selectedSuggestion,
+          microDecisionChoice,
+          reflectionAnswer,
+        },
+      });
+      
+      toast.success(`Day ${currentDay} completed! 🎉`, {
+        description: "+100 XP earned",
+      });
+
+      // Navigate to next day if not the last day
+      setTimeout(() => {
         if (currentDay < 30) {
-            setLocation(`/dashboard/${currentDay + 1}`);
-            setCompleted(false);
+          setLocation(`/dashboard/${currentDay + 1}`);
         }
-    }, 1500);
+      }, 1000);
+    } catch (error) {
+      console.error("Failed to complete day:", error);
+    }
   };
 
   const handleShuffle = () => {
     setLoadingAI(true);
-    setTimeout(() => setLoadingAI(false), 1000); // Simulate API call
+    setTimeout(() => {
+      setLoadingAI(false);
+      toast.info("New suggestions generated!");
+    }, 1000);
   };
+
+  if (daysLoading || progressLoading || !dayData) {
+    return (
+      <Layout currentDay={currentDay}>
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center space-y-4">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <p className="text-slate-500 font-medium">Loading day content...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  const suggestions = dayData.suggestions ? JSON.parse(dayData.suggestions as string) : null;
+  const microDecisionOptions = dayData.microDecisionOptions ? JSON.parse(dayData.microDecisionOptions as string) : null;
 
   return (
     <Layout currentDay={currentDay}>
@@ -106,31 +166,33 @@ export default function Dashboard() {
               </div>
 
               <div className="space-y-3">
-                {dayData.aiTask?.suggestions ? (
-                    dayData.aiTask.suggestions.map((idea, i) => (
+                {suggestions && suggestions.length > 0 ? (
+                    suggestions.map((idea: any, i: number) => (
                         <motion.div 
                           key={i} 
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: i * 0.1 }}
                           whileHover={{ scale: 1.01 }}
-                          className="group relative border-2 border-slate-100 rounded-xl p-5 hover:border-primary/30 hover:bg-blue-50/30 transition-all cursor-pointer bg-white"
+                          className={`group relative border-2 rounded-xl p-5 hover:border-primary/30 hover:bg-blue-50/30 transition-all cursor-pointer bg-white ${selectedSuggestion === i ? 'border-primary bg-blue-50' : 'border-slate-100'}`}
+                          onClick={() => setSelectedSuggestion(i)}
+                          data-testid={`suggestion-${i}`}
                         >
                           <div className="flex justify-between items-start">
                             <div>
                               <h3 className="font-bold text-slate-900 mb-1 text-lg">{idea.title}</h3>
                               <p className="text-slate-500 font-medium">{idea.desc}</p>
                             </div>
-                            <div className="w-5 h-5 rounded-full border-2 border-slate-300 group-hover:border-primary group-hover:bg-primary transition-colors"></div>
+                            <div className={`w-5 h-5 rounded-full border-2 transition-colors ${selectedSuggestion === i ? 'border-primary bg-primary' : 'border-slate-300 group-hover:border-primary'}`}>
+                              {selectedSuggestion === i && <CheckCircle2 className="w-5 h-5 text-white" />}
+                            </div>
                           </div>
                         </motion.div>
                     ))
                 ) : (
-                    // Generic Fallback for days without specific mock data yet
                     <div className="p-8 border-2 border-dashed border-slate-200 rounded-xl text-center text-slate-400 bg-slate-50">
                         <Wand2 className="w-8 h-8 mx-auto mb-3 opacity-50" />
-                        <p className="font-medium">AI Generator for "{dayData.title}" would appear here.</p>
-                        <p className="text-xs mt-1">Click "Shuffle" to simulate generation.</p>
+                        <p className="font-medium">{dayData.aiTaskDescription || "AI task content will appear here"}</p>
                     </div>
                 )}
               </div>
@@ -144,11 +206,17 @@ export default function Dashboard() {
               </div>
               <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                 <p className="text-slate-600 font-medium mb-4">
-                  Make a decision to move forward. Don't overthink it.
+                  {dayData.microDecisionQuestion || "Make a decision to move forward. Don't overthink it."}
                 </p>
                 <div className="grid sm:grid-cols-2 gap-3">
-                   {["Option A", "Option B", "Option C", "Option D"].map((opt) => (
-                     <Button key={opt} variant="outline" className="justify-start h-14 text-slate-600 border-2 border-slate-100 hover:border-primary hover:text-primary hover:bg-blue-50/50 text-base font-semibold">
+                   {(microDecisionOptions || ["Option A", "Option B"]).map((opt: string) => (
+                     <Button 
+                       key={opt} 
+                       variant="outline" 
+                       className={`justify-start h-14 border-2 text-base font-semibold ${microDecisionChoice === opt ? 'border-primary text-primary bg-blue-50' : 'text-slate-600 border-slate-100 hover:border-primary hover:text-primary hover:bg-blue-50/50'}`}
+                       onClick={() => setMicroDecisionChoice(opt)}
+                       data-testid={`micro-decision-${opt}`}
+                     >
                        {opt}
                      </Button>
                    ))}
@@ -163,10 +231,15 @@ export default function Dashboard() {
                 <h2 className="font-bold text-xl text-slate-900">Reflection</h2>
               </div>
               <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                <label className="font-semibold text-slate-900 block mb-3">One sentence takeaway from today:</label>
+                <label className="font-semibold text-slate-900 block mb-3">
+                  {dayData.reflectionQuestion || "One sentence takeaway from today:"}
+                </label>
                 <textarea 
                   className="w-full min-h-[120px] rounded-lg border-2 border-slate-200 bg-slate-50 p-4 text-base font-medium shadow-none placeholder:text-slate-400 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-0 resize-none transition-colors"
                   placeholder="I realized that..."
+                  value={reflectionAnswer}
+                  onChange={(e) => setReflectionAnswer(e.target.value)}
+                  data-testid="input-reflection"
                 />
               </Card>
             </div>
@@ -174,10 +247,16 @@ export default function Dashboard() {
             <div className="flex justify-end pt-8">
               <Button 
                 size="lg" 
-                className={`rounded-xl px-10 h-14 text-lg font-bold shadow-xl shadow-primary/20 gap-2 hover:translate-y-[-2px] transition-all ${completed ? "bg-green-500 hover:bg-green-600" : ""}`} 
+                className={`rounded-xl px-10 h-14 text-lg font-bold shadow-xl shadow-primary/20 gap-2 hover:translate-y-[-2px] transition-all ${dayProgress?.completed ? "bg-green-500 hover:bg-green-600" : ""}`} 
                 onClick={handleComplete}
+                disabled={completeDay.isPending}
+                data-testid="button-complete-day"
               >
-                {completed ? (
+                {completeDay.isPending ? (
+                    <>
+                        Saving... <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    </>
+                ) : dayProgress?.completed ? (
                     <>
                         Completed! <CheckCircle2 className="w-5 h-5" />
                     </>
@@ -215,9 +294,9 @@ export default function Dashboard() {
                  <div className="space-y-2">
                    <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
                      <span>Current Progress</span>
-                     <span>{Math.round((currentDay / 30) * 100)}%</span>
+                     <span>{stats ? Math.round((stats.lastCompletedDay || 0) / 30 * 100) : 0}%</span>
                    </div>
-                   <Progress value={(currentDay / 30) * 100} className="h-3 bg-white/10" indicatorClassName="bg-primary" />
+                   <Progress value={stats ? (stats.lastCompletedDay || 0) / 30 * 100 : 0} className="h-3 bg-white/10" indicatorClassName="bg-primary" />
                  </div>
                </div>
             </Card>
@@ -225,7 +304,7 @@ export default function Dashboard() {
             <Card className="p-6 border-2 border-slate-100 shadow-none rounded-2xl">
               <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-4">Current Streak</h3>
               <div className="flex items-end gap-3">
-                <div className="text-5xl font-black text-slate-900 leading-none">3</div>
+                <div className="text-5xl font-black text-slate-900 leading-none" data-testid="text-streak">{stats?.currentStreak || 0}</div>
                 <div className="text-sm text-slate-500 font-bold uppercase tracking-wide mb-1">
                   Days<br/>Active
                 </div>
@@ -233,18 +312,20 @@ export default function Dashboard() {
             </Card>
             
             {/* Locked Future Days Preview */}
-            <div className="pt-4 border-t border-slate-200">
-                <h4 className="font-bold text-sm text-slate-900 mb-3">Coming Up Next</h4>
-                <div className="space-y-2">
-                    {challengeDays.slice(currentDay, currentDay + 3).map(nextDay => (
-                        <div key={nextDay.day} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100 text-slate-400">
-                            <span className="text-xs font-bold uppercase">Day {nextDay.day}</span>
-                            <span className="text-sm font-medium truncate max-w-[120px]">{nextDay.title}</span>
-                            <Lock className="w-3 h-3" />
-                        </div>
-                    ))}
-                </div>
-            </div>
+            {Array.isArray(allDays) && (
+              <div className="pt-4 border-t border-slate-200">
+                  <h4 className="font-bold text-sm text-slate-900 mb-3">Coming Up Next</h4>
+                  <div className="space-y-2">
+                      {allDays.slice(currentDay, currentDay + 3).map((nextDay: any) => (
+                          <div key={nextDay.day} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100 text-slate-400">
+                              <span className="text-xs font-bold uppercase">Day {nextDay.day}</span>
+                              <span className="text-sm font-medium truncate max-w-[120px]">{nextDay.title}</span>
+                              <Lock className="w-3 h-3" />
+                          </div>
+                      ))}
+                  </div>
+              </div>
+            )}
           </div>
 
         </div>

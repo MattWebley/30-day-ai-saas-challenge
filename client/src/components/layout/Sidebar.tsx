@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { challengeDays, badges } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
+import { useDayContent } from "@/hooks/useDays";
+import { useUserProgress } from "@/hooks/useProgress";
+import { useUserStats } from "@/hooks/useStats";
 import { 
   CheckCircle2, 
   Lock, 
@@ -20,10 +22,21 @@ interface SidebarProps {
 
 export function Sidebar({ currentDay }: SidebarProps) {
   const [location] = useLocation();
-  const progress = Math.round((currentDay / 30) * 100);
+  const { dayContent: allDays } = useDayContent();
+  const { progress: userProgress } = useUserProgress();
+  const { stats } = useUserStats();
+
+  const challengeDays = Array.isArray(allDays) ? allDays : [];
+  const completedDays = new Set(
+    Array.isArray(userProgress) 
+      ? userProgress.filter((p: any) => p.completed).map((p: any) => p.day)
+      : []
+  );
+
+  const progress = stats ? Math.round(((stats.lastCompletedDay || 0) / 30) * 100) : 0;
 
   // Group days by phase
-  const phases = Array.from(new Set(challengeDays.map(d => d.phase)));
+  const phases = Array.from(new Set(challengeDays.map((d: any) => d.phase)));
 
   return (
     <div className="w-80 h-screen bg-sidebar border-r border-sidebar-border flex flex-col fixed left-0 top-0 z-50">
@@ -83,36 +96,39 @@ export function Sidebar({ currentDay }: SidebarProps) {
                 {phase}
               </h3>
               <div className="space-y-0.5">
-                {challengeDays.filter(d => d.phase === phase).map((day) => (
-                  <Link key={day.day} href={`/dashboard/${day.day}`}>
-                    <a
-                      className={cn(
-                        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all group mb-0.5",
-                        // Logic: Highlight if it's the current day being viewed. 
-                        // Dim if locked.
-                        currentDay === day.day 
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                          : "hover:bg-sidebar-accent hover:text-sidebar-foreground",
-                        // day.locked && currentDay !== day.day && "opacity-50 cursor-not-allowed pointer-events-none" // Optional: enforce lock
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          "w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-colors",
-                          day.completed 
-                            ? "bg-primary border-primary text-primary-foreground"
-                            : currentDay === day.day 
-                              ? "border-primary text-primary font-bold"
-                              : "border-muted-foreground/30 text-muted-foreground"
-                        )}>
-                          {day.completed ? <CheckCircle2 className="w-3.5 h-3.5" /> : day.day}
+                {challengeDays.filter((d: any) => d.phase === phase).map((day: any) => {
+                  const isCompleted = completedDays.has(day.day);
+                  const isLocked = day.day > (stats?.lastCompletedDay || 0) + 1 && !isCompleted;
+                  
+                  return (
+                    <Link key={day.day} href={`/dashboard/${day.day}`}>
+                      <a
+                        className={cn(
+                          "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all group mb-0.5",
+                          currentDay === day.day 
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                            : "hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                        )}
+                        data-testid={`nav-day-${day.day}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={cn(
+                            "w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-colors",
+                            isCompleted 
+                              ? "bg-primary border-primary text-primary-foreground"
+                              : currentDay === day.day 
+                                ? "border-primary text-primary font-bold"
+                                : "border-muted-foreground/30 text-muted-foreground"
+                          )}>
+                            {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5" /> : day.day}
+                          </div>
+                          <span className="truncate">{day.title}</span>
                         </div>
-                        <span className="truncate">{day.title}</span>
-                      </div>
-                      {day.locked && currentDay !== day.day && <Lock className="w-3 h-3 text-muted-foreground" />}
-                    </a>
-                  </Link>
-                ))}
+                        {isLocked && currentDay !== day.day && <Lock className="w-3 h-3 text-muted-foreground" />}
+                      </a>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -120,7 +136,7 @@ export function Sidebar({ currentDay }: SidebarProps) {
       </ScrollArea>
 
       {/* Footer */}
-      <div className="p-4 border-t border-sidebar-border">
+      <div className="p-4 border-t border-sidebar-border space-y-1">
         <Link href="/settings">
           <a className={cn(
             "flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors",
@@ -132,6 +148,14 @@ export function Sidebar({ currentDay }: SidebarProps) {
             Settings
           </a>
         </Link>
+        <a 
+          href="/api/logout"
+          className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"
+          data-testid="button-logout"
+        >
+          <LogOut className="w-4 h-4" />
+          Logout
+        </a>
       </div>
     </div>
   );
