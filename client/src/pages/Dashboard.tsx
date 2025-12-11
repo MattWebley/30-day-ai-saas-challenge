@@ -140,13 +140,13 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Matt's Tip */}
+        {/* Matt Webley's Tip */}
         {dayData.tip && (
           <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
             <div className="flex items-start gap-3">
               <span className="text-xl">💡</span>
               <div>
-                <p className="font-semibold text-amber-800 text-sm uppercase tracking-wide mb-1">Matt's Tip</p>
+                <p className="font-semibold text-amber-800 text-sm uppercase tracking-wide mb-1">Matt Webley's Tip</p>
                 <p className="text-amber-900 font-medium">{dayData.tip}</p>
               </div>
             </div>
