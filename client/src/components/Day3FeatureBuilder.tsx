@@ -97,8 +97,9 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
     day1Progress?.shortlistedIdeas?.includes(i)
   ) || [];
 
-  const chosenIdea = day2Progress?.chosenIdea !== undefined && shortlistedIdeas[day2Progress.chosenIdea]
-    ? shortlistedIdeas[day2Progress.chosenIdea]
+  const chosenIdeaIndex = day2Progress?.userInputs?.chosenIdea;
+  const chosenIdea = chosenIdeaIndex !== undefined && shortlistedIdeas[chosenIdeaIndex]
+    ? shortlistedIdeas[chosenIdeaIndex]
     : null;
 
   const userInputs = day1Progress?.userInputs;

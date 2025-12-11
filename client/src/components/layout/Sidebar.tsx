@@ -37,8 +37,9 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
       day1?.shortlistedIdeas?.includes(i)
     ) || [];
     
-    const chosenIdea = day2?.chosenIdea !== undefined && shortlistedIdeas[day2.chosenIdea]
-      ? shortlistedIdeas[day2.chosenIdea]
+    const chosenIdeaIndex = day2?.userInputs?.chosenIdea;
+    const chosenIdea = chosenIdeaIndex !== undefined && shortlistedIdeas[chosenIdeaIndex]
+      ? shortlistedIdeas[chosenIdeaIndex]
       : null;
     
     const userInputs = day1?.userInputs;
@@ -136,7 +137,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
       : []
   );
 
-  const progress = stats ? Math.round(((stats.lastCompletedDay || 0) / 30) * 100) : 0;
+  const progress = stats ? Math.round((((stats as any).lastCompletedDay || 0) / 30) * 100) : 0;
   const lastCompleted = (stats as any)?.lastCompletedDay || 0;
   
   const [testMode, setTestMode] = useState(false);
@@ -196,7 +197,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
         </div>
 
         {/* My Journey Section */}
-        <MyJourneySection userProgress={userProgress} />
+        <MyJourneySection userProgress={userProgress as any} />
 
         <button
           onClick={() => setTestMode(!testMode)}
@@ -259,7 +260,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
               <div className="space-y-0.5">
                 {visibleDays.filter((d: any) => d.phase === phase).map((day: any) => {
                   const isCompleted = completedDays.has(day.day);
-                  const isLocked = day.day > (stats?.lastCompletedDay || 0) + 1 && !isCompleted;
+                  const isLocked = day.day > ((stats as any)?.lastCompletedDay || 0) + 1 && !isCompleted;
                   const daysAhead = day.day - currentDay;
                   const fadeOpacity = daysAhead <= 0 || isCompleted ? 1 : daysAhead === 1 ? 0.7 : daysAhead === 2 ? 0.5 : daysAhead >= 3 ? 0.35 : 1;
                   

@@ -79,6 +79,21 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   const [loadingPrompt, setLoadingPrompt] = useState<string | null>(null);
   const [finalChoice, setFinalChoice] = useState<number | null>(null);
 
+  const saveChosenIdea = useMutation({
+    mutationFn: async (chosenIdea: number) => {
+      const res = await apiRequest("POST", "/api/progress/day2", { chosenIdea });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
+    },
+  });
+
+  const handleSelectFinalIdea = (index: number) => {
+    setFinalChoice(index);
+    saveChosenIdea.mutate(index);
+  };
+
   const { data: day1Progress } = useQuery({
     queryKey: ["/api/progress/1"],
     queryFn: async () => {
@@ -310,7 +325,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
               <Button
                 size="lg"
                 className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-                onClick={() => setFinalChoice(selectedIdeaIndex)}
+                onClick={() => handleSelectFinalIdea(selectedIdeaIndex!)}
                 data-testid="button-choose-idea"
               >
                 <Trophy className="w-5 h-5" />
