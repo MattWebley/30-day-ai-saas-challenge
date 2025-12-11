@@ -228,8 +228,8 @@ Give me exactly 6 ideas, one per line:`;
   };
 
   const handleFinish = () => {
-    saveProgress.mutate({ bleedingNeckProblem, coreFeatures, uspFeatures });
-    setCurrentStep(4);
+    saveProgress.mutate({ bleedingNeckProblem, coreFeatures, uspFeatures, tenSecondPitch });
+    setCurrentStep(5);
   };
 
   if (!chosenIdea) {
@@ -244,10 +244,38 @@ Give me exactly 6 ideas, one per line:`;
     );
   }
 
+  const [tenSecondPitch, setTenSecondPitch] = useState("");
+  const [pitchAttempts, setPitchAttempts] = useState(0);
+
+  const generatePitch = async () => {
+    if (pitchAttempts >= MAX_AI_ATTEMPTS) return;
+    setPitchAttempts(prev => prev + 1);
+    setIsGenerating(true);
+    try {
+      const prompt = `Create a 10-second pitch (max 25 words) for this product:
+
+Product: ${chosenIdea?.title}
+Problem it solves: ${bleedingNeckProblem}
+Unique features: ${uspFeatures.join(', ')}
+
+Format: "For [target customer] who [pain point], [product name] is a [category] that [key benefit]. Unlike [alternatives], we [unique differentiator]."
+
+Give me ONLY the pitch, nothing else.`;
+
+      const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
+      const data = await res.json();
+      setTenSecondPitch(data.response.trim().replace(/^["']|["']$/g, ''));
+    } catch {
+      toast.error("Failed to generate. Try again.");
+    }
+    setIsGenerating(false);
+  };
+
   const steps = [
     { num: 1, label: "Problem" },
     { num: 2, label: "Core" },
     { num: 3, label: "USP" },
+    { num: 4, label: "Pitch" },
   ];
 
   return (
@@ -257,8 +285,8 @@ Give me exactly 6 ideas, one per line:`;
         <h3 className="font-bold text-slate-900">{chosenIdea.title}</h3>
       </Card>
 
-      {currentStep < 4 && (
-        <div className="flex items-center justify-center gap-2">
+      {currentStep < 5 && (
+        <div className="flex items-center justify-center gap-2 flex-wrap">
           {steps.map((step, idx) => (
             <div key={step.num} className="flex items-center">
               <div 
@@ -302,6 +330,20 @@ Give me exactly 6 ideas, one per line:`;
                 So painful they'd pay almost anything to fix it.
               </p>
             </div>
+
+            <Card className="p-4 bg-slate-50 border border-slate-200">
+              <p className="text-sm font-bold text-slate-700 mb-2">Why this matters:</p>
+              <p className="text-sm text-slate-600 mb-3">
+                A "bleeding neck" problem is so urgent that customers will pay almost anything to solve it NOW. 
+                Think: "My website is down and I'm losing $1,000/hour" vs "I wish my website was prettier."
+              </p>
+              <div className="bg-white p-3 rounded border border-slate-200">
+                <p className="text-xs font-bold text-slate-500 uppercase mb-1">Example:</p>
+                <p className="text-sm text-slate-700 italic">
+                  "Freelancers lose 5+ hours/week chasing invoices because clients 'forget' to pay, causing cash flow crises."
+                </p>
+              </div>
+            </Card>
 
             <Card className="p-6 border-2 border-slate-200">
               <Textarea
@@ -361,6 +403,20 @@ Give me exactly 6 ideas, one per line:`;
                 The baseline features ALL competitors have. Users <strong>expect</strong> these.
               </p>
             </div>
+
+            <Card className="p-4 bg-slate-50 border border-slate-200">
+              <p className="text-sm font-bold text-slate-700 mb-2">Think "table stakes":</p>
+              <p className="text-sm text-slate-600 mb-3">
+                These are features users expect from ANY product in your category. 
+                Without them, users won't even consider you. But they won't choose you BECAUSE of them either.
+              </p>
+              <div className="bg-white p-3 rounded border border-slate-200">
+                <p className="text-xs font-bold text-slate-500 uppercase mb-1">Example for invoicing app:</p>
+                <p className="text-sm text-slate-700 italic">
+                  Create invoices, send by email, track payments, accept online payments, download PDFs
+                </p>
+              </div>
+            </Card>
 
             <Card className="p-6 border-2 border-slate-200">
               <div className="space-y-3">
@@ -456,6 +512,20 @@ Give me exactly 6 ideas, one per line:`;
                 1-2 unique features that competitors <strong>don't have</strong>. Your unfair advantage.
               </p>
             </div>
+
+            <Card className="p-4 bg-slate-50 border border-slate-200">
+              <p className="text-sm font-bold text-slate-700 mb-2">Your "unfair advantage":</p>
+              <p className="text-sm text-slate-600 mb-3">
+                What can YOU build that competitors can't easily copy? Think about your unique skills, 
+                experience, or insights. This is why customers will choose YOU over established players.
+              </p>
+              <div className="bg-white p-3 rounded border border-slate-200">
+                <p className="text-xs font-bold text-slate-500 uppercase mb-1">Example USPs:</p>
+                <p className="text-sm text-slate-700 italic">
+                  "AI predicts which invoices will be paid late" or "One-click import from competitor X"
+                </p>
+              </div>
+            </Card>
 
             <Card className="p-6 border-2 border-slate-200">
               <div className="space-y-4">
@@ -563,9 +633,104 @@ Give me exactly 6 ideas, one per line:`;
               </Button>
               <Button
                 size="lg"
+                className="gap-2"
+                onClick={() => setCurrentStep(4)}
+                disabled={uspFeatures.length === 0}
+                data-testid="button-next-step3"
+              >
+                Next: Your Pitch <ChevronRight className="w-5 h-5" />
+              </Button>
+            </div>
+          </motion.div>
+        )}
+
+        {currentStep === 4 && (
+          <motion.div
+            key="step4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
+          >
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
+                <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Craft Your 10-Second Pitch</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
+                If you can't explain it in 10 seconds, you can't sell it.
+              </p>
+            </div>
+
+            <Card className="p-4 bg-slate-50 border border-slate-200">
+              <p className="text-sm font-bold text-slate-700 mb-2">The elevator pitch formula:</p>
+              <p className="text-sm text-slate-600 mb-3">
+                Your pitch should answer: WHO is it for, WHAT problem does it solve, and WHY is it different? 
+                Keep it under 25 words so it's memorable.
+              </p>
+              <div className="bg-white p-3 rounded border border-slate-200">
+                <p className="text-xs font-bold text-slate-500 uppercase mb-1">Example pitch:</p>
+                <p className="text-sm text-slate-700 italic">
+                  "For freelancers losing money to late invoices, PayFast is an invoicing tool that uses AI to predict late payers and auto-sends reminders before they forget."
+                </p>
+              </div>
+            </Card>
+
+            <Card className="p-6 border-2 border-slate-200">
+              <p className="text-xs font-bold text-slate-500 uppercase mb-3">Your 10-Second Pitch:</p>
+              <Textarea
+                placeholder="For [target customer] who [pain point], [your product] is a [category] that [key benefit]. Unlike [alternatives], we [unique differentiator]."
+                value={tenSecondPitch}
+                onChange={(e) => setTenSecondPitch(e.target.value)}
+                className="min-h-[120px] text-lg border-0 shadow-none focus-visible:ring-0 resize-none"
+                data-testid="input-pitch"
+              />
+              <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-4">
+                <p className="text-xs text-slate-400">{tenSecondPitch.split(/\s+/).filter(Boolean).length} words</p>
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={generatePitch}
+                  disabled={isGenerating || pitchAttempts >= MAX_AI_ATTEMPTS}
+                  data-testid="button-generate-pitch"
+                >
+                  {isGenerating ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Writing...</>
+                  ) : pitchAttempts >= MAX_AI_ATTEMPTS ? (
+                    <>No attempts left</>
+                  ) : (
+                    <><Sparkles className="w-4 h-4" /> Write It For Me{MAX_AI_ATTEMPTS - pitchAttempts === 1 ? ' (1 left)' : ''}</>
+                  )}
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="p-4 border border-blue-200 bg-blue-50">
+              <p className="text-sm font-bold text-blue-800 mb-1">Practice tip:</p>
+              <p className="text-sm text-blue-700">
+                Read your pitch out loud. Can you say it naturally in one breath? Does it make someone say "tell me more"? 
+                If not, simplify it.
+              </p>
+            </Card>
+
+            <div className="flex justify-between">
+              <Button
+                variant="outline"
+                size="lg"
+                className="gap-2"
+                onClick={() => setCurrentStep(3)}
+              >
+                <ChevronLeft className="w-5 h-5" /> Back
+              </Button>
+              <Button
+                size="lg"
                 className="gap-2 bg-green-600 hover:bg-green-700"
                 onClick={handleFinish}
-                disabled={uspFeatures.length === 0}
+                disabled={!tenSecondPitch.trim()}
                 data-testid="button-finish"
               >
                 <Check className="w-5 h-5" /> Finish
@@ -574,7 +739,7 @@ Give me exactly 6 ideas, one per line:`;
           </motion.div>
         )}
 
-        {currentStep === 4 && (
+        {currentStep === 5 && (
           <motion.div
             key="complete"
             initial={{ opacity: 0, scale: 0.95 }}
@@ -585,9 +750,14 @@ Give me exactly 6 ideas, one per line:`;
               <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                 <Check className="w-8 h-8 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Feature Plan is Ready!</h2>
-              <p className="text-slate-500">Here's exactly what you're building.</p>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Product Strategy is Complete!</h2>
+              <p className="text-slate-500">Here's everything you've defined.</p>
             </div>
+
+            <Card className="p-5 border-2 border-black">
+              <p className="text-xs font-bold text-slate-500 uppercase mb-2">Your 10-Second Pitch:</p>
+              <p className="text-lg text-slate-900 font-medium">{tenSecondPitch}</p>
+            </Card>
 
             <Card className="p-5 border-2 border-black">
               <div className="flex items-center gap-2 mb-2">
