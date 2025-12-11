@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
+import { useTestMode } from "@/contexts/TestModeContext";
 import { 
   CheckCircle2, 
   Lock, 
@@ -129,6 +130,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   const { dayContent: allDays } = useDayContent();
   const { progress: userProgress } = useUserProgress();
   const { stats } = useUserStats();
+  const { testMode, setTestMode } = useTestMode();
 
   const challengeDays = Array.isArray(allDays) ? allDays : [];
   const completedDays = new Set(
@@ -139,8 +141,6 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
 
   const progress = stats ? Math.round((((stats as any).lastCompletedDay || 0) / 30) * 100) : 0;
   const lastCompleted = (stats as any)?.lastCompletedDay || 0;
-  
-  const [testMode, setTestMode] = useState(false);
   
   const maxVisibleDay = testMode ? 30 : Math.max(lastCompleted + 3, currentDay + 2, 3);
   const visibleDays = challengeDays.filter((d: any) => d.day <= maxVisibleDay);

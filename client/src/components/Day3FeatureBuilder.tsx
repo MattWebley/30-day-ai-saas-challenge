@@ -1,13 +1,26 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useTestMode } from "@/contexts/TestModeContext";
 import { Copy, Check, Sparkles, Loader2, ChevronRight, Plus, X, Zap, Target, Star, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+
+const MOCK_IDEA = {
+  title: "AI Content Optimizer",
+  desc: "A SaaS tool that uses AI to analyze and optimize marketing content for better engagement",
+  targetCustomer: "Digital marketers and content creators",
+};
+
+const MOCK_USER_INPUTS = {
+  skills: "copywriting, marketing",
+  knowledge: "digital marketing, SEO",
+  interests: "AI tools, automation",
+};
 
 interface Day3Props {
   onComplete: () => void;
@@ -72,6 +85,7 @@ For each USP idea, explain WHY it would be a competitive advantage and HOW it co
 
 export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   const queryClient = useQueryClient();
+  const { testMode } = useTestMode();
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [aiResponses, setAiResponses] = useState<Record<string, string>>({});
   const [loadingPrompt, setLoadingPrompt] = useState<string | null>(null);
@@ -98,11 +112,12 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   ) || [];
 
   const chosenIdeaIndex = day2Progress?.userInputs?.chosenIdea;
-  const chosenIdea = chosenIdeaIndex !== undefined && shortlistedIdeas[chosenIdeaIndex]
+  const realChosenIdea = chosenIdeaIndex !== undefined && shortlistedIdeas[chosenIdeaIndex]
     ? shortlistedIdeas[chosenIdeaIndex]
     : null;
 
-  const userInputs = day1Progress?.userInputs;
+  const chosenIdea = testMode ? MOCK_IDEA : realChosenIdea;
+  const userInputs = testMode ? MOCK_USER_INPUTS : day1Progress?.userInputs;
 
   const runAiPrompt = useMutation({
     mutationFn: async ({ promptId }: { promptId: string }) => {
