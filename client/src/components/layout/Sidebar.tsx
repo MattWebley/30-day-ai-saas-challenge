@@ -58,52 +58,50 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
 
   return (
     <div 
-      className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 relative cursor-pointer transition-all hover:shadow-md"
+      className="mt-4 p-3 bg-white rounded-md border border-slate-200 relative cursor-pointer transition-all hover:border-slate-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-center gap-2 mb-2">
-        <Rocket className="w-4 h-4 text-blue-600" />
-        <p className="text-xs font-bold text-blue-800 uppercase tracking-wide">My Journey</p>
+        <Rocket className="w-4 h-4 text-black" />
+        <p className="text-xs font-bold text-black uppercase tracking-wide">My Journey</p>
       </div>
       
       {journey.chosenIdea ? (
         <div className="space-y-1">
           <div className="flex items-start gap-2">
-            <Target className="w-3 h-3 text-green-600 mt-0.5 flex-shrink-0" />
+            <Target className="w-3 h-3 text-black mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-xs text-slate-500">Building:</p>
-              <p className="text-sm font-semibold text-slate-900 leading-tight">{journey.chosenIdea.title}</p>
+              <p className="text-sm font-semibold text-black leading-tight">{journey.chosenIdea.title}</p>
             </div>
           </div>
         </div>
       ) : journey.hasShortlist ? (
         <div className="flex items-start gap-2">
-          <Lightbulb className="w-3 h-3 text-amber-500 mt-0.5 flex-shrink-0" />
+          <Lightbulb className="w-3 h-3 text-black mt-0.5 flex-shrink-0" />
           <div>
             <p className="text-xs text-slate-500">Shortlisted:</p>
-            <p className="text-sm font-medium text-slate-700">{journey.shortlistCount} ideas</p>
+            <p className="text-sm font-medium text-black">{journey.shortlistCount} ideas</p>
           </div>
         </div>
       ) : null}
 
       {isHovered && (
-        <div className="absolute left-full top-0 ml-2 w-64 p-4 bg-white rounded-xl shadow-xl border border-slate-200 z-50">
-          <h4 className="font-bold text-sm text-slate-900 mb-3 flex items-center gap-2">
-            <span className="text-lg">📝</span> Journey Notes
-          </h4>
+        <div className="absolute left-full top-0 ml-2 w-64 p-4 bg-white rounded-md shadow-xl border border-slate-200 z-50">
+          <h4 className="font-bold text-sm text-black mb-3">Journey Notes</h4>
           <div className="space-y-3 text-xs">
             {journey.userInputs && (
-              <div className="p-2 bg-slate-50 rounded-lg">
-                <p className="font-semibold text-slate-700 mb-1">Day 1: About You</p>
+              <div className="p-2 bg-slate-50 rounded-md border border-slate-100">
+                <p className="font-semibold text-black mb-1">Day 1: About You</p>
                 <p className="text-slate-600">Skills: {journey.userInputs.skills || 'Not set'}</p>
                 <p className="text-slate-600">Interests: {journey.userInputs.interests || 'Not set'}</p>
               </div>
             )}
             {journey.hasShortlist && (
-              <div className="p-2 bg-amber-50 rounded-lg">
-                <p className="font-semibold text-amber-800 mb-1">Day 1: Top 5 Ideas</p>
-                <ul className="text-amber-700 space-y-0.5">
+              <div className="p-2 bg-slate-50 rounded-md border border-slate-100">
+                <p className="font-semibold text-black mb-1">Day 1: Top 5 Ideas</p>
+                <ul className="text-slate-600 space-y-0.5">
                   {journey.shortlistedIdeas.slice(0, 5).map((idea: any, i: number) => (
                     <li key={i} className="truncate">• {idea.title}</li>
                   ))}
@@ -111,10 +109,10 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
               </div>
             )}
             {journey.chosenIdea && (
-              <div className="p-2 bg-green-50 rounded-lg">
-                <p className="font-semibold text-green-800 mb-1">Day 2: Final Choice</p>
-                <p className="text-green-700 font-medium">{journey.chosenIdea.title}</p>
-                <p className="text-green-600 text-[10px] mt-1">{journey.chosenIdea.desc}</p>
+              <div className="p-2 bg-slate-50 rounded-md border border-slate-100">
+                <p className="font-semibold text-black mb-1">Day 2: Final Choice</p>
+                <p className="text-black font-medium">{journey.chosenIdea.title}</p>
+                <p className="text-slate-500 text-[10px] mt-1">{journey.chosenIdea.desc}</p>
               </div>
             )}
           </div>
@@ -186,13 +184,13 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
         </div>
 
         {/* Streak Display */}
-        <div className="mt-4 flex items-center gap-3 p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-200">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
+        <div className="mt-4 flex items-center gap-3 p-3 bg-white rounded-md border border-slate-200">
+          <div className="w-10 h-10 rounded-full bg-black flex items-center justify-center">
             <span className="text-white font-black text-lg">{(stats as any)?.currentStreak || 0}</span>
           </div>
           <div>
-            <p className="text-xs font-bold text-amber-800 uppercase tracking-wide">Day Streak</p>
-            <p className="text-xs text-amber-600">Keep it going!</p>
+            <p className="text-xs font-bold text-black uppercase tracking-wide">Day Streak</p>
+            <p className="text-xs text-slate-500">Keep it going!</p>
           </div>
         </div>
 
