@@ -352,5 +352,155 @@ Format: { "ideas": [...] }`;
     }
   });
 
+  // Chat/Comments routes
+  app.get("/api/comments/:day", async (req, res) => {
+    try {
+      const day = parseInt(req.params.day);
+      const comments = await storage.getDayComments(day);
+      res.json(comments);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      res.status(500).json({ message: "Failed to fetch comments" });
+    }
+  });
+
+  // Anti-spam detection function
+  function detectSpam(content: string): { isSpam: boolean; reason?: string } {
+    const lowerContent = content.toLowerCase();
+    
+    // Check for links (various patterns)
+    const linkPatterns = [
+      /https?:\/\//i,
+      /www\./i,
+      /\[url/i,
+      /\.com\b/i,
+      /\.net\b/i,
+      /\.org\b/i,
+      /\.io\b/i,
+      /\.co\b/i,
+      /bit\.ly/i,
+      /tinyurl/i,
+      /t\.co/i,
+      /goo\.gl/i,
+      // Unicode domain obfuscation
+      /[\u0430-\u044f]+\.(com|net|org|io)/i, // Cyrillic
+      // Spaced out links
+      /h\s*t\s*t\s*p/i,
+      /w\s*w\s*w\s*\./i,
+      // Common substitutions
+      /\[dot\]/i,
+      /\(dot\)/i,
+      /\[at\]/i,
+      /\(at\)/i,
+    ];
+    
+    for (const pattern of linkPatterns) {
+      if (pattern.test(content)) {
+        return { isSpam: true, reason: "Contains links or link-like content" };
+      }
+    }
+    
+    // Check for email patterns
+    if (/[\w.-]+@[\w.-]+\.\w+/.test(content)) {
+      return { isSpam: true, reason: "Contains email address" };
+    }
+    
+    // Check for phone numbers
+    if (/(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/.test(content)) {
+      return { isSpam: true, reason: "Contains phone number" };
+    }
+    
+    // Check for promotional keywords
+    const promoKeywords = ["buy now", "click here", "free money", "guaranteed", "limited time", "act now", "discount code", "promo code", "affiliate"];
+    for (const keyword of promoKeywords) {
+      if (lowerContent.includes(keyword)) {
+        return { isSpam: true, reason: `Contains promotional content: ${keyword}` };
+      }
+    }
+    
+    return { isSpam: false };
+  }
+
+  app.post("/api/comments", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { day, content } = req.body;
+      
+      if (!content || content.trim().length === 0) {
+        return res.status(400).json({ message: "Comment cannot be empty" });
+      }
+      
+      if (content.length > 1000) {
+        return res.status(400).json({ message: "Comment too long (max 1000 characters)" });
+      }
+      
+      // Check user's spam status
+      const spamStatus = await storage.getUserSpamStatus(userId);
+      const requiresApproval = spamStatus?.requiresApproval || false;
+      
+      // Check for spam content
+      const spamCheck = detectSpam(content);
+      
+      let status = "approved";
+      let flagReason = null;
+      
+      if (requiresApproval) {
+        status = "pending";
+        flagReason = "User flagged for repeated suspicious activity";
+      } else if (spamCheck.isSpam) {
+        status = "pending";
+        flagReason = spamCheck.reason;
+        // Increment flag count
+        await storage.incrementFlagCount(userId);
+      }
+      
+      const comment = await storage.createDayComment({
+        day,
+        userId,
+        content: content.trim(),
+        status,
+        flagReason,
+      });
+      
+      if (status === "pending") {
+        res.json({ 
+          ...comment, 
+          message: "Your comment is being reviewed and will appear once approved." 
+        });
+      } else {
+        const user = await storage.getUser(userId);
+        res.json({ ...comment, user });
+      }
+    } catch (error: any) {
+      console.error("Error creating comment:", error);
+      res.status(500).json({ message: error.message || "Failed to create comment" });
+    }
+  });
+
+  // Admin: Get pending comments
+  app.get("/api/admin/pending-comments", isAuthenticated, async (req: any, res) => {
+    try {
+      const comments = await storage.getPendingComments();
+      res.json(comments);
+    } catch (error) {
+      console.error("Error fetching pending comments:", error);
+      res.status(500).json({ message: "Failed to fetch pending comments" });
+    }
+  });
+
+  // Admin: Approve/reject comment
+  app.post("/api/admin/comments/:id/status", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body; // 'approved' or 'rejected'
+      
+      const updated = await storage.updateCommentStatus(id, status);
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating comment status:", error);
+      res.status(500).json({ message: error.message || "Failed to update comment" });
+    }
+  });
+
   return httpServer;
 }

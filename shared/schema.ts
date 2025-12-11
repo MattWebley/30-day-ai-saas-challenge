@@ -184,3 +184,54 @@ export const insertUserStatsSchema = createInsertSchema(userStats).omit({
 
 export type UserStats = typeof userStats.$inferSelect;
 export type InsertUserStats = z.infer<typeof insertUserStatsSchema>;
+
+// Day chat/comments
+export const dayComments = pgTable("day_comments", {
+  id: serial("id").primaryKey(),
+  day: integer("day").notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  status: text("status").default("approved"), // 'approved' | 'pending' | 'rejected'
+  flagReason: text("flag_reason"), // Why it was flagged
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("day_comments_day_idx").on(table.day),
+  index("day_comments_user_id_idx").on(table.userId),
+  index("day_comments_status_idx").on(table.status),
+]);
+
+export const dayCommentsRelations = relations(dayComments, ({ one }) => ({
+  user: one(users, {
+    fields: [dayComments.userId],
+    references: [users.id],
+  }),
+}));
+
+export const insertDayCommentSchema = createInsertSchema(dayComments).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type DayComment = typeof dayComments.$inferSelect;
+export type InsertDayComment = z.infer<typeof insertDayCommentSchema>;
+
+// User spam tracking
+export const userSpamStatus = pgTable("user_spam_status", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
+  flaggedCount: integer("flagged_count").default(0),
+  requiresApproval: boolean("requires_approval").default(false), // True after 3 flags
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("user_spam_status_user_id_idx").on(table.userId),
+]);
+
+export const insertUserSpamStatusSchema = createInsertSchema(userSpamStatus).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type UserSpamStatus = typeof userSpamStatus.$inferSelect;
+export type InsertUserSpamStatus = z.infer<typeof insertUserSpamStatusSchema>;

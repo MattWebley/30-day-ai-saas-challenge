@@ -19,6 +19,7 @@ import { useUserProgress, useCompleteDay } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
 import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
 import { Day1IdeaGenerator } from "@/components/Day1IdeaGenerator";
+import { DayChat } from "@/components/DayChat";
 import { toast } from "sonner";
 
 export default function Dashboard() {
@@ -294,6 +295,11 @@ export default function Dashboard() {
               </>
             )}
 
+            {/* Discussion Section */}
+            <div className="pt-8 border-t border-slate-200 mt-8">
+              <DayChat day={currentDay} />
+            </div>
+
           </div>
 
           {/* Right Column: Progress & Info */}
@@ -349,21 +355,6 @@ export default function Dashboard() {
               </p>
             </Card>
             
-            {/* Locked Future Days Preview */}
-            {Array.isArray(allDays) && (
-              <div className="pt-4 border-t border-slate-200">
-                  <h4 className="font-bold text-sm text-slate-900 mb-3">Coming Up Next</h4>
-                  <div className="space-y-2">
-                      {allDays.slice(currentDay, currentDay + 3).map((nextDay: any) => (
-                          <div key={nextDay.day} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100 text-slate-400">
-                              <span className="text-xs font-bold uppercase">Day {nextDay.day}</span>
-                              <span className="text-sm font-medium truncate max-w-[120px]">{nextDay.title}</span>
-                              <Lock className="w-3 h-3" />
-                          </div>
-                      ))}
-                  </div>
-              </div>
-            )}
           </div>
 
         </div>

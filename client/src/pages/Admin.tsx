@@ -1,22 +1,64 @@
 import { Layout } from "@/components/layout/Layout";
 import { Card } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { 
   Users, 
   TrendingUp, 
   CheckCircle2, 
   Clock,
   Trophy,
-  BarChart3
+  BarChart3,
+  MessageSquare,
+  AlertTriangle,
+  Check,
+  X
 } from "lucide-react";
+import { toast } from "sonner";
+import { formatDistanceToNow } from "date-fns";
+
+interface PendingComment {
+  id: number;
+  day: number;
+  content: string;
+  flagReason: string | null;
+  createdAt: string;
+  user: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+  };
+}
 
 export default function Admin() {
+  const queryClient = useQueryClient();
+  
   const { data: adminData, isLoading } = useQuery({
     queryKey: ["/api/admin/stats"],
     queryFn: async () => {
       const res = await fetch("/api/admin/stats", { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch admin stats");
       return res.json();
+    },
+  });
+
+  const { data: pendingComments = [] } = useQuery<PendingComment[]>({
+    queryKey: ["/api/admin/pending-comments"],
+  });
+
+  const updateCommentStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const res = await apiRequest("POST", `/api/admin/comments/${id}/status`, { status });
+      return res.json();
+    },
+    onSuccess: (_, { status }) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-comments"] });
+      toast.success(status === "approved" ? "Comment approved" : "Comment rejected");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to update comment");
     },
   });
 
@@ -95,6 +137,81 @@ export default function Admin() {
               </div>
             </div>
           </Card>
+        </div>
+
+        {/* Comment Approval Queue */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-bold text-slate-900">Comment Approval Queue</h2>
+            {pendingComments.length > 0 && (
+              <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">
+                {pendingComments.length} pending
+              </span>
+            )}
+          </div>
+          
+          {pendingComments.length === 0 ? (
+            <Card className="p-8 border-2 border-slate-100 text-center">
+              <MessageSquare className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+              <p className="text-slate-500">No comments pending approval</p>
+            </Card>
+          ) : (
+            <Card className="border-2 border-slate-100 divide-y divide-slate-100">
+              {pendingComments.map((comment) => (
+                <div key={comment.id} className="p-4" data-testid={`pending-comment-${comment.id}`}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-semibold text-slate-900 text-sm">
+                          {comment.user?.firstName || "Anonymous"} {comment.user?.lastName || ""}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          Day {comment.day}
+                        </span>
+                        <span className="text-xs text-slate-400">
+                          {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                        </span>
+                      </div>
+                      
+                      <p className="text-slate-600 text-sm mb-2 whitespace-pre-wrap break-words">
+                        {comment.content}
+                      </p>
+                      
+                      {comment.flagReason && (
+                        <div className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded inline-flex">
+                          <AlertTriangle className="w-3 h-3" />
+                          {comment.flagReason}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="flex gap-2 flex-shrink-0">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1 border-green-200 text-green-700 hover:bg-green-50"
+                        onClick={() => updateCommentStatus.mutate({ id: comment.id, status: "approved" })}
+                        disabled={updateCommentStatus.isPending}
+                        data-testid={`approve-comment-${comment.id}`}
+                      >
+                        <Check className="w-4 h-4" /> Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="gap-1 border-red-200 text-red-700 hover:bg-red-50"
+                        onClick={() => updateCommentStatus.mutate({ id: comment.id, status: "rejected" })}
+                        disabled={updateCommentStatus.isPending}
+                        data-testid={`reject-comment-${comment.id}`}
+                      >
+                        <X className="w-4 h-4" /> Reject
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Card>
+          )}
         </div>
 
         {/* Student Progress Table */}

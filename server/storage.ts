@@ -5,6 +5,8 @@ import {
   badges,
   userBadges,
   userStats,
+  dayComments,
+  userSpamStatus,
   type User,
   type UpsertUser,
   type DayContent,
@@ -17,6 +19,10 @@ import {
   type InsertUserBadge,
   type UserStats,
   type InsertUserStats,
+  type DayComment,
+  type InsertDayComment,
+  type UserSpamStatus,
+  type InsertUserSpamStatus,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -58,6 +64,16 @@ export interface IStorage {
   createUserStats(stats: InsertUserStats): Promise<UserStats>;
   updateUserStats(userId: string, stats: Partial<InsertUserStats>): Promise<UserStats | undefined>;
   getAllUserStats(): Promise<UserStats[]>;
+  
+  // Day comments operations
+  getDayComments(day: number): Promise<(DayComment & { user: User })[]>;
+  createDayComment(comment: InsertDayComment): Promise<DayComment>;
+  updateCommentStatus(id: number, status: string): Promise<DayComment | undefined>;
+  getPendingComments(): Promise<(DayComment & { user: User })[]>;
+  
+  // Spam status operations
+  getUserSpamStatus(userId: string): Promise<UserSpamStatus | undefined>;
+  incrementFlagCount(userId: string): Promise<UserSpamStatus>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -235,6 +251,86 @@ export class DatabaseStorage implements IStorage {
 
   async getAllUserStats(): Promise<UserStats[]> {
     return await db.select().from(userStats);
+  }
+
+  // Day comments operations
+  async getDayComments(day: number): Promise<(DayComment & { user: User })[]> {
+    const comments = await db
+      .select()
+      .from(dayComments)
+      .where(and(eq(dayComments.day, day), eq(dayComments.status, "approved")))
+      .orderBy(desc(dayComments.createdAt));
+    
+    const commentsWithUsers = await Promise.all(
+      comments.map(async (comment) => {
+        const user = await this.getUser(comment.userId);
+        return { ...comment, user: user! };
+      })
+    );
+    return commentsWithUsers;
+  }
+
+  async createDayComment(comment: InsertDayComment): Promise<DayComment> {
+    const [created] = await db.insert(dayComments).values(comment).returning();
+    return created;
+  }
+
+  async updateCommentStatus(id: number, status: string): Promise<DayComment | undefined> {
+    const [updated] = await db
+      .update(dayComments)
+      .set({ status })
+      .where(eq(dayComments.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getPendingComments(): Promise<(DayComment & { user: User })[]> {
+    const comments = await db
+      .select()
+      .from(dayComments)
+      .where(eq(dayComments.status, "pending"))
+      .orderBy(desc(dayComments.createdAt));
+    
+    const commentsWithUsers = await Promise.all(
+      comments.map(async (comment) => {
+        const user = await this.getUser(comment.userId);
+        return { ...comment, user: user! };
+      })
+    );
+    return commentsWithUsers;
+  }
+
+  // Spam status operations
+  async getUserSpamStatus(userId: string): Promise<UserSpamStatus | undefined> {
+    const [status] = await db
+      .select()
+      .from(userSpamStatus)
+      .where(eq(userSpamStatus.userId, userId));
+    return status;
+  }
+
+  async incrementFlagCount(userId: string): Promise<UserSpamStatus> {
+    const existing = await this.getUserSpamStatus(userId);
+    
+    if (existing) {
+      const newCount = (existing.flaggedCount || 0) + 1;
+      const [updated] = await db
+        .update(userSpamStatus)
+        .set({
+          flaggedCount: newCount,
+          requiresApproval: newCount >= 3,
+          updatedAt: new Date(),
+        })
+        .where(eq(userSpamStatus.userId, userId))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(userSpamStatus)
+        .values({ userId, flaggedCount: 1 })
+        .returning();
+      return created;
+    }
   }
 }
 
