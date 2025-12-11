@@ -6,9 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useTestMode } from "@/contexts/TestModeContext";
-import { Copy, Check, Sparkles, Loader2, ChevronRight, Plus, X, Zap, Target, Star, AlertTriangle } from "lucide-react";
+import { Sparkles, Loader2, ChevronRight, ChevronLeft, Plus, X, Check, Target, Star, AlertTriangle, Edit3 } from "lucide-react";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const MOCK_IDEA = {
   title: "AI Content Optimizer",
@@ -26,75 +26,16 @@ interface Day3Props {
   onComplete: () => void;
 }
 
-const FEATURE_PROMPTS = [
-  {
-    id: "bleeding_neck",
-    title: "Step 1: Find the Bleeding Neck Problem",
-    description: "Identify the ONE critical problem your product MUST solve brilliantly",
-    icon: "bleeding",
-    prompt: `I'm building a SaaS product: "[IDEA_TITLE]" - [IDEA_DESC]
-
-Help me identify the "Bleeding Neck Problem" - the ONE critical problem my target customers are DESPERATE to solve. This is so painful they'd pay almost anything to fix it.
-
-1. What are the top 3-5 pain points people have in this space?
-2. Which ONE is the most urgent/painful? (The bleeding neck)
-3. Why is this problem so critical that people can't ignore it?
-4. How will my product solve this better than alternatives?
-
-Give me a clear, one-sentence statement of the bleeding neck problem I should focus on.`,
-  },
-  {
-    id: "competitor_features",
-    title: "Step 2: Find Core Features",
-    description: "Analyze competitors to find the features EVERYONE has (these are your must-haves)",
-    icon: "core",
-    prompt: `I'm building a SaaS product: "[IDEA_TITLE]" - [IDEA_DESC]
-
-The bleeding neck problem I'm solving: [BLEEDING_NECK]
-
-Find 3-5 competitors in this space and analyze their features. Then tell me:
-
-1. List each competitor and their main features
-2. Which features do ALL or MOST competitors share? (These are the CORE features I must have)
-3. Which features are unique to only 1-2 competitors?
-
-Format the core features as a simple bullet list I can use as my MVP checklist.`,
-  },
-  {
-    id: "usp_generator",
-    title: "Step 3: Generate Your USP",
-    description: "Create unique features based on your skills and competitor gaps",
-    icon: "usp",
-    prompt: `I'm building: "[IDEA_TITLE]" - [IDEA_DESC]
-
-The bleeding neck problem I'm solving: [BLEEDING_NECK]
-
-My unique background:
-- Skills: [SKILLS]
-- Knowledge: [KNOWLEDGE]
-- Interests: [INTERESTS]
-
-Based on the competitor analysis, suggest 2-3 potential USP (Unique Selling Proposition) features I could build that:
-1. Leverage my unique skills/knowledge
-2. Fill a gap that competitors are missing
-3. Would make customers choose ME over the competition
-
-For each USP idea, explain WHY it would be a competitive advantage and HOW it connects to my background.`,
-  },
-];
-
 export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   const queryClient = useQueryClient();
   const { testMode } = useTestMode();
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [aiResponses, setAiResponses] = useState<Record<string, string>>({});
-  const [loadingPrompt, setLoadingPrompt] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState(1);
+  const [isGenerating, setIsGenerating] = useState(false);
+  
   const [bleedingNeckProblem, setBleedingNeckProblem] = useState("");
   const [coreFeatures, setCoreFeatures] = useState<string[]>([]);
   const [uspFeatures, setUspFeatures] = useState<string[]>([]);
-  const [newCoreFeature, setNewCoreFeature] = useState("");
-  const [newUspFeature, setNewUspFeature] = useState("");
-  const [step, setStep] = useState<'research' | 'finalize'>('research');
+  const [newFeature, setNewFeature] = useState("");
 
   const { data: allProgress } = useQuery({
     queryKey: ["/api/progress"],
@@ -119,30 +60,6 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   const chosenIdea = testMode ? MOCK_IDEA : realChosenIdea;
   const userInputs = testMode ? MOCK_USER_INPUTS : day1Progress?.userInputs;
 
-  const runAiPrompt = useMutation({
-    mutationFn: async ({ promptId }: { promptId: string }) => {
-      const promptTemplate = FEATURE_PROMPTS.find(p => p.id === promptId)?.prompt || "";
-      let filledPrompt = promptTemplate
-        .replace(/\[IDEA_TITLE\]/g, chosenIdea?.title || "My SaaS")
-        .replace(/\[IDEA_DESC\]/g, chosenIdea?.desc || "A software product")
-        .replace(/\[BLEEDING_NECK\]/g, bleedingNeckProblem || "Not yet defined")
-        .replace(/\[SKILLS\]/g, userInputs?.skills || "Not specified")
-        .replace(/\[KNOWLEDGE\]/g, userInputs?.knowledge || "Not specified")
-        .replace(/\[INTERESTS\]/g, userInputs?.interests || "Not specified");
-      
-      const res = await apiRequest("POST", "/api/ai-prompt", { prompt: filledPrompt });
-      return res.json();
-    },
-    onSuccess: (data, { promptId }) => {
-      setAiResponses(prev => ({ ...prev, [promptId]: data.response }));
-      setLoadingPrompt(null);
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to run AI analysis");
-      setLoadingPrompt(null);
-    },
-  });
-
   const saveProgress = useMutation({
     mutationFn: async (data: any) => {
       const res = await apiRequest("POST", "/api/progress/day3", data);
@@ -153,83 +70,106 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
     },
   });
 
-  const copyToClipboard = async (text: string, id: string) => {
+  const generateBleedingNeck = async () => {
+    setIsGenerating(true);
     try {
-      await navigator.clipboard.writeText(text);
-      setCopiedId(id);
-      toast.success("Copied to clipboard!");
-      setTimeout(() => setCopiedId(null), 2000);
+      const prompt = `I'm building: "${chosenIdea?.title}" - ${chosenIdea?.desc}
+
+What is the ONE critical "bleeding neck" problem this product solves? This is the pain so urgent that customers would pay almost anything to fix it.
+
+Give me a clear, one-sentence problem statement in this format:
+"[Target customers] desperately need [solution] because [pain point is critical]."
+
+Just the one sentence, nothing else.`;
+
+      const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
+      const data = await res.json();
+      setBleedingNeckProblem(data.response.trim().replace(/^["']|["']$/g, ''));
     } catch {
-      toast.error("Failed to copy");
+      toast.error("Failed to generate. Try again.");
+    }
+    setIsGenerating(false);
+  };
+
+  const generateCoreFeatures = async () => {
+    setIsGenerating(true);
+    try {
+      const prompt = `I'm building: "${chosenIdea?.title}" - ${chosenIdea?.desc}
+
+The bleeding neck problem I'm solving: ${bleedingNeckProblem}
+
+What are the 4-5 CORE features that ALL competitors in this space have? These are the baseline features users expect.
+
+List them as simple bullet points, one feature per line. Just the feature names, no explanations. Example format:
+- User authentication
+- Dashboard
+- etc.`;
+
+      const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
+      const data = await res.json();
+      const features = data.response
+        .split('\n')
+        .map((line: string) => line.replace(/^[-•*]\s*/, '').trim())
+        .filter((line: string) => line.length > 0 && line.length < 100);
+      setCoreFeatures(features.slice(0, 6));
+    } catch {
+      toast.error("Failed to generate. Try again.");
+    }
+    setIsGenerating(false);
+  };
+
+  const generateUSPFeatures = async () => {
+    setIsGenerating(true);
+    try {
+      const prompt = `I'm building: "${chosenIdea?.title}" - ${chosenIdea?.desc}
+
+Bleeding neck problem: ${bleedingNeckProblem}
+
+My skills: ${userInputs?.skills || 'Not specified'}
+My knowledge: ${userInputs?.knowledge || 'Not specified'}
+
+What are 2 unique USP features I could add that:
+1. Competitors DON'T have
+2. Leverage my unique skills/knowledge
+3. Would make customers choose ME
+
+List exactly 2 features as bullet points. Just the feature name and a short benefit. Example:
+- AI-powered suggestions (saves 2 hours/day)`;
+
+      const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
+      const data = await res.json();
+      const features = data.response
+        .split('\n')
+        .map((line: string) => line.replace(/^[-•*]\s*/, '').trim())
+        .filter((line: string) => line.length > 0 && line.length < 150);
+      setUspFeatures(features.slice(0, 2));
+    } catch {
+      toast.error("Failed to generate. Try again.");
+    }
+    setIsGenerating(false);
+  };
+
+  const addFeature = (type: 'core' | 'usp') => {
+    if (!newFeature.trim()) return;
+    if (type === 'core') {
+      setCoreFeatures(prev => [...prev, newFeature.trim()]);
+    } else {
+      setUspFeatures(prev => [...prev, newFeature.trim()]);
+    }
+    setNewFeature("");
+  };
+
+  const removeFeature = (type: 'core' | 'usp', index: number) => {
+    if (type === 'core') {
+      setCoreFeatures(prev => prev.filter((_, i) => i !== index));
+    } else {
+      setUspFeatures(prev => prev.filter((_, i) => i !== index));
     }
   };
 
-  const getFilledPrompt = (promptId: string) => {
-    const promptTemplate = FEATURE_PROMPTS.find(p => p.id === promptId)?.prompt || "";
-    return promptTemplate
-      .replace(/\[IDEA_TITLE\]/g, chosenIdea?.title || "My SaaS")
-      .replace(/\[IDEA_DESC\]/g, chosenIdea?.desc || "A software product")
-      .replace(/\[BLEEDING_NECK\]/g, bleedingNeckProblem || "Not yet defined")
-      .replace(/\[SKILLS\]/g, userInputs?.skills || "Not specified")
-      .replace(/\[KNOWLEDGE\]/g, userInputs?.knowledge || "Not specified")
-      .replace(/\[INTERESTS\]/g, userInputs?.interests || "Not specified");
-  };
-
-  const handleRunAi = (promptId: string) => {
-    setLoadingPrompt(promptId);
-    runAiPrompt.mutate({ promptId });
-  };
-
-  const addCoreFeature = () => {
-    if (newCoreFeature.trim()) {
-      setCoreFeatures(prev => [...prev, newCoreFeature.trim()]);
-      setNewCoreFeature("");
-    }
-  };
-
-  const addUspFeature = () => {
-    if (newUspFeature.trim()) {
-      setUspFeatures(prev => [...prev, newUspFeature.trim()]);
-      setNewUspFeature("");
-    }
-  };
-
-  const removeCoreFeature = (index: number) => {
-    setCoreFeatures(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const removeUspFeature = (index: number) => {
-    setUspFeatures(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const handleFinalize = () => {
-    if (!bleedingNeckProblem.trim()) {
-      toast.error("Define your bleeding neck problem first");
-      return;
-    }
-    if (coreFeatures.length === 0) {
-      toast.error("Add at least one core feature");
-      return;
-    }
-    if (uspFeatures.length === 0) {
-      toast.error("Add at least one USP feature");
-      return;
-    }
+  const handleFinish = () => {
     saveProgress.mutate({ bleedingNeckProblem, coreFeatures, uspFeatures });
-    setStep('finalize');
-  };
-
-  const getPromptIcon = (iconType: string) => {
-    switch (iconType) {
-      case 'bleeding':
-        return <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0" />;
-      case 'core':
-        return <Target className="w-6 h-6 text-blue-600 flex-shrink-0" />;
-      case 'usp':
-        return <Star className="w-6 h-6 text-purple-500 flex-shrink-0" />;
-      default:
-        return <Target className="w-6 h-6 text-blue-600 flex-shrink-0" />;
-    }
+    setCurrentStep(4);
   };
 
   if (!chosenIdea) {
@@ -244,308 +184,346 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
     );
   }
 
-  if (step === 'finalize') {
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="space-y-6"
-      >
-        <div className="text-center py-4">
-          <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-            <Check className="w-8 h-8 text-green-600" />
-          </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Feature Plan is Ready!</h2>
-          <p className="text-slate-500">Here's what you're building for {chosenIdea.title}</p>
-        </div>
-
-        <Card className="p-5 border-2 border-amber-200 bg-amber-50">
-          <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600" />
-            <h3 className="font-bold text-amber-900">Bleeding Neck Problem</h3>
-          </div>
-          <p className="text-amber-800">{bleedingNeckProblem}</p>
-        </Card>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="p-5 border-2 border-blue-200 bg-blue-50">
-            <div className="flex items-center gap-2 mb-4">
-              <Target className="w-5 h-5 text-blue-600" />
-              <h3 className="font-bold text-blue-900">Core Features</h3>
-              <span className="text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full">{coreFeatures.length}</span>
-            </div>
-            <ul className="space-y-2">
-              {coreFeatures.map((feature, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-blue-800">
-                  <Check className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  {feature}
-                </li>
-              ))}
-            </ul>
-          </Card>
-
-          <Card className="p-5 border-2 border-amber-200 bg-amber-50">
-            <div className="flex items-center gap-2 mb-4">
-              <Star className="w-5 h-5 text-amber-600" />
-              <h3 className="font-bold text-amber-900">USP Features</h3>
-              <span className="text-xs bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full">{uspFeatures.length}</span>
-            </div>
-            <ul className="space-y-2">
-              {uspFeatures.map((feature, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-amber-800">
-                  <Zap className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  {feature}
-                </li>
-              ))}
-            </ul>
-          </Card>
-        </div>
-
-        <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200 text-center">
-          <p className="text-lg font-bold text-green-900 mb-2">
-            "You now know EXACTLY what to build. No more guessing!"
-          </p>
-          <p className="text-green-700">
-            Tomorrow we'll start turning these features into reality.
-          </p>
-        </div>
-
-        <Button 
-          size="lg" 
-          className="w-full h-14 text-lg font-bold gap-2"
-          onClick={onComplete}
-          data-testid="button-complete-day3"
-        >
-          Complete Day 3 <ChevronRight className="w-5 h-5" />
-        </Button>
-      </motion.div>
-    );
-  }
+  const steps = [
+    { num: 1, label: "Problem" },
+    { num: 2, label: "Core" },
+    { num: 3, label: "USP" },
+  ];
 
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Define Your Features</h2>
-        <p className="text-slate-500">
-          Find your bleeding neck problem, research competitors, and create your USP
-        </p>
-      </div>
-
-      <Card className="p-5 border-2 border-primary/30 bg-blue-50/50">
-        <p className="text-xs font-bold text-primary uppercase tracking-wide mb-1">Building:</p>
-        <h3 className="font-bold text-lg text-slate-900">{chosenIdea.title}</h3>
-        <p className="text-slate-600 mt-1">{chosenIdea.desc}</p>
+    <div className="space-y-6">
+      <Card className="p-4 border border-slate-200 bg-slate-50">
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Building:</p>
+        <h3 className="font-bold text-slate-900">{chosenIdea.title}</h3>
       </Card>
 
-      {FEATURE_PROMPTS.map((prompt) => {
-        const filledPrompt = getFilledPrompt(prompt.id);
-        const aiResponse = aiResponses[prompt.id];
-        const isLoading = loadingPrompt === prompt.id;
-
-        return (
-          <Card key={prompt.id} className={`p-5 border-2 ${prompt.id === 'bleeding_neck' ? 'border-amber-200' : 'border-slate-100'}`}>
-            <div className="flex items-start gap-3 mb-3">
-              {getPromptIcon(prompt.icon)}
-              <div>
-                <h4 className="font-bold text-slate-900">{prompt.title}</h4>
-                <p className="text-sm text-slate-500">{prompt.description}</p>
+      {currentStep < 4 && (
+        <div className="flex items-center justify-center gap-2">
+          {steps.map((step, idx) => (
+            <div key={step.num} className="flex items-center">
+              <div 
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
+                  currentStep > step.num 
+                    ? 'bg-green-500 text-white' 
+                    : currentStep === step.num 
+                      ? 'bg-black text-white' 
+                      : 'bg-slate-200 text-slate-400'
+                }`}
+              >
+                {currentStep > step.num ? <Check className="w-4 h-4" /> : step.num}
               </div>
+              <span className={`ml-2 text-sm font-medium ${currentStep >= step.num ? 'text-slate-900' : 'text-slate-400'}`}>
+                {step.label}
+              </span>
+              {idx < steps.length - 1 && (
+                <div className={`w-12 h-0.5 mx-3 ${currentStep > step.num ? 'bg-green-500' : 'bg-slate-200'}`} />
+              )}
             </div>
-            
-            <div className="bg-slate-50 rounded-lg p-4 font-mono text-sm text-slate-700 whitespace-pre-wrap mb-4 max-h-48 overflow-y-auto">
-              {filledPrompt}
+          ))}
+        </div>
+      )}
+
+      <AnimatePresence mode="wait">
+        {currentStep === 1 && (
+          <motion.div
+            key="step1"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
+          >
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-7 h-7 text-amber-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">What's the Bleeding Neck Problem?</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
+                The ONE critical problem your customers are <strong>desperate</strong> to solve. 
+                So painful they'd pay almost anything to fix it.
+              </p>
             </div>
 
-            <div className="flex gap-3">
+            <Card className="p-6 border-2 border-slate-200">
+              <Textarea
+                placeholder="e.g., Small business owners waste 10+ hours/week on manual bookkeeping because existing tools are too complex..."
+                value={bleedingNeckProblem}
+                onChange={(e) => setBleedingNeckProblem(e.target.value)}
+                className="min-h-[120px] text-lg border-0 shadow-none focus-visible:ring-0 resize-none"
+                data-testid="input-bleeding-neck"
+              />
+              <div className="flex justify-end pt-4 border-t border-slate-100 mt-4">
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={generateBleedingNeck}
+                  disabled={isGenerating}
+                  data-testid="button-generate-problem"
+                >
+                  {isGenerating ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Thinking...</>
+                  ) : (
+                    <><Sparkles className="w-4 h-4" /> Write It For Me</>
+                  )}
+                </Button>
+              </div>
+            </Card>
+
+            <div className="flex justify-end">
               <Button
-                variant="outline"
+                size="lg"
                 className="gap-2"
-                onClick={() => copyToClipboard(filledPrompt, prompt.id)}
-                data-testid={`copy-prompt-${prompt.id}`}
+                onClick={() => setCurrentStep(2)}
+                disabled={!bleedingNeckProblem.trim()}
+                data-testid="button-next-step1"
               >
-                {copiedId === prompt.id ? (
-                  <><Check className="w-4 h-4" /> Copied!</>
-                ) : (
-                  <><Copy className="w-4 h-4" /> Copy Prompt</>
-                )}
-              </Button>
-
-              <Button
-                className="gap-2"
-                onClick={() => handleRunAi(prompt.id)}
-                disabled={isLoading}
-                data-testid={`run-ai-${prompt.id}`}
-              >
-                {isLoading ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>
-                ) : (
-                  <><Sparkles className="w-4 h-4" /> Use Our AI</>
-                )}
+                Next: Core Features <ChevronRight className="w-5 h-5" />
               </Button>
             </div>
+          </motion.div>
+        )}
 
-            {aiResponse && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 max-h-64 overflow-y-auto"
-              >
-                <p className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-2">AI Response</p>
-                <p className="text-slate-700 whitespace-pre-wrap text-sm">{aiResponse}</p>
-              </motion.div>
-            )}
+        {currentStep === 2 && (
+          <motion.div
+            key="step2"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
+          >
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                <Target className="w-7 h-7 text-blue-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">What Core Features Do You Need?</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
+                The baseline features ALL competitors have. Users <strong>expect</strong> these.
+              </p>
+            </div>
 
-            {prompt.id === 'bleeding_neck' && (
-              <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
-                <div className="flex items-center justify-between mb-2">
-                  <label className="block text-sm font-bold text-amber-900">
-                    Your Bleeding Neck Problem Statement:
-                  </label>
-                </div>
-                <Textarea
-                  placeholder="The ONE critical problem my product solves is..."
-                  value={bleedingNeckProblem}
-                  onChange={(e) => setBleedingNeckProblem(e.target.value)}
-                  className="min-h-[80px] bg-white border-amber-200 focus:border-amber-400"
-                  data-testid="input-bleeding-neck"
-                />
-                <div className="flex items-center justify-between mt-3">
-                  <p className="text-xs text-amber-700">
-                    This will be used in the next prompts to keep your features focused.
-                  </p>
+            <Card className="p-6 border-2 border-slate-200">
+              {coreFeatures.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-slate-400 mb-4">No features yet. Generate or add manually.</p>
                   <Button
-                    size="sm"
-                    className="gap-1 bg-amber-600 hover:bg-amber-700 text-white"
-                    onClick={() => {
-                      setLoadingPrompt('bleeding_statement');
-                      const statementPrompt = `Based on this SaaS product: "${chosenIdea?.title}" - ${chosenIdea?.desc}
-
-Write a ONE sentence "bleeding neck problem" statement. This should be the critical problem customers are DESPERATE to solve - so painful they'd pay almost anything to fix it.
-
-Format: "[Target customers] are desperately seeking to [solve specific pain] because [why it's critical], and [product name] provides [unique solution]."
-
-Just give me the one-sentence statement, nothing else.`;
-                      
-                      apiRequest("POST", "/api/ai-prompt", { prompt: statementPrompt })
-                        .then(res => res.json())
-                        .then(data => {
-                          setBleedingNeckProblem(data.response.trim());
-                          setLoadingPrompt(null);
-                        })
-                        .catch(() => {
-                          toast.error("Failed to generate statement");
-                          setLoadingPrompt(null);
-                        });
-                    }}
-                    disabled={loadingPrompt === 'bleeding_statement'}
-                    data-testid="button-write-bleeding-neck"
+                    className="gap-2"
+                    onClick={generateCoreFeatures}
+                    disabled={isGenerating}
+                    data-testid="button-generate-core"
                   >
-                    {loadingPrompt === 'bleeding_statement' ? (
-                      <><Loader2 className="w-3 h-3 animate-spin" /> Writing...</>
+                    {isGenerating ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing competitors...</>
                     ) : (
-                      <><Sparkles className="w-3 h-3" /> Write It For Me</>
+                      <><Sparkles className="w-4 h-4" /> Generate Core Features</>
                     )}
                   </Button>
                 </div>
-              </div>
-            )}
-          </Card>
-        );
-      })}
-
-      <Card className="p-6 border-2 border-slate-200">
-        <h3 className="font-bold text-lg text-slate-900 mb-4">Build Your Feature List</h3>
-        <p className="text-sm text-slate-500 mb-6">
-          Based on your research, add the features you'll include in your MVP
-        </p>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Target className="w-5 h-5 text-blue-600" />
-              <h4 className="font-bold text-slate-800">Core Features</h4>
-              <span className="text-xs text-slate-400">(must-haves)</span>
-            </div>
-            <div className="space-y-2 mb-3">
-              {coreFeatures.map((feature, i) => (
-                <div key={i} className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg">
-                  <span className="flex-1 text-sm text-blue-900">{feature}</span>
-                  <button
-                    onClick={() => removeCoreFeature(i)}
-                    className="text-blue-400 hover:text-blue-600 cursor-pointer"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+              ) : (
+                <div className="space-y-3">
+                  {coreFeatures.map((feature, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg group">
+                      <Check className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                      <span className="flex-1 text-slate-800">{feature}</span>
+                      <button
+                        onClick={() => removeFeature('core', i)}
+                        className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity cursor-pointer"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <div className="flex gap-2 pt-2">
+                    <Input
+                      placeholder="Add another feature..."
+                      value={newFeature}
+                      onChange={(e) => setNewFeature(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && addFeature('core')}
+                      className="flex-1"
+                    />
+                    <Button variant="outline" onClick={() => addFeature('core')}>
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Add a core feature..."
-                value={newCoreFeature}
-                onChange={(e) => setNewCoreFeature(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && addCoreFeature()}
-                data-testid="input-core-feature"
-              />
-              <Button variant="outline" size="icon" onClick={addCoreFeature}>
-                <Plus className="w-4 h-4" />
+              )}
+            </Card>
+
+            <div className="flex justify-between">
+              <Button
+                variant="outline"
+                size="lg"
+                className="gap-2"
+                onClick={() => setCurrentStep(1)}
+              >
+                <ChevronLeft className="w-5 h-5" /> Back
+              </Button>
+              <Button
+                size="lg"
+                className="gap-2"
+                onClick={() => setCurrentStep(3)}
+                disabled={coreFeatures.length === 0}
+                data-testid="button-next-step2"
+              >
+                Next: Your USP <ChevronRight className="w-5 h-5" />
               </Button>
             </div>
-          </div>
+          </motion.div>
+        )}
 
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Star className="w-5 h-5 text-amber-500" />
-              <h4 className="font-bold text-slate-800">USP Features</h4>
-              <span className="text-xs text-slate-400">(your edge)</span>
-            </div>
-            <div className="space-y-2 mb-3">
-              {uspFeatures.map((feature, i) => (
-                <div key={i} className="flex items-center gap-2 p-2 bg-amber-50 rounded-lg">
-                  <span className="flex-1 text-sm text-amber-900">{feature}</span>
-                  <button
-                    onClick={() => removeUspFeature(i)}
-                    className="text-amber-400 hover:text-amber-600 cursor-pointer"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Add a USP feature..."
-                value={newUspFeature}
-                onChange={(e) => setNewUspFeature(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && addUspFeature()}
-                data-testid="input-usp-feature"
-              />
-              <Button variant="outline" size="icon" onClick={addUspFeature}>
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="p-6 border-2 border-green-300 bg-gradient-to-r from-green-50 to-emerald-50">
-        <div className="text-center">
-          <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to Lock In Your Features?</h3>
-          <p className="text-slate-600 mb-4">
-            You have your bleeding neck problem, {coreFeatures.length} core features, and {uspFeatures.length} USP features
-          </p>
-          <Button
-            size="lg"
-            className="gap-2"
-            onClick={handleFinalize}
-            disabled={!bleedingNeckProblem.trim() || coreFeatures.length === 0 || uspFeatures.length === 0}
-            data-testid="button-finalize-features"
+        {currentStep === 3 && (
+          <motion.div
+            key="step3"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
           >
-            <Check className="w-5 h-5" />
-            Finalize Feature List
-          </Button>
-        </div>
-      </Card>
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
+                <Star className="w-7 h-7 text-purple-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">What Makes You Different?</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
+                1-2 unique features that competitors <strong>don't have</strong>. Your unfair advantage.
+              </p>
+            </div>
+
+            <Card className="p-6 border-2 border-slate-200">
+              {uspFeatures.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-slate-400 mb-4">No USP features yet. Generate based on your skills.</p>
+                  <Button
+                    className="gap-2"
+                    onClick={generateUSPFeatures}
+                    disabled={isGenerating}
+                    data-testid="button-generate-usp"
+                  >
+                    {isGenerating ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Finding your edge...</>
+                    ) : (
+                      <><Sparkles className="w-4 h-4" /> Generate USP Features</>
+                    )}
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {uspFeatures.map((feature, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg group">
+                      <Star className="w-4 h-4 text-purple-600 flex-shrink-0" />
+                      <span className="flex-1 text-slate-800">{feature}</span>
+                      <button
+                        onClick={() => removeFeature('usp', i)}
+                        className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity cursor-pointer"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <div className="flex gap-2 pt-2">
+                    <Input
+                      placeholder="Add your own USP..."
+                      value={newFeature}
+                      onChange={(e) => setNewFeature(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && addFeature('usp')}
+                      className="flex-1"
+                    />
+                    <Button variant="outline" onClick={() => addFeature('usp')}>
+                      <Plus className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </Card>
+
+            <div className="flex justify-between">
+              <Button
+                variant="outline"
+                size="lg"
+                className="gap-2"
+                onClick={() => setCurrentStep(2)}
+              >
+                <ChevronLeft className="w-5 h-5" /> Back
+              </Button>
+              <Button
+                size="lg"
+                className="gap-2 bg-green-600 hover:bg-green-700"
+                onClick={handleFinish}
+                disabled={uspFeatures.length === 0}
+                data-testid="button-finish"
+              >
+                <Check className="w-5 h-5" /> Finish
+              </Button>
+            </div>
+          </motion.div>
+        )}
+
+        {currentStep === 4 && (
+          <motion.div
+            key="complete"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="space-y-6"
+          >
+            <div className="text-center py-4">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Feature Plan is Ready!</h2>
+              <p className="text-slate-500">Here's exactly what you're building.</p>
+            </div>
+
+            <Card className="p-5 border-2 border-amber-200 bg-amber-50">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="w-5 h-5 text-amber-600" />
+                <h3 className="font-bold text-amber-900">Bleeding Neck Problem</h3>
+              </div>
+              <p className="text-amber-800">{bleedingNeckProblem}</p>
+            </Card>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <Card className="p-5 border-2 border-blue-200 bg-blue-50">
+                <div className="flex items-center gap-2 mb-3">
+                  <Target className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-bold text-blue-900">Core Features</h3>
+                  <span className="text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full">{coreFeatures.length}</span>
+                </div>
+                <ul className="space-y-2">
+                  {coreFeatures.map((f, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-blue-800">
+                      <Check className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+
+              <Card className="p-5 border-2 border-purple-200 bg-purple-50">
+                <div className="flex items-center gap-2 mb-3">
+                  <Star className="w-5 h-5 text-purple-600" />
+                  <h3 className="font-bold text-purple-900">USP Features</h3>
+                  <span className="text-xs bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full">{uspFeatures.length}</span>
+                </div>
+                <ul className="space-y-2">
+                  {uspFeatures.map((f, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm text-purple-800">
+                      <Star className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            </div>
+
+            <Button 
+              size="lg" 
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={onComplete}
+              data-testid="button-complete-day3"
+            >
+              Complete Day 3 <ChevronRight className="w-5 h-5" />
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
