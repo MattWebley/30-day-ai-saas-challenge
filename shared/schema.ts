@@ -56,6 +56,7 @@ export const dayContent = pgTable("day_content", {
   microDecisionOptions: jsonb("micro_decision_options"), // Array of strings
   reflectionQuestion: text("reflection_question"),
   tip: text("tip"),
+  lesson: text("lesson"),
   xpReward: integer("xp_reward").default(100),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

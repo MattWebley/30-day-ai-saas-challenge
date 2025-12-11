@@ -5,10 +5,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { 
   Play, 
-  Shuffle, 
   ArrowRight, 
   CheckCircle2, 
-  Wand2,
   Trophy,
   ChevronRight,
   Lock
@@ -27,7 +25,6 @@ export default function Dashboard() {
   const [selectedSuggestion, setSelectedSuggestion] = useState<number | undefined>();
   const [microDecisionChoice, setMicroDecisionChoice] = useState<string>("");
   const [reflectionAnswer, setReflectionAnswer] = useState<string>("");
-  const [loadingAI, setLoadingAI] = useState(false);
 
   // Determine current day from URL or default to 1
   const currentDay = params?.day ? parseInt(params.day) : 1;
@@ -156,59 +153,26 @@ export default function Dashboard() {
           {/* Left Column: Task Steps */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* Step 1: AI Task / Content */}
-            {/* Dynamic rendering based on if we have specific AI content in mock-data, otherwise generic fallback */}
+            {/* Step 1: Today's Lesson */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                  <h2 className="font-bold text-xl text-slate-900">
-                    {dayData.aiTask?.title || "AI Generated Suggestions"}
-                  </h2>
-                </div>
-                <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="gap-2 text-slate-500 hover:text-primary font-medium"
-                    onClick={handleShuffle}
-                    disabled={loadingAI}
-                >
-                  <Shuffle className={`w-4 h-4 ${loadingAI ? 'animate-spin' : ''}`} /> 
-                  {loadingAI ? "Generating..." : "Shuffle"}
-                </Button>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
               </div>
 
-              <div className="space-y-3">
-                {suggestions && suggestions.length > 0 ? (
-                    suggestions.map((idea: any, i: number) => (
-                        <motion.div 
-                          key={i} 
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.1 }}
-                          whileHover={{ scale: 1.01 }}
-                          className={`group relative border-2 rounded-xl p-5 hover:border-primary/30 hover:bg-blue-50/30 transition-all cursor-pointer bg-white ${selectedSuggestion === i ? 'border-primary bg-blue-50' : 'border-slate-100'}`}
-                          onClick={() => setSelectedSuggestion(i)}
-                          data-testid={`suggestion-${i}`}
-                        >
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h3 className="font-bold text-slate-900 mb-1 text-lg">{idea.title}</h3>
-                              <p className="text-slate-500 font-medium">{idea.desc}</p>
-                            </div>
-                            <div className={`w-5 h-5 rounded-full border-2 transition-colors ${selectedSuggestion === i ? 'border-primary bg-primary' : 'border-slate-300 group-hover:border-primary'}`}>
-                              {selectedSuggestion === i && <CheckCircle2 className="w-5 h-5 text-white" />}
-                            </div>
-                          </div>
-                        </motion.div>
-                    ))
+              <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                {dayData.lesson ? (
+                  <div className="prose prose-slate max-w-none">
+                    {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                      <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
                 ) : (
-                    <div className="p-8 border-2 border-dashed border-slate-200 rounded-xl text-center text-slate-400 bg-slate-50">
-                        <Wand2 className="w-8 h-8 mx-auto mb-3 opacity-50" />
-                        <p className="font-medium">{dayData.aiTaskDescription || "AI task content will appear here"}</p>
-                    </div>
+                  <p className="text-slate-500">{dayData.description}</p>
                 )}
-              </div>
+              </Card>
             </div>
 
             {/* Step 2: Micro Decision */}
@@ -296,7 +260,7 @@ export default function Dashboard() {
                <div className="relative z-10 space-y-6">
                  <div className="flex items-center gap-4">
                    <div className="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center text-white border border-white/10 shadow-inner">
-                     <Wand2 className="w-7 h-7" />
+                     <Trophy className="w-7 h-7 text-yellow-500" />
                    </div>
                    <div>
                      <div className="font-bold text-xl">Initiator</div>
