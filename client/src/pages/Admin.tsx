@@ -1,6 +1,9 @@
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { 
@@ -13,7 +16,9 @@ import {
   MessageSquare,
   AlertTriangle,
   Check,
-  X
+  X,
+  Palette,
+  Save
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -32,9 +37,74 @@ interface PendingComment {
   };
 }
 
+interface BrandSettings {
+  primaryColor: string;
+  textColor: string;
+  backgroundColor: string;
+  accentColor: string;
+  fontFamily: string;
+  borderRadius: number;
+  logoUrl?: string;
+  appName: string;
+}
+
+const FONT_OPTIONS = [
+  "Poppins",
+  "Inter",
+  "Roboto",
+  "Open Sans",
+  "Lato",
+  "Montserrat",
+  "Nunito",
+  "Source Sans Pro",
+];
+
 export default function Admin() {
   const queryClient = useQueryClient();
   
+  const { data: brandSettings } = useQuery<BrandSettings>({
+    queryKey: ["/api/brand-settings"],
+  });
+
+  const [brand, setBrand] = useState<BrandSettings>({
+    primaryColor: "#007BFF",
+    textColor: "#000000",
+    backgroundColor: "#FFFFFF",
+    accentColor: "#007BFF",
+    fontFamily: "Poppins",
+    borderRadius: 6,
+    appName: "30 Day AI SaaS Challenge",
+  });
+
+  useEffect(() => {
+    if (brandSettings) {
+      setBrand({
+        primaryColor: brandSettings.primaryColor || "#007BFF",
+        textColor: brandSettings.textColor || "#000000",
+        backgroundColor: brandSettings.backgroundColor || "#FFFFFF",
+        accentColor: brandSettings.accentColor || "#007BFF",
+        fontFamily: brandSettings.fontFamily || "Poppins",
+        borderRadius: brandSettings.borderRadius || 6,
+        logoUrl: brandSettings.logoUrl || "",
+        appName: brandSettings.appName || "30 Day AI SaaS Challenge",
+      });
+    }
+  }, [brandSettings]);
+
+  const saveBrandSettings = useMutation({
+    mutationFn: async (settings: BrandSettings) => {
+      const res = await apiRequest("POST", "/api/admin/brand-settings", settings);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/brand-settings"] });
+      toast.success("Brand settings saved! Refresh to see changes.");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to save brand settings");
+    },
+  });
+
   const { data: adminData, isLoading } = useQuery({
     queryKey: ["/api/admin/stats"],
     queryFn: async () => {
@@ -212,6 +282,167 @@ export default function Admin() {
               ))}
             </Card>
           )}
+        </div>
+
+        {/* Brand Pack */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <h2 className="text-xl font-bold text-slate-900">Brand Pack</h2>
+            <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">
+              App-wide
+            </span>
+          </div>
+          
+          <Card className="p-6 border-2 border-slate-100">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="appName">App Name</Label>
+                <Input
+                  id="appName"
+                  value={brand.appName}
+                  onChange={(e) => setBrand({ ...brand, appName: e.target.value })}
+                  data-testid="input-app-name"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="primaryColor">Primary Color</Label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    id="primaryColor"
+                    value={brand.primaryColor}
+                    onChange={(e) => setBrand({ ...brand, primaryColor: e.target.value })}
+                    className="w-12 h-10 rounded border border-slate-200 cursor-pointer"
+                  />
+                  <Input
+                    value={brand.primaryColor}
+                    onChange={(e) => setBrand({ ...brand, primaryColor: e.target.value })}
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="accentColor">Accent Color</Label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    id="accentColor"
+                    value={brand.accentColor}
+                    onChange={(e) => setBrand({ ...brand, accentColor: e.target.value })}
+                    className="w-12 h-10 rounded border border-slate-200 cursor-pointer"
+                  />
+                  <Input
+                    value={brand.accentColor}
+                    onChange={(e) => setBrand({ ...brand, accentColor: e.target.value })}
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="textColor">Text Color</Label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    id="textColor"
+                    value={brand.textColor}
+                    onChange={(e) => setBrand({ ...brand, textColor: e.target.value })}
+                    className="w-12 h-10 rounded border border-slate-200 cursor-pointer"
+                  />
+                  <Input
+                    value={brand.textColor}
+                    onChange={(e) => setBrand({ ...brand, textColor: e.target.value })}
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="backgroundColor">Background Color</Label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    id="backgroundColor"
+                    value={brand.backgroundColor}
+                    onChange={(e) => setBrand({ ...brand, backgroundColor: e.target.value })}
+                    className="w-12 h-10 rounded border border-slate-200 cursor-pointer"
+                  />
+                  <Input
+                    value={brand.backgroundColor}
+                    onChange={(e) => setBrand({ ...brand, backgroundColor: e.target.value })}
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="fontFamily">Font Family</Label>
+                <select
+                  id="fontFamily"
+                  value={brand.fontFamily}
+                  onChange={(e) => setBrand({ ...brand, fontFamily: e.target.value })}
+                  className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white text-sm"
+                  data-testid="select-font-family"
+                >
+                  {FONT_OPTIONS.map((font) => (
+                    <option key={font} value={font}>{font}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="borderRadius">Border Radius (px)</Label>
+                <Input
+                  id="borderRadius"
+                  type="number"
+                  min="0"
+                  max="24"
+                  value={brand.borderRadius}
+                  onChange={(e) => setBrand({ ...brand, borderRadius: parseInt(e.target.value) || 0 })}
+                  data-testid="input-border-radius"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="logoUrl">Logo URL (optional)</Label>
+                <Input
+                  id="logoUrl"
+                  value={brand.logoUrl || ""}
+                  onChange={(e) => setBrand({ ...brand, logoUrl: e.target.value })}
+                  placeholder="https://..."
+                  data-testid="input-logo-url"
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-slate-100 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div 
+                  className="w-10 h-10 rounded flex items-center justify-center text-white text-xs font-bold"
+                  style={{ 
+                    backgroundColor: brand.primaryColor,
+                    borderRadius: `${brand.borderRadius}px`,
+                  }}
+                >
+                  Aa
+                </div>
+                <div className="text-sm text-slate-500">
+                  Preview: <span style={{ fontFamily: brand.fontFamily }}>{brand.fontFamily}</span>
+                </div>
+              </div>
+              <Button
+                onClick={() => saveBrandSettings.mutate(brand)}
+                disabled={saveBrandSettings.isPending}
+                className="gap-2"
+                data-testid="button-save-brand"
+              >
+                <Save className="w-4 h-4" />
+                {saveBrandSettings.isPending ? "Saving..." : "Save Brand Settings"}
+              </Button>
+            </div>
+          </Card>
         </div>
 
         {/* Student Progress Table */}

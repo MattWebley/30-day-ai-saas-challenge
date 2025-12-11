@@ -7,6 +7,7 @@ import {
   userStats,
   dayComments,
   userSpamStatus,
+  brandSettings,
   type User,
   type UpsertUser,
   type DayContent,
@@ -23,6 +24,8 @@ import {
   type InsertDayComment,
   type UserSpamStatus,
   type InsertUserSpamStatus,
+  type BrandSettings,
+  type InsertBrandSettings,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -74,6 +77,10 @@ export interface IStorage {
   // Spam status operations
   getUserSpamStatus(userId: string): Promise<UserSpamStatus | undefined>;
   incrementFlagCount(userId: string): Promise<UserSpamStatus>;
+  
+  // Brand settings operations
+  getBrandSettings(): Promise<BrandSettings | undefined>;
+  updateBrandSettings(settings: Partial<InsertBrandSettings>): Promise<BrandSettings>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -328,6 +335,31 @@ export class DatabaseStorage implements IStorage {
       const [created] = await db
         .insert(userSpamStatus)
         .values({ userId, flaggedCount: 1 })
+        .returning();
+      return created;
+    }
+  }
+
+  // Brand settings operations
+  async getBrandSettings(): Promise<BrandSettings | undefined> {
+    const [settings] = await db.select().from(brandSettings).limit(1);
+    return settings;
+  }
+
+  async updateBrandSettings(settings: Partial<InsertBrandSettings>): Promise<BrandSettings> {
+    const existing = await this.getBrandSettings();
+    
+    if (existing) {
+      const [updated] = await db
+        .update(brandSettings)
+        .set({ ...settings, updatedAt: new Date() })
+        .where(eq(brandSettings.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(brandSettings)
+        .values(settings)
         .returning();
       return created;
     }

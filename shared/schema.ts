@@ -235,3 +235,25 @@ export const insertUserSpamStatusSchema = createInsertSchema(userSpamStatus).omi
 
 export type UserSpamStatus = typeof userSpamStatus.$inferSelect;
 export type InsertUserSpamStatus = z.infer<typeof insertUserSpamStatusSchema>;
+
+// Brand settings - global app theming
+export const brandSettings = pgTable("brand_settings", {
+  id: serial("id").primaryKey(),
+  primaryColor: varchar("primary_color").default("#007BFF"),
+  textColor: varchar("text_color").default("#000000"),
+  backgroundColor: varchar("background_color").default("#FFFFFF"),
+  accentColor: varchar("accent_color").default("#007BFF"),
+  fontFamily: varchar("font_family").default("Poppins"),
+  borderRadius: integer("border_radius").default(6),
+  logoUrl: text("logo_url"),
+  appName: varchar("app_name").default("30 Day AI SaaS Challenge"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertBrandSettingsSchema = createInsertSchema(brandSettings).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type BrandSettings = typeof brandSettings.$inferSelect;
+export type InsertBrandSettings = z.infer<typeof insertBrandSettingsSchema>;

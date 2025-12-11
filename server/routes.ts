@@ -548,5 +548,36 @@ Format: { "ideas": [...] }`;
     }
   });
 
+  // Brand settings - public endpoint (for applying theme)
+  app.get("/api/brand-settings", async (req, res) => {
+    try {
+      const settings = await storage.getBrandSettings();
+      res.json(settings || {
+        primaryColor: "#007BFF",
+        textColor: "#000000",
+        backgroundColor: "#FFFFFF",
+        accentColor: "#007BFF",
+        fontFamily: "Poppins",
+        borderRadius: 6,
+        appName: "30 Day AI SaaS Challenge",
+      });
+    } catch (error) {
+      console.error("Error fetching brand settings:", error);
+      res.status(500).json({ message: "Failed to fetch brand settings" });
+    }
+  });
+
+  // Admin: Update brand settings
+  app.post("/api/admin/brand-settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const settings = req.body;
+      const updated = await storage.updateBrandSettings(settings);
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating brand settings:", error);
+      res.status(500).json({ message: error.message || "Failed to update brand settings" });
+    }
+  });
+
   return httpServer;
 }
