@@ -295,31 +295,31 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
               </div>
             </div>
           ))}
+
+          {/* Settings & Logout - scrolls with content */}
+          <div className="space-y-1 pt-4 border-t border-sidebar-border">
+            <Link href="/settings" onClick={handleNavClick}>
+              <span className={cn(
+                "flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                location === "/settings"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"
+              )}>
+                <Settings className="w-4 h-4" />
+                Settings
+              </span>
+            </Link>
+            <a 
+              href="/api/logout"
+              className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"
+              data-testid="button-logout"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </a>
+          </div>
         </div>
       </ScrollArea>
-
-      {/* Footer */}
-      <div className="p-4 border-t border-sidebar-border space-y-1">
-        <Link href="/settings" onClick={handleNavClick}>
-          <span className={cn(
-            "flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors cursor-pointer",
-            location === "/settings"
-              ? "bg-sidebar-accent text-sidebar-accent-foreground"
-              : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"
-          )}>
-            <Settings className="w-4 h-4" />
-            Settings
-          </span>
-        </Link>
-        <a 
-          href="/api/logout"
-          className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"
-          data-testid="button-logout"
-        >
-          <LogOut className="w-4 h-4" />
-          Logout
-        </a>
-      </div>
     </div>
   );
 }
