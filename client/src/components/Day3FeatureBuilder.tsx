@@ -324,7 +324,7 @@ Give me exactly 6 ideas, one per line:`;
                   ) : bleedingNeckAttempts >= MAX_AI_ATTEMPTS ? (
                     <>No attempts left</>
                   ) : (
-                    <><Sparkles className="w-4 h-4" /> Write It For Me ({MAX_AI_ATTEMPTS - bleedingNeckAttempts} left)</>
+                    <><Sparkles className="w-4 h-4" /> Write It For Me{MAX_AI_ATTEMPTS - bleedingNeckAttempts === 1 ? ' (1 left)' : ''}</>
                   )}
                 </Button>
               </div>
@@ -410,7 +410,7 @@ Give me exactly 6 ideas, one per line:`;
                     ) : coreAttempts >= MAX_AI_ATTEMPTS ? (
                       <>No attempts left</>
                     ) : (
-                      <><Sparkles className="w-4 h-4" /> Generate with AI ({MAX_AI_ATTEMPTS - coreAttempts} left)</>
+                      <><Sparkles className="w-4 h-4" /> Generate with AI{MAX_AI_ATTEMPTS - coreAttempts === 1 ? ' (1 left)' : ''}</>
                     )}
                   </Button>
                 </div>
@@ -544,7 +544,7 @@ Give me exactly 6 ideas, one per line:`;
                       ) : uspAttempts >= MAX_AI_ATTEMPTS ? (
                         <>No attempts left</>
                       ) : (
-                        <><Sparkles className="w-4 h-4" /> Generate 6 Ideas ({MAX_AI_ATTEMPTS - uspAttempts} left)</>
+                        <><Sparkles className="w-4 h-4" /> Generate 6 Ideas{MAX_AI_ATTEMPTS - uspAttempts === 1 ? ' (1 left)' : ''}</>
                       )}
                     </Button>
                   </div>
