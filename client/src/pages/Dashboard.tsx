@@ -149,7 +149,7 @@ export default function Dashboard() {
           <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg">
             <div className="flex items-start gap-4">
               <img 
-                src="/attached_assets/Screenshot_2025-12-11_at_21.03.42_1765472625903.png" 
+                src="/matt-webley.png" 
                 alt="Matt Webley"
                 className="w-14 h-14 rounded-full object-cover flex-shrink-0"
               />
