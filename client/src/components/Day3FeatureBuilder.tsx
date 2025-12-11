@@ -222,11 +222,11 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   const getPromptIcon = (iconType: string) => {
     switch (iconType) {
       case 'bleeding':
-        return <AlertTriangle className="w-6 h-6 text-red-500 flex-shrink-0" />;
+        return <AlertTriangle className="w-6 h-6 text-amber-600 flex-shrink-0" />;
       case 'core':
         return <Target className="w-6 h-6 text-blue-600 flex-shrink-0" />;
       case 'usp':
-        return <Star className="w-6 h-6 text-amber-500 flex-shrink-0" />;
+        return <Star className="w-6 h-6 text-purple-500 flex-shrink-0" />;
       default:
         return <Target className="w-6 h-6 text-blue-600 flex-shrink-0" />;
     }
@@ -259,12 +259,12 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
           <p className="text-slate-500">Here's what you're building for {chosenIdea.title}</p>
         </div>
 
-        <Card className="p-5 border-2 border-red-200 bg-red-50">
+        <Card className="p-5 border-2 border-amber-200 bg-amber-50">
           <div className="flex items-center gap-2 mb-3">
-            <AlertTriangle className="w-5 h-5 text-red-500" />
-            <h3 className="font-bold text-red-900">Bleeding Neck Problem</h3>
+            <AlertTriangle className="w-5 h-5 text-amber-600" />
+            <h3 className="font-bold text-amber-900">Bleeding Neck Problem</h3>
           </div>
-          <p className="text-red-800">{bleedingNeckProblem}</p>
+          <p className="text-amber-800">{bleedingNeckProblem}</p>
         </Card>
 
         <div className="grid md:grid-cols-2 gap-6">
@@ -343,7 +343,7 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
         const isLoading = loadingPrompt === prompt.id;
 
         return (
-          <Card key={prompt.id} className={`p-5 border-2 ${prompt.id === 'bleeding_neck' ? 'border-red-200' : 'border-slate-100'}`}>
+          <Card key={prompt.id} className={`p-5 border-2 ${prompt.id === 'bleeding_neck' ? 'border-amber-200' : 'border-slate-100'}`}>
             <div className="flex items-start gap-3 mb-3">
               {getPromptIcon(prompt.icon)}
               <div>
@@ -396,18 +396,41 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
             )}
 
             {prompt.id === 'bleeding_neck' && (
-              <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
-                <label className="block text-sm font-bold text-red-900 mb-2">
-                  Your Bleeding Neck Problem Statement:
-                </label>
+              <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-bold text-amber-900">
+                    Write Your Bleeding Neck Problem Statement:
+                  </label>
+                  {aiResponse && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs gap-1 border-amber-300 text-amber-700 hover:bg-amber-100"
+                      onClick={() => {
+                        const match = aiResponse.match(/(?:bleeding neck problem[^:]*:|one-sentence statement[^:]*:)\s*["']?([^"'\n]+)/i);
+                        if (match) {
+                          setBleedingNeckProblem(match[1].trim());
+                        } else {
+                          const lines = aiResponse.split('\n').filter(l => l.trim());
+                          const lastLine = lines[lines.length - 1]?.trim();
+                          if (lastLine) setBleedingNeckProblem(lastLine);
+                        }
+                      }}
+                      data-testid="button-use-ai-statement"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      Use AI Suggestion
+                    </Button>
+                  )}
+                </div>
                 <Textarea
-                  placeholder="The ONE critical problem my product solves is..."
+                  placeholder="Read the AI response above, then write your one-sentence problem statement here..."
                   value={bleedingNeckProblem}
                   onChange={(e) => setBleedingNeckProblem(e.target.value)}
-                  className="min-h-[80px] bg-white border-red-200 focus:border-red-400"
+                  className="min-h-[80px] bg-white border-amber-200 focus:border-amber-400"
                   data-testid="input-bleeding-neck"
                 />
-                <p className="text-xs text-red-600 mt-2">
+                <p className="text-xs text-amber-700 mt-2">
                   This will be used in the next prompts to keep your features focused.
                 </p>
               </div>
