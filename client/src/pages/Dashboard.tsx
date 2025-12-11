@@ -146,12 +146,16 @@ export default function Dashboard() {
 
         {/* Matt Webley's Tip */}
         {dayData.tip && (
-          <div className="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-lg">
-            <div className="flex items-start gap-3">
-              <span className="text-xl">💡</span>
+          <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg">
+            <div className="flex items-start gap-4">
+              <img 
+                src="/attached_assets/Screenshot_2025-12-11_at_21.03.42_1765472625903.png" 
+                alt="Matt Webley"
+                className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+              />
               <div>
-                <p className="font-semibold text-amber-800 text-sm uppercase tracking-wide mb-1">Matt Webley's Tip</p>
-                <p className="text-amber-900 font-medium">{dayData.tip}</p>
+                <p className="font-bold text-black text-sm uppercase tracking-wide mb-1">Matt's Tip</p>
+                <p className="text-slate-700 font-medium leading-relaxed">{dayData.tip}</p>
               </div>
             </div>
           </div>
