@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Check, ChevronRight, Loader2 } from "lucide-react";
+import { Sparkles, Check, ChevronRight, Loader2, Plus, PenLine } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "sonner";
@@ -44,6 +45,8 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   
   const [ideas, setIdeas] = useState<Idea[]>(existingProgress?.generatedIdeas || []);
   const [selectedIdeas, setSelectedIdeas] = useState<number[]>(existingProgress?.shortlistedIdeas || []);
+  const [showCustomForm, setShowCustomForm] = useState(false);
+  const [customIdea, setCustomIdea] = useState({ title: "", desc: "", targetCustomer: "" });
 
   const generateIdeas = useMutation({
     mutationFn: async () => {
@@ -104,6 +107,33 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
       shortlistedIdeas: selectedIdeas,
     });
     setStep('shortlist');
+  };
+
+  const handleAddCustomIdea = () => {
+    if (!customIdea.title.trim() || !customIdea.desc.trim()) {
+      toast.error("Please fill in at least the title and description");
+      return;
+    }
+    
+    const newIdea: Idea = {
+      title: customIdea.title.trim(),
+      desc: customIdea.desc.trim(),
+      targetCustomer: customIdea.targetCustomer.trim() || "Your target market",
+      scores: {
+        marketDemand: 3,
+        skillMatch: 5,
+        passionFit: 5,
+        speedToMvp: 3,
+        monetization: 3,
+      },
+      totalScore: 19,
+      whyThisWorks: "This is YOUR idea - you know it best!",
+    };
+    
+    setIdeas(prev => [newIdea, ...prev]);
+    setCustomIdea({ title: "", desc: "", targetCustomer: "" });
+    setShowCustomForm(false);
+    toast.success("Your idea has been added to the list!");
   };
 
   const getScoreColor = (score: number) => {
@@ -255,6 +285,64 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
 
         {!showConfirmation && (
           <Progress value={(selectedIdeas.length / 5) * 100} className="h-2" />
+        )}
+
+        {!showConfirmation && (
+          <Card className="p-4 border-2 border-dashed border-blue-300 bg-blue-50/50">
+            {showCustomForm ? (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <PenLine className="w-5 h-5 text-blue-600" />
+                  <h3 className="font-bold text-slate-900">Add Your Own Idea</h3>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Idea Name</label>
+                  <Input
+                    placeholder="e.g., AI Resume Builder"
+                    value={customIdea.title}
+                    onChange={(e) => setCustomIdea(prev => ({ ...prev, title: e.target.value }))}
+                    data-testid="input-custom-title"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                  <Textarea
+                    placeholder="What does your idea do? What problem does it solve?"
+                    value={customIdea.desc}
+                    onChange={(e) => setCustomIdea(prev => ({ ...prev, desc: e.target.value }))}
+                    className="min-h-[60px]"
+                    data-testid="input-custom-desc"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Target Customer (optional)</label>
+                  <Input
+                    placeholder="e.g., Job seekers, freelancers..."
+                    value={customIdea.targetCustomer}
+                    onChange={(e) => setCustomIdea(prev => ({ ...prev, targetCustomer: e.target.value }))}
+                    data-testid="input-custom-target"
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={handleAddCustomIdea} className="gap-2" data-testid="button-add-custom">
+                    <Plus className="w-4 h-4" /> Add to List
+                  </Button>
+                  <Button variant="outline" onClick={() => setShowCustomForm(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowCustomForm(true)}
+                className="w-full flex items-center justify-center gap-2 py-3 text-blue-700 font-semibold hover:text-blue-800 transition-colors cursor-pointer"
+                data-testid="button-show-custom-form"
+              >
+                <Plus className="w-5 h-5" />
+                Already have an idea? Add your own!
+              </button>
+            )}
+          </Card>
         )}
 
         <div className="space-y-4">
