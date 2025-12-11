@@ -14,6 +14,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/dashboard" component={Dashboard} />
+      <Route path="/dashboard/:day" component={Dashboard} />
       <Route path="/badges" component={Badges} />
       <Route path="/settings" component={Settings} />
       <Route component={NotFound} />

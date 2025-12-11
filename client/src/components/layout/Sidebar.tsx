@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { challengeDays, badges } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
@@ -14,9 +14,13 @@ import {
   LogOut
 } from "lucide-react";
 
-export function Sidebar() {
+interface SidebarProps {
+  currentDay: number;
+}
+
+export function Sidebar({ currentDay }: SidebarProps) {
   const [location] = useLocation();
-  const progress = 3; // Mock progress percentage (1 day done out of 30)
+  const progress = Math.round((currentDay / 30) * 100);
 
   // Group days by phase
   const phases = Array.from(new Set(challengeDays.map(d => d.phase)));
@@ -39,9 +43,9 @@ export function Sidebar() {
         <div className="space-y-2">
           <div className="flex justify-between text-xs font-medium text-muted-foreground uppercase tracking-wider">
             <span>Overall Progress</span>
-            <span>3%</span>
+            <span>{progress}%</span>
           </div>
-          <Progress value={3} className="h-2" />
+          <Progress value={progress} className="h-2" />
         </div>
       </div>
 
@@ -52,7 +56,7 @@ export function Sidebar() {
              <Link href="/dashboard">
               <a className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                location === "/dashboard" 
+                location === "/dashboard" || location.startsWith("/dashboard/")
                   ? "bg-sidebar-accent text-sidebar-accent-foreground" 
                   : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               )}>
@@ -80,31 +84,34 @@ export function Sidebar() {
               </h3>
               <div className="space-y-0.5">
                 {challengeDays.filter(d => d.phase === phase).map((day) => (
-                  <button
-                    key={day.day}
-                    disabled={day.locked}
-                    className={cn(
-                      "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all group",
-                      day.locked 
-                        ? "opacity-50 cursor-not-allowed" 
-                        : "hover:bg-sidebar-accent hover:text-sidebar-foreground",
-                      // Highlight active day if relevant (mock logic)
-                      day.day === 1 && "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "w-6 h-6 rounded-full flex items-center justify-center text-[10px] border",
-                        day.completed 
-                          ? "bg-primary border-primary text-primary-foreground"
-                          : "border-muted-foreground/30 text-muted-foreground"
-                      )}>
-                        {day.completed ? <CheckCircle2 className="w-3.5 h-3.5" /> : day.day}
+                  <Link key={day.day} href={`/dashboard/${day.day}`}>
+                    <a
+                      className={cn(
+                        "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all group mb-0.5",
+                        // Logic: Highlight if it's the current day being viewed. 
+                        // Dim if locked.
+                        currentDay === day.day 
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                          : "hover:bg-sidebar-accent hover:text-sidebar-foreground",
+                        // day.locked && currentDay !== day.day && "opacity-50 cursor-not-allowed pointer-events-none" // Optional: enforce lock
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-colors",
+                          day.completed 
+                            ? "bg-primary border-primary text-primary-foreground"
+                            : currentDay === day.day 
+                              ? "border-primary text-primary font-bold"
+                              : "border-muted-foreground/30 text-muted-foreground"
+                        )}>
+                          {day.completed ? <CheckCircle2 className="w-3.5 h-3.5" /> : day.day}
+                        </div>
+                        <span className="truncate">{day.title}</span>
                       </div>
-                      <span className="truncate">{day.title}</span>
-                    </div>
-                    {day.locked && <Lock className="w-3 h-3 text-muted-foreground" />}
-                  </button>
+                      {day.locked && currentDay !== day.day && <Lock className="w-3 h-3 text-muted-foreground" />}
+                    </a>
+                  </Link>
                 ))}
               </div>
             </div>

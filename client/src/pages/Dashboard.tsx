@@ -10,41 +10,45 @@ import {
   CheckCircle2, 
   Wand2,
   Trophy,
-  ChevronRight
+  ChevronRight,
+  Lock
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useRoute, useLocation } from "wouter";
+import { challengeDays } from "@/lib/mock-data";
 
 export default function Dashboard() {
+  const [match, params] = useRoute("/dashboard/:day");
+  const [location, setLocation] = useLocation();
   const [completed, setCompleted] = useState(false);
+  const [loadingAI, setLoadingAI] = useState(false);
 
-  // Mock Data for Day 1
-  const dayData = {
-    day: 1,
-    title: "The Idea Spark",
-    description: "Before we build, we validate. Today is about crystalizing that vague thought in your shower into a concrete concept.",
-    aiSuggestions: [
-      {
-        title: "Micro-SaaS for Dog Walkers",
-        desc: "A CRM specifically for managing recurring dog walking schedules and payments."
-      },
-      {
-        title: "AI Email Triage",
-        desc: "A plugin that auto-drafts replies based on your past writing style."
-      },
-      {
-        title: "Content Repurposer",
-        desc: "Turn a single blog post into 10 tweets and a LinkedIn carousel automatically."
-      }
-    ]
-  };
+  // Determine current day from URL or default to 1
+  const currentDay = params?.day ? parseInt(params.day) : 1;
+  const dayData = challengeDays.find(d => d.day === currentDay) || challengeDays[0];
 
+  // Handle completion
   const handleComplete = () => {
     setCompleted(true);
+    // In a real app, we would update state/backend here
+    // For prototype, we just animate/show feedback
+    setTimeout(() => {
+        // Navigate to next day if not the last day
+        if (currentDay < 30) {
+            setLocation(`/dashboard/${currentDay + 1}`);
+            setCompleted(false);
+        }
+    }, 1500);
+  };
+
+  const handleShuffle = () => {
+    setLoadingAI(true);
+    setTimeout(() => setLoadingAI(false), 1000); // Simulate API call
   };
 
   return (
-    <Layout>
+    <Layout currentDay={currentDay}>
       <div className="space-y-8 pb-20 font-sans">
         {/* Header - Clean & Sharp */}
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 border-b border-slate-200 pb-8">
@@ -53,7 +57,7 @@ export default function Dashboard() {
                <span className="bg-primary text-white px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
                 Day {dayData.day}
               </span>
-              <span className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Initiation Phase</span>
+              <span className="text-sm font-semibold text-slate-400 uppercase tracking-wider">{dayData.phase}</span>
             </div>
             <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">{dayData.title}</h1>
             <p className="text-lg text-slate-500 max-w-3xl leading-relaxed">
@@ -79,34 +83,56 @@ export default function Dashboard() {
           {/* Left Column: Task Steps */}
           <div className="lg:col-span-2 space-y-8">
             
-            {/* Step 1: AI Suggestions */}
+            {/* Step 1: AI Task / Content */}
+            {/* Dynamic rendering based on if we have specific AI content in mock-data, otherwise generic fallback */}
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                  <h2 className="font-bold text-xl text-slate-900">AI Generated Ideas</h2>
+                  <h2 className="font-bold text-xl text-slate-900">
+                    {dayData.aiTask?.title || "AI Generated Suggestions"}
+                  </h2>
                 </div>
-                <Button variant="ghost" size="sm" className="gap-2 text-slate-500 hover:text-primary font-medium">
-                  <Shuffle className="w-4 h-4" /> Shuffle Ideas
+                <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="gap-2 text-slate-500 hover:text-primary font-medium"
+                    onClick={handleShuffle}
+                    disabled={loadingAI}
+                >
+                  <Shuffle className={`w-4 h-4 ${loadingAI ? 'animate-spin' : ''}`} /> 
+                  {loadingAI ? "Generating..." : "Shuffle"}
                 </Button>
               </div>
 
               <div className="space-y-3">
-                {dayData.aiSuggestions.map((idea, i) => (
-                  <motion.div 
-                    key={i} 
-                    whileHover={{ scale: 1.01 }}
-                    className="group relative border-2 border-slate-100 rounded-xl p-5 hover:border-primary/30 hover:bg-blue-50/30 transition-all cursor-pointer bg-white"
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-bold text-slate-900 mb-1 text-lg">{idea.title}</h3>
-                        <p className="text-slate-500 font-medium">{idea.desc}</p>
-                      </div>
-                      <div className="w-5 h-5 rounded-full border-2 border-slate-300 group-hover:border-primary group-hover:bg-primary transition-colors"></div>
+                {dayData.aiTask?.suggestions ? (
+                    dayData.aiTask.suggestions.map((idea, i) => (
+                        <motion.div 
+                          key={i} 
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.1 }}
+                          whileHover={{ scale: 1.01 }}
+                          className="group relative border-2 border-slate-100 rounded-xl p-5 hover:border-primary/30 hover:bg-blue-50/30 transition-all cursor-pointer bg-white"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h3 className="font-bold text-slate-900 mb-1 text-lg">{idea.title}</h3>
+                              <p className="text-slate-500 font-medium">{idea.desc}</p>
+                            </div>
+                            <div className="w-5 h-5 rounded-full border-2 border-slate-300 group-hover:border-primary group-hover:bg-primary transition-colors"></div>
+                          </div>
+                        </motion.div>
+                    ))
+                ) : (
+                    // Generic Fallback for days without specific mock data yet
+                    <div className="p-8 border-2 border-dashed border-slate-200 rounded-xl text-center text-slate-400 bg-slate-50">
+                        <Wand2 className="w-8 h-8 mx-auto mb-3 opacity-50" />
+                        <p className="font-medium">AI Generator for "{dayData.title}" would appear here.</p>
+                        <p className="text-xs mt-1">Click "Shuffle" to simulate generation.</p>
                     </div>
-                  </motion.div>
-                ))}
+                )}
               </div>
             </div>
 
@@ -114,14 +140,14 @@ export default function Dashboard() {
             <div className="space-y-4 pt-4">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center font-bold">2</div>
-                <h2 className="font-bold text-xl text-slate-900">Refinement</h2>
+                <h2 className="font-bold text-xl text-slate-900">Micro Decision</h2>
               </div>
               <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                 <p className="text-slate-600 font-medium mb-4">
-                  Which target audience excites you the most? Pick one to focus on.
+                  Make a decision to move forward. Don't overthink it.
                 </p>
                 <div className="grid sm:grid-cols-2 gap-3">
-                   {["Freelancers", "Small Agencies", "Enterprise Sales", "Students"].map((opt) => (
+                   {["Option A", "Option B", "Option C", "Option D"].map((opt) => (
                      <Button key={opt} variant="outline" className="justify-start h-14 text-slate-600 border-2 border-slate-100 hover:border-primary hover:text-primary hover:bg-blue-50/50 text-base font-semibold">
                        {opt}
                      </Button>
@@ -137,17 +163,29 @@ export default function Dashboard() {
                 <h2 className="font-bold text-xl text-slate-900">Reflection</h2>
               </div>
               <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                <label className="font-semibold text-slate-900 block mb-3">Why does this problem matter to you?</label>
+                <label className="font-semibold text-slate-900 block mb-3">One sentence takeaway from today:</label>
                 <textarea 
                   className="w-full min-h-[120px] rounded-lg border-2 border-slate-200 bg-slate-50 p-4 text-base font-medium shadow-none placeholder:text-slate-400 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-0 resize-none transition-colors"
-                  placeholder="I've experienced this pain myself when..."
+                  placeholder="I realized that..."
                 />
               </Card>
             </div>
 
             <div className="flex justify-end pt-8">
-              <Button size="lg" className="rounded-xl px-10 h-14 text-lg font-bold shadow-xl shadow-primary/20 gap-2 hover:translate-y-[-2px] transition-all" onClick={handleComplete}>
-                Complete Day 1 <ArrowRight className="w-5 h-5" />
+              <Button 
+                size="lg" 
+                className={`rounded-xl px-10 h-14 text-lg font-bold shadow-xl shadow-primary/20 gap-2 hover:translate-y-[-2px] transition-all ${completed ? "bg-green-500 hover:bg-green-600" : ""}`} 
+                onClick={handleComplete}
+              >
+                {completed ? (
+                    <>
+                        Completed! <CheckCircle2 className="w-5 h-5" />
+                    </>
+                ) : (
+                    <>
+                        Complete Day {dayData.day} <ArrowRight className="w-5 h-5" />
+                    </>
+                )}
               </Button>
             </div>
 
@@ -177,9 +215,9 @@ export default function Dashboard() {
                  <div className="space-y-2">
                    <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
                      <span>Current Progress</span>
-                     <span>90%</span>
+                     <span>{Math.round((currentDay / 30) * 100)}%</span>
                    </div>
-                   <Progress value={90} className="h-3 bg-white/10" indicatorClassName="bg-primary" />
+                   <Progress value={(currentDay / 30) * 100} className="h-3 bg-white/10" indicatorClassName="bg-primary" />
                  </div>
                </div>
             </Card>
@@ -187,12 +225,26 @@ export default function Dashboard() {
             <Card className="p-6 border-2 border-slate-100 shadow-none rounded-2xl">
               <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-4">Current Streak</h3>
               <div className="flex items-end gap-3">
-                <div className="text-5xl font-black text-slate-900 leading-none">0</div>
+                <div className="text-5xl font-black text-slate-900 leading-none">3</div>
                 <div className="text-sm text-slate-500 font-bold uppercase tracking-wide mb-1">
                   Days<br/>Active
                 </div>
               </div>
             </Card>
+            
+            {/* Locked Future Days Preview */}
+            <div className="pt-4 border-t border-slate-200">
+                <h4 className="font-bold text-sm text-slate-900 mb-3">Coming Up Next</h4>
+                <div className="space-y-2">
+                    {challengeDays.slice(currentDay, currentDay + 3).map(nextDay => (
+                        <div key={nextDay.day} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100 text-slate-400">
+                            <span className="text-xs font-bold uppercase">Day {nextDay.day}</span>
+                            <span className="text-sm font-medium truncate max-w-[120px]">{nextDay.title}</span>
+                            <Lock className="w-3 h-3" />
+                        </div>
+                    ))}
+                </div>
+            </div>
           </div>
 
         </div>
