@@ -352,6 +352,23 @@ Format: { "ideas": [...] }`;
     }
   });
 
+  // Generic AI prompt endpoint for Day 2 validation
+  app.post("/api/ai-prompt", isAuthenticated, async (req: any, res) => {
+    try {
+      const { prompt } = req.body;
+      
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      res.json({ response: response.choices[0].message.content });
+    } catch (error: any) {
+      console.error("Error running AI prompt:", error);
+      res.status(500).json({ message: error.message || "Failed to run AI prompt" });
+    }
+  });
+
   // Chat/Comments routes
   app.get("/api/comments/:day", async (req, res) => {
     try {
