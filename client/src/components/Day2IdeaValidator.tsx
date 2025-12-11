@@ -224,7 +224,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
       </div>
 
       {/* Idea Selector */}
-      <div className="grid sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {shortlistedIdeas.map((idea, idx) => (
           <button
             key={idx}
@@ -236,8 +236,8 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
             }`}
             data-testid={`select-idea-${idx}`}
           >
-            <p className="font-bold text-sm text-slate-900 truncate">{idea.title}</p>
-            <p className="text-xs text-slate-500 mt-1">Score: {idea.totalScore}/25</p>
+            <p className="font-bold text-sm text-slate-900 leading-snug">{idea.title}</p>
+            <p className="text-xs text-slate-500 mt-2">Score: {idea.totalScore}/25</p>
           </button>
         ))}
       </div>
