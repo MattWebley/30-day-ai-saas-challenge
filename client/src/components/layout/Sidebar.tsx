@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -9,18 +9,19 @@ import { useUserStats } from "@/hooks/useStats";
 import { 
   CheckCircle2, 
   Lock, 
-  ChevronRight, 
   Trophy, 
   LayoutDashboard,
   Settings,
-  LogOut
+  LogOut,
+  X
 } from "lucide-react";
 
 interface SidebarProps {
   currentDay: number;
+  onClose?: () => void;
 }
 
-export function Sidebar({ currentDay }: SidebarProps) {
+export function Sidebar({ currentDay, onClose }: SidebarProps) {
   const [location] = useLocation();
   const { dayContent: allDays } = useDayContent();
   const { progress: userProgress } = useUserProgress();
@@ -36,29 +37,41 @@ export function Sidebar({ currentDay }: SidebarProps) {
   const progress = stats ? Math.round(((stats.lastCompletedDay || 0) / 30) * 100) : 0;
   const lastCompleted = (stats as any)?.lastCompletedDay || 0;
   
-  // Test mode toggle
   const [testMode, setTestMode] = useState(false);
   
-  // Only show completed days + current + next 2 days (limit visibility) unless test mode
   const maxVisibleDay = testMode ? 30 : Math.max(lastCompleted + 3, currentDay + 2, 3);
   const visibleDays = challengeDays.filter((d: any) => d.day <= maxVisibleDay);
 
-  // Group visible days by phase
   const phases = Array.from(new Set(visibleDays.map((d: any) => d.phase)));
 
+  const handleNavClick = () => {
+    if (onClose) onClose();
+  };
+
   return (
-    <div className="w-80 h-screen bg-sidebar border-r border-sidebar-border flex flex-col fixed left-0 top-0 z-50">
+    <div className="w-80 h-screen bg-sidebar border-r border-sidebar-border flex flex-col">
       {/* Header */}
       <div className="p-6 border-b border-sidebar-border">
-        <div className="flex items-center gap-3 mb-6">
-          <img 
-            src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png" 
-            alt="Matt Webley" 
-            className="w-10 h-10 rounded-full"
-          />
-          <h1 className="font-bold text-sm tracking-tight text-sidebar-foreground leading-tight">
-            30 Day AI<br/>SaaS Challenge
-          </h1>
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <img 
+              src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png" 
+              alt="Matt Webley" 
+              className="w-10 h-10 rounded-full"
+            />
+            <h1 className="font-bold text-sm tracking-tight text-sidebar-foreground leading-tight">
+              30 Day AI<br/>SaaS Challenge
+            </h1>
+          </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="lg:hidden p-2 -mr-2 rounded-lg hover:bg-muted"
+              data-testid="button-close-sidebar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         <div className="space-y-2">
@@ -87,27 +100,27 @@ export function Sidebar({ currentDay }: SidebarProps) {
       <ScrollArea className="flex-1 px-4 py-4">
         <div className="space-y-8">
           <div className="space-y-1">
-             <Link href="/dashboard">
-              <a className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            <Link href="/dashboard" onClick={handleNavClick}>
+              <span className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
                 location === "/dashboard" || location.startsWith("/dashboard/")
                   ? "bg-sidebar-accent text-sidebar-accent-foreground" 
                   : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               )}>
                 <LayoutDashboard className="w-4 h-4" />
                 Current Task
-              </a>
+              </span>
             </Link>
-             <Link href="/badges">
-              <a className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+            <Link href="/badges" onClick={handleNavClick}>
+              <span className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
                 location === "/badges" 
                   ? "bg-sidebar-accent text-sidebar-accent-foreground" 
                   : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               )}>
                 <Trophy className="w-4 h-4" />
                 Badge Collection
-              </a>
+              </span>
             </Link>
           </div>
 
@@ -122,10 +135,10 @@ export function Sidebar({ currentDay }: SidebarProps) {
                   const isLocked = day.day > (stats?.lastCompletedDay || 0) + 1 && !isCompleted;
                   
                   return (
-                    <Link key={day.day} href={`/dashboard/${day.day}`}>
-                      <a
+                    <Link key={day.day} href={`/dashboard/${day.day}`} onClick={handleNavClick}>
+                      <span
                         className={cn(
-                          "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all group mb-0.5",
+                          "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all group mb-0.5 cursor-pointer",
                           currentDay === day.day 
                             ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                             : "hover:bg-sidebar-accent hover:text-sidebar-foreground"
@@ -146,7 +159,7 @@ export function Sidebar({ currentDay }: SidebarProps) {
                           <span className="truncate">{day.title}</span>
                         </div>
                         {isLocked && currentDay !== day.day && <Lock className="w-3 h-3 text-muted-foreground" />}
-                      </a>
+                      </span>
                     </Link>
                   );
                 })}
@@ -158,16 +171,16 @@ export function Sidebar({ currentDay }: SidebarProps) {
 
       {/* Footer */}
       <div className="p-4 border-t border-sidebar-border space-y-1">
-        <Link href="/settings">
-          <a className={cn(
-            "flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors",
+        <Link href="/settings" onClick={handleNavClick}>
+          <span className={cn(
+            "flex items-center gap-3 px-3 py-2 w-full rounded-lg text-sm font-medium transition-colors cursor-pointer",
             location === "/settings"
               ? "bg-sidebar-accent text-sidebar-accent-foreground"
               : "text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent"
           )}>
             <Settings className="w-4 h-4" />
             Settings
-          </a>
+          </span>
         </Link>
         <a 
           href="/api/logout"
