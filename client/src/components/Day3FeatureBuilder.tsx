@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Copy, Check, Sparkles, Loader2, ChevronRight, Plus, X, Zap, Target, Star } from "lucide-react";
+import { Copy, Check, Sparkles, Loader2, ChevronRight, Plus, X, Zap, Target, Star, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -14,10 +15,29 @@ interface Day3Props {
 
 const FEATURE_PROMPTS = [
   {
-    id: "competitor_features",
-    title: "Step 1: Find Core Features",
-    description: "Analyze competitors to find the features EVERYONE has (these are your must-haves)",
+    id: "bleeding_neck",
+    title: "Step 1: Find the Bleeding Neck Problem",
+    description: "Identify the ONE critical problem your product MUST solve brilliantly",
+    icon: "bleeding",
     prompt: `I'm building a SaaS product: "[IDEA_TITLE]" - [IDEA_DESC]
+
+Help me identify the "Bleeding Neck Problem" - the ONE critical problem my target customers are DESPERATE to solve. This is so painful they'd pay almost anything to fix it.
+
+1. What are the top 3-5 pain points people have in this space?
+2. Which ONE is the most urgent/painful? (The bleeding neck)
+3. Why is this problem so critical that people can't ignore it?
+4. How will my product solve this better than alternatives?
+
+Give me a clear, one-sentence statement of the bleeding neck problem I should focus on.`,
+  },
+  {
+    id: "competitor_features",
+    title: "Step 2: Find Core Features",
+    description: "Analyze competitors to find the features EVERYONE has (these are your must-haves)",
+    icon: "core",
+    prompt: `I'm building a SaaS product: "[IDEA_TITLE]" - [IDEA_DESC]
+
+The bleeding neck problem I'm solving: [BLEEDING_NECK]
 
 Find 3-5 competitors in this space and analyze their features. Then tell me:
 
@@ -29,9 +49,12 @@ Format the core features as a simple bullet list I can use as my MVP checklist.`
   },
   {
     id: "usp_generator",
-    title: "Step 2: Generate Your USP",
+    title: "Step 3: Generate Your USP",
     description: "Create unique features based on your skills and competitor gaps",
+    icon: "usp",
     prompt: `I'm building: "[IDEA_TITLE]" - [IDEA_DESC]
+
+The bleeding neck problem I'm solving: [BLEEDING_NECK]
 
 My unique background:
 - Skills: [SKILLS]
@@ -52,6 +75,7 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [aiResponses, setAiResponses] = useState<Record<string, string>>({});
   const [loadingPrompt, setLoadingPrompt] = useState<string | null>(null);
+  const [bleedingNeckProblem, setBleedingNeckProblem] = useState("");
   const [coreFeatures, setCoreFeatures] = useState<string[]>([]);
   const [uspFeatures, setUspFeatures] = useState<string[]>([]);
   const [newCoreFeature, setNewCoreFeature] = useState("");
@@ -85,6 +109,7 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
       let filledPrompt = promptTemplate
         .replace(/\[IDEA_TITLE\]/g, chosenIdea?.title || "My SaaS")
         .replace(/\[IDEA_DESC\]/g, chosenIdea?.desc || "A software product")
+        .replace(/\[BLEEDING_NECK\]/g, bleedingNeckProblem || "Not yet defined")
         .replace(/\[SKILLS\]/g, userInputs?.skills || "Not specified")
         .replace(/\[KNOWLEDGE\]/g, userInputs?.knowledge || "Not specified")
         .replace(/\[INTERESTS\]/g, userInputs?.interests || "Not specified");
@@ -128,6 +153,7 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
     return promptTemplate
       .replace(/\[IDEA_TITLE\]/g, chosenIdea?.title || "My SaaS")
       .replace(/\[IDEA_DESC\]/g, chosenIdea?.desc || "A software product")
+      .replace(/\[BLEEDING_NECK\]/g, bleedingNeckProblem || "Not yet defined")
       .replace(/\[SKILLS\]/g, userInputs?.skills || "Not specified")
       .replace(/\[KNOWLEDGE\]/g, userInputs?.knowledge || "Not specified")
       .replace(/\[INTERESTS\]/g, userInputs?.interests || "Not specified");
@@ -161,6 +187,10 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   };
 
   const handleFinalize = () => {
+    if (!bleedingNeckProblem.trim()) {
+      toast.error("Define your bleeding neck problem first");
+      return;
+    }
     if (coreFeatures.length === 0) {
       toast.error("Add at least one core feature");
       return;
@@ -169,8 +199,21 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
       toast.error("Add at least one USP feature");
       return;
     }
-    saveProgress.mutate({ coreFeatures, uspFeatures });
+    saveProgress.mutate({ bleedingNeckProblem, coreFeatures, uspFeatures });
     setStep('finalize');
+  };
+
+  const getPromptIcon = (iconType: string) => {
+    switch (iconType) {
+      case 'bleeding':
+        return <AlertTriangle className="w-6 h-6 text-red-500 flex-shrink-0" />;
+      case 'core':
+        return <Target className="w-6 h-6 text-blue-600 flex-shrink-0" />;
+      case 'usp':
+        return <Star className="w-6 h-6 text-amber-500 flex-shrink-0" />;
+      default:
+        return <Target className="w-6 h-6 text-blue-600 flex-shrink-0" />;
+    }
   };
 
   if (!chosenIdea) {
@@ -199,6 +242,14 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
           <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Feature Plan is Ready!</h2>
           <p className="text-slate-500">Here's what you're building for {chosenIdea.title}</p>
         </div>
+
+        <Card className="p-5 border-2 border-red-200 bg-red-50">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-5 h-5 text-red-500" />
+            <h3 className="font-bold text-red-900">Bleeding Neck Problem</h3>
+          </div>
+          <p className="text-red-800">{bleedingNeckProblem}</p>
+        </Card>
 
         <div className="grid md:grid-cols-2 gap-6">
           <Card className="p-5 border-2 border-blue-200 bg-blue-50">
@@ -260,7 +311,7 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
       <div className="text-center">
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Define Your Features</h2>
         <p className="text-slate-500">
-          Research competitors, identify core features, and create your USP
+          Find your bleeding neck problem, research competitors, and create your USP
         </p>
       </div>
 
@@ -276,13 +327,9 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
         const isLoading = loadingPrompt === prompt.id;
 
         return (
-          <Card key={prompt.id} className="p-5 border-2 border-slate-100">
+          <Card key={prompt.id} className={`p-5 border-2 ${prompt.id === 'bleeding_neck' ? 'border-red-200' : 'border-slate-100'}`}>
             <div className="flex items-start gap-3 mb-3">
-              {prompt.id === 'competitor_features' ? (
-                <Target className="w-6 h-6 text-blue-600 flex-shrink-0" />
-              ) : (
-                <Star className="w-6 h-6 text-amber-500 flex-shrink-0" />
-              )}
+              {getPromptIcon(prompt.icon)}
               <div>
                 <h4 className="font-bold text-slate-900">{prompt.title}</h4>
                 <p className="text-sm text-slate-500">{prompt.description}</p>
@@ -330,6 +377,24 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
                 <p className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-2">AI Response</p>
                 <p className="text-slate-700 whitespace-pre-wrap text-sm">{aiResponse}</p>
               </motion.div>
+            )}
+
+            {prompt.id === 'bleeding_neck' && (
+              <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                <label className="block text-sm font-bold text-red-900 mb-2">
+                  Your Bleeding Neck Problem Statement:
+                </label>
+                <Textarea
+                  placeholder="The ONE critical problem my product solves is..."
+                  value={bleedingNeckProblem}
+                  onChange={(e) => setBleedingNeckProblem(e.target.value)}
+                  className="min-h-[80px] bg-white border-red-200 focus:border-red-400"
+                  data-testid="input-bleeding-neck"
+                />
+                <p className="text-xs text-red-600 mt-2">
+                  This will be used in the next prompts to keep your features focused.
+                </p>
+              </div>
             )}
           </Card>
         );
@@ -414,13 +479,13 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
         <div className="text-center">
           <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to Lock In Your Features?</h3>
           <p className="text-slate-600 mb-4">
-            You have {coreFeatures.length} core features and {uspFeatures.length} USP features
+            You have your bleeding neck problem, {coreFeatures.length} core features, and {uspFeatures.length} USP features
           </p>
           <Button
             size="lg"
             className="gap-2"
             onClick={handleFinalize}
-            disabled={coreFeatures.length === 0 || uspFeatures.length === 0}
+            disabled={!bleedingNeckProblem.trim() || coreFeatures.length === 0 || uspFeatures.length === 0}
             data-testid="button-finalize-features"
           >
             <Check className="w-5 h-5" />
