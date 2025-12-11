@@ -6,7 +6,51 @@ import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useTestMode } from "@/contexts/TestModeContext";
-import { Sparkles, Loader2, ChevronRight, ChevronLeft, Plus, X, Check, Target, Star, AlertTriangle, Edit3 } from "lucide-react";
+import { Sparkles, Loader2, ChevronRight, ChevronLeft, Plus, X, Check } from "lucide-react";
+
+const BleedingNeckIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 3v4" />
+    <path d="M12 17v4" />
+    <path d="M8 7l2 2" />
+    <path d="M14 15l2 2" />
+    <path d="M8 17l2-2" />
+    <path d="M14 9l2-2" />
+    <circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.3" />
+    <path d="M12 9v6" strokeWidth="2.5" />
+  </svg>
+);
+
+const CoreFeaturesIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" />
+    <rect x="14" y="14" width="7" height="7" rx="1" fill="currentColor" opacity="0.2" />
+    <path d="M6.5 6.5h0" strokeWidth="3" strokeLinecap="round" />
+    <path d="M17.5 6.5h0" strokeWidth="3" strokeLinecap="round" />
+    <path d="M6.5 17.5h0" strokeWidth="3" strokeLinecap="round" />
+    <path d="M17.5 17.5h0" strokeWidth="3" strokeLinecap="round" />
+  </svg>
+);
+
+const UniqueFeatureIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 2l2.4 7.4h7.6l-6 4.6 2.3 7-6.3-4.6-6.3 4.6 2.3-7-6-4.6h7.6z" fill="currentColor" opacity="0.15" />
+    <circle cx="12" cy="12" r="3" fill="currentColor" />
+    <path d="M12 5v-2" />
+    <path d="M12 21v-2" />
+    <path d="M5 12h-2" />
+    <path d="M21 12h-2" />
+  </svg>
+);
+
+const SuccessIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.15" />
+    <path d="M8 12l3 3 5-6" strokeWidth="2.5" />
+  </svg>
+);
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -175,7 +219,7 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
   if (!chosenIdea) {
     return (
       <Card className="p-8 border-2 border-amber-200 bg-amber-50 text-center">
-        <Target className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+        <BleedingNeckIcon className="w-12 h-12 text-amber-500 mx-auto mb-4" />
         <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Day 2 First!</h3>
         <p className="text-slate-600">
           You need to choose your final idea in Day 2 before defining features here.
@@ -234,7 +278,7 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
           >
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="w-7 h-7 text-amber-600" />
+                <BleedingNeckIcon className="w-7 h-7 text-amber-600" />
               </div>
               <h2 className="text-2xl font-bold text-slate-900 mb-2">What's the Bleeding Neck Problem?</h2>
               <p className="text-slate-500 max-w-lg mx-auto">
@@ -292,7 +336,7 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
           >
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
-                <Target className="w-7 h-7 text-blue-600" />
+                <CoreFeaturesIcon className="w-7 h-7 text-blue-600" />
               </div>
               <h2 className="text-2xl font-bold text-slate-900 mb-2">What Core Features Do You Need?</h2>
               <p className="text-slate-500 max-w-lg mx-auto">
@@ -385,7 +429,7 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
           >
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
-                <Star className="w-7 h-7 text-purple-600" />
+                <UniqueFeatureIcon className="w-7 h-7 text-purple-600" />
               </div>
               <h2 className="text-2xl font-bold text-slate-900 mb-2">What Makes You Different?</h2>
               <p className="text-slate-500 max-w-lg mx-auto">
@@ -397,7 +441,7 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
               <div className="space-y-3">
                 {uspFeatures.map((feature, i) => (
                   <div key={i} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg group">
-                    <Star className="w-4 h-4 text-purple-600 flex-shrink-0" />
+                    <UniqueFeatureIcon className="w-4 h-4 text-purple-600 flex-shrink-0" />
                     <span className="flex-1 text-slate-800">{feature}</span>
                     <button
                       onClick={() => removeFeature('usp', i)}
@@ -485,7 +529,7 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
 
             <Card className="p-5 border-2 border-amber-200 bg-amber-50">
               <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="w-5 h-5 text-amber-600" />
+                <BleedingNeckIcon className="w-5 h-5 text-amber-600" />
                 <h3 className="font-bold text-amber-900">Bleeding Neck Problem</h3>
               </div>
               <p className="text-amber-800">{bleedingNeckProblem}</p>
@@ -494,7 +538,7 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
             <div className="grid md:grid-cols-2 gap-4">
               <Card className="p-5 border-2 border-blue-200 bg-blue-50">
                 <div className="flex items-center gap-2 mb-3">
-                  <Target className="w-5 h-5 text-blue-600" />
+                  <CoreFeaturesIcon className="w-5 h-5 text-blue-600" />
                   <h3 className="font-bold text-blue-900">Core Features</h3>
                   <span className="text-xs bg-blue-200 text-blue-800 px-2 py-0.5 rounded-full">{coreFeatures.length}</span>
                 </div>
@@ -510,14 +554,14 @@ List exactly 2 features as bullet points. Just the feature name and a short bene
 
               <Card className="p-5 border-2 border-purple-200 bg-purple-50">
                 <div className="flex items-center gap-2 mb-3">
-                  <Star className="w-5 h-5 text-purple-600" />
+                  <UniqueFeatureIcon className="w-5 h-5 text-purple-600" />
                   <h3 className="font-bold text-purple-900">USP Features</h3>
                   <span className="text-xs bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full">{uspFeatures.length}</span>
                 </div>
                 <ul className="space-y-2">
                   {uspFeatures.map((f, i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-purple-800">
-                      <Star className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                      <UniqueFeatureIcon className="w-4 h-4 mt-0.5 flex-shrink-0" />
                       {f}
                     </li>
                   ))}

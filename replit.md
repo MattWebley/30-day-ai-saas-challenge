@@ -12,6 +12,7 @@ A gamified daily challenge application that guides users from zero to a working 
 - **Border Radius**: 6px
 - **Communication**: Simple, everyday language
 - **No AI-generated gradient styles** - use intentional, curated color palettes for special elements
+- **No generic Lucide icons** - Create custom unique SVG icons instead of using generic AlertTriangle, Target, Star, etc. Icons should be distinctive and on-brand
 
 ## Recent Changes
 
