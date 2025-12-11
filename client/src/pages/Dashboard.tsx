@@ -104,8 +104,8 @@ export default function Dashboard() {
     );
   }
 
-  const suggestions = dayData.suggestions ? JSON.parse(dayData.suggestions as string) : null;
-  const microDecisionOptions = dayData.microDecisionOptions ? JSON.parse(dayData.microDecisionOptions as string) : null;
+  const suggestions = dayData.suggestions || null;
+  const microDecisionOptions = dayData.microDecisionOptions || null;
 
   return (
     <Layout currentDay={currentDay}>
@@ -294,9 +294,9 @@ export default function Dashboard() {
                  <div className="space-y-2">
                    <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
                      <span>Current Progress</span>
-                     <span>{stats ? Math.round((stats.lastCompletedDay || 0) / 30 * 100) : 0}%</span>
+                     <span>{stats ? Math.round(((stats as any).lastCompletedDay || 0) / 30 * 100) : 0}%</span>
                    </div>
-                   <Progress value={stats ? (stats.lastCompletedDay || 0) / 30 * 100 : 0} className="h-3 bg-white/10" indicatorClassName="bg-primary" />
+                   <Progress value={stats ? ((stats as any).lastCompletedDay || 0) / 30 * 100 : 0} className="h-3 bg-white/10" indicatorClassName="bg-primary" />
                  </div>
                </div>
             </Card>
@@ -304,7 +304,7 @@ export default function Dashboard() {
             <Card className="p-6 border-2 border-slate-100 shadow-none rounded-2xl">
               <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-4">Current Streak</h3>
               <div className="flex items-end gap-3">
-                <div className="text-5xl font-black text-slate-900 leading-none" data-testid="text-streak">{stats?.currentStreak || 0}</div>
+                <div className="text-5xl font-black text-slate-900 leading-none" data-testid="text-streak">{(stats as any)?.currentStreak || 0}</div>
                 <div className="text-sm text-slate-500 font-bold uppercase tracking-wide mb-1">
                   Days<br/>Active
                 </div>
