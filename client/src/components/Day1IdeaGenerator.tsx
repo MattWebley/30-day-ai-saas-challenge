@@ -106,18 +106,33 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
     setStep('shortlist');
   };
 
-  const ScoreBar = ({ label, score }: { label: string; score: number }) => (
-    <div className="flex items-center gap-2 text-xs">
-      <span className="w-24 text-slate-500 truncate">{label}</span>
-      <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-        <div 
-          className="h-full bg-primary rounded-full transition-all"
-          style={{ width: `${(score / 5) * 100}%` }}
-        />
+  const getScoreColor = (score: number) => {
+    if (score >= 4) return { bg: 'bg-green-500', text: 'text-green-700', light: 'bg-green-100' };
+    if (score >= 3) return { bg: 'bg-amber-500', text: 'text-amber-700', light: 'bg-amber-100' };
+    return { bg: 'bg-red-500', text: 'text-red-700', light: 'bg-red-100' };
+  };
+
+  const getTotalScoreColor = (total: number) => {
+    if (total >= 20) return { border: 'border-green-400', bg: 'bg-green-50', badge: 'bg-green-500 text-white', glow: 'shadow-green-200' };
+    if (total >= 15) return { border: 'border-amber-400', bg: 'bg-amber-50', badge: 'bg-amber-500 text-white', glow: 'shadow-amber-200' };
+    return { border: 'border-red-400', bg: 'bg-red-50', badge: 'bg-red-500 text-white', glow: 'shadow-red-200' };
+  };
+
+  const ScoreBar = ({ label, score }: { label: string; score: number }) => {
+    const colors = getScoreColor(score);
+    return (
+      <div className="flex items-center gap-2 text-xs">
+        <span className="w-24 text-slate-500 truncate">{label}</span>
+        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div 
+            className={`h-full ${colors.bg} rounded-full transition-all`}
+            style={{ width: `${(score / 5) * 100}%` }}
+          />
+        </div>
+        <span className={`w-5 font-bold ${colors.text}`}>{score}</span>
       </div>
-      <span className="w-4 text-slate-600 font-medium">{score}</span>
-    </div>
-  );
+    );
+  };
 
   if (step === 'inputs') {
     return (
@@ -253,6 +268,8 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                 : displayIndex;
               const isSelected = selectedIdeas.includes(actualIndex);
               
+              const scoreColors = getTotalScoreColor(idea.totalScore);
+              
               return (
                 <motion.div
                   key={actualIndex}
@@ -261,10 +278,10 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                   transition={{ delay: displayIndex * 0.05 }}
                 >
                   <Card 
-                    className={`p-5 border-2 cursor-pointer transition-all ${
+                    className={`p-5 border-2 cursor-pointer transition-all shadow-lg ${scoreColors.glow} ${
                       isSelected 
-                        ? 'border-primary bg-blue-50/50' 
-                        : 'border-slate-100 hover:border-slate-200'
+                        ? `${scoreColors.border} ${scoreColors.bg}` 
+                        : `${scoreColors.border} hover:${scoreColors.bg}`
                     }`}
                     onClick={() => !showConfirmation && toggleIdeaSelection(actualIndex)}
                     data-testid={`idea-card-${actualIndex}`}
@@ -274,7 +291,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                         <div className="flex items-center gap-3 mb-2">
                           <span className="text-xs font-bold text-slate-400">#{actualIndex + 1}</span>
                           <h3 className="font-bold text-slate-900">{idea.title}</h3>
-                          <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded">
+                          <span className={`px-3 py-1 ${scoreColors.badge} text-sm font-bold rounded-full`}>
                             {idea.totalScore}/25
                           </span>
                         </div>
