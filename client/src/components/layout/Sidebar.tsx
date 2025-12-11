@@ -261,6 +261,8 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 {visibleDays.filter((d: any) => d.phase === phase).map((day: any) => {
                   const isCompleted = completedDays.has(day.day);
                   const isLocked = day.day > (stats?.lastCompletedDay || 0) + 1 && !isCompleted;
+                  const daysAhead = day.day - currentDay;
+                  const fadeOpacity = daysAhead <= 0 || isCompleted ? 1 : daysAhead === 1 ? 0.7 : daysAhead === 2 ? 0.5 : daysAhead >= 3 ? 0.35 : 1;
                   
                   return (
                     <Link key={day.day} href={`/dashboard/${day.day}`} onClick={handleNavClick}>
@@ -271,6 +273,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                             ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                             : "hover:bg-sidebar-accent hover:text-sidebar-foreground"
                         )}
+                        style={{ opacity: currentDay === day.day ? 1 : fadeOpacity }}
                         data-testid={`nav-day-${day.day}`}
                       >
                         <div className="flex items-center gap-3">
