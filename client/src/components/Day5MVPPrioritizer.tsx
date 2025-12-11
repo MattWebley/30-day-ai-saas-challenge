@@ -5,19 +5,8 @@ import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useTestMode } from "@/contexts/TestModeContext";
-import { Sparkles, Loader2, Check, X, Minus, RotateCcw } from "lucide-react";
+import { Sparkles, Loader2, Check, X, Minus } from "lucide-react";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 const MOCK_DATA = {
   chosenIdea: { title: "AI Content Optimizer" },
@@ -85,21 +74,6 @@ export function Day5MVPPrioritizer({ onComplete }: Day5Props) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
-    },
-  });
-
-  const resetAllProgress = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/progress/reset-all", {});
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
-      toast.success("All progress has been reset. Starting fresh!");
-      window.location.href = "/dashboard/1";
-    },
-    onError: () => {
-      toast.error("Failed to reset progress. Try again.");
     },
   });
 
@@ -316,37 +290,7 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
         </Card>
       )}
 
-      <div className="flex justify-between pt-2">
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button
-              variant="outline"
-              size="lg"
-              className="gap-2 text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
-              data-testid="button-start-over"
-            >
-              <RotateCcw className="w-5 h-5" /> Start Over
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Are you sure you want to start over?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will permanently delete ALL your progress from Days 1-5, including your ideas, features, pitch, and customer profile. You'll start fresh from Day 1.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={() => resetAllProgress.mutate()}
-                className="bg-red-600 hover:bg-red-700"
-              >
-                Yes, Reset Everything
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
+      <div className="flex justify-end pt-2">
         <Button
           size="lg"
           className="gap-2 bg-green-600 hover:bg-green-700"
