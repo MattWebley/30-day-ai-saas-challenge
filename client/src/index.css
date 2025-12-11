@@ -55,40 +55,40 @@
   --font-sans: 'Poppins', sans-serif;
 }
 
-/* MattWebley.com Style Refined: Clean, High Contrast, Geometric */
+/* MattWebley.com Style Refined: Pure Black on White */
 
 :root {
   /* Absolute White Background */
   --background: 0 0% 100%; 
-  /* Sharp Black Text */
-  --foreground: 222 47% 10%; 
+  /* Pure Black Text (0,0,0) as requested */
+  --foreground: 0 0% 0%; 
 
   --card: 0 0% 100%;
-  --card-foreground: 222 47% 10%;
+  --card-foreground: 0 0% 0%;
 
   --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 10%;
+  --popover-foreground: 0 0% 0%;
 
   /* Electric Blue Accent - Sharper */
   --primary: 221 83% 53%; 
   --primary-foreground: 0 0% 100%;
 
   /* Very subtle, cool greys for secondary backgrounds */
-  --secondary: 210 20% 98%; 
-  --secondary-foreground: 222 47% 11%;
+  --secondary: 0 0% 96%; 
+  --secondary-foreground: 0 0% 0%;
 
-  --muted: 210 20% 96%;
-  --muted-foreground: 215 16% 40%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 40%;
 
-  --accent: 210 20% 96%;
-  --accent-foreground: 222 47% 11%;
+  --accent: 0 0% 96%;
+  --accent-foreground: 0 0% 0%;
 
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
 
   /* Borders are light but visible */
-  --border: 214 32% 91%;
-  --input: 214 32% 91%;
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
   --ring: 221 83% 53%;
 
   /* Slightly tighter radius for a more professional SaaS look */
@@ -100,13 +100,13 @@
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
 
-  --sidebar: 0 0% 99%; 
-  --sidebar-foreground: 222 47% 10%;
+  --sidebar: 0 0% 100%; 
+  --sidebar-foreground: 0 0% 0%;
   --sidebar-primary: 221 83% 53%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 210 20% 96%;
-  --sidebar-accent-foreground: 222 47% 10%;
-  --sidebar-border: 214 32% 91%;
+  --sidebar-accent: 0 0% 96%;
+  --sidebar-accent-foreground: 0 0% 0%;
+  --sidebar-border: 0 0% 90%;
   --sidebar-ring: 221 83% 53%;
 }
 
