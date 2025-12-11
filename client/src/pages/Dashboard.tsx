@@ -3,22 +3,19 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Play, 
   Shuffle, 
   ArrowRight, 
   CheckCircle2, 
-  Lightbulb,
-  MessageSquare,
   Wand2,
-  Trophy
+  Trophy,
+  ChevronRight
 } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function Dashboard() {
-  const [step, setStep] = useState(1);
   const [completed, setCompleted] = useState(false);
 
   // Mock Data for Day 1
@@ -26,7 +23,6 @@ export default function Dashboard() {
     day: 1,
     title: "The Idea Spark",
     description: "Before we build, we validate. Today is about crystalizing that vague thought in your shower into a concrete concept.",
-    video: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Placeholder
     aiSuggestions: [
       {
         title: "Micro-SaaS for Dog Walkers",
@@ -45,35 +41,33 @@ export default function Dashboard() {
 
   const handleComplete = () => {
     setCompleted(true);
-    // Trigger confetti or badge animation here
   };
 
   return (
     <Layout>
-      <div className="space-y-8 pb-20">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
-          <div>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-              <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">
+      <div className="space-y-8 pb-20 font-sans">
+        {/* Header - Clean & Sharp */}
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 border-b border-slate-200 pb-8">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+               <span className="bg-primary text-white px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
                 Day {dayData.day}
               </span>
-              <span>•</span>
-              <span>Initiation Phase</span>
+              <span className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Initiation Phase</span>
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">{dayData.title}</h1>
-            <p className="text-muted-foreground mt-2 max-w-2xl">
+            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">{dayData.title}</h1>
+            <p className="text-lg text-slate-500 max-w-3xl leading-relaxed">
               {dayData.description}
             </p>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 shrink-0">
              <div className="text-right hidden md:block">
-               <div className="text-xs font-medium text-muted-foreground uppercase">Time Estimate</div>
-               <div className="font-bold">5 Minutes</div>
+               <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Est. Time</div>
+               <div className="font-bold text-slate-900 text-lg">5 Min</div>
              </div>
-             <div className="h-10 w-px bg-border hidden md:block"></div>
-             <Button variant="outline" className="gap-2">
+             <div className="h-10 w-px bg-slate-200 hidden md:block"></div>
+             <Button variant="outline" className="gap-2 border-2 border-slate-200 hover:border-primary hover:text-primary font-bold">
                <Play className="w-4 h-4" /> Watch Lesson
              </Button>
           </div>
@@ -86,70 +80,73 @@ export default function Dashboard() {
           <div className="lg:col-span-2 space-y-8">
             
             {/* Step 1: AI Suggestions */}
-            <Card className="p-6 border-2 border-slate-100 shadow-none overflow-hidden relative">
-              <div className="absolute top-0 left-0 w-1 h-full bg-primary"></div>
-              <div className="flex items-center justify-between mb-6">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-blue-50 text-primary flex items-center justify-center font-bold">1</div>
-                  <h2 className="font-bold text-lg">AI Generated Ideas</h2>
+                  <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                  <h2 className="font-bold text-xl text-slate-900">AI Generated Ideas</h2>
                 </div>
-                <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground">
-                  <Shuffle className="w-4 h-4" /> Shuffle
+                <Button variant="ghost" size="sm" className="gap-2 text-slate-500 hover:text-primary font-medium">
+                  <Shuffle className="w-4 h-4" /> Shuffle Ideas
                 </Button>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {dayData.aiSuggestions.map((idea, i) => (
-                  <div key={i} className="group relative border rounded-xl p-4 hover:border-primary/50 hover:bg-slate-50 transition-all cursor-pointer">
+                  <motion.div 
+                    key={i} 
+                    whileHover={{ scale: 1.01 }}
+                    className="group relative border-2 border-slate-100 rounded-xl p-5 hover:border-primary/30 hover:bg-blue-50/30 transition-all cursor-pointer bg-white"
+                  >
                     <div className="flex justify-between items-start">
                       <div>
-                        <h3 className="font-semibold text-slate-900 mb-1">{idea.title}</h3>
-                        <p className="text-sm text-slate-500">{idea.desc}</p>
+                        <h3 className="font-bold text-slate-900 mb-1 text-lg">{idea.title}</h3>
+                        <p className="text-slate-500 font-medium">{idea.desc}</p>
                       </div>
-                      <div className="w-4 h-4 rounded-full border border-slate-300 group-hover:border-primary"></div>
+                      <div className="w-5 h-5 rounded-full border-2 border-slate-300 group-hover:border-primary group-hover:bg-primary transition-colors"></div>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </Card>
+            </div>
 
             {/* Step 2: Micro Decision */}
-            <Card className="p-6 border-2 border-slate-100 shadow-none relative opacity-90">
-              <div className="absolute top-0 left-0 w-1 h-full bg-slate-200"></div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold">2</div>
-                <h2 className="font-bold text-lg text-slate-700">Refinement</h2>
+            <div className="space-y-4 pt-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center font-bold">2</div>
+                <h2 className="font-bold text-xl text-slate-900">Refinement</h2>
               </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                Which target audience excites you the most? Pick one to focus on.
-              </p>
-              <div className="grid sm:grid-cols-2 gap-4">
-                 {["Freelancers", "Small Agencies", "Enterprise Sales", "Students"].map((opt) => (
-                   <Button key={opt} variant="outline" className="justify-start h-12 text-slate-600">
-                     {opt}
-                   </Button>
-                 ))}
-              </div>
-            </Card>
+              <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                <p className="text-slate-600 font-medium mb-4">
+                  Which target audience excites you the most? Pick one to focus on.
+                </p>
+                <div className="grid sm:grid-cols-2 gap-3">
+                   {["Freelancers", "Small Agencies", "Enterprise Sales", "Students"].map((opt) => (
+                     <Button key={opt} variant="outline" className="justify-start h-14 text-slate-600 border-2 border-slate-100 hover:border-primary hover:text-primary hover:bg-blue-50/50 text-base font-semibold">
+                       {opt}
+                     </Button>
+                   ))}
+                </div>
+              </Card>
+            </div>
 
              {/* Step 3: Reflection */}
-            <Card className="p-6 border-2 border-slate-100 shadow-none relative opacity-90">
-              <div className="absolute top-0 left-0 w-1 h-full bg-slate-200"></div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold">3</div>
-                <h2 className="font-bold text-lg text-slate-700">Reflection</h2>
+            <div className="space-y-4 pt-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center font-bold">3</div>
+                <h2 className="font-bold text-xl text-slate-900">Reflection</h2>
               </div>
-              <div className="space-y-4">
-                <p className="font-medium text-slate-700">Why does this problem matter to you?</p>
+              <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                <label className="font-semibold text-slate-900 block mb-3">Why does this problem matter to you?</label>
                 <textarea 
-                  className="w-full min-h-[100px] rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="w-full min-h-[120px] rounded-lg border-2 border-slate-200 bg-slate-50 p-4 text-base font-medium shadow-none placeholder:text-slate-400 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-0 resize-none transition-colors"
                   placeholder="I've experienced this pain myself when..."
                 />
-              </div>
-            </Card>
+              </Card>
+            </div>
 
-            <div className="flex justify-end pt-4">
-              <Button size="lg" className="rounded-full px-8 h-12 text-lg shadow-xl shadow-primary/20 gap-2" onClick={handleComplete}>
+            <div className="flex justify-end pt-8">
+              <Button size="lg" className="rounded-xl px-10 h-14 text-lg font-bold shadow-xl shadow-primary/20 gap-2 hover:translate-y-[-2px] transition-all" onClick={handleComplete}>
                 Complete Day 1 <ArrowRight className="w-5 h-5" />
               </Button>
             </div>
@@ -158,37 +155,40 @@ export default function Dashboard() {
 
           {/* Right Column: Progress & Info */}
           <div className="space-y-6">
-            <Card className="p-6 bg-slate-900 text-white border-none shadow-xl relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-32 bg-primary/20 blur-3xl rounded-full -mr-16 -mt-16 pointer-events-none"></div>
-               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                 <Trophy className="w-5 h-5 text-yellow-400" />
-                 Next Reward
+            <Card className="p-6 bg-slate-900 text-white border-none shadow-2xl rounded-2xl relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full translate-x-1/2 -translate-y-1/2 blur-3xl pointer-events-none"></div>
+               
+               <h3 className="font-bold text-sm uppercase tracking-widest text-slate-400 mb-6 flex items-center gap-2">
+                 <Trophy className="w-4 h-4 text-yellow-500" />
+                 Next Milestone
                </h3>
-               <div className="space-y-4 relative z-10">
-                 <div className="flex items-center gap-4 bg-white/10 p-3 rounded-lg backdrop-blur-md border border-white/10">
-                   <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded flex items-center justify-center text-white">
-                     <Wand2 className="w-5 h-5" />
+               
+               <div className="relative z-10 space-y-6">
+                 <div className="flex items-center gap-4">
+                   <div className="w-14 h-14 bg-white/10 rounded-xl flex items-center justify-center text-white border border-white/10 shadow-inner">
+                     <Wand2 className="w-7 h-7" />
                    </div>
                    <div>
-                     <div className="font-bold text-sm">Initiator Badge</div>
-                     <div className="text-xs text-slate-300">Complete Day 1</div>
+                     <div className="font-bold text-xl">Initiator</div>
+                     <div className="text-sm text-slate-400 font-medium">Badge Reward</div>
                    </div>
                  </div>
-                 <div className="space-y-1">
-                   <div className="flex justify-between text-xs font-medium text-slate-400">
-                     <span>Progress</span>
+                 
+                 <div className="space-y-2">
+                   <div className="flex justify-between text-xs font-bold text-slate-400 uppercase tracking-wider">
+                     <span>Current Progress</span>
                      <span>90%</span>
                    </div>
-                   <Progress value={90} className="h-2 bg-slate-800" />
+                   <Progress value={90} className="h-3 bg-white/10" indicatorClassName="bg-primary" />
                  </div>
                </div>
             </Card>
 
-            <Card className="p-6">
-              <h3 className="font-bold text-sm uppercase tracking-wider text-muted-foreground mb-4">Daily Streak</h3>
-              <div className="flex items-center gap-2">
-                <div className="text-4xl font-black text-slate-900">0</div>
-                <div className="text-sm text-muted-foreground leading-tight">
+            <Card className="p-6 border-2 border-slate-100 shadow-none rounded-2xl">
+              <h3 className="font-bold text-xs uppercase tracking-widest text-slate-400 mb-4">Current Streak</h3>
+              <div className="flex items-end gap-3">
+                <div className="text-5xl font-black text-slate-900 leading-none">0</div>
+                <div className="text-sm text-slate-500 font-bold uppercase tracking-wide mb-1">
                   Days<br/>Active
                 </div>
               </div>
