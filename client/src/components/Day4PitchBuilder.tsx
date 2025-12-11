@@ -209,54 +209,160 @@ HANGOUTS:
             exit={{ opacity: 0, x: -20 }}
             className="space-y-6"
           >
-            <div className="text-center">
-              <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl text-white font-bold">10</span>
-              </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">The 10-Second Pitch Formula</h2>
-              <p className="text-slate-500 max-w-lg mx-auto">
-                If you can't explain it in 10 seconds, it's too complicated.
-              </p>
-            </div>
-
-            <Card className="p-6 border-2 border-black bg-slate-50">
-              <p className="text-center text-lg font-medium text-slate-800 mb-4">
-                The magic formula:
-              </p>
-              <div className="text-center text-2xl font-bold text-black">
+            <Card className="p-5 border-2 border-black bg-slate-50">
+              <p className="text-center text-sm font-medium text-slate-600 mb-2">The 10-second pitch formula:</p>
+              <div className="text-center text-xl font-bold text-black">
                 "I help <span className="text-blue-600">[WHO]</span> do <span className="text-blue-600">[WHAT]</span> so they can <span className="text-blue-600">[BENEFIT]</span>"
               </div>
-              <p className="text-center text-sm text-slate-500 mt-4">
-                That's it. No jargon. No buzzwords. Something a 10-year-old could understand.
-              </p>
             </Card>
 
-            <Card className="p-5 border border-slate-200">
-              <h4 className="font-bold text-slate-900 mb-3">Examples of great 10-second pitches:</h4>
-              <div className="space-y-3">
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <p className="text-slate-800">"I help busy professionals organize emails so they can reach inbox zero daily."</p>
-                  <p className="text-xs text-slate-500 mt-1">WHO: busy professionals | WHAT: organize emails | BENEFIT: inbox zero</p>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <p className="text-slate-800">"I help small businesses track expenses so they can save money on taxes."</p>
-                  <p className="text-xs text-slate-500 mt-1">WHO: small businesses | WHAT: track expenses | BENEFIT: save on taxes</p>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <p className="text-slate-800">"I help parents find babysitters so they can enjoy worry-free date nights."</p>
-                  <p className="text-xs text-slate-500 mt-1">WHO: parents | WHAT: find babysitters | BENEFIT: worry-free date nights</p>
-                </div>
-              </div>
-            </Card>
+            <div className="space-y-4">
+              <Card className="p-4 border-2 border-slate-200">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  WHO do you help?
+                </label>
+                <Input
+                  placeholder="e.g., busy freelancers, first-time homebuyers..."
+                  value={who}
+                  onChange={(e) => setWho(e.target.value)}
+                  className="text-base"
+                  data-testid="input-who"
+                />
+              </Card>
 
-            <div className="flex justify-end">
+              <Card className="p-4 border-2 border-slate-200">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  WHAT do you help them do?
+                </label>
+                <Input
+                  placeholder="e.g., find clients, save for retirement..."
+                  value={what}
+                  onChange={(e) => setWhat(e.target.value)}
+                  className="text-base"
+                  data-testid="input-what"
+                />
+              </Card>
+
+              <Card className="p-4 border-2 border-slate-200">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  What BENEFIT do they get?
+                </label>
+                <Input
+                  placeholder="e.g., earn more money, save 5 hours/week..."
+                  value={benefit}
+                  onChange={(e) => setBenefit(e.target.value)}
+                  className="text-base"
+                  data-testid="input-benefit"
+                />
+              </Card>
+            </div>
+
+            {who && what && benefit && (
+              <>
+                <Card className="p-4 border-2 border-black bg-slate-50">
+                  <p className="text-xs font-bold text-slate-500 uppercase mb-1">Your draft pitch:</p>
+                  <p className="text-lg font-medium text-slate-900">
+                    "I help {who} {what} so they can {benefit}."
+                  </p>
+                </Card>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="font-bold text-slate-900">AI Pitch Variations</p>
+                    {pitchVariations.length === 0 ? (
+                      <Button
+                        size="sm"
+                        className="gap-2"
+                        onClick={generatePitches}
+                        disabled={isGenerating || aiAttempts >= MAX_AI_ATTEMPTS}
+                        data-testid="button-generate-pitches"
+                      >
+                        {isGenerating ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</>
+                        ) : (
+                          <><Sparkles className="w-4 h-4" /> Generate 4 Ideas{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
+                        )}
+                      </Button>
+                    ) : aiAttempts < MAX_AI_ATTEMPTS && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={generatePitches}
+                        disabled={isGenerating}
+                      >
+                        {isGenerating ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Regenerating...</>
+                        ) : (
+                          <><Sparkles className="w-4 h-4" /> Regenerate{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+
+                  {pitchVariations.length > 0 && (
+                    <div className="space-y-2">
+                      {pitchVariations.map((pitch, i) => (
+                        <button
+                          key={i}
+                          onClick={() => handleSelectPitch(i)}
+                          className={`w-full p-3 rounded-lg border-2 text-left transition-all cursor-pointer text-sm ${
+                            selectedPitch === i
+                              ? 'border-black bg-black text-white'
+                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                          }`}
+                        >
+                          <div className="flex items-start gap-2">
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                              selectedPitch === i ? 'border-white bg-white' : 'border-slate-300'
+                            }`}>
+                              {selectedPitch === i && <Check className="w-3 h-3 text-black" />}
+                            </div>
+                            <span className={selectedPitch === i ? 'text-white' : 'text-slate-800'}>
+                              {pitch}
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {selectedPitch !== null && (
+                  <Card className="p-4 border-2 border-slate-200">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                      Your final pitch (edit if needed):
+                    </label>
+                    <Textarea
+                      value={finalPitch}
+                      onChange={(e) => setFinalPitch(e.target.value)}
+                      className="min-h-[60px] text-base"
+                      data-testid="input-final-pitch"
+                    />
+                    <div className="flex justify-end mt-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-1"
+                        onClick={() => copyToClipboard(finalPitch)}
+                      >
+                        <Copy className="w-3 h-3" /> Copy
+                      </Button>
+                    </div>
+                  </Card>
+                )}
+              </>
+            )}
+
+            <div className="flex justify-end pt-2">
               <Button
                 size="lg"
                 className="gap-2"
                 onClick={() => setCurrentStep(2)}
+                disabled={!finalPitch.trim()}
                 data-testid="button-next-step1"
               >
-                Build My Pitch <ChevronRight className="w-5 h-5" />
+                Meet Your Customer <ChevronRight className="w-5 h-5" />
               </Button>
             </div>
           </motion.div>
@@ -271,210 +377,6 @@ HANGOUTS:
             className="space-y-6"
           >
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Fill In Your Formula</h2>
-              <p className="text-slate-500">Answer these 3 questions to build your pitch.</p>
-            </div>
-
-            <div className="space-y-4">
-              <Card className="p-5 border-2 border-slate-200">
-                <label className="block text-sm font-bold text-slate-700 mb-2">
-                  WHO do you help? <span className="text-slate-400 font-normal">(be specific)</span>
-                </label>
-                <Input
-                  placeholder="e.g., busy freelancers, first-time homebuyers, stressed parents..."
-                  value={who}
-                  onChange={(e) => setWho(e.target.value)}
-                  className="text-lg"
-                  data-testid="input-who"
-                />
-              </Card>
-
-              <Card className="p-5 border-2 border-slate-200">
-                <label className="block text-sm font-bold text-slate-700 mb-2">
-                  WHAT do you help them do? <span className="text-slate-400 font-normal">(one action)</span>
-                </label>
-                <Input
-                  placeholder="e.g., find clients, save for retirement, meal plan..."
-                  value={what}
-                  onChange={(e) => setWhat(e.target.value)}
-                  className="text-lg"
-                  data-testid="input-what"
-                />
-              </Card>
-
-              <Card className="p-5 border-2 border-slate-200">
-                <label className="block text-sm font-bold text-slate-700 mb-2">
-                  What BENEFIT do they get? <span className="text-slate-400 font-normal">(the outcome they want)</span>
-                </label>
-                <Input
-                  placeholder="e.g., earn more money, have peace of mind, save 5 hours/week..."
-                  value={benefit}
-                  onChange={(e) => setBenefit(e.target.value)}
-                  className="text-lg"
-                  data-testid="input-benefit"
-                />
-              </Card>
-            </div>
-
-            {who && what && benefit && (
-              <Card className="p-5 border-2 border-black bg-slate-50">
-                <p className="text-xs font-bold text-slate-500 uppercase mb-2">Your draft pitch:</p>
-                <p className="text-xl font-medium text-slate-900">
-                  "I help <span className="text-blue-600">{who}</span> {what} so they can <span className="text-blue-600">{benefit}</span>."
-                </p>
-              </Card>
-            )}
-
-            <div className="flex justify-between">
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-2"
-                onClick={() => setCurrentStep(1)}
-              >
-                <ChevronLeft className="w-5 h-5" /> Back
-              </Button>
-              <Button
-                size="lg"
-                className="gap-2"
-                onClick={() => setCurrentStep(3)}
-                disabled={!who || !what || !benefit}
-                data-testid="button-next-step2"
-              >
-                Get AI Variations <ChevronRight className="w-5 h-5" />
-              </Button>
-            </div>
-          </motion.div>
-        )}
-
-        {currentStep === 3 && (
-          <motion.div
-            key="step3"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
-          >
-            <div className="text-center">
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Pick Your Best Pitch</h2>
-              <p className="text-slate-500">Generate variations and choose the one that feels right.</p>
-            </div>
-
-            {pitchVariations.length === 0 ? (
-              <Card className="p-8 border-2 border-slate-200 text-center">
-                <p className="text-slate-500 mb-4">Generate AI-powered pitch variations based on your inputs.</p>
-                <Button
-                  className="gap-2"
-                  onClick={generatePitches}
-                  disabled={isGenerating || aiAttempts >= MAX_AI_ATTEMPTS}
-                  data-testid="button-generate-pitches"
-                >
-                  {isGenerating ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Crafting pitches...</>
-                  ) : aiAttempts >= MAX_AI_ATTEMPTS ? (
-                    <>No attempts left</>
-                  ) : (
-                    <><Sparkles className="w-4 h-4" /> Generate 4 Pitch Variations{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
-                  )}
-                </Button>
-              </Card>
-            ) : (
-              <div className="space-y-3">
-                {pitchVariations.map((pitch, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleSelectPitch(i)}
-                    className={`w-full p-4 rounded-lg border-2 text-left transition-all cursor-pointer ${
-                      selectedPitch === i
-                        ? 'border-black bg-black text-white'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                        selectedPitch === i ? 'border-white bg-white' : 'border-slate-300'
-                      }`}>
-                        {selectedPitch === i && <Check className="w-4 h-4 text-black" />}
-                      </div>
-                      <span className={`flex-1 ${selectedPitch === i ? 'text-white' : 'text-slate-800'}`}>
-                        {pitch}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-
-                {aiAttempts < MAX_AI_ATTEMPTS && (
-                  <Button
-                    variant="outline"
-                    className="w-full gap-2"
-                    onClick={generatePitches}
-                    disabled={isGenerating}
-                  >
-                    {isGenerating ? (
-                      <><Loader2 className="w-4 h-4 animate-spin" /> Regenerating...</>
-                    ) : (
-                      <><Sparkles className="w-4 h-4" /> Regenerate{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
-                    )}
-                  </Button>
-                )}
-              </div>
-            )}
-
-            {selectedPitch !== null && (
-              <Card className="p-5 border-2 border-slate-200">
-                <label className="block text-sm font-bold text-slate-700 mb-2">
-                  Edit your final pitch:
-                </label>
-                <Textarea
-                  value={finalPitch}
-                  onChange={(e) => setFinalPitch(e.target.value)}
-                  className="min-h-[80px] text-lg"
-                  data-testid="input-final-pitch"
-                />
-                <div className="flex justify-end mt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-1"
-                    onClick={() => copyToClipboard(finalPitch)}
-                  >
-                    <Copy className="w-3 h-3" /> Copy
-                  </Button>
-                </div>
-              </Card>
-            )}
-
-            <div className="flex justify-between">
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-2"
-                onClick={() => setCurrentStep(2)}
-              >
-                <ChevronLeft className="w-5 h-5" /> Back
-              </Button>
-              <Button
-                size="lg"
-                className="gap-2"
-                onClick={() => setCurrentStep(4)}
-                disabled={!finalPitch.trim()}
-                data-testid="button-next-step3"
-              >
-                Meet Your Customer <ChevronRight className="w-5 h-5" />
-              </Button>
-            </div>
-          </motion.div>
-        )}
-
-        {currentStep === 4 && (
-          <motion.div
-            key="step4"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
-          >
-            <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
                 <svg className="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="8" r="4" />
@@ -482,21 +384,16 @@ HANGOUTS:
                 </svg>
               </div>
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Ideal Customer</h2>
-              <p className="text-slate-500 max-w-lg mx-auto">
-                Now you know WHO you're talking to. Let's paint a picture of them.
-              </p>
+              <p className="text-slate-500">Discover who they are and where to find them.</p>
             </div>
 
-            <Card className="p-5 border-2 border-black bg-slate-50">
+            <Card className="p-4 border-2 border-black bg-slate-50">
               <p className="text-sm font-bold text-slate-500 uppercase mb-1">You're building for:</p>
-              <p className="text-xl font-bold text-black">{who}</p>
+              <p className="text-lg font-bold text-black">{who}</p>
             </Card>
 
             {!icpData ? (
-              <Card className="p-8 border-2 border-slate-200 text-center">
-                <p className="text-slate-600 mb-4">
-                  Generate a detailed profile of your ideal customer and discover where they hang out online.
-                </p>
+              <Card className="p-6 border-2 border-slate-200 text-center">
                 <Button
                   className="gap-2"
                   onClick={generateICP}
@@ -504,7 +401,7 @@ HANGOUTS:
                   data-testid="button-generate-icp"
                 >
                   {isGeneratingICP ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Building customer profile...</>
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Building profile...</>
                   ) : icpAttempts >= MAX_AI_ATTEMPTS ? (
                     <>No attempts left</>
                   ) : (
@@ -514,37 +411,37 @@ HANGOUTS:
               </Card>
             ) : (
               <div className="space-y-4">
-                <Card className="p-5 border-2 border-slate-200">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
+                <Card className="p-4 border-2 border-slate-200">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-7 h-7 rounded-full bg-black flex items-center justify-center">
                       <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="8" r="4" />
                         <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
                       </svg>
                     </div>
-                    <h4 className="font-bold text-slate-900">Your Ideal Customer Avatar</h4>
+                    <h4 className="font-bold text-slate-900">Your Ideal Customer</h4>
                   </div>
-                  <p className="text-slate-700 leading-relaxed">{icpData.description}</p>
+                  <p className="text-slate-700 leading-relaxed text-sm">{icpData.description}</p>
                 </Card>
 
-                <Card className="p-5 border-2 border-slate-200">
+                <Card className="p-4 border-2 border-slate-200">
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center">
+                    <div className="w-7 h-7 rounded-full bg-black flex items-center justify-center">
                       <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <circle cx="12" cy="12" r="10" />
                         <path d="M2 12h20" />
                         <ellipse cx="12" cy="12" rx="4" ry="10" />
                       </svg>
                     </div>
-                    <h4 className="font-bold text-slate-900">7 Places They Hang Out Online</h4>
+                    <h4 className="font-bold text-slate-900">7 Places They Hang Out</h4>
                   </div>
                   <div className="space-y-2">
                     {icpData.hangouts.map((hangout, i) => (
-                      <div key={i} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                        <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      <div key={i} className="flex items-start gap-2 p-2 bg-slate-50 rounded-lg border border-slate-100">
+                        <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
                           {i + 1}
                         </span>
-                        <span className="text-slate-700">{hangout}</span>
+                        <span className="text-slate-700 text-sm">{hangout}</span>
                       </div>
                     ))}
                   </div>
@@ -560,19 +457,19 @@ HANGOUTS:
                     {isGeneratingICP ? (
                       <><Loader2 className="w-4 h-4 animate-spin" /> Regenerating...</>
                     ) : (
-                      <><Sparkles className="w-4 h-4" /> Regenerate Profile{icpAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
+                      <><Sparkles className="w-4 h-4" /> Regenerate{icpAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
                     )}
                   </Button>
                 )}
               </div>
             )}
 
-            <div className="flex justify-between">
+            <div className="flex justify-between pt-2">
               <Button
                 variant="outline"
                 size="lg"
                 className="gap-2"
-                onClick={() => setCurrentStep(3)}
+                onClick={() => setCurrentStep(1)}
               >
                 <ChevronLeft className="w-5 h-5" /> Back
               </Button>
