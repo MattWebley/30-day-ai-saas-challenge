@@ -13,6 +13,8 @@ A gamified daily challenge application that guides users from zero to a working 
 - **Communication**: Simple, everyday language
 - **No AI-generated gradient styles** - use intentional, curated color palettes for special elements
 - **No generic Lucide icons** - Create custom unique SVG icons instead of using generic AlertTriangle, Target, Star, etc. Icons should be distinctive and on-brand
+- **Tooltips**: White background with black text, never blue
+- **Day Instructions**: Each day must have VERY simple, VERY brief step-by-step instructions of EXACTLY what to do
 
 ## Recent Changes
 
@@ -152,10 +154,19 @@ All prompts are clearly labeled with "Prompt" suffix for clarity:
 
 ## Tooltips
 Tooltips are used throughout the app for contextual help:
+- **White background with black text** (never blue)
 - All buttons have descriptive tooltips on hover
 - Day 2 idea cards show full idea details on hover
 - Interactive elements explain their purpose
 - AI generation buttons explain what will happen
+
+## Day Instructions Format
+Each day MUST have very simple, very brief step-by-step instructions:
+- **Day 1**: 1) Fill in your background 2) Generate ideas 3) Pick your top 3-5 4) Confirm selection
+- **Day 2**: 1) Hover to review each idea 2) Use prompts to validate 3) Pick ONE winner
+- **Day 3**: 1) Define the problem 2) List core features 3) Add USP features 4) Write pitch 5) Define ICP
+- **Day 4**: 1) Review your features 2) Generate screen recommendations 3) Confirm your app flow
+- **Day 5**: 1) Review all features 2) Pick ONE killer feature for MVP
 
 ### My Journey Section (Sidebar)
 - Shows user's chosen idea and key decisions
