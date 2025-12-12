@@ -35,7 +35,7 @@ interface Day2Props {
 const VALIDATION_PROMPTS = [
   {
     id: "market_viability",
-    title: "Market Viability Check",
+    title: "Market Viability Check Prompt",
     prompt: `I'm considering building a SaaS product: "[IDEA_TITLE]" - [IDEA_DESC]
 
 Target customer: [TARGET_CUSTOMER]
@@ -50,7 +50,7 @@ Give me a viability score out of 10 and tell me if I should proceed.`,
   },
   {
     id: "competitor_analysis",
-    title: "Competitor Deep Dive",
+    title: "Competitor Deep Dive Prompt",
     prompt: `Find me 3-5 competitors for this SaaS idea: "[IDEA_TITLE]" - [IDEA_DESC]
 
 For each competitor, tell me:
@@ -64,7 +64,7 @@ Remember: Competition is GOOD - it proves there's money in this market!`,
   },
   {
     id: "customer_pain",
-    title: "Customer Pain Points",
+    title: "Customer Pain Points Prompt",
     prompt: `My SaaS idea is: "[IDEA_TITLE]" - [IDEA_DESC]
 Target customer: [TARGET_CUSTOMER]
 
@@ -170,7 +170,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
         <Trophy className="w-12 h-12 text-amber-500 mx-auto mb-4" />
         <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Day 1 First!</h3>
         <p className="text-slate-600">
-          You need to generate and shortlist your 5 ideas in Day 1 before validating them here.
+          You need to generate and shortlist your ideas (3-5) in Day 1 before validating them here.
         </p>
       </Card>
     );
@@ -221,7 +221,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
     <TooltipProvider>
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Validate Your Top 5 Ideas</h2>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Validate Your Top Ideas</h2>
         <p className="text-slate-500">
           Use these prompts to research each idea. Then pick ONE to move forward with.
         </p>
@@ -233,19 +233,27 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
       {/* Idea Selector */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {shortlistedIdeas.map((idea, idx) => (
-          <button
-            key={idx}
-            onClick={() => setSelectedIdeaIndex(idx)}
-            className={`p-4 rounded-xl border-2 text-left transition-all cursor-pointer ${
-              selectedIdeaIndex === idx
-                ? "border-primary bg-blue-50"
-                : "border-slate-200 hover:border-slate-300"
-            }`}
-            data-testid={`select-idea-${idx}`}
-          >
-            <p className="font-bold text-sm text-slate-900 leading-snug">{idea.title}</p>
-            <p className="text-xs text-slate-500 mt-2">Score: {idea.totalScore}/25</p>
-          </button>
+          <Tooltip key={idx}>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => setSelectedIdeaIndex(idx)}
+                className={`p-4 rounded-xl border-2 text-left transition-all cursor-pointer ${
+                  selectedIdeaIndex === idx
+                    ? "border-primary bg-blue-50"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
+                data-testid={`select-idea-${idx}`}
+              >
+                <p className="font-bold text-sm text-slate-900 leading-snug">{idea.title}</p>
+                <p className="text-xs text-slate-500 mt-2">Score: {idea.totalScore}/25</p>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom" className="max-w-xs">
+              <p className="font-semibold mb-1">{idea.title}</p>
+              <p className="text-xs text-slate-300 mb-2">{idea.desc}</p>
+              <p className="text-xs text-slate-400">Target: {idea.targetCustomer}</p>
+            </TooltipContent>
+          </Tooltip>
         ))}
       </div>
 

@@ -95,7 +95,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
         return prev.filter(i => i !== index);
       }
       if (prev.length >= 5) {
-        toast.error("You can only select 5 ideas. Deselect one first.");
+        toast.error("You can select up to 5 ideas. Deselect one first.");
         return prev;
       }
       return [...prev, index];
@@ -103,8 +103,8 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   };
 
   const handleConfirmShortlist = () => {
-    if (selectedIdeas.length !== 5) {
-      toast.error("Please select exactly 5 ideas to continue");
+    if (selectedIdeas.length < 3) {
+      toast.error("Please select at least 3 ideas to continue");
       return;
     }
     saveProgress.mutate({
@@ -276,12 +276,12 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold text-slate-900">
-              {showConfirmation ? "Your Top 5 Ideas" : "Select Your Top 5 Ideas"}
+              {showConfirmation ? `Your Top ${selectedIdeas.length} Ideas` : "Select Your Top 3-5 Ideas"}
             </h2>
             <p className="text-slate-500 text-sm">
               {showConfirmation 
                 ? "These ideas will carry through to Day 2 for validation" 
-                : `${selectedIdeas.length}/5 selected - Pick the ideas that excite you most`}
+                : `${selectedIdeas.length} selected (need 3-5) - Pick the ideas that excite you most`}
             </p>
           </div>
           {!showConfirmation && (
@@ -290,21 +290,21 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                 <TooltipTrigger asChild>
                   <Button 
                     onClick={handleConfirmShortlist}
-                    disabled={selectedIdeas.length !== 5}
+                    disabled={selectedIdeas.length < 3}
                     className="gap-2"
                     data-testid="button-confirm-shortlist"
                   >
                     Confirm Selection <ChevronRight className="w-4 h-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Lock in your 5 favorite ideas</TooltipContent>
+                <TooltipContent>Lock in your favorite ideas (3-5)</TooltipContent>
               </Tooltip>
             </TooltipProvider>
           )}
         </div>
 
         {!showConfirmation && (
-          <Progress value={(selectedIdeas.length / 5) * 100} className="h-2" />
+          <Progress value={Math.min((selectedIdeas.length / 3) * 100, 100)} className="h-2" />
         )}
 
         {!showConfirmation && (
