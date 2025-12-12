@@ -153,57 +153,57 @@ export default function Admin() {
   return (
     <Layout currentDay={1}>
       <div className="space-y-8 pb-20">
-        <div className="border-b border-slate-200 pb-6">
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Admin Dashboard</h1>
-          <p className="text-slate-500 mt-1">Track student progress and engagement metrics</p>
+        <div className="border-b border-black pb-6">
+          <h1 className="text-3xl font-extrabold tracking-tight text-black">Admin Dashboard</h1>
+          <p className="text-slate-600 mt-1">Track student progress and engagement metrics</p>
         </div>
 
         {/* Overview Stats */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-6 border-2 border-slate-100">
+          <Card className="p-6 border-2 border-black">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
                 <Users className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500">Total Students</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.totalUsers}</p>
+                <p className="text-sm font-medium text-slate-600">Total Students</p>
+                <p className="text-2xl font-bold text-black">{stats.totalUsers}</p>
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 border-2 border-slate-100">
+          <Card className="p-6 border-2 border-black">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500">Active (7 days)</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.activeUsers}</p>
+                <p className="text-sm font-medium text-slate-600">Active (7 days)</p>
+                <p className="text-2xl font-bold text-black">{stats.activeUsers}</p>
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 border-2 border-slate-100">
+          <Card className="p-6 border-2 border-black">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
                 <Trophy className="w-6 h-6 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500">Completed 30 Days</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.completedChallenges}</p>
+                <p className="text-sm font-medium text-slate-600">Completed 30 Days</p>
+                <p className="text-2xl font-bold text-black">{stats.completedChallenges}</p>
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 border-2 border-slate-100">
+          <Card className="p-6 border-2 border-black">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
                 <BarChart3 className="w-6 h-6 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500">Avg Progress</p>
-                <p className="text-2xl font-bold text-slate-900">{Math.round(stats.avgProgress)}%</p>
+                <p className="text-sm font-medium text-slate-600">Avg Progress</p>
+                <p className="text-2xl font-bold text-black">{Math.round(stats.avgProgress)}%</p>
               </div>
             </div>
           </Card>
@@ -212,7 +212,7 @@ export default function Admin() {
         {/* Comment Approval Queue */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold text-slate-900">Comment Approval Queue</h2>
+            <h2 className="text-xl font-bold text-black">Comment Approval Queue</h2>
             {pendingComments.length > 0 && (
               <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">
                 {pendingComments.length} pending
@@ -221,24 +221,24 @@ export default function Admin() {
           </div>
           
           {pendingComments.length === 0 ? (
-            <Card className="p-8 border-2 border-slate-100 text-center">
-              <MessageSquare className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-slate-500">No comments pending approval</p>
+            <Card className="p-8 border-2 border-black text-center">
+              <MessageSquare className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+              <p className="text-slate-600">No comments pending approval</p>
             </Card>
           ) : (
-            <Card className="border-2 border-slate-100 divide-y divide-slate-100">
+            <Card className="border-2 border-black divide-y divide-black">
               {pendingComments.map((comment) => (
                 <div key={comment.id} className="p-4" data-testid={`pending-comment-${comment.id}`}>
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="font-semibold text-slate-900 text-sm">
+                        <span className="font-semibold text-black text-sm">
                           {comment.user?.firstName || "Anonymous"} {comment.user?.lastName || ""}
                         </span>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-slate-600">
                           Day {comment.day}
                         </span>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-slate-600">
                           {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                         </span>
                       </div>
@@ -287,13 +287,13 @@ export default function Admin() {
         {/* Brand Pack */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold text-slate-900">Brand Pack</h2>
+            <h2 className="text-xl font-bold text-black">Brand Pack</h2>
             <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">
               App-wide
             </span>
           </div>
           
-          <Card className="p-6 border-2 border-slate-100">
+          <Card className="p-6 border-2 border-black">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="appName">App Name</Label>
@@ -313,7 +313,7 @@ export default function Admin() {
                     id="primaryColor"
                     value={brand.primaryColor}
                     onChange={(e) => setBrand({ ...brand, primaryColor: e.target.value })}
-                    className="w-12 h-10 rounded border border-slate-200 cursor-pointer"
+                    className="w-12 h-10 rounded border border-black cursor-pointer"
                   />
                   <Input
                     value={brand.primaryColor}
@@ -331,7 +331,7 @@ export default function Admin() {
                     id="accentColor"
                     value={brand.accentColor}
                     onChange={(e) => setBrand({ ...brand, accentColor: e.target.value })}
-                    className="w-12 h-10 rounded border border-slate-200 cursor-pointer"
+                    className="w-12 h-10 rounded border border-black cursor-pointer"
                   />
                   <Input
                     value={brand.accentColor}
@@ -349,7 +349,7 @@ export default function Admin() {
                     id="textColor"
                     value={brand.textColor}
                     onChange={(e) => setBrand({ ...brand, textColor: e.target.value })}
-                    className="w-12 h-10 rounded border border-slate-200 cursor-pointer"
+                    className="w-12 h-10 rounded border border-black cursor-pointer"
                   />
                   <Input
                     value={brand.textColor}
@@ -367,7 +367,7 @@ export default function Admin() {
                     id="backgroundColor"
                     value={brand.backgroundColor}
                     onChange={(e) => setBrand({ ...brand, backgroundColor: e.target.value })}
-                    className="w-12 h-10 rounded border border-slate-200 cursor-pointer"
+                    className="w-12 h-10 rounded border border-black cursor-pointer"
                   />
                   <Input
                     value={brand.backgroundColor}
@@ -383,7 +383,7 @@ export default function Admin() {
                   id="fontFamily"
                   value={brand.fontFamily}
                   onChange={(e) => setBrand({ ...brand, fontFamily: e.target.value })}
-                  className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white text-sm"
+                  className="w-full h-10 px-3 rounded-md border border-black bg-white text-sm"
                   data-testid="select-font-family"
                 >
                   {FONT_OPTIONS.map((font) => (
@@ -417,7 +417,7 @@ export default function Admin() {
               </div>
             </div>
 
-            <div className="mt-6 pt-6 border-t border-slate-100 flex items-center justify-between">
+            <div className="mt-6 pt-6 border-t border-black flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div 
                   className="w-10 h-10 rounded flex items-center justify-center text-white text-xs font-bold"
@@ -428,7 +428,7 @@ export default function Admin() {
                 >
                   Aa
                 </div>
-                <div className="text-sm text-slate-500">
+                <div className="text-sm text-slate-600">
                   Preview: <span style={{ fontFamily: brand.fontFamily }}>{brand.fontFamily}</span>
                 </div>
               </div>
@@ -447,54 +447,54 @@ export default function Admin() {
 
         {/* Student Progress Table */}
         <div className="space-y-4">
-          <h2 className="text-xl font-bold text-slate-900">Student Progress</h2>
-          <Card className="border-2 border-slate-100 overflow-hidden">
+          <h2 className="text-xl font-bold text-black">Student Progress</h2>
+          <Card className="border-2 border-black overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-slate-50 border-b border-slate-200">
+                <thead className="bg-white border-b border-black">
                   <tr>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Student</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Current Day</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Progress</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">XP Earned</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Active</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wider">Student</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wider">Current Day</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wider">Progress</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wider">XP Earned</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wider">Last Active</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-black">
                   {stats.userProgress && stats.userProgress.length > 0 ? (
                     stats.userProgress.map((user: any, i: number) => (
-                      <tr key={i} className="hover:bg-slate-50" data-testid={`admin-user-row-${i}`}>
+                      <tr key={i} className="hover:bg-white" data-testid={`admin-user-row-${i}`}>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">
+                            <div className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-xs font-bold text-slate-600">
                               {user.firstName?.[0] || user.email?.[0]?.toUpperCase() || "?"}
                             </div>
                             <div>
-                              <p className="font-medium text-slate-900">{user.firstName || "Unknown"} {user.lastName || ""}</p>
-                              <p className="text-xs text-slate-500">{user.email || "No email"}</p>
+                              <p className="font-medium text-black">{user.firstName || "Unknown"} {user.lastName || ""}</p>
+                              <p className="text-xs text-slate-600">{user.email || "No email"}</p>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="font-semibold text-slate-900">Day {user.currentDay || 1}</span>
+                          <span className="font-semibold text-black">Day {user.currentDay || 1}</span>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
-                            <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
+                            <div className="w-24 h-2 bg-slate-600 rounded-full overflow-hidden">
                               <div 
                                 className="h-full bg-primary rounded-full" 
                                 style={{ width: `${Math.round(((user.currentDay || 0) / 30) * 100)}%` }}
                               />
                             </div>
-                            <span className="text-sm text-slate-500">{Math.round(((user.currentDay || 0) / 30) * 100)}%</span>
+                            <span className="text-sm text-slate-600">{Math.round(((user.currentDay || 0) / 30) * 100)}%</span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="font-medium text-slate-900">{user.totalXp || 0} XP</span>
+                          <span className="font-medium text-black">{user.totalXp || 0} XP</span>
                         </td>
                         <td className="px-6 py-4">
-                          <div className="flex items-center gap-1 text-sm text-slate-500">
+                          <div className="flex items-center gap-1 text-sm text-slate-600">
                             <Clock className="w-3 h-3" />
                             {user.lastActive ? new Date(user.lastActive).toLocaleDateString() : "Never"}
                           </div>
@@ -509,7 +509,7 @@ export default function Admin() {
                               Active
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-slate-100 text-slate-500 text-xs font-medium">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-white text-slate-600 text-xs font-medium">
                               Inactive
                             </span>
                           )}
@@ -518,7 +518,7 @@ export default function Admin() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                      <td colSpan={6} className="px-6 py-12 text-center text-slate-600">
                         No students enrolled yet
                       </td>
                     </tr>
@@ -531,8 +531,8 @@ export default function Admin() {
 
         {/* Day Completion Stats */}
         <div className="space-y-4">
-          <h2 className="text-xl font-bold text-slate-900">Day-by-Day Completion</h2>
-          <Card className="p-6 border-2 border-slate-100">
+          <h2 className="text-xl font-bold text-black">Day-by-Day Completion</h2>
+          <Card className="p-6 border-2 border-black">
             <div className="grid grid-cols-6 sm:grid-cols-10 lg:grid-cols-15 gap-2">
               {Array.from({ length: 30 }, (_, i) => {
                 const dayNum = i + 1;

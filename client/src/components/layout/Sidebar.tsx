@@ -91,18 +91,18 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
       ) : null}
 
       {isHovered && (
-        <div className="absolute left-full top-0 ml-2 w-64 p-4 bg-white rounded-md shadow-xl border border-slate-200 z-50">
+        <div className="absolute left-full top-0 ml-2 w-64 p-4 bg-white rounded-md shadow-xl border border-black z-50">
           <h4 className="font-bold text-sm text-black mb-3">Journey Notes</h4>
           <div className="space-y-3 text-xs">
             {journey.userInputs && (
-              <div className="p-2 bg-slate-50 rounded-md border border-slate-100">
+              <div className="p-2 bg-white rounded-md border border-black">
                 <p className="font-semibold text-black mb-1">Day 1: About You</p>
                 <p className="text-slate-600">Skills: {journey.userInputs.skills || 'Not set'}</p>
                 <p className="text-slate-600">Interests: {journey.userInputs.interests || 'Not set'}</p>
               </div>
             )}
             {journey.hasShortlist && (
-              <div className="p-2 bg-slate-50 rounded-md border border-slate-100">
+              <div className="p-2 bg-white rounded-md border border-black">
                 <p className="font-semibold text-black mb-1">Day 1: Top 5 Ideas</p>
                 <ul className="text-slate-600 space-y-0.5">
                   {journey.shortlistedIdeas.slice(0, 5).map((idea: any, i: number) => (
@@ -112,10 +112,10 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
               </div>
             )}
             {journey.chosenIdea && (
-              <div className="p-2 bg-slate-50 rounded-md border border-slate-100">
+              <div className="p-2 bg-white rounded-md border border-black">
                 <p className="font-semibold text-black mb-1">Day 2: Final Choice</p>
                 <p className="text-black font-medium">{journey.chosenIdea.title}</p>
-                <p className="text-slate-500 text-[10px] mt-1">{journey.chosenIdea.desc}</p>
+                <p className="text-slate-600 text-[10px] mt-1">{journey.chosenIdea.desc}</p>
               </div>
             )}
           </div>

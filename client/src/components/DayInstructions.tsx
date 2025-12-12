@@ -44,11 +44,11 @@ export function DayInstructions({ day }: DayInstructionsProps) {
   const instructions = DAY_INSTRUCTIONS[day] || DAY_INSTRUCTIONS[6];
   
   return (
-    <Card className="p-4 border-2 border-slate-200 bg-slate-50 mb-6" data-testid="day-instructions">
-      <p className="font-bold text-sm text-slate-900 mb-3 uppercase tracking-wide">What To Do Today:</p>
+    <Card className="p-4 border-2 border-black bg-white mb-6" data-testid="day-instructions">
+      <p className="font-bold text-sm text-black mb-3 uppercase tracking-wide">What To Do Today:</p>
       <ol className="space-y-2">
         {instructions.map((step, index) => (
-          <li key={index} className="flex items-start gap-3 text-sm text-slate-700">
+          <li key={index} className="flex items-start gap-3 text-sm text-slate-600">
             <span className="flex-shrink-0 w-5 h-5 rounded-full bg-black text-white text-xs font-bold flex items-center justify-center">
               {index + 1}
             </span>

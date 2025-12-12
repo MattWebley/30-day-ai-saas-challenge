@@ -63,18 +63,18 @@ export function DayChat({ day }: DayChatProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center">
+        <div className="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center">
           <MessageCircle className="w-4 h-4" />
         </div>
-        <h2 className="font-bold text-xl text-slate-900">Discussion</h2>
-        <span className="text-sm text-slate-400">({comments.length} comments)</span>
+        <h2 className="font-bold text-xl text-black">Discussion</h2>
+        <span className="text-sm text-slate-600">({comments.length} comments)</span>
       </div>
 
-      <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+      <Card className="p-6 border-2 border-black shadow-none bg-white">
         <form onSubmit={handleSubmit} className="mb-6">
           <div className="flex gap-3">
             <textarea
-              className="flex-1 min-h-[80px] rounded-lg border-2 border-slate-200 bg-slate-50 p-3 text-sm font-medium shadow-none placeholder:text-slate-400 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-0 resize-none transition-colors"
+              className="flex-1 min-h-[80px] rounded-lg border-2 border-black bg-white p-3 text-sm font-medium shadow-none placeholder:text-slate-600 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-0 resize-none transition-colors"
               placeholder="Ask a question or share your thoughts..."
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
@@ -90,7 +90,7 @@ export function DayChat({ day }: DayChatProps) {
               {postComment.isPending ? "..." : <><Send className="w-4 h-4" /> Post</>}
             </Button>
           </div>
-          <p className="text-xs text-slate-400 mt-2">
+          <p className="text-xs text-slate-600 mt-2">
             {newComment.length}/1000 characters
           </p>
         </form>
@@ -103,9 +103,9 @@ export function DayChat({ day }: DayChatProps) {
         )}
 
         {isLoading ? (
-          <div className="text-center py-8 text-slate-400">Loading comments...</div>
+          <div className="text-center py-8 text-slate-600">Loading comments...</div>
         ) : comments.length === 0 ? (
-          <div className="text-center py-8 text-slate-400">
+          <div className="text-center py-8 text-slate-600">
             No comments yet. Be the first to share your thoughts!
           </div>
         ) : (
@@ -113,7 +113,7 @@ export function DayChat({ day }: DayChatProps) {
             {comments.map((comment) => (
               <div
                 key={comment.id}
-                className="flex gap-3 p-4 bg-slate-50 rounded-lg"
+                className="flex gap-3 p-4 bg-white rounded-lg"
                 data-testid={`comment-${comment.id}`}
               >
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -131,11 +131,11 @@ export function DayChat({ day }: DayChatProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-semibold text-slate-900 text-sm">
+                    <span className="font-semibold text-black text-sm">
                       {comment.user?.firstName || "Anonymous"}
                       {comment.user?.lastName ? ` ${comment.user.lastName[0]}.` : ""}
                     </span>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-slate-600">
                       {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                     </span>
                   </div>

@@ -9,12 +9,18 @@ A gamified daily challenge application that guides users from zero to a working 
 - **Design Style**: Clean black and white aesthetic like MattWebley.com
 - **Font**: Poppins
 - **Colors**: Pure black (#000000) text on white (#FFFFFF) backgrounds, blue (#007BFF) accents
+- **Grey Shades**: ONLY 2 shades allowed throughout the entire app:
+  - **Black**: #000000 (text-black) - for primary text, borders, strong elements
+  - **Dark Grey**: slate-600 (#475569) - for secondary/muted text ONLY
+  - NEVER use lighter greys (slate-100 through slate-500) - they look washed out
+  - Backgrounds should be white (bg-white), borders should be black (border-black)
 - **Border Radius**: 6px
 - **Communication**: Simple, everyday language
 - **No AI-generated gradient styles** - use intentional, curated color palettes for special elements
 - **No generic Lucide icons** - Create custom unique SVG icons instead of using generic AlertTriangle, Target, Star, etc. Icons should be distinctive and on-brand
 - **Tooltips**: White background with black text, never blue
 - **Day Instructions**: Each day must have VERY simple, VERY brief step-by-step instructions of EXACTLY what to do
+- **Abbreviations**: Write "e.g." NOT "e.g.," (no comma after)
 
 ## Recent Changes
 

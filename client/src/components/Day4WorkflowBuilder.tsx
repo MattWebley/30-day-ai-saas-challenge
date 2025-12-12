@@ -188,8 +188,8 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
 
   if (!chosenIdea) {
     return (
-      <Card className="p-8 border-2 border-slate-200 text-center">
-        <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Previous Days First</h3>
+      <Card className="p-8 border-2 border-black text-center">
+        <h3 className="text-xl font-bold text-black mb-2">Complete Previous Days First</h3>
         <p className="text-slate-600">
           You need to complete Days 1-3 before planning your app screens.
         </p>
@@ -199,23 +199,23 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
 
   return (
     <div className="space-y-6">
-      <Card className="p-4 border border-slate-200 bg-slate-50">
+      <Card className="p-4 border border-black bg-white">
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Building:</p>
-            <p className="font-bold text-slate-900">{chosenIdea.title}</p>
+            <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">Building:</p>
+            <p className="font-bold text-black">{chosenIdea.title}</p>
           </div>
           <div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">For:</p>
-            <p className="text-slate-700">{icp || "Your target user"}</p>
+            <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">For:</p>
+            <p className="text-black">{icp || "Your target user"}</p>
           </div>
         </div>
         {(coreFeatures.length > 0 || uspFeatures.length > 0) && (
-          <div className="mt-3 pt-3 border-t border-slate-200">
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Features to support:</p>
+          <div className="mt-3 pt-3 border-t border-black">
+            <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-2">Features to support:</p>
             <div className="flex flex-wrap gap-1">
               {[...coreFeatures, ...uspFeatures].map((f, i) => (
-                <span key={i} className="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded-full">{f}</span>
+                <span key={i} className="text-xs bg-white border border-black text-black px-2 py-1 rounded-full">{f}</span>
               ))}
             </div>
           </div>
@@ -241,8 +241,8 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
                   <path d="M10 6.5h4M17.5 10v4M14 17.5h-4M6.5 14v-4" strokeDasharray="2 2" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Design Your App Screens</h2>
-              <p className="text-slate-500 max-w-md mx-auto mb-6">
+              <h2 className="text-2xl font-bold text-black mb-2">Design Your App Screens</h2>
+              <p className="text-slate-600 max-w-md mx-auto mb-6">
                 AI will analyze your features and target user to recommend the exact screens your MVP needs.
               </p>
               
@@ -268,7 +268,7 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
               </TooltipProvider>
 
               {aiAttempts > 0 && aiAttempts < MAX_AI_ATTEMPTS && (
-                <p className="text-xs text-slate-400 mt-2">{MAX_AI_ATTEMPTS - aiAttempts} attempts remaining</p>
+                <p className="text-xs text-slate-600 mt-2">{MAX_AI_ATTEMPTS - aiAttempts} attempts remaining</p>
               )}
             </div>
           </motion.div>
@@ -280,13 +280,13 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
             className="space-y-6"
           >
             <div>
-              <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <h3 className="font-bold text-black mb-4 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs">1</span>
                 Your MVP Screens
               </h3>
               <div className="space-y-3">
                 {screens.map((screen, i) => (
-                  <Card key={i} className="p-4 border-2 border-slate-200">
+                  <Card key={i} className="p-4 border-2 border-black">
                     <div className="flex items-start justify-between mb-2">
                       {editingScreen === i ? (
                         <input
@@ -295,12 +295,12 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
                           onChange={(e) => setEditValue(e.target.value)}
                           onBlur={() => handleEditScreen(i, editValue)}
                           onKeyDown={(e) => e.key === 'Enter' && handleEditScreen(i, editValue)}
-                          className="font-bold text-slate-900 border-b-2 border-black outline-none bg-transparent"
+                          className="font-bold text-black border-b-2 border-black outline-none bg-transparent"
                           autoFocus
                         />
                       ) : (
-                        <h4 className="font-bold text-slate-900 flex items-center gap-2">
-                          <span className="w-5 h-5 rounded bg-slate-100 text-slate-600 flex items-center justify-center text-xs">{i + 1}</span>
+                        <h4 className="font-bold text-black flex items-center gap-2">
+                          <span className="w-5 h-5 rounded bg-white border border-black text-slate-600 flex items-center justify-center text-xs">{i + 1}</span>
                           {screen.name}
                         </h4>
                       )}
@@ -310,7 +310,7 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
                             <TooltipTrigger asChild>
                               <button
                                 onClick={() => { setEditingScreen(i); setEditValue(screen.name); }}
-                                className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                className="p-1 text-slate-600 hover:text-slate-600 cursor-pointer"
                               >
                                 <Edit3 className="w-4 h-4" />
                               </button>
@@ -324,7 +324,7 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
                               <TooltipTrigger asChild>
                                 <button
                                   onClick={() => handleRemoveScreen(i)}
-                                  className="p-1 text-slate-400 hover:text-red-500 cursor-pointer"
+                                  className="p-1 text-slate-600 hover:text-red-500 cursor-pointer"
                                 >
                                   <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2">
                                     <path d="M18 6L6 18M6 6l12 12" />
@@ -340,7 +340,7 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
                     <p className="text-sm text-slate-600 mb-3">{screen.purpose}</p>
                     <div className="flex flex-wrap gap-1">
                       {screen.keyElements.map((el, j) => (
-                        <span key={j} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">{el}</span>
+                        <span key={j} className="text-xs bg-white border border-black text-slate-600 px-2 py-1 rounded-full">{el}</span>
                       ))}
                     </div>
                   </Card>
@@ -350,11 +350,11 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
 
             {userFlow && (
               <div>
-                <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <h3 className="font-bold text-black mb-4 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs">2</span>
                   User Flow
                 </h3>
-                <Card className="p-4 border-2 border-slate-200">
+                <Card className="p-4 border-2 border-black">
                   <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-2">
                     {userFlow.steps.map((step, i) => (
                       <React.Fragment key={i}>
@@ -362,7 +362,7 @@ FLOW_REASONING: [One sentence explaining why this order makes sense for your tar
                           {step}
                         </div>
                         {i < userFlow.steps.length - 1 && (
-                          <ArrowRight className="w-4 h-4 text-slate-300 flex-shrink-0" />
+                          <ArrowRight className="w-4 h-4 text-slate-600 flex-shrink-0" />
                         )}
                       </React.Fragment>
                     ))}
