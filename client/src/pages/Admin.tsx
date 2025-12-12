@@ -467,7 +467,7 @@ export default function Admin() {
                       <tr key={i} className="hover:bg-white" data-testid={`admin-user-row-${i}`}>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-xs font-bold text-slate-600">
+                            <div className="w-8 h-8 rounded-full bg-black flex items-center justify-center text-xs font-bold text-white">
                               {user.firstName?.[0] || user.email?.[0]?.toUpperCase() || "?"}
                             </div>
                             <div>
