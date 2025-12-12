@@ -129,13 +129,14 @@ A gamified daily challenge application that guides users from zero to a working 
 - "Use Our AI" buttons to run prompts
 - Narrow ideas down to 1 final choice
 
-### Day 3: Core Features & USP Generator (6 Steps)
+### Day 3: Core Features & USP Generator (7 Steps)
 - Step 1: Define Bleeding Neck Problem
-- Step 2: Find Core Features from competitor analysis
-- Step 3: Generate USP features based on user skills + competitor gaps
-- Step 4: Create 10-Second Pitch (WHO/WHAT/BENEFIT formula)
-- Step 5: Generate ICP + 7 online hangouts
-- Step 6: Summary of all decisions
+- Step 2: Find Competitors (AI searches for direct SaaS competitors with URLs, screenshots, top 5 features)
+- Step 3: Core Features (pre-populated from shared competitor features, editable)
+- Step 4: USP Features (generate unique features based on user skills + competitor gaps)
+- Step 5: Create 10-Second Pitch (WHO/WHAT/BENEFIT formula)
+- Step 6: Generate ICP + 7 online hangouts
+- Step 7: Summary of all decisions
 
 ### Day 4: App Screen Planner
 - AI-driven screen recommendations based on features and ICP
@@ -166,7 +167,7 @@ Each day MUST have very simple, very brief step-by-step instructions:
 - **Displays**: A numbered list of exactly what to do that day
 - **Day 1**: 1) Fill in your background 2) Generate ideas 3) Pick your top 3-5 4) Confirm selection
 - **Day 2**: 1) Hover to review each idea 2) Use prompts to validate 3) Pick ONE winner
-- **Day 3**: 1) Define the problem 2) List core features 3) Add USP features 4) Write pitch 5) Define ICP
+- **Day 3**: 1) Define the problem 2) Find competitors 3) Review core features 4) Add USP features 5) Write pitch 6) Define ICP
 - **Day 4**: 1) Review your features 2) Generate screen recommendations 3) Confirm your app flow
 - **Day 5**: 1) Review all features 2) Categorize features 3) Pick ONE killer feature for MVP
 - **Day 6+**: 1) Read today's lesson 2) Complete the micro-decision 3) Write your reflection

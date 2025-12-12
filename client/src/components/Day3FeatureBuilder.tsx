@@ -54,6 +54,22 @@ const CustomerIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const CompetitorIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+    <circle cx="12" cy="12" r="4" />
+  </svg>
+);
+
+interface Competitor {
+  name: string;
+  url: string;
+  description: string;
+  topFeatures: string[];
+  screenshotUrl: string;
+}
+
 const MOCK_IDEA = {
   title: "AI Content Optimizer",
   desc: "A SaaS tool that uses AI to analyze and optimize marketing content for better engagement",
@@ -92,6 +108,11 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   
   const [icpData, setIcpData] = useState<{ description: string; hangouts: string[] } | null>(null);
   const [isGeneratingICP, setIsGeneratingICP] = useState(false);
+  
+  const [competitors, setCompetitors] = useState<Competitor[]>([]);
+  const [sharedFeatures, setSharedFeatures] = useState<string[]>([]);
+  const [isResearchingCompetitors, setIsResearchingCompetitors] = useState(false);
+  const [competitorAttempts, setCompetitorAttempts] = useState(0);
   
   const [bleedingNeckAttempts, setBleedingNeckAttempts] = useState(0);
   const [coreAttempts, setCoreAttempts] = useState(0);
@@ -152,6 +173,49 @@ Just the one sentence, nothing else.`;
       setBleedingNeckProblem(data.response.trim().replace(/^["']|["']$/g, ''));
     } catch {
       toast.error("Failed to generate. Try again.");
+    }
+    setIsGenerating(false);
+  };
+
+  const researchCompetitors = async () => {
+    if (competitorAttempts >= MAX_AI_ATTEMPTS) return;
+    setCompetitorAttempts(prev => prev + 1);
+    setIsResearchingCompetitors(true);
+    try {
+      const res = await apiRequest("POST", "/api/research-competitors", {
+        ideaTitle: chosenIdea?.title,
+        ideaDescription: chosenIdea?.desc,
+        targetCustomer: chosenIdea?.targetCustomer,
+      });
+      const data = await res.json();
+      setCompetitors(data.competitors || []);
+      setSharedFeatures(data.sharedFeatures || []);
+      if (data.sharedFeatures?.length > 0) {
+        setCoreFeatures(data.sharedFeatures);
+      }
+    } catch {
+      toast.error("Failed to research competitors. Try again.");
+    }
+    setIsResearchingCompetitors(false);
+  };
+
+  const generateUSPFromCompetitors = async () => {
+    if (uspAttempts >= MAX_AI_ATTEMPTS) return;
+    setUspAttempts(prev => prev + 1);
+    setIsGenerating(true);
+    try {
+      const res = await apiRequest("POST", "/api/generate-usp-features", {
+        ideaTitle: chosenIdea?.title,
+        ideaDescription: chosenIdea?.desc,
+        userSkills: `${userInputs?.skills || ''}, ${userInputs?.knowledge || ''}`,
+        sharedFeatures: coreFeatures,
+        competitors: competitors,
+      });
+      const data = await res.json();
+      setUspSuggestions(data.uspFeatures || []);
+      setSelectedUspIndexes([]);
+    } catch {
+      toast.error("Failed to generate USP features. Try again.");
     }
     setIsGenerating(false);
   };
@@ -361,7 +425,7 @@ HANGOUTS:
       icpDescription: icpData?.description,
       icpHangouts: icpData?.hangouts
     });
-    setCurrentStep(6);
+    setCurrentStep(7);
   };
 
   if (!chosenIdea) {
@@ -378,10 +442,11 @@ HANGOUTS:
 
   const steps = [
     { num: 1, label: "Problem" },
-    { num: 2, label: "Core" },
-    { num: 3, label: "USP" },
-    { num: 4, label: "Pitch" },
-    { num: 5, label: "Customer" },
+    { num: 2, label: "Competitors" },
+    { num: 3, label: "Core" },
+    { num: 4, label: "USP" },
+    { num: 5, label: "Pitch" },
+    { num: 6, label: "Customer" },
   ];
 
   return (
@@ -391,7 +456,7 @@ HANGOUTS:
         <h3 className="font-bold text-slate-900">{chosenIdea.title}</h3>
       </Card>
 
-      {currentStep < 6 && (
+      {currentStep < 7 && (
         <div className="flex items-center justify-center gap-1 flex-wrap">
           {steps.map((step, idx) => (
             <div key={step.num} className="flex items-center">
@@ -482,7 +547,7 @@ HANGOUTS:
                       disabled={!bleedingNeckProblem.trim()}
                       data-testid="button-next-step1"
                     >
-                      Next: Core Features <ChevronRight className="w-5 h-5" />
+                      Next: Find Competitors <ChevronRight className="w-5 h-5" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>Continue to define your core features</TooltipContent>
@@ -502,11 +567,153 @@ HANGOUTS:
           >
             <div className="text-center">
               <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
+                <CompetitorIcon className="w-7 h-7 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Who Are Your Direct Competitors?</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
+                Let's find SaaS products that do <strong>exactly</strong> what you're building.
+              </p>
+            </div>
+
+            <Card className="p-6 border-2 border-slate-200">
+              <div className="text-center mb-6">
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="lg"
+                        className="gap-2"
+                        onClick={researchCompetitors}
+                        disabled={isResearchingCompetitors || competitorAttempts >= MAX_AI_ATTEMPTS}
+                        data-testid="button-research-competitors"
+                      >
+                        {isResearchingCompetitors ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Searching the market...</>
+                        ) : competitorAttempts >= MAX_AI_ATTEMPTS ? (
+                          <>No attempts left</>
+                        ) : (
+                          <><Sparkles className="w-4 h-4" /> Find My Competitors{competitorAttempts > 0 && MAX_AI_ATTEMPTS - competitorAttempts === 1 ? ' (1 left)' : ''}</>
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>AI will search for direct SaaS competitors</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+
+              {competitors.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="font-bold text-slate-900 text-lg">Found {competitors.length} Direct Competitors:</h3>
+                  <div className="space-y-4">
+                    {competitors.map((comp, i) => (
+                      <div key={i} className="border border-slate-200 rounded-lg p-4 bg-white">
+                        <div className="flex gap-4">
+                          <img 
+                            src={comp.screenshotUrl} 
+                            alt={`${comp.name} screenshot`}
+                            className="w-32 h-24 object-cover rounded border border-slate-200 flex-shrink-0"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="96" viewBox="0 0 128 96"><rect fill="%23f1f5f9" width="128" height="96"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%2394a3b8" font-size="10">Screenshot</text></svg>';
+                            }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="font-bold text-slate-900">{comp.name}</h4>
+                              <a 
+                                href={comp.url} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 text-sm underline"
+                                data-testid={`link-competitor-${i}`}
+                              >
+                                Visit site ↗
+                              </a>
+                            </div>
+                            <p className="text-sm text-slate-600 mb-3">{comp.description}</p>
+                            <div>
+                              <p className="text-xs font-bold text-slate-500 uppercase mb-2">Top 5 Features:</p>
+                              <div className="flex flex-wrap gap-1">
+                                {comp.topFeatures.slice(0, 5).map((feature, fi) => (
+                                  <span key={fi} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">
+                                    {feature}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {sharedFeatures.length > 0 && (
+                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <h4 className="font-bold text-green-900 mb-2">Shared Core Features (Found in 2+ Competitors):</h4>
+                      <p className="text-sm text-green-700 mb-3">These are the baseline features you MUST have to compete:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {sharedFeatures.map((feature, i) => (
+                          <span key={i} className="px-3 py-1.5 bg-green-100 text-green-800 text-sm rounded-lg font-medium">
+                            {feature}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </Card>
+
+            <div className="flex justify-between">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => setCurrentStep(1)}
+                    >
+                      <ChevronLeft className="w-5 h-5" /> Back
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Go back to the problem step</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => setCurrentStep(3)}
+                      disabled={competitors.length === 0}
+                      data-testid="button-next-step2"
+                    >
+                      Next: Core Features <ChevronRight className="w-5 h-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Review core features from competitor analysis</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </motion.div>
+        )}
+
+        {currentStep === 3 && (
+          <motion.div
+            key="step3"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
+          >
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
                 <CoreFeaturesIcon className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">What Core Features Do You Need?</h2>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Core Features (From Competitors)</h2>
               <p className="text-slate-500 max-w-lg mx-auto">
-                The baseline features ALL competitors have. Users <strong>expect</strong> these.
+                These are the baseline features users <strong>expect</strong>. Edit or add more below.
               </p>
             </div>
 
@@ -580,12 +787,12 @@ HANGOUTS:
                       variant="outline"
                       size="lg"
                       className="gap-2"
-                      onClick={() => setCurrentStep(1)}
+                      onClick={() => setCurrentStep(2)}
                     >
                       <ChevronLeft className="w-5 h-5" /> Back
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Go back to the problem step</TooltipContent>
+                  <TooltipContent>Go back to competitors</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
               <TooltipProvider>
@@ -594,9 +801,9 @@ HANGOUTS:
                     <Button
                       size="lg"
                       className="gap-2"
-                      onClick={() => setCurrentStep(3)}
+                      onClick={() => setCurrentStep(4)}
                       disabled={coreFeatures.length === 0}
-                      data-testid="button-next-step2"
+                      data-testid="button-next-step3"
                     >
                       Next: Your USP <ChevronRight className="w-5 h-5" />
                     </Button>
@@ -608,9 +815,9 @@ HANGOUTS:
           </motion.div>
         )}
 
-        {currentStep === 3 && (
+        {currentStep === 4 && (
           <motion.div
-            key="step3"
+            key="step4"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -736,7 +943,7 @@ HANGOUTS:
                       variant="outline"
                       size="lg"
                       className="gap-2"
-                      onClick={() => setCurrentStep(2)}
+                      onClick={() => setCurrentStep(3)}
                     >
                       <ChevronLeft className="w-5 h-5" /> Back
                     </Button>
@@ -750,9 +957,9 @@ HANGOUTS:
                     <Button
                       size="lg"
                       className="gap-2"
-                      onClick={() => setCurrentStep(4)}
+                      onClick={() => setCurrentStep(5)}
                       disabled={uspFeatures.length === 0}
-                      data-testid="button-next-step3"
+                      data-testid="button-next-step4"
                     >
                       Next: Your Pitch <ChevronRight className="w-5 h-5" />
                     </Button>
@@ -764,9 +971,9 @@ HANGOUTS:
           </motion.div>
         )}
 
-        {currentStep === 4 && (
+        {currentStep === 5 && (
           <motion.div
-            key="step4"
+            key="step5"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -956,7 +1163,7 @@ HANGOUTS:
                       variant="outline"
                       size="lg"
                       className="gap-2"
-                      onClick={() => setCurrentStep(3)}
+                      onClick={() => setCurrentStep(4)}
                     >
                       <ChevronLeft className="w-5 h-5" /> Back
                     </Button>
@@ -970,9 +1177,9 @@ HANGOUTS:
                     <Button
                       size="lg"
                       className="gap-2"
-                      onClick={() => setCurrentStep(5)}
+                      onClick={() => setCurrentStep(6)}
                       disabled={!finalPitch.trim()}
-                      data-testid="button-next-step4"
+                      data-testid="button-next-step5"
                     >
                       Meet Your Customer <ChevronRight className="w-5 h-5" />
                     </Button>
@@ -984,9 +1191,9 @@ HANGOUTS:
           </motion.div>
         )}
 
-        {currentStep === 5 && (
+        {currentStep === 6 && (
           <motion.div
-            key="step5"
+            key="step6"
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
@@ -1089,7 +1296,7 @@ HANGOUTS:
                       variant="outline"
                       size="lg"
                       className="gap-2"
-                      onClick={() => setCurrentStep(4)}
+                      onClick={() => setCurrentStep(5)}
                     >
                       <ChevronLeft className="w-5 h-5" /> Back
                     </Button>
@@ -1117,7 +1324,7 @@ HANGOUTS:
           </motion.div>
         )}
 
-        {currentStep === 6 && (
+        {currentStep === 7 && (
           <motion.div
             key="complete"
             initial={{ opacity: 0, scale: 0.95 }}
