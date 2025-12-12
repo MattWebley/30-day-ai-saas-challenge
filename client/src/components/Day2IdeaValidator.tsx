@@ -256,6 +256,11 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
 
           {/* Validation Prompts */}
           <div className="space-y-6">
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <p className="text-sm text-slate-700">
+                <strong>How to use these prompts:</strong> Copy the prompt below and paste it into ChatGPT, Claude, or any AI assistant. Or click "Use Our AI" to get an instant response here.
+              </p>
+            </div>
             {VALIDATION_PROMPTS.map((prompt) => {
               const filledPrompt = getFilledPrompt(prompt.prompt, shortlistedIdeas[selectedIdeaIndex]);
               const aiResponse = aiResponses[prompt.id]?.[selectedIdeaIndex];
