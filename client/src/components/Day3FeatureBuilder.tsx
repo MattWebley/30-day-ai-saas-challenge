@@ -7,6 +7,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useTestMode } from "@/contexts/TestModeContext";
 import { Sparkles, Loader2, ChevronRight, ChevronLeft, Plus, X, Check } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const BleedingNeckIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" fill="none" className={className} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -312,34 +318,48 @@ Give me exactly 6 ideas, one per line:`;
                 data-testid="input-bleeding-neck"
               />
               <div className="flex justify-end pt-4 border-t border-slate-100 mt-4">
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  onClick={generateBleedingNeck}
-                  disabled={isGenerating || bleedingNeckAttempts >= MAX_AI_ATTEMPTS}
-                  data-testid="button-generate-problem"
-                >
-                  {isGenerating ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Thinking...</>
-                  ) : bleedingNeckAttempts >= MAX_AI_ATTEMPTS ? (
-                    <>No attempts left</>
-                  ) : (
-                    <><Sparkles className="w-4 h-4" /> Write It For Me{MAX_AI_ATTEMPTS - bleedingNeckAttempts === 1 ? ' (1 left)' : ''}</>
-                  )}
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className="gap-2"
+                        onClick={generateBleedingNeck}
+                        disabled={isGenerating || bleedingNeckAttempts >= MAX_AI_ATTEMPTS}
+                        data-testid="button-generate-problem"
+                      >
+                        {isGenerating ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Thinking...</>
+                        ) : bleedingNeckAttempts >= MAX_AI_ATTEMPTS ? (
+                          <>No attempts left</>
+                        ) : (
+                          <><Sparkles className="w-4 h-4" /> Write It For Me{MAX_AI_ATTEMPTS - bleedingNeckAttempts === 1 ? ' (1 left)' : ''}</>
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>AI will write a problem statement for you</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </Card>
 
             <div className="flex justify-end">
-              <Button
-                size="lg"
-                className="gap-2"
-                onClick={() => setCurrentStep(2)}
-                disabled={!bleedingNeckProblem.trim()}
-                data-testid="button-next-step1"
-              >
-                Next: Core Features <ChevronRight className="w-5 h-5" />
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => setCurrentStep(2)}
+                      disabled={!bleedingNeckProblem.trim()}
+                      data-testid="button-next-step1"
+                    >
+                      Next: Core Features <ChevronRight className="w-5 h-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Continue to define your core features</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </motion.div>
         )}
@@ -398,43 +418,64 @@ Give me exactly 6 ideas, one per line:`;
                 </div>
 
                 <div className="text-center">
-                  <Button
-                    variant="outline"
-                    className="gap-2"
-                    onClick={generateCoreFeatures}
-                    disabled={isGenerating || coreAttempts >= MAX_AI_ATTEMPTS}
-                    data-testid="button-generate-core"
-                  >
-                    {isGenerating ? (
-                      <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing competitors...</>
-                    ) : coreAttempts >= MAX_AI_ATTEMPTS ? (
-                      <>No attempts left</>
-                    ) : (
-                      <><Sparkles className="w-4 h-4" /> Generate with AI{MAX_AI_ATTEMPTS - coreAttempts === 1 ? ' (1 left)' : ''}</>
-                    )}
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="gap-2"
+                          onClick={generateCoreFeatures}
+                          disabled={isGenerating || coreAttempts >= MAX_AI_ATTEMPTS}
+                          data-testid="button-generate-core"
+                        >
+                          {isGenerating ? (
+                            <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing competitors...</>
+                          ) : coreAttempts >= MAX_AI_ATTEMPTS ? (
+                            <>No attempts left</>
+                          ) : (
+                            <><Sparkles className="w-4 h-4" /> Generate with AI{MAX_AI_ATTEMPTS - coreAttempts === 1 ? ' (1 left)' : ''}</>
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>AI analyzes competitors to find core features</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </div>
               </div>
             </Card>
 
             <div className="flex justify-between">
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-2"
-                onClick={() => setCurrentStep(1)}
-              >
-                <ChevronLeft className="w-5 h-5" /> Back
-              </Button>
-              <Button
-                size="lg"
-                className="gap-2"
-                onClick={() => setCurrentStep(3)}
-                disabled={coreFeatures.length === 0}
-                data-testid="button-next-step2"
-              >
-                Next: Your USP <ChevronRight className="w-5 h-5" />
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => setCurrentStep(1)}
+                    >
+                      <ChevronLeft className="w-5 h-5" /> Back
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Go back to the problem step</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => setCurrentStep(3)}
+                      disabled={coreFeatures.length === 0}
+                      data-testid="button-next-step2"
+                    >
+                      Next: Your USP <ChevronRight className="w-5 h-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Continue to define your unique features</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </motion.div>
         )}
@@ -532,44 +573,65 @@ Give me exactly 6 ideas, one per line:`;
                       <div className="flex-1 h-px bg-slate-200" />
                     </div>
 
-                    <Button
-                      variant="outline"
-                      className="w-full gap-2"
-                      onClick={generateUSPFeatures}
-                      disabled={isGenerating || uspAttempts >= MAX_AI_ATTEMPTS}
-                      data-testid="button-generate-usp"
-                    >
-                      {isGenerating ? (
-                        <><Loader2 className="w-4 h-4 animate-spin" /> Generating ideas...</>
-                      ) : uspAttempts >= MAX_AI_ATTEMPTS ? (
-                        <>No attempts left</>
-                      ) : (
-                        <><Sparkles className="w-4 h-4" /> Generate 6 Ideas{MAX_AI_ATTEMPTS - uspAttempts === 1 ? ' (1 left)' : ''}</>
-                      )}
-                    </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className="w-full gap-2"
+                            onClick={generateUSPFeatures}
+                            disabled={isGenerating || uspAttempts >= MAX_AI_ATTEMPTS}
+                            data-testid="button-generate-usp"
+                          >
+                            {isGenerating ? (
+                              <><Loader2 className="w-4 h-4 animate-spin" /> Generating ideas...</>
+                            ) : uspAttempts >= MAX_AI_ATTEMPTS ? (
+                              <>No attempts left</>
+                            ) : (
+                              <><Sparkles className="w-4 h-4" /> Generate 6 Ideas{MAX_AI_ATTEMPTS - uspAttempts === 1 ? ' (1 left)' : ''}</>
+                            )}
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>AI generates 6 unique feature ideas</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                 )}
               </div>
             </Card>
 
             <div className="flex justify-between">
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-2"
-                onClick={() => setCurrentStep(2)}
-              >
-                <ChevronLeft className="w-5 h-5" /> Back
-              </Button>
-              <Button
-                size="lg"
-                className="gap-2 bg-green-600 hover:bg-green-700"
-                onClick={handleFinish}
-                disabled={uspFeatures.length === 0}
-                data-testid="button-finish"
-              >
-                <Check className="w-5 h-5" /> Finish
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => setCurrentStep(2)}
+                    >
+                      <ChevronLeft className="w-5 h-5" /> Back
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Go back to core features</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="lg"
+                      className="gap-2 bg-green-600 hover:bg-green-700"
+                      onClick={handleFinish}
+                      disabled={uspFeatures.length === 0}
+                      data-testid="button-finish"
+                    >
+                      <Check className="w-5 h-5" /> Finish
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Save your features and see the summary</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </motion.div>
         )}
@@ -631,14 +693,21 @@ Give me exactly 6 ideas, one per line:`;
               </Card>
             </div>
 
-            <Button 
-              size="lg" 
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={onComplete}
-              data-testid="button-complete-day3"
-            >
-              Complete Day 3 <ChevronRight className="w-5 h-5" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    size="lg" 
+                    className="w-full h-14 text-lg font-bold gap-2"
+                    onClick={onComplete}
+                    data-testid="button-complete-day3"
+                  >
+                    Complete Day 3 <ChevronRight className="w-5 h-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Mark Day 3 as complete and move on</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </motion.div>
         )}
       </AnimatePresence>
