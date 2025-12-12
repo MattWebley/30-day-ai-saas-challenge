@@ -6,6 +6,12 @@ import { apiRequest } from "@/lib/queryClient";
 import { Copy, Check, Sparkles, Loader2, ChevronRight, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Idea {
   title: string;
@@ -212,6 +218,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   }
 
   return (
+    <TooltipProvider>
     <div className="space-y-8">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Validate Your Top 5 Ideas</h2>
@@ -275,31 +282,41 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
                   </div>
 
                   <div className="flex gap-3">
-                    <Button
-                      variant="outline"
-                      className="gap-2"
-                      onClick={() => copyToClipboard(filledPrompt, `${prompt.id}-${selectedIdeaIndex}`)}
-                      data-testid={`copy-prompt-${prompt.id}`}
-                    >
-                      {copiedId === `${prompt.id}-${selectedIdeaIndex}` ? (
-                        <><Check className="w-4 h-4" /> Copied!</>
-                      ) : (
-                        <><Copy className="w-4 h-4" /> Copy Prompt</>
-                      )}
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="gap-2"
+                          onClick={() => copyToClipboard(filledPrompt, `${prompt.id}-${selectedIdeaIndex}`)}
+                          data-testid={`copy-prompt-${prompt.id}`}
+                        >
+                          {copiedId === `${prompt.id}-${selectedIdeaIndex}` ? (
+                            <><Check className="w-4 h-4" /> Copied!</>
+                          ) : (
+                            <><Copy className="w-4 h-4" /> Copy Prompt</>
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Copy this prompt to paste into ChatGPT or Claude</TooltipContent>
+                    </Tooltip>
 
-                    <Button
-                      className="gap-2"
-                      onClick={() => handleRunAi(prompt.id, selectedIdeaIndex)}
-                      disabled={isLoading}
-                      data-testid={`run-ai-${prompt.id}`}
-                    >
-                      {isLoading ? (
-                        <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>
-                      ) : (
-                        <><Sparkles className="w-4 h-4" /> Use Our AI</>
-                      )}
-                    </Button>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          className="gap-2"
+                          onClick={() => handleRunAi(prompt.id, selectedIdeaIndex)}
+                          disabled={isLoading}
+                          data-testid={`run-ai-${prompt.id}`}
+                        >
+                          {isLoading ? (
+                            <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>
+                          ) : (
+                            <><Sparkles className="w-4 h-4" /> Use Our AI</>
+                          )}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Get an instant AI analysis right here</TooltipContent>
+                    </Tooltip>
                   </div>
 
                   {aiResponse && (
@@ -327,15 +344,20 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
               <p className="text-sm text-amber-700 font-semibold mb-4">
                 "There is NO perfect idea. The perfect idea is the one you actually BUILD."
               </p>
-              <Button
-                size="lg"
-                className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-                onClick={() => handleSelectFinalIdea(selectedIdeaIndex!)}
-                data-testid="button-choose-idea"
-              >
-                <Trophy className="w-5 h-5" />
-                Choose "{shortlistedIdeas[selectedIdeaIndex].title}"
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="lg"
+                    className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                    onClick={() => handleSelectFinalIdea(selectedIdeaIndex!)}
+                    data-testid="button-choose-idea"
+                  >
+                    <Trophy className="w-5 h-5" />
+                    Choose "{shortlistedIdeas[selectedIdeaIndex].title}"
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Lock in this idea and move to Day 3</TooltipContent>
+              </Tooltip>
             </div>
           </Card>
         </motion.div>
@@ -347,5 +369,6 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
         </div>
       )}
     </div>
+    </TooltipProvider>
   );
 }
