@@ -504,7 +504,7 @@ HANGOUTS:
 
             <Card className="p-6 border-2 border-slate-200">
               <Textarea
-                placeholder="e.g., Small business owners waste 10+ hours/week on manual bookkeeping because existing tools are too complex..."
+                placeholder="e.g. Small business owners waste 10+ hours/week on manual bookkeeping because existing tools are too complex..."
                 value={bleedingNeckProblem}
                 onChange={(e) => setBleedingNeckProblem(e.target.value)}
                 className="min-h-[120px] text-lg border-0 shadow-none focus-visible:ring-0 resize-none"
@@ -1002,7 +1002,7 @@ HANGOUTS:
                   WHO do you help?
                 </label>
                 <Input
-                  placeholder="e.g., busy freelancers, first-time homebuyers..."
+                  placeholder="e.g. busy freelancers, first-time homebuyers..."
                   value={who}
                   onChange={(e) => setWho(e.target.value)}
                   className="text-base"
@@ -1015,7 +1015,7 @@ HANGOUTS:
                   WHAT do you help them do?
                 </label>
                 <Input
-                  placeholder="e.g., find clients, save for retirement..."
+                  placeholder="e.g. find clients, save for retirement..."
                   value={what}
                   onChange={(e) => setWhat(e.target.value)}
                   className="text-base"
@@ -1028,7 +1028,7 @@ HANGOUTS:
                   What BENEFIT do they get?
                 </label>
                 <Input
-                  placeholder="e.g., earn more money, save 5 hours/week..."
+                  placeholder="e.g. earn more money, save 5 hours/week..."
                   value={benefit}
                   onChange={(e) => setBenefit(e.target.value)}
                   className="text-base"

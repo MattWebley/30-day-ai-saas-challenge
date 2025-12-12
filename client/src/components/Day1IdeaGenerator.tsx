@@ -184,7 +184,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
               What do you know a lot about? (Knowledge/Expertise)
             </label>
             <Textarea
-              placeholder="e.g., Digital marketing, accounting, fitness training, real estate..."
+              placeholder="e.g. Digital marketing, accounting, fitness training, real estate..."
               value={inputs.knowledge}
               onChange={(e) => setInputs(prev => ({ ...prev, knowledge: e.target.value }))}
               className="min-h-[80px]"
@@ -197,7 +197,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
               What are you good at? (Skills)
             </label>
             <Textarea
-              placeholder="e.g., Writing, design, data analysis, project management..."
+              placeholder="e.g. Writing, design, data analysis, project management..."
               value={inputs.skills}
               onChange={(e) => setInputs(prev => ({ ...prev, skills: e.target.value }))}
               className="min-h-[80px]"
@@ -210,7 +210,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
               What do you enjoy doing? (Interests/Passions)
             </label>
             <Textarea
-              placeholder="e.g., Helping small businesses, solving puzzles, teaching..."
+              placeholder="e.g. Helping small businesses, solving puzzles, teaching..."
               value={inputs.interests}
               onChange={(e) => setInputs(prev => ({ ...prev, interests: e.target.value }))}
               className="min-h-[80px]"
@@ -223,7 +223,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
               What's your work experience? (Optional)
             </label>
             <Textarea
-              placeholder="e.g., 5 years in sales, ran a restaurant, worked in healthcare..."
+              placeholder="e.g. 5 years in sales, ran a restaurant, worked in healthcare..."
               value={inputs.experience}
               onChange={(e) => setInputs(prev => ({ ...prev, experience: e.target.value }))}
               className="min-h-[80px]"
@@ -318,7 +318,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Idea Name</label>
                   <Input
-                    placeholder="e.g., AI Resume Builder"
+                    placeholder="e.g. AI Resume Builder"
                     value={customIdea.title}
                     onChange={(e) => setCustomIdea(prev => ({ ...prev, title: e.target.value }))}
                     data-testid="input-custom-title"
@@ -337,7 +337,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Target Customer (optional)</label>
                   <Input
-                    placeholder="e.g., Job seekers, freelancers..."
+                    placeholder="e.g. Job seekers, freelancers..."
                     value={customIdea.targetCustomer}
                     onChange={(e) => setCustomIdea(prev => ({ ...prev, targetCustomer: e.target.value }))}
                     data-testid="input-custom-target"

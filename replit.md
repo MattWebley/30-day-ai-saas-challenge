@@ -22,7 +22,7 @@ A gamified daily challenge application that guides users from zero to a working 
 - Day 1: Now allows selecting 3-5 ideas (instead of forcing exactly 5)
 - Day 2: Hover tooltips on idea cards show full description and target customer
 - Day 4: Redesigned as AI-driven screen planner (analyzes features/ICP to recommend screens)
-- All prompts clearly labeled as "Prompt" (e.g., "Market Viability Check Prompt")
+- All prompts clearly labeled as "Prompt" (e.g. "Market Viability Check Prompt")
 - Mobile sidebar now scrolls properly
 
 ### Day 3: Core Features & USP Generator (Dec 11, 2025)
