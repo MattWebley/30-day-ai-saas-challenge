@@ -7,9 +7,9 @@ import { ArrowRight, Sparkles, CheckCircle2, Zap, Trophy, Play } from "lucide-re
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-white font-sans text-black">
+    <div className="min-h-screen bg-white font-sans text-slate-900">
       {/* Navbar - Clean & Minimal */}
-      <header className="border-b border-black bg-white sticky top-0 z-50">
+      <header className="border-b border-slate-100 bg-white sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img 
@@ -20,9 +20,9 @@ export default function Landing() {
             <span className="font-bold text-xl tracking-tight">30 Day AI SaaS Challenge</span>
           </div>
           <div className="flex gap-4 items-center">
-            <span className="hidden md:inline text-sm font-medium text-slate-600">Already a member?</span>
+            <span className="hidden md:inline text-sm font-medium text-slate-500">Already a member?</span>
             <a href="/api/login">
-              <Button variant="ghost" className="font-medium text-black hover:text-primary hover:bg-blue-50">Login</Button>
+              <Button variant="ghost" className="font-medium text-slate-900 hover:text-primary hover:bg-blue-50">Login</Button>
             </a>
             <a href="/api/login">
               <Button className="rounded-lg px-6 font-semibold shadow-none">Start Now</Button>
@@ -45,12 +45,12 @@ export default function Landing() {
               <span>The #1 Challenge for New Founders</span>
             </div>
             
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-black leading-[1.1]">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 leading-[1.1]">
               Build your AI SaaS <br className="hidden md:block" />
               <span className="text-primary">in just 30 days.</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-medium">
+            <p className="text-xl md:text-2xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
               No code. No confusion. Just 5-minute daily micro-tasks that take you from idea to a product ready for paying customers.
             </p>
 
@@ -62,7 +62,7 @@ export default function Landing() {
               </a>
             </div>
             
-            <div className="pt-6 flex items-center justify-center gap-6 text-sm font-medium text-slate-600">
+            <div className="pt-6 flex items-center justify-center gap-6 text-sm font-medium text-slate-500">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-primary" />
                 <span>No credit card needed</span>
@@ -90,7 +90,7 @@ export default function Landing() {
               </div>
               <div className="space-y-4">
                 <h2 className="text-3xl md:text-4xl font-bold">See how it works</h2>
-                <p className="text-slate-600 max-w-xl mx-auto text-lg">
+                <p className="text-slate-300 max-w-xl mx-auto text-lg">
                   Watch the 2-minute walkthrough of how we simplify the entire SaaS building process.
                 </p>
               </div>
@@ -99,11 +99,11 @@ export default function Landing() {
         </section>
 
         {/* Feature Grid - Clean, Bordered Cards */}
-        <section className="py-24 bg-white border-t border-black">
+        <section className="py-24 bg-slate-50 border-t border-slate-200">
           <div className="max-w-6xl mx-auto px-6">
             <div className="text-center mb-16 space-y-4">
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-black">Why this actually works</h2>
-              <p className="text-slate-600 text-lg max-w-2xl mx-auto">Most courses fail because they are too long. We fixed that.</p>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900">Why this actually works</h2>
+              <p className="text-slate-500 text-lg max-w-2xl mx-auto">Most courses fail because they are too long. We fixed that.</p>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -131,12 +131,12 @@ export default function Landing() {
                   transition={{ delay: i * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <Card className="p-8 h-full bg-white border border-black shadow-sm hover:shadow-md hover:border-primary/50 transition-all rounded-xl">
+                  <Card className="p-8 h-full bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-primary/50 transition-all rounded-xl">
                     <div className="w-14 h-14 rounded-lg bg-blue-50 flex items-center justify-center mb-6">
                       {feature.icon}
                     </div>
-                    <h3 className="text-xl font-bold mb-3 text-black">{feature.title}</h3>
-                    <p className="text-slate-600 leading-relaxed font-medium">
+                    <h3 className="text-xl font-bold mb-3 text-slate-900">{feature.title}</h3>
+                    <p className="text-slate-500 leading-relaxed font-medium">
                       {feature.desc}
                     </p>
                   </Card>

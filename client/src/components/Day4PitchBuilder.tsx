@@ -190,8 +190,8 @@ HANGOUTS:
 
   if (!chosenIdea) {
     return (
-      <Card className="p-8 border-2 border-black text-center">
-        <h3 className="text-xl font-bold text-black mb-2">Complete Previous Days First</h3>
+      <Card className="p-8 border-2 border-slate-200 text-center">
+        <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Previous Days First</h3>
         <p className="text-slate-600">
           You need to complete Days 1-3 before crafting your pitch.
         </p>
@@ -201,9 +201,9 @@ HANGOUTS:
 
   return (
     <div className="space-y-6">
-      <Card className="p-4 border border-black bg-white">
-        <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">Your Product:</p>
-        <h3 className="font-bold text-black">{chosenIdea.title}</h3>
+      <Card className="p-4 border border-slate-200 bg-slate-50">
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Your Product:</p>
+        <h3 className="font-bold text-slate-900">{chosenIdea.title}</h3>
       </Card>
 
       <AnimatePresence mode="wait">
@@ -215,7 +215,7 @@ HANGOUTS:
             exit={{ opacity: 0, x: -20 }}
             className="space-y-6"
           >
-            <Card className="p-5 border-2 border-black bg-white">
+            <Card className="p-5 border-2 border-black bg-slate-50">
               <p className="text-center text-sm font-medium text-slate-600 mb-2">The 10-second pitch formula:</p>
               <div className="text-center text-xl font-bold text-black">
                 "I help <span className="text-blue-600">[WHO]</span> do <span className="text-blue-600">[WHAT]</span> so they can <span className="text-blue-600">[BENEFIT]</span>"
@@ -223,8 +223,8 @@ HANGOUTS:
             </Card>
 
             <div className="space-y-4">
-              <Card className="p-4 border-2 border-black">
-                <label className="block text-sm font-bold text-black mb-2">
+              <Card className="p-4 border-2 border-slate-200">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   WHO do you help?
                 </label>
                 <Input
@@ -236,8 +236,8 @@ HANGOUTS:
                 />
               </Card>
 
-              <Card className="p-4 border-2 border-black">
-                <label className="block text-sm font-bold text-black mb-2">
+              <Card className="p-4 border-2 border-slate-200">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   WHAT do you help them do?
                 </label>
                 <Input
@@ -249,8 +249,8 @@ HANGOUTS:
                 />
               </Card>
 
-              <Card className="p-4 border-2 border-black">
-                <label className="block text-sm font-bold text-black mb-2">
+              <Card className="p-4 border-2 border-slate-200">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   What BENEFIT do they get?
                 </label>
                 <Input
@@ -265,16 +265,16 @@ HANGOUTS:
 
             {who && what && benefit && (
               <>
-                <Card className="p-4 border-2 border-black bg-white">
-                  <p className="text-xs font-bold text-slate-600 uppercase mb-1">Your draft pitch:</p>
-                  <p className="text-lg font-medium text-black">
+                <Card className="p-4 border-2 border-black bg-slate-50">
+                  <p className="text-xs font-bold text-slate-500 uppercase mb-1">Your draft pitch:</p>
+                  <p className="text-lg font-medium text-slate-900">
                     "I help {who} {what} so they can {benefit}."
                   </p>
                 </Card>
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="font-bold text-black">AI Pitch Variations</p>
+                    <p className="font-bold text-slate-900">AI Pitch Variations</p>
                     {pitchVariations.length === 0 ? (
                       <TooltipProvider>
                         <Tooltip>
@@ -329,16 +329,16 @@ HANGOUTS:
                           className={`w-full p-3 rounded-lg border-2 text-left transition-all cursor-pointer text-sm ${
                             selectedPitch === i
                               ? 'border-black bg-black text-white'
-                              : 'border-black hover:border-black bg-white'
+                              : 'border-slate-200 hover:border-slate-300 bg-white'
                           }`}
                         >
                           <div className="flex items-start gap-2">
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                              selectedPitch === i ? 'border-white bg-white' : 'border-black'
+                              selectedPitch === i ? 'border-white bg-white' : 'border-slate-300'
                             }`}>
                               {selectedPitch === i && <Check className="w-3 h-3 text-black" />}
                             </div>
-                            <span className={selectedPitch === i ? 'text-white' : 'text-black'}>
+                            <span className={selectedPitch === i ? 'text-white' : 'text-slate-800'}>
                               {pitch}
                             </span>
                           </div>
@@ -349,8 +349,8 @@ HANGOUTS:
                 </div>
 
                 {selectedPitch !== null && (
-                  <Card className="p-4 border-2 border-black">
-                    <label className="block text-sm font-bold text-black mb-2">
+                  <Card className="p-4 border-2 border-slate-200">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
                       Your final pitch (edit if needed):
                     </label>
                     <Textarea
@@ -417,17 +417,17 @@ HANGOUTS:
                   <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-black mb-2">Your Ideal Customer</h2>
-              <p className="text-slate-600">Discover who they are and where to find them.</p>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Ideal Customer</h2>
+              <p className="text-slate-500">Discover who they are and where to find them.</p>
             </div>
 
-            <Card className="p-4 border-2 border-black bg-white">
-              <p className="text-sm font-bold text-slate-600 uppercase mb-1">You're building for:</p>
+            <Card className="p-4 border-2 border-black bg-slate-50">
+              <p className="text-sm font-bold text-slate-500 uppercase mb-1">You're building for:</p>
               <p className="text-lg font-bold text-black">{who}</p>
             </Card>
 
             {!icpData ? (
-              <Card className="p-6 border-2 border-black text-center">
+              <Card className="p-6 border-2 border-slate-200 text-center">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -452,7 +452,7 @@ HANGOUTS:
               </Card>
             ) : (
               <div className="space-y-4">
-                <Card className="p-4 border-2 border-black">
+                <Card className="p-4 border-2 border-slate-200">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-7 h-7 rounded-full bg-black flex items-center justify-center">
                       <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -460,12 +460,12 @@ HANGOUTS:
                         <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
                       </svg>
                     </div>
-                    <h4 className="font-bold text-black">Your Ideal Customer</h4>
+                    <h4 className="font-bold text-slate-900">Your Ideal Customer</h4>
                   </div>
-                  <p className="text-black leading-relaxed text-sm">{icpData.description}</p>
+                  <p className="text-slate-700 leading-relaxed text-sm">{icpData.description}</p>
                 </Card>
 
-                <Card className="p-4 border-2 border-black">
+                <Card className="p-4 border-2 border-slate-200">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-7 h-7 rounded-full bg-black flex items-center justify-center">
                       <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -474,15 +474,15 @@ HANGOUTS:
                         <ellipse cx="12" cy="12" rx="4" ry="10" />
                       </svg>
                     </div>
-                    <h4 className="font-bold text-black">7 Places They Hang Out</h4>
+                    <h4 className="font-bold text-slate-900">7 Places They Hang Out</h4>
                   </div>
                   <div className="space-y-2">
                     {icpData.hangouts.map((hangout, i) => (
-                      <div key={i} className="flex items-start gap-2 p-2 bg-white rounded-lg border border-black">
+                      <div key={i} className="flex items-start gap-2 p-2 bg-slate-50 rounded-lg border border-slate-100">
                         <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
                           {i + 1}
                         </span>
-                        <span className="text-black text-sm">{hangout}</span>
+                        <span className="text-slate-700 text-sm">{hangout}</span>
                       </div>
                     ))}
                   </div>

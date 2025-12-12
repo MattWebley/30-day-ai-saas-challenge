@@ -142,8 +142,8 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
 
   if (!chosenIdea || features.length === 0) {
     return (
-      <Card className="p-8 border-2 border-black text-center">
-        <h3 className="text-xl font-bold text-black mb-2">Complete Previous Days First</h3>
+      <Card className="p-8 border-2 border-slate-200 text-center">
+        <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Previous Days First</h3>
         <p className="text-slate-600">
           You need to define your features on Day 3 before prioritizing them.
         </p>
@@ -153,12 +153,12 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
 
   return (
     <div className="space-y-6">
-      <Card className="p-4 border border-black bg-white">
-        <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">Your Product:</p>
-        <h3 className="font-bold text-black">{chosenIdea.title}</h3>
+      <Card className="p-4 border border-slate-200 bg-slate-50">
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Your Product:</p>
+        <h3 className="font-bold text-slate-900">{chosenIdea.title}</h3>
       </Card>
 
-      <Card className="p-5 border-2 border-black bg-white">
+      <Card className="p-5 border-2 border-black bg-slate-50">
         <p className="text-center text-lg font-bold text-black mb-2">
           Your MVP needs ONE killer feature
         </p>
@@ -169,11 +169,11 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="font-bold text-black">Categorize Your Features</h3>
+          <h3 className="font-bold text-slate-900">Categorize Your Features</h3>
           <div className="flex gap-4 text-xs">
             <span className="text-green-600 font-medium">Must: {mustHaveCount}</span>
             <span className="text-amber-600 font-medium">Nice: {niceToHaveCount}</span>
-            <span className="text-slate-600 font-medium">Cut: {cutCount}</span>
+            <span className="text-slate-400 font-medium">Cut: {cutCount}</span>
           </div>
         </div>
 
@@ -183,12 +183,12 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
             className={`p-3 rounded-lg border-2 transition-all ${
               feature.priority === 'must' ? 'border-green-500 bg-green-50' :
               feature.priority === 'nice' ? 'border-amber-400 bg-amber-50' :
-              feature.priority === 'cut' ? 'border-slate-600 bg-white opacity-60' :
-              'border-black bg-white'
+              feature.priority === 'cut' ? 'border-slate-300 bg-slate-100 opacity-60' :
+              'border-slate-200 bg-white'
             }`}
           >
             <div className="flex items-center justify-between gap-3">
-              <span className={`font-medium ${feature.priority === 'cut' ? 'line-through text-slate-600' : 'text-black'}`}>
+              <span className={`font-medium ${feature.priority === 'cut' ? 'line-through text-slate-400' : 'text-slate-800'}`}>
                 {feature.name}
               </span>
               <div className="flex gap-1">
@@ -197,7 +197,7 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
                   className={`p-2 rounded-lg border-2 transition-all cursor-pointer ${
                     feature.priority === 'must' 
                       ? 'border-green-500 bg-green-500 text-white' 
-                      : 'border-black hover:border-green-500 text-slate-600 hover:text-green-500'
+                      : 'border-slate-200 hover:border-green-500 text-slate-400 hover:text-green-500'
                   }`}
                   title="Must Have"
                 >
@@ -208,7 +208,7 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
                   className={`p-2 rounded-lg border-2 transition-all cursor-pointer ${
                     feature.priority === 'nice' 
                       ? 'border-amber-400 bg-amber-400 text-white' 
-                      : 'border-black hover:border-amber-400 text-slate-600 hover:text-amber-500'
+                      : 'border-slate-200 hover:border-amber-400 text-slate-400 hover:text-amber-500'
                   }`}
                   title="Nice to Have"
                 >
@@ -218,8 +218,8 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
                   onClick={() => setPriority(i, 'cut')}
                   className={`p-2 rounded-lg border-2 transition-all cursor-pointer ${
                     feature.priority === 'cut' 
-                      ? 'border-slate-600 bg-slate-600 text-white' 
-                      : 'border-black hover:border-slate-600 text-slate-600 hover:text-slate-600'
+                      ? 'border-slate-400 bg-slate-400 text-white' 
+                      : 'border-slate-200 hover:border-slate-400 text-slate-400 hover:text-slate-500'
                   }`}
                   title="Cut It"
                 >
@@ -232,9 +232,9 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
       </div>
 
       {allCategorized && mustHaveCount > 0 && (
-        <Card className="p-5 border-2 border-black space-y-4">
+        <Card className="p-5 border-2 border-slate-200 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-black">What's Your ONE Killer Feature?</h3>
+            <h3 className="font-bold text-slate-900">What's Your ONE Killer Feature?</h3>
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -275,7 +275,7 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer ${
                     killerFeature === f.name
                       ? 'bg-black text-white'
-                      : 'bg-white border border-black text-black hover:bg-blue-50'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
                 >
                   {f.name}
@@ -295,9 +295,9 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
 
       {killerFeature && (
         <Card className="p-5 border-2 border-black bg-black text-white">
-          <p className="text-xs font-bold text-slate-600 uppercase mb-1">Your MVP's Killer Feature:</p>
+          <p className="text-xs font-bold text-slate-400 uppercase mb-1">Your MVP's Killer Feature:</p>
           <p className="text-xl font-bold">{killerFeature}</p>
-          <p className="text-sm text-slate-600 mt-2">
+          <p className="text-sm text-slate-300 mt-2">
             This is what you'll build first. Everything else comes later.
           </p>
         </Card>

@@ -432,7 +432,7 @@ HANGOUTS:
     return (
       <Card className="p-8 border-2 border-amber-200 bg-amber-50 text-center">
         <BleedingNeckIcon className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-black mb-2">Complete Day 2 First!</h3>
+        <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Day 2 First!</h3>
         <p className="text-slate-600">
           You need to choose your final idea in Day 2 before defining features here.
         </p>
@@ -451,9 +451,9 @@ HANGOUTS:
 
   return (
     <div className="space-y-6">
-      <Card className="p-4 border border-black bg-white">
-        <p className="text-xs font-bold text-slate-600 uppercase tracking-wide mb-1">Building:</p>
-        <h3 className="font-bold text-black">{chosenIdea.title}</h3>
+      <Card className="p-4 border border-slate-200 bg-slate-50">
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Building:</p>
+        <h3 className="font-bold text-slate-900">{chosenIdea.title}</h3>
       </Card>
 
       {currentStep < 7 && (
@@ -466,16 +466,16 @@ HANGOUTS:
                     ? 'bg-green-500 text-white' 
                     : currentStep === step.num 
                       ? 'bg-black text-white' 
-                      : 'bg-slate-600 text-slate-600'
+                      : 'bg-slate-200 text-slate-400'
                 }`}
               >
                 {currentStep > step.num ? <Check className="w-3 h-3" /> : step.num}
               </div>
-              <span className={`ml-1 text-xs font-medium ${currentStep >= step.num ? 'text-black' : 'text-slate-600'}`}>
+              <span className={`ml-1 text-xs font-medium ${currentStep >= step.num ? 'text-slate-900' : 'text-slate-400'}`}>
                 {step.label}
               </span>
               {idx < steps.length - 1 && (
-                <div className={`w-6 h-0.5 mx-2 ${currentStep > step.num ? 'bg-green-500' : 'bg-slate-600'}`} />
+                <div className={`w-6 h-0.5 mx-2 ${currentStep > step.num ? 'bg-green-500' : 'bg-slate-200'}`} />
               )}
             </div>
           ))}
@@ -495,14 +495,14 @@ HANGOUTS:
               <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
                 <BleedingNeckIcon className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-black mb-2">What's the Bleeding Neck Problem?</h2>
-              <p className="text-slate-600 max-w-lg mx-auto">
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">What's the Bleeding Neck Problem?</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
                 The ONE critical problem your customers are <strong>desperate</strong> to solve. 
                 So painful they'd pay almost anything to fix it.
               </p>
             </div>
 
-            <Card className="p-6 border-2 border-black">
+            <Card className="p-6 border-2 border-slate-200">
               <Textarea
                 placeholder="e.g. Small business owners waste 10+ hours/week on manual bookkeeping because existing tools are too complex..."
                 value={bleedingNeckProblem}
@@ -510,7 +510,7 @@ HANGOUTS:
                 className="min-h-[120px] text-lg border-0 shadow-none focus-visible:ring-0 resize-none"
                 data-testid="input-bleeding-neck"
               />
-              <div className="flex justify-end pt-4 border-t border-black mt-4">
+              <div className="flex justify-end pt-4 border-t border-slate-100 mt-4">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -569,13 +569,13 @@ HANGOUTS:
               <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
                 <CompetitorIcon className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-black mb-2">Who Are Your Direct Competitors?</h2>
-              <p className="text-slate-600 max-w-lg mx-auto">
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Who Are Your Direct Competitors?</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
                 Let's find SaaS products that do <strong>exactly</strong> what you're building.
               </p>
             </div>
 
-            <Card className="p-6 border-2 border-black">
+            <Card className="p-6 border-2 border-slate-200">
               <div className="text-center mb-6">
                 <TooltipProvider>
                   <Tooltip>
@@ -603,22 +603,22 @@ HANGOUTS:
 
               {competitors.length > 0 && (
                 <div className="space-y-4">
-                  <h3 className="font-bold text-black text-lg">Found {competitors.length} Direct Competitors:</h3>
+                  <h3 className="font-bold text-slate-900 text-lg">Found {competitors.length} Direct Competitors:</h3>
                   <div className="space-y-4">
                     {competitors.map((comp, i) => (
-                      <div key={i} className="border border-black rounded-lg p-4 bg-white">
+                      <div key={i} className="border border-slate-200 rounded-lg p-4 bg-white">
                         <div className="flex gap-4">
                           <img 
                             src={comp.screenshotUrl} 
                             alt={`${comp.name} screenshot`}
-                            className="w-32 h-24 object-cover rounded border border-black flex-shrink-0"
+                            className="w-32 h-24 object-cover rounded border border-slate-200 flex-shrink-0"
                             onError={(e) => {
                               (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="96" viewBox="0 0 128 96"><rect fill="%23f1f5f9" width="128" height="96"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%2394a3b8" font-size="10">Screenshot</text></svg>';
                             }}
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-bold text-black">{comp.name}</h4>
+                              <h4 className="font-bold text-slate-900">{comp.name}</h4>
                               <a 
                                 href={comp.url} 
                                 target="_blank" 
@@ -631,10 +631,10 @@ HANGOUTS:
                             </div>
                             <p className="text-sm text-slate-600 mb-3">{comp.description}</p>
                             <div>
-                              <p className="text-xs font-bold text-slate-600 uppercase mb-2">Top 5 Features:</p>
+                              <p className="text-xs font-bold text-slate-500 uppercase mb-2">Top 5 Features:</p>
                               <div className="flex flex-wrap gap-1">
                                 {comp.topFeatures.slice(0, 5).map((feature, fi) => (
-                                  <span key={fi} className="px-2 py-1 bg-white text-black text-xs rounded">
+                                  <span key={fi} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs rounded">
                                     {feature}
                                   </span>
                                 ))}
@@ -711,21 +711,21 @@ HANGOUTS:
               <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
                 <CoreFeaturesIcon className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-black mb-2">Core Features (From Competitors)</h2>
-              <p className="text-slate-600 max-w-lg mx-auto">
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Core Features (From Competitors)</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
                 These are the baseline features users <strong>expect</strong>. Edit or add more below.
               </p>
             </div>
 
-            <Card className="p-6 border-2 border-black">
+            <Card className="p-6 border-2 border-slate-200">
               <div className="space-y-3">
                 {coreFeatures.map((feature, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-lg group border border-black">
+                  <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg group border border-slate-200">
                     <Check className="w-4 h-4 text-black flex-shrink-0" />
-                    <span className="flex-1 text-black">{feature}</span>
+                    <span className="flex-1 text-slate-800">{feature}</span>
                     <button
                       onClick={() => removeFeature('core', i)}
-                      className="opacity-0 group-hover:opacity-100 text-slate-600 hover:text-slate-600 transition-opacity cursor-pointer"
+                      className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-slate-600 transition-opacity cursor-pointer"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -747,9 +747,9 @@ HANGOUTS:
                 </div>
 
                 <div className="flex items-center gap-3 pt-2">
-                  <div className="flex-1 h-px bg-slate-600" />
-                  <span className="text-xs text-slate-600 uppercase">or</span>
-                  <div className="flex-1 h-px bg-slate-600" />
+                  <div className="flex-1 h-px bg-slate-200" />
+                  <span className="text-xs text-slate-400 uppercase">or</span>
+                  <div className="flex-1 h-px bg-slate-200" />
                 </div>
 
                 <div className="text-center">
@@ -827,17 +827,17 @@ HANGOUTS:
               <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
                 <UniqueFeatureIcon className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-black mb-2">What Makes You Different?</h2>
-              <p className="text-slate-600 max-w-lg mx-auto">
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">What Makes You Different?</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
                 1-2 unique features that competitors <strong>don't have</strong>. Your unfair advantage.
               </p>
             </div>
 
-            <Card className="p-6 border-2 border-black">
+            <Card className="p-6 border-2 border-slate-200">
               <div className="space-y-4">
                 {uspFeatures.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-slate-600 uppercase">Your USP Features:</p>
+                    <p className="text-xs font-bold text-slate-500 uppercase">Your USP Features:</p>
                     {uspFeatures.map((feature, i) => (
                       <div key={i} className="flex items-center gap-3 p-3 bg-black text-white rounded-lg group">
                         <UniqueFeatureIcon className="w-4 h-4 flex-shrink-0" />
@@ -855,7 +855,7 @@ HANGOUTS:
 
                 {uspSuggestions.length > 0 ? (
                   <div className="space-y-3">
-                    <p className="text-sm font-medium text-black">Pick 1-2 features that excite you:</p>
+                    <p className="text-sm font-medium text-slate-700">Pick 1-2 features that excite you:</p>
                     <div className="grid gap-2">
                       {uspSuggestions.map((suggestion, i) => (
                         <button
@@ -863,17 +863,17 @@ HANGOUTS:
                           onClick={() => toggleUspSelection(i)}
                           className={`p-4 rounded-lg border-2 text-left transition-all cursor-pointer ${
                             selectedUspIndexes.includes(i)
-                              ? 'border-black bg-white'
-                              : 'border-black hover:border-black'
+                              ? 'border-black bg-slate-50'
+                              : 'border-slate-200 hover:border-slate-300'
                           }`}
                         >
                           <div className="flex items-center gap-3">
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                              selectedUspIndexes.includes(i) ? 'border-black bg-black' : 'border-black'
+                              selectedUspIndexes.includes(i) ? 'border-black bg-black' : 'border-slate-300'
                             }`}>
                               {selectedUspIndexes.includes(i) && <Check className="w-3 h-3 text-white" />}
                             </div>
-                            <span className="text-black">{suggestion}</span>
+                            <span className="text-slate-800">{suggestion}</span>
                           </div>
                         </button>
                       ))}
@@ -903,9 +903,9 @@ HANGOUTS:
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <div className="flex-1 h-px bg-slate-600" />
-                      <span className="text-xs text-slate-600 uppercase">or</span>
-                      <div className="flex-1 h-px bg-slate-600" />
+                      <div className="flex-1 h-px bg-slate-200" />
+                      <span className="text-xs text-slate-400 uppercase">or</span>
+                      <div className="flex-1 h-px bg-slate-200" />
                     </div>
 
                     <TooltipProvider>
@@ -983,13 +983,13 @@ HANGOUTS:
               <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
                 <PitchIcon className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-black mb-2">Your 10-Second Pitch</h2>
-              <p className="text-slate-600 max-w-lg mx-auto">
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Your 10-Second Pitch</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
                 Explain what you do in one simple sentence anyone can understand.
               </p>
             </div>
 
-            <Card className="p-5 border-2 border-black bg-white">
+            <Card className="p-5 border-2 border-black bg-slate-50">
               <p className="text-center text-sm font-medium text-slate-600 mb-2">The magic formula:</p>
               <div className="text-center text-xl font-bold text-black">
                 "I help <span className="text-blue-600">[WHO]</span> do <span className="text-blue-600">[WHAT]</span> so they can <span className="text-blue-600">[BENEFIT]</span>"
@@ -997,8 +997,8 @@ HANGOUTS:
             </Card>
 
             <div className="space-y-4">
-              <Card className="p-4 border-2 border-black">
-                <label className="block text-sm font-bold text-black mb-2">
+              <Card className="p-4 border-2 border-slate-200">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   WHO do you help?
                 </label>
                 <Input
@@ -1010,8 +1010,8 @@ HANGOUTS:
                 />
               </Card>
 
-              <Card className="p-4 border-2 border-black">
-                <label className="block text-sm font-bold text-black mb-2">
+              <Card className="p-4 border-2 border-slate-200">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   WHAT do you help them do?
                 </label>
                 <Input
@@ -1023,8 +1023,8 @@ HANGOUTS:
                 />
               </Card>
 
-              <Card className="p-4 border-2 border-black">
-                <label className="block text-sm font-bold text-black mb-2">
+              <Card className="p-4 border-2 border-slate-200">
+                <label className="block text-sm font-bold text-slate-700 mb-2">
                   What BENEFIT do they get?
                 </label>
                 <Input
@@ -1039,16 +1039,16 @@ HANGOUTS:
 
             {who && what && benefit && (
               <>
-                <Card className="p-4 border-2 border-black bg-white">
-                  <p className="text-xs font-bold text-slate-600 uppercase mb-1">Your draft pitch:</p>
-                  <p className="text-lg font-medium text-black">
+                <Card className="p-4 border-2 border-black bg-slate-50">
+                  <p className="text-xs font-bold text-slate-500 uppercase mb-1">Your draft pitch:</p>
+                  <p className="text-lg font-medium text-slate-900">
                     "I help {who} {what} so they can {benefit}."
                   </p>
                 </Card>
 
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <p className="font-bold text-black">AI Pitch Variations</p>
+                    <p className="font-bold text-slate-900">AI Pitch Variations</p>
                     {pitchVariations.length === 0 ? (
                       <TooltipProvider>
                         <Tooltip>
@@ -1103,16 +1103,16 @@ HANGOUTS:
                           className={`w-full p-3 rounded-lg border-2 text-left transition-all cursor-pointer text-sm ${
                             selectedPitch === i
                               ? 'border-black bg-black text-white'
-                              : 'border-black hover:border-black bg-white'
+                              : 'border-slate-200 hover:border-slate-300 bg-white'
                           }`}
                         >
                           <div className="flex items-start gap-2">
                             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                              selectedPitch === i ? 'border-white bg-white' : 'border-black'
+                              selectedPitch === i ? 'border-white bg-white' : 'border-slate-300'
                             }`}>
                               {selectedPitch === i && <Check className="w-3 h-3 text-black" />}
                             </div>
-                            <span className={selectedPitch === i ? 'text-white' : 'text-black'}>
+                            <span className={selectedPitch === i ? 'text-white' : 'text-slate-800'}>
                               {pitch}
                             </span>
                           </div>
@@ -1123,8 +1123,8 @@ HANGOUTS:
                 </div>
 
                 {selectedPitch !== null && (
-                  <Card className="p-4 border-2 border-black">
-                    <label className="block text-sm font-bold text-black mb-2">
+                  <Card className="p-4 border-2 border-slate-200">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
                       Your final pitch (edit if needed):
                     </label>
                     <Textarea
@@ -1203,17 +1203,17 @@ HANGOUTS:
               <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
                 <CustomerIcon className="w-7 h-7 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-black mb-2">Your Ideal Customer</h2>
-              <p className="text-slate-600">Discover who they are and where to find them.</p>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Ideal Customer</h2>
+              <p className="text-slate-500">Discover who they are and where to find them.</p>
             </div>
 
-            <Card className="p-4 border-2 border-black bg-white">
-              <p className="text-sm font-bold text-slate-600 uppercase mb-1">You're building for:</p>
+            <Card className="p-4 border-2 border-black bg-slate-50">
+              <p className="text-sm font-bold text-slate-500 uppercase mb-1">You're building for:</p>
               <p className="text-lg font-bold text-black">{who}</p>
             </Card>
 
             {!icpData ? (
-              <Card className="p-6 border-2 border-black text-center">
+              <Card className="p-6 border-2 border-slate-200 text-center">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -1238,17 +1238,17 @@ HANGOUTS:
               </Card>
             ) : (
               <div className="space-y-4">
-                <Card className="p-4 border-2 border-black">
+                <Card className="p-4 border-2 border-slate-200">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-7 h-7 rounded-full bg-black flex items-center justify-center">
                       <CustomerIcon className="w-4 h-4 text-white" />
                     </div>
-                    <h4 className="font-bold text-black">Your Ideal Customer</h4>
+                    <h4 className="font-bold text-slate-900">Your Ideal Customer</h4>
                   </div>
-                  <p className="text-black leading-relaxed text-sm">{icpData.description}</p>
+                  <p className="text-slate-700 leading-relaxed text-sm">{icpData.description}</p>
                 </Card>
 
-                <Card className="p-4 border-2 border-black">
+                <Card className="p-4 border-2 border-slate-200">
                   <div className="flex items-center gap-2 mb-3">
                     <div className="w-7 h-7 rounded-full bg-black flex items-center justify-center">
                       <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -1257,15 +1257,15 @@ HANGOUTS:
                         <ellipse cx="12" cy="12" rx="4" ry="10" />
                       </svg>
                     </div>
-                    <h4 className="font-bold text-black">7 Places They Hang Out</h4>
+                    <h4 className="font-bold text-slate-900">7 Places They Hang Out</h4>
                   </div>
                   <div className="space-y-2">
                     {icpData.hangouts.map((hangout, i) => (
-                      <div key={i} className="flex items-start gap-2 p-2 bg-white rounded-lg border border-black">
+                      <div key={i} className="flex items-start gap-2 p-2 bg-slate-50 rounded-lg border border-slate-100">
                         <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold flex-shrink-0">
                           {i + 1}
                         </span>
-                        <span className="text-black text-sm">{hangout}</span>
+                        <span className="text-slate-700 text-sm">{hangout}</span>
                       </div>
                     ))}
                   </div>
@@ -1335,33 +1335,33 @@ HANGOUTS:
               <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
                 <Check className="w-8 h-8 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-black mb-2">Your Product Blueprint is Ready!</h2>
-              <p className="text-slate-600">Everything you need to start building.</p>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Product Blueprint is Ready!</h2>
+              <p className="text-slate-500">Everything you need to start building.</p>
             </div>
 
             <Card className="p-4 border-2 border-black">
-              <p className="text-xs font-bold text-slate-600 uppercase mb-1">Your 10-Second Pitch:</p>
-              <p className="text-lg font-medium text-black">{finalPitch}</p>
+              <p className="text-xs font-bold text-slate-500 uppercase mb-1">Your 10-Second Pitch:</p>
+              <p className="text-lg font-medium text-slate-900">{finalPitch}</p>
             </Card>
 
-            <Card className="p-5 border-2 border-black">
+            <Card className="p-5 border-2 border-slate-200">
               <div className="flex items-center gap-2 mb-2">
                 <BleedingNeckIcon className="w-5 h-5 text-black" />
                 <h3 className="font-bold text-black">Bleeding Neck Problem</h3>
               </div>
-              <p className="text-black">{bleedingNeckProblem}</p>
+              <p className="text-slate-700">{bleedingNeckProblem}</p>
             </Card>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <Card className="p-5 border-2 border-black">
+              <Card className="p-5 border-2 border-slate-200">
                 <div className="flex items-center gap-2 mb-3">
                   <CoreFeaturesIcon className="w-5 h-5 text-black" />
                   <h3 className="font-bold text-black">Core Features</h3>
-                  <span className="text-xs bg-white text-black px-2 py-0.5 rounded-full">{coreFeatures.length}</span>
+                  <span className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">{coreFeatures.length}</span>
                 </div>
                 <ul className="space-y-2">
                   {coreFeatures.map((f, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-black">
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
                       <Check className="w-4 h-4 mt-0.5 flex-shrink-0" />
                       {f}
                     </li>
@@ -1369,15 +1369,15 @@ HANGOUTS:
                 </ul>
               </Card>
 
-              <Card className="p-5 border-2 border-black">
+              <Card className="p-5 border-2 border-slate-200">
                 <div className="flex items-center gap-2 mb-3">
                   <UniqueFeatureIcon className="w-5 h-5 text-black" />
                   <h3 className="font-bold text-black">USP Features</h3>
-                  <span className="text-xs bg-white text-black px-2 py-0.5 rounded-full">{uspFeatures.length}</span>
+                  <span className="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">{uspFeatures.length}</span>
                 </div>
                 <ul className="space-y-2">
                   {uspFeatures.map((f, i) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-black">
+                    <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
                       <UniqueFeatureIcon className="w-4 h-4 mt-0.5 flex-shrink-0" />
                       {f}
                     </li>
@@ -1387,19 +1387,19 @@ HANGOUTS:
             </div>
 
             {icpData && (
-              <Card className="p-5 border-2 border-black">
+              <Card className="p-5 border-2 border-slate-200">
                 <div className="flex items-center gap-2 mb-3">
                   <CustomerIcon className="w-5 h-5 text-black" />
                   <h3 className="font-bold text-black">Your Ideal Customer</h3>
                 </div>
-                <p className="text-black text-sm mb-3">{icpData.description}</p>
-                <p className="text-xs font-bold text-slate-600 uppercase mb-2">Find them at:</p>
+                <p className="text-slate-700 text-sm mb-3">{icpData.description}</p>
+                <p className="text-xs font-bold text-slate-500 uppercase mb-2">Find them at:</p>
                 <div className="flex flex-wrap gap-2">
                   {icpData.hangouts.slice(0, 4).map((h, i) => (
                     <span key={i} className="text-xs bg-blue-50 text-blue-700 px-2 py-1 rounded-full">{h}</span>
                   ))}
                   {icpData.hangouts.length > 4 && (
-                    <span className="text-xs bg-white text-slate-600 px-2 py-1 rounded-full">+{icpData.hangouts.length - 4} more</span>
+                    <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-full">+{icpData.hangouts.length - 4} more</span>
                   )}
                 </div>
               </Card>

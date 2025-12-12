@@ -168,7 +168,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
     return (
       <Card className="p-8 border-2 border-amber-200 bg-amber-50 text-center">
         <Trophy className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-        <h3 className="text-xl font-bold text-black mb-2">Complete Day 1 First!</h3>
+        <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Day 1 First!</h3>
         <p className="text-slate-600">
           You need to generate and shortlist your ideas (3-5) in Day 1 before validating them here.
         </p>
@@ -187,13 +187,13 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
         <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
           <Trophy className="w-10 h-10 text-green-600" />
         </div>
-        <h2 className="text-2xl font-bold text-black mb-2">Your Chosen Idea</h2>
-        <p className="text-slate-600 mb-6">This is the one you're building!</p>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Chosen Idea</h2>
+        <p className="text-slate-500 mb-6">This is the one you're building!</p>
         
         <Card className="p-6 border-2 border-green-400 bg-green-50 max-w-2xl mx-auto text-left">
-          <h3 className="text-xl font-bold text-black mb-2">{chosenIdea.title}</h3>
+          <h3 className="text-xl font-bold text-slate-900 mb-2">{chosenIdea.title}</h3>
           <p className="text-slate-600 mb-3">{chosenIdea.desc}</p>
-          <p className="text-sm text-slate-600">Target: {chosenIdea.targetCustomer}</p>
+          <p className="text-sm text-slate-500">Target: {chosenIdea.targetCustomer}</p>
         </Card>
 
         <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 max-w-2xl mx-auto">
@@ -221,8 +221,8 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
     <TooltipProvider>
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-black mb-2">Validate Your Top Ideas</h2>
-        <p className="text-slate-600">
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Validate Your Top Ideas</h2>
+        <p className="text-slate-500">
           Use these prompts to research each idea. Then pick ONE to move forward with.
         </p>
         <p className="text-sm text-amber-600 font-semibold mt-2">
@@ -240,18 +240,18 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
                 className={`p-4 rounded-xl border-2 text-left transition-all cursor-pointer ${
                   selectedIdeaIndex === idx
                     ? "border-primary bg-blue-50"
-                    : "border-black hover:border-black"
+                    : "border-slate-200 hover:border-slate-300"
                 }`}
                 data-testid={`select-idea-${idx}`}
               >
-                <p className="font-bold text-sm text-black leading-snug">{idea.title}</p>
-                <p className="text-xs text-slate-600 mt-2">Score: {idea.totalScore}/25</p>
+                <p className="font-bold text-sm text-slate-900 leading-snug">{idea.title}</p>
+                <p className="text-xs text-slate-500 mt-2">Score: {idea.totalScore}/25</p>
               </button>
             </TooltipTrigger>
             <TooltipContent side="bottom" className="max-w-xs">
               <p className="font-semibold mb-1">{idea.title}</p>
-              <p className="text-xs text-slate-600 mb-2">{idea.desc}</p>
-              <p className="text-xs text-slate-600">Target: {idea.targetCustomer}</p>
+              <p className="text-xs text-slate-300 mb-2">{idea.desc}</p>
+              <p className="text-xs text-slate-400">Target: {idea.targetCustomer}</p>
             </TooltipContent>
           </Tooltip>
         ))}
@@ -264,15 +264,15 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
           className="space-y-6"
         >
           <Card className="p-5 border-2 border-primary/30 bg-blue-50/50">
-            <h3 className="font-bold text-lg text-black">{shortlistedIdeas[selectedIdeaIndex].title}</h3>
+            <h3 className="font-bold text-lg text-slate-900">{shortlistedIdeas[selectedIdeaIndex].title}</h3>
             <p className="text-slate-600 mt-1">{shortlistedIdeas[selectedIdeaIndex].desc}</p>
-            <p className="text-sm text-slate-600 mt-2">Target: {shortlistedIdeas[selectedIdeaIndex].targetCustomer}</p>
+            <p className="text-sm text-slate-500 mt-2">Target: {shortlistedIdeas[selectedIdeaIndex].targetCustomer}</p>
           </Card>
 
           {/* Validation Prompts */}
           <div className="space-y-6">
-            <div className="bg-white border border-black rounded-lg p-4">
-              <p className="text-sm text-black">
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <p className="text-sm text-slate-700">
                 <strong>How to use these prompts:</strong> Copy the prompt below and paste it into ChatGPT, Claude, or any AI assistant. Or click "Use Our AI" to get an instant response here.
               </p>
             </div>
@@ -282,10 +282,10 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
               const isLoading = loadingPrompt === `${prompt.id}-${selectedIdeaIndex}`;
 
               return (
-                <Card key={prompt.id} className="p-5 border-2 border-black">
-                  <h4 className="font-bold text-black mb-3">{prompt.title}</h4>
+                <Card key={prompt.id} className="p-5 border-2 border-slate-100">
+                  <h4 className="font-bold text-slate-900 mb-3">{prompt.title}</h4>
                   
-                  <div className="bg-white rounded-lg p-4 font-mono text-sm text-black whitespace-pre-wrap mb-4">
+                  <div className="bg-slate-50 rounded-lg p-4 font-mono text-sm text-slate-700 whitespace-pre-wrap mb-4">
                     {filledPrompt}
                   </div>
 
@@ -334,7 +334,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
                       className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200"
                     >
                       <p className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-2">AI Response</p>
-                      <p className="text-black whitespace-pre-wrap">{aiResponse}</p>
+                      <p className="text-slate-700 whitespace-pre-wrap">{aiResponse}</p>
                     </motion.div>
                   )}
                 </Card>
@@ -345,7 +345,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
           {/* Final Choice Section */}
           <Card className="p-6 border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50">
             <div className="text-center">
-              <h3 className="text-xl font-bold text-black mb-2">Ready to Decide?</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to Decide?</h3>
               <p className="text-slate-600 mb-4">
                 Done your research? Trust your gut and pick this one!
               </p>
@@ -372,7 +372,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
       )}
 
       {selectedIdeaIndex === null && (
-        <div className="text-center py-8 text-slate-600">
+        <div className="text-center py-8 text-slate-400">
           Select an idea above to start validating it
         </div>
       )}
