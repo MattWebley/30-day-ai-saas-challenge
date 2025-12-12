@@ -121,18 +121,18 @@ interface ScreenTemplate {
 }
 
 const SCREEN_TEMPLATES: ScreenTemplate[] = [
-  { id: 'landing', name: 'Landing Page', description: 'Hero, features, and call-to-action', category: 'essential', type: 'landing' },
-  { id: 'signup', name: 'Sign Up / Login', description: 'User registration and authentication', category: 'essential', type: 'signup' },
-  { id: 'dashboard', name: 'Dashboard', description: 'Overview with key metrics and quick actions', category: 'essential', type: 'dashboard' },
-  { id: 'list', name: 'List View', description: 'Browse and filter items or data', category: 'essential', type: 'list' },
-  { id: 'detail', name: 'Detail View', description: 'View single item with full details', category: 'essential', type: 'detail' },
-  { id: 'form', name: 'Create/Edit Form', description: 'Add or update content', category: 'essential', type: 'form' },
-  { id: 'settings', name: 'Settings', description: 'User preferences and account settings', category: 'growth', type: 'settings' },
-  { id: 'profile', name: 'User Profile', description: 'View and edit user information', category: 'growth', type: 'profile' },
-  { id: 'results', name: 'Results / Output', description: 'Display generated results or analytics', category: 'growth', type: 'results' },
-  { id: 'pricing', name: 'Pricing Page', description: 'Plans and subscription options', category: 'growth', type: 'pricing' },
-  { id: 'checkout', name: 'Checkout', description: 'Payment and purchase flow', category: 'growth', type: 'checkout' },
-  { id: 'ai', name: 'AI Interaction', description: 'Chat or AI-powered features', category: 'advanced', type: 'ai' },
+  { id: 'dashboard', name: 'Dashboard', description: 'Main hub with overview and quick actions', category: 'essential', type: 'dashboard' },
+  { id: 'list', name: 'List View', description: 'Browse, search, and filter your data', category: 'essential', type: 'list' },
+  { id: 'detail', name: 'Detail View', description: 'View a single item with full info', category: 'essential', type: 'detail' },
+  { id: 'form', name: 'Create/Edit', description: 'Add new items or update existing ones', category: 'essential', type: 'form' },
+  { id: 'ai', name: 'AI Generation', description: 'Input screen for AI-powered features', category: 'essential', type: 'ai' },
+  { id: 'results', name: 'Results / Output', description: 'Display AI results or generated content', category: 'essential', type: 'results' },
+  { id: 'settings', name: 'Settings', description: 'User preferences and configurations', category: 'growth', type: 'settings' },
+  { id: 'profile', name: 'Account / Profile', description: 'User account and subscription info', category: 'growth', type: 'profile' },
+  { id: 'history', name: 'History / Saved', description: 'Past generations or saved items', category: 'growth', type: 'list' },
+  { id: 'onboarding', name: 'Onboarding', description: 'First-time user setup wizard', category: 'growth', type: 'form' },
+  { id: 'compare', name: 'Compare / Analyze', description: 'Side-by-side comparison view', category: 'advanced', type: 'results' },
+  { id: 'export', name: 'Export / Share', description: 'Download or share your results', category: 'advanced', type: 'detail' },
 ];
 
 interface WorkflowOption {
@@ -366,8 +366,8 @@ FLOW3_SCREENS: [screen1, screen2, screen3...]`;
               <div>
                 <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs">1</span>
-                  Essential Screens
-                  <span className="text-xs font-normal text-slate-500">(Every MVP needs these)</span>
+                  Core App Screens
+                  <span className="text-xs font-normal text-slate-500">(Pick at least 3 for your MVP)</span>
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {essentialScreens.map(screen => (
@@ -397,8 +397,8 @@ FLOW3_SCREENS: [screen1, screen2, screen3...]`;
               <div>
                 <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs">2</span>
-                  Growth Screens
-                  <span className="text-xs font-normal text-slate-500">(Add when you have users)</span>
+                  Nice-to-Have Screens
+                  <span className="text-xs font-normal text-slate-500">(Add later once core works)</span>
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {growthScreens.map(screen => (
@@ -428,8 +428,8 @@ FLOW3_SCREENS: [screen1, screen2, screen3...]`;
               <div>
                 <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
                   <span className="w-6 h-6 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs">3</span>
-                  Advanced Screens
-                  <span className="text-xs font-normal text-slate-500">(For power users)</span>
+                  Extra Features
+                  <span className="text-xs font-normal text-slate-500">(Consider for v2)</span>
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {advancedScreens.map(screen => (
