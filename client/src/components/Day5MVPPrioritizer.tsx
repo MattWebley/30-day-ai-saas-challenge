@@ -7,6 +7,12 @@ import { apiRequest } from "@/lib/queryClient";
 import { useTestMode } from "@/contexts/TestModeContext";
 import { Sparkles, Loader2, Check, X, Minus } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const MOCK_DATA = {
   chosenIdea: { title: "AI Content Optimizer" },
@@ -229,19 +235,26 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
         <Card className="p-5 border-2 border-slate-200 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-slate-900">What's Your ONE Killer Feature?</h3>
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-2"
-              onClick={generateAISuggestion}
-              disabled={isGenerating || aiAttempts >= MAX_AI_ATTEMPTS}
-            >
-              {isGenerating ? (
-                <><Loader2 className="w-4 h-4 animate-spin" /> Thinking...</>
-              ) : (
-                <><Sparkles className="w-4 h-4" /> Get AI Suggestion{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
-              )}
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="gap-2"
+                    onClick={generateAISuggestion}
+                    disabled={isGenerating || aiAttempts >= MAX_AI_ATTEMPTS}
+                  >
+                    {isGenerating ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> Thinking...</>
+                    ) : (
+                      <><Sparkles className="w-4 h-4" /> Get AI Suggestion{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>AI recommends which feature to focus on</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           {aiSuggestion && (
@@ -291,15 +304,22 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
       )}
 
       <div className="flex justify-end pt-2">
-        <Button
-          size="lg"
-          className="gap-2 bg-green-600 hover:bg-green-700"
-          onClick={handleFinish}
-          disabled={!killerFeature.trim()}
-          data-testid="button-finish"
-        >
-          <Check className="w-5 h-5" /> Complete Day 5
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                size="lg"
+                className="gap-2 bg-green-600 hover:bg-green-700"
+                onClick={handleFinish}
+                disabled={!killerFeature.trim()}
+                data-testid="button-finish"
+              >
+                <Check className="w-5 h-5" /> Complete Day 5
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Save your MVP plan and complete Day 5</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </div>
   );

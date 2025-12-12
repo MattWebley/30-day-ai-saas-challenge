@@ -9,6 +9,12 @@ import { useTestMode } from "@/contexts/TestModeContext";
 import { Sparkles, Loader2, ChevronRight, ChevronLeft, Check, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const MOCK_DATA = {
   chosenIdea: { title: "AI Content Optimizer", desc: "Helps marketers optimize content" },
@@ -270,33 +276,47 @@ HANGOUTS:
                   <div className="flex items-center justify-between">
                     <p className="font-bold text-slate-900">AI Pitch Variations</p>
                     {pitchVariations.length === 0 ? (
-                      <Button
-                        size="sm"
-                        className="gap-2"
-                        onClick={generatePitches}
-                        disabled={isGenerating || aiAttempts >= MAX_AI_ATTEMPTS}
-                        data-testid="button-generate-pitches"
-                      >
-                        {isGenerating ? (
-                          <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</>
-                        ) : (
-                          <><Sparkles className="w-4 h-4" /> Generate 4 Ideas{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
-                        )}
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="sm"
+                              className="gap-2"
+                              onClick={generatePitches}
+                              disabled={isGenerating || aiAttempts >= MAX_AI_ATTEMPTS}
+                              data-testid="button-generate-pitches"
+                            >
+                              {isGenerating ? (
+                                <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</>
+                              ) : (
+                                <><Sparkles className="w-4 h-4" /> Generate 4 Ideas{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>AI creates 4 pitch variations based on your inputs</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     ) : aiAttempts < MAX_AI_ATTEMPTS && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-2"
-                        onClick={generatePitches}
-                        disabled={isGenerating}
-                      >
-                        {isGenerating ? (
-                          <><Loader2 className="w-4 h-4 animate-spin" /> Regenerating...</>
-                        ) : (
-                          <><Sparkles className="w-4 h-4" /> Regenerate{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
-                        )}
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-2"
+                              onClick={generatePitches}
+                              disabled={isGenerating}
+                            >
+                              {isGenerating ? (
+                                <><Loader2 className="w-4 h-4 animate-spin" /> Regenerating...</>
+                              ) : (
+                                <><Sparkles className="w-4 h-4" /> Regenerate{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
+                              )}
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Generate new pitch variations</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                   </div>
 
@@ -340,14 +360,21 @@ HANGOUTS:
                       data-testid="input-final-pitch"
                     />
                     <div className="flex justify-end mt-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="gap-1"
-                        onClick={() => copyToClipboard(finalPitch)}
-                      >
-                        <Copy className="w-3 h-3" /> Copy
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1"
+                              onClick={() => copyToClipboard(finalPitch)}
+                            >
+                              <Copy className="w-3 h-3" /> Copy
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Copy your pitch to clipboard</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </div>
                   </Card>
                 )}
@@ -355,15 +382,22 @@ HANGOUTS:
             )}
 
             <div className="flex justify-end pt-2">
-              <Button
-                size="lg"
-                className="gap-2"
-                onClick={() => setCurrentStep(2)}
-                disabled={!finalPitch.trim()}
-                data-testid="button-next-step1"
-              >
-                Meet Your Customer <ChevronRight className="w-5 h-5" />
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => setCurrentStep(2)}
+                      disabled={!finalPitch.trim()}
+                      data-testid="button-next-step1"
+                    >
+                      Meet Your Customer <ChevronRight className="w-5 h-5" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Continue to discover your ideal customer</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </motion.div>
         )}
@@ -394,20 +428,27 @@ HANGOUTS:
 
             {!icpData ? (
               <Card className="p-6 border-2 border-slate-200 text-center">
-                <Button
-                  className="gap-2"
-                  onClick={generateICP}
-                  disabled={isGeneratingICP || icpAttempts >= MAX_AI_ATTEMPTS}
-                  data-testid="button-generate-icp"
-                >
-                  {isGeneratingICP ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Building profile...</>
-                  ) : icpAttempts >= MAX_AI_ATTEMPTS ? (
-                    <>No attempts left</>
-                  ) : (
-                    <><Sparkles className="w-4 h-4" /> Generate Customer Profile{icpAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
-                  )}
-                </Button>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        className="gap-2"
+                        onClick={generateICP}
+                        disabled={isGeneratingICP || icpAttempts >= MAX_AI_ATTEMPTS}
+                        data-testid="button-generate-icp"
+                      >
+                        {isGeneratingICP ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Building profile...</>
+                        ) : icpAttempts >= MAX_AI_ATTEMPTS ? (
+                          <>No attempts left</>
+                        ) : (
+                          <><Sparkles className="w-4 h-4" /> Generate Customer Profile{icpAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}</>
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>AI creates a detailed customer avatar and where to find them</TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               </Card>
             ) : (
               <div className="space-y-4">
@@ -465,23 +506,37 @@ HANGOUTS:
             )}
 
             <div className="flex justify-between pt-2">
-              <Button
-                variant="outline"
-                size="lg"
-                className="gap-2"
-                onClick={() => setCurrentStep(1)}
-              >
-                <ChevronLeft className="w-5 h-5" /> Back
-              </Button>
-              <Button
-                size="lg"
-                className="gap-2 bg-green-600 hover:bg-green-700"
-                onClick={handleFinish}
-                disabled={!icpData}
-                data-testid="button-finish"
-              >
-                <Check className="w-5 h-5" /> Complete Day 4
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="gap-2"
+                      onClick={() => setCurrentStep(1)}
+                    >
+                      <ChevronLeft className="w-5 h-5" /> Back
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Go back to your pitch</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="lg"
+                      className="gap-2 bg-green-600 hover:bg-green-700"
+                      onClick={handleFinish}
+                      disabled={!icpData}
+                      data-testid="button-finish"
+                    >
+                      <Check className="w-5 h-5" /> Complete Day 4
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Save and complete Day 4</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </motion.div>
         )}
