@@ -24,6 +24,7 @@ import { Day3FeatureBuilder } from "@/components/Day3FeatureBuilder";
 import { Day4WorkflowBuilder } from "@/components/Day4WorkflowBuilder";
 import { Day5MVPPrioritizer } from "@/components/Day5MVPPrioritizer";
 import { DayChat } from "@/components/DayChat";
+import { DayInstructions } from "@/components/DayInstructions";
 import { toast } from "sonner";
 
 export default function Dashboard() {
@@ -92,13 +93,6 @@ export default function Dashboard() {
     }
   };
 
-  const handleShuffle = () => {
-    setLoadingAI(true);
-    setTimeout(() => {
-      setLoadingAI(false);
-      toast.info("New suggestions generated!");
-    }, 1000);
-  };
 
   if (daysLoading || progressLoading || !dayData) {
     return (
@@ -162,6 +156,9 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+
+        {/* Step-by-Step Instructions */}
+        <DayInstructions day={currentDay} />
 
         {/* Main Task Area */}
         <div className="space-y-8">
