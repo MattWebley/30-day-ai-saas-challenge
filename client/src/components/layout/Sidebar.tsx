@@ -152,7 +152,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   };
 
   return (
-    <div className="w-80 bg-sidebar border-r border-sidebar-border">
+    <div className="w-80 bg-sidebar border-r border-sidebar-border h-full overflow-y-auto">
       {/* Header */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center justify-between mb-6">

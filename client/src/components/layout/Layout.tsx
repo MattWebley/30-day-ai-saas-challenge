@@ -41,7 +41,7 @@ export function Layout({ children, currentDay = 1 }: LayoutProps) {
 
       {/* Mobile Sidebar (fixed overlay) */}
       <div className={`
-        fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:hidden
+        fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:hidden overflow-y-auto
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
       `}>
         <Sidebar currentDay={currentDay} onClose={() => setSidebarOpen(false)} />
