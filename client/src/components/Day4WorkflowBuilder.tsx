@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useTestMode } from "@/contexts/TestModeContext";
-import { Sparkles, Loader2, ChevronRight, Check, ArrowRight } from "lucide-react";
+import { Sparkles, Loader2, Check, ArrowRight, Edit3 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,156 +14,39 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const ScreenIcon = ({ type }: { type: string }) => {
-  const icons: Record<string, React.ReactNode> = {
-    landing: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <rect x="5" y="5" width="14" height="4" rx="1" />
-        <circle cx="8" cy="14" r="2" />
-        <path d="M12 12h5M12 16h5" />
-      </svg>
-    ),
-    signup: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <rect x="6" y="8" width="12" height="2" rx="1" />
-        <rect x="6" y="12" width="12" height="2" rx="1" />
-        <rect x="8" y="17" width="8" height="2" rx="1" />
-      </svg>
-    ),
-    dashboard: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <rect x="5" y="5" width="6" height="6" rx="1" />
-        <rect x="13" y="5" width="6" height="3" rx="1" />
-        <rect x="13" y="10" width="6" height="3" rx="1" />
-        <rect x="5" y="13" width="14" height="6" rx="1" />
-      </svg>
-    ),
-    list: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M6 8h12M6 12h12M6 16h8" />
-        <circle cx="18" cy="8" r="1" fill="currentColor" />
-        <circle cx="18" cy="12" r="1" fill="currentColor" />
-      </svg>
-    ),
-    detail: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <rect x="5" y="5" width="14" height="6" rx="1" />
-        <path d="M5 14h10M5 17h6" />
-      </svg>
-    ),
-    form: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M6 7h6M6 11h12M6 15h12" />
-        <rect x="6" y="18" width="4" height="2" rx="0.5" />
-      </svg>
-    ),
-    settings: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <circle cx="12" cy="9" r="2" />
-        <path d="M6 15h4M14 15h4" />
-        <circle cx="10" cy="15" r="1" fill="currentColor" />
-      </svg>
-    ),
-    pricing: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <rect x="5" y="6" width="4" height="10" rx="1" />
-        <rect x="10" y="5" width="4" height="12" rx="1" />
-        <rect x="15" y="7" width="4" height="9" rx="1" />
-      </svg>
-    ),
-    checkout: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <rect x="5" y="6" width="6" height="4" rx="1" />
-        <rect x="5" y="12" width="14" height="2" rx="0.5" />
-        <rect x="5" y="16" width="14" height="2" rx="0.5" />
-      </svg>
-    ),
-    profile: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <circle cx="12" cy="9" r="3" />
-        <path d="M6 18c0-3 3-4 6-4s6 1 6 4" />
-      </svg>
-    ),
-    results: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M7 14l3-3 3 3 4-5" />
-        <circle cx="17" cy="9" r="1" fill="currentColor" />
-      </svg>
-    ),
-    ai: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6" stroke="currentColor" strokeWidth="1.5">
-        <rect x="3" y="3" width="18" height="18" rx="2" />
-        <path d="M8 12h8M8 8h4M8 16h6" />
-        <circle cx="16" cy="8" r="2" />
-      </svg>
-    ),
-  };
-  return icons[type] || icons.landing;
-};
-
-interface ScreenTemplate {
-  id: string;
+interface Screen {
   name: string;
-  description: string;
-  category: 'essential' | 'growth' | 'advanced';
-  type: string;
+  purpose: string;
+  keyElements: string[];
 }
 
-const SCREEN_TEMPLATES: ScreenTemplate[] = [
-  { id: 'dashboard', name: 'Dashboard', description: 'Main hub with overview and quick actions', category: 'essential', type: 'dashboard' },
-  { id: 'list', name: 'List View', description: 'Browse, search, and filter your data', category: 'essential', type: 'list' },
-  { id: 'detail', name: 'Detail View', description: 'View a single item with full info', category: 'essential', type: 'detail' },
-  { id: 'form', name: 'Create/Edit', description: 'Add new items or update existing ones', category: 'essential', type: 'form' },
-  { id: 'ai', name: 'AI Generation', description: 'Input screen for AI-powered features', category: 'essential', type: 'ai' },
-  { id: 'results', name: 'Results / Output', description: 'Display AI results or generated content', category: 'essential', type: 'results' },
-  { id: 'settings', name: 'Settings', description: 'User preferences and configurations', category: 'growth', type: 'settings' },
-  { id: 'profile', name: 'Account / Profile', description: 'User account and subscription info', category: 'growth', type: 'profile' },
-  { id: 'history', name: 'History / Saved', description: 'Past generations or saved items', category: 'growth', type: 'list' },
-  { id: 'onboarding', name: 'Onboarding', description: 'First-time user setup wizard', category: 'growth', type: 'form' },
-  { id: 'compare', name: 'Compare / Analyze', description: 'Side-by-side comparison view', category: 'advanced', type: 'results' },
-  { id: 'export', name: 'Export / Share', description: 'Download or share your results', category: 'advanced', type: 'detail' },
-];
-
-interface WorkflowOption {
-  id: string;
-  name: string;
-  description: string;
-  screens: string[];
+interface UserFlow {
+  steps: string[];
+  reasoning: string;
 }
-
-const MOCK_DATA = {
-  chosenIdea: { title: "AI Content Optimizer" },
-  coreFeatures: ["Content editor", "AI suggestions"],
-  uspFeatures: ["Smart A/B testing"],
-};
 
 interface Day4Props {
   onComplete: () => void;
 }
 
+const MOCK_DATA = {
+  chosenIdea: { title: "AI Content Optimizer" },
+  coreFeatures: ["Content editor", "AI suggestions", "Analytics dashboard"],
+  uspFeatures: ["Smart A/B testing", "Competitor analysis"],
+  icp: "Solo content creators who post 3+ times per week",
+};
+
 export function Day4WorkflowBuilder({ onComplete }: Day4Props) {
   const queryClient = useQueryClient();
   const { testMode } = useTestMode();
-  const [currentStep, setCurrentStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiAttempts, setAiAttempts] = useState(0);
   const MAX_AI_ATTEMPTS = 3;
 
-  const [selectedScreens, setSelectedScreens] = useState<string[]>([]);
-  const [workflowOptions, setWorkflowOptions] = useState<WorkflowOption[]>([]);
-  const [selectedWorkflow, setSelectedWorkflow] = useState<number | null>(null);
-  const [customFlow, setCustomFlow] = useState<string[]>([]);
+  const [screens, setScreens] = useState<Screen[]>([]);
+  const [userFlow, setUserFlow] = useState<UserFlow | null>(null);
+  const [editingScreen, setEditingScreen] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState("");
 
   const { data: allProgress } = useQuery({
     queryKey: ["/api/progress"],
@@ -189,6 +72,7 @@ export function Day4WorkflowBuilder({ onComplete }: Day4Props) {
   const chosenIdea = testMode ? MOCK_DATA.chosenIdea : realChosenIdea;
   const coreFeatures = testMode ? MOCK_DATA.coreFeatures : (day3Progress?.userInputs?.coreFeatures || []);
   const uspFeatures = testMode ? MOCK_DATA.uspFeatures : (day3Progress?.userInputs?.uspFeatures || []);
+  const icp = testMode ? MOCK_DATA.icp : (day3Progress?.userInputs?.icp || "");
 
   const saveProgress = useMutation({
     mutationFn: async (data: any) => {
@@ -200,117 +84,104 @@ export function Day4WorkflowBuilder({ onComplete }: Day4Props) {
     },
   });
 
-  const toggleScreen = (screenId: string) => {
-    setSelectedScreens(prev => 
-      prev.includes(screenId) 
-        ? prev.filter(id => id !== screenId)
-        : [...prev, screenId]
-    );
-  };
-
-  const generateWorkflowOptions = async () => {
+  const generateAppFlow = async () => {
     if (aiAttempts >= MAX_AI_ATTEMPTS) return;
     setAiAttempts(prev => prev + 1);
     setIsGenerating(true);
+
     try {
-      const selectedScreenNames = selectedScreens.map(id => 
-        SCREEN_TEMPLATES.find(s => s.id === id)?.name
-      ).filter(Boolean);
+      const allFeatures = [...coreFeatures, ...uspFeatures];
+      
+      const prompt = `You are designing the MVP for an AI SaaS app. Think carefully about what screens this specific product needs.
 
-      const prompt = `I'm building: "${chosenIdea?.title}"
-Core features: ${coreFeatures.join(', ')}
-USP features: ${uspFeatures.join(', ')}
+PRODUCT: "${chosenIdea?.title}"
+TARGET USER: ${icp || "Busy professionals who need quick results"}
+CORE FEATURES: ${coreFeatures.join(', ')}
+UNIQUE FEATURES: ${uspFeatures.join(', ')}
 
-The user has selected these screens for their MVP: ${selectedScreenNames.join(', ')}
+Based on these SPECIFIC features and this SPECIFIC user, design the minimum screens needed for a working MVP.
 
-Create 3 different user flow options showing how these screens connect. Each flow should represent a different approach:
-1. "Simple Flow" - Minimal steps, fastest to build
-2. "Standard Flow" - Balanced approach for most users
-3. "Full Flow" - Complete experience with all features
+Rules:
+- Only include screens that directly support the listed features
+- Think about what THIS specific user needs, not generic SaaS screens
+- Maximum 4-5 screens for MVP
+- Each screen must have a clear purpose tied to a feature
 
-For each flow:
-- Give it a catchy name
-- Write a one-sentence description of the approach
-- List the screens in order of the user journey (use exact screen names from the list above)
+For each screen, provide:
+1. Screen name (short, descriptive)
+2. Purpose (one sentence explaining why this screen exists)
+3. Key elements (3-4 main things on this screen)
+
+Also describe the user flow - the order a new user would go through these screens.
 
 Format your response EXACTLY like this:
-FLOW1_NAME: [name]
-FLOW1_DESC: [description]
-FLOW1_SCREENS: [screen1, screen2, screen3...]
+SCREEN1_NAME: [name]
+SCREEN1_PURPOSE: [purpose]
+SCREEN1_ELEMENTS: [element1, element2, element3]
 
-FLOW2_NAME: [name]
-FLOW2_DESC: [description]
-FLOW2_SCREENS: [screen1, screen2, screen3...]
+SCREEN2_NAME: [name]
+SCREEN2_PURPOSE: [purpose]
+SCREEN2_ELEMENTS: [element1, element2, element3]
 
-FLOW3_NAME: [name]
-FLOW3_DESC: [description]
-FLOW3_SCREENS: [screen1, screen2, screen3...]`;
+(continue for each screen)
+
+FLOW_STEPS: [screen1 name, screen2 name, ...]
+FLOW_REASONING: [One sentence explaining why this order makes sense for your target user]`;
 
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
       const data = await res.json();
       const response = data.response;
 
-      const flows: WorkflowOption[] = [];
-      for (let i = 1; i <= 3; i++) {
-        const nameMatch = response.match(new RegExp(`FLOW${i}_NAME:\\s*(.+)`));
-        const descMatch = response.match(new RegExp(`FLOW${i}_DESC:\\s*(.+)`));
-        const screensMatch = response.match(new RegExp(`FLOW${i}_SCREENS:\\s*(.+)`));
+      const parsedScreens: Screen[] = [];
+      for (let i = 1; i <= 6; i++) {
+        const nameMatch = response.match(new RegExp(`SCREEN${i}_NAME:\\s*(.+)`));
+        const purposeMatch = response.match(new RegExp(`SCREEN${i}_PURPOSE:\\s*(.+)`));
+        const elementsMatch = response.match(new RegExp(`SCREEN${i}_ELEMENTS:\\s*(.+)`));
 
-        if (nameMatch && descMatch && screensMatch) {
-          const screenNames = screensMatch[1].split(',').map((s: string) => s.trim());
-          const screenIds = screenNames.map((name: string) => {
-            const template = SCREEN_TEMPLATES.find(t => 
-              t.name.toLowerCase().includes(name.toLowerCase()) || 
-              name.toLowerCase().includes(t.name.toLowerCase())
-            );
-            return template?.id;
-          }).filter(Boolean);
-
-          flows.push({
-            id: `flow${i}`,
+        if (nameMatch && purposeMatch && elementsMatch) {
+          parsedScreens.push({
             name: nameMatch[1].trim(),
-            description: descMatch[1].trim(),
-            screens: screenIds.length > 0 ? screenIds : selectedScreens.slice(0, 4),
+            purpose: purposeMatch[1].trim(),
+            keyElements: elementsMatch[1].split(',').map((e: string) => e.trim()),
           });
         }
       }
 
-      if (flows.length === 0) {
-        flows.push(
-          { id: 'simple', name: 'Quick MVP', description: 'Get to market fast with core screens only', screens: selectedScreens.slice(0, 3) },
-          { id: 'standard', name: 'Standard Flow', description: 'Balanced approach for most users', screens: selectedScreens.slice(0, 5) },
-          { id: 'full', name: 'Complete Experience', description: 'Full featured user journey', screens: selectedScreens },
-        );
-      }
+      const flowStepsMatch = response.match(/FLOW_STEPS:\s*(.+)/);
+      const flowReasoningMatch = response.match(/FLOW_REASONING:\s*(.+)/);
 
-      setWorkflowOptions(flows);
+      const parsedFlow: UserFlow = {
+        steps: flowStepsMatch ? flowStepsMatch[1].split(',').map((s: string) => s.trim()) : parsedScreens.map(s => s.name),
+        reasoning: flowReasoningMatch ? flowReasoningMatch[1].trim() : "This flow guides users from setup to value delivery.",
+      };
+
+      if (parsedScreens.length === 0) {
+        toast.error("Couldn't parse AI response. Please try again.");
+      } else {
+        setScreens(parsedScreens);
+        setUserFlow(parsedFlow);
+      }
     } catch {
       toast.error("Failed to generate. Try again.");
-      setWorkflowOptions([
-        { id: 'simple', name: 'Quick MVP', description: 'Get to market fast with core screens only', screens: selectedScreens.slice(0, 3) },
-        { id: 'standard', name: 'Standard Flow', description: 'Balanced approach for most users', screens: selectedScreens.slice(0, 5) },
-        { id: 'full', name: 'Complete Experience', description: 'Full featured user journey', screens: selectedScreens },
-      ]);
     }
     setIsGenerating(false);
   };
 
-  const handleSelectWorkflow = (index: number) => {
-    setSelectedWorkflow(index);
-    setCustomFlow(workflowOptions[index].screens);
+  const handleEditScreen = (index: number, newName: string) => {
+    const updated = [...screens];
+    updated[index] = { ...updated[index], name: newName };
+    setScreens(updated);
+    setEditingScreen(null);
+  };
+
+  const handleRemoveScreen = (index: number) => {
+    setScreens(screens.filter((_, i) => i !== index));
   };
 
   const handleFinish = () => {
-    const finalScreens = customFlow.length > 0 ? customFlow : selectedScreens;
-    const screenDetails = finalScreens.map(id => {
-      const template = SCREEN_TEMPLATES.find(t => t.id === id);
-      return template ? { id: template.id, name: template.name, description: template.description } : null;
-    }).filter(Boolean);
-
     saveProgress.mutate({ 
-      selectedScreens: finalScreens,
-      screenDetails,
-      workflowName: selectedWorkflow !== null ? workflowOptions[selectedWorkflow]?.name : 'Custom',
+      screens,
+      userFlow,
     });
     onComplete();
   };
@@ -320,35 +191,49 @@ FLOW3_SCREENS: [screen1, screen2, screen3...]`;
       <Card className="p-8 border-2 border-slate-200 text-center">
         <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Previous Days First</h3>
         <p className="text-slate-600">
-          You need to complete Days 1-3 before planning your workflow.
+          You need to complete Days 1-3 before planning your app screens.
         </p>
       </Card>
     );
   }
 
-  const essentialScreens = SCREEN_TEMPLATES.filter(s => s.category === 'essential');
-  const growthScreens = SCREEN_TEMPLATES.filter(s => s.category === 'growth');
-  const advancedScreens = SCREEN_TEMPLATES.filter(s => s.category === 'advanced');
-
   return (
     <div className="space-y-6">
       <Card className="p-4 border border-slate-200 bg-slate-50">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Building:</p>
-        <h3 className="font-bold text-slate-900">{chosenIdea.title}</h3>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Building:</p>
+            <p className="font-bold text-slate-900">{chosenIdea.title}</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">For:</p>
+            <p className="text-slate-700">{icp || "Your target user"}</p>
+          </div>
+        </div>
+        {(coreFeatures.length > 0 || uspFeatures.length > 0) && (
+          <div className="mt-3 pt-3 border-t border-slate-200">
+            <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Features to support:</p>
+            <div className="flex flex-wrap gap-1">
+              {[...coreFeatures, ...uspFeatures].map((f, i) => (
+                <span key={i} className="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded-full">{f}</span>
+              ))}
+            </div>
+          </div>
+        )}
       </Card>
 
       <AnimatePresence mode="wait">
-        {currentStep === 1 && (
+        {screens.length === 0 ? (
           <motion.div
-            key="step1"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            key="generate"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             className="space-y-6"
           >
-            <div className="text-center">
-              <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
-                <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-white" stroke="currentColor" strokeWidth="1.5">
+            <div className="text-center py-8">
+              <div className="w-16 h-16 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
+                <svg viewBox="0 0 24 24" fill="none" className="w-8 h-8 text-white" stroke="currentColor" strokeWidth="1.5">
                   <rect x="3" y="3" width="7" height="7" rx="1" />
                   <rect x="14" y="3" width="7" height="7" rx="1" />
                   <rect x="3" y="14" width="7" height="7" rx="1" />
@@ -356,310 +241,168 @@ FLOW3_SCREENS: [screen1, screen2, screen3...]`;
                   <path d="M10 6.5h4M17.5 10v4M14 17.5h-4M6.5 14v-4" strokeDasharray="2 2" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Plan Your App Screens</h2>
-              <p className="text-slate-500 max-w-lg mx-auto">
-                Select which screens your MVP needs. Start simple - you can always add more later.
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Design Your App Screens</h2>
+              <p className="text-slate-500 max-w-md mx-auto mb-6">
+                AI will analyze your features and target user to recommend the exact screens your MVP needs.
               </p>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs">1</span>
-                  Core App Screens
-                  <span className="text-xs font-normal text-slate-500">(Pick at least 3 for your MVP)</span>
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {essentialScreens.map(screen => (
-                    <button
-                      key={screen.id}
-                      onClick={() => toggleScreen(screen.id)}
-                      className={`p-4 rounded-lg border-2 text-left transition-all cursor-pointer ${
-                        selectedScreens.includes(screen.id)
-                          ? 'border-black bg-black text-white'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
-                    >
-                      <div className={`mb-2 ${selectedScreens.includes(screen.id) ? 'text-white' : 'text-slate-700'}`}>
-                        <ScreenIcon type={screen.type} />
-                      </div>
-                      <p className={`font-bold text-sm ${selectedScreens.includes(screen.id) ? 'text-white' : 'text-slate-900'}`}>
-                        {screen.name}
-                      </p>
-                      <p className={`text-xs mt-1 ${selectedScreens.includes(screen.id) ? 'text-slate-300' : 'text-slate-500'}`}>
-                        {screen.description}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs">2</span>
-                  Nice-to-Have Screens
-                  <span className="text-xs font-normal text-slate-500">(Add later once core works)</span>
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {growthScreens.map(screen => (
-                    <button
-                      key={screen.id}
-                      onClick={() => toggleScreen(screen.id)}
-                      className={`p-4 rounded-lg border-2 text-left transition-all cursor-pointer ${
-                        selectedScreens.includes(screen.id)
-                          ? 'border-black bg-black text-white'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
-                    >
-                      <div className={`mb-2 ${selectedScreens.includes(screen.id) ? 'text-white' : 'text-slate-700'}`}>
-                        <ScreenIcon type={screen.type} />
-                      </div>
-                      <p className={`font-bold text-sm ${selectedScreens.includes(screen.id) ? 'text-white' : 'text-slate-900'}`}>
-                        {screen.name}
-                      </p>
-                      <p className={`text-xs mt-1 ${selectedScreens.includes(screen.id) ? 'text-slate-300' : 'text-slate-500'}`}>
-                        {screen.description}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-bold text-slate-900 mb-3 flex items-center gap-2">
-                  <span className="w-6 h-6 rounded-full bg-purple-500 text-white flex items-center justify-center text-xs">3</span>
-                  Extra Features
-                  <span className="text-xs font-normal text-slate-500">(Consider for v2)</span>
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {advancedScreens.map(screen => (
-                    <button
-                      key={screen.id}
-                      onClick={() => toggleScreen(screen.id)}
-                      className={`p-4 rounded-lg border-2 text-left transition-all cursor-pointer ${
-                        selectedScreens.includes(screen.id)
-                          ? 'border-black bg-black text-white'
-                          : 'border-slate-200 hover:border-slate-300 bg-white'
-                      }`}
-                    >
-                      <div className={`mb-2 ${selectedScreens.includes(screen.id) ? 'text-white' : 'text-slate-700'}`}>
-                        <ScreenIcon type={screen.type} />
-                      </div>
-                      <p className={`font-bold text-sm ${selectedScreens.includes(screen.id) ? 'text-white' : 'text-slate-900'}`}>
-                        {screen.name}
-                      </p>
-                      <p className={`text-xs mt-1 ${selectedScreens.includes(screen.id) ? 'text-slate-300' : 'text-slate-500'}`}>
-                        {screen.description}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-bold text-slate-900">{selectedScreens.length} screens selected</p>
-                  <p className="text-sm text-slate-500">
-                    {selectedScreens.length < 3 ? 'Select at least 3 screens to continue' : 'Great selection for an MVP!'}
-                  </p>
-                </div>
-                {selectedScreens.length >= 3 && (
-                  <div className="flex gap-2 flex-wrap">
-                    {selectedScreens.slice(0, 4).map(id => {
-                      const screen = SCREEN_TEMPLATES.find(s => s.id === id);
-                      return (
-                        <span key={id} className="text-xs bg-black text-white px-2 py-1 rounded-full">
-                          {screen?.name}
-                        </span>
-                      );
-                    })}
-                    {selectedScreens.length > 4 && (
-                      <span className="text-xs bg-slate-200 text-slate-600 px-2 py-1 rounded-full">
-                        +{selectedScreens.length - 4} more
-                      </span>
-                    )}
-                  </div>
-                )}
-              </div>
-            </Card>
-
-            <div className="flex justify-end">
+              
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       size="lg"
                       className="gap-2"
-                      onClick={() => {
-                        setCurrentStep(2);
-                        if (workflowOptions.length === 0) {
-                          generateWorkflowOptions();
-                        }
-                      }}
-                      disabled={selectedScreens.length < 3}
-                      data-testid="button-next-step1"
+                      onClick={generateAppFlow}
+                      disabled={isGenerating || aiAttempts >= MAX_AI_ATTEMPTS}
+                      data-testid="button-generate-screens"
                     >
-                      Create Your Flow <ChevronRight className="w-5 h-5" />
+                      {isGenerating ? (
+                        <><Loader2 className="w-5 h-5 animate-spin" /> Analyzing your product...</>
+                      ) : (
+                        <><Sparkles className="w-5 h-5" /> Design My App Screens</>
+                      )}
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Continue to arrange your screens into a user flow</TooltipContent>
+                  <TooltipContent>AI designs screens based on YOUR features and users</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+
+              {aiAttempts > 0 && aiAttempts < MAX_AI_ATTEMPTS && (
+                <p className="text-xs text-slate-400 mt-2">{MAX_AI_ATTEMPTS - aiAttempts} attempts remaining</p>
+              )}
             </div>
           </motion.div>
-        )}
-
-        {currentStep === 2 && (
+        ) : (
           <motion.div
-            key="step2"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
+            key="results"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <div className="text-center">
-              <div className="w-14 h-14 rounded-full bg-black flex items-center justify-center mx-auto mb-4">
-                <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-white" stroke="currentColor" strokeWidth="1.5">
-                  <circle cx="5" cy="12" r="2" />
-                  <circle cx="12" cy="12" r="2" />
-                  <circle cx="19" cy="12" r="2" />
-                  <path d="M7 12h3M14 12h3" />
-                </svg>
+            <div>
+              <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <span className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs">1</span>
+                Your MVP Screens
+              </h3>
+              <div className="space-y-3">
+                {screens.map((screen, i) => (
+                  <Card key={i} className="p-4 border-2 border-slate-200">
+                    <div className="flex items-start justify-between mb-2">
+                      {editingScreen === i ? (
+                        <input
+                          type="text"
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onBlur={() => handleEditScreen(i, editValue)}
+                          onKeyDown={(e) => e.key === 'Enter' && handleEditScreen(i, editValue)}
+                          className="font-bold text-slate-900 border-b-2 border-black outline-none bg-transparent"
+                          autoFocus
+                        />
+                      ) : (
+                        <h4 className="font-bold text-slate-900 flex items-center gap-2">
+                          <span className="w-5 h-5 rounded bg-slate-100 text-slate-600 flex items-center justify-center text-xs">{i + 1}</span>
+                          {screen.name}
+                        </h4>
+                      )}
+                      <div className="flex gap-1">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => { setEditingScreen(i); setEditValue(screen.name); }}
+                                className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
+                              >
+                                <Edit3 className="w-4 h-4" />
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>Edit screen name</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        {screens.length > 2 && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  onClick={() => handleRemoveScreen(i)}
+                                  className="p-1 text-slate-400 hover:text-red-500 cursor-pointer"
+                                >
+                                  <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4" stroke="currentColor" strokeWidth="2">
+                                    <path d="M18 6L6 18M6 6l12 12" />
+                                  </svg>
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>Remove screen</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-sm text-slate-600 mb-3">{screen.purpose}</p>
+                    <div className="flex flex-wrap gap-1">
+                      {screen.keyElements.map((el, j) => (
+                        <span key={j} className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">{el}</span>
+                      ))}
+                    </div>
+                  </Card>
+                ))}
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Choose Your User Flow</h2>
-              <p className="text-slate-500 max-w-lg mx-auto">
-                Pick how users will navigate through your app. AI generated 3 options for you.
-              </p>
             </div>
 
-            {isGenerating ? (
-              <Card className="p-8 border-2 border-slate-200 text-center">
-                <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-slate-400" />
-                <p className="font-medium text-slate-600">Creating workflow options...</p>
-              </Card>
-            ) : workflowOptions.length > 0 ? (
-              <div className="space-y-4">
-                {workflowOptions.map((flow, i) => (
-                  <button
-                    key={flow.id}
-                    onClick={() => handleSelectWorkflow(i)}
-                    className={`w-full p-5 rounded-lg border-2 text-left transition-all cursor-pointer ${
-                      selectedWorkflow === i
-                        ? 'border-black bg-slate-50'
-                        : 'border-slate-200 hover:border-slate-300 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                            selectedWorkflow === i ? 'border-black bg-black' : 'border-slate-300'
-                          }`}>
-                            {selectedWorkflow === i && <Check className="w-4 h-4 text-white" />}
-                          </div>
-                          <h4 className="font-bold text-slate-900">{flow.name}</h4>
+            {userFlow && (
+              <div>
+                <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                  <span className="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs">2</span>
+                  User Flow
+                </h3>
+                <Card className="p-4 border-2 border-slate-200">
+                  <div className="flex items-center gap-2 mb-3 overflow-x-auto pb-2">
+                    {userFlow.steps.map((step, i) => (
+                      <React.Fragment key={i}>
+                        <div className="flex-shrink-0 px-3 py-2 bg-black text-white rounded-lg text-sm font-medium">
+                          {step}
                         </div>
-                        <p className="text-sm text-slate-500 mt-1 ml-8">{flow.description}</p>
-                      </div>
-                      <span className="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded-full">
-                        {flow.screens.length} screens
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center gap-2 ml-8 overflow-x-auto pb-2">
-                      {flow.screens.map((screenId, idx) => {
-                        const screen = SCREEN_TEMPLATES.find(s => s.id === screenId);
-                        return (
-                          <div key={idx} className="flex items-center gap-2 flex-shrink-0">
-                            <div className={`p-2 rounded-lg border ${
-                              selectedWorkflow === i ? 'border-black bg-white' : 'border-slate-200 bg-slate-50'
-                            }`}>
-                              <ScreenIcon type={screen?.type || 'landing'} />
-                              <p className="text-xs font-medium text-center mt-1 max-w-[60px] truncate">{screen?.name}</p>
-                            </div>
-                            {idx < flow.screens.length - 1 && (
-                              <ArrowRight className="w-4 h-4 text-slate-300 flex-shrink-0" />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </button>
-                ))}
-
-                {aiAttempts < MAX_AI_ATTEMPTS && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full gap-2"
-                          onClick={generateWorkflowOptions}
-                          disabled={isGenerating}
-                        >
-                          <Sparkles className="w-4 h-4" /> Generate New Options{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>AI will create 3 new workflow options</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+                        {i < userFlow.steps.length - 1 && (
+                          <ArrowRight className="w-4 h-4 text-slate-300 flex-shrink-0" />
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </div>
+                  <p className="text-sm text-slate-600 italic">{userFlow.reasoning}</p>
+                </Card>
               </div>
-            ) : (
-              <Card className="p-6 border-2 border-slate-200 text-center">
+            )}
+
+            <div className="flex justify-between pt-4">
+              {aiAttempts < MAX_AI_ATTEMPTS && (
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
+                        variant="outline"
                         className="gap-2"
-                        onClick={generateWorkflowOptions}
-                        disabled={isGenerating || aiAttempts >= MAX_AI_ATTEMPTS}
+                        onClick={generateAppFlow}
+                        disabled={isGenerating}
                       >
-                        {isGenerating ? (
-                          <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</>
-                        ) : (
-                          <><Sparkles className="w-4 h-4" /> Generate Workflow Options</>
-                        )}
+                        <Sparkles className="w-4 h-4" /> Regenerate{aiAttempts === MAX_AI_ATTEMPTS - 1 ? ' (1 left)' : ''}
                       </Button>
                     </TooltipTrigger>
-                    <TooltipContent>AI creates 3 different user flow options</TooltipContent>
+                    <TooltipContent>Get a fresh set of screen recommendations</TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              </Card>
-            )}
-
-            <div className="flex justify-between">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      className="gap-2"
-                      onClick={() => setCurrentStep(1)}
-                    >
-                      Back
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Go back to select screens</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              )}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
                       size="lg"
-                      className="gap-2 bg-green-600 hover:bg-green-700"
+                      className="gap-2 bg-green-600 hover:bg-green-700 ml-auto"
                       onClick={handleFinish}
-                      disabled={selectedWorkflow === null}
                       data-testid="button-finish"
                     >
                       <Check className="w-5 h-5" /> Complete Day 4
                     </Button>
                   </TooltipTrigger>
-                  <TooltipContent>Save your workflow and complete Day 4</TooltipContent>
+                  <TooltipContent>Save your app screens and complete Day 4</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
