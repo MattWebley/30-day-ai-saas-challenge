@@ -497,6 +497,123 @@ Format: { "ideas": [...] }`;
     }
   });
 
+  // Competitor Research endpoint for Day 3
+  app.post("/api/research-competitors", isAuthenticated, async (req: any, res) => {
+    try {
+      const { ideaTitle, ideaDescription, targetCustomer } = req.body;
+      
+      const prompt = `You are a SaaS market research expert. I need you to find DIRECT competitors for this SaaS idea:
+
+Product: "${ideaTitle}"
+Description: ${ideaDescription}
+Target Customer: ${targetCustomer}
+
+Find 4-5 REAL, EXISTING SaaS companies that do EXACTLY the same thing or very similar. For each competitor, provide:
+1. Company name
+2. Website URL (must be real and working)
+3. A one-line description of what they do
+4. Their top 5 features that they promote most prominently on their sales page
+
+IMPORTANT: Only include REAL companies with real websites. Do not make up companies.
+
+Respond in this exact JSON format:
+{
+  "competitors": [
+    {
+      "name": "Company Name",
+      "url": "https://example.com",
+      "description": "One line description",
+      "topFeatures": ["Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5"]
+    }
+  ]
+}
+
+Only respond with valid JSON, nothing else.`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+      });
+
+      const content = response.choices[0].message.content || "{}";
+      const parsed = JSON.parse(content);
+      
+      // Add screenshot URLs using free screenshot service
+      const competitorsWithScreenshots = (parsed.competitors || []).map((comp: any) => ({
+        ...comp,
+        screenshotUrl: `https://image.thum.io/get/width/400/crop/300/${encodeURIComponent(comp.url)}`,
+      }));
+
+      // Find shared features across all competitors
+      const allFeatures: Record<string, number> = {};
+      competitorsWithScreenshots.forEach((comp: any) => {
+        (comp.topFeatures || []).forEach((feature: string) => {
+          const normalized = feature.toLowerCase().trim();
+          allFeatures[normalized] = (allFeatures[normalized] || 0) + 1;
+        });
+      });
+      
+      // Features that appear in 2+ competitors are "core" features
+      const sharedFeatures = Object.entries(allFeatures)
+        .filter(([_, count]) => count >= 2)
+        .map(([feature]) => feature.charAt(0).toUpperCase() + feature.slice(1))
+        .slice(0, 8);
+
+      res.json({ 
+        competitors: competitorsWithScreenshots,
+        sharedFeatures,
+      });
+    } catch (error: any) {
+      console.error("Error researching competitors:", error);
+      res.status(500).json({ message: error.message || "Failed to research competitors" });
+    }
+  });
+
+  // Generate USP features based on competitors
+  app.post("/api/generate-usp-features", isAuthenticated, async (req: any, res) => {
+    try {
+      const { ideaTitle, ideaDescription, userSkills, sharedFeatures, competitors } = req.body;
+      
+      const competitorInfo = competitors.map((c: any) => 
+        `${c.name}: ${c.topFeatures?.join(', ')}`
+      ).join('\n');
+      
+      const prompt = `You are a SaaS positioning expert. Based on this analysis, suggest unique differentiating features (USPs) for a new product.
+
+Product: "${ideaTitle}"
+Description: ${ideaDescription}
+User's Skills: ${userSkills}
+
+Competitor Features:
+${competitorInfo}
+
+Shared Core Features (what everyone has): ${sharedFeatures.join(', ')}
+
+What are 5-7 UNIQUE features this product could have that competitors DON'T have? Focus on:
+- Gaps in the market
+- Features the user's skills enable
+- Innovative approaches competitors haven't tried
+
+List only the features, one per line, each under 10 words. No numbering or bullets.`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      const features = (response.choices[0].message.content || "")
+        .split('\n')
+        .map((line: string) => line.replace(/^[-•*\d.]+\s*/, '').trim())
+        .filter((line: string) => line.length > 3 && line.length < 80);
+
+      res.json({ uspFeatures: features });
+    } catch (error: any) {
+      console.error("Error generating USP features:", error);
+      res.status(500).json({ message: error.message || "Failed to generate USP features" });
+    }
+  });
+
   // Chat/Comments routes
   app.get("/api/comments/:day", async (req, res) => {
     try {
