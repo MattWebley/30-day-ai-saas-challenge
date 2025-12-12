@@ -16,6 +16,13 @@ A gamified daily challenge application that guides users from zero to a working 
 
 ## Recent Changes
 
+### Day 1-4 Updates (Dec 12, 2025)
+- Day 1: Now allows selecting 3-5 ideas (instead of forcing exactly 5)
+- Day 2: Hover tooltips on idea cards show full description and target customer
+- Day 4: Redesigned as AI-driven screen planner (analyzes features/ICP to recommend screens)
+- All prompts clearly labeled as "Prompt" (e.g., "Market Viability Check Prompt")
+- Mobile sidebar now scrolls properly
+
 ### Day 3: Core Features & USP Generator (Dec 11, 2025)
 - Created Day3FeatureBuilder component with competitor analysis prompts
 - Step 1: Find Core Features from competitor analysis
@@ -110,19 +117,45 @@ A gamified daily challenge application that guides users from zero to a working 
 - 28 AI-scored ideas (number of wealth)
 - Color-coded cards: green (20+), orange (15-19), red (lower)
 - Custom idea input option
-- Shortlist top 5 ideas
+- Shortlist top 3-5 ideas (flexible selection)
+- Tooltips on all interactive elements
 
 ### Day 2: Idea Validator
 - Interactive validator with shortlisted ideas from Day 1
-- Copy-pastable AI prompts for validation
+- Hover tooltips show idea details (description, target customer) at a glance
+- Copy-pastable AI prompts for validation (clearly labeled as "Prompts")
 - "Use Our AI" buttons to run prompts
-- Narrow from 5 ideas to 1 final choice
+- Narrow ideas down to 1 final choice
 
-### Day 3: Core Features & USP Generator
-- Competitor analysis to identify shared "core" features
-- USP generator based on user skills + market gaps
-- Editable feature checklist
-- Finalize feature list for MVP
+### Day 3: Core Features & USP Generator (6 Steps)
+- Step 1: Define Bleeding Neck Problem
+- Step 2: Find Core Features from competitor analysis
+- Step 3: Generate USP features based on user skills + competitor gaps
+- Step 4: Create 10-Second Pitch (WHO/WHAT/BENEFIT formula)
+- Step 5: Generate ICP + 7 online hangouts
+- Step 6: Summary of all decisions
+
+### Day 4: App Screen Planner
+- AI-driven screen recommendations based on features and ICP
+- Analyzes your specific product to suggest minimum screens for MVP
+- Each screen includes purpose and key elements
+- User flow visualization with reasoning
+
+### Day 5: MVP Prioritizer
+- Identify the ONE killer feature for MVP
+- Focus on what makes the product unique
+
+## Prompts Used Throughout App
+All prompts are clearly labeled with "Prompt" suffix for clarity:
+- **Day 2**: Market Viability Check Prompt, Competitor Deep Dive Prompt, Customer Pain Points Prompt
+- **Day 3**: Bleeding Neck Problem Prompt, Core Features Prompt, USP Features Prompt, 10-Second Pitch Prompt, ICP Generator Prompt
+
+## Tooltips
+Tooltips are used throughout the app for contextual help:
+- All buttons have descriptive tooltips on hover
+- Day 2 idea cards show full idea details on hover
+- Interactive elements explain their purpose
+- AI generation buttons explain what will happen
 
 ### My Journey Section (Sidebar)
 - Shows user's chosen idea and key decisions
