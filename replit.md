@@ -162,11 +162,14 @@ Tooltips are used throughout the app for contextual help:
 
 ## Day Instructions Format
 Each day MUST have very simple, very brief step-by-step instructions:
+- **Implemented in**: `client/src/components/DayInstructions.tsx`
+- **Displays**: A numbered list of exactly what to do that day
 - **Day 1**: 1) Fill in your background 2) Generate ideas 3) Pick your top 3-5 4) Confirm selection
 - **Day 2**: 1) Hover to review each idea 2) Use prompts to validate 3) Pick ONE winner
 - **Day 3**: 1) Define the problem 2) List core features 3) Add USP features 4) Write pitch 5) Define ICP
 - **Day 4**: 1) Review your features 2) Generate screen recommendations 3) Confirm your app flow
-- **Day 5**: 1) Review all features 2) Pick ONE killer feature for MVP
+- **Day 5**: 1) Review all features 2) Categorize features 3) Pick ONE killer feature for MVP
+- **Day 6+**: 1) Read today's lesson 2) Complete the micro-decision 3) Write your reflection
 
 ### My Journey Section (Sidebar)
 - Shows user's chosen idea and key decisions
