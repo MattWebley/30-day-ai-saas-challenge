@@ -9,6 +9,12 @@ import { Sparkles, Check, ChevronRight, Loader2, Plus, PenLine } from "lucide-re
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Idea {
   title: string;
@@ -226,15 +232,22 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
           </div>
         </div>
 
-        <Button 
-          size="lg" 
-          className="w-full h-14 text-lg font-bold gap-2"
-          onClick={handleGenerate}
-          data-testid="button-generate-ideas"
-        >
-          <Sparkles className="w-5 h-5" />
-          Generate 28 SaaS Ideas
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                size="lg" 
+                className="w-full h-14 text-lg font-bold gap-2"
+                onClick={handleGenerate}
+                data-testid="button-generate-ideas"
+              >
+                <Sparkles className="w-5 h-5" />
+                Generate 28 SaaS Ideas
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>AI will create 28 personalized ideas based on your profile</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     );
   }
@@ -272,14 +285,21 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
             </p>
           </div>
           {!showConfirmation && (
-            <Button 
-              onClick={handleConfirmShortlist}
-              disabled={selectedIdeas.length !== 5}
-              className="gap-2"
-              data-testid="button-confirm-shortlist"
-            >
-              Confirm Selection <ChevronRight className="w-4 h-4" />
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button 
+                    onClick={handleConfirmShortlist}
+                    disabled={selectedIdeas.length !== 5}
+                    className="gap-2"
+                    data-testid="button-confirm-shortlist"
+                  >
+                    Confirm Selection <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Lock in your 5 favorite ideas</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
 
@@ -324,9 +344,16 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                   />
                 </div>
                 <div className="flex gap-2">
-                  <Button onClick={handleAddCustomIdea} className="gap-2" data-testid="button-add-custom">
-                    <Plus className="w-4 h-4" /> Add to List
-                  </Button>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button onClick={handleAddCustomIdea} className="gap-2" data-testid="button-add-custom">
+                          <Plus className="w-4 h-4" /> Add to List
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>Add your idea to the list of options</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                   <Button variant="outline" onClick={() => setShowCustomForm(false)}>
                     Cancel
                   </Button>
@@ -417,14 +444,21 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
         </div>
 
         {showConfirmation && (
-          <Button 
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={onComplete}
-            data-testid="button-complete-day1"
-          >
-            Complete Day 1 <ChevronRight className="w-5 h-5" />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button 
+                  size="lg"
+                  className="w-full h-14 text-lg font-bold gap-2"
+                  onClick={onComplete}
+                  data-testid="button-complete-day1"
+                >
+                  Complete Day 1 <ChevronRight className="w-5 h-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Mark Day 1 as complete and move on</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
       </div>
     );
