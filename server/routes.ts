@@ -540,9 +540,10 @@ Only respond with valid JSON, nothing else.`;
       const parsed = JSON.parse(content);
       
       // Add screenshot URLs using free screenshot service
+      // Using screenshotapi.net which is free and doesn't require authentication for basic usage
       const competitorsWithScreenshots = (parsed.competitors || []).map((comp: any) => ({
         ...comp,
-        screenshotUrl: `https://image.thum.io/get/width/400/crop/300/${encodeURIComponent(comp.url)}`,
+        screenshotUrl: `https://shot.screenshotapi.net/screenshot?url=${encodeURIComponent(comp.url)}&width=400&height=300&output=image&file_type=png&wait_for_event=load`,
       }));
 
       // Find shared features across all competitors
