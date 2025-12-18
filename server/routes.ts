@@ -554,16 +554,67 @@ Only respond with valid JSON, nothing else.`;
           allFeatures[normalized] = (allFeatures[normalized] || 0) + 1;
         });
       });
-      
+
       // Features that appear in 2+ competitors are "core" features
-      const sharedFeatures = Object.entries(allFeatures)
+      const sharedFeatureNames = Object.entries(allFeatures)
         .filter(([_, count]) => count >= 2)
         .map(([feature]) => feature.charAt(0).toUpperCase() + feature.slice(1))
         .slice(0, 8);
 
-      res.json({ 
+      // Generate detailed descriptions for shared features using AI
+      let sharedFeaturesWithDetails = sharedFeatureNames.map(name => ({
+        name,
+        description: '',
+        why: ''
+      }));
+
+      if (sharedFeatureNames.length > 0) {
+        try {
+          const descriptionPrompt = `You are a SaaS product expert. For this product idea: "${ideaTitle}" (${ideaDescription}), explain these core features that all competitors have.
+
+Target Customer: ${targetCustomer}
+
+Core Features Found in Competitors:
+${sharedFeatureNames.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+
+For EACH feature, provide:
+1. A clear 1-sentence description of what this feature does
+2. A 1-sentence explanation of why this feature is important/valuable to the target customer
+
+Respond in this exact JSON format:
+{
+  "features": [
+    {
+      "name": "Feature Name",
+      "description": "What this feature does...",
+      "why": "Why customers need this..."
+    }
+  ]
+}
+
+Keep each description and why statement under 120 characters. Only respond with valid JSON.`;
+
+          const descResponse = await openai.chat.completions.create({
+            model: "gpt-4o",
+            messages: [{ role: "user", content: descriptionPrompt }],
+            response_format: { type: "json_object" },
+          });
+
+          const descContent = descResponse.choices[0].message.content || "{}";
+          const descParsed = JSON.parse(descContent);
+
+          if (descParsed.features && Array.isArray(descParsed.features)) {
+            sharedFeaturesWithDetails = descParsed.features;
+          }
+        } catch (error) {
+          console.error("Error generating feature descriptions:", error);
+          // Fall back to simple format if AI call fails
+        }
+      }
+
+      res.json({
         competitors: competitorsWithScreenshots,
-        sharedFeatures,
+        sharedFeatures: sharedFeaturesWithDetails,
       });
     } catch (error: any) {
       console.error("Error researching competitors:", error);

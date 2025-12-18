@@ -70,6 +70,12 @@ interface Competitor {
   screenshotUrl: string;
 }
 
+interface SharedFeature {
+  name: string;
+  description: string;
+  why: string;
+}
+
 const MOCK_IDEA = {
   title: "AI Content Optimizer",
   desc: "A SaaS tool that uses AI to analyze and optimize marketing content for better engagement",
@@ -110,7 +116,7 @@ export function Day3FeatureBuilder({ onComplete }: Day3Props) {
   const [isGeneratingICP, setIsGeneratingICP] = useState(false);
   
   const [competitors, setCompetitors] = useState<Competitor[]>([]);
-  const [sharedFeatures, setSharedFeatures] = useState<string[]>([]);
+  const [sharedFeatures, setSharedFeatures] = useState<SharedFeature[]>([]);
   const [isResearchingCompetitors, setIsResearchingCompetitors] = useState(false);
   const [competitorAttempts, setCompetitorAttempts] = useState(0);
   
@@ -191,7 +197,8 @@ Just the one sentence, nothing else.`;
       setCompetitors(data.competitors || []);
       setSharedFeatures(data.sharedFeatures || []);
       if (data.sharedFeatures?.length > 0) {
-        setCoreFeatures(data.sharedFeatures);
+        // Extract just the feature names for coreFeatures
+        setCoreFeatures(data.sharedFeatures.map((f: SharedFeature) => f.name));
       }
     } catch {
       toast.error("Failed to research competitors. Try again.");
@@ -647,14 +654,27 @@ HANGOUTS:
                   </div>
 
                   {sharedFeatures.length > 0 && (
-                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                      <h4 className="font-bold text-green-900 mb-2">Shared Core Features (Found in 2+ Competitors):</h4>
-                      <p className="text-sm text-green-700 mb-3">These are the baseline features you MUST have to compete:</p>
-                      <div className="flex flex-wrap gap-2">
+                    <div className="mt-6 p-5 bg-green-50 border-2 border-green-200 rounded-lg">
+                      <h4 className="font-bold text-green-900 mb-2 text-lg">Shared Core Features (Found in 2+ Competitors)</h4>
+                      <p className="text-sm text-green-700 mb-4">These are the baseline features you MUST have to compete:</p>
+                      <div className="space-y-3">
                         {sharedFeatures.map((feature, i) => (
-                          <span key={i} className="px-3 py-1.5 bg-green-100 text-green-800 text-sm rounded-lg font-medium">
-                            {feature}
-                          </span>
+                          <div key={i} className="bg-white border border-green-200 rounded-lg p-4 shadow-sm">
+                            <div className="flex items-start gap-3">
+                              <div className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+                                {i + 1}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h5 className="font-bold text-green-900 mb-1">{feature.name}</h5>
+                                <p className="text-sm text-slate-700 mb-2">
+                                  <span className="font-medium text-slate-600">What it does:</span> {feature.description}
+                                </p>
+                                <p className="text-sm text-green-800">
+                                  <span className="font-medium text-green-700">Why it matters:</span> {feature.why}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
                         ))}
                       </div>
                     </div>
