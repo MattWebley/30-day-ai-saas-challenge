@@ -21,7 +21,8 @@ import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
 import { Day1IdeaGenerator } from "@/components/Day1IdeaGenerator";
 import { Day2IdeaValidator } from "@/components/Day2IdeaValidator";
 import { Day3FeatureBuilder } from "@/components/Day3FeatureBuilder";
-import { Day4WorkflowBuilder } from "@/components/Day4WorkflowBuilder";
+import { Day4ToolSetup } from "@/components/Day4ToolSetup";
+import { Day5PRDGenerator } from "@/components/Day5PRDGenerator";
 import { Day5MVPPrioritizer } from "@/components/Day5MVPPrioritizer";
 import { DayChat } from "@/components/DayChat";
 import { DayInstructions } from "@/components/DayInstructions";
@@ -271,19 +272,19 @@ export default function Dashboard() {
               </>
             ) : currentDay === 4 ? (
               <>
-                {/* Day 4: Workflow Builder */}
+                {/* Day 4: Tool Setup */}
                 <div className="space-y-4">
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    <Day4WorkflowBuilder onComplete={handleComplete} />
+                    <Day4ToolSetup onComplete={handleComplete} />
                   </Card>
                 </div>
               </>
             ) : currentDay === 5 ? (
               <>
-                {/* Day 5: MVP Prioritizer */}
+                {/* Day 5: PRD Generator */}
                 <div className="space-y-4">
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    <Day5MVPPrioritizer onComplete={handleComplete} />
+                    <Day5PRDGenerator onComplete={handleComplete} />
                   </Card>
                 </div>
               </>
