@@ -441,11 +441,29 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
           </AnimatePresence>
         </div>
 
+        {!showConfirmation && selectedIdeas.length >= 3 && (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  size="lg"
+                  onClick={handleConfirmShortlist}
+                  className="w-full h-14 text-lg font-bold gap-2"
+                  data-testid="button-confirm-shortlist-bottom"
+                >
+                  Confirm Selection ({selectedIdeas.length} ideas) <ChevronRight className="w-5 h-5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Lock in your favorite ideas and proceed</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        )}
+
         {showConfirmation && (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button 
+                <Button
                   size="lg"
                   className="w-full h-14 text-lg font-bold gap-2"
                   onClick={onComplete}
