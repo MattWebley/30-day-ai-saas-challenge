@@ -278,13 +278,28 @@ export async function registerRoutes(
     try {
       const { knowledge, skills, interests, experience } = req.body;
       
-      const prompt = `You are a SaaS business idea expert. Based on the user's profile, generate exactly 28 B2B SaaS product ideas.
+      const prompt = `You are a SaaS business idea expert. Generate exactly 28 B2B SaaS product ideas where the user has a NATURAL ADVANTAGE.
 
 USER PROFILE:
 - Knowledge/Expertise: ${knowledge}
 - Skills: ${skills}
 - Interests/Passions: ${interests}
 - Work Experience: ${experience}
+
+CRITICAL RULES:
+1. Each idea should leverage ONE area where they have a clear advantage (knowledge, skills, OR experience)
+2. DO NOT force weird combinations of all three unless it's genuinely natural
+3. Focus on problems they ALREADY understand deeply from one of their inputs
+4. Ideas should feel obvious given their background, not Frankenstein combinations
+
+GOOD EXAMPLES:
+- If they have "accounting knowledge" → Ideas solving accounting pain points
+- If they have "sales experience" → Ideas automating sales workflows
+- If they know "healthcare" → Ideas for healthcare professionals
+
+BAD EXAMPLES:
+- Combining "loves gaming" + "knows Excel" + "worked in HR" into one weird idea
+- Forcing all inputs into every idea when they don't naturally connect
 
 SCORING CRITERIA (rate each 1-5):
 1. Market Demand - Is there proven demand? Are competitors making money?
@@ -299,7 +314,7 @@ For each idea, provide:
 - targetCustomer: Who would pay for this
 - scores: Object with marketDemand, skillMatch, passionFit, speedToMvp, monetization (each 1-5)
 - totalScore: Sum of all scores (out of 25)
-- whyThisWorks: One sentence explaining the opportunity
+- whyThisWorks: One sentence explaining why THEIR background gives them an edge
 
 Return JSON array of 28 ideas, sorted by totalScore descending.
 Format: { "ideas": [...] }`;
