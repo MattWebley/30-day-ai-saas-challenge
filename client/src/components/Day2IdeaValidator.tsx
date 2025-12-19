@@ -605,22 +605,22 @@ Return ONLY a numbered list, most painful first:
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div>
                       <h4 className="font-bold text-slate-900 mb-1">{prompt.title}</h4>
-                      <p className="text-xs text-slate-500">Click to run instant AI analysis</p>
+                      {!aiResponse && <p className="text-xs text-slate-500">Click to run instant AI analysis</p>}
                     </div>
-                    <Button
-                      className="gap-2 flex-shrink-0"
-                      onClick={() => handleRunAi(prompt.id, selectedIdeaIndex)}
-                      disabled={isLoading}
-                      data-testid={`run-ai-${prompt.id}`}
-                    >
-                      {isLoading ? (
-                        <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>
-                      ) : aiResponse ? (
-                        <><Check className="w-4 h-4" /> Re-run</>
-                      ) : (
-                        <><Sparkles className="w-4 h-4" /> Run Analysis</>
-                      )}
-                    </Button>
+                    {!aiResponse && (
+                      <Button
+                        className="gap-2 flex-shrink-0"
+                        onClick={() => handleRunAi(prompt.id, selectedIdeaIndex)}
+                        disabled={isLoading}
+                        data-testid={`run-ai-${prompt.id}`}
+                      >
+                        {isLoading ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>
+                        ) : (
+                          <><Sparkles className="w-4 h-4" /> Run Analysis</>
+                        )}
+                      </Button>
+                    )}
                   </div>
 
                   {aiResponse && (
