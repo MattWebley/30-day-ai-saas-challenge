@@ -616,7 +616,29 @@ async function seed() {
   ];
 
   for (const day of dayContentData) {
-    await db.insert(dayContent).values(day).onConflictDoNothing();
+    await db.insert(dayContent).values(day).onConflictDoUpdate({
+      target: dayContent.day,
+      set: {
+        title: day.title,
+        description: day.description,
+        phase: day.phase,
+        videoUrl: day.videoUrl,
+        aiTaskType: day.aiTaskType,
+        aiTaskTitle: day.aiTaskTitle,
+        aiTaskDescription: day.aiTaskDescription,
+        suggestions: day.suggestions,
+        template: day.template,
+        microDecisionQuestion: day.microDecisionQuestion,
+        microDecisionOptions: day.microDecisionOptions,
+        reflectionQuestion: day.reflectionQuestion,
+        tip: day.tip,
+        lesson: day.lesson,
+        outcome: day.outcome,
+        estimatedMinutes: day.estimatedMinutes,
+        xpReward: day.xpReward,
+        updatedAt: new Date(),
+      },
+    });
   }
 
   console.log("✅ Seeding complete!");
