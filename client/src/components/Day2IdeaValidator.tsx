@@ -417,7 +417,6 @@ Example good format:
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-          <div className="space-y-6">
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
               <p className="text-sm text-slate-700">
                 <strong>How to use these prompts:</strong> Copy the prompt below and paste it into ChatGPT, Claude, or any AI assistant. Or click "Use Our AI" to get an instant response here.
@@ -487,45 +486,44 @@ Example good format:
                 </Card>
               );
             })}
-          </div>
 
-          {/* Final Choice Section */}
-          <Card className="p-6 border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50">
-            <div className="text-center">
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to Decide?</h3>
-              <p className="text-slate-600 mb-4">
-                Done your research? Trust your gut and pick this one!
-              </p>
-              <p className="text-sm text-amber-700 font-semibold mb-4">
-                "There is NO perfect idea. The perfect idea is the one you actually BUILD."
-              </p>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    size="lg"
-                    className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-                    onClick={() => handleSelectFinalIdea(selectedIdeaIndex!)}
-                    data-testid="button-choose-idea"
-                  >
-                    <Trophy className="w-5 h-5" />
-                    Choose "{shortlistedIdeas[selectedIdeaIndex].title}"
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Lock in this idea and move to Day 3</TooltipContent>
-              </Tooltip>
-            </div>
-          </Card>
+            {/* Final Choice Section */}
+            <Card className="p-6 border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50">
+              <div className="text-center">
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to Decide?</h3>
+                <p className="text-slate-600 mb-4">
+                  Done your research? Trust your gut and pick this one!
+                </p>
+                <p className="text-sm text-amber-700 font-semibold mb-4">
+                  "There is NO perfect idea. The perfect idea is the one you actually BUILD."
+                </p>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="lg"
+                      className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+                      onClick={() => handleSelectFinalIdea(selectedIdeaIndex!)}
+                      data-testid="button-choose-idea"
+                    >
+                      <Trophy className="w-5 h-5" />
+                      Choose "{shortlistedIdeas[selectedIdeaIndex].title}"
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Lock in this idea and move to Day 3</TooltipContent>
+                </Tooltip>
+              </div>
+            </Card>
 
-          <Button
-            variant="outline"
-            onClick={() => {
-              setStep('pain');
-              setSelectedPainPoint(null);
-            }}
-          >
-            ← Change Pain Point
-          </Button>
-        </motion.div>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setStep('pain');
+                setSelectedPainPoint(null);
+              }}
+            >
+              ← Change Pain Point
+            </Button>
+          </motion.div>
         </>
       )}
     </div>
