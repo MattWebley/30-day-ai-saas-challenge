@@ -1,7 +1,9 @@
 import { Card } from "@/components/ui/card";
+import { Target } from "lucide-react";
 
 interface DayInstructionsProps {
   day: number;
+  outcome?: string;
 }
 
 const DAY_INSTRUCTIONS: Record<number, string[]> = {
@@ -40,13 +42,13 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
   ],
 };
 
-export function DayInstructions({ day }: DayInstructionsProps) {
+export function DayInstructions({ day, outcome }: DayInstructionsProps) {
   const instructions = DAY_INSTRUCTIONS[day] || DAY_INSTRUCTIONS[6];
-  
+
   return (
     <Card className="p-4 border-2 border-slate-200 bg-slate-50 mb-6" data-testid="day-instructions">
       <p className="font-bold text-sm text-slate-900 mb-3 uppercase tracking-wide">What To Do Today:</p>
-      <ol className="space-y-2">
+      <ol className="space-y-2 mb-4">
         {instructions.map((step, index) => (
           <li key={index} className="flex items-start gap-3 text-sm text-slate-700">
             <span className="flex-shrink-0 w-5 h-5 rounded-full bg-black text-white text-xs font-bold flex items-center justify-center">
@@ -56,6 +58,18 @@ export function DayInstructions({ day }: DayInstructionsProps) {
           </li>
         ))}
       </ol>
+
+      {outcome && (
+        <div className="mt-4 pt-4 border-t border-slate-300">
+          <div className="flex items-start gap-2">
+            <Target className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-xs text-slate-900 mb-1 uppercase tracking-wide">Today's Outcome:</p>
+              <p className="text-sm text-slate-700 font-medium">{outcome}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </Card>
   );
 }

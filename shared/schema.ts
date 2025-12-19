@@ -57,6 +57,7 @@ export const dayContent = pgTable("day_content", {
   reflectionQuestion: text("reflection_question"),
   tip: text("tip"),
   lesson: text("lesson"),
+  outcome: text("outcome"), // What the user will have accomplished by the end of the day
   estimatedMinutes: integer("estimated_minutes").default(5), // Realistic time estimate for the task
   xpReward: integer("xp_reward").default(100),
   createdAt: timestamp("created_at").defaultNow(),

@@ -159,7 +159,7 @@ export default function Dashboard() {
         )}
 
         {/* Step-by-Step Instructions */}
-        <DayInstructions day={currentDay} />
+        <DayInstructions day={currentDay} outcome={dayData.outcome} />
 
         {/* Main Task Area */}
         <div className="space-y-8">

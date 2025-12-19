@@ -105,6 +105,7 @@ async function seed() {
       microDecisionQuestion: "Which area excites you most?",
       microDecisionOptions: JSON.stringify(["B2B", "B2C", "Developer Tools", "E-commerce"]),
       reflectionQuestion: "What problem do you want to solve and why does it matter to you?",
+      outcome: "A shortlist of 3-5 SaaS ideas validated by AI, ready for deeper evaluation",
       xpReward: 100,
     },
     {
@@ -121,6 +122,7 @@ async function seed() {
       microDecisionQuestion: "What's your primary competitive advantage?",
       microDecisionOptions: JSON.stringify(["Better UX", "Lower Price", "Unique Feature", "Niche Focus"]),
       reflectionQuestion: "What makes your solution different from existing alternatives?",
+      outcome: "One validated SaaS idea with clear competitive advantages and market opportunity",
       xpReward: 100,
     },
     {
@@ -137,6 +139,7 @@ async function seed() {
       microDecisionQuestion: "Who will use your product first?",
       microDecisionOptions: JSON.stringify(["Small Business Owners", "Freelancers", "Enterprise Teams", "Consumers"]),
       reflectionQuestion: "What pain point keeps your ideal customer up at night?",
+      outcome: "A detailed customer persona with demographics, pain points, and buying behaviors",
       xpReward: 100,
     },
     {
@@ -153,6 +156,7 @@ async function seed() {
       microDecisionQuestion: "What's your main benefit focus?",
       microDecisionOptions: JSON.stringify(["Save Time", "Save Money", "Reduce Complexity", "Increase Revenue"]),
       reflectionQuestion: "If you could only say one thing about your product, what would it be?",
+      outcome: "A compelling value proposition that clearly communicates your unique benefit",
       xpReward: 100,
     },
     {
@@ -169,6 +173,7 @@ async function seed() {
       microDecisionQuestion: "What's your MVP philosophy?",
       microDecisionOptions: JSON.stringify(["Minimal viable", "Feature-rich", "Design-first", "Data-driven"]),
       reflectionQuestion: "What's the absolute minimum feature set that delivers value?",
+      outcome: "A prioritized feature list with must-haves, nice-to-haves, and features to cut",
       xpReward: 100,
     },
     {
@@ -185,6 +190,7 @@ async function seed() {
       microDecisionQuestion: "Which pricing model fits best?",
       microDecisionOptions: JSON.stringify(["Subscription", "Freemium", "Pay-per-use", "One-time"]),
       reflectionQuestion: "What would your ideal customer be willing to pay?",
+      outcome: "A clear pricing strategy with model selection and initial price points",
       xpReward: 100,
     },
     {
@@ -201,6 +207,7 @@ async function seed() {
       microDecisionQuestion: "What brand style resonates with you?",
       microDecisionOptions: JSON.stringify(["Professional", "Playful", "Modern", "Classic"]),
       reflectionQuestion: "What feeling do you want your brand to evoke?",
+      outcome: "A memorable product name and brand identity that resonates with your target audience",
       xpReward: 100,
     },
 
@@ -219,6 +226,7 @@ async function seed() {
       microDecisionQuestion: "What's your primary user action?",
       microDecisionOptions: JSON.stringify(["Sign up", "Create project", "Upload file", "Make payment"]),
       reflectionQuestion: "What's the shortest path to user success in your app?",
+      outcome: "A complete user flow diagram from landing to key conversion points",
       xpReward: 100,
     },
     {
@@ -235,6 +243,7 @@ async function seed() {
       microDecisionQuestion: "Which database type?",
       microDecisionOptions: JSON.stringify(["PostgreSQL", "MySQL", "MongoDB", "Firebase"]),
       reflectionQuestion: "What data relationships are critical to your product?",
+      outcome: "An optimized database schema with all necessary tables and relationships defined",
       xpReward: 100,
     },
     {
@@ -251,6 +260,7 @@ async function seed() {
       microDecisionQuestion: "API architecture preference?",
       microDecisionOptions: JSON.stringify(["REST", "GraphQL", "tRPC", "gRPC"]),
       reflectionQuestion: "What data operations are most critical to your app?",
+      outcome: "A complete API endpoint structure with routes, methods, and data contracts",
       xpReward: 100,
     },
     {
@@ -267,6 +277,7 @@ async function seed() {
       microDecisionQuestion: "Primary auth method?",
       microDecisionOptions: JSON.stringify(["Email/Password", "Social OAuth", "Magic Link", "SSO"]),
       reflectionQuestion: "How can you make signup as frictionless as possible?",
+      outcome: "A secure authentication strategy with chosen methods and implementation plan",
       xpReward: 100,
     },
     {
@@ -283,6 +294,7 @@ async function seed() {
       microDecisionQuestion: "Layout priority?",
       microDecisionOptions: JSON.stringify(["Dashboard-first", "Landing page-first", "Onboarding-first", "Settings-first"]),
       reflectionQuestion: "What screen will users spend the most time on?",
+      outcome: "Low-fidelity wireframes for all critical screens in your application",
       xpReward: 100,
     },
     {
@@ -299,6 +311,7 @@ async function seed() {
       microDecisionQuestion: "Development experience?",
       microDecisionOptions: JSON.stringify(["Beginner", "Intermediate", "Advanced", "Expert"]),
       reflectionQuestion: "What technologies are you most comfortable with?",
+      outcome: "A complete tech stack decision with frontend, backend, and infrastructure choices",
       xpReward: 100,
     },
     {
@@ -315,6 +328,7 @@ async function seed() {
       microDecisionQuestion: "Top priority integration?",
       microDecisionOptions: JSON.stringify(["Payment", "Email", "Analytics", "Storage"]),
       reflectionQuestion: "Which external services are absolutely necessary for your MVP?",
+      outcome: "A list of required third-party integrations with setup priorities",
       xpReward: 100,
     },
 
@@ -333,6 +347,7 @@ async function seed() {
       microDecisionQuestion: "What will you build first?",
       microDecisionOptions: JSON.stringify(["Auth system", "Main feature", "Database", "UI framework"]),
       reflectionQuestion: "What did you accomplish today? What surprised you?",
+      outcome: "A working project foundation with authentication, database, and 1-2 core features implemented",
       xpReward: 200,
     },
 
@@ -351,6 +366,7 @@ async function seed() {
       microDecisionQuestion: "Primary CTA?",
       microDecisionOptions: JSON.stringify(["Sign Up", "Book Demo", "Start Free Trial", "Watch Video"]),
       reflectionQuestion: "What's the one thing visitors must understand in 5 seconds?",
+      outcome: "A conversion-optimized landing page with compelling copy and clear CTAs",
       xpReward: 100,
     },
     {
@@ -367,6 +383,7 @@ async function seed() {
       microDecisionQuestion: "Onboarding style?",
       microDecisionOptions: JSON.stringify(["Interactive tutorial", "Quick setup wizard", "Video walkthrough", "Self-guided"]),
       reflectionQuestion: "What's the 'aha moment' in your product?",
+      outcome: "A smooth onboarding flow that gets users to their first win quickly",
       xpReward: 100,
     },
     {
@@ -383,6 +400,7 @@ async function seed() {
       microDecisionQuestion: "Implementation approach?",
       microDecisionOptions: JSON.stringify(["Build from scratch", "Use template", "Clone similar feature", "Hybrid"]),
       reflectionQuestion: "What's the smallest version of this feature that works?",
+      outcome: "Your primary feature fully implemented and functional",
       xpReward: 100,
     },
     {
@@ -399,6 +417,7 @@ async function seed() {
       microDecisionQuestion: "Feature complexity?",
       microDecisionOptions: JSON.stringify(["Simple", "Moderate", "Complex", "Very complex"]),
       reflectionQuestion: "How does this feature complement your first one?",
+      outcome: "Your second key feature working and integrated with your first",
       xpReward: 100,
     },
     {
@@ -415,6 +434,7 @@ async function seed() {
       microDecisionQuestion: "Payment approach?",
       microDecisionOptions: JSON.stringify(["Subscription only", "One-time + subscription", "Usage-based", "Freemium"]),
       reflectionQuestion: "What pricing tier will you launch with?",
+      outcome: "Stripe integration complete with subscriptions and payment processing working",
       xpReward: 100,
     },
     {
@@ -431,6 +451,7 @@ async function seed() {
       microDecisionQuestion: "Email service?",
       microDecisionOptions: JSON.stringify(["SendGrid", "Postmark", "AWS SES", "Resend"]),
       reflectionQuestion: "What's the most important email to get right?",
+      outcome: "Transactional emails configured with welcome messages and key notifications",
       xpReward: 100,
     },
     {
@@ -447,6 +468,7 @@ async function seed() {
       microDecisionQuestion: "Analytics tool?",
       microDecisionOptions: JSON.stringify(["Google Analytics", "Mixpanel", "PostHog", "Plausible"]),
       reflectionQuestion: "What's your north star metric?",
+      outcome: "Analytics tracking implemented for key user actions and conversion metrics",
       xpReward: 100,
     },
     {
@@ -463,6 +485,7 @@ async function seed() {
       microDecisionQuestion: "Error monitoring?",
       microDecisionOptions: JSON.stringify(["Sentry", "LogRocket", "Bugsnag", "Built-in logging"]),
       reflectionQuestion: "What errors would be most catastrophic for users?",
+      outcome: "Comprehensive error handling and monitoring in place for critical paths",
       xpReward: 100,
     },
 
@@ -481,6 +504,7 @@ async function seed() {
       microDecisionQuestion: "Priority optimization?",
       microDecisionOptions: JSON.stringify(["Page load speed", "API response time", "Database queries", "Bundle size"]),
       reflectionQuestion: "Where do users experience the most friction?",
+      outcome: "Key performance bottlenecks identified and optimized for better user experience",
       xpReward: 100,
     },
     {
@@ -497,6 +521,7 @@ async function seed() {
       microDecisionQuestion: "UX priority?",
       microDecisionOptions: JSON.stringify(["Mobile responsive", "Accessibility", "Loading states", "Error messages"]),
       reflectionQuestion: "What would make your app feel more polished?",
+      outcome: "Polished UX with improved responsiveness, loading states, and error messaging",
       xpReward: 100,
     },
     {
@@ -513,6 +538,7 @@ async function seed() {
       microDecisionQuestion: "Security focus?",
       microDecisionOptions: JSON.stringify(["Data encryption", "Auth security", "API security", "Input validation"]),
       reflectionQuestion: "What sensitive data needs the most protection?",
+      outcome: "Security vulnerabilities identified and fixed with proper data protection in place",
       xpReward: 100,
     },
     {
@@ -529,6 +555,7 @@ async function seed() {
       microDecisionQuestion: "Testing priority?",
       microDecisionOptions: JSON.stringify(["Unit tests", "Integration tests", "E2E tests", "Manual QA"]),
       reflectionQuestion: "What functionality absolutely cannot break?",
+      outcome: "Test coverage for critical functionality ensuring reliability before launch",
       xpReward: 100,
     },
 
@@ -547,6 +574,7 @@ async function seed() {
       microDecisionQuestion: "Launch platform?",
       microDecisionOptions: JSON.stringify(["Product Hunt", "Hacker News", "Reddit", "LinkedIn"]),
       reflectionQuestion: "What needs to be perfect before you launch?",
+      outcome: "A complete pre-launch checklist with all tasks and platform strategy defined",
       xpReward: 100,
     },
     {
@@ -563,6 +591,7 @@ async function seed() {
       microDecisionQuestion: "Marketing angle?",
       microDecisionOptions: JSON.stringify(["Problem-focused", "Solution-focused", "Story-focused", "Feature-focused"]),
       reflectionQuestion: "What makes your product worth sharing?",
+      outcome: "Launch content ready: social posts, Product Hunt copy, and announcement emails",
       xpReward: 100,
     },
 
@@ -581,6 +610,7 @@ async function seed() {
       microDecisionQuestion: "Launch feeling?",
       microDecisionOptions: JSON.stringify(["Excited", "Nervous", "Confident", "All of the above!"]),
       reflectionQuestion: "What did you learn most during this 30-day journey? What's next?",
+      outcome: "Your SaaS MVP is live and available to the world!",
       xpReward: 300,
     },
   ];
