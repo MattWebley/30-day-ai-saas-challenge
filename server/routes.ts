@@ -681,6 +681,328 @@ List only the features, one per line, each under 10 words. No numbering or bulle
     }
   });
 
+  // Generate all features for Day 3 (Core + Shared + USP)
+  app.post("/api/ai/generate-features", isAuthenticated, async (req: any, res) => {
+    try {
+      const { idea, painPoints } = req.body;
+
+      // Step 1: Generate core features based on idea and pain points
+      const corePrompt = `You are a SaaS product expert. Based on this idea and pain points, suggest 5-7 core features.
+
+Product Idea: ${idea}
+
+Pain Points to Solve:
+${painPoints.map((p: string, i: number) => `${i + 1}. ${p}`).join('\n')}
+
+Generate 5-7 CORE features that directly solve these pain points. Each feature should:
+- Solve at least one of the pain points
+- Be specific and actionable
+- Be essential to the product
+
+Respond in this exact JSON format:
+{
+  "coreFeatures": [
+    {
+      "name": "Feature Name (3-6 words)",
+      "description": "What this feature does and which pain point it solves (1 sentence, max 120 chars)"
+    }
+  ]
+}
+
+Only respond with valid JSON, nothing else.`;
+
+      const coreResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: corePrompt }],
+        response_format: { type: "json_object" },
+      });
+
+      const coreContent = coreResponse.choices[0].message.content || "{}";
+      const coreParsed = JSON.parse(coreContent);
+      const coreFeatures = coreParsed.coreFeatures || [];
+
+      // Step 2: Find competitors and analyze shared features
+      const competitorPrompt = `You are a SaaS market research expert. Find 3-4 REAL competitors for this idea: "${idea}"
+
+Find REAL, EXISTING SaaS companies that do the same or very similar thing. For each competitor, provide their top 3-5 features.
+
+Respond in this exact JSON format:
+{
+  "competitors": [
+    {
+      "name": "Company Name",
+      "topFeatures": ["Feature 1", "Feature 2", "Feature 3"]
+    }
+  ]
+}
+
+Only respond with valid JSON, nothing else.`;
+
+      const competitorResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: competitorPrompt }],
+        response_format: { type: "json_object" },
+      });
+
+      const competitorContent = competitorResponse.choices[0].message.content || "{}";
+      const competitorParsed = JSON.parse(competitorContent);
+      const competitors = competitorParsed.competitors || [];
+
+      // Find shared features across competitors
+      const allFeatures: Record<string, number> = {};
+      competitors.forEach((comp: any) => {
+        (comp.topFeatures || []).forEach((feature: string) => {
+          const normalized = feature.toLowerCase().trim();
+          allFeatures[normalized] = (allFeatures[normalized] || 0) + 1;
+        });
+      });
+
+      // Features that appear in 2+ competitors are "shared must-haves"
+      const sharedFeatureNames = Object.entries(allFeatures)
+        .filter(([_, count]) => count >= 2)
+        .map(([feature]) => feature.charAt(0).toUpperCase() + feature.slice(1))
+        .slice(0, 6);
+
+      // Generate descriptions for shared features
+      let sharedFeatures: any[] = [];
+      if (sharedFeatureNames.length > 0) {
+        const sharedPrompt = `For this product idea: "${idea}", explain these features that all competitors have:
+
+Shared Features:
+${sharedFeatureNames.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+
+For EACH feature, provide:
+1. A clear 1-sentence description (max 100 chars)
+
+Respond in this exact JSON format:
+{
+  "sharedFeatures": [
+    {
+      "name": "Feature Name",
+      "description": "What this feature does and why it's essential to compete (1 sentence, max 120 chars)"
+    }
+  ]
+}
+
+Only respond with valid JSON, nothing else.`;
+
+        const sharedResponse = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [{ role: "user", content: sharedPrompt }],
+          response_format: { type: "json_object" },
+        });
+
+        const sharedContent = sharedResponse.choices[0].message.content || "{}";
+        const sharedParsed = JSON.parse(sharedContent);
+        sharedFeatures = sharedParsed.sharedFeatures || [];
+      }
+
+      // Step 3: Generate USP features
+      const uspPrompt = `You are a SaaS positioning expert. Based on this analysis, suggest 4-6 UNIQUE differentiating features.
+
+Product Idea: ${idea}
+
+Core Features (what we're building): ${coreFeatures.map((f: any) => f.name).join(', ')}
+Shared Features (what competitors have): ${sharedFeatureNames.join(', ')}
+
+Generate 4-6 UNIQUE features this product could have that competitors DON'T have. Focus on:
+- Gaps in the market
+- Innovative approaches competitors haven't tried
+- Features that give a competitive advantage
+
+Respond in this exact JSON format:
+{
+  "uspFeatures": [
+    {
+      "name": "Feature Name (3-6 words)",
+      "description": "What makes this unique and why customers would want it (1 sentence, max 120 chars)"
+    }
+  ]
+}
+
+Only respond with valid JSON, nothing else.`;
+
+      const uspResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: uspPrompt }],
+        response_format: { type: "json_object" },
+      });
+
+      const uspContent = uspResponse.choices[0].message.content || "{}";
+      const uspParsed = JSON.parse(uspContent);
+      const uspFeatures = uspParsed.uspFeatures || [];
+
+      res.json({
+        coreFeatures,
+        sharedFeatures,
+        uspFeatures,
+      });
+    } catch (error: any) {
+      console.error("Error generating features:", error);
+      res.status(500).json({ message: error.message || "Failed to generate features" });
+    }
+  });
+
+  // Generate MVP Roadmap for Day 4
+  app.post("/api/ai/generate-mvp-roadmap", isAuthenticated, async (req: any, res) => {
+    try {
+      const { idea, features } = req.body;
+
+      const prompt = `You are a SaaS product strategist. Create an MVP roadmap for this product idea.
+
+Product Idea: ${idea}
+
+All Features:
+${features.map((f: string, i: number) => `${i + 1}. ${f}`).join('\n')}
+
+Divide these features into two groups:
+1. **MVP Features** (MUST build first): The minimum features needed to launch and deliver core value
+2. **Post-MVP Features** (build after launch): Nice-to-haves that can wait
+
+For each feature, estimate build time in weeks (be realistic).
+
+Prioritize features that:
+- Solve the core pain point
+- Are essential to basic functionality
+- Provide immediate value
+
+De-prioritize features that:
+- Are nice-to-have but not essential
+- Can be added based on user feedback
+- Are complex or time-consuming
+
+Respond in this exact JSON format:
+{
+  "mvpFeatures": [
+    {
+      "name": "Feature Name",
+      "description": "Why this is essential for MVP (1 sentence, max 100 chars)",
+      "estimatedWeeks": 2
+    }
+  ],
+  "postMvpFeatures": [
+    {
+      "name": "Feature Name",
+      "description": "Why this can wait until after launch (1 sentence, max 100 chars)",
+      "estimatedWeeks": 1
+    }
+  ]
+}
+
+Keep MVP scope tight - aim for 4-6 weeks total build time for MVP features. Only respond with valid JSON, nothing else.`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+        response_format: { type: "json_object" },
+      });
+
+      const content = response.choices[0].message.content || "{}";
+      const parsed = JSON.parse(content);
+
+      res.json({
+        mvpFeatures: parsed.mvpFeatures || [],
+        postMvpFeatures: parsed.postMvpFeatures || [],
+      });
+    } catch (error: any) {
+      console.error("Error generating MVP roadmap:", error);
+      res.status(500).json({ message: error.message || "Failed to generate MVP roadmap" });
+    }
+  });
+
+  // Generate PRD for Day 6
+  app.post("/api/ai/generate-prd", isAuthenticated, async (req: any, res) => {
+    try {
+      const { idea, painPoints, features, mvpFeatures } = req.body;
+
+      // Generate summary
+      const summaryPrompt = `You are a product strategist. Create a 3-4 sentence executive summary for this SaaS product.
+
+Product Idea: ${idea}
+
+Pain Points: ${painPoints.join(', ')}
+MVP Features: ${mvpFeatures.join(', ')}
+
+Write a compelling executive summary that explains:
+1. What the product is
+2. What problem it solves
+3. Who it's for
+4. The key value proposition
+
+Keep it concise, professional, and compelling. 3-4 sentences maximum.`;
+
+      const summaryResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: summaryPrompt }],
+      });
+
+      const summary = summaryResponse.choices[0].message.content || "";
+
+      // Generate full PRD
+      const prdPrompt = `You are a senior product manager. Create a complete Product Requirements Document (PRD) for this SaaS product.
+
+Product Idea: ${idea}
+
+Pain Points Addressed:
+${painPoints.map((p: string, i: number) => `${i + 1}. ${p}`).join('\n')}
+
+All Features:
+${features.map((f: string, i: number) => `${i + 1}. ${f}`).join('\n')}
+
+MVP Features (Build First):
+${mvpFeatures.map((f: string, i: number) => `${i + 1}. ${f}`).join('\n')}
+
+Create a professional PRD with these sections:
+
+# Product Requirements Document
+
+## 1. Product Overview
+[Brief description of what the product is and does]
+
+## 2. Problem Statement
+[Clear description of the problems this product solves]
+
+## 3. Target Users
+[Who will use this product]
+
+## 4. Goals & Success Metrics
+[What success looks like - key metrics to track]
+
+## 5. MVP Feature Specifications
+
+For each MVP feature, provide:
+- Feature name
+- User story ("As a [user], I want to [action] so that [benefit]")
+- Acceptance criteria (what defines "done")
+
+## 6. Post-MVP Features
+[List features to build after launch]
+
+## 7. Technical Considerations
+[Key technical requirements, integrations, data considerations]
+
+## 8. Launch Checklist
+[Essential items needed before launch]
+
+Be specific and actionable. This PRD should give a developer everything they need to start building.`;
+
+      const prdResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prdPrompt }],
+      });
+
+      const prd = prdResponse.choices[0].message.content || "";
+
+      res.json({
+        summary,
+        prd,
+      });
+    } catch (error: any) {
+      console.error("Error generating PRD:", error);
+      res.status(500).json({ message: error.message || "Failed to generate PRD" });
+    }
+  });
+
   // Chat/Comments routes
   app.get("/api/comments/:day", async (req, res) => {
     try {

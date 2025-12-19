@@ -1,0 +1,213 @@
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ExternalLink, Code2, Rocket, CheckCircle2, Copy } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+
+interface Day7ReplitBuildProps {
+  dayId: number;
+  prd: string;
+  onComplete: () => void;
+}
+
+const BUILD_STEPS = [
+  {
+    title: "Open Replit",
+    description: "Go to Replit and create a new project",
+    url: "https://replit.com/~",
+  },
+  {
+    title: "Create a New Repl",
+    description: "Click 'Create Repl' and choose your tech stack (e.g., Node.js, Python, React)",
+    url: null,
+  },
+  {
+    title: "Copy Your PRD",
+    description: "Copy your PRD from below and paste it into a new file called 'PRD.md' in your Repl",
+    url: null,
+  },
+  {
+    title: "Ask Claude Code to Build",
+    description: "In your Repl, use Claude Code to start building your MVP. Paste your PRD and ask it to scaffold your project",
+    url: null,
+  },
+  {
+    title: "Build Your First Feature",
+    description: "Start with the first MVP feature from your roadmap. Use Claude Code to help you implement it",
+    url: null,
+  },
+];
+
+export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps) {
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
+  const { toast } = useToast();
+
+  const toggleStep = (stepIndex: number) => {
+    const newCompleted = new Set(completedSteps);
+    if (newCompleted.has(stepIndex)) {
+      newCompleted.delete(stepIndex);
+    } else {
+      newCompleted.add(stepIndex);
+    }
+    setCompletedSteps(newCompleted);
+  };
+
+  const handleCopyPRD = () => {
+    navigator.clipboard.writeText(prd);
+    toast({
+      title: "PRD Copied!",
+      description: "Your PRD has been copied to your clipboard",
+    });
+  };
+
+  const allStepsComplete = BUILD_STEPS.every((_, idx) => completedSteps.has(idx));
+
+  const handleContinue = () => {
+    onComplete();
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card className="p-6 border-2 border-primary bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
+              <Rocket className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-slate-900">Time to Build!</h3>
+              <p className="text-slate-600">
+                Today you start building your SaaS in Replit
+              </p>
+            </div>
+          </div>
+        </div>
+      </Card>
+
+      {/* Build Steps */}
+      <Card className="p-6 border-2 border-slate-200 bg-white">
+        <h4 className="font-bold text-slate-900 mb-4">Build Steps</h4>
+        <p className="text-sm text-slate-600 mb-4">
+          Follow these steps to get started building your SaaS
+        </p>
+
+        <div className="space-y-3">
+          {BUILD_STEPS.map((step, idx) => (
+            <div
+              key={idx}
+              className="flex items-start gap-3 p-4 rounded-lg border-2 border-slate-200 bg-white hover:border-primary transition-colors"
+            >
+              <Checkbox
+                checked={completedSteps.has(idx)}
+                onCheckedChange={() => toggleStep(idx)}
+                className="mt-1"
+              />
+              <div className="flex-1">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <h5 className="font-semibold text-slate-900">
+                    {idx + 1}. {step.title}
+                  </h5>
+                  {step.url && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2"
+                      onClick={() => window.open(step.url, "_blank")}
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Open
+                    </Button>
+                  )}
+                </div>
+                <p className="text-sm text-slate-600">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* PRD */}
+      <Card className="p-6 border-2 border-slate-200 bg-white">
+        <div className="flex items-center justify-between mb-4">
+          <h4 className="font-bold text-slate-900">Your PRD</h4>
+          <Button variant="outline" size="sm" onClick={handleCopyPRD} className="gap-2">
+            <Copy className="w-4 h-4" />
+            Copy PRD
+          </Button>
+        </div>
+
+        <div className="bg-slate-50 p-4 rounded-lg border-2 border-slate-200 max-h-[400px] overflow-y-auto">
+          <pre className="text-xs text-slate-700 whitespace-pre-wrap font-mono">
+            {prd}
+          </pre>
+        </div>
+      </Card>
+
+      {/* Continue Button */}
+      <Card className="p-6 border-2 border-slate-200 bg-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="font-medium text-slate-900">
+              {completedSteps.size} of {BUILD_STEPS.length} steps completed
+            </p>
+            {!allStepsComplete && (
+              <p className="text-sm text-slate-600 mt-1">
+                Complete all steps to continue
+              </p>
+            )}
+            {allStepsComplete && (
+              <div className="flex items-center gap-2 mt-2 text-green-600">
+                <CheckCircle2 className="w-5 h-5" />
+                <span className="font-medium">All steps complete! You're building!</span>
+              </div>
+            )}
+          </div>
+          <Button
+            size="lg"
+            onClick={handleContinue}
+            disabled={!allStepsComplete}
+          >
+            {allStepsComplete ? "Complete Week 1" : "Complete All Steps First"}
+          </Button>
+        </div>
+      </Card>
+
+      {/* Tips */}
+      <Card className="p-6 border-2 border-amber-200 bg-amber-50">
+        <div className="space-y-3">
+          <h4 className="font-bold text-amber-900 flex items-center gap-2">
+            <Code2 className="w-5 h-5" />
+            Pro Tips for Building in Replit
+          </h4>
+          <ul className="space-y-2 text-sm text-amber-900">
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <span>
+                <strong>Start simple:</strong> Build one feature at a time, test it, then move to the next
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <span>
+                <strong>Use Claude Code:</strong> Ask it to explain any code you don't understand
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <span>
+                <strong>Test constantly:</strong> Use Replit's built-in preview to test your app as you build
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+              <span>
+                <strong>Don't overthink:</strong> Your MVP doesn't need to be perfect, it needs to work
+              </span>
+            </li>
+          </ul>
+        </div>
+      </Card>
+    </div>
+  );
+}

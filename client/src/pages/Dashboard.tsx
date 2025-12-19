@@ -20,10 +20,11 @@ import { useUserStats } from "@/hooks/useStats";
 import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
 import { Day1IdeaGenerator } from "@/components/Day1IdeaGenerator";
 import { Day2IdeaValidator } from "@/components/Day2IdeaValidator";
-import { Day3FeatureBuilder } from "@/components/Day3FeatureBuilder";
-import { Day4ToolSetup } from "@/components/Day4ToolSetup";
-import { Day5PRDGenerator } from "@/components/Day5PRDGenerator";
-import { Day5MVPPrioritizer } from "@/components/Day5MVPPrioritizer";
+import { Day3CoreFeatures } from "@/components/Day3CoreFeatures";
+import { Day4MvpRoadmap } from "@/components/Day4MvpRoadmap";
+import { Day5TechStack } from "@/components/Day5TechStack";
+import { Day6SummaryPRD } from "@/components/Day6SummaryPRD";
+import { Day7ReplitBuild } from "@/components/Day7ReplitBuild";
 import { DayChat } from "@/components/DayChat";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
@@ -241,53 +242,70 @@ export default function Dashboard() {
               </>
             ) : currentDay === 3 ? (
               <>
-                {/* Step 1: Today's Lesson */}
+                {/* Day 3: Core Features & USP */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                    <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
-                  </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    {dayData.lesson ? (
-                      <div className="prose prose-slate max-w-none">
-                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">
-                            {paragraph}
-                          </p>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-slate-500">{dayData.description}</p>
-                    )}
-                  </Card>
-                </div>
-
-                {/* Step 2: Feature Builder */}
-                <div className="space-y-4 pt-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Define Your Features</h2>
-                  </div>
-                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    <Day3FeatureBuilder onComplete={handleComplete} />
+                    <Day3CoreFeatures
+                      dayId={currentDay}
+                      userIdea={dayProgress?.completionData?.selectedIdea || ""}
+                      userPainPoints={dayProgress?.completionData?.selectedPainPoints || []}
+                      onComplete={handleComplete}
+                    />
                   </Card>
                 </div>
               </>
             ) : currentDay === 4 ? (
               <>
-                {/* Day 4: Tool Setup */}
+                {/* Day 4: MVP Roadmap */}
                 <div className="space-y-4">
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    <Day4ToolSetup onComplete={handleComplete} />
+                    <Day4MvpRoadmap
+                      dayId={currentDay}
+                      selectedFeatures={dayProgress?.completionData?.selectedFeatures || []}
+                      userIdea={dayProgress?.completionData?.selectedIdea || ""}
+                      onComplete={handleComplete}
+                    />
                   </Card>
                 </div>
               </>
             ) : currentDay === 5 ? (
               <>
-                {/* Day 5: PRD Generator */}
+                {/* Day 5: Tech Stack Setup */}
                 <div className="space-y-4">
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    <Day5PRDGenerator onComplete={handleComplete} />
+                    <Day5TechStack
+                      dayId={currentDay}
+                      onComplete={handleComplete}
+                    />
+                  </Card>
+                </div>
+              </>
+            ) : currentDay === 6 ? (
+              <>
+                {/* Day 6: Summary + PRD */}
+                <div className="space-y-4">
+                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    <Day6SummaryPRD
+                      dayId={currentDay}
+                      userIdea={dayProgress?.completionData?.selectedIdea || ""}
+                      painPoints={dayProgress?.completionData?.selectedPainPoints || []}
+                      features={dayProgress?.completionData?.allFeatures || []}
+                      mvpFeatures={dayProgress?.completionData?.selectedMvpFeatures || []}
+                      onComplete={handleComplete}
+                    />
+                  </Card>
+                </div>
+              </>
+            ) : currentDay === 7 ? (
+              <>
+                {/* Day 7: PRD into Replit */}
+                <div className="space-y-4">
+                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    <Day7ReplitBuild
+                      dayId={currentDay}
+                      prd={dayProgress?.completionData?.prd || ""}
+                      onComplete={handleComplete}
+                    />
                   </Card>
                 </div>
               </>
