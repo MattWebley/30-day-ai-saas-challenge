@@ -261,15 +261,23 @@ Return ONLY a numbered list, most painful first:
   };
 
   const handleAddCustomPain = () => {
-    if (!customPainInput.trim()) {
+    const trimmedInput = customPainInput.trim();
+    if (!trimmedInput) {
       toast.error("Please enter a pain point");
       return;
     }
-    if (painPoints.includes(customPainInput.trim())) {
+
+    // Check if already exists (case-insensitive)
+    const exists = painPoints.some(p =>
+      p.toLowerCase() === trimmedInput.toLowerCase()
+    );
+
+    if (exists) {
       toast.error("This pain point already exists");
       return;
     }
-    setPainPoints(prev => [...prev, customPainInput.trim()]);
+
+    setPainPoints(prev => [...prev, trimmedInput]);
     setCustomPainInput("");
     setShowCustomInput(false);
     toast.success("Custom pain point added!");
@@ -404,11 +412,14 @@ Return ONLY a numbered list, most painful first:
             <>
               <div className="grid gap-3">
                 {painPoints.map((pain, idx) => {
-                  // Clean up any JSON artifacts, quotes, brackets
-                  const cleanPain = pain
+                  // Clean up any JSON artifacts, quotes, brackets (for AI-generated content)
+                  // Custom pain points won't need this cleaning
+                  const cleanPain = typeof pain === 'string' ? pain
                     .replace(/^["'\[]+|["'\]]+$/g, '') // Remove leading/trailing quotes and brackets
                     .replace(/\\"/g, '"') // Unescape quotes
-                    .trim();
+                    .trim() : '';
+
+                  if (!cleanPain) return null; // Skip empty pain points
 
                   const isSelected = selectedPainPoints.includes(cleanPain);
 
@@ -421,7 +432,7 @@ Return ONLY a numbered list, most painful first:
 
                   return (
                     <Card
-                      key={idx}
+                      key={`pain-${idx}-${cleanPain.slice(0, 20)}`}
                       className={`p-5 border-2 cursor-pointer ${
                         isSelected
                           ? 'border-primary bg-blue-50'
