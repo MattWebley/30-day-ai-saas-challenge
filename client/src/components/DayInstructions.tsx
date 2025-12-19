@@ -15,8 +15,8 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
   ],
   2: [
     "Select one of your shortlisted ideas",
-    "AI generates 3-5 pain points it solves",
-    "Pick the most compelling pain point",
+    "AI identifies 7-10 prominent pain points (ranked by severity)",
+    "Pick up to 3 most compelling pain points",
     "Use validation prompts to research the market",
     "Lock in your final idea choice"
   ],

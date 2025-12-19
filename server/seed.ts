@@ -112,7 +112,7 @@ async function seed() {
     {
       day: 2,
       title: "Will People Pay For This?",
-      description: "Discover the core pain point and validate market demand",
+      description: "Identify the top 3 pain points and validate market demand",
       phase: "Week 1: Planning & Idea",
       videoUrl: null,
       aiTaskType: "suggestion",
@@ -123,8 +123,8 @@ async function seed() {
       microDecisionQuestion: "What's your primary competitive advantage?",
       microDecisionOptions: JSON.stringify(["Better UX", "Lower Price", "Unique Feature", "Niche Focus"]),
       reflectionQuestion: "What makes your solution different from existing alternatives?",
-      outcome: "One validated SaaS idea with a clear, painful problem it solves for customers",
-      completionMessage: "The hardest decision is behind you. You picked ONE idea and identified the exact pain it solves. That's what separates builders from dreamers - making a choice and committing. Now we turn this pain point into a real product.",
+      outcome: "One validated SaaS idea with 1-3 specific, painful problems it solves for customers",
+      completionMessage: "The hardest decision is behind you. You picked ONE idea and identified the exact pains it solves. That's what separates builders from dreamers - making a choice and committing. Now we turn these pain points into a real product.",
       xpReward: 100,
     },
     {

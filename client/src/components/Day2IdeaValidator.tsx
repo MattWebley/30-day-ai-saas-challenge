@@ -86,7 +86,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   const [finalChoice, setFinalChoice] = useState<number | null>(null);
   const [step, setStep] = useState<'select' | 'pain' | 'validate'>('select');
   const [painPoints, setPainPoints] = useState<string[]>([]);
-  const [selectedPainPoint, setSelectedPainPoint] = useState<string | null>(null);
+  const [selectedPainPoints, setSelectedPainPoints] = useState<string[]>([]);
   const [loadingPainPoints, setLoadingPainPoints] = useState(false);
 
   const saveChosenIdea = useMutation({
@@ -120,28 +120,35 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   const generatePainPoints = useMutation({
     mutationFn: async (ideaIndex: number) => {
       const idea = shortlistedIdeas[ideaIndex];
-      const prompt = `For this SaaS idea: "${idea.title}" - ${idea.desc}
+      const prompt = `You are a pain point expert. Analyze this SaaS idea and identify the MOST PROMINENT pain points it solves.
 
-Target customer: ${idea.targetCustomer}
+SaaS Idea: "${idea.title}" - ${idea.desc}
+Target Customer: ${idea.targetCustomer}
 
-Generate 3-5 specific, painful problems this idea solves.
+TASK: Generate 7-10 pain points, ranked by prominence and severity.
 
-IMPORTANT: Each pain point must be CONCISE - use as few words as possible (5-10 words max) while still being crystal clear about the problem.
+CRITICAL RULES:
+1. Use your knowledge of this specific niche/industry to identify REAL pains
+2. Don't be random - think about what ACTUALLY hurts in this space
+3. Rank them by how painful/costly they are (most painful first)
+4. Each pain must be CONCISE (5-12 words max)
+5. Focus on quantifiable impact: time wasted, money lost, opportunities missed
 
-Focus on:
-- Specific pain (not generic)
-- Emotional or financial impact
-- What they're wasting (time, money, energy)
+WHAT MAKES A GOOD PAIN POINT:
+✓ "Spending 5+ hours/week manually entering invoices"
+✓ "Losing 20% revenue from poor follow-up tracking"
+✓ "Missing compliance deadlines = $10k+ fines"
 
-Return ONLY a numbered list:
-1. [Pain point 1]
-2. [Pain point 2]
-3. [Pain point 3]
+BAD EXAMPLES:
+✗ "It's hard to manage things" (too vague)
+✗ "Customers are frustrated" (not specific)
+✗ "Inefficient processes" (generic)
 
-Example good format:
-1. Manually tracking expenses takes 3+ hours weekly
-2. Miss tax deductions because receipts are lost
-3. Paying accountant $200/month for basic bookkeeping`;
+Return ONLY a numbered list, most painful first:
+1. [Most painful problem]
+2. [Second most painful]
+...
+7-10. [Still painful but less critical]`;
 
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
       return res.json();
@@ -237,8 +244,24 @@ Example good format:
     generatePainPoints.mutate(idx);
   };
 
-  const handleSelectPainPoint = (pain: string) => {
-    setSelectedPainPoint(pain);
+  const togglePainPoint = (pain: string) => {
+    setSelectedPainPoints(prev => {
+      if (prev.includes(pain)) {
+        return prev.filter(p => p !== pain);
+      }
+      if (prev.length >= 3) {
+        toast.error("You can select up to 3 pain points");
+        return prev;
+      }
+      return [...prev, pain];
+    });
+  };
+
+  const handleContinueWithPainPoints = () => {
+    if (selectedPainPoints.length === 0) {
+      toast.error("Please select at least 1 pain point");
+      return;
+    }
     setStep('validate');
   };
 
@@ -345,37 +368,70 @@ Example good format:
           </Card>
 
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">What Pain Does This Solve?</h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">What Pains Does This Solve?</h2>
             <p className="text-slate-500">
-              Pick the ONE pain point that resonates most
+              Select up to 3 pain points (ranked by severity)
+            </p>
+            <p className="text-sm text-primary font-semibold mt-2">
+              {selectedPainPoints.length}/3 selected
             </p>
           </div>
 
           {loadingPainPoints ? (
             <Card className="p-12 text-center">
               <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-              <p className="text-slate-600">Discovering pain points...</p>
+              <p className="text-slate-600">AI is analyzing the most prominent pain points in this niche...</p>
             </Card>
           ) : (
-            <div className="grid gap-4">
-              {painPoints.map((pain, idx) => {
-                // Clean up any JSON artifacts, quotes, brackets
-                const cleanPain = pain
-                  .replace(/^["'\[]+|["'\]]+$/g, '') // Remove leading/trailing quotes and brackets
-                  .replace(/\\"/g, '"') // Unescape quotes
-                  .trim();
+            <>
+              <div className="grid gap-3">
+                {painPoints.map((pain, idx) => {
+                  // Clean up any JSON artifacts, quotes, brackets
+                  const cleanPain = pain
+                    .replace(/^["'\[]+|["'\]]+$/g, '') // Remove leading/trailing quotes and brackets
+                    .replace(/\\"/g, '"') // Unescape quotes
+                    .trim();
 
-                return (
-                  <Card
-                    key={idx}
-                    className="p-5 border-2 border-slate-200 hover:border-primary hover:bg-blue-50/50 cursor-pointer transition-all"
-                    onClick={() => handleSelectPainPoint(cleanPain)}
-                  >
-                    <p className="text-slate-700 font-medium">{cleanPain}</p>
-                  </Card>
-                );
-              })}
-            </div>
+                  const isSelected = selectedPainPoints.includes(cleanPain);
+
+                  return (
+                    <Card
+                      key={idx}
+                      className={`p-5 border-2 cursor-pointer transition-all ${
+                        isSelected
+                          ? 'border-primary bg-blue-50'
+                          : 'border-slate-200 hover:border-primary hover:bg-blue-50/50'
+                      }`}
+                      onClick={() => togglePainPoint(cleanPain)}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                          isSelected
+                            ? 'bg-primary border-primary text-white'
+                            : 'border-slate-300'
+                        }`}>
+                          {isSelected && <Check className="w-4 h-4" />}
+                        </div>
+                        <div className="flex-1">
+                          <span className="text-xs text-slate-400 font-bold">#{idx + 1}</span>
+                          <p className="text-slate-700 font-medium">{cleanPain}</p>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+
+              {selectedPainPoints.length > 0 && (
+                <Button
+                  size="lg"
+                  onClick={handleContinueWithPainPoints}
+                  className="w-full h-14 text-lg font-bold gap-2"
+                >
+                  Continue with {selectedPainPoints.length} pain point{selectedPainPoints.length > 1 ? 's' : ''} <ChevronRight className="w-5 h-5" />
+                </Button>
+              )}
+            </>
           )}
 
           <Button
@@ -384,6 +440,7 @@ Example good format:
               setStep('select');
               setSelectedIdeaIndex(null);
               setPainPoints([]);
+              setSelectedPainPoints([]);
             }}
           >
             ← Back to Ideas
@@ -396,10 +453,18 @@ Example good format:
         <>
           <Card className="p-5 border-2 border-green-300 bg-green-50">
             <div className="flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <h3 className="font-bold text-slate-900">{shortlistedIdeas[selectedIdeaIndex].title}</h3>
-                <p className="text-sm text-slate-600 mt-1">Pain: {selectedPainPoint}</p>
+              <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <h3 className="font-bold text-slate-900 mb-2">{shortlistedIdeas[selectedIdeaIndex].title}</h3>
+                <p className="text-xs font-semibold text-green-700 mb-2">Selected Pain Points:</p>
+                <ul className="space-y-1">
+                  {selectedPainPoints.map((pain, idx) => (
+                    <li key={idx} className="text-sm text-slate-700 flex items-start gap-2">
+                      <span className="text-green-600">•</span>
+                      <span>{pain}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </Card>
@@ -518,10 +583,10 @@ Example good format:
               variant="outline"
               onClick={() => {
                 setStep('pain');
-                setSelectedPainPoint(null);
+                setSelectedPainPoints([]);
               }}
             >
-              ← Change Pain Point
+              ← Change Pain Points
             </Button>
           </motion.div>
         </>
