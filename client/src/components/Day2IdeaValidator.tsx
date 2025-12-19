@@ -322,9 +322,9 @@ Example good format:
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="max-w-xs">
-                  <p className="font-semibold mb-1">{idea.title}</p>
-                  <p className="text-xs text-slate-300 mb-2">{idea.desc}</p>
-                  <p className="text-xs text-slate-400">Target: {idea.targetCustomer}</p>
+                  <p className="font-semibold mb-1 text-white">{idea.title}</p>
+                  <p className="text-xs text-slate-200 mb-2">{idea.desc}</p>
+                  <p className="text-xs text-slate-300">Target: {idea.targetCustomer}</p>
                 </TooltipContent>
               </Tooltip>
             ))}
