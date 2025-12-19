@@ -36,45 +36,33 @@ interface Day2Props {
 const VALIDATION_PROMPTS = [
   {
     id: "market_viability",
-    title: "Market Viability Check Prompt",
-    prompt: `I'm considering building a SaaS product: "[IDEA_TITLE]" - [IDEA_DESC]
+    title: "Market Viability Check",
+    prompt: `SaaS Idea: "[IDEA_TITLE]" - [IDEA_DESC]
+Target: [TARGET_CUSTOMER]
 
-Target customer: [TARGET_CUSTOMER]
+Be BRUTALLY honest. Provide a brief, structured analysis:
 
-Please be BRUTALLY HONEST - I don't want sugar coating. Analyze:
-1. Is there proven demand for this type of solution?
-2. Are people already paying for similar products?
-3. What's the realistic revenue potential?
-4. What are the biggest risks?
+**DEMAND**: Is there proven demand? Are people paying for this now?
+**MARKET SIZE**: How big is this opportunity? (small niche, mid-market, or massive)
+**RISKS**: Top 2-3 risks that could kill this idea
+**VERDICT**: Viability score /10 + one sentence: proceed or pivot?
 
-Give me a viability score out of 10 and tell me if I should proceed.`,
+Keep it concise - no fluff.`,
   },
   {
     id: "competitor_analysis",
-    title: "Competitor Deep Dive Prompt",
-    prompt: `Find me 3-5 competitors for this SaaS idea: "[IDEA_TITLE]" - [IDEA_DESC]
+    title: "Competitor Analysis",
+    prompt: `Find 3-5 direct competitors for: "[IDEA_TITLE]" - [IDEA_DESC]
 
-For each competitor, tell me:
-1. Company name and website
-2. Their pricing model
-3. What they do well
-4. What they do poorly (opportunity for me)
-5. Estimated revenue if you can find it
+For EACH competitor, be brief:
+• **Name** + Website
+• **Pricing**: What they charge
+• **Strengths**: What they do well (1-2 points)
+• **Weaknesses**: Gaps you could exploit (1-2 points)
 
-Remember: Competition is GOOD - it proves there's money in this market!`,
-  },
-  {
-    id: "customer_pain",
-    title: "Customer Pain Points Prompt",
-    prompt: `My SaaS idea is: "[IDEA_TITLE]" - [IDEA_DESC]
-Target customer: [TARGET_CUSTOMER]
+End with: **KEY TAKEAWAY** - What does this competition tell you about market demand?
 
-Help me understand:
-1. What specific pain points does this solve?
-2. How painful is this problem (mild annoyance vs hair-on-fire)?
-3. What do people currently do to solve this? (competitors, spreadsheets, nothing?)
-4. Would they pay monthly for a solution?
-5. What would make them switch from their current solution?`,
+No fluff. Bullet points only.`,
   },
 ];
 
