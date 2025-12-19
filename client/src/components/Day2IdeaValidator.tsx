@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Copy, Check, Sparkles, Loader2, ChevronRight, Trophy, Flame, Plus, X, CheckCircle2 } from "lucide-react";
+import { Check, Sparkles, Loader2, ChevronRight, Trophy, Flame, Plus, X, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -80,7 +80,6 @@ Help me understand:
 
 export function Day2IdeaValidator({ onComplete }: Day2Props) {
   const queryClient = useQueryClient();
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedIdeaIndex, setSelectedIdeaIndex] = useState<number | null>(null);
   const [aiResponses, setAiResponses] = useState<Record<string, Record<number, string>>>({});
   const [loadingPrompt, setLoadingPrompt] = useState<string | null>(null);
@@ -216,24 +215,6 @@ Return ONLY a numbered list, most painful first:
       setLoadingPrompt(null);
     },
   });
-
-  const copyToClipboard = async (text: string, id: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedId(id);
-      toast.success("Copied to clipboard!");
-      setTimeout(() => setCopiedId(null), 2000);
-    } catch {
-      toast.error("Failed to copy");
-    }
-  };
-
-  const getFilledPrompt = (promptTemplate: string, idea: Idea) => {
-    return promptTemplate
-      .replace(/\[IDEA_TITLE\]/g, idea.title)
-      .replace(/\[IDEA_DESC\]/g, idea.desc)
-      .replace(/\[TARGET_CUSTOMER\]/g, idea.targetCustomer);
-  };
 
   const handleRunAi = (promptId: string, ideaIndex: number) => {
     setLoadingPrompt(`${promptId}-${ideaIndex}`);
@@ -570,7 +551,7 @@ Return ONLY a numbered list, most painful first:
           <div className="text-center mt-6">
             <h2 className="text-2xl font-bold text-slate-900 mb-2">Validate This Idea</h2>
             <p className="text-slate-500">
-              Use these prompts to research the market. Then lock in your choice!
+              Run AI-powered market analysis to validate your idea. Then lock in your choice!
             </p>
           </div>
 
@@ -580,60 +561,40 @@ Return ONLY a numbered list, most painful first:
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-              <p className="text-sm text-slate-700">
-                <strong>How to use these prompts:</strong> Copy the prompt below and paste it into ChatGPT, Claude, or any AI assistant. Or click "Use Our AI" to get an instant response here.
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-5 h-5 text-blue-600" />
+                <p className="font-bold text-blue-900">Instant AI Validation</p>
+              </div>
+              <p className="text-sm text-blue-700">
+                Run these expert validation analyses powered by our AI - no copy/paste needed, results in seconds.
               </p>
             </div>
             {VALIDATION_PROMPTS.map((prompt) => {
-              const filledPrompt = getFilledPrompt(prompt.prompt, shortlistedIdeas[selectedIdeaIndex]);
               const aiResponse = aiResponses[prompt.id]?.[selectedIdeaIndex];
               const isLoading = loadingPrompt === `${prompt.id}-${selectedIdeaIndex}`;
 
               return (
-                <Card key={prompt.id} className="p-5 border-2 border-slate-100">
-                  <h4 className="font-bold text-slate-900 mb-3">{prompt.title}</h4>
-                  
-                  <div className="bg-slate-50 rounded-lg p-4 font-mono text-sm text-slate-700 whitespace-pre-wrap mb-4">
-                    {filledPrompt}
-                  </div>
-
-                  <div className="flex gap-3">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="gap-2"
-                          onClick={() => copyToClipboard(filledPrompt, `${prompt.id}-${selectedIdeaIndex}`)}
-                          data-testid={`copy-prompt-${prompt.id}`}
-                        >
-                          {copiedId === `${prompt.id}-${selectedIdeaIndex}` ? (
-                            <><Check className="w-4 h-4" /> Copied!</>
-                          ) : (
-                            <><Copy className="w-4 h-4" /> Copy Prompt</>
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Copy this prompt to paste into ChatGPT or Claude</TooltipContent>
-                    </Tooltip>
-
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          className="gap-2"
-                          onClick={() => handleRunAi(prompt.id, selectedIdeaIndex)}
-                          disabled={isLoading}
-                          data-testid={`run-ai-${prompt.id}`}
-                        >
-                          {isLoading ? (
-                            <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>
-                          ) : (
-                            <><Sparkles className="w-4 h-4" /> Use Our AI</>
-                          )}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>Get an instant AI analysis right here</TooltipContent>
-                    </Tooltip>
+                <Card key={prompt.id} className="p-5 border-2 border-slate-100 hover:border-primary/50">
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div>
+                      <h4 className="font-bold text-slate-900 mb-1">{prompt.title}</h4>
+                      <p className="text-xs text-slate-500">Click to run instant AI analysis</p>
+                    </div>
+                    <Button
+                      className="gap-2 flex-shrink-0"
+                      onClick={() => handleRunAi(prompt.id, selectedIdeaIndex)}
+                      disabled={isLoading}
+                      data-testid={`run-ai-${prompt.id}`}
+                    >
+                      {isLoading ? (
+                        <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>
+                      ) : aiResponse ? (
+                        <><Check className="w-4 h-4" /> Re-run</>
+                      ) : (
+                        <><Sparkles className="w-4 h-4" /> Run Analysis</>
+                      )}
+                    </Button>
                   </div>
 
                   {aiResponse && (
@@ -642,7 +603,10 @@ Return ONLY a numbered list, most painful first:
                       animate={{ opacity: 1, height: "auto" }}
                       className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200"
                     >
-                      <p className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-2">AI Response</p>
+                      <p className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-2 flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        AI Analysis
+                      </p>
                       <p className="text-slate-700 whitespace-pre-wrap">{aiResponse}</p>
                     </motion.div>
                   )}
