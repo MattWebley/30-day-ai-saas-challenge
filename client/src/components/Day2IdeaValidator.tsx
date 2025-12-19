@@ -637,13 +637,36 @@ Return ONLY a numbered list, most painful first:
                             const trimmedLine = line.trim();
                             if (!trimmedLine) return null;
 
+                            // Helper function to render text with clickable URLs
+                            const renderWithLinks = (text: string) => {
+                              const urlRegex = /(https?:\/\/[^\s]+)/g;
+                              const parts = text.split(urlRegex);
+
+                              return parts.map((part, i) => {
+                                if (part.match(urlRegex)) {
+                                  return (
+                                    <a
+                                      key={i}
+                                      href={part}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-blue-600 hover:text-blue-800 underline"
+                                    >
+                                      {part}
+                                    </a>
+                                  );
+                                }
+                                return <span key={i}>{part}</span>;
+                              });
+                            };
+
                             // Check if line starts with bold markdown (**TEXT**)
                             const boldMatch = trimmedLine.match(/^\*\*(.*?)\*\*:?\s*(.*)$/);
                             if (boldMatch) {
                               return (
                                 <div key={idx} className="flex gap-2">
                                   <span className="font-bold text-slate-900 min-w-[120px]">{boldMatch[1]}:</span>
-                                  <span className="text-slate-700 flex-1">{boldMatch[2]}</span>
+                                  <span className="text-slate-700 flex-1">{renderWithLinks(boldMatch[2])}</span>
                                 </div>
                               );
                             }
@@ -653,14 +676,14 @@ Return ONLY a numbered list, most painful first:
                               return (
                                 <div key={idx} className="flex gap-2 ml-4">
                                   <span className="text-slate-400">•</span>
-                                  <span className="text-slate-700">{trimmedLine.substring(1).trim()}</span>
+                                  <span className="text-slate-700">{renderWithLinks(trimmedLine.substring(1).trim())}</span>
                                 </div>
                               );
                             }
 
                             // Regular text
                             return (
-                              <p key={idx} className="text-slate-700">{trimmedLine}</p>
+                              <p key={idx} className="text-slate-700">{renderWithLinks(trimmedLine)}</p>
                             );
                           })}
                         </div>
