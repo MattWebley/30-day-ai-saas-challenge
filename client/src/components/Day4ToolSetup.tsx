@@ -55,7 +55,7 @@ export function Day4ToolSetup({ onComplete }: Day4Props) {
         <div className="flex items-start gap-4">
           <button
             onClick={() => setReplitChecked(!replitChecked)}
-            className={`w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 mt-1 transition-all ${
+            className={`w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 mt-1 transition-none ${
               replitChecked ? 'bg-green-500 border-green-500' : 'border-slate-300 hover:border-slate-400'
             }`}
           >
@@ -92,7 +92,7 @@ export function Day4ToolSetup({ onComplete }: Day4Props) {
           {/* ChatGPT */}
           <button
             onClick={() => setAiToolSelected('chatgpt')}
-            className={`p-4 rounded-lg border-2 text-left transition-all ${
+            className={`p-4 rounded-lg border-2 text-left transition-none ${
               aiToolSelected === 'chatgpt'
                 ? 'border-black bg-slate-50'
                 : 'border-slate-200 hover:border-slate-300'
@@ -117,7 +117,7 @@ export function Day4ToolSetup({ onComplete }: Day4Props) {
           {/* Claude */}
           <button
             onClick={() => setAiToolSelected('claude')}
-            className={`p-4 rounded-lg border-2 text-left transition-all ${
+            className={`p-4 rounded-lg border-2 text-left transition-none ${
               aiToolSelected === 'claude'
                 ? 'border-black bg-slate-50'
                 : 'border-slate-200 hover:border-slate-300'
@@ -142,7 +142,7 @@ export function Day4ToolSetup({ onComplete }: Day4Props) {
           {/* Abacus AI */}
           <button
             onClick={() => setAiToolSelected('abacus')}
-            className={`p-4 rounded-lg border-2 text-left transition-all ${
+            className={`p-4 rounded-lg border-2 text-left transition-none ${
               aiToolSelected === 'abacus'
                 ? 'border-black bg-slate-50'
                 : 'border-slate-200 hover:border-slate-300'
@@ -221,7 +221,7 @@ export function Day4ToolSetup({ onComplete }: Day4Props) {
                 onClick={() => setAiToolSetup(!aiToolSetup)}
                 className="flex items-center gap-3 w-full"
               >
-                <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
+                <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-none ${
                   aiToolSetup ? 'bg-green-500 border-green-500' : 'border-slate-300 hover:border-slate-400'
                 }`}>
                   {aiToolSetup && <Check className="w-4 h-4 text-white" />}

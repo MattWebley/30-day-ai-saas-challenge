@@ -364,7 +364,7 @@ export default function Dashboard() {
             <div className="flex justify-end pt-8">
               <Button 
                 size="lg" 
-                className={`rounded-xl px-10 h-14 text-lg font-bold shadow-xl shadow-primary/20 gap-2 hover:translate-y-[-2px] transition-all ${dayProgress?.completed ? "bg-green-500 hover:bg-green-600" : ""}`} 
+                className={`rounded-xl px-10 h-14 text-lg font-bold shadow-xl shadow-primary/20 gap-2 hover:translate-y-[-2px] transition-none ${dayProgress?.completed ? "bg-green-500 hover:bg-green-600" : ""}`} 
                 onClick={handleComplete}
                 disabled={completeDay.isPending}
                 data-testid="button-complete-day"

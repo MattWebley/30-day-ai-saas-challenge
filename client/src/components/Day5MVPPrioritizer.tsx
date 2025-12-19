@@ -180,7 +180,7 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
         {features.map((feature, i) => (
           <div 
             key={i} 
-            className={`p-3 rounded-lg border-2 transition-all ${
+            className={`p-3 rounded-lg border-2 transition-none ${
               feature.priority === 'must' ? 'border-green-500 bg-green-50' :
               feature.priority === 'nice' ? 'border-amber-400 bg-amber-50' :
               feature.priority === 'cut' ? 'border-slate-300 bg-slate-100 opacity-60' :
@@ -194,7 +194,7 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
               <div className="flex gap-1">
                 <button
                   onClick={() => setPriority(i, 'must')}
-                  className={`p-2 rounded-lg border-2 transition-all cursor-pointer ${
+                  className={`p-2 rounded-lg border-2 transition-none cursor-pointer ${
                     feature.priority === 'must' 
                       ? 'border-green-500 bg-green-500 text-white' 
                       : 'border-slate-200 hover:border-green-500 text-slate-400 hover:text-green-500'
@@ -205,7 +205,7 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
                 </button>
                 <button
                   onClick={() => setPriority(i, 'nice')}
-                  className={`p-2 rounded-lg border-2 transition-all cursor-pointer ${
+                  className={`p-2 rounded-lg border-2 transition-none cursor-pointer ${
                     feature.priority === 'nice' 
                       ? 'border-amber-400 bg-amber-400 text-white' 
                       : 'border-slate-200 hover:border-amber-400 text-slate-400 hover:text-amber-500'
@@ -216,7 +216,7 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
                 </button>
                 <button
                   onClick={() => setPriority(i, 'cut')}
-                  className={`p-2 rounded-lg border-2 transition-all cursor-pointer ${
+                  className={`p-2 rounded-lg border-2 transition-none cursor-pointer ${
                     feature.priority === 'cut' 
                       ? 'border-slate-400 bg-slate-400 text-white' 
                       : 'border-slate-200 hover:border-slate-400 text-slate-400 hover:text-slate-500'
@@ -272,7 +272,7 @@ Format: Start with the feature name, then a dash, then the explanation. Keep it 
                 <button
                   key={i}
                   onClick={() => setKillerFeature(f.name)}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-none cursor-pointer ${
                     killerFeature === f.name
                       ? 'bg-black text-white'
                       : 'bg-slate-100 text-slate-700 hover:bg-slate-200'

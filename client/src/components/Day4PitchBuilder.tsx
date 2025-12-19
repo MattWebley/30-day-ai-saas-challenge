@@ -326,7 +326,7 @@ HANGOUTS:
                         <button
                           key={i}
                           onClick={() => handleSelectPitch(i)}
-                          className={`w-full p-3 rounded-lg border-2 text-left transition-all cursor-pointer text-sm ${
+                          className={`w-full p-3 rounded-lg border-2 text-left transition-none cursor-pointer text-sm ${
                             selectedPitch === i
                               ? 'border-black bg-black text-white'
                               : 'border-slate-200 hover:border-slate-300 bg-white'

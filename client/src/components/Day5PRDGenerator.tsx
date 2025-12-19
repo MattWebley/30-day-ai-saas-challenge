@@ -361,7 +361,7 @@ Make it detailed, actionable, and ready for a developer (or Replit Agent) to bui
                 onClick={() => setReplitStarted(!replitStarted)}
                 className="flex items-center gap-3"
               >
-                <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-all ${
+                <div className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-none ${
                   replitStarted ? 'bg-blue-600 border-blue-600' : 'border-blue-300 hover:border-blue-400'
                 }`}>
                   {replitStarted && <Check className="w-4 h-4 text-white" />}

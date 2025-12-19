@@ -56,7 +56,7 @@ export default function Landing() {
 
             <div className="pt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a href="/api/login">
-                <Button size="lg" className="h-16 px-10 text-lg rounded-xl font-bold gap-3 shadow-xl shadow-primary/20 hover:translate-y-[-2px] transition-all">
+                <Button size="lg" className="h-16 px-10 text-lg rounded-xl font-bold gap-3 shadow-xl shadow-primary/20 hover:translate-y-[-2px] transition-none">
                   Start Day 1 for Free <ArrowRight className="w-6 h-6" />
                 </Button>
               </a>
@@ -131,7 +131,7 @@ export default function Landing() {
                   transition={{ delay: i * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <Card className="p-8 h-full bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-primary/50 transition-all rounded-xl">
+                  <Card className="p-8 h-full bg-white border border-slate-200 shadow-sm hover:shadow-md hover:border-primary/50 transition-none rounded-xl">
                     <div className="w-14 h-14 rounded-lg bg-blue-50 flex items-center justify-center mb-6">
                       {feature.icon}
                     </div>

@@ -467,12 +467,12 @@ HANGOUTS:
         <div className="flex items-center justify-center gap-1 flex-wrap">
           {steps.map((step, idx) => (
             <div key={step.num} className="flex items-center">
-              <div 
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
-                  currentStep > step.num 
-                    ? 'bg-green-500 text-white' 
-                    : currentStep === step.num 
-                      ? 'bg-black text-white' 
+              <div
+                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
+                  currentStep > step.num
+                    ? 'bg-green-500 text-white'
+                    : currentStep === step.num
+                      ? 'bg-black text-white'
                       : 'bg-slate-200 text-slate-400'
                 }`}
               >
@@ -881,7 +881,7 @@ HANGOUTS:
                         <button
                           key={i}
                           onClick={() => toggleUspSelection(i)}
-                          className={`p-4 rounded-lg border-2 text-left transition-all cursor-pointer ${
+                          className={`p-4 rounded-lg border-2 text-left cursor-pointer ${
                             selectedUspIndexes.includes(i)
                               ? 'border-black bg-slate-50'
                               : 'border-slate-200 hover:border-slate-300'
@@ -1120,7 +1120,7 @@ HANGOUTS:
                         <button
                           key={i}
                           onClick={() => handleSelectPitch(i)}
-                          className={`w-full p-3 rounded-lg border-2 text-left transition-all cursor-pointer text-sm ${
+                          className={`w-full p-3 rounded-lg border-2 text-left cursor-pointer text-sm ${
                             selectedPitch === i
                               ? 'border-black bg-black text-white'
                               : 'border-slate-200 hover:border-slate-300 bg-white'

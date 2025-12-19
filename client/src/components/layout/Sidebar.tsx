@@ -60,7 +60,7 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
 
   return (
     <div 
-      className="mt-4 p-3 rounded-md relative cursor-pointer transition-all"
+      className="mt-4 p-3 rounded-md relative cursor-pointer transition-none"
       style={{ backgroundColor: '#E8F4F0', border: '1px solid #B8D4CA' }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -268,7 +268,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                     <Link key={day.day} href={`/dashboard/${day.day}`} onClick={handleNavClick}>
                       <span
                         className={cn(
-                          "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all group mb-0.5 cursor-pointer",
+                          "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-none group mb-0.5 cursor-pointer",
                           currentDay === day.day 
                             ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
                             : "hover:bg-sidebar-accent hover:text-sidebar-foreground"

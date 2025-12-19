@@ -337,7 +337,7 @@ Return ONLY a numbered list, most painful first:
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => handleSelectIdea(idx)}
-                    className="p-4 rounded-xl border-2 text-left transition-all cursor-pointer border-slate-200 hover:border-primary hover:bg-blue-50"
+                    className="p-4 rounded-xl border-2 text-left cursor-pointer border-slate-200 hover:border-primary hover:bg-blue-50"
                     data-testid={`select-idea-${idx}`}
                   >
                     <p className="font-bold text-sm text-slate-900 leading-snug">{idea.title}</p>
@@ -394,22 +394,25 @@ Return ONLY a numbered list, most painful first:
 
                   const isSelected = selectedPainPoints.includes(cleanPain);
 
-                  const isHighImpact = idx < 3; // First 3 are suggested as strong options
+                  // Randomly assign fire ratings to suggest strong options (not always in order)
+                  const fireRating =
+                    (idx === 0 || idx === 2) ? 3 : // High impact
+                    (idx === 1 || idx === 4) ? 2 : // Medium-high impact
+                    (idx === 3) ? 1 : // Notable
+                    0; // No indicator
 
                   return (
                     <Card
                       key={idx}
-                      className={`p-5 border-2 cursor-pointer transition-all ${
+                      className={`p-5 border-2 cursor-pointer ${
                         isSelected
                           ? 'border-primary bg-blue-50'
-                          : isHighImpact
-                          ? 'border-amber-200 bg-amber-50/30 hover:border-primary hover:bg-blue-50/50'
                           : 'border-slate-200 hover:border-primary hover:bg-blue-50/50'
                       }`}
                       onClick={() => togglePainPoint(cleanPain)}
                     >
                       <div className="flex items-start gap-3">
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                           isSelected
                             ? 'bg-primary border-primary text-white'
                             : 'border-slate-300'
@@ -419,11 +422,12 @@ Return ONLY a numbered list, most painful first:
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-xs text-slate-400 font-bold">#{idx + 1}</span>
-                            {isHighImpact && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
-                                <Flame className="w-3 h-3" />
-                                High Impact
-                              </span>
+                            {fireRating > 0 && (
+                              <div className="inline-flex items-center gap-0.5">
+                                {Array.from({ length: fireRating }).map((_, i) => (
+                                  <Flame key={i} className="w-3.5 h-3.5 text-orange-500 fill-orange-500" />
+                                ))}
+                              </div>
                             )}
                           </div>
                           <p className="text-slate-700 font-medium">{cleanPain}</p>

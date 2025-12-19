@@ -29,7 +29,7 @@ export default function Badges() {
                 transition={{ delay: i * 0.05 }}
               >
                 <Card className={cn(
-                  "p-8 flex flex-col items-center text-center gap-4 transition-all hover:shadow-lg",
+                  "p-8 flex flex-col items-center text-center gap-4 transition-none hover:shadow-lg",
                   badge.earned 
                     ? "bg-white border-slate-200" 
                     : "bg-slate-50 border-slate-100 opacity-60 grayscale"

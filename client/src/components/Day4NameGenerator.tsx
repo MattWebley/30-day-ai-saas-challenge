@@ -311,7 +311,7 @@ ONLY respond with valid JSON.`;
                         <button
                           key={i}
                           onClick={() => selectName(i)}
-                          className={`p-4 rounded-lg border-2 text-left transition-all cursor-pointer ${
+                          className={`p-4 rounded-lg border-2 text-left transition-none cursor-pointer ${
                             selectedIndex === i
                               ? 'border-black bg-slate-50'
                               : 'border-slate-200 hover:border-slate-300 bg-white'
