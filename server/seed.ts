@@ -618,6 +618,7 @@ async function seed() {
       microDecisionOptions: JSON.stringify(["Excited", "Nervous", "Confident", "All of the above!"]),
       reflectionQuestion: "What did you learn most during this 30-day journey? What's next?",
       outcome: "Your SaaS MVP is live and available to the world!",
+      completionMessage: "You did it. 30 days ago, this was just an idea. Today, it's live. Most people never make it past day 3. You shipped. That makes you a founder. Now go get your first customer.",
       xpReward: 300,
     },
   ];
@@ -641,6 +642,7 @@ async function seed() {
         tip: day.tip,
         lesson: day.lesson,
         outcome: day.outcome,
+        completionMessage: day.completionMessage,
         estimatedMinutes: day.estimatedMinutes,
         xpReward: day.xpReward,
         updatedAt: new Date(),
