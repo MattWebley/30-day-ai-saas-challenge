@@ -141,7 +141,7 @@ async function seed() {
       microDecisionQuestion: "Who will use your product first?",
       microDecisionOptions: JSON.stringify(["Small Business Owners", "Freelancers", "Enterprise Teams", "Consumers"]),
       reflectionQuestion: "What pain point keeps your ideal customer up at night?",
-      outcome: "A detailed customer persona with demographics, pain points, and buying behaviors",
+      outcome: "A detailed customer persona with demographics and buying behaviors",
       completionMessage: "You know what beats a 'perfect' feature list? One that you can actually build. You just defined your core features and what makes you different. Most founders never get this specific. Day 4: we set up the tools that'll help you build this thing.",
       xpReward: 100,
     },
