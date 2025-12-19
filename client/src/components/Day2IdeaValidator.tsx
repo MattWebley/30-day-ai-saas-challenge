@@ -37,17 +37,17 @@ const VALIDATION_PROMPTS = [
   {
     id: "market_viability",
     title: "Market Viability Check",
-    prompt: `SaaS Idea: "[IDEA_TITLE]" - [IDEA_DESC]
+    prompt: `"[IDEA_TITLE]" - [IDEA_DESC]
 Target: [TARGET_CUSTOMER]
 
-Be BRUTALLY honest. Provide a brief, structured analysis:
+Be BRUTALLY honest. Answer in 4 short lines:
 
-**DEMAND**: Is there proven demand? Are people paying for this now?
-**MARKET SIZE**: How big is this opportunity? (small niche, mid-market, or massive)
-**RISKS**: Top 2-3 risks that could kill this idea
-**VERDICT**: Viability score /10 + one sentence: proceed or pivot?
+**DEMAND**: Are people already paying for this? (Yes/No + 1 sentence why)
+**MARKET SIZE**: Small niche / Mid-market / Massive opportunity?
+**TOP RISK**: The #1 thing that could kill this
+**VERDICT**: Score /10 + Proceed or Pivot?
 
-Keep it concise - no fluff.`,
+Maximum 4 sentences total.`,
   },
   {
     id: "competitor_analysis",
