@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Target } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 interface DayInstructionsProps {
   day: number;
@@ -62,7 +62,7 @@ export function DayInstructions({ day, outcome }: DayInstructionsProps) {
       {outcome && (
         <div className="mt-4 pt-4 border-t border-slate-300">
           <div className="flex items-start gap-2">
-            <Target className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+            <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-bold text-xs text-slate-900 mb-1 uppercase tracking-wide">Today's Outcome:</p>
               <p className="text-sm text-slate-700 font-medium">{outcome}</p>
