@@ -104,6 +104,7 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   const handleSelectFinalIdea = (index: number) => {
     setFinalChoice(index);
     saveChosenIdea.mutate(index);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const { data: day1Progress } = useQuery({
@@ -230,6 +231,7 @@ Return ONLY a numbered list, most painful first:
     setStep('pain');
     setLoadingPainPoints(true);
     generatePainPoints.mutate(idx);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const togglePainPoint = (pain: string) => {
@@ -274,6 +276,7 @@ Return ONLY a numbered list, most painful first:
       return;
     }
     setStep('validate');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (!day1Progress?.shortlistedIdeas?.length) {
