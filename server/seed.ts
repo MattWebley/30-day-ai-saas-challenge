@@ -111,7 +111,7 @@ async function seed() {
     {
       day: 2,
       title: "Will People Pay For This?",
-      description: "Validate your idea with AI-powered market research",
+      description: "Discover the core pain point and validate market demand",
       phase: "Week 1: Planning & Idea",
       videoUrl: null,
       aiTaskType: "suggestion",
@@ -122,7 +122,7 @@ async function seed() {
       microDecisionQuestion: "What's your primary competitive advantage?",
       microDecisionOptions: JSON.stringify(["Better UX", "Lower Price", "Unique Feature", "Niche Focus"]),
       reflectionQuestion: "What makes your solution different from existing alternatives?",
-      outcome: "One validated SaaS idea with clear competitive advantages and market opportunity",
+      outcome: "One validated SaaS idea with a clear, painful problem it solves for customers",
       xpReward: 100,
     },
     {

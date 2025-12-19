@@ -14,9 +14,11 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Click 'Confirm Selection'"
   ],
   2: [
-    "Hover over each idea to see full details",
-    "Use the prompts to validate each idea",
-    "Pick ONE winner to move forward with"
+    "Select one of your shortlisted ideas",
+    "AI generates 3-5 pain points it solves",
+    "Pick the most compelling pain point",
+    "Use validation prompts to research the market",
+    "Lock in your final idea choice"
   ],
   3: [
     "Define the bleeding neck problem",

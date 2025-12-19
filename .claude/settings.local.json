@@ -8,7 +8,9 @@
       "Bash(git pull:*)",
       "WebSearch",
       "Bash(npm run db:push:*)",
-      "Bash(psql:*)"
+      "Bash(psql:*)",
+      "Bash(npm run db:seed:*)",
+      "Bash(tsx:*)"
     ]
   }
 }

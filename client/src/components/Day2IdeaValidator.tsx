@@ -84,6 +84,10 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   const [aiResponses, setAiResponses] = useState<Record<string, Record<number, string>>>({});
   const [loadingPrompt, setLoadingPrompt] = useState<string | null>(null);
   const [finalChoice, setFinalChoice] = useState<number | null>(null);
+  const [step, setStep] = useState<'select' | 'pain' | 'validate'>('select');
+  const [painPoints, setPainPoints] = useState<string[]>([]);
+  const [selectedPainPoint, setSelectedPainPoint] = useState<string | null>(null);
+  const [loadingPainPoints, setLoadingPainPoints] = useState(false);
 
   const saveChosenIdea = useMutation({
     mutationFn: async (chosenIdea: number) => {
@@ -109,9 +113,44 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
     },
   });
 
-  const shortlistedIdeas: Idea[] = day1Progress?.generatedIdeas?.filter((_: Idea, i: number) => 
+  const shortlistedIdeas: Idea[] = day1Progress?.generatedIdeas?.filter((_: Idea, i: number) =>
     day1Progress?.shortlistedIdeas?.includes(i)
   ) || [];
+
+  const generatePainPoints = useMutation({
+    mutationFn: async (ideaIndex: number) => {
+      const idea = shortlistedIdeas[ideaIndex];
+      const prompt = `For this SaaS idea: "${idea.title}" - ${idea.desc}
+
+Target customer: ${idea.targetCustomer}
+
+Generate 3-5 specific, painful problems this idea solves. For each pain point:
+- Be specific (not generic)
+- Focus on emotional or financial impact
+- Make it relatable
+
+Return ONLY a JSON array of pain point strings, like this:
+["Pain point 1", "Pain point 2", "Pain point 3"]`;
+
+      const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      try {
+        const parsed = JSON.parse(data.response);
+        setPainPoints(Array.isArray(parsed) ? parsed : []);
+        setLoadingPainPoints(false);
+      } catch {
+        const lines = data.response.split('\n').filter((l: string) => l.trim());
+        setPainPoints(lines);
+        setLoadingPainPoints(false);
+      }
+    },
+    onError: () => {
+      toast.error("Failed to generate pain points");
+      setLoadingPainPoints(false);
+    },
+  });
 
   const runAiPrompt = useMutation({
     mutationFn: async ({ promptId, ideaIndex }: { promptId: string; ideaIndex: number }) => {
@@ -162,6 +201,18 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   const handleRunAi = (promptId: string, ideaIndex: number) => {
     setLoadingPrompt(`${promptId}-${ideaIndex}`);
     runAiPrompt.mutate({ promptId, ideaIndex });
+  };
+
+  const handleSelectIdea = (idx: number) => {
+    setSelectedIdeaIndex(idx);
+    setStep('pain');
+    setLoadingPainPoints(true);
+    generatePainPoints.mutate(idx);
+  };
+
+  const handleSelectPainPoint = (pain: string) => {
+    setSelectedPainPoint(pain);
+    setStep('validate');
   };
 
   if (!day1Progress?.shortlistedIdeas?.length) {
@@ -220,44 +271,42 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   return (
     <TooltipProvider>
     <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Validate Your Top Ideas</h2>
-        <p className="text-slate-500">
-          Use these prompts to research each idea. Then pick ONE to move forward with.
-        </p>
-        <p className="text-sm text-amber-600 font-semibold mt-2">
-          Remember: Progress beats procrastination. Pick one and GO!
-        </p>
-      </div>
+      {/* Step 1: Select Idea */}
+      {step === 'select' && (
+        <>
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Pick Your Idea</h2>
+            <p className="text-slate-500">
+              Select one idea to discover its core pain point
+            </p>
+          </div>
 
-      {/* Idea Selector */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {shortlistedIdeas.map((idea, idx) => (
-          <Tooltip key={idx}>
-            <TooltipTrigger asChild>
-              <button
-                onClick={() => setSelectedIdeaIndex(idx)}
-                className={`p-4 rounded-xl border-2 text-left transition-all cursor-pointer ${
-                  selectedIdeaIndex === idx
-                    ? "border-primary bg-blue-50"
-                    : "border-slate-200 hover:border-slate-300"
-                }`}
-                data-testid={`select-idea-${idx}`}
-              >
-                <p className="font-bold text-sm text-slate-900 leading-snug">{idea.title}</p>
-                <p className="text-xs text-slate-500 mt-2">Score: {idea.totalScore}/25</p>
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom" className="max-w-xs">
-              <p className="font-semibold mb-1">{idea.title}</p>
-              <p className="text-xs text-slate-300 mb-2">{idea.desc}</p>
-              <p className="text-xs text-slate-400">Target: {idea.targetCustomer}</p>
-            </TooltipContent>
-          </Tooltip>
-        ))}
-      </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {shortlistedIdeas.map((idea, idx) => (
+              <Tooltip key={idx}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => handleSelectIdea(idx)}
+                    className="p-4 rounded-xl border-2 text-left transition-all cursor-pointer border-slate-200 hover:border-primary hover:bg-blue-50"
+                    data-testid={`select-idea-${idx}`}
+                  >
+                    <p className="font-bold text-sm text-slate-900 leading-snug">{idea.title}</p>
+                    <p className="text-xs text-slate-500 mt-2">Score: {idea.totalScore}/25</p>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">
+                  <p className="font-semibold mb-1">{idea.title}</p>
+                  <p className="text-xs text-slate-300 mb-2">{idea.desc}</p>
+                  <p className="text-xs text-slate-400">Target: {idea.targetCustomer}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
+        </>
+      )}
 
-      {selectedIdeaIndex !== null && (
+      {/* Step 2: Pain Point Discovery */}
+      {step === 'pain' && selectedIdeaIndex !== null && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -266,10 +315,73 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
           <Card className="p-5 border-2 border-primary/30 bg-blue-50/50">
             <h3 className="font-bold text-lg text-slate-900">{shortlistedIdeas[selectedIdeaIndex].title}</h3>
             <p className="text-slate-600 mt-1">{shortlistedIdeas[selectedIdeaIndex].desc}</p>
-            <p className="text-sm text-slate-500 mt-2">Target: {shortlistedIdeas[selectedIdeaIndex].targetCustomer}</p>
           </Card>
 
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">What Pain Does This Solve?</h2>
+            <p className="text-slate-500">
+              Pick the ONE pain point that resonates most
+            </p>
+          </div>
+
+          {loadingPainPoints ? (
+            <Card className="p-12 text-center">
+              <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+              <p className="text-slate-600">Discovering pain points...</p>
+            </Card>
+          ) : (
+            <div className="grid gap-4">
+              {painPoints.map((pain, idx) => (
+                <Card
+                  key={idx}
+                  className="p-5 border-2 border-slate-200 hover:border-primary hover:bg-blue-50/50 cursor-pointer transition-all"
+                  onClick={() => handleSelectPainPoint(pain)}
+                >
+                  <p className="text-slate-700 font-medium">{pain.replace(/^["']|["']$/g, '')}</p>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          <Button
+            variant="outline"
+            onClick={() => {
+              setStep('select');
+              setSelectedIdeaIndex(null);
+              setPainPoints([]);
+            }}
+          >
+            ← Back to Ideas
+          </Button>
+        </motion.div>
+      )}
+
+      {/* Step 3: Validation */}
+      {step === 'validate' && selectedIdeaIndex !== null && (
+        <>
+          <Card className="p-5 border-2 border-green-300 bg-green-50">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-bold text-slate-900">{shortlistedIdeas[selectedIdeaIndex].title}</h3>
+                <p className="text-sm text-slate-600 mt-1">Pain: {selectedPainPoint}</p>
+              </div>
+            </div>
+          </Card>
+
+          <div className="text-center mt-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Validate This Idea</h2>
+            <p className="text-slate-500">
+              Use these prompts to research the market. Then lock in your choice!
+            </p>
+          </div>
+
           {/* Validation Prompts */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
           <div className="space-y-6">
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
               <p className="text-sm text-slate-700">
@@ -368,13 +480,18 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
               </Tooltip>
             </div>
           </Card>
-        </motion.div>
-      )}
 
-      {selectedIdeaIndex === null && (
-        <div className="text-center py-8 text-slate-400">
-          Select an idea above to start validating it
-        </div>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setStep('pain');
+              setSelectedPainPoint(null);
+            }}
+          >
+            ← Change Pain Point
+          </Button>
+        </motion.div>
+        </>
       )}
     </div>
     </TooltipProvider>
