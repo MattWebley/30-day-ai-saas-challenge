@@ -635,20 +635,28 @@ Return ONLY a numbered list, most painful first:
 
                         // Helper function to render text with clickable URLs
                         const renderWithLinks = (text: string) => {
-                          const urlRegex = /(https?:\/\/[^\s]+)/g;
+                          // More precise URL regex that excludes trailing punctuation
+                          const urlRegex = /(https?:\/\/[^\s<>",\)]+[^\s<>",\.\)!?:;])/g;
                           const parts = text.split(urlRegex);
 
                           return parts.map((part, i) => {
                             if (part.match(urlRegex)) {
+                              // Clean the URL and ensure it's valid
+                              const cleanUrl = part.trim();
                               return (
                                 <a
                                   key={i}
-                                  href={part}
+                                  href={cleanUrl}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-blue-600 hover:text-blue-800 underline font-medium"
+                                  onClick={(e) => {
+                                    // Extra safeguard to ensure new tab opens
+                                    e.preventDefault();
+                                    window.open(cleanUrl, '_blank', 'noopener,noreferrer');
+                                  }}
+                                  className="text-blue-600 hover:text-blue-800 underline font-medium break-all cursor-pointer"
                                 >
-                                  {part}
+                                  {cleanUrl}
                                 </a>
                               );
                             }
