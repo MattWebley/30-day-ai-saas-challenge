@@ -595,7 +595,7 @@ Return ONLY a numbered list, most painful first:
               </div>
               <div className="mt-4 pt-4 border-t border-slate-200">
                 <p className="text-xs text-slate-500 italic">
-                  Note: The quick checks below can help guide your research, but ideally check with real people or somebody with entrepreneurial experience before building.
+                  Pro tip: Run these checks first, then validate with real customers or experienced entrepreneurs before building.
                 </p>
               </div>
             </Card>
