@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Copy, Check, Sparkles, Loader2, ChevronRight, Trophy, Flame, Plus, X } from "lucide-react";
+import { Copy, Check, Sparkles, Loader2, ChevronRight, Trophy, Flame, Plus, X, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -557,7 +557,7 @@ Return ONLY a numbered list, most painful first:
                 <p className="text-xs font-semibold text-green-700 mb-2">Selected Pain Points:</p>
                 <ul className="space-y-1">
                   {selectedPainPoints.map((pain, idx) => (
-                    <li key={idx} className="text-sm text-slate-700 flex items-start gap-2">
+                    <li key={`selected-${idx}-${pain.slice(0, 20)}`} className="text-sm text-slate-700 flex items-start gap-2">
                       <span className="text-green-600">•</span>
                       <span>{pain}</span>
                     </li>
