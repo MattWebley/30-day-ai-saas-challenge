@@ -392,11 +392,9 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: displayIndex * 0.05 }}
                 >
-                  <Card 
-                    className={`p-5 border-2 cursor-pointer transition-all shadow-lg ${scoreColors.glow} ${
-                      isSelected 
-                        ? `${scoreColors.border} ${scoreColors.bg}` 
-                        : `${scoreColors.border} hover:${scoreColors.bg}`
+                  <Card
+                    className={`p-5 border-2 cursor-pointer transition-all shadow-lg ${scoreColors.glow} ${scoreColors.border} ${
+                      isSelected ? scoreColors.bg : 'hover:bg-slate-50'
                     }`}
                     onClick={() => !showConfirmation && toggleIdeaSelection(actualIndex)}
                     data-testid={`idea-card-${actualIndex}`}
