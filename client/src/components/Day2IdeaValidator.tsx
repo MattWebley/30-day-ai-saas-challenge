@@ -625,13 +625,46 @@ Return ONLY a numbered list, most painful first:
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200"
+                      className="mt-4"
                     >
-                      <p className="text-xs font-bold text-blue-700 uppercase tracking-wide mb-2 flex items-center gap-1">
-                        <Sparkles className="w-3 h-3" />
-                        AI Analysis
-                      </p>
-                      <p className="text-slate-700 whitespace-pre-wrap">{aiResponse}</p>
+                      <div className="bg-white rounded-lg border-2 border-slate-200 p-5">
+                        <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+                          <Sparkles className="w-4 h-4 text-blue-600" />
+                          <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">AI Analysis</span>
+                        </div>
+                        <div className="space-y-3">
+                          {aiResponse.split('\n').map((line, idx) => {
+                            const trimmedLine = line.trim();
+                            if (!trimmedLine) return null;
+
+                            // Check if line starts with bold markdown (**TEXT**)
+                            const boldMatch = trimmedLine.match(/^\*\*(.*?)\*\*:?\s*(.*)$/);
+                            if (boldMatch) {
+                              return (
+                                <div key={idx} className="flex gap-2">
+                                  <span className="font-bold text-slate-900 min-w-[120px]">{boldMatch[1]}:</span>
+                                  <span className="text-slate-700 flex-1">{boldMatch[2]}</span>
+                                </div>
+                              );
+                            }
+
+                            // Check if it's a bullet point
+                            if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                              return (
+                                <div key={idx} className="flex gap-2 ml-4">
+                                  <span className="text-slate-400">•</span>
+                                  <span className="text-slate-700">{trimmedLine.substring(1).trim()}</span>
+                                </div>
+                              );
+                            }
+
+                            // Regular text
+                            return (
+                              <p key={idx} className="text-slate-700">{trimmedLine}</p>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </motion.div>
                   )}
                 </Card>
