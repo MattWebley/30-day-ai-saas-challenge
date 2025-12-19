@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Copy, Check, Sparkles, Loader2, ChevronRight, Trophy, Flame } from "lucide-react";
+import { Copy, Check, Sparkles, Loader2, ChevronRight, Trophy, Flame, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -88,6 +89,8 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   const [painPoints, setPainPoints] = useState<string[]>([]);
   const [selectedPainPoints, setSelectedPainPoints] = useState<string[]>([]);
   const [loadingPainPoints, setLoadingPainPoints] = useState(false);
+  const [customPainInput, setCustomPainInput] = useState("");
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
   const saveChosenIdea = useMutation({
     mutationFn: async (chosenIdea: number) => {
@@ -255,6 +258,21 @@ Return ONLY a numbered list, most painful first:
       }
       return [...prev, pain];
     });
+  };
+
+  const handleAddCustomPain = () => {
+    if (!customPainInput.trim()) {
+      toast.error("Please enter a pain point");
+      return;
+    }
+    if (painPoints.includes(customPainInput.trim())) {
+      toast.error("This pain point already exists");
+      return;
+    }
+    setPainPoints(prev => [...prev, customPainInput.trim()]);
+    setCustomPainInput("");
+    setShowCustomInput(false);
+    toast.success("Custom pain point added!");
   };
 
   const handleContinueWithPainPoints = () => {
@@ -438,6 +456,57 @@ Return ONLY a numbered list, most painful first:
                 })}
               </div>
 
+              {/* Add Custom Pain Point */}
+              <div className="border-t border-slate-200 pt-4">
+                {!showCustomInput ? (
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCustomInput(true)}
+                    className="w-full gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Your Own Pain Point
+                  </Button>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Enter a custom pain point..."
+                        value={customPainInput}
+                        onChange={(e) => setCustomPainInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddCustomPain();
+                          }
+                          if (e.key === 'Escape') {
+                            setShowCustomInput(false);
+                            setCustomPainInput("");
+                          }
+                        }}
+                        autoFocus
+                        className="flex-1"
+                      />
+                      <Button onClick={handleAddCustomPain} className="gap-2">
+                        <Plus className="w-4 h-4" />
+                        Add
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setShowCustomInput(false);
+                          setCustomPainInput("");
+                        }}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-slate-500">
+                      Press Enter to add, Escape to cancel
+                    </p>
+                  </div>
+                )}
+              </div>
+
               {selectedPainPoints.length > 0 && (
                 <Button
                   size="lg"
@@ -457,6 +526,8 @@ Return ONLY a numbered list, most painful first:
               setSelectedIdeaIndex(null);
               setPainPoints([]);
               setSelectedPainPoints([]);
+              setShowCustomInput(false);
+              setCustomPainInput("");
             }}
           >
             ← Back to Ideas
