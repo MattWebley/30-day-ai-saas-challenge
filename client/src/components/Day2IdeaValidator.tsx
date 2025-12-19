@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Copy, Check, Sparkles, Loader2, ChevronRight, Trophy } from "lucide-react";
+import { Copy, Check, Sparkles, Loader2, ChevronRight, Trophy, Flame } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -370,7 +370,7 @@ Return ONLY a numbered list, most painful first:
           <div className="text-center">
             <h2 className="text-2xl font-bold text-slate-900 mb-2">What Pains Does This Solve?</h2>
             <p className="text-slate-500">
-              Select up to 3 pain points (ranked by severity)
+              Select up to 3 pain points that resonate most with you
             </p>
             <p className="text-sm text-primary font-semibold mt-2">
               {selectedPainPoints.length}/3 selected
@@ -394,12 +394,16 @@ Return ONLY a numbered list, most painful first:
 
                   const isSelected = selectedPainPoints.includes(cleanPain);
 
+                  const isHighImpact = idx < 3; // First 3 are suggested as strong options
+
                   return (
                     <Card
                       key={idx}
                       className={`p-5 border-2 cursor-pointer transition-all ${
                         isSelected
                           ? 'border-primary bg-blue-50'
+                          : isHighImpact
+                          ? 'border-amber-200 bg-amber-50/30 hover:border-primary hover:bg-blue-50/50'
                           : 'border-slate-200 hover:border-primary hover:bg-blue-50/50'
                       }`}
                       onClick={() => togglePainPoint(cleanPain)}
@@ -413,7 +417,15 @@ Return ONLY a numbered list, most painful first:
                           {isSelected && <Check className="w-4 h-4" />}
                         </div>
                         <div className="flex-1">
-                          <span className="text-xs text-slate-400 font-bold">#{idx + 1}</span>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs text-slate-400 font-bold">#{idx + 1}</span>
+                            {isHighImpact && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
+                                <Flame className="w-3 h-3" />
+                                High Impact
+                              </span>
+                            )}
+                          </div>
                           <p className="text-slate-700 font-medium">{cleanPain}</p>
                         </div>
                       </div>
