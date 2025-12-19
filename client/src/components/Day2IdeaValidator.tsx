@@ -571,12 +571,41 @@ Return ONLY a numbered list, most painful first:
             <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-5 h-5 text-blue-600" />
-                <p className="font-bold text-blue-900">Instant AI Validation</p>
+                <p className="font-bold text-blue-900">Quick AI Validation</p>
               </div>
-              <p className="text-sm text-blue-700">
-                Run these expert validation analyses powered by our AI - no copy/paste needed, results in seconds.
+              <p className="text-sm text-blue-700 mb-2">
+                Get instant AI-powered insights to guide your research. Note: AI can miss important details or make assumptions.
+              </p>
+              <p className="text-xs text-blue-600 font-semibold">
+                ⚠️ Always validate with real people before building!
               </p>
             </div>
+
+            {/* Manual Validation (Better) */}
+            <Card className="p-5 border-2 border-green-200 bg-green-50">
+              <h4 className="font-bold text-green-900 mb-3 flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5" />
+                Better: Manual Validation Methods
+              </h4>
+              <div className="space-y-3 text-sm">
+                <div>
+                  <p className="font-semibold text-green-900 mb-1">1. Talk to 5-10 potential customers</p>
+                  <p className="text-green-700">Ask about their current solution and pain points. Do they match yours?</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-green-900 mb-1">2. Search online communities</p>
+                  <p className="text-green-700">Check Reddit, Facebook groups, forums - are people complaining about this problem?</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-green-900 mb-1">3. Find existing competitors</p>
+                  <p className="text-green-700">If 3+ companies are solving this, there's proven demand. Study their pricing and reviews.</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-green-900 mb-1">4. Gauge willingness to pay</p>
+                  <p className="text-green-700">Ask: "Would you pay $X/month for this?" Real money talk = real validation.</p>
+                </div>
+              </div>
+            </Card>
             {VALIDATION_PROMPTS.map((prompt) => {
               const aiResponse = aiResponses[prompt.id]?.[selectedIdeaIndex];
               const isLoading = loadingPrompt === `${prompt.id}-${selectedIdeaIndex}`;
