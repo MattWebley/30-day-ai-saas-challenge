@@ -134,17 +134,21 @@ CRITICAL RULES:
 2. Don't be random - think about what ACTUALLY hurts in this space
 3. Rank them by how painful/costly they are (most painful first)
 4. Each pain must be CONCISE (5-12 words max)
-5. Focus on quantifiable impact: time wasted, money lost, opportunities missed
+5. Focus on the core problem, NOT specific metrics or percentages
 
 WHAT MAKES A GOOD PAIN POINT:
-✓ "Spending 5+ hours/week manually entering invoices"
-✓ "Losing 20% revenue from poor follow-up tracking"
-✓ "Missing compliance deadlines = $10k+ fines"
+✓ "Spending excessive time manually entering invoices"
+✓ "Losing revenue from poor follow-up tracking"
+✓ "Missing compliance deadlines and facing penalties"
+✓ "Struggling to track customer interactions across teams"
+✓ "Wasting time on repetitive administrative tasks"
 
 BAD EXAMPLES:
 ✗ "It's hard to manage things" (too vague)
-✗ "Customers are frustrated" (not specific)
+✗ "Customers are frustrated" (not specific enough)
 ✗ "Inefficient processes" (generic)
+✗ "Losing 25% of leads" (too specific with metrics)
+✗ "Spending 10+ hours per week" (avoid exact numbers)
 
 Return ONLY a numbered list, most painful first:
 1. [Most painful problem]
