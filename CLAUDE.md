@@ -87,7 +87,7 @@ components.json   - shadcn/ui component config
 
 ## Current Status
 - Status: In Progress
-- Last Session: 2025-12-13
+- Last Session: 2025-12-19
 - Current Branch: main
 - GitHub Repo: MattWebley/30-day-ai-saas-challenge
 
@@ -119,6 +119,34 @@ components.json   - shadcn/ui component config
   - Repository successfully synced with GitHub
   - CLAUDE.md now serves as central documentation hub
   - Ready for next development phase
+
+### 2025-12-19 - Day 2 & Day 3 Improvements
+- Tasks Completed:
+  - Fixed overly specific AI pain point generation (removed percentages/metrics from prompts)
+  - Fixed scroll-to-top behavior throughout app (App.tsx) and Day 2 step transitions
+  - Removed copy/paste prompt functionality from Day 2
+  - Added built-in AI validation with manual validation methods
+  - Made market viability check more concise (4 lines max: DEMAND, MARKET SIZE, TOP RISK, VERDICT)
+  - Improved AI response presentation with native formatting (removed "AI Analysis" headers)
+  - Made competitor URLs clickable and open in new tabs
+  - Removed re-run button (only shows before first analysis)
+  - Complete Day 2 UI redesign to match app design language (removed AI branding, gradients)
+  - Updated validation note text to emphasize real customer validation
+  - Removed redundant "pain points" from Day 3 outcome text
+- Fixes Applied:
+  - Fixed missing CheckCircle2 import causing Day 2 crash
+  - Fixed URL links not opening in new tabs (added explicit onClick handler with window.open)
+  - Fixed custom pain points causing crash (implemented stable React keys)
+  - Fixed re-run button showing incorrectly (added conditional rendering)
+  - Fixed scroll behavior using instant scroll instead of smooth
+  - Fixed dark hover transitions (removed transition-all classes throughout Day 2)
+- Notes:
+  - Day 2 extensively redesigned for consistency with rest of app
+  - All AI prompts optimized for conciseness and usefulness
+  - URL detection and rendering working properly with regex parser
+  - Database reseeded with updated Day 3 outcome
+  - Changed Day 2 from "AI-branded" to professional "Quick Research Tools"
+  - All cards now use white backgrounds with border-2 border-slate-200
 
 ---
 
