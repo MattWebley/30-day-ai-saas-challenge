@@ -40,12 +40,14 @@ const VALIDATION_PROMPTS = [
     prompt: `"[IDEA_TITLE]" - [IDEA_DESC]
 Target: [TARGET_CUSTOMER]
 
-Be BRUTALLY honest. Answer in 4 short lines:
+Be honest but constructive. Most SaaS ideas are viable with the right execution - only give scores below 7/10 if there are fundamental deal-breakers (no demand, massive regulation, impossible to build, etc).
+
+Answer in 4 short lines:
 
 **DEMAND**: Are people already paying for this? (Yes/No + 1 sentence why)
 **MARKET SIZE**: Small niche / Mid-market / Massive opportunity?
 **TOP RISK**: The #1 thing that could kill this
-**VERDICT**: Score /10 + Proceed or Pivot?
+**VERDICT**: Score /10 (7-10 unless fundamental issues) + Proceed or Pivot?
 
 Maximum 4 sentences total.`,
   },
