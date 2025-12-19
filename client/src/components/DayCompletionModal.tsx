@@ -1,14 +1,13 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy, ArrowRight, Sparkles } from "lucide-react";
+import { Trophy, ArrowRight } from "lucide-react";
 
 interface DayCompletionModalProps {
   isOpen: boolean;
   day: number;
   title: string;
   completionMessage?: string;
-  xpEarned: number;
   onContinue: () => void;
 }
 
@@ -17,7 +16,6 @@ export function DayCompletionModal({
   day,
   title,
   completionMessage,
-  xpEarned,
   onContinue,
 }: DayCompletionModalProps) {
   if (!isOpen) return null;
@@ -57,15 +55,14 @@ export function DayCompletionModal({
                 </motion.div>
               </div>
 
-              {/* XP Badge */}
+              {/* Progress Indicator */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4 }}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full shadow-lg"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 rounded-full border-2 border-slate-200"
               >
-                <Sparkles className="w-5 h-5 text-white" />
-                <span className="text-white font-bold text-lg">+{xpEarned} XP</span>
+                <span className="text-slate-900 font-bold text-lg">Day {day}/30 Complete</span>
               </motion.div>
 
               {/* Completion Message */}

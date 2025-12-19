@@ -401,7 +401,6 @@ export default function Dashboard() {
         day={currentDay}
         title={dayData.title}
         completionMessage={dayData.completionMessage}
-        xpEarned={dayData.xpReward}
         onContinue={handleContinueFromModal}
       />
     </Layout>
