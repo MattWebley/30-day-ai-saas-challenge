@@ -366,7 +366,7 @@ Return ONLY a numbered list, most painful first:
           animate={{ opacity: 1, y: 0 }}
           className="space-y-6"
         >
-          <Card className="p-5 border-2 border-primary/30 bg-blue-50/50">
+          <Card className="p-5 border-2 border-slate-200 bg-white">
             <h3 className="font-bold text-lg text-slate-900">{shortlistedIdeas[selectedIdeaIndex].title}</h3>
             <p className="text-slate-600 mt-1">{shortlistedIdeas[selectedIdeaIndex].desc}</p>
           </Card>
@@ -382,9 +382,9 @@ Return ONLY a numbered list, most painful first:
           </div>
 
           {loadingPainPoints ? (
-            <Card className="p-12 text-center">
+            <Card className="p-12 text-center border-2 border-slate-200">
               <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-              <p className="text-slate-600">AI is analyzing the most prominent pain points in this niche...</p>
+              <p className="text-slate-600">Analyzing the most prominent pain points...</p>
             </Card>
           ) : (
             <>
@@ -527,16 +527,16 @@ Return ONLY a numbered list, most painful first:
       {/* Step 3: Validation */}
       {step === 'validate' && selectedIdeaIndex !== null && (
         <>
-          <Card className="p-5 border-2 border-green-300 bg-green-50">
+          <Card className="p-5 border-2 border-slate-200 bg-white">
             <div className="flex items-start gap-3">
-              <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+              <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
               <div className="flex-1">
                 <h3 className="font-bold text-slate-900 mb-2">{shortlistedIdeas[selectedIdeaIndex].title}</h3>
-                <p className="text-xs font-semibold text-green-700 mb-2">Selected Pain Points:</p>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Selected Pain Points:</p>
                 <ul className="space-y-1">
                   {selectedPainPoints.map((pain, idx) => (
                     <li key={`selected-${idx}-${pain.slice(0, 20)}`} className="text-sm text-slate-700 flex items-start gap-2">
-                      <span className="text-green-600">•</span>
+                      <span className="text-primary">•</span>
                       <span>{pain}</span>
                     </li>
                   ))}
@@ -547,88 +547,95 @@ Return ONLY a numbered list, most painful first:
 
           <div className="text-center mt-6">
             <h2 className="text-2xl font-bold text-slate-900 mb-2">Validate This Idea</h2>
-            <p className="text-slate-500">
-              Run AI-powered market analysis to validate your idea. Then lock in your choice!
+            <p className="text-slate-500 max-w-lg mx-auto">
+              Research the market to validate demand. Then lock in your choice!
             </p>
           </div>
 
-          {/* Validation Prompts */}
+          {/* Validation Section */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-5 h-5 text-blue-600" />
-                <p className="font-bold text-blue-900">Quick AI Validation</p>
-              </div>
-              <p className="text-sm text-blue-700 mb-2">
-                Get instant AI-powered insights to guide your research. Note: AI can miss important details or make assumptions.
-              </p>
-              <p className="text-xs text-blue-600 font-semibold">
-                ⚠️ Always validate with real people before building!
-              </p>
-            </div>
-
-            {/* Manual Validation (Better) */}
-            <Card className="p-5 border-2 border-green-200 bg-green-50">
-              <h4 className="font-bold text-green-900 mb-3 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5" />
-                Better: Manual Validation Methods
-              </h4>
+            {/* Manual Validation Methods */}
+            <Card className="p-6 border-2 border-slate-200">
+              <h3 className="text-lg font-bold text-slate-900 mb-4">
+                Manual Validation Methods (Recommended)
+              </h3>
               <div className="space-y-3 text-sm">
-                <div>
-                  <p className="font-semibold text-green-900 mb-1">1. Talk to 5-10 potential customers</p>
-                  <p className="text-green-700">Ask about their current solution and pain points. Do they match yours?</p>
+                <div className="flex gap-3">
+                  <span className="font-bold text-slate-400">1.</span>
+                  <div>
+                    <p className="font-semibold text-slate-900 mb-1">Talk to 5-10 potential customers</p>
+                    <p className="text-slate-600">Ask about their current solution and pain points. Do they match yours?</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-green-900 mb-1">2. Search online communities</p>
-                  <p className="text-green-700">Check Reddit, Facebook groups, forums - are people complaining about this problem?</p>
+                <div className="flex gap-3">
+                  <span className="font-bold text-slate-400">2.</span>
+                  <div>
+                    <p className="font-semibold text-slate-900 mb-1">Search online communities</p>
+                    <p className="text-slate-600">Check Reddit, Facebook groups, forums - are people complaining about this problem?</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-green-900 mb-1">3. Find existing competitors</p>
-                  <p className="text-green-700">If 3+ companies are solving this, there's proven demand. Study their pricing and reviews.</p>
+                <div className="flex gap-3">
+                  <span className="font-bold text-slate-400">3.</span>
+                  <div>
+                    <p className="font-semibold text-slate-900 mb-1">Find existing competitors</p>
+                    <p className="text-slate-600">If 3+ companies are solving this, there's proven demand. Study their pricing and reviews.</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold text-green-900 mb-1">4. Gauge willingness to pay</p>
-                  <p className="text-green-700">Ask: "Would you pay $X/month for this?" Real money talk = real validation.</p>
+                <div className="flex gap-3">
+                  <span className="font-bold text-slate-400">4.</span>
+                  <div>
+                    <p className="font-semibold text-slate-900 mb-1">Gauge willingness to pay</p>
+                    <p className="text-slate-600">Ask: "Would you pay $X/month for this?" Real money talk = real validation.</p>
+                  </div>
                 </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-slate-200">
+                <p className="text-xs text-slate-500 italic">
+                  Note: The quick checks below can help guide your research, but always validate with real people before building.
+                </p>
               </div>
             </Card>
-            {VALIDATION_PROMPTS.map((prompt) => {
-              const aiResponse = aiResponses[prompt.id]?.[selectedIdeaIndex];
-              const isLoading = loadingPrompt === `${prompt.id}-${selectedIdeaIndex}`;
 
-              return (
-                <Card key={prompt.id} className="p-5 border-2 border-slate-100 hover:border-primary/50">
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <div>
-                      <h4 className="font-bold text-slate-900 mb-1">{prompt.title}</h4>
-                      {!aiResponse && <p className="text-xs text-slate-500">Click to run instant AI analysis</p>}
+            {/* Quick Research Tools */}
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-slate-900">Quick Research Tools</h3>
+              {VALIDATION_PROMPTS.map((prompt) => {
+                const aiResponse = aiResponses[prompt.id]?.[selectedIdeaIndex];
+                const isLoading = loadingPrompt === `${prompt.id}-${selectedIdeaIndex}`;
+
+                return (
+                  <Card key={prompt.id} className="p-5 border-2 border-slate-200">
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      <div className="flex-1">
+                        <h4 className="font-bold text-slate-900">{prompt.title}</h4>
+                      </div>
+                      {!aiResponse && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleRunAi(prompt.id, selectedIdeaIndex)}
+                          disabled={isLoading}
+                          data-testid={`run-ai-${prompt.id}`}
+                        >
+                          {isLoading ? (
+                            <><Loader2 className="w-4 h-4 animate-spin" /> Loading...</>
+                          ) : (
+                            <>Run Check</>
+                          )}
+                        </Button>
+                      )}
                     </div>
-                    {!aiResponse && (
-                      <Button
-                        className="gap-2 flex-shrink-0"
-                        onClick={() => handleRunAi(prompt.id, selectedIdeaIndex)}
-                        disabled={isLoading}
-                        data-testid={`run-ai-${prompt.id}`}
-                      >
-                        {isLoading ? (
-                          <><Loader2 className="w-4 h-4 animate-spin" /> Analyzing...</>
-                        ) : (
-                          <><Sparkles className="w-4 h-4" /> Run Analysis</>
-                        )}
-                      </Button>
-                    )}
-                  </div>
 
-                  {aiResponse && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      className="mt-4 bg-slate-50 rounded-lg p-4 border border-slate-200"
-                    >
+                    {aiResponse && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        className="mt-4 pt-4 border-t border-slate-200"
+                      >
                       {aiResponse.split('\n').map((line, idx) => {
                         const trimmedLine = line.trim();
                         if (!trimmedLine) return null;
@@ -707,31 +714,27 @@ Return ONLY a numbered list, most painful first:
             })}
 
             {/* Final Choice Section */}
-            <Card className="p-6 border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-orange-50">
+            <Card className="p-6 border-2 border-slate-200 bg-white mt-8">
               <div className="text-center">
-                <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to Decide?</h3>
-                <p className="text-slate-600 mb-4">
-                  Done your research? Trust your gut and pick this one!
+                <h3 className="text-xl font-bold text-slate-900 mb-2">Ready to Commit?</h3>
+                <p className="text-slate-600 mb-3">
+                  Done your research? Trust your gut and lock in this idea.
                 </p>
-                <p className="text-sm text-amber-700 font-semibold mb-4">
+                <p className="text-sm text-slate-500 italic mb-6">
                   "There is NO perfect idea. The perfect idea is the one you actually BUILD."
                 </p>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="lg"
-                      className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
-                      onClick={() => handleSelectFinalIdea(selectedIdeaIndex!)}
-                      data-testid="button-choose-idea"
-                    >
-                      <Trophy className="w-5 h-5" />
-                      Choose "{shortlistedIdeas[selectedIdeaIndex].title}"
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Lock in this idea and move to Day 3</TooltipContent>
-                </Tooltip>
+                <Button
+                  size="lg"
+                  className="gap-2"
+                  onClick={() => handleSelectFinalIdea(selectedIdeaIndex!)}
+                  data-testid="button-choose-idea"
+                >
+                  <Trophy className="w-5 h-5" />
+                  Choose "{shortlistedIdeas[selectedIdeaIndex].title}"
+                </Button>
               </div>
             </Card>
+            </div>
 
             <Button
               variant="outline"
