@@ -129,22 +129,40 @@ Generate 3-5 specific, painful problems this idea solves. For each pain point:
 - Focus on emotional or financial impact
 - Make it relatable
 
-Return ONLY a JSON array of pain point strings, like this:
-["Pain point 1", "Pain point 2", "Pain point 3"]`;
+Return ONLY the pain points as a numbered list:
+1. [Pain point 1]
+2. [Pain point 2]
+3. [Pain point 3]`;
 
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
       return res.json();
     },
     onSuccess: (data) => {
       try {
+        // Try to parse as JSON first
         const parsed = JSON.parse(data.response);
-        setPainPoints(Array.isArray(parsed) ? parsed : []);
-        setLoadingPainPoints(false);
+        if (Array.isArray(parsed)) {
+          setPainPoints(parsed);
+          setLoadingPainPoints(false);
+          return;
+        }
       } catch {
-        const lines = data.response.split('\n').filter((l: string) => l.trim());
-        setPainPoints(lines);
-        setLoadingPainPoints(false);
+        // Not JSON, parse as text
       }
+
+      // Parse numbered list format
+      const lines = data.response
+        .split('\n')
+        .map((l: string) => l.trim())
+        .filter((l: string) => l.length > 0)
+        .map((l: string) => {
+          // Remove number prefix like "1. " or "1) "
+          return l.replace(/^\d+[\.\)]\s*/, '').replace(/^[-•]\s*/, '');
+        })
+        .filter((l: string) => l.length > 10); // Filter out short junk
+
+      setPainPoints(lines);
+      setLoadingPainPoints(false);
     },
     onError: () => {
       toast.error("Failed to generate pain points");
@@ -331,15 +349,23 @@ Return ONLY a JSON array of pain point strings, like this:
             </Card>
           ) : (
             <div className="grid gap-4">
-              {painPoints.map((pain, idx) => (
-                <Card
-                  key={idx}
-                  className="p-5 border-2 border-slate-200 hover:border-primary hover:bg-blue-50/50 cursor-pointer transition-all"
-                  onClick={() => handleSelectPainPoint(pain)}
-                >
-                  <p className="text-slate-700 font-medium">{pain.replace(/^["']|["']$/g, '')}</p>
-                </Card>
-              ))}
+              {painPoints.map((pain, idx) => {
+                // Clean up any JSON artifacts, quotes, brackets
+                const cleanPain = pain
+                  .replace(/^["'\[]+|["'\]]+$/g, '') // Remove leading/trailing quotes and brackets
+                  .replace(/\\"/g, '"') // Unescape quotes
+                  .trim();
+
+                return (
+                  <Card
+                    key={idx}
+                    className="p-5 border-2 border-slate-200 hover:border-primary hover:bg-blue-50/50 cursor-pointer transition-all"
+                    onClick={() => handleSelectPainPoint(cleanPain)}
+                  >
+                    <p className="text-slate-700 font-medium">{cleanPain}</p>
+                  </Card>
+                );
+              })}
             </div>
           )}
 
