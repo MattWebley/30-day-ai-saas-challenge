@@ -90,12 +90,12 @@ async function seed() {
     {
       day: 1,
       title: "Your Million Dollar Idea",
-      description: "Use AI to generate 30 unique SaaS ideas in 5 minutes",
+      description: "Use AI to generate 28 SaaS ideas in 5 minutes",
       phase: "Week 1: Planning & Idea",
       videoUrl: null,
       aiTaskType: "suggestion",
       aiTaskTitle: "AI-Generated SaaS Ideas",
-      aiTaskDescription: "Let AI generate 30 SaaS ideas based on your interests, skills, and market trends. Select the one that resonates most with you.",
+      aiTaskDescription: "Let AI generate 28 SaaS ideas based on your interests, skills, and market trends. Select the one that resonates most with you.",
       suggestions: JSON.stringify([
         { title: "AI Writing Assistant", desc: "Help content creators write better, faster" },
         { title: "Project Management Tool", desc: "Simplified project tracking for small teams" },
@@ -106,6 +106,7 @@ async function seed() {
       microDecisionOptions: JSON.stringify(["B2B", "B2C", "Developer Tools", "E-commerce"]),
       reflectionQuestion: "What problem do you want to solve and why does it matter to you?",
       outcome: "A shortlist of 3-5 SaaS ideas validated by AI, ready for deeper evaluation",
+      completionMessage: "Most people never get past 'someday I'll start.' You just generated 28 ideas and picked your favorites. You're already ahead of 90% of people who talk about building a business. Tomorrow, we find out which one has legs.",
       xpReward: 100,
     },
     {
@@ -123,6 +124,7 @@ async function seed() {
       microDecisionOptions: JSON.stringify(["Better UX", "Lower Price", "Unique Feature", "Niche Focus"]),
       reflectionQuestion: "What makes your solution different from existing alternatives?",
       outcome: "One validated SaaS idea with a clear, painful problem it solves for customers",
+      completionMessage: "The hardest decision is behind you. You picked ONE idea and identified the exact pain it solves. That's what separates builders from dreamers - making a choice and committing. Now we turn this pain point into a real product.",
       xpReward: 100,
     },
     {
@@ -140,6 +142,7 @@ async function seed() {
       microDecisionOptions: JSON.stringify(["Small Business Owners", "Freelancers", "Enterprise Teams", "Consumers"]),
       reflectionQuestion: "What pain point keeps your ideal customer up at night?",
       outcome: "A detailed customer persona with demographics, pain points, and buying behaviors",
+      completionMessage: "You know what beats a 'perfect' feature list? One that you can actually build. You just defined your core features and what makes you different. Most founders never get this specific. Day 4: we set up the tools that'll help you build this thing.",
       xpReward: 100,
     },
     {
@@ -157,6 +160,7 @@ async function seed() {
       microDecisionOptions: JSON.stringify(["Save Time", "Save Money", "Reduce Complexity", "Increase Revenue"]),
       reflectionQuestion: "If you could only say one thing about your product, what would it be?",
       outcome: "A compelling value proposition that clearly communicates your unique benefit",
+      completionMessage: "Your AI toolkit is ready. You now have the superpowers that would've taken weeks to set up manually. Tomorrow we use these tools to create your PRD and scope your MVP. The fun part starts now.",
       xpReward: 100,
     },
     {
@@ -174,6 +178,7 @@ async function seed() {
       microDecisionOptions: JSON.stringify(["Minimal viable", "Feature-rich", "Design-first", "Data-driven"]),
       reflectionQuestion: "What's the absolute minimum feature set that delivers value?",
       outcome: "A prioritized feature list with must-haves, nice-to-haves, and features to cut",
+      completionMessage: "You have a PRD. A real Product Requirements Document that tells you exactly what to build and what to ignore. Most founders skip this and wonder why they're still coding 6 months later with nothing to show. You're different. Week 1 complete - the foundation is set.",
       xpReward: 100,
     },
     {
@@ -191,6 +196,7 @@ async function seed() {
       microDecisionOptions: JSON.stringify(["Subscription", "Freemium", "Pay-per-use", "One-time"]),
       reflectionQuestion: "What would your ideal customer be willing to pay?",
       outcome: "A clear pricing strategy with model selection and initial price points",
+      completionMessage: "Day 6 complete. You're building momentum. Every day you show up is a day closer to launch.",
       xpReward: 100,
     },
     {
@@ -208,6 +214,7 @@ async function seed() {
       microDecisionOptions: JSON.stringify(["Professional", "Playful", "Modern", "Classic"]),
       reflectionQuestion: "What feeling do you want your brand to evoke?",
       outcome: "A memorable product name and brand identity that resonates with your target audience",
+      completionMessage: "Week 1 done. 7 days of clarity and planning. While others are still 'thinking about it,' you have a validated idea, a clear plan, and the tools to build. Next week: we build.",
       xpReward: 100,
     },
 

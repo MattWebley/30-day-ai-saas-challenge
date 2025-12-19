@@ -26,6 +26,7 @@ import { Day5PRDGenerator } from "@/components/Day5PRDGenerator";
 import { Day5MVPPrioritizer } from "@/components/Day5MVPPrioritizer";
 import { DayChat } from "@/components/DayChat";
 import { DayInstructions } from "@/components/DayInstructions";
+import { DayCompletionModal } from "@/components/DayCompletionModal";
 import { toast } from "sonner";
 
 export default function Dashboard() {
@@ -34,6 +35,7 @@ export default function Dashboard() {
   const [selectedSuggestion, setSelectedSuggestion] = useState<number | undefined>();
   const [microDecisionChoice, setMicroDecisionChoice] = useState<string>("");
   const [reflectionAnswer, setReflectionAnswer] = useState<string>("");
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
 
   // Determine current day from URL or default to 1
   const currentDay = params?.day ? parseInt(params.day) : 1;
@@ -68,7 +70,7 @@ export default function Dashboard() {
   // Handle completion
   const handleComplete = async () => {
     if (!dayData) return;
-    
+
     try {
       await completeDay.mutateAsync({
         day: currentDay,
@@ -78,19 +80,20 @@ export default function Dashboard() {
           reflectionAnswer,
         },
       });
-      
-      toast.success(`Day ${currentDay} completed! 🎉`, {
-        description: "+100 XP earned",
-      });
 
-      // Navigate to next day if not the last day
-      setTimeout(() => {
-        if (currentDay < 30) {
-          setLocation(`/dashboard/${currentDay + 1}`);
-        }
-      }, 1000);
+      // Show completion modal
+      setShowCompletionModal(true);
     } catch (error) {
       console.error("Failed to complete day:", error);
+      toast.error("Failed to complete day");
+    }
+  };
+
+  const handleContinueFromModal = () => {
+    setShowCompletionModal(false);
+    // Navigate to next day if not the last day
+    if (currentDay < 30) {
+      setLocation(`/dashboard/${currentDay + 1}`);
     }
   };
 
@@ -391,6 +394,16 @@ export default function Dashboard() {
 
         </div>
       </div>
+
+      {/* Completion Modal */}
+      <DayCompletionModal
+        isOpen={showCompletionModal}
+        day={currentDay}
+        title={dayData.title}
+        completionMessage={dayData.completionMessage}
+        xpEarned={dayData.xpReward}
+        onContinue={handleContinueFromModal}
+      />
     </Layout>
   );
 }

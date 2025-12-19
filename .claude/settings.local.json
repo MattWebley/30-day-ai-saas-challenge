@@ -10,7 +10,8 @@
       "Bash(npm run db:push:*)",
       "Bash(psql:*)",
       "Bash(npm run db:seed:*)",
-      "Bash(tsx:*)"
+      "Bash(tsx:*)",
+      "Bash(npm run dev:*)"
     ]
   }
 }
