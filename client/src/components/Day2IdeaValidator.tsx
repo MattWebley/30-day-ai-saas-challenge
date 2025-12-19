@@ -124,15 +124,24 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
 
 Target customer: ${idea.targetCustomer}
 
-Generate 3-5 specific, painful problems this idea solves. For each pain point:
-- Be specific (not generic)
-- Focus on emotional or financial impact
-- Make it relatable
+Generate 3-5 specific, painful problems this idea solves.
 
-Return ONLY the pain points as a numbered list:
+IMPORTANT: Each pain point must be CONCISE - use as few words as possible (5-10 words max) while still being crystal clear about the problem.
+
+Focus on:
+- Specific pain (not generic)
+- Emotional or financial impact
+- What they're wasting (time, money, energy)
+
+Return ONLY a numbered list:
 1. [Pain point 1]
 2. [Pain point 2]
-3. [Pain point 3]`;
+3. [Pain point 3]
+
+Example good format:
+1. Manually tracking expenses takes 3+ hours weekly
+2. Miss tax deductions because receipts are lost
+3. Paying accountant $200/month for basic bookkeeping`;
 
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
       return res.json();
