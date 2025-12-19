@@ -186,34 +186,62 @@ CLONED CORE FEATURES + USP + LONGER FREE TRIAL + CHEAPER MONTHLY PRICE = WIN`,
     },
     {
       day: 4,
-      title: "Naming, Domains & MVP Roadmap",
-      description: "Name your SaaS, secure the .com domain and social handles, then prioritize which features to build first.",
+      title: "Name It & Claim It",
+      description: "Choose a killer name, secure the .com domain (no exceptions!), and claim all your social handles before someone else does.",
       phase: "Week 1: Idea & Planning",
       videoUrl: null,
       aiTaskType: "suggestion",
-      aiTaskTitle: "Name Generator & MVP Prioritization",
-      aiTaskDescription: "AI generates name ideas, checks domain availability, then helps you prioritize features into MVP vs V2.",
+      aiTaskTitle: "AI Name Generator",
+      aiTaskDescription: "AI generates brandable name ideas based on your idea, pain points, and features. Then you'll register your domain and claim social handles.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's your MVP philosophy?",
-      microDecisionOptions: JSON.stringify(["Launch fast, iterate", "Build it right first", "Balanced approach", "Maximum features"]),
-      reflectionQuestion: "What's the absolute minimum feature set that delivers real value?",
-      tip: "Use NAMECHEAP for domains - it's the best. You NEED the .com. If you can't get it, CHANGE THE NAME! Also grab all social handles TODAY.",
-      lesson: `NAMING YOUR SAAS
-Ask ChatGPT or Claude for name ideas and pick one. But there's considerations:
+      microDecisionQuestion: "What vibe do you want for your brand name?",
+      microDecisionOptions: JSON.stringify(["Short & Punchy (Slack, Zoom)", "Made-up Word (Spotify, Trello)", "Compound Word (Mailchimp, Dropbox)", "Action Word (Notion, Figma)"]),
+      reflectionQuestion: "Say your product name out loud 5 times. Does it feel right? If you have to spell it for people, it's wrong.",
+      tip: "NEVER pay more than $10-15/year for a .com domain. If someone wants $100+, it's a domain squatter. Change the name instead. Your time is better spent building than negotiating with hoarders.",
+      lesson: `Your name is your first impression. Get this RIGHT.
 
-1. TRADEMARKS: Do a quick trademark search in US and UK. Avoid obvious clashes.
-2. DOMAIN: Use Namecheap. You NEED the .com - if you can't get it, change the name! Buy obvious misspellings too.
-3. SOCIALS: Grab Facebook, Instagram, LinkedIn, X - ALL of them. Even if you never use them.
+THE GOLDEN RULES OF SAAS NAMING:
 
-MVP ROADMAP
-Now prioritize your features. What MUST be built for MVP vs what can wait for V2?
+1. ALWAYS GET THE .COM
+Not .io, not .co, not .app. The .com. It's what people type automatically. If you can't get the .com for a reasonable price, CHANGE THE NAME.
 
-Remember: We want this MVP to take 7-30 DAYS maximum. If cloning all competitor features seems too big, NICHE DOWN into something smaller. Focus on ONE or TWO core features but do them REALLY well.
+2. KEEP IT SHORT
+1-2 words maximum. Under 10 characters is ideal. If you can't fit it in a Twitter handle, it's too long.
 
-Put future features on a "V2 List" - learn this phrase: "Not MVP, maybe V2." It'll SAVE your sanity.`,
-      outcome: "Your SaaS name, .com domain secured, social handles grabbed, and a prioritized MVP roadmap",
-      completionMessage: "You have a NAME and a clear roadmap. Most founders spend months on this. You did it in a day. Tomorrow: setting up your AI-powered development toolkit.",
+3. MAKE IT SPEAKABLE
+Say it out loud. If you have to spell it for people every time, it's WRONG. "It's Trello, T-R-E-L-L-O" is fine. "It's Xqyzt, X-Q-Y-Z-T" is not.
+
+4. BE UNIQUE
+"ProjectManager" is not a name - it's a description. "Asana" is a name. Made-up words that SOUND good are often better than descriptive names.
+
+WHAT TO AVOID:
+
+❌ HYPHENS OR NUMBERS
+"task-hub-123.com" looks cheap and confusing. Just don't.
+
+❌ OVERPAYING FOR DOMAINS
+Normal .com registration: $10-15/year on Namecheap
+If it's $100+: It's a "premium" domain owned by a squatter
+Rule: If you can't get it for under $20, pick a DIFFERENT name
+
+❌ GENERIC NAMES
+"Analytics Platform" or "Marketing Tool" - you can't trademark these and they're forgettable.
+
+REGISTER EVERYTHING TODAY:
+
+1. DOMAIN: Use Namecheap (namecheap.com) - best prices, best interface
+2. TWITTER/X: twitter.com/[yourname] - check and register
+3. INSTAGRAM: instagram.com/[yourname] - check and register
+4. LINKEDIN: Create a company page
+5. TIKTOK: If relevant to your audience
+6. GITHUB: If you'll have any public code
+
+Grab them ALL. Even if you never use them. Someone WILL squat on them if you don't.
+
+The name you pick today will be on every invoice, every email, every conversation. Make it count.`,
+      outcome: "Your product name chosen, .com domain registered, and all social handles claimed",
+      completionMessage: "You have a NAME. A real brand that's YOURS. Domain secured, socials claimed. Nobody can take these from you now. Tomorrow: setting up your AI-powered development toolkit.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -333,1688 +361,1836 @@ KEY NOTE: You HAVE to accept this is an EVER-CHANGING space. Things change CONST
     // ============================================
     {
       day: 8,
-      title: "Your First Build Session with AI",
-      description: "Put your PRD into Replit and watch AI build your first working screen - then customize it with specific requests.",
+      title: "Watch The MAGIC Happen",
+      description: "Drop your PRD into Replit and watch AI build your ENTIRE app structure in minutes. This is the moment it gets REAL.",
       phase: "Week 2: Building Your MVP",
       videoUrl: null,
       aiTaskType: "generator",
-      aiTaskTitle: "AI Build Session",
-      aiTaskDescription: "Drop your PRD into Replit Agent and get your first working screen built. Then customize it with targeted requests.",
+      aiTaskTitle: "First Build Session",
+      aiTaskDescription: "Paste your PRD into Replit Agent and watch it build. Then tell us what you see!",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What screen should AI build first?",
-      microDecisionOptions: JSON.stringify(["Dashboard - where users land after login", "Core action screen - the main thing users do", "Onboarding - first-time user experience", "Settings - user preferences and account"]),
-      reflectionQuestion: "Look at what AI just built. What ONE thing would make it 20% better?",
-      tip: "Don't try to build everything at once. Get ONE screen working, then move to the next. Momentum beats perfection.",
-      lesson: `YOUR FIRST REAL BUILD SESSION
+      microDecisionQuestion: "What excites you MOST about today?",
+      microDecisionOptions: JSON.stringify(["Seeing my idea become REAL", "Finding out if this actually works", "Getting past the 'planning' phase", "Proving I can actually do this"]),
+      reflectionQuestion: "You just built something REAL. How does that feel?",
+      tip: "Don't try to UNDERSTAND everything Replit builds. You don't need to! You just need to DIRECT it. You're the BOSS, not the employee.",
+      lesson: `Here's the moment you've been waiting for. Today your idea becomes REAL.
 
-Today you're going to watch AI build something real for you.
+The BRUTAL truth? Most people NEVER get here. They plan forever. They "research" forever. They THINK about building but never BUILD.
 
-STEP 1: PREPARE YOUR PRD
-Open the PRD you created on Day 6. Make sure it includes:
-- What the app does (one sentence)
-- Who it's for
-- The 3-5 main features
-- The screens you need
+Not you. Today you BUILD.
 
-STEP 2: DROP IT INTO REPLIT AGENT
-Go to Replit → Create new project → Open Agent
-Paste your entire PRD or drag the file in.
-Click "Start Building"
+STEP 1: Open Replit
+Go to replit.com → Click "Create Repl" → Select "Agent"
+This is your AI builder. It's SMARTER than most dev teams and works 24/7.
 
-Watch it work. It will:
-- Set up your project structure
-- Create database tables
-- Build basic screens
-- Add routing and navigation
+STEP 2: Feed It Your PRD
+Remember that PRD from Day 6? PASTE THE WHOLE THING into the Agent chat.
+Don't overthink it. Just paste it and hit enter.
 
-STEP 3: YOUR FIRST CUSTOMIZATION
-Once it's done, look at what was built. Now make it YOURS.
+STEP 3: Watch The Magic
+Seriously - just WATCH. The Agent will:
+- Create your entire project structure
+- Set up your database
+- Build your screens
+- Add navigation
+- Style everything
 
-Copy this prompt template:
+This would take a human dev team WEEKS. The Agent does it in MINUTES.
 
----
-"I want to customize [SCREEN NAME].
+STEP 4: Click Around
+Once it's done, CLICK THROUGH YOUR APP. Does it load? Can you see screens? Does it FEEL like what you imagined?
 
-Currently it shows: [WHAT YOU SEE]
-I want it to show: [WHAT YOU WANT]
+It won't be perfect. That's fine. You're going to make it YOURS over the next few days.
 
-Specifically:
-1. [CHANGE 1 - e.g., "Change the header to say 'Welcome back, {user name}'"]
-2. [CHANGE 2 - e.g., "Add a card showing their current streak"]
-3. [CHANGE 3 - e.g., "Make the main CTA button blue and larger"]
-
-Keep everything else the same."
----
-
-STEP 4: TEST IT
-After each change, click through your app. Does it work?
-
-Pro tip: You can STACK multiple requests in one message. The agent will do them all.`,
-      outcome: "First screen built by AI and customized to your vision",
-      completionMessage: "You just built your first real screen. Not a tutorial - YOUR app, YOUR vision. The agent did the heavy lifting, you directed. This is how you build fast.",
+KEY INSIGHT: You don't need to understand HOW it built this. You just need to know WHAT you want to change. That's tomorrow.`,
+      outcome: "Your PRD turned into a REAL working app structure you can click through",
+      completionMessage: "You just did something 99% of 'wantrepreneurs' never do - you actually BUILT something. It's rough, it's early, but it's REAL. Tomorrow we make it yours.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 9,
-      title: "Prompting Like a Pro: Get Exactly What You Want",
-      description: "AI generates prompts FOR you based on what you're trying to build - then you use them to get perfect results.",
+      title: "Make It YOURS (Customization Day)",
+      description: "Your app looks generic right now. Today we make it UNMISTAKABLY yours - branding, colors, copy, personality.",
       phase: "Week 2: Building Your MVP",
       videoUrl: null,
       aiTaskType: "generator",
-      aiTaskTitle: "AI Prompt Generator",
-      aiTaskDescription: "Tell us what feature you want. AI will generate the PERFECT prompt to get exactly the result you need.",
+      aiTaskTitle: "Brand Your App",
+      aiTaskDescription: "Tell us your brand vibe and we'll generate the perfect customization prompts for Replit.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What are you trying to build today?",
-      microDecisionOptions: JSON.stringify(["A form that collects user input", "A display that shows data beautifully", "An action that processes something", "Navigation between screens"]),
-      reflectionQuestion: "What's the most important detail you want the AI to get right?",
-      tip: "The difference between a vague result and a perfect result is specificity. Generic prompts get generic results. Specific prompts get exactly what you want.",
-      lesson: `THE PROMPT FORMULA THAT WORKS EVERY TIME
+      microDecisionQuestion: "What FEELING should your app give users?",
+      microDecisionOptions: JSON.stringify(["Professional & Trustworthy", "Fun & Friendly", "Bold & Powerful", "Simple & Clean"]),
+      reflectionQuestion: "When users land on your app, what's the FIRST impression you want them to have?",
+      tip: "Your app doesn't need to look AMAZING. It needs to look CREDIBLE. Users decide in 3 seconds if they trust your app. Make those 3 seconds count.",
+      lesson: `Right now your app looks like every other AI-generated app. GENERIC. FORGETTABLE.
 
-Bad prompts → vague results → frustration
-Good prompts → exactly what you want → shipped
+Today we fix that.
 
-TODAY'S AI TASK:
-Let AI write the perfect prompt FOR you.
+Here's the truth: Users judge your app in 3 SECONDS. Before they read anything, before they try anything, they FEEL something. That feeling determines if they stay or bounce.
 
-Copy this into Claude or ChatGPT:
+THE 4 THINGS THAT MAKE YOUR APP "YOURS":
 
----
-"I'm building [YOUR APP] and I need help writing the perfect prompt to give to my Replit AI agent.
+1. COLORS
+Pick 2-3 colors MAX. One primary (buttons, links), one background, one accent.
+Don't overthink this. Go to coolors.co, find a palette you like, DONE.
 
-I want to build: [DESCRIBE THE FEATURE]
+2. LOGO/NAME PLACEMENT
+Your logo or app name should be visible on EVERY screen. Top left corner. Simple. Consistent.
 
-The feature should:
-- [REQUIREMENT 1]
-- [REQUIREMENT 2]
-- [REQUIREMENT 3]
+3. COPY (THE WORDS)
+Generic: "Welcome to Dashboard"
+YOURS: "Let's make some money, [Name]!"
 
-Generate a detailed, specific prompt I can copy-paste into Replit Agent that will get me exactly what I want on the first try.
+The words should sound like YOU wrote them, not a robot.
 
-Include:
-1. Exact UI elements needed
-2. Specific behaviors (what happens when users click/type)
-3. Data that needs to be saved/loaded
-4. Error states and edge cases
-5. Styling preferences
+4. PERSONALITY
+Is your app serious? Playful? Motivational? Pick ONE personality and be CONSISTENT.
 
-Format it so I can copy-paste directly."
----
+THE CUSTOMIZATION PROMPT:
+Copy this into Replit Agent:
 
-WHAT YOU'LL GET:
-The AI will generate a perfect, detailed prompt you can paste into Replit.
+"I want to customize the look and feel of my app:
 
-EXAMPLE:
-Instead of: "Add a contact form"
+COLORS:
+- Primary color: [YOUR COLOR - e.g., #3B82F6]
+- Background: [YOUR COLOR - e.g., #F8FAFC]
+- Accent: [YOUR COLOR - e.g., #10B981]
 
-AI generates:
-"Add a contact form to the /contact page with:
-- Name field (required, text)
-- Email field (required, email validation)
-- Message field (required, textarea, 500 char max)
-- Submit button (blue, full width, says 'Send Message')
-- On submit: validate all fields, save to database, send email notification to admin@myapp.com
-- Show success message: 'Thanks! We'll reply within 24 hours.'
-- Show inline errors if validation fails
-- Disable button while submitting, show loading spinner"
+BRANDING:
+- Add my app name '[YOUR APP NAME]' to the top left of every page
+- Use the font [Inter/Poppins/whatever you like]
 
-See the difference? One gets a generic form. One gets EXACTLY what you need.
+COPY CHANGES:
+- Change 'Dashboard' to '[YOUR CUSTOM NAME]'
+- Change 'Welcome' to '[YOUR CUSTOM GREETING]'
+- Make all button text more action-oriented
 
-Use this technique for EVERY feature you build.`,
-      outcome: "Perfect prompts generated that get you exactly what you want",
-      completionMessage: "You now have a superpower: you can get AI to write perfect prompts for you. No more vague results. No more back-and-forth. Tomorrow: building your core feature.",
+Apply these changes across the ENTIRE app consistently."
+
+THAT'S IT. Watch your app transform from generic to YOURS.`,
+      outcome: "Your app now has YOUR brand - colors, copy, and personality that's unmistakably yours",
+      completionMessage: "Generic is DEAD. Your app now looks and feels like YOURS. When users land on it, they'll know immediately this isn't some template - it's a REAL product. Tomorrow: we build the thing people PAY for.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 10,
-      title: "Build Your Core Feature (AI Does 90%)",
-      description: "AI generates your complete core feature spec - then builds it for you. You just test and tweak.",
+      title: "Build The Money Feature",
+      description: "Today you build THE thing people will PAY for. The ONE feature that makes your app worth money.",
       phase: "Week 2: Building Your MVP",
       videoUrl: null,
       aiTaskType: "generator",
-      aiTaskTitle: "AI Feature Builder",
-      aiTaskDescription: "Describe what your core feature does. AI generates the complete spec and implementation prompt.",
+      aiTaskTitle: "Core Feature Builder",
+      aiTaskDescription: "Define your money-making feature and we'll generate the perfect build prompt.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's the CORE action in your app?",
-      microDecisionOptions: JSON.stringify(["Users CREATE something (posts, projects, content)", "Users ANALYZE something (data, text, images)", "Users TRACK something (progress, habits, metrics)", "Users CONNECT something (people, tools, services)"]),
-      reflectionQuestion: "If your app only did ONE thing perfectly, what would that be?",
-      tip: "Your core feature is the reason people use your app. Everything else is supporting cast. Get this ONE thing working beautifully before anything else.",
-      lesson: `BUILDING YOUR CORE FEATURE TODAY
+      microDecisionQuestion: "What does your app help people DO?",
+      microDecisionOptions: JSON.stringify(["SAVE time on something tedious", "MAKE more money", "AVOID costly mistakes", "GET something they couldn't before"]),
+      reflectionQuestion: "If your app did ONLY this one thing, would people still pay? If yes, you've found your core.",
+      tip: "Features don't make money. SOLUTIONS make money. People don't pay for features - they pay for outcomes. Focus on the OUTCOME.",
+      lesson: `Listen up. This is THE most important day of the challenge.
 
-Your core feature is the heart of your app. Let's build it RIGHT.
+Everything else - the branding, the extra features, the polish - is DECORATION. THIS is what people PAY for.
 
-STEP 1: DEFINE IT CLEARLY
-Complete this sentence: "Users come to my app to ____________"
+THE MONEY FEATURE FORMULA:
+Your core feature = The MAIN thing users come to DO
+Without this, your app is worthless. WITH this, everything else is a bonus.
 
-That's your core feature.
+ASK YOURSELF:
+"People will pay me $X/month to _____________"
 
-STEP 2: LET AI DESIGN IT
-Copy this prompt into Claude or ChatGPT:
+Fill in that blank. THAT'S your core feature.
 
----
-"I'm building [APP NAME] - [ONE SENTENCE DESCRIPTION].
+EXAMPLES:
+- "...to automatically generate social media posts from their blog"
+- "...to track their Amazon FBA inventory across warehouses"
+- "...to find winning products before their competitors"
+- "...to get AI to write their email sequences"
 
-My core feature is: [THE THING USERS COME TO DO]
+NOT EXAMPLES (too vague):
+- "...to have a nice dashboard" (that's not a feature, that's decoration)
+- "...to manage things" (WHAT things?)
+- "...to be more productive" (HOW specifically?)
 
-Design this feature in detail:
+BUILD IT NOW:
+Copy this into Replit Agent:
 
-1. USER FLOW
-   - What does the user see first?
-   - What do they input/click?
-   - What happens next?
-   - What's the final result?
+"Build my core feature: [YOUR ONE-SENTENCE DESCRIPTION]
 
-2. UI COMPONENTS
-   - What screens are needed?
-   - What's on each screen?
-   - What buttons, forms, displays?
+Here's what it needs to do:
+1. User inputs: [WHAT THEY PROVIDE]
+2. Processing: [WHAT HAPPENS TO IT]
+3. Output: [WHAT THEY GET BACK]
 
-3. DATA FLOW
-   - What data is collected?
-   - Where is it stored?
-   - How is it processed?
-   - What's displayed back?
+Make it work end-to-end. I want to be able to:
+- [STEP 1 - e.g., 'Enter my blog URL']
+- [STEP 2 - e.g., 'Click Generate']
+- [STEP 3 - e.g., 'See 5 social posts ready to copy']
 
-4. EDGE CASES
-   - What if the input is invalid?
-   - What if the process fails?
-   - What if there's no data yet?
+Focus on making this ONE flow work perfectly. Don't build anything else."
 
-Generate a complete, detailed prompt I can paste into Replit Agent to build this entire feature."
----
-
-STEP 3: BUILD IT
-Take the generated prompt → Paste into Replit Agent → Watch it build
-
-STEP 4: TEST IT
-Go through the entire flow as a user:
-- Does input work?
-- Does processing happen?
-- Do I see the result?
-- Do errors show clearly?
-
-STEP 5: REFINE
-For anything not quite right:
-"The [THING] isn't working correctly. It currently [DOES X]. It should [DO Y]. Fix this specific issue."`,
-      outcome: "Core feature fully built, tested, and working",
-      completionMessage: "Your core feature WORKS. The thing that makes your app valuable is now real. Most founders never get this far. Tomorrow: debugging like a pro.",
+TEST IT IMMEDIATELY:
+Did it work? Did you get the output you expected?
+If yes: CELEBRATE. You just built the thing people will pay for.
+If no: Tell the Agent what's wrong and have it fix it. Don't move on until it WORKS.`,
+      outcome: "Your CORE money-making feature is built and working end-to-end",
+      completionMessage: "You just built the thing that makes your app worth money. Not features. Not decoration. The ACTUAL thing people will pay for. That's HUGE. Tomorrow: what to do when things break.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 11,
-      title: "Debug Like a Pro (AI Fixes Your Bugs)",
-      description: "Screenshot your bugs and use AI to generate instant fixes. No more hours of frustration.",
+      title: "When Things Break (5-Min Fixes)",
+      description: "Something WILL break. Here's exactly how to fix it in 5 minutes or less - every single time.",
       phase: "Week 2: Building Your MVP",
       videoUrl: null,
       aiTaskType: "generator",
-      aiTaskTitle: "AI Bug Fixer",
-      aiTaskDescription: "Describe your bug or drop a screenshot. AI generates the exact fix you need.",
+      aiTaskTitle: "Bug Squasher",
+      aiTaskDescription: "Tell us what's broken and we'll generate the exact fix prompt you need.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What type of bug are you dealing with?",
-      microDecisionOptions: JSON.stringify(["It looks wrong (visual/styling)", "It doesn't work (functionality broken)", "It crashes (error messages)", "It's just weird (unexpected behavior)"]),
-      reflectionQuestion: "What did this bug teach you about how your app works?",
-      tip: "The fastest way to fix bugs: screenshot → describe what's wrong → describe what should happen → paste into AI → get fix → paste fix into Replit. 2 minutes max.",
-      lesson: `THE 2-MINUTE BUG FIX FORMULA
+      microDecisionQuestion: "What's going wrong?",
+      microDecisionOptions: JSON.stringify(["Something LOOKS wrong (colors, layout, text)", "Something DOESN'T WORK (buttons, forms, actions)", "I see an ERROR message", "It's just... WEIRD"]),
+      reflectionQuestion: "Every bug you fix makes you better at this. What did this one teach you?",
+      tip: "NEVER spend more than 5 minutes on a bug yourself. If it's not fixed in 5 minutes, ASK THE AI. It's seen this bug a thousand times before.",
+      lesson: `Things WILL break. That's not failure - that's BUILDING.
 
-Bugs are inevitable. Spending hours on them is NOT.
+The difference between people who ship and people who quit? People who ship know how to fix things FAST.
 
-THE SCREENSHOT METHOD:
-1. Screenshot the problem
-2. Drop it into ChatGPT or Claude
-3. Say what's wrong and what should happen
-4. Get the fix
-5. Apply it
+Here's the BRUTAL truth: Professional developers spend 50% of their time debugging. But YOU have something they didn't have 2 years ago - AI that's seen EVERY bug before.
 
-TODAY'S AI TASK:
-When you hit a bug, use this prompt template:
+THE 5-MINUTE FIX FORMULA:
 
----
-"I'm getting a bug in my Replit project.
+STEP 1: IDENTIFY (30 seconds)
+What TYPE of problem is it?
+- VISUAL: Something looks wrong
+- FUNCTIONAL: Something doesn't work
+- ERROR: Red text or scary messages
+- DATA: Things don't save or load
 
-[PASTE SCREENSHOT OR ERROR MESSAGE]
+STEP 2: SCREENSHOT + DESCRIBE (1 minute)
+Take a screenshot of the problem.
+Write ONE sentence: "I expected X but got Y"
 
-WHAT'S HAPPENING:
-[Describe the current broken behavior]
+STEP 3: ASK AI (2 minutes)
+Paste this into Replit Agent:
 
-WHAT SHOULD HAPPEN:
-[Describe the expected correct behavior]
+"I have a bug:
+[SCREENSHOT or PASTE THE ERROR]
 
-HOW TO REPRODUCE:
-1. [Step 1]
-2. [Step 2]
-3. [Then this happens]
+Expected: [WHAT SHOULD HAPPEN]
+Actual: [WHAT'S HAPPENING]
 
-Please:
-1. Explain what's likely causing this
-2. Give me the exact code fix I can paste into Replit
-3. Tell me what file to put it in
-4. Suggest how to prevent this in the future"
----
+Find and fix this issue."
 
-ADVANCED DEBUGGING:
+STEP 4: TEST (1 minute)
+Did it work?
+YES → Move on, you're done
+NO → Tell the Agent: "That didn't fix it. It's still doing [X]. Try a different approach."
 
-For errors you can't figure out:
-"Here's my error: [PASTE ERROR]
-Here's the code that's breaking: [PASTE CODE]
-Explain it like I'm not a developer and give me the fix."
+STEP 5: ESCALATE (only if needed)
+If Replit can't fix it after 2-3 tries:
+- Copy the error and your description
+- Paste into Claude or ChatGPT
+- Ask for an explanation + fix
+- Paste the fix back into Replit
 
-For UI issues:
-"[SCREENSHOT] This button should be blue and aligned right, but it's gray and centered. Give me the exact CSS/Tailwind classes to fix this."
+THE GOLDEN RULE:
+Never spend more than 5 minutes stuck. The AI has seen your bug before. ALWAYS ask for help.
 
-For data issues:
-"Data saves but doesn't show up when I refresh. Here's my save code: [CODE]. Here's my load code: [CODE]. What's wrong?"
-
-Remember: The AI has seen thousands of these bugs before. It knows the fix. Just show it what's wrong.`,
-      outcome: "Bugs fixed quickly using AI-powered debugging workflow",
-      completionMessage: "You can now fix bugs in minutes, not hours. This single skill will save you more time than anything else in this challenge. Tomorrow: using AI as your expert team.",
+Bugs are SPEED BUMPS, not roadblocks. Now you know how to fly over them.`,
+      outcome: "You can fix ANY bug in 5 minutes or less using the AI fix formula",
+      completionMessage: "You just learned the #1 skill that separates shippers from quitters - fixing things FAST. Bugs don't scare you anymore. Tomorrow: making your app actually LOOK good.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 12,
-      title: "Your AI Expert Team (Get Any Answer)",
-      description: "AI becomes your expert coder, designer, marketer, and strategist - all at once. Learn to get expert answers instantly.",
+      title: "Make It LOOK Professional",
+      description: "Your app works. Now let's make it LOOK like something people would pay for. Zero design skills required.",
       phase: "Week 2: Building Your MVP",
       videoUrl: null,
       aiTaskType: "generator",
-      aiTaskTitle: "AI Expert Consultation",
-      aiTaskDescription: "Ask any question about building your SaaS. AI responds as the expert you need.",
+      aiTaskTitle: "Design Upgrade",
+      aiTaskDescription: "Tell us what screens need work and we'll generate the design upgrade prompts.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What kind of expert do you need right now?",
-      microDecisionOptions: JSON.stringify(["Technical architect - 'How should I structure this?'", "UX designer - 'How should this feel?'", "Business strategist - 'Is this the right approach?'", "Debugger - 'Why isn't this working?'"]),
-      reflectionQuestion: "What's the one question you've been afraid to ask because you thought you 'should know' the answer?",
-      tip: "There are no stupid questions when talking to AI. Ask everything. The AI has no judgment and infinite patience. Use it.",
-      lesson: `YOUR UNLIMITED EXPERT TEAM
+      microDecisionQuestion: "What's the BIGGEST visual problem with your app right now?",
+      microDecisionOptions: JSON.stringify(["It looks CLUTTERED (too much stuff)", "It looks BORING (too plain)", "It looks AMATEUR (inconsistent styling)", "It looks CONFUSING (hard to navigate)"]),
+      reflectionQuestion: "If you showed your app to a potential customer RIGHT NOW, what would you be embarrassed about?",
+      tip: "Good design isn't about being PRETTY. It's about being CLEAR. If users know what to do without thinking, that's good design.",
+      lesson: `Here's the truth about design: It's not about talent. It's about STEALING.
 
-You now have 24/7 access to:
-- Senior developers
-- UX designers
-- Business strategists
-- Marketing experts
-- Security consultants
+Every good-looking app you've ever seen? They STOLE their design from somewhere else. Spacing, colors, layouts - it's all been done before.
 
-All for the cost of a coffee.
+Today, YOU steal from the best.
 
-TODAY'S AI TASK:
-Pick the expert you need most right now and use this template:
+THE 5 THINGS THAT MAKE APPS LOOK PRO:
 
----
-FOR TECHNICAL DECISIONS:
-"Act as a senior developer who has built 50+ SaaS applications.
+1. WHITESPACE
+Most amateur apps are CRAMPED. Everything jammed together.
+Fix: Add MORE space between elements. When you think there's enough, add MORE.
 
-I'm building [YOUR APP]. I need to [WHAT YOU'RE TRYING TO DO].
+2. CONSISTENCY
+Same colors, same fonts, same button styles EVERYWHERE.
+Fix: Pick ONE style and stick to it across every screen.
 
-Options I'm considering:
-1. [OPTION A]
-2. [OPTION B]
+3. HIERARCHY
+The most important thing should be the BIGGEST and most VISIBLE.
+Fix: Make your main action button 2x bigger than everything else.
 
-Which approach is better for my situation? Give me:
-- Your recommendation and why
-- Potential pitfalls of each approach
-- The exact implementation steps
-- Code examples if helpful"
+4. ALIGNMENT
+Everything should line up. Left edges. Right edges. Centers.
+Fix: Use a grid. Everything snaps to the same invisible lines.
 
-FOR UX DECISIONS:
-"Act as a UX designer who specializes in SaaS products.
+5. CONTRAST
+Important things should POP. Less important things should fade.
+Fix: Primary actions = bold colors. Secondary actions = subtle colors.
 
-I'm building [YOUR APP] for [YOUR USERS].
+THE DESIGN UPGRADE PROMPT:
+Paste this into Replit Agent:
 
-Currently, [DESCRIBE CURRENT FLOW].
+"I want to improve the design of my app. Apply these changes:
 
-Is this the right approach? If not, how should I improve it?
-Be specific - tell me exactly what to change."
+WHITESPACE:
+- Add more padding inside all cards and containers
+- Add more spacing between sections
+- Give elements room to breathe
 
-FOR BUSINESS DECISIONS:
-"Act as a SaaS founder who has built and sold multiple products.
+CONSISTENCY:
+- Use the same border radius on all cards and buttons
+- Use the same shadow style everywhere
+- Make all headings the same size per level (h1, h2, h3)
 
-I'm building [YOUR APP]. I'm trying to decide [YOUR DILEMMA].
+HIERARCHY:
+- Make the primary action button on each page bigger and bolder
+- Make secondary actions smaller and less prominent
+- Use larger text for important information
 
-What would you do in my situation? Give me:
-- Your recommendation
-- Why this approach
-- Common mistakes to avoid
-- What to do if it doesn't work"
+ALIGNMENT:
+- Align all form labels consistently
+- Make sure cards in grids are the same height
+- Center-align or left-align consistently (pick one)
 
-FOR SECOND OPINIONS:
-"Here's what I built/wrote/decided: [PASTE IT]
+Apply these changes across the ENTIRE app."
 
-As an expert in [AREA], what would you add or change to make this better?
-Be critical - I want to improve, not feel good."
----
-
-THE BOUNCE TECHNIQUE:
-1. Ask ChatGPT your question
-2. Paste the response into Claude: "Is there anything you'd add or disagree with?"
-3. You now have TWO expert opinions to synthesize
-
-Use this for every important decision.`,
-      outcome: "Expert advice on demand for any challenge you face",
-      completionMessage: "You now have the ability to get world-class advice on ANY topic, instantly. Most founders pay thousands for consultants. You have something better - and it's available 24/7.",
+DO THIS NOW. Then look at your app. It will look 10x more professional.`,
+      outcome: "Your app now LOOKS like something people would pay money for",
+      completionMessage: "Your app doesn't just WORK now - it LOOKS professional. First impressions matter. You just made sure yours is a good one. Tomorrow: adding your second killer feature.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 13,
-      title: "Build Feature #2 (Full AI Generation)",
-      description: "AI designs and builds your second feature from scratch - complete user flow, UI, data, and edge cases.",
+      title: "Add Your Second KILLER Feature",
+      description: "One feature is a tool. Two features is a PRODUCT. Today you level up.",
       phase: "Week 2: Building Your MVP",
       videoUrl: null,
       aiTaskType: "generator",
-      aiTaskTitle: "AI Feature Generator",
-      aiTaskDescription: "Tell AI your second feature. It designs and generates everything you need to build it.",
+      aiTaskTitle: "Feature #2 Builder",
+      aiTaskDescription: "Pick your second feature and we'll generate the complete build prompt.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's your second most important feature?",
-      microDecisionOptions: JSON.stringify(["User settings and preferences", "Data history and past results", "Sharing or collaboration", "Analytics and insights"]),
-      reflectionQuestion: "How does this feature make your core feature more valuable?",
-      tip: "Feature #2 should SUPPORT feature #1, not compete with it. It should make the core experience better, not distract from it.",
-      lesson: `BUILDING FEATURE #2 (THE AI WAY)
+      microDecisionQuestion: "What would make your core feature MORE valuable?",
+      microDecisionOptions: JSON.stringify(["HISTORY - See past results/activity", "SETTINGS - Customize how it works", "EXPORT - Get data out (PDF, CSV, share)", "INSIGHTS - Analytics and trends"]),
+      reflectionQuestion: "If a user LOVED feature #1, what would make them say 'WOW this app is amazing'?",
+      tip: "Feature #2 should make Feature #1 BETTER, not distract from it. Think: What would a power user want after they've used the core feature 10 times?",
+      lesson: `One feature = a tool.
+Two features = a PRODUCT.
 
-Your core feature works. Now let's add the second feature that makes it even better.
+Today you go from tool to product.
 
-STEP 1: CHOOSE WISELY
-Your second feature should:
-- Support your core feature (not distract from it)
-- Be something users ask for
-- Be achievable in one build session
+THE FEATURE #2 RULE:
+Your second feature should make your FIRST feature more valuable. It's not a separate thing - it's an ENHANCEMENT.
 
-Good examples:
-- If core = create content → #2 = save/organize content
-- If core = track progress → #2 = see history/analytics
-- If core = analyze data → #2 = export/share results
+EXAMPLES THAT WORK:
+- Core = generate content → #2 = save/organize past generations
+- Core = analyze data → #2 = export results as PDF/share link
+- Core = track something → #2 = see trends and insights over time
+- Core = create something → #2 = templates to start faster
 
-STEP 2: LET AI DESIGN IT
-Copy this prompt into Claude or ChatGPT:
+EXAMPLES THAT DON'T WORK:
+- Core = generate content → #2 = calendar feature (unrelated)
+- Core = track fitness → #2 = recipe database (different product)
 
----
-"I'm building [APP NAME]. My core feature is [CORE FEATURE].
+PICK YOUR FEATURE #2:
+Based on your core feature, which of these adds the MOST value?
+1. HISTORY - Users can see everything they've done before
+2. SETTINGS - Users can customize how things work
+3. EXPORT - Users can get their data out (share, download)
+4. INSIGHTS - Users can see patterns and analytics
 
-For my second feature, I want to add: [FEATURE #2 DESCRIPTION]
+BUILD IT NOW:
+Paste this into Replit Agent:
 
-Design this feature completely:
+"Add Feature #2 to my app: [YOUR FEATURE DESCRIPTION]
 
-1. HOW IT CONNECTS TO CORE
-   - Where do users access this from?
-   - How does data flow from core feature to this?
+This feature should:
+1. Be accessible from [WHERE - e.g., 'a new tab in the sidebar' or 'a button on the results page']
+2. Show [WHAT DATA - e.g., 'all past generations with dates']
+3. Let users [ACTIONS - e.g., 'click to view details, delete old ones, or re-run']
 
-2. COMPLETE USER FLOW
-   - Step by step, what happens?
-   - What does each screen show?
+Make sure:
+- It connects to the existing data from my core feature
+- The navigation makes sense (user can easily get there and back)
+- It matches the existing design style
 
-3. UI SPECIFICATION
-   - What components are needed?
-   - Layout and arrangement
-   - Key interactions
+Build this complete feature."
 
-4. DATA REQUIREMENTS
-   - What data is needed?
-   - Where does it come from?
-   - What's stored, what's calculated?
+TEST IMMEDIATELY:
+1. Does your core feature still work? (DON'T BREAK IT!)
+2. Does the new feature work?
+3. Do they connect properly?
+4. Can you navigate between them easily?
 
-5. EDGE CASES
-   - First-time user (no data yet)
-   - Power user (lots of data)
-   - Error states
-
-Generate a complete prompt I can paste into Replit Agent to build this feature. Make sure it integrates properly with the existing app."
----
-
-STEP 3: BUILD & TEST
-1. Paste the generated prompt into Replit
-2. Let it build
-3. Test the entire user flow (including feature #1!)
-4. Fix any integration issues
-
-INTEGRATION TESTING CHECKLIST:
-□ Feature #1 still works
-□ Feature #2 works standalone
-□ Data flows between them correctly
-□ Navigation makes sense
-□ No confusing dead ends`,
-      outcome: "Second feature built and integrated with existing app",
-      completionMessage: "Two features working together. Your app is becoming a real product. The AI did the building - you're directing the vision. That's exactly how it should work.",
+If anything broke, use your Day 11 bug-fixing skills. Don't panic.`,
+      outcome: "Your app now has TWO features that work together - you have a real PRODUCT",
+      completionMessage: "You now have a PRODUCT, not just a tool. Two features working together. This is what separates side projects from real SaaS businesses. Tomorrow: the safety net that protects everything you've built.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 14,
-      title: "Git, Checkpoints & Never Losing Work",
-      description: "AI sets up your safety net - proper version control so you can experiment freely without fear of breaking everything.",
+      title: "Protect Your Work FOREVER",
+      description: "You've built something REAL. Now let's make sure you NEVER lose it. Set up your safety net in 5 minutes.",
       phase: "Week 2: Building Your MVP",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "AI Version Control Setup",
-      aiTaskDescription: "AI generates your complete version control workflow - checkpoints, commits, and recovery procedures.",
+      aiTaskTitle: "Safety Net Setup",
+      aiTaskDescription: "Set up version control so you can experiment fearlessly.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's your biggest fear about making changes?",
-      microDecisionOptions: JSON.stringify(["Breaking something that works", "Losing hours of work", "Not being able to undo", "Not knowing what changed"]),
-      reflectionQuestion: "Think about a time you wished you could 'undo' a change. What would having that ability have saved you?",
-      tip: "The best developers aren't afraid to experiment because they KNOW they can always go back. That safety comes from version control. Set it up once, use it forever.",
-      lesson: `YOUR SAFETY NET: NEVER LOSE WORK AGAIN
+      microDecisionQuestion: "What scares you most about making changes?",
+      microDecisionOptions: JSON.stringify(["Breaking something that WORKS", "Losing HOURS of progress", "Not being able to UNDO", "Not knowing WHAT changed"]),
+      reflectionQuestion: "After this, you can experiment FEARLESSLY. How does that change what you're willing to try?",
+      tip: "The best builders aren't afraid to experiment because they KNOW they can always go back. That's not bravery - it's PREPARATION.",
+      lesson: `You've built something REAL over the past 7 days. Let's make sure you NEVER lose it.
 
-The WORST feeling: Breaking something and not being able to get it back.
+Here's what separates amateurs from pros:
 
-Today we eliminate that fear forever.
+AMATEURS: "I'm afraid to change anything because I might break it"
+PROS: "I'll try anything because I can always undo it"
 
-TODAY'S AI TASK:
-Set up version control with this prompt:
+Today you become a pro.
 
----
-"I'm building a SaaS project in Replit. Set up a complete version control workflow for me:
+THE SAFETY NET (5 MINUTES):
 
-1. REPLIT CHECKPOINTS
-   - How to create a checkpoint before risky changes
-   - Naming convention for checkpoints
-   - When to create checkpoints
-   - How to rollback if needed
+STEP 1: Connect to GitHub (if not done already)
+In Replit: Tools → Git → Connect to GitHub
+This backs up EVERYTHING to the cloud. Even if Replit explodes, your code is safe.
 
-2. GITHUB INTEGRATION (if not already set up)
-   - Connect this project to GitHub
-   - Set up proper .gitignore
-   - Initial commit with good message
+STEP 2: Create Your First "Save Point"
+In Replit, type in the Git panel:
+- Add a message: "Working MVP with 2 features"
+- Click "Commit All"
+- Click "Push"
 
-3. COMMIT WORKFLOW
-   - When to commit
-   - Good commit message format
-   - What to include in each commit
+That's it. Your work is now PROTECTED FOREVER.
 
-4. BACKUP STRATEGY
-   - How to ensure I never lose work
-   - What to do at end of each day
-   - Emergency recovery procedures
+THE CHECKPOINT HABIT:
+From now on, BEFORE you make any big change:
 
-5. DOCUMENTATION
-   - Generate a README.md with:
-     - What this project does
-     - How to set it up
-     - How to run it
-     - Environment variables needed
-
-Walk me through setting all this up right now."
----
-
-THE CHECKPOINT RITUAL:
-
-BEFORE any risky change:
-1. Create a Replit checkpoint: "Working [feature name]"
-2. Commit to GitHub: "feat: working [feature name]"
-3. Now experiment freely!
-
-IF things break badly:
-1. Try one fix (2-3 minutes max)
-2. Still broken? Rollback to checkpoint
-3. You're back to working code
-4. Try a different approach
+1. Ask yourself: "Would I be sad if I lost what I have now?"
+2. If YES → Create a checkpoint (commit + push)
+3. Then make your change FEARLESSLY
 
 WHEN TO CHECKPOINT:
-- Something FINALLY works
-- Before adding a major feature
-- Before trying to fix a weird bug
-- End of every build session
-- Anytime you think "I don't want to lose this"
+✓ Something finally WORKS
+✓ BEFORE adding a new feature
+✓ BEFORE trying to fix something weird
+✓ At the END of every build session
+✓ Anytime you think "I don't want to lose this"
 
-This takes 30 seconds and can save you HOURS.`,
-      outcome: "Version control set up with checkpoints, GitHub, and recovery workflow",
-      completionMessage: "Week 2 COMPLETE! You've built two features, learned to debug with AI, and set up safety nets. You're building like a real developer now - fast, with confidence. Next week: APIs and superpowers!",
+THE UNDO BUTTON:
+If you break something badly:
+1. Don't panic
+2. In Replit Git panel, find your last good commit
+3. Click "Revert to this commit"
+4. You're back to working code
+5. Try a different approach
+
+This takes 30 seconds and will save you HOURS of frustration.
+
+🎉 WEEK 2 COMPLETE!
+
+Look at what you've accomplished:
+- Day 8: Built your first REAL app
+- Day 9: Made it YOURS with branding
+- Day 10: Built the MONEY feature
+- Day 11: Learned to fix ANYTHING in 5 minutes
+- Day 12: Made it LOOK professional
+- Day 13: Added a second KILLER feature
+- Day 14: Protected it FOREVER
+
+You now have a working MVP. A REAL product. Most people never get this far.`,
+      outcome: "Your work is protected forever - you can now experiment fearlessly",
+      completionMessage: "WEEK 2 COMPLETE! You have a working MVP with two features, professional design, and it's backed up forever. You're not dreaming about building a business anymore - you're DOING it. Next week: we add the superpowers (APIs, AI features, and more).",
       xpReward: 100,
       estimatedMinutes: 5,
     },
 
     // ============================================
-    // WEEK 3: APIs, INTEGRATIONS & POLISH (Days 15-21)
+    // WEEK 3: SUPERPOWERS (Days 15-21)
     // ============================================
     {
       day: 15,
-      title: "Introduction to APIs",
-      description: "Understanding APIs - how to plug in AI magic and third-party services.",
-      phase: "Week 3: APIs & Integrations",
+      title: "Unlock The SUPERPOWERS (APIs Explained)",
+      description: "APIs let you plug in features that would take YEARS to build yourself. AI, payments, emails - all in minutes.",
+      phase: "Week 3: Superpowers",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "API Fundamentals",
-      aiTaskDescription: "Learn what APIs are and how they'll supercharge your SaaS.",
+      aiTaskTitle: "Superpower Selection",
+      aiTaskDescription: "Pick which superpowers your app needs and we'll show you exactly how to add them.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Which API interests you most?",
-      microDecisionOptions: JSON.stringify(["AI/OpenAI", "Payments/Stripe", "Email", "Storage"]),
-      reflectionQuestion: "What functionality would make your SaaS amazing that you couldn't build yourself?",
-      tip: "Finding the right APIs is what brings absolute MAGIC to your software. You can plug in functionality that would take YEARS to build yourself.",
-      lesson: `WHAT IS AN API?
+      microDecisionQuestion: "Which SUPERPOWER does your app need most?",
+      microDecisionOptions: JSON.stringify(["AI Brain (OpenAI) - make it smart", "Money Collection (Stripe) - get paid", "Communication (Email/SMS) - reach users", "Storage (Files/Images) - save stuff"]),
+      reflectionQuestion: "What's ONE feature that would make your app 10x more valuable - but you have NO idea how to build?",
+      tip: "APIs are like hiring specialists. Need AI? Hire OpenAI. Need payments? Hire Stripe. They do the hard work, you just connect the wires.",
+      lesson: `Time to give your app SUPERPOWERS.
 
-API = How two pieces of software communicate with each other.
+Right now your app can only do what Replit built. That's like having a car with no engine. Today we add the engine.
 
-Think of it like ordering food:
-- You (your app) tell the waiter (API) what you want
-- The kitchen (external service) makes it
-- Waiter brings it back to you
+WHAT THE HELL IS AN API?
 
-WHY APIs ARE MAGIC:
-- Want AI image generation? There's an API for that
-- Want to send emails? There's an API for that
-- Want to process payments? There's an API for that
-- Want speech-to-text? There's an API for that
+Simple version: An API lets your app USE other people's technology.
 
-You can get your SaaS to do ANYTHING because even if Replit can't code it, you can plug an API into it!
+- OpenAI spent BILLIONS building AI. You can use it for $0.002 per request.
+- Stripe spent YEARS building payment systems. You can use it for 2.9% + 30¢.
+- Resend built email infrastructure. You can send 3,000 emails/month FREE.
 
-COMMON APIs YOU'LL USE:
-- OpenAI API - AI text/image generation
-- Stripe - Payment processing
-- Resend/SendGrid - Email delivery
-- Twilio - SMS messaging
-- AWS S3 - File storage
+You don't need to build ANY of this. You just PLUG IT IN.
 
-Each API has documentation. You can literally ask Claude: "How do I integrate [API] into my Replit project?"`,
-      outcome: "Understanding of APIs and which ones your SaaS needs",
-      completionMessage: "You now understand the MAGIC of APIs. Tomorrow: adding your first AI integration.",
+THE SUPERPOWERS AVAILABLE TO YOU:
+
+🧠 AI BRAIN (OpenAI/Claude API)
+- Generate content
+- Analyze data
+- Answer questions
+- Summarize text
+- The possibilities are ENDLESS
+
+💰 MONEY COLLECTION (Stripe)
+- Accept credit cards
+- Manage subscriptions
+- Handle refunds
+- Send invoices
+
+📧 COMMUNICATION (Resend/Twilio)
+- Send emails that hit INBOXES (not spam)
+- Send SMS notifications
+- Password reset emails
+- Welcome sequences
+
+📁 STORAGE (AWS S3/Cloudinary)
+- User file uploads
+- Image storage
+- Document management
+
+HOW TO ADD ANY API:
+1. Sign up for the service
+2. Get your API key
+3. Store it in Replit Secrets (NEVER in code!)
+4. Tell Replit Agent: "Integrate [API NAME] using my key in secrets"
+
+That's it. The Agent knows how to connect them all.
+
+This week, we're adding the superpowers that turn your app from "interesting" to "I NEED this."`,
+      outcome: "You understand APIs and know exactly which superpowers your app needs",
+      completionMessage: "You now see the POSSIBILITIES. APIs are how small teams build products that compete with giants. Tomorrow: we add your first superpower - AI.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 16,
-      title: "Adding Your First API Integration",
-      description: "Integrate OpenAI or Claude API to add AI-powered features to your SaaS.",
-      phase: "Week 3: APIs & Integrations",
+      title: "Give Your App A BRAIN (AI Integration)",
+      description: "Add AI-powered features that make your app SMART. This is the stuff that makes people say 'WOW'.",
+      phase: "Week 3: Superpowers",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "AI API Integration",
-      aiTaskDescription: "Connect OpenAI or Claude API to add intelligent features to your product.",
+      aiTaskTitle: "AI Brain Setup",
+      aiTaskDescription: "Connect OpenAI to your app and build your first AI-powered feature.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Which AI provider?",
-      microDecisionOptions: JSON.stringify(["OpenAI", "Claude/Anthropic", "Both", "Other"]),
-      reflectionQuestion: "What AI-powered feature will delight your users most?",
-      tip: "OpenAI API is very cheap pay-as-you-go. It'll probably be the BRAIN of your project. Get it set up early.",
-      lesson: `ADDING AI TO YOUR SAAS
+      microDecisionQuestion: "What should AI DO in your app?",
+      microDecisionOptions: JSON.stringify(["GENERATE content (text, ideas, suggestions)", "ANALYZE data (insights, summaries, scores)", "ANSWER questions (chatbot, help, support)", "AUTOMATE tasks (processing, sorting, tagging)"]),
+      reflectionQuestion: "What manual task could AI do for your users that would make them say 'THIS IS AMAZING'?",
+      tip: "The OpenAI API costs about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.",
+      lesson: `Today your app gets a BRAIN.
 
-Step 1: Get your API key
-- Go to platform.openai.com or console.anthropic.com
-- Create an account and generate an API key
-- Add billing (pay-as-you-go, very cheap)
+This is what separates "just another tool" from "I can't live without this."
 
-Step 2: Store it securely
-- In Replit, use Secrets to store your API key
-- NEVER put API keys in your code directly
-- Name it something like OPENAI_API_KEY
+THE AI INTEGRATION (10 MINUTES):
 
-Step 3: Tell the agent to integrate it
-"I want to add an AI feature that [DESCRIPTION]. Use the OpenAI API key stored in secrets. When the user [ACTION], call the API and [RESULT]."
+STEP 1: Get Your API Key
+Go to platform.openai.com
+Click "API Keys" → "Create new secret key"
+Copy it somewhere safe (you'll only see it once!)
 
-EXAMPLE PROMPTS:
-"Add a feature where users can paste text and get an AI-generated summary"
-"When users click 'Generate Ideas', call OpenAI to create 5 suggestions based on their input"
-"Add an AI chat assistant that answers questions about [TOPIC]"
+STEP 2: Store It In Replit
+In Replit: Tools → Secrets
+Add new secret: OPENAI_API_KEY = [paste your key]
+NEVER put API keys in your code. EVER. That's how you get hacked.
 
-The agent knows how to integrate these APIs. Just tell it what you want!`,
-      outcome: "AI API integrated with at least one AI-powered feature working",
-      completionMessage: "Your SaaS now has AI superpowers! This is what makes modern software magical. Tomorrow: email integration.",
+STEP 3: Add Your First AI Feature
+Copy this into Replit Agent:
+
+"Add an AI-powered feature to my app:
+
+When users [TRIGGER - e.g., 'click the Generate button']:
+1. Take their input: [WHAT INPUT - e.g., 'the text in the main textarea']
+2. Send it to OpenAI with this instruction: [WHAT TO DO - e.g., 'Summarize this in 3 bullet points']
+3. Display the result: [WHERE - e.g., 'in a new card below the input']
+
+Use the OpenAI API key from secrets (OPENAI_API_KEY).
+Add a loading state while it's processing.
+Handle errors gracefully."
+
+THAT'S IT. Your app now has AI.
+
+EXAMPLE AI FEATURES BY APP TYPE:
+
+Content tool → "Generate 5 headline variations"
+Analytics tool → "Explain this data in plain English"
+Research tool → "Summarize these findings"
+Productivity tool → "Suggest next steps based on progress"
+E-commerce tool → "Write product descriptions from bullet points"
+
+THE MAGIC FORMULA:
+User gives INPUT → AI processes with INSTRUCTION → User gets OUTPUT
+
+Pick ONE feature. Build it. Test it. Watch users' faces when they see it work.
+
+AI is no longer impressive by itself. What's impressive is AI that solves YOUR users' specific problem in a way they didn't know was possible.`,
+      outcome: "Your app has AI - at least one feature that uses OpenAI to do something SMART",
+      completionMessage: "Your app just got a brain. This is the moment it stops being 'another tool' and starts being something SPECIAL. Tomorrow: getting paid.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 17,
-      title: "Email Integration",
-      description: "Set up Resend or SendGrid so your app can send emails that actually reach inboxes.",
-      phase: "Week 3: APIs & Integrations",
+      title: "Get PAID (Stripe Integration)",
+      description: "Time to make MONEY. Set up Stripe so you can actually charge for your SaaS.",
+      phase: "Week 3: Superpowers",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "Email Service Setup",
-      aiTaskDescription: "Configure email sending so your app can send welcome emails, notifications, and more.",
+      aiTaskTitle: "Payment Setup",
+      aiTaskDescription: "Connect Stripe and set up your pricing tiers.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Which email service?",
-      microDecisionOptions: JSON.stringify(["Resend", "SendGrid", "AWS SES", "Postmark"]),
-      reflectionQuestion: "What's the most important email your app needs to send?",
-      tip: "Use Resend or SendGrid to make your software able to send emails that actually end up in people's PRIMARY inboxes.",
-      lesson: `WHY YOU NEED EMAIL
+      microDecisionQuestion: "How will you charge?",
+      microDecisionOptions: JSON.stringify(["Monthly subscription ($X/month)", "Annual subscription (discount for yearly)", "One-time payment + subscription", "Freemium (free tier + paid upgrade)"]),
+      reflectionQuestion: "What price would make you think 'Yes, people will pay that' AND 'Yes, that's worth my time'?",
+      tip: "START CHEAP. You can always raise prices later. Getting your FIRST paying customer is more important than maximizing revenue on day one.",
+      lesson: `Today we make you MONEY.
 
-Your SaaS needs to send emails:
-- Welcome emails when users sign up
-- Password reset emails
-- Notification emails
-- Onboarding sequences
+Everything else is decoration. If people don't pay, you don't have a business. You have a hobby.
 
-WITHOUT proper email setup, your emails go to SPAM!
+THE STRIPE SETUP (15 MINUTES):
 
-RECOMMENDED: Resend or SendGrid
-Both are developer-friendly and have generous free tiers.
+STEP 1: Create Your Stripe Account
+Go to stripe.com → Sign up
+You can start in TEST MODE (no real money yet)
 
-SETUP STEPS:
-1. Create account at resend.com or sendgrid.com
-2. Verify your domain (follow their DNS instructions)
-3. Get your API key
-4. Store in Replit Secrets
-5. Ask agent to integrate
+STEP 2: Create Your Product & Prices
+In Stripe Dashboard:
+- Products → Add Product
+- Name it (e.g., "Pro Plan")
+- Add pricing (e.g., $29/month)
+- Copy the Price ID (starts with price_)
 
-TELL THE AGENT:
-"Set up email sending using Resend. API key is in secrets as RESEND_API_KEY. Create a welcome email that sends when users sign up with their name and a getting started guide."
+STEP 3: Store Your Keys
+In Replit Secrets, add:
+- STRIPE_SECRET_KEY = sk_test_... (from Stripe)
+- STRIPE_PUBLISHABLE_KEY = pk_test_...
 
-IMPORTANT: Domain verification can take 24-48 hours. Start this today!`,
-      outcome: "Email service integrated with welcome emails working",
-      completionMessage: "Your app can now communicate with users via email. This is essential for any real SaaS. Tomorrow: authentication.",
+STEP 4: Tell The Agent
+Copy this into Replit Agent:
+
+"Add Stripe payment integration:
+
+1. Create a pricing page showing my plans:
+   - [PLAN NAME]: $[PRICE]/month - [FEATURES]
+   - [PLAN NAME]: $[PRICE]/month - [FEATURES]
+
+2. When users click 'Subscribe':
+   - Create a Stripe Checkout session
+   - Redirect to Stripe's hosted checkout
+   - On success, redirect back and update their subscription status
+
+3. Add a webhook to handle:
+   - Successful payments
+   - Failed payments
+   - Subscription cancellations
+
+Use my Stripe keys from secrets."
+
+PRICING PSYCHOLOGY:
+
+Don't overthink this. Here's what works for new SaaS:
+
+STARTER PRICING:
+- Basic: $19-29/month (entry point)
+- Pro: $49-79/month (most popular)
+- Enterprise: $149+/month (for big fish)
+
+THE ANCHOR TRICK:
+Your middle tier should be the one you WANT people to buy.
+Make it look like the obvious choice between cheap and expensive.
+
+IMPORTANT: Test in TEST MODE first!
+Use Stripe's test card: 4242 4242 4242 4242
+Go through the entire flow as a user.
+Only switch to LIVE keys when everything works.
+
+Tomorrow: making sure emails actually hit inboxes.`,
+      outcome: "Stripe is connected - you can accept real payments for your SaaS",
+      completionMessage: "Your app can now make MONEY. This is huge. You're not building a side project anymore - you're building a BUSINESS. Tomorrow: email integration so you can actually communicate with customers.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 18,
-      title: "Authentication & User Management",
-      description: "Set up secure user authentication - sign up, login, password reset, and user sessions.",
-      phase: "Week 3: APIs & Integrations",
+      title: "Emails That Actually ARRIVE",
+      description: "Set up email so your app can send welcome emails, password resets, and notifications that hit INBOXES, not spam.",
+      phase: "Week 3: Superpowers",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "Auth System Setup",
-      aiTaskDescription: "Implement secure authentication so users can create accounts and log in.",
+      aiTaskTitle: "Email Setup",
+      aiTaskDescription: "Connect Resend for transactional emails that actually get delivered.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Primary auth method?",
-      microDecisionOptions: JSON.stringify(["Email/Password", "Social login (Google)", "Magic link", "All options"]),
-      reflectionQuestion: "How can you make signup as frictionless as possible?",
-      tip: "Most SAAS projects need: Sign up, Login, Logout, Password reset, and Session management. The agent can build all of this.",
-      lesson: `AUTHENTICATION ESSENTIALS
+      microDecisionQuestion: "What's the MOST important email your app will send?",
+      microDecisionOptions: JSON.stringify(["Welcome email (first impression)", "Password reset (critical for trust)", "Notifications (keep users engaged)", "Receipts/Invoices (for payments)"]),
+      reflectionQuestion: "Think about an app you love. What email from them made you feel like they 'get it'?",
+      tip: "Use Resend. It's free for 3,000 emails/month and takes 5 minutes to set up. No excuses.",
+      lesson: `Your app needs to TALK to users. Email is how.
 
-Your users need to:
-- Create an account
-- Log in securely
-- Stay logged in (sessions)
-- Reset forgotten passwords
-- Log out
+Without proper email:
+- Password resets don't work
+- Welcome emails go to spam
+- You can't notify users of anything
+- You look unprofessional
 
-TELL THE AGENT:
-"Set up user authentication with:
-- Email and password signup/login
-- Password reset via email
-- Secure session management
-- Redirect to dashboard after login
-- Protect dashboard routes from non-logged-in users"
+THE EMAIL SETUP (10 MINUTES):
 
-SECURITY BASICS:
-- Passwords should be hashed (never stored in plain text)
-- Use HTTPS (Replit handles this)
-- Sessions should expire after inactivity
-- Password reset links should expire
+STEP 1: Create Resend Account
+Go to resend.com → Sign up (free tier is plenty to start)
 
-OPTIONAL ADDITIONS:
-- Social login (Google, GitHub)
-- Two-factor authentication
-- Email verification before access
+STEP 2: Get Your API Key
+Dashboard → API Keys → Create API Key
+Copy it.
 
-Start simple. You can add more later.`,
-      outcome: "Secure authentication system with signup, login, and password reset",
-      completionMessage: "Your SaaS now has real user accounts! Users can sign up and log in securely. Tomorrow: getting paid.",
+STEP 3: Store It Securely
+In Replit Secrets: RESEND_API_KEY = [your key]
+
+STEP 4: Tell The Agent
+Copy this into Replit Agent:
+
+"Set up email with Resend (API key in secrets as RESEND_API_KEY):
+
+1. Welcome email - send when user signs up:
+   - From: hello@[yourdomain].com
+   - Subject: Welcome to [APP NAME]!
+   - Body: Friendly welcome, what they can do, one clear CTA
+
+2. Password reset email:
+   - Include secure reset link
+   - Link expires in 1 hour
+   - Clear instructions
+
+3. General notification function:
+   - Reusable for any future emails
+   - Takes: to, subject, body
+
+Make emails look professional with proper formatting."
+
+DOMAIN VERIFICATION (Optional but recommended):
+If you want to send from your own domain (not @resend.dev):
+- Go to Resend → Domains → Add Domain
+- Add the DNS records they give you
+- Takes 24-48 hours to verify
+
+PRO TIP: Write emails like you're talking to ONE person, not "Dear Valued Customer." Be human.
+
+EMAILS THAT WORK:
+❌ "Your account has been successfully created. Please log in to continue."
+✅ "You're in! 🎉 Here's what to do first..."
+
+❌ "Click here to reset your password."
+✅ "Forgot your password? No worries - click below to get back in."
+
+Make every email feel like it came from a human who gives a damn.`,
+      outcome: "Emails working - welcome emails, password resets, and notifications that actually arrive",
+      completionMessage: "Your app can now communicate with users like a real business. Emails land in inboxes, not spam. That's professionalism. Tomorrow: user accounts and security.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 19,
-      title: "Payment Integration (Stripe)",
-      description: "Set up Stripe so you can accept payments and charge subscriptions.",
-      phase: "Week 3: APIs & Integrations",
+      title: "Lock It DOWN (Authentication)",
+      description: "Add user accounts - signup, login, password reset. Keep the bad guys out and the good guys in.",
+      phase: "Week 3: Superpowers",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "Stripe Payment Setup",
-      aiTaskDescription: "Integrate Stripe to accept payments for your SaaS subscriptions.",
+      aiTaskTitle: "User Accounts Setup",
+      aiTaskDescription: "Set up authentication so users can create accounts and log in securely.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Payment model?",
-      microDecisionOptions: JSON.stringify(["Monthly subscription", "Annual subscription", "One-time + subscription", "Usage-based"]),
-      reflectionQuestion: "What will your launch pricing be?",
-      tip: "Hook up Stripe for payment processing. The agent can handle most of this - just tell it your pricing tiers.",
-      lesson: `GETTING PAID WITH STRIPE
+      microDecisionQuestion: "How should users sign up?",
+      microDecisionOptions: JSON.stringify(["Email + Password (simple & universal)", "Google Sign-In (one-click easy)", "Magic Link (no password needed)", "All of the above (user choice)"]),
+      reflectionQuestion: "What's the fastest way to get users from 'interested' to 'using your app'?",
+      tip: "Start with email + password. Add social login later if you want. Don't overcomplicate your first version.",
+      lesson: `Your app needs to know WHO is using it.
 
-Stripe is the industry standard for SaaS payments. It handles:
-- Credit card processing
-- Subscription management
-- Invoices
-- Failed payment recovery
+Without authentication:
+- Anyone can see anyone's data
+- You can't personalize anything
+- You can't charge specific users
+- You have no idea who's using your product
 
-SETUP STEPS:
-1. Create account at stripe.com
-2. Get your API keys (test AND live)
-3. Store in Replit Secrets (STRIPE_SECRET_KEY, STRIPE_PUBLISHABLE_KEY)
-4. Create your products/prices in Stripe dashboard
+THE AUTH SETUP (10 MINUTES):
 
-TELL THE AGENT:
-"Integrate Stripe for payments. I have 2 tiers:
-- Basic: $29/month
-- Pro: $79/month
-Create a pricing page, checkout flow, and webhook to handle successful payments. Update user's subscription status in the database."
+Tell Replit Agent:
 
-IMPORTANT:
-- Start with TEST mode (use test API keys)
-- Test the full flow before going live
-- Handle failed payments gracefully
-- Show users their subscription status
+"Set up user authentication:
 
-You can go live when you're ready by switching to live API keys.`,
-      outcome: "Stripe integrated with working checkout flow and subscription management",
-      completionMessage: "Your SaaS can now make money! This is huge. You have a real, monetizable product. Tomorrow: polish time.",
+1. SIGNUP
+   - Email and password
+   - Validate email format
+   - Password minimum 8 characters
+   - Send welcome email after signup
+
+2. LOGIN
+   - Email and password
+   - Remember me option
+   - Redirect to dashboard after login
+
+3. PASSWORD RESET
+   - Send reset link via email
+   - Link expires in 1 hour
+   - Confirm new password matches
+
+4. PROTECTION
+   - Protect all dashboard routes
+   - Redirect non-logged-in users to login
+   - Show current user's name in the header
+
+5. LOGOUT
+   - Clear session
+   - Redirect to homepage
+
+Hash all passwords securely. Never store plain text passwords."
+
+THAT'S IT. The Agent knows how to do this properly.
+
+SECURITY BASICS (stuff the Agent handles):
+✓ Passwords hashed (bcrypt)
+✓ Sessions expire after inactivity
+✓ HTTPS (Replit does this automatically)
+✓ Reset links are one-time use
+
+TEST THE FLOW:
+1. Sign up with a new email
+2. Log out
+3. Log back in
+4. Request password reset
+5. Use the reset link
+6. Log in with new password
+
+If all that works, you're good.
+
+OPTIONAL UPGRADES (not for MVP):
+- Google/GitHub sign-in
+- Two-factor authentication
+- Email verification before access
+
+Keep it simple for now. You can add fancy stuff later.`,
+      outcome: "User accounts working - signup, login, logout, password reset all functional",
+      completionMessage: "Your app is now SECURE. Users have their own accounts, their data is protected, and you know who's who. Tomorrow: building your admin dashboard.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 20,
-      title: "UI/UX Polish",
-      description: "Make your app look professional - consistent styling, responsive design, and delightful details.",
-      phase: "Week 3: APIs & Integrations",
+      title: "Your ADMIN Dashboard",
+      description: "Build the control center where YOU manage everything - users, data, payments, and problems.",
+      phase: "Week 3: Superpowers",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "Visual Polish",
-      aiTaskDescription: "Clean up the UI, ensure mobile responsiveness, and add professional touches.",
+      aiTaskTitle: "Admin Dashboard",
+      aiTaskDescription: "Build your admin panel to manage users, view data, and control your SaaS.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What needs the most polish?",
-      microDecisionOptions: JSON.stringify(["Mobile responsiveness", "Consistent styling", "Loading states", "Error handling"]),
-      reflectionQuestion: "What would make your app feel more premium?",
-      tip: "You CAN screenshot tools you like and feed them to Replit. It might do a good job of something similar - just don't copy direct competitors.",
-      lesson: `MAKING IT LOOK PRO
+      microDecisionQuestion: "What do YOU need to see when you log in as admin?",
+      microDecisionOptions: JSON.stringify(["User list (who's signed up)", "Revenue metrics (who's paying)", "Usage stats (what's being used)", "All of the above"]),
+      reflectionQuestion: "When your app has 100 users, what information will you need to access FAST?",
+      tip: "Your admin dashboard doesn't need to be pretty. It needs to be FUNCTIONAL. You're the only one who'll see it.",
+      lesson: `Time to build YOUR control center.
 
-Your MVP works. Now let's make it LOOK like it works.
+Users get the pretty app. YOU get the control panel.
 
-QUICK WINS:
-1. Consistent colors and fonts throughout
-2. Proper spacing and alignment
-3. Loading states (spinners, skeletons)
-4. Error messages that help (not just "Error!")
-5. Mobile responsive design
+Without an admin dashboard:
+- You don't know who's signed up
+- You can't see what's happening
+- You can't help users with problems
+- You're flying blind
 
-TELL THE AGENT:
-"Review the UI and make it more professional:
-- Ensure consistent spacing and typography
-- Add loading states to all async actions
-- Make sure it looks good on mobile
-- Improve error messages to be helpful
-- Add subtle hover states to buttons"
+THE ADMIN BUILD (10 MINUTES):
 
-SCREENSHOT METHOD:
-Find a SaaS you love the look of (NOT a competitor). Screenshot their UI. Show it to the agent: "Make my dashboard look more like this style - clean, modern, with good spacing."
+Tell Replit Agent:
 
-PRIORITY ORDER:
-1. Mobile works (most users are on mobile)
-2. Core flows look polished
-3. Edge cases handled gracefully
-4. Delightful small touches (animations, micro-interactions)`,
-      outcome: "Professional-looking UI with mobile responsiveness and polished interactions",
-      completionMessage: "Your app now LOOKS like a real product. First impressions matter, and yours is now making a great one. Tomorrow: final testing.",
+"Build an admin dashboard at /admin (protected, only for admin users):
+
+1. OVERVIEW PAGE
+   Show me at a glance:
+   - Total users
+   - New users this week
+   - Active users today
+   - Revenue this month (if applicable)
+
+2. USER MANAGEMENT
+   - List all users with: name, email, signup date, plan
+   - Search and filter users
+   - Click to see user details
+   - Ability to delete/disable accounts
+
+3. DATA VIEW
+   - See all [MAIN CONTENT TYPE] created by users
+   - Filter by user, date, status
+   - Quick actions (delete, feature, etc.)
+
+4. QUICK ACTIONS
+   - Impersonate user (see what they see)
+   - Send announcement to all users
+   - Export user list to CSV
+
+Make it functional. Doesn't need to be beautiful.
+Protect with admin-only access check."
+
+ADMIN ACCESS:
+Option 1: Check if user email = your email
+Option 2: Add an 'isAdmin' column to users table
+Option 3: Separate admin login entirely
+
+Keep it simple: if (user.email === 'you@yourdomain.com')
+
+THINGS YOU'LL THANK YOURSELF FOR:
+
+1. Quick user search - when someone emails "I can't log in"
+2. User activity view - see what they've done
+3. Delete button - for spam/test accounts
+4. Export - for when you need data in a spreadsheet
+
+Your admin is YOUR tool. Build what YOU need.`,
+      outcome: "Admin dashboard where you can see and manage everything in your SaaS",
+      completionMessage: "You now have CONTROL. You can see who's using your app, what they're doing, and manage problems when they happen. Tomorrow: final testing and polish.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 21,
-      title: "Final Testing, Bug Fixes & Launch Prep",
-      description: "Complete testing of all features, fix remaining bugs, and prepare for launch.",
-      phase: "Week 3: APIs & Integrations",
+      title: "Test EVERYTHING (Launch Prep)",
+      description: "Go through your ENTIRE app as a new user. Find the breaks. Fix them. Get ready to launch.",
+      phase: "Week 3: Superpowers",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "Launch Preparation",
-      aiTaskDescription: "Final QA pass, bug fixes, and pre-launch checklist.",
+      aiTaskTitle: "Launch Checklist",
+      aiTaskDescription: "Complete the pre-launch testing checklist and fix any issues.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Launch readiness?",
-      microDecisionOptions: JSON.stringify(["Ready to go!", "Few bugs left", "Need more polish", "Major issues"]),
-      reflectionQuestion: "What's the ONE thing that must work perfectly at launch?",
-      tip: "Test as a NEW user. Sign up fresh. Go through every flow. Fix anything confusing or broken. Then do it again.",
-      lesson: `LAUNCH PREP CHECKLIST
+      microDecisionQuestion: "How does your app feel right now?",
+      microDecisionOptions: JSON.stringify(["READY - Ship it!", "ALMOST - Just a few bugs", "NERVOUS - Needs more polish", "SCARED - Major stuff broken"]),
+      reflectionQuestion: "If you HAD to launch tomorrow, what's the ONE thing you'd panic about?",
+      tip: "Open a private/incognito browser. Sign up as a BRAND NEW user. Don't use your test account. Experience what real users will experience.",
+      lesson: `Time to find out if this thing ACTUALLY works.
 
-FULL USER FLOW TEST:
-1. Sign up as a completely new user
-2. Complete onboarding
-3. Use every core feature
-4. Upgrade to paid (test mode)
-5. Manage account settings
-6. Log out and back in
+Today you're not the builder. You're a USER. A skeptical, impatient, easily-confused user.
 
-CHECK EACH:
-□ Signup works and sends welcome email
-□ Login works (and password reset)
-□ Core features work correctly
-□ Payment flow works (test mode)
-□ Mobile experience is good
-□ Error messages are helpful
-□ Loading states exist
-□ Data saves and persists
+THE REAL USER TEST:
 
-BUG PRIORITY:
-- P0: Blocks core functionality - FIX NOW
-- P1: Annoying but workaround exists - Fix before launch
-- P2: Minor issues - Can fix after launch
-- P3: Nice to have - Add to V2 list
+Open an incognito browser window. Go to your app. Pretend you've never seen it before.
 
-FINAL TOUCHES:
-- Favicon and app title
-- 404 page
-- Terms of service page
-- Privacy policy page (AI can write these)`,
-      outcome: "All critical bugs fixed, full testing complete, ready for launch",
-      completionMessage: "Week 3 COMPLETE! You have a REAL, working SaaS product with AI features, email, auth, payments, and professional polish. You built this in 21 days. Most people take YEARS. You're ready for users!",
+Now go through EVERYTHING:
+
+1. FIRST IMPRESSION (30 seconds)
+   - Do I understand what this does?
+   - Do I want to sign up?
+   - Is the signup button obvious?
+
+2. SIGNUP FLOW
+   - Sign up with a NEW email
+   - Did I get a welcome email?
+   - Am I logged in?
+   - Do I know what to do next?
+
+3. CORE FEATURE
+   - Can I figure out how to use the main feature?
+   - Does it work?
+   - Do I get feedback (loading, success)?
+   - Does the output make sense?
+
+4. PAYMENT (Test Mode)
+   - Can I find the upgrade option?
+   - Is pricing clear?
+   - Does checkout work? (Use card 4242 4242 4242 4242)
+   - Am I upgraded after paying?
+
+5. ACCOUNT STUFF
+   - Can I change my settings?
+   - Can I reset my password?
+   - Can I log out and back in?
+   - Does my data persist?
+
+6. EDGE CASES
+   - What if I enter nothing?
+   - What if I enter garbage?
+   - What if I'm on mobile?
+   - What if I refresh mid-action?
+
+WRITE DOWN EVERY PROBLEM:
+
+For each issue, note:
+- What happened
+- What should have happened
+- How annoying is it (1-5)
+
+Fix EVERY 4 and 5 before launch.
+Fix 3s if you have time.
+1s and 2s can wait.
+
+THE FINAL TOUCHES:
+
+□ Favicon uploaded (the little icon in browser tabs)
+□ Page title correct on all pages
+□ 404 page exists (test: yourapp.com/sdjkhfsjkdfh)
+□ Privacy policy page (AI can write this)
+□ Terms of service page (AI can write this)
+
+Ask the Agent: "Generate a simple privacy policy and terms of service for my SaaS app called [NAME] that does [DESCRIPTION]. Keep it standard and straightforward."
+
+🎉 WEEK 3 COMPLETE!
+
+Look at what you have now:
+- Working AI features
+- Payment processing
+- Email that works
+- User authentication
+- Admin dashboard
+- Tested and polished
+
+You have a REAL SaaS. Most people never get this far. You did.`,
+      outcome: "App fully tested, bugs fixed, legal pages added, READY FOR LAUNCH",
+      completionMessage: "WEEK 3 DONE! You have a REAL, WORKING, SELLABLE SaaS product. AI features, payments, emails, auth, admin - all working. You built in 21 days what takes most people MONTHS. Next week: advanced features and the final push.",
       xpReward: 150,
       estimatedMinutes: 5,
     },
 
     // ============================================
-    // WEEK 4: ADVANCED FEATURES & POLISH (Days 22-30)
+    // WEEK 4: POLISH & LAUNCH (Days 22-30)
     // ============================================
     {
       day: 22,
-      title: "UX Audit: Making Your App Feel Professional",
-      description: "AI analyzes your app and identifies exactly where you need better user feedback - then generates the code to fix it.",
-      phase: "Week 4: Advanced Features & Polish",
+      title: "Make It FEEL Premium",
+      description: "The difference between amateur and professional? FEEDBACK. Every click should feel acknowledged.",
+      phase: "Week 4: Polish & Launch",
       videoUrl: null,
       aiTaskType: "audit",
-      aiTaskTitle: "AI UX Audit",
-      aiTaskDescription: "Describe your app's main user actions. AI will identify friction points and generate the exact code to add professional feedback patterns.",
+      aiTaskTitle: "UX Upgrade",
+      aiTaskDescription: "List your app's main actions and we'll show you how to make each one feel polished.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's your app's personality?",
-      microDecisionOptions: JSON.stringify(["Minimal & clean - subtle feedback", "Friendly & warm - encouraging messages", "Professional & serious - formal confirmations", "Fun & playful - delightful surprises"]),
-      reflectionQuestion: "Think about the last app you used that felt 'premium'. What made it feel that way?",
-      tip: "The difference between a $10 app and a $100 app isn't features - it's feel. Every click should have a response. Every action should feel acknowledged.",
-      lesson: `THE UX AUDIT: WHERE DOES YOUR APP FEEL "OFF"?
+      microDecisionQuestion: "What's the VIBE of your app?",
+      microDecisionOptions: JSON.stringify(["PROFESSIONAL - Clean, corporate, trustworthy", "FRIENDLY - Warm, encouraging, approachable", "POWERFUL - Bold, confident, no-nonsense", "FUN - Playful, delightful, surprising"]),
+      reflectionQuestion: "Think of an app you LOVE using. What makes it feel so good? Now... does YOUR app have that?",
+      tip: "Users can't tell you why an app feels 'cheap' or 'premium' but they KNOW the difference instantly. It's the little things. Today we fix the little things.",
+      lesson: `Here's the difference between a $10 app and a $100 app: FEEDBACK.
 
-Amateur apps feel clunky. Professional apps feel smooth. The difference? Feedback loops.
+Amateur apps: Click → Nothing → Did it work???
+Pro apps: Click → Loading... → Success! ✓
 
-TODAY'S AI TASK:
-Copy this prompt into Claude or ChatGPT, filling in YOUR app details:
+Today we make your app FEEL expensive.
 
----
-"I'm building [YOUR APP NAME] - [ONE SENTENCE DESCRIPTION].
+THE FEEDBACK CHECKLIST:
 
-Here are the main actions users take:
-1. [ACTION 1 - e.g., "Create a new project"]
-2. [ACTION 2 - e.g., "Save their work"]
-3. [ACTION 3 - e.g., "Delete items"]
-4. [ACTION 4 - e.g., "Submit a form"]
-5. [ACTION 5 - e.g., "Complete a task"]
+Every action needs THREE things:
+1. SOMETHING IS HAPPENING (loading state)
+2. IT WORKED (success feedback)
+3. IT BROKE (helpful error message)
 
-For each action, tell me:
-1. What feedback should the user see? (toast, modal, animation, sound?)
-2. What could go wrong and how should we handle it?
-3. What would make this feel DELIGHTFUL, not just functional?
+Go through your app and find EVERY button. Does it have all three?
 
-Then generate the exact code I need to implement:
-- A toast notification system (use sonner or react-hot-toast)
-- Confirmation modals for destructive actions
-- Success states that feel rewarding
-- Error states that are helpful, not scary
+THE UPGRADE PROMPT:
 
-Make the code production-ready for a React + TypeScript app."
----
+Tell Replit Agent:
 
-WHAT YOU'LL GET:
-The AI will analyze YOUR specific app and generate:
-- Custom toast messages for your actions
-- Modal components for confirmations
-- Micro-interactions that match your app's personality
-- Error handling that doesn't make users feel stupid
+"Improve the user feedback throughout my app:
 
-THE PROFESSIONAL TOUCH:
-- Success toasts: "Project created!" with a subtle checkmark
-- Error toasts: "Couldn't save - check your connection" (not "ERROR 500")
-- Confirmation modals: "Delete this project? This can't be undone."
-- Loading states: Skeleton screens, not spinning wheels
+1. ADD TOAST NOTIFICATIONS
+   - Success: Green, checkmark, auto-dismiss after 3 seconds
+   - Error: Red, stays until dismissed, helpful message
+   - Loading: Shows when actions take more than 500ms
 
-Copy the AI's code directly into Replit and watch your app transform.`,
-      outcome: "AI-generated feedback system implemented - toasts, modals, and micro-interactions working",
-      completionMessage: "Your app now FEELS different. Users might not notice the changes consciously, but they'll trust your app more. That's the power of good UX.",
+2. ADD LOADING STATES
+   - Buttons show spinner when clicked
+   - Forms disable during submission
+   - Pages show skeleton while loading data
+
+3. ADD CONFIRMATION DIALOGS
+   - Before deleting anything
+   - Before canceling subscriptions
+   - Before any destructive action
+
+4. IMPROVE ERROR MESSAGES
+   Change these patterns:
+   - 'Error' → 'Couldn't save. Try again?'
+   - 'Failed' → 'Something went wrong on our end. We're on it.'
+   - 'Invalid' → 'Please check your [field name]'
+
+Use the sonner library for toasts.
+Make it feel professional."
+
+THE FEEL TEST:
+
+After implementing, go through your app and click EVERYTHING.
+- Does every button feel responsive?
+- Do I always know if something worked?
+- Are errors helpful, not scary?
+
+If YES to all three, you've got a premium feel.`,
+      outcome: "Your app FEELS professional - every action has feedback, every error is helpful",
+      completionMessage: "Your app just went from 'amateur' to 'professional' without adding a single feature. That's the power of UX. Users can't explain it, but they FEEL it.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 23,
-      title: "Dashboard Builder: Visualize Your Data",
-      description: "AI designs a custom dashboard for YOUR app's data - complete with charts, stats, and insights your users actually need.",
-      phase: "Week 4: Advanced Features & Polish",
+      title: "Numbers That MATTER (User Dashboard)",
+      description: "Give users a dashboard that shows them what they care about. Not data dumps - INSIGHTS.",
+      phase: "Week 4: Polish & Launch",
       videoUrl: null,
       aiTaskType: "generator",
-      aiTaskTitle: "AI Dashboard Designer",
-      aiTaskDescription: "Tell AI about your app's data. It will design and generate a complete dashboard with the right visualizations.",
+      aiTaskTitle: "User Dashboard",
+      aiTaskDescription: "Define what metrics your users care about and we'll help you display them beautifully.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's the PRIMARY insight your users need?",
-      microDecisionOptions: JSON.stringify(["Progress over time - 'Am I improving?'", "Comparisons - 'How do I stack up?'", "Totals & achievements - 'What have I accomplished?'", "Activity feed - 'What's happening now?'"]),
-      reflectionQuestion: "If your users could only see ONE number when they log in, what should it be?",
-      tip: "The best dashboards answer ONE question instantly. Don't build a dashboard that needs explanation - build one that makes users say 'Oh, I get it' in 2 seconds.",
-      lesson: `BUILDING A DASHBOARD THAT ACTUALLY HELPS
+      microDecisionQuestion: "What does YOUR user want to know when they log in?",
+      microDecisionOptions: JSON.stringify(["'Am I making progress?' (trends)", "'What should I do next?' (actions)", "'What did I accomplish?' (totals)", "'What's happening right now?' (activity)"]),
+      reflectionQuestion: "If users could see just ONE number when they log in, what should it be?",
+      tip: "Most dashboards SUCK because they show EVERYTHING. Great dashboards show ONE thing clearly. What's your ONE thing?",
+      lesson: `Let's talk about dashboards.
 
-Most dashboards are useless - too much data, no insight. Let's build one that matters.
+Most dashboards are GARBAGE. 15 charts, no insights. Data everywhere, meaning nowhere.
 
-TODAY'S AI TASK:
-Copy this prompt into Claude or ChatGPT:
+Today we build a dashboard that actually HELPS.
 
----
-"I'm building [YOUR APP NAME] - [ONE SENTENCE DESCRIPTION].
+THE DASHBOARD RULE:
+Answer ONE question clearly. Then add supporting details.
 
-My app tracks this data:
-- [DATA TYPE 1 - e.g., "User tasks completed per day"]
-- [DATA TYPE 2 - e.g., "Time spent on each project"]
-- [DATA TYPE 3 - e.g., "Revenue per customer"]
-- [DATA TYPE 4 - e.g., "Feature usage stats"]
+EXAMPLES:
 
-My users care most about: [THE ONE KEY METRIC]
+Productivity app: "You're 73% to your weekly goal" (one big number)
+Analytics app: "Traffic up 23% this week" (with trend line)
+Finance app: "You've saved $1,240 this month" (with progress bar)
 
-Design a dashboard that:
-1. Shows the ONE most important number prominently
-2. Uses the RIGHT chart type for each data set
-3. Answers the question: [WHAT QUESTION SHOULD THE DASHBOARD ANSWER?]
+THE QUESTION YOUR DASHBOARD ANSWERS:
+Fill in: "When my users log in, they want to know _________"
 
-Generate complete React + TypeScript code using Recharts including:
-- A stats overview section with key numbers
-- 2-3 charts that tell a story
-- Proper loading states
-- Mobile-responsive layout
+That's your dashboard's ONE JOB.
 
-Make it clean and minimal - no chart junk."
----
+THE BUILD PROMPT:
 
-CHART TYPES CHEAT SHEET:
-- LINE CHART: Trends over time (daily/weekly/monthly)
-- BAR CHART: Comparing categories or periods
-- DONUT CHART: Parts of a whole (use sparingly!)
-- SINGLE NUMBER: When one metric matters most
-- PROGRESS BAR: Toward a goal
+Tell Replit Agent:
 
-THE GOLDEN RULE:
-Every chart should answer a question. If you can't state the question, delete the chart.
+"Create a user dashboard that shows:
 
-BAD: "Here's all your data in 12 charts"
-GOOD: "You're 73% to your monthly goal. Here's your trend."
+MAIN METRIC (big and prominent):
+- [YOUR KEY NUMBER - e.g., 'Tasks completed this week']
+- Show comparison to last period (up/down arrow)
 
-Paste the AI's code into Replit. You now have a dashboard that actually means something.`,
-      outcome: "Custom dashboard with meaningful visualizations - stats, charts, and insights that users actually need",
-      completionMessage: "You just turned raw data into insights. Your users can now see their progress at a glance - that's what keeps them coming back.",
+SUPPORTING STATS (row of 3-4 cards):
+- [STAT 1 - e.g., 'Current streak: X days']
+- [STAT 2 - e.g., 'Total [things] created']
+- [STAT 3 - e.g., 'Time saved this month']
+
+ONE CHART (if data supports it):
+- [CHART TYPE] showing [DATA OVER TIME]
+- Keep it simple, 30 days max
+
+RECENT ACTIVITY (list):
+- Last 5-10 actions the user took
+- With timestamps
+
+Make the main metric HUGE. Everything else supports it.
+Mobile-responsive layout."
+
+THE CHART CHEAT SHEET:
+- GOING UP OR DOWN over time? → Line chart
+- COMPARING THINGS? → Bar chart
+- PARTS OF A WHOLE? → Donut (use sparingly)
+- ONE BIG NUMBER? → Just show the number. Big.
+
+WHAT TO AVOID:
+❌ Too many charts (pick 1-2 max)
+❌ Tiny numbers everywhere
+❌ No context ("47" means nothing - "47 more than last week" means something)
+❌ "Vanity metrics" that look good but don't help`,
+      outcome: "User dashboard that shows ONE key insight clearly with supporting context",
+      completionMessage: "Your users now have a dashboard that actually HELPS them. Not a data dump - a clear answer to what they care about. That's what keeps people coming back.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 24,
-      title: "AI Builds Your Admin Dashboard",
-      description: "Paste your app description. AI analyzes it, tells you EXACTLY what admin features you need, and generates the complete build prompt. Zero thinking required.",
-      phase: "Week 4: Advanced Features & Polish",
+      title: "Mobile That WORKS",
+      description: "55% of users are on mobile. If your app sucks on phones, you're losing HALF your potential customers.",
+      phase: "Week 4: Polish & Launch",
       videoUrl: null,
       aiTaskType: "audit",
-      aiTaskTitle: "AI Admin Audit",
-      aiTaskDescription: "Paste your PRD or app description from Day 6. AI analyzes your app and generates a complete, customized admin dashboard - telling you exactly what you need and why.",
+      aiTaskTitle: "Mobile Audit",
+      aiTaskDescription: "Test your app on mobile and we'll help you fix what's broken.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: null,
-      microDecisionOptions: null,
-      reflectionQuestion: null,
-      tip: "You don't need to figure out what admin features you need. AI will analyze YOUR specific app and tell you. Then it builds the whole thing. Your job is to paste and review.",
-      lesson: `AI BUILDS YOUR ADMIN: ZERO THINKING REQUIRED
+      microDecisionQuestion: "How does your app look on your phone RIGHT NOW?",
+      microDecisionOptions: JSON.stringify(["GREAT - Works perfectly", "OK - Usable but awkward", "BAD - Hard to use", "BROKEN - Doesn't work at all"]),
+      reflectionQuestion: "Open your app on your phone. What's the FIRST thing that frustrates you?",
+      tip: "Open your app on your ACTUAL phone right now. Not the browser simulator. Your REAL phone. Click everything. Find the pain.",
+      lesson: `Stop reading. Grab your phone. Open your app. NOW.
 
-Stop trying to figure out what admin features you need. Let AI analyze your app and TELL you.
+I'll wait.
 
-HERE'S WHAT'S ABOUT TO HAPPEN:
+...
 
-1. You paste your app description (the PRD from Day 6)
-2. AI analyzes it and identifies exactly what you need to manage
-3. AI generates your complete admin dashboard specification
-4. You paste that into Replit and watch it build
+OK, how was it? If it was anything less than "actually good," today we fix that.
 
-That's it. No decisions. No guessing. AI does the thinking.
+THE MOBILE REALITY:
+- 55% of web traffic is mobile
+- If your app sucks on phones, you lose HALF your users
+- Bad mobile = bad first impression = no second chance
 
-STEP 1: GRAB YOUR APP DESCRIPTION
+THE MOBILE TESTING CHECKLIST:
 
-Go back to Day 6 and copy your PRD. Or just write a quick summary:
-- What your app does
-- Who it's for
-- What users create/do in the app
-- How you charge (if applicable)
+Open your app on your phone and check:
 
-STEP 2: PASTE THIS PROMPT INTO CLAUDE OR CHATGPT
+□ Can I read all text without zooming?
+□ Can I tap buttons without missing?
+□ Can I fill out forms without rage?
+□ Can I navigate with one thumb?
+□ Does everything fit on screen?
 
----
-"I need you to analyze my SaaS app and design the PERFECT admin dashboard for it.
+For every "no," that's a problem to fix.
 
-HERE'S MY APP:
-[PASTE YOUR PRD OR APP DESCRIPTION HERE]
+THE FIX PROMPT:
 
-YOUR JOB:
+Tell Replit Agent:
 
-1. ANALYZE MY APP
-   Look at what my app does and tell me:
-   - What data will I need to monitor daily?
-   - What user actions will I need to manage?
-   - What could go wrong that I need to catch?
-   - What metrics actually matter for THIS specific business?
+"Fix these mobile issues in my app:
 
-2. DESIGN MY ADMIN DASHBOARD
-   Based on your analysis, create a complete admin specification with:
+1. NAVIGATION
+   - Add hamburger menu for mobile (hide full nav)
+   - Bottom navigation bar for main actions
+   - Make touch targets 44x44px minimum
 
-   THE HOMEPAGE DASHBOARD
-   - What 4-6 key numbers should I see the moment I log in?
-   - What charts/graphs would actually be useful?
-   - What alerts need my immediate attention?
+2. TEXT
+   - Minimum font size 16px (prevents iOS zoom)
+   - Limit line width to ~70 characters
+   - Use proper spacing between lines
 
-   USER MANAGEMENT
-   - What user info do I need to see and edit?
-   - What filters make sense for MY type of users?
-   - What actions do I need (beyond basic edit/delete)?
+3. FORMS
+   - Full-width inputs on mobile
+   - Labels above fields (not beside)
+   - Use correct input types (email, tel, number)
+   - Form doesn't jump when keyboard appears
 
-   [MAIN ENTITY] MANAGEMENT
-   - Based on what users create in my app, what do I need to manage?
-   - How should I organize and filter this content?
-   - What bulk actions would save me time?
+4. TABLES/DATA
+   - Convert wide tables to card layout on mobile
+   - Or make tables horizontally scrollable
+   - Show most important columns first
 
-   REVENUE/BILLING (if applicable)
-   - What payment info do I need quick access to?
-   - How do I handle refunds, upgrades, failed payments?
+5. IMAGES
+   - Scale down on mobile
+   - Don't break layout
 
-   DANGER ZONE
-   - What could break that I need to monitor?
-   - What early warning signs should trigger alerts?
+Test at 375px width (iPhone SE size) for worst case."
 
-3. GENERATE THE BUILD PROMPT
-   Now write me the EXACT prompt I should paste into Replit Agent to build this entire admin dashboard. Make it specific to my app - not generic.
+QUICK MOBILE WINS:
 
-   Include all pages, all components, all API routes, all database queries.
+Add this one line to fix most font issues:
+- Minimum font size: 16px everywhere
 
-   Make it so I can paste it and the agent builds the whole thing."
----
+Add this to fix tap targets:
+- Minimum button/link size: 44x44 pixels
+- Space between tap targets: 8px minimum
 
-STEP 3: REVIEW WHAT AI FOUND
+Add this to fix navigation:
+- Hide menu behind hamburger icon on mobile
+- Or use bottom tab bar for main actions
 
-AI will come back with:
-- An analysis of what YOU specifically need (not generic advice)
-- A complete admin design tailored to YOUR app
-- A ready-to-paste prompt for Replit
+TEST ON REAL PHONES:
+- Your phone
+- A friend's phone (different size)
+- Chrome DevTools (iPhone SE, iPhone 14)
 
-Read through the analysis. Does it make sense? Did AI catch things you hadn't thought of?
-
-If something's missing, just say: "Also add [X] because [reason]"
-
-STEP 4: BUILD IT
-
-Take that generated prompt → Paste into Replit Agent → Watch your admin get built.
-
-WHAT YOU'LL END UP WITH:
-
-□ A dashboard showing YOUR key metrics at a glance
-□ User management tailored to YOUR user data
-□ Content management for whatever YOUR users create
-□ Revenue tracking if you're charging
-□ Alerts for things that could go wrong in YOUR specific app
-□ Quick actions that save YOU time based on YOUR workflows
-
-All of it specific to your app. Not some generic template.
-
-THE MAGIC:
-You didn't have to figure out what you need.
-You didn't have to design anything.
-You didn't have to write a single spec.
-
-AI analyzed YOUR app and built YOUR admin.
-
-That's the power of letting AI do the thinking.`,
-      outcome: "AI-designed admin dashboard built specifically for YOUR app - not a template, a custom solution",
-      completionMessage: "AI just analyzed your entire app and built you a custom admin dashboard. You didn't have to figure out what you needed - AI told you. This is how you build fast: let AI do the thinking, you do the directing.",
+If it works on iPhone SE, it works everywhere.`,
+      outcome: "Your app works on mobile - readable, tappable, usable",
+      completionMessage: "Your app now works on PHONES. You just stopped losing half your potential users. That's not a feature - that's survival.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 25,
-      title: "Smart Search & Filtering",
-      description: "AI builds a complete search system for YOUR app - instant results, smart filters, and a UX that makes finding things effortless.",
-      phase: "Week 4: Advanced Features & Polish",
+      title: "Speed That WINS",
+      description: "A slow app loses users. A fast app wins. Today we make your app FAST.",
+      phase: "Week 4: Polish & Launch",
       videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "AI Search Builder",
-      aiTaskDescription: "Describe what users search for in your app. AI generates a complete search system with filters, sorting, and instant results.",
+      aiTaskType: "audit",
+      aiTaskTitle: "Speed Boost",
+      aiTaskDescription: "Check your app's performance and fix the slow parts.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "How do your users think about finding things?",
-      microDecisionOptions: JSON.stringify(["By name/title - they know what they're looking for", "By category/type - they're browsing options", "By date - they want recent or historical", "By status - they need to filter by state"]),
-      reflectionQuestion: "What's the most frustrating search experience you've ever had? What made it bad?",
-      tip: "Good search is invisible. Users don't think 'wow, great search!' - they just find what they need instantly. Bad search makes users leave.",
-      lesson: `SEARCH THAT DOESN'T SUCK
+      microDecisionQuestion: "How FAST does your app feel?",
+      microDecisionOptions: JSON.stringify(["INSTANT - Everything loads immediately", "FAST - Most things load quick", "OK - Some pages are slow", "SLOW - Users are definitely noticing"]),
+      reflectionQuestion: "Time yourself: how many SECONDS from clicking your URL to seeing your app fully loaded?",
+      tip: "A 1-second delay = 7% drop in conversions. A 3-second load = 53% of mobile users leave. Speed is literally money.",
+      lesson: `Let's be honest: is your app slow?
 
-Bad search = frustrated users = churn. Let's build search that just works.
+Load your app right now. Count the seconds until it's usable.
 
-TODAY'S AI TASK:
-Copy this prompt into Claude or ChatGPT:
+1-2 seconds = Good
+3-4 seconds = Users are leaving
+5+ seconds = You have a serious problem
 
----
-"I'm building [YOUR APP NAME] - [ONE SENTENCE DESCRIPTION].
+THE SPEED CHECK:
 
-Users search for: [MAIN SEARCHABLE ENTITY - e.g., "projects", "recipes", "documents"]
+1. Open Chrome DevTools (right-click → Inspect → Lighthouse tab)
+2. Click "Analyze page load"
+3. Look at your Performance score
 
-Each item has these fields:
-- [FIELD 1 - e.g., "title (text)"]
-- [FIELD 2 - e.g., "category (enum: work, personal, ideas)"]
-- [FIELD 3 - e.g., "status (enum: active, completed, archived)"]
-- [FIELD 4 - e.g., "createdAt (date)"]
-- [FIELD 5 - e.g., "tags (array)"]
+Below 50 = Problem
+50-80 = Needs work
+80+ = You're good
 
-Build a complete search and filter system:
+THE QUICK FIXES:
 
-1. SEARCH BAR
-   - Searches across [which fields?]
-   - Debounced (300ms delay)
-   - Shows loading state
-   - "No results" with helpful suggestion
+Tell Replit Agent:
 
-2. FILTERS
-   - Filter by [FILTER 1 - e.g., category dropdown]
-   - Filter by [FILTER 2 - e.g., status toggles]
-   - Filter by [FILTER 3 - e.g., date range]
-   - Clear all filters button
+"Improve my app's performance:
 
-3. SORTING
-   - Sort by: [OPTIONS - e.g., newest, oldest, alphabetical, most used]
-   - Remember user's preference
+1. IMAGES
+   - Compress all images (use TinyPNG or Squoosh)
+   - Add loading='lazy' to images below the fold
+   - Use WebP format if possible
 
-4. URL SYNC
-   - Store search/filter state in URL
-   - Users can share/bookmark filtered views
+2. LOADING STATES
+   - Show skeleton screens while data loads
+   - Don't wait for everything - show what you have
+   - Load critical stuff first, extras later
 
-5. RESULTS
-   - Highlight matching text
-   - Show result count
-   - Pagination or infinite scroll
+3. DATABASE
+   - Add indexes on frequently-searched columns
+   - Don't load ALL data, paginate
+   - Cache data that doesn't change often
 
-Generate complete React + TypeScript code with:
-- Frontend search component
-- API route with proper filtering
-- Database query optimization"
----
+4. CODE
+   - Remove unused dependencies
+   - Lazy load routes (only load pages when visited)
+   - Minify JavaScript and CSS (Replit does this for production)
 
-SEARCH UX BEST PRACTICES:
-- Instant feedback (show loading, show count)
-- Preserve scroll position when filtering
-- Remember recent searches
-- Suggest popular searches when empty
-- Handle typos gracefully
+5. FIRST LOAD
+   - Reduce initial bundle size
+   - Show something in under 1 second
+   - Full app can load after
 
-THE TECHNICAL BITS:
-- Debounce: Don't search on every keystroke
-- Backend filtering: Don't fetch everything then filter
-- Indexes: Add database indexes on searchable fields
+Run a Lighthouse audit and fix the top issues."
 
-Paste the code into Replit. Test it with real data.`,
-      outcome: "Complete search system with filters, sorting, URL sync, and instant results",
-      completionMessage: "Finding things in your app is now effortless. This seemingly simple feature is what separates amateur apps from professional ones.",
+THE 80/20 SPEED FIXES:
+
+These 4 things fix 80% of speed problems:
+
+1. COMPRESS IMAGES - Biggest impact for least effort
+2. ADD LOADING STATES - Perceived speed matters
+3. LAZY LOAD - Don't load what isn't needed
+4. DATABASE INDEXES - Speeds up every query
+
+THE REALITY CHECK:
+
+Your app doesn't need to be PERFECT. It needs to be FAST ENOUGH.
+
+Fast enough = Users don't notice the wait
+Fast enough = The app feels responsive
+Fast enough = Nobody leaves because of speed
+
+That's your target. Not perfection. Fast enough.`,
+      outcome: "App loads fast - images optimized, loading states added, performance improved",
+      completionMessage: "Your app is now FAST. Users won't notice the performance - and that's exactly the point. Speed is invisible when it's good. It only becomes visible when it's bad.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 26,
-      title: "Data Export & Portability",
-      description: "AI generates complete export functionality - CSV, PDF reports, and data downloads that build trust with your users.",
-      phase: "Week 4: Advanced Features & Polish",
+      title: "Let Users LEAVE (Data Export)",
+      description: "Give users the power to export their data. Ironically, this makes them STAY.",
+      phase: "Week 4: Polish & Launch",
       videoUrl: null,
       aiTaskType: "generator",
-      aiTaskTitle: "AI Export Builder",
-      aiTaskDescription: "Tell AI what data users have. It generates complete export features with proper formatting and professional PDF reports.",
+      aiTaskTitle: "Data Export",
+      aiTaskDescription: "Add export features so users can take their data anywhere.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What would your users do with exported data?",
-      microDecisionOptions: JSON.stringify(["Analyze in spreadsheets - they want CSV/Excel", "Share with others - they need PDF reports", "Backup their work - they want full data dump", "Import elsewhere - they need standard formats"]),
-      reflectionQuestion: "Have you ever been trapped in an app that wouldn't let you export your data? How did that feel?",
-      tip: "Export features build trust. Users think 'I'm not locked in - I can leave anytime.' Ironically, that makes them MORE likely to stay.",
-      lesson: `DATA FREEDOM: LET YOUR USERS TAKE THEIR STUFF
+      microDecisionQuestion: "What would users do with their exported data?",
+      microDecisionOptions: JSON.stringify(["ANALYZE it (spreadsheets, charts)", "SHARE it (reports, presentations)", "BACKUP it (peace of mind)", "MOVE it (to another tool)"]),
+      reflectionQuestion: "Ever been trapped in an app that wouldn't let you export? How did that feel? Don't do that to your users.",
+      tip: "Export builds TRUST. Users think 'I can leave anytime' which ironically makes them STAY because they don't feel trapped.",
+      lesson: `Here's a weird truth about SaaS:
 
-Users want to know they OWN their data. Export features prove it.
+The more freedom you give users to LEAVE, the more likely they are to STAY.
 
-TODAY'S AI TASK:
-Copy this prompt into Claude or ChatGPT:
+Export features say: "We're confident you'll stay because we're GOOD, not because you're TRAPPED."
 
----
-"I'm building [YOUR APP NAME] - [ONE SENTENCE DESCRIPTION].
+That's powerful.
 
-Users have this data they might want to export:
-- [DATA TYPE 1 - e.g., "List of projects with: name, description, status, dates"]
-- [DATA TYPE 2 - e.g., "Activity history: actions, timestamps, results"]
-- [DATA TYPE 3 - e.g., "Analytics: daily usage, achievements, progress"]
+THE EXPORT BUILD:
 
-Build complete export functionality:
+Tell Replit Agent:
+
+"Add data export features to my app:
 
 1. CSV EXPORT
-   - Export [main entity] to CSV
-   - Include all relevant columns with headers
-   - Handle special characters (commas, quotes)
-   - Filename: [entity]-export-YYYY-MM-DD.csv
+   - Button: 'Export to CSV'
+   - Include: [LIST YOUR MAIN DATA FIELDS]
+   - Filename: my-data-YYYY-MM-DD.csv
+   - Works with large datasets
 
-2. PDF REPORT
-   - Professional report layout
-   - Header with app logo and date range
-   - Summary statistics at top
-   - Detailed data in clean table format
-   - Footer with generation timestamp
-   - Filename: [entity]-report-YYYY-MM-DD.pdf
+2. PDF REPORT (optional but impressive)
+   - Button: 'Download Report'
+   - Professional layout with my app logo
+   - Summary stats at top
+   - Data in clean table format
+   - Filename: report-YYYY-MM-DD.pdf
 
-3. FULL DATA EXPORT (Account Backup)
-   - JSON file with ALL user data
-   - Include all related entities
-   - Useful for migration or backup
-   - Filename: my-data-export-YYYY-MM-DD.json
+3. FULL BACKUP
+   - Button: 'Export All My Data'
+   - JSON file with EVERYTHING
+   - For users who want complete backup
+   - Include all related data
 
 4. UX
-   - Export button in obvious location
-   - Loading state during generation
-   - Success toast when complete
+   - Show loading state while generating
+   - Success message when done
    - Handle large exports gracefully
 
-Generate React + TypeScript code using:
-- CSV: Papa Parse or native generation
-- PDF: jsPDF or react-pdf
-- Include backend API routes"
----
+Put export options in Settings or on the main data page."
 
-PRO TIPS:
-- Large exports: Generate in background, email when ready
-- PDF branding: Include your logo, use your colors
-- Privacy: Only export that user's data, never others'
-- Dates: Use ISO format for data, human format for reports
+WHERE TO PUT EXPORT BUTTONS:
 
-WHAT THIS SIGNALS TO USERS:
-"We don't hold your data hostage"
-"We're confident you'll stay because we're good, not because you're trapped"
-"We respect your ownership"
+Option 1: Settings page → "Your Data" section
+Option 2: Main data view → "Export" dropdown in header
+Option 3: Account page → "Download my data"
 
-This is trust-building 101.`,
-      outcome: "CSV export, PDF reports, and full data backup - users can take their data anywhere",
-      completionMessage: "Your users now own their data completely. This single feature communicates more trust than any marketing copy ever could.",
+Any of these works. Pick one.
+
+WHAT USERS THINK WHEN THEY SEE EXPORT:
+
+❌ Without export: "Am I trapped here?"
+✅ With export: "Cool, I can leave whenever. But I don't need to."
+
+THE TRUST SIGNAL:
+
+Export features tell users:
+- We respect your data
+- We're not holding you hostage
+- We're confident in our product
+
+It's a power move that costs you nothing.`,
+      outcome: "Users can export their data - CSV, reports, full backup",
+      completionMessage: "Your users now OWN their data. They can leave anytime. And weirdly, that makes them want to stay. Trust is a powerful thing.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 27,
-      title: "Mobile Audit & Responsive Overhaul",
-      description: "AI audits your app for mobile issues and generates specific fixes - no more pinching, squinting, or rage-tapping tiny buttons.",
-      phase: "Week 4: Advanced Features & Polish",
+      title: "Your LANDING PAGE",
+      description: "Your app needs a front door. A landing page that converts visitors into signups. Let's build it.",
+      phase: "Week 4: Polish & Launch",
       videoUrl: null,
-      aiTaskType: "audit",
-      aiTaskTitle: "AI Mobile Audit",
-      aiTaskDescription: "Describe your current layout. AI identifies mobile problems and generates the exact CSS/component fixes needed.",
+      aiTaskType: "generator",
+      aiTaskTitle: "Landing Page",
+      aiTaskDescription: "Create a landing page that converts visitors into users.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "How do you expect most users to access your app?",
-      microDecisionOptions: JSON.stringify(["Mostly desktop - but mobile should work", "50/50 split - both matter equally", "Mostly mobile - phone-first audience", "Tablet-heavy - lots of iPad users"]),
-      reflectionQuestion: "Open your app on your phone right now. What's the first thing that frustrates you?",
-      tip: "55% of web traffic is mobile. If your app sucks on phones, you're losing HALF your potential users before they even see your features.",
-      lesson: `MOBILE REALITY CHECK
+      microDecisionQuestion: "What should your landing page FOCUS on?",
+      microDecisionOptions: JSON.stringify(["THE PROBLEM - Pain they're experiencing", "THE SOLUTION - What your app does", "THE PROOF - Results others got", "THE OFFER - Why sign up NOW"]),
+      reflectionQuestion: "In ONE sentence, why should someone sign up for your app TODAY?",
+      tip: "A great landing page answers ONE question: 'What's in it for me?' Answer it in the first 5 seconds and you've won.",
+      lesson: `Your app needs a front door.
 
-Open your app on your phone. Be honest: is it good?
+Right now, people land on your login page. That's like walking into a store and immediately seeing the cash register.
 
-TODAY'S AI TASK:
-First, actually test your app on your phone (or Chrome DevTools mobile view).
-Note every problem you see. Then copy this prompt:
+You need a LANDING PAGE - something that sells.
 
----
-"I'm building [YOUR APP NAME] - [ONE SENTENCE DESCRIPTION].
+THE LANDING PAGE FORMULA:
 
-Here are the mobile issues I've found:
-1. [ISSUE 1 - e.g., "Navigation bar is too cramped, buttons overlap"]
-2. [ISSUE 2 - e.g., "Text is too small to read on the dashboard"]
-3. [ISSUE 3 - e.g., "Forms are hard to fill out, keyboard covers inputs"]
-4. [ISSUE 4 - e.g., "Tables don't fit, have to scroll horizontally constantly"]
-5. [ISSUE 5 - e.g., "Buttons are too small to tap accurately"]
+1. HERO SECTION (Above the fold - no scrolling)
+   - Headline: What you do + for whom + the benefit
+   - Subheadline: How you do it differently
+   - CTA button: "Start Free" or "Try It Now"
+   - Maybe a screenshot or demo video
 
-My current layout:
-- Navigation: [DESCRIBE - e.g., "Top bar with 5 nav items"]
-- Main screens: [DESCRIBE - e.g., "Dashboard, list view, detail view, settings"]
-- Complex areas: [DESCRIBE - e.g., "Data tables with 6 columns"]
+2. PROBLEM SECTION
+   - "Tired of [THEIR PAIN]?"
+   - 3 specific problems they face
+   - Make them feel understood
 
-Generate a complete mobile-responsive overhaul:
+3. SOLUTION SECTION
+   - "Here's how [APP NAME] helps"
+   - 3-4 key features with benefits (not just features)
+   - Screenshots or illustrations
 
-1. NAVIGATION
-   - Convert to hamburger menu or bottom tabs on mobile
-   - Make touch targets 44px minimum
+4. SOCIAL PROOF (if you have it)
+   - Testimonials
+   - Logos of companies using it
+   - Numbers ("500+ users" or "10,000 tasks completed")
 
-2. TYPOGRAPHY
-   - Minimum 16px font size (prevents iOS zoom)
-   - Proper line height for readability
-   - Don't make users pinch to read
+5. FINAL CTA
+   - Repeat your main call-to-action
+   - Maybe add urgency ("Free during beta")
 
-3. FORMS
-   - Full-width inputs on mobile
-   - Proper input types (email, tel, number)
-   - Labels above fields, not beside
-   - Form doesn't shift when keyboard appears
+THE BUILD PROMPT:
 
-4. TABLES → CARDS
-   - Convert data tables to stacked cards on mobile
-   - Or make tables horizontally scrollable
-   - Priority: show most important info first
+Tell Replit Agent:
 
-5. TOUCH TARGETS
-   - All buttons 44x44px minimum
-   - Adequate spacing between tap targets
-   - No hover-only interactions
+"Create a landing page for my app:
 
-Generate specific CSS/Tailwind and component changes for each issue."
----
+APP NAME: [YOUR APP NAME]
+TAGLINE: [ONE SENTENCE - WHAT IT DOES FOR WHOM]
+TARGET USER: [WHO IS THIS FOR]
+MAIN BENEFIT: [THE #1 THING THEY GET]
 
-THE MOBILE TESTING CHECKLIST:
-□ Can I read all text without zooming?
-□ Can I tap all buttons without mis-clicking?
-□ Do forms work with the keyboard up?
-□ Does navigation work with one thumb?
-□ Do images and tables fit the screen?
+Build a landing page with:
 
-Do this on a REAL phone, not just DevTools.`,
-      outcome: "App fully tested and working on mobile - proper navigation, readable text, tappable buttons",
-      completionMessage: "You just unlocked half of the internet. Mobile users can now actually use your app. That's not a nice-to-have, that's survival.",
+1. HERO
+   - Headline: [YOUR HEADLINE]
+   - Subheadline: [YOUR SUBHEADLINE]
+   - CTA: 'Start Free' → links to /signup
+   - Include a screenshot of the app
+
+2. PROBLEM
+   - Section title: 'The Problem'
+   - 3 pain points as cards
+
+3. SOLUTION
+   - Section title: 'How [APP NAME] Helps'
+   - 3-4 features with icons and descriptions
+
+4. CTA
+   - 'Ready to get started?'
+   - 'Start Free' button → /signup
+
+Modern, clean design. Mobile-responsive.
+Put it at the root URL (/)"
+
+WRITE YOUR HEADLINE:
+
+Formula: [ACTION] [THING] [WITHOUT PAIN/WITH BENEFIT]
+
+Examples:
+- "Create social posts without the headache"
+- "Track your habits and actually stick to them"
+- "Build landing pages in minutes, not hours"
+
+Your turn. What's yours?`,
+      outcome: "Landing page that converts visitors into signups",
+      completionMessage: "Your app now has a front door. Visitors can understand what you do and why they should care - before they even sign up. That's marketing 101.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 28,
-      title: "Performance Audit & Speed Boost",
-      description: "AI analyzes your app for performance bottlenecks and generates specific optimizations - faster loads, snappier interactions.",
-      phase: "Week 4: Advanced Features & Polish",
+      title: "Security CHECK (Don't Get Hacked)",
+      description: "Before you launch, let's make sure you're not leaving the door wide open for hackers.",
+      phase: "Week 4: Polish & Launch",
       videoUrl: null,
       aiTaskType: "audit",
-      aiTaskTitle: "AI Performance Audit",
-      aiTaskDescription: "Tell AI about your current performance issues. It identifies bottlenecks and generates specific fixes.",
+      aiTaskTitle: "Security Audit",
+      aiTaskDescription: "Run through the security checklist before launch.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Where does your app feel slowest?",
-      microDecisionOptions: JSON.stringify(["Initial page load - takes forever to see content", "Navigation - switching pages feels sluggish", "Data operations - saving/loading feels slow", "Everything feels fine, but I want it faster"]),
-      reflectionQuestion: "Time yourself: how many seconds from hitting enter to seeing your app fully loaded? Be honest.",
-      tip: "A 1-second delay = 7% drop in conversions. A 3-second load = 53% of mobile users leave. Speed is literally money.",
-      lesson: `MAKE IT FAST: PERFORMANCE THAT MATTERS
+      microDecisionQuestion: "How confident are you in your app's security?",
+      microDecisionOptions: JSON.stringify(["CONFIDENT - I've thought about this", "UNSURE - I don't really know", "WORRIED - I haven't checked anything", "CLUELESS - Security what?"]),
+      reflectionQuestion: "If a hacker broke into your app tomorrow, what's the worst thing they could access?",
+      tip: "You don't need to be a security expert. You just need to NOT do the obviously dumb things. This checklist covers the obvious stuff.",
+      lesson: `Before you launch, let's make sure you're not an easy target.
 
-Slow apps lose users. Fast apps win. Here's how to diagnose and fix.
+You don't need to be a security expert. You just need to NOT do the dumb stuff.
 
-STEP 1: MEASURE FIRST
-Open Chrome DevTools → Lighthouse → Run audit
-Note your scores:
-- Performance: ___
-- First Contentful Paint: ___
-- Largest Contentful Paint: ___
-- Time to Interactive: ___
+THE SECURITY CHECKLIST:
 
-STEP 2: AI ANALYSIS
-Copy this prompt into Claude or ChatGPT:
+Go through each item. Check it. Fix what's broken.
 
----
-"I'm building [YOUR APP NAME] - [ONE SENTENCE DESCRIPTION].
+1. API KEYS & SECRETS
+   □ All API keys in environment variables (not code)
+   □ No secrets in GitHub/Replit files
+   □ .env file in .gitignore
+   □ No keys visible in browser console/network tab
 
-Here's my current performance situation:
-- Lighthouse Performance Score: [SCORE]
-- First Contentful Paint: [TIME]
-- Largest Contentful Paint: [TIME]
-- Time to Interactive: [TIME]
+2. AUTHENTICATION
+   □ Passwords are hashed (not plain text)
+   □ Password reset links expire
+   □ Sessions expire after inactivity
+   □ Can't access dashboard without logging in
 
-Current issues I've noticed:
-1. [ISSUE 1 - e.g., "Initial load takes 4+ seconds"]
-2. [ISSUE 2 - e.g., "Dashboard feels sluggish with data"]
-3. [ISSUE 3 - e.g., "Images load slowly"]
+3. DATA PROTECTION
+   □ Users can only see THEIR data
+   □ Admin routes require admin check
+   □ No user IDs exposed in URLs that allow access to others' data
+   □ Input validation on all forms
 
-My tech stack:
-- Frontend: [e.g., React, Next.js]
-- Backend: [e.g., Node/Express]
-- Database: [e.g., PostgreSQL]
-- Hosting: [e.g., Replit, Vercel]
+4. COMMON ATTACKS
+   □ SQL injection: Using ORM (Drizzle/Prisma), not raw SQL
+   □ XSS: React escapes HTML by default (don't use dangerouslySetInnerHTML)
+   □ CSRF: Using proper session management
 
-Analyze my performance and generate specific fixes:
+5. HTTPS
+   □ Replit/Vercel handles this automatically
+   □ No mixed content warnings
+   □ API calls use https://
 
-1. IMAGE OPTIMIZATION
-   - Convert to WebP
-   - Proper sizing
-   - Lazy loading
-   - Generate the code
+THE QUICK SECURITY FIX:
 
-2. API OPTIMIZATION
-   - Reduce unnecessary calls
-   - Add caching
-   - Pagination for lists
-   - Generate the code
+Tell Replit Agent:
 
-3. LOADING STATES
-   - Skeleton screens instead of spinners
-   - Optimistic updates
-   - Progressive loading
-   - Generate the code
+"Audit my app for basic security issues:
 
-4. CODE SPLITTING
-   - Lazy load routes
-   - Dynamic imports for heavy components
-   - Generate the code
+1. Check that all API routes require authentication
+2. Ensure users can only access their own data
+3. Verify no secrets are exposed in client code
+4. Add rate limiting to prevent abuse
+5. Ensure all forms have input validation
 
-5. DATABASE
-   - Add indexes for common queries
-   - Optimize N+1 problems
-   - Generate the queries
+Fix any issues you find."
 
-Give me specific, copy-paste-ready code for each fix."
----
+THE TEST:
 
-QUICK WINS (Do These Today):
-1. Compress images with TinyPNG or Squoosh
-2. Add loading="lazy" to images below the fold
-3. Remove unused npm packages
-4. Add indexes to frequently-queried database columns
+1. Log in as User A
+2. Copy a URL that shows User A's data
+3. Log in as User B
+4. Paste that URL
+5. Can User B see User A's data?
 
-TARGET SCORES:
-- Performance: > 80
-- FCP: < 1.8s
-- LCP: < 2.5s
-- TTI: < 3.9s`,
-      outcome: "Measurably faster app - optimized images, efficient APIs, proper loading states",
-      completionMessage: "Speed is a competitive advantage. Your users will feel the difference even if they can't articulate it. This is polish that matters. But here's the truth: a polished app without a business strategy is just an expensive hobby. Something to think about as you finish these final days...",
+If YES, you have a HUGE problem. Fix it now.
+
+WHAT HACKERS LOOK FOR:
+
+1. Exposed API keys (free money for them)
+2. No auth checks (access anything)
+3. User IDs in URLs (enumerate all users)
+4. No rate limiting (brute force passwords)
+
+Don't be an easy target. Run through this list.`,
+      outcome: "Basic security audit complete - no obvious vulnerabilities",
+      completionMessage: "Your app isn't an easy target anymore. You've checked the basics. Professional security audits exist for a reason, but you've covered the obvious stuff. That's enough for launch.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 29,
-      title: "Bulletproof Error Handling",
-      description: "AI reviews your app and generates comprehensive error handling - graceful failures, helpful messages, and logging that saves your sanity.",
-      phase: "Week 4: Advanced Features & Polish",
+      title: "Pre-Launch CHECKLIST",
+      description: "Tomorrow you launch. Today you make absolutely sure everything is ready. No surprises.",
+      phase: "Week 4: Polish & Launch",
       videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "AI Error System Builder",
-      aiTaskDescription: "Tell AI about your app's operations. It generates complete error handling - boundaries, messages, and logging.",
+      aiTaskType: "setup",
+      aiTaskTitle: "Final Check",
+      aiTaskDescription: "Run through the complete pre-launch checklist.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's your error philosophy?",
-      microDecisionOptions: JSON.stringify(["Protective - catch everything, never show raw errors", "Transparent - tell users exactly what went wrong", "Helpful - explain the error AND how to fix it", "Minimal - simple 'try again' for everything"]),
-      reflectionQuestion: "What's the worst error message you've ever seen in an app? What made it so bad?",
-      tip: "Your users WILL hit errors. The question is: will they see 'ERROR: ECONNREFUSED 127.0.0.1:5432' or 'Having trouble connecting. Check your internet and try again.'?",
-      lesson: `ERROR HANDLING: WHEN (NOT IF) THINGS BREAK
+      microDecisionQuestion: "How ready do you FEEL?",
+      microDecisionOptions: JSON.stringify(["PUMPED - Let's gooo!", "READY - Nervous but prepared", "WORRIED - Still have doubts", "TERRIFIED - Is it good enough?"]),
+      reflectionQuestion: "What's the ONE thing that would embarrass you if it broke on launch day?",
+      tip: "Tomorrow is launch day. Today is 'find everything that could go wrong' day. Better to find problems now than when real users are watching.",
+      lesson: `Tomorrow you launch. Today we make sure you're ACTUALLY ready.
 
-Things WILL break. Networks fail. Servers hiccup. Users do unexpected things. Your job: fail gracefully.
+Go through this ENTIRE checklist. Check every single item. Fix anything that's broken.
 
-TODAY'S AI TASK:
-Copy this prompt into Claude or ChatGPT:
+THE FINAL CHECKLIST:
 
----
-"I'm building [YOUR APP NAME] - [ONE SENTENCE DESCRIPTION].
+CORE FUNCTIONALITY
+□ Sign up works (test with a new email)
+□ Login works
+□ Password reset works
+□ Main feature works end-to-end
+□ Secondary features work
+□ Payments work (test with 4242 4242 4242 4242)
+□ Data saves and persists after refresh
+□ Logout works
 
-Here are the main operations that could fail:
-1. [OPERATION 1 - e.g., "User login/authentication"]
-2. [OPERATION 2 - e.g., "Saving user data"]
-3. [OPERATION 3 - e.g., "Loading dashboard data"]
-4. [OPERATION 4 - e.g., "Processing payments"]
-5. [OPERATION 5 - e.g., "Third-party API calls"]
+USER EXPERIENCE
+□ Landing page is clear and compelling
+□ Signup is simple (minimum fields)
+□ Dashboard loads without errors
+□ Navigation makes sense
+□ Mobile works
+□ Loading states exist
+□ Error messages are helpful
 
-Generate a complete error handling system:
+TECHNICAL
+□ No console errors
+□ No broken links
+□ No exposed API keys
+□ Fast enough (< 3 second load)
+□ Images optimized
+□ HTTPS working
 
-1. ERROR BOUNDARY (React)
-   - Catch crashes, show friendly fallback
-   - Allow user to "try again"
-   - Report error to logging
+CONTENT
+□ Favicon set
+□ Page titles correct
+□ 404 page exists
+□ Privacy policy page exists
+□ Terms of service page exists
 
-2. API ERROR HANDLING
-   - Consistent try/catch pattern
-   - Different messages for different errors:
-     - Network error → "Connection problem"
-     - 401 → "Please log in again"
-     - 403 → "You don't have permission"
-     - 404 → "Not found"
-     - 500 → "Something went wrong on our end"
-   - Never show raw error messages to users
+BUSINESS
+□ Stripe keys are LIVE (not test)
+□ Email domain verified (or using resend.dev)
+□ Support email ready (even if just your email)
+□ Know what you'll do if something breaks
 
-3. FORM VALIDATION ERRORS
-   - Inline error messages
-   - Clear, specific feedback
-   - Don't clear the form on error
+THE FINAL TEST:
 
-4. TOAST NOTIFICATIONS
-   - Error toasts for failures
-   - Include "try again" action when possible
-   - Auto-dismiss after 5 seconds
+1. Open incognito browser
+2. Go to your landing page
+3. Sign up as a brand new user
+4. Complete one full workflow
+5. Upgrade to paid (use real card in test mode)
+6. Check you got charged
+7. Check welcome email arrived
+8. Log out and log back in
 
-5. ERROR LOGGING
-   - Log to console in development
-   - Log to database/service in production
-   - Include: error message, stack trace, user ID, timestamp, action attempted
+If ALL of that works, you're ready.
 
-6. OFFLINE HANDLING
-   - Detect when offline
-   - Queue actions to retry
-   - Show offline indicator
+COMMON LAUNCH DAY DISASTERS:
 
-Generate complete React + TypeScript code for all of this."
----
+1. Stripe still in test mode → No real payments!
+2. Email not set up → Users can't reset passwords
+3. No error handling → Ugly crashes
+4. Forgot to buy domain → Weird URL
+5. Database issues → Lost data
 
-ERROR MESSAGE WRITING GUIDE:
-BAD: "Error: ECONNREFUSED"
-BAD: "Something went wrong"
-GOOD: "Couldn't save your changes. Check your internet and try again."
-GOOD: "This email is already registered. Try logging in instead?"
+Check. Check. Check. Then check again.
 
-THE FORMULA:
-[What happened] + [Why it might have happened] + [What to do next]
-
-ERROR LOGGING SAVES LIVES:
-When a user reports "it's broken", you need to know:
-- What they were doing
-- What error occurred
-- When it happened
-- What their state was
-
-Without logging, you're flying blind.`,
-      outcome: "Complete error handling - boundaries, friendly messages, and logging that helps you debug",
-      completionMessage: "Your app now fails gracefully. When things break (and they will), users get help instead of cryptic messages, and you get the logs to fix it. Tomorrow is your final day. You've built something real - but building an app and building a business are two very different things.",
+Sleep well tonight. Tomorrow you launch.`,
+      outcome: "Complete pre-launch checklist done - ready for launch day",
+      completionMessage: "You've checked everything. You've tested everything. You're as ready as you'll ever be. Tomorrow is the day. Get some sleep. You've earned it.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 30,
-      title: "Launch Ready: Final Polish & What's Next",
-      description: "AI generates your personalized launch checklist, README, and final polish tasks. Then we talk about what REALLY comes next.",
+      title: "🚀 LAUNCH DAY",
+      description: "You did it. 30 days ago this was an idea. Today it's a REAL product. Time to launch.",
       phase: "The Finisher",
       videoUrl: null,
       aiTaskType: "generator",
-      aiTaskTitle: "AI Launch Prep",
-      aiTaskDescription: "Tell AI about your app. It generates a personalized launch checklist and README tailored to your specific project.",
+      aiTaskTitle: "Launch Time",
+      aiTaskDescription: "You've made it. Let's launch this thing.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "How do you feel right now?",
-      microDecisionOptions: JSON.stringify(["Proud - I can't believe I actually built this", "Nervous - Is it good enough to show people?", "Excited - I want to get this in front of users", "Exhausted - but ready to push through"]),
-      reflectionQuestion: "30 days ago, this was just an idea. Look at what you've built. What surprised you most about this journey?",
-      tip: "Most people never finish anything. You did. That alone puts you in the top 1%. The code doesn't have to be perfect. It has to work and solve a real problem.",
-      lesson: `DAY 30: YOU ACTUALLY DID IT
+      microDecisionQuestion: "How do you feel RIGHT NOW?",
+      microDecisionOptions: JSON.stringify(["PROUD - I can't believe I built this", "EXCITED - Let's get users!", "NERVOUS - Is it good enough?", "EXHAUSTED - But I'm finishing this"]),
+      reflectionQuestion: "30 days ago, this was just an idea. Look at what you've built. What surprised you most about yourself?",
+      tip: "Most people never finish ANYTHING. You did. That alone puts you in the top 1% of people who talk about building something.",
+      lesson: `🎉 YOU ACTUALLY DID IT.
 
-30 days ago, this was an idea. Today, it's real software.
+30 days ago, you had an idea.
+Today, you have a REAL product.
 
-Let's make sure you're truly launch-ready.
-
-FINAL AI TASK:
-Copy this prompt into Claude or ChatGPT:
-
----
-"I've just completed building [YOUR APP NAME] - [ONE SENTENCE DESCRIPTION].
-
-Tech stack: [YOUR STACK]
-Main features: [LIST YOUR FEATURES]
-Target users: [WHO IS THIS FOR]
-
-Generate three things for me:
-
-1. PERSONALIZED LAUNCH CHECKLIST
-   Based on my specific app, what do I need to verify before launch?
-   Include: security checks, functionality tests, edge cases, legal requirements
-   Be specific to MY app, not generic
-
-2. README.md
-   Generate a complete README for my GitHub repo including:
-   - Project description
-   - Features list
-   - Tech stack
-   - Setup instructions
-   - Environment variables needed
-   - How to contribute (if open source)
-
-3. PRE-LAUNCH POLISH
-   What are the TOP 5 small things I should fix/add before showing this to users?
-   Be specific and actionable."
----
-
-THE FINAL CHECKLIST:
-
-SECURITY
-□ No API keys in code (use environment variables)
-□ Authentication working properly
-□ Admin routes protected
-□ User data isolated (can't see others' data)
-
-FUNCTIONALITY
-□ All core features tested
-□ Forms validate properly
-□ Error handling in place
-□ Mobile works
-
-POLISH
-□ Loading states present
-□ Success/error feedback
-□ No broken links
-□ No console errors
-
-BACKUP
-□ Code in GitHub
-□ Database backed up
-□ Environment variables documented
-
----
+Let that sink in.
 
 WHAT YOU'VE BUILT:
-- A real, working SaaS application
-- User authentication
-- Core features that solve a problem
-- Professional UI/UX with feedback
-- Admin dashboard
-- Search and filtering
-- Data export
-- Mobile-responsive design
-- Error handling
-- Performance optimization
+
+□ A complete SaaS application
+□ User authentication & accounts
+□ AI-powered features
+□ Payment processing
+□ Email integration
+□ Admin dashboard
+□ Professional UI/UX
+□ Mobile-responsive design
+□ Landing page that converts
+□ Security basics covered
+
+This is REAL. This is YOURS.
+
+Most people never finish anything. They talk about it, plan it, "research" it... but they never SHIP.
+
+You shipped.
+
+That makes you different.
+
+THE LAUNCH:
+
+Your app is ready. Here's how to launch:
+
+1. Switch Stripe to LIVE mode
+2. Verify your email domain (or use resend.dev)
+3. Share your landing page URL with:
+   - 5 people who have the problem you solve
+   - 3 online communities where your users hang out
+   - Your social media (if you have any)
+
+Start small. Get 5-10 users. Learn from them.
 
 ---
 
-THE HONEST TRUTH ABOUT WHAT'S NEXT:
+BUT HERE'S THE TRUTH...
 
-You've done what 99% of people never do. You shipped.
+An app is NOT a business.
 
-But here's what nobody tells you: an app is NOT a business.
+You've built the product. That's the easy part. (Yes, really.)
 
-Most builders get stuck right here. They have a working product but no idea how to:
-- Position it so the right people find it
-- Price it so people actually pay
-- Get their first 10 paying customers
-- Scale beyond word-of-mouth
-- Build systems that generate consistent income
+The HARD part? Getting people to pay for it.
 
-The technical skills that got you here won't get you there. Building a business requires completely different skills: positioning, pricing, sales, marketing, systems.
+Most builders get stuck right here:
+- They have a product nobody knows about
+- They have no idea how to market it
+- They don't know how to price it
+- They can't get their first 10 customers
+- They have no systems for growth
 
-That's exactly what I help with.
+The skills that got you HERE won't get you THERE.
 
-If you're serious about turning this into real income - not just a side project that collects dust - I offer 1:1 mentorship where we work together on the BUSINESS side.
+Building an app = technical skills
+Building a business = completely different skills
+
+Positioning. Pricing. Sales. Marketing. Systems. Scaling.
+
+That's the stuff that turns a product into income.
+
+---
+
+WHAT'S NEXT?
+
+If you're serious about turning this into REAL income - not just a side project that collects dust - I can help.
+
+I offer 1:1 mentorship where we work together on the BUSINESS side:
+- Positioning that attracts the right customers
+- Pricing that people actually pay
+- Marketing that doesn't feel gross
+- Systems that generate consistent income
+- The accountability to actually follow through
 
 Apply here: https://www.mattwebley.com/workwithmatt
 
-Most people never finish. You did. That makes you different.
+You've proven you can BUILD.
+Now let's see if you're ready to build the BUSINESS.
 
-Now let's see if you're ready to build the business too.`,
-      outcome: "Launch checklist complete, README generated, app polished and ready for real users",
-      completionMessage: "You did it. 30 days ago, this was just an idea. Today, it's a real SaaS. Most people never finish anything. You shipped. That makes you a builder. But building an app and building a business are two different things. If you want 1:1 help turning this into real income, apply here: https://www.mattwebley.com/workwithmatt",
+---
+
+Congratulations. You're a builder now.
+
+What you do next determines everything.`,
+      outcome: "You launched. You're officially a builder.",
+      completionMessage: "🎉 30 DAYS COMPLETE! You built a real SaaS product from scratch. You're in the top 1% of people who actually SHIP. The product is done - now the real work begins. If you want 1:1 help turning this into real income, apply here: https://www.mattwebley.com/workwithmatt",
       xpReward: 300,
       estimatedMinutes: 5,
     },

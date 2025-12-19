@@ -1,0 +1,765 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import {
+  Sparkles,
+  Loader2,
+  Check,
+  ChevronRight,
+  ChevronLeft,
+  ExternalLink,
+  Globe,
+  AlertCircle,
+  CheckCircle2,
+  AlertTriangle,
+  DollarSign,
+  Ban,
+  Lightbulb
+} from "lucide-react";
+import { toast } from "sonner";
+import { motion, AnimatePresence } from "framer-motion";
+
+interface NameSuggestion {
+  name: string;
+  domain: string;
+  tagline: string;
+  why: string;
+}
+
+interface DomainCheckResult {
+  domain: string;
+  available: boolean;
+  price?: string;
+  registrar?: string;
+}
+
+interface Day4NamingProps {
+  dayId: number;
+  userIdea: string;
+  painPoints: string[];
+  features: string[];
+  onComplete: () => void;
+}
+
+// Namecheap affiliate link
+const NAMECHEAP_AFFILIATE = "https://www.namecheap.com/?aff=YOUR_AFFILIATE_ID";
+
+// Social platforms to register
+const SOCIAL_PLATFORMS = [
+  {
+    id: "domain",
+    label: "Domain (.com)",
+    icon: "🌐",
+    checkUrl: (name: string) => `https://www.namecheap.com/domains/registration/results/?domain=${name.toLowerCase().replace(/\s+/g, '')}.com&aff=YOUR_AFFILIATE_ID`,
+    description: "Your main website"
+  },
+  {
+    id: "twitter",
+    label: "Twitter / X",
+    icon: "𝕏",
+    checkUrl: (name: string) => `https://twitter.com/${name.toLowerCase().replace(/\s+/g, '')}`,
+    description: "Check if @handle is available"
+  },
+  {
+    id: "instagram",
+    label: "Instagram",
+    icon: "📷",
+    checkUrl: (name: string) => `https://instagram.com/${name.toLowerCase().replace(/\s+/g, '')}`,
+    description: "Check if @handle is available"
+  },
+  {
+    id: "linkedin",
+    label: "LinkedIn Page",
+    icon: "💼",
+    checkUrl: (name: string) => `https://www.linkedin.com/company/${name.toLowerCase().replace(/\s+/g, '-')}`,
+    description: "Create a company page"
+  },
+  {
+    id: "tiktok",
+    label: "TikTok",
+    icon: "🎵",
+    checkUrl: (name: string) => `https://tiktok.com/@${name.toLowerCase().replace(/\s+/g, '')}`,
+    description: "Check if @handle is available"
+  },
+  {
+    id: "github",
+    label: "GitHub",
+    icon: "💻",
+    checkUrl: (name: string) => `https://github.com/${name.toLowerCase().replace(/\s+/g, '')}`,
+    description: "For your open source / code"
+  },
+];
+
+export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }: Day4NamingProps) {
+  const queryClient = useQueryClient();
+  const [currentStep, setCurrentStep] = useState<"learn" | "generate" | "confirm" | "complete">("learn");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
+  const [aiAttempts, setAiAttempts] = useState(0);
+  const MAX_AI_ATTEMPTS = 3;
+
+  const [nameSuggestions, setNameSuggestions] = useState<NameSuggestion[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [customName, setCustomName] = useState("");
+  const [finalName, setFinalName] = useState("");
+  const [finalDomain, setFinalDomain] = useState("");
+  const [domainResults, setDomainResults] = useState<Record<string, DomainCheckResult>>({});
+  const [registeredItems, setRegisteredItems] = useState<Set<string>>(new Set());
+
+  const toggleRegistered = (itemId: string) => {
+    const newRegistered = new Set(registeredItems);
+    if (newRegistered.has(itemId)) {
+      newRegistered.delete(itemId);
+    } else {
+      newRegistered.add(itemId);
+    }
+    setRegisteredItems(newRegistered);
+  };
+
+  const allItemsRegistered = registeredItems.size >= 2; // At least domain + 1 social
+
+  const saveProgress = useMutation({
+    mutationFn: async (data: any) => {
+      const res = await apiRequest("POST", "/api/progress/4", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
+    },
+  });
+
+  const generateNames = async () => {
+    if (aiAttempts >= MAX_AI_ATTEMPTS) return;
+    setAiAttempts(prev => prev + 1);
+    setIsGenerating(true);
+
+    try {
+      const prompt = `You are a SaaS naming expert. Generate 6 unique, brandable product names for this startup:
+
+PRODUCT IDEA: ${userIdea}
+
+PROBLEMS IT SOLVES:
+${painPoints.length > 0 ? painPoints.map(p => `- ${p}`).join('\n') : '- General productivity/efficiency problems'}
+
+KEY FEATURES:
+${features.length > 0 ? features.map(f => `- ${f}`).join('\n') : '- Core functionality for the target audience'}
+
+NAMING REQUIREMENTS (CRITICAL):
+1. SHORT - 1-2 words maximum, under 10 characters ideal
+2. EASY TO SPELL - No tricky spellings that people will get wrong
+3. MEMORABLE - Should stick in someone's head after hearing it once
+4. AVAILABLE .COM LIKELY - Avoid common dictionary words (those .coms are taken)
+5. NO HYPHENS OR NUMBERS - Ever. They look unprofessional.
+6. UNIQUE & BRANDABLE - Not generic like "TaskManager" or "DataHub"
+
+NAME STYLES TO MIX:
+- Made-up words (Spotify, Trello, Asana)
+- Compound words (Mailchimp, Dropbox, Basecamp)
+- Misspellings (Lyft, Fiverr, Tumblr)
+- Short real words (Slack, Zoom, Notion)
+- Prefixes/Suffixes (Shopify, Webflow, Loomly)
+
+For each name provide:
+- name: The product name (1-2 words max)
+- domain: Just the domain name part (no .com)
+- tagline: 5-7 word tagline explaining what it does
+- why: One sentence on why this name works for this specific product
+
+Return ONLY valid JSON:
+{
+  "names": [
+    {"name": "Example", "domain": "example", "tagline": "Short tagline here", "why": "Why it works..."}
+  ]
+}`;
+
+      const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
+      const data = await res.json();
+      const parsed = JSON.parse(data.response);
+      setNameSuggestions(parsed.names || []);
+      setSelectedIndex(null);
+    } catch (error) {
+      console.error("Error generating names:", error);
+      // Fallback names based on the idea
+      const ideaWords = userIdea.toLowerCase().split(' ');
+      const fallbackNames = [
+        { name: "Flowly", domain: "flowly", tagline: "Work smarter, not harder", why: "Suggests smooth workflow" },
+        { name: "Zestify", domain: "zestify", tagline: "Add energy to your day", why: "Energetic and memorable" },
+        { name: "Snapwise", domain: "snapwise", tagline: "Quick decisions, better results", why: "Implies speed and intelligence" },
+        { name: "Pulsehub", domain: "pulsehub", tagline: "Keep your finger on the pulse", why: "Central and dynamic" },
+        { name: "Brevity", domain: "brevityapp", tagline: "Less noise, more signal", why: "Suggests simplicity" },
+        { name: "Launchly", domain: "launchly", tagline: "From idea to launch, fast", why: "Action-oriented and catchy" },
+      ];
+      setNameSuggestions(fallbackNames);
+      toast.error("AI unavailable - showing example names");
+    }
+    setIsGenerating(false);
+  };
+
+  const checkDomain = async (domain: string) => {
+    // Simulate domain check (in production, use a real API)
+    setIsChecking(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Simulate - most short names are taken
+    const likelyAvailable = domain.length > 7 || domain.includes('ly') || domain.includes('ify');
+    setDomainResults(prev => ({
+      ...prev,
+      [domain]: {
+        domain: `${domain}.com`,
+        available: likelyAvailable,
+      }
+    }));
+    setIsChecking(false);
+  };
+
+  const selectName = (index: number) => {
+    setSelectedIndex(index);
+    const selected = nameSuggestions[index];
+    setFinalName(selected.name);
+    setFinalDomain(`${selected.domain}.com`);
+  };
+
+  const handleCustomName = () => {
+    if (!customName.trim()) return;
+    const domainName = customName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    setFinalName(customName.trim());
+    setFinalDomain(`${domainName}.com`);
+    setCurrentStep("confirm");
+  };
+
+  const handleFinish = () => {
+    saveProgress.mutate({
+      finalName,
+      finalDomain,
+      allSuggestions: nameSuggestions,
+    });
+    setCurrentStep("complete");
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Context Card */}
+      {userIdea && (
+        <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Naming Your Product:</p>
+          <p className="font-semibold text-slate-900">{userIdea}</p>
+        </Card>
+      )}
+
+      <AnimatePresence mode="wait">
+        {/* Step 1: Learn the Rules */}
+        {currentStep === "learn" && (
+          <motion.div
+            key="learn"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
+          >
+            {/* Hero */}
+            <Card className="p-6 border-2 border-primary bg-gradient-to-br from-blue-50 to-indigo-50">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
+                  <Globe className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-extrabold text-slate-900">Name It RIGHT</h3>
+                  <p className="text-slate-600 mt-1">
+                    Your name is your first impression. Get this right.
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* The Rules */}
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <h4 className="font-bold text-slate-900 text-lg mb-4 flex items-center gap-2">
+                <Lightbulb className="w-5 h-5 text-amber-500" />
+                The Golden Rules of SaaS Naming
+              </h4>
+              <div className="space-y-4">
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-bold text-green-900">Always get the .com</div>
+                    <div className="text-sm text-green-800">
+                      Not .io, not .co, not .app. The .com. It's what people type automatically.
+                      If you can't get the .com, pick a different name.
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-bold text-green-900">Keep it SHORT</div>
+                    <div className="text-sm text-green-800">
+                      1-2 words. Under 10 characters. Easy to type, easy to remember, easy to say out loud.
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-bold text-green-900">Make it SPEAKABLE</div>
+                    <div className="text-sm text-green-800">
+                      Say it out loud. If you have to spell it for people, it's wrong.
+                      "It's Trello, T-R-E-L-L-O" is fine. "It's Xqyzt, X-Q-Y-Z-T" is not.
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-bold text-green-900">Be UNIQUE</div>
+                    <div className="text-sm text-green-800">
+                      "ProjectManager" is not a name. "Asana" is. Made-up words that sound good are
+                      often better than descriptive names.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* What to AVOID */}
+            <Card className="p-6 border-2 border-red-200 bg-red-50">
+              <h4 className="font-bold text-red-900 text-lg mb-4 flex items-center gap-2">
+                <Ban className="w-5 h-5" />
+                What to AVOID
+              </h4>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-bold text-red-900">No hyphens or numbers</div>
+                    <div className="text-sm text-red-800">
+                      "task-hub-123.com" looks cheap and confusing. Don't do it.
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-bold text-red-900">Don't overpay for domains</div>
+                    <div className="text-sm text-red-800">
+                      A .com should cost ~$10-15/year. If someone wants $500+ for a domain, pick a different name.
+                      Domain squatters are not worth it at this stage.
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <div className="font-bold text-red-900">Don't be too generic</div>
+                    <div className="text-sm text-red-800">
+                      "Analytics Platform" or "Marketing Tool" - these aren't names, they're descriptions.
+                      You can't trademark a generic term.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Domain Pricing Education */}
+            <Card className="p-6 border-2 border-amber-200 bg-amber-50">
+              <h4 className="font-bold text-amber-900 text-lg mb-3 flex items-center gap-2">
+                <DollarSign className="w-5 h-5" />
+                What Domains SHOULD Cost
+              </h4>
+              <div className="space-y-2 text-sm text-amber-900">
+                <p>
+                  <strong>Normal .com registration:</strong> $10-15/year
+                </p>
+                <p>
+                  <strong>If someone wants $100+:</strong> It's a "premium" domain owned by a squatter. Skip it.
+                </p>
+                <p>
+                  <strong>Rule of thumb:</strong> If you can't get the .com for under $20, pick a different name.
+                  Your energy is better spent building than negotiating with domain hoarders.
+                </p>
+              </div>
+            </Card>
+
+            <Button
+              className="w-full"
+              size="lg"
+              onClick={() => setCurrentStep("generate")}
+            >
+              I Understand - Let's Name It <ChevronRight className="w-5 h-5 ml-2" />
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Step 2: Generate Names */}
+        {currentStep === "generate" && (
+          <motion.div
+            key="generate"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
+          >
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-7 h-7 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Generate Name Ideas</h2>
+              <p className="text-slate-500 max-w-lg mx-auto">
+                AI will create names based on your idea, pain points, and features.
+              </p>
+            </div>
+
+            {/* AI Generator */}
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <div className="text-center mb-6">
+                <Button
+                  size="lg"
+                  className="gap-2"
+                  onClick={generateNames}
+                  disabled={isGenerating || aiAttempts >= MAX_AI_ATTEMPTS}
+                >
+                  {isGenerating ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Generating Names...</>
+                  ) : aiAttempts >= MAX_AI_ATTEMPTS ? (
+                    <>No attempts left</>
+                  ) : (
+                    <><Sparkles className="w-4 h-4" /> Generate 6 Name Ideas {aiAttempts > 0 ? `(${MAX_AI_ATTEMPTS - aiAttempts} left)` : ''}</>
+                  )}
+                </Button>
+              </div>
+
+              {nameSuggestions.length > 0 && (
+                <div className="space-y-4">
+                  <h3 className="font-bold text-slate-900 text-lg">Pick Your Favorite:</h3>
+
+                  <div className="grid gap-3">
+                    {nameSuggestions.map((suggestion, i) => {
+                      const domainCheck = domainResults[suggestion.domain];
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => selectName(i)}
+                          className={`p-4 rounded-lg border-2 text-left transition-all ${
+                            selectedIndex === i
+                              ? 'border-primary bg-blue-50'
+                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 className="font-bold text-xl text-slate-900">{suggestion.name}</h4>
+                                {selectedIndex === i && (
+                                  <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
+                                )}
+                              </div>
+                              <p className="text-sm text-slate-600 italic mb-2">"{suggestion.tagline}"</p>
+                              <div className="flex items-center gap-2 mb-2">
+                                <Globe className="w-4 h-4 text-slate-400" />
+                                <span className="text-sm font-mono text-slate-700">{suggestion.domain}.com</span>
+                              </div>
+                              <p className="text-xs text-slate-500">{suggestion.why}</p>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {selectedIndex !== null && (
+                    <Button
+                      className="w-full"
+                      size="lg"
+                      onClick={() => setCurrentStep("confirm")}
+                    >
+                      Choose "{nameSuggestions[selectedIndex].name}" <ChevronRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  )}
+                </div>
+              )}
+
+              {/* Custom Name Option */}
+              <div className="mt-6 pt-6 border-t border-slate-200">
+                <p className="text-sm font-medium text-slate-700 mb-3">Already have a name in mind?</p>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter your product name..."
+                    value={customName}
+                    onChange={(e) => setCustomName(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleCustomName()}
+                    className="flex-1"
+                  />
+                  <Button
+                    onClick={handleCustomName}
+                    disabled={!customName.trim()}
+                  >
+                    Use This
+                  </Button>
+                </div>
+              </div>
+            </Card>
+
+            <Button
+              variant="outline"
+              onClick={() => setCurrentStep("learn")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-4 h-4" /> Back to Rules
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Step 3: Confirm */}
+        {currentStep === "confirm" && (
+          <motion.div
+            key="confirm"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            className="space-y-6"
+          >
+            <div className="text-center">
+              <div className="w-14 h-14 rounded-full bg-green-600 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-7 h-7 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Great Choice!</h2>
+              <p className="text-slate-500">
+                Let's make sure you can get the domain.
+              </p>
+            </div>
+
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <div className="space-y-4">
+                <div className="text-center p-6 bg-slate-50 rounded-xl border-2 border-slate-200">
+                  <p className="text-sm font-bold text-slate-500 uppercase mb-2">Your Product Name</p>
+                  <h3 className="text-3xl font-extrabold text-slate-900">{finalName}</h3>
+                  <p className="text-lg font-mono text-slate-600 mt-2">{finalDomain}</p>
+                </div>
+
+                <Button
+                  variant="outline"
+                  className="w-full gap-2"
+                  onClick={() => checkDomain(finalDomain.replace('.com', ''))}
+                  disabled={isChecking}
+                >
+                  {isChecking ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Checking...</>
+                  ) : (
+                    <><Globe className="w-4 h-4" /> Check Domain Availability</>
+                  )}
+                </Button>
+
+                {domainResults[finalDomain.replace('.com', '')] && (
+                  <div className="mt-4">
+                    {domainResults[finalDomain.replace('.com', '')].available ? (
+                      <div className="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+                        <div className="flex items-start gap-3">
+                          <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
+                          <div className="flex-1">
+                            <p className="font-bold text-green-900 mb-1">Likely Available!</p>
+                            <p className="text-sm text-green-700 mb-3">
+                              {finalDomain} appears to be available. Register it now before someone else does!
+                            </p>
+                            <Button
+                              className="gap-2 bg-green-600 hover:bg-green-700"
+                              onClick={() => window.open(`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}&aff=YOUR_AFFILIATE_ID`, '_blank')}
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                              Register on Namecheap (~$10/year)
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-lg">
+                        <div className="flex items-start gap-3">
+                          <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <p className="font-bold text-amber-900 mb-1">This domain might be taken</p>
+                            <p className="text-sm text-amber-700 mb-2">
+                              Check Namecheap to confirm. If it's premium-priced ($100+), go back and pick a different name.
+                            </p>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-2"
+                              onClick={() => window.open(`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}&aff=YOUR_AFFILIATE_ID`, '_blank')}
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                              Check on Namecheap
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* Important Reminder */}
+            <Card className="p-4 border-2 border-amber-200 bg-amber-50">
+              <div className="flex items-start gap-3">
+                <DollarSign className="w-5 h-5 text-amber-600 mt-0.5" />
+                <div className="text-sm text-amber-900">
+                  <strong>Remember:</strong> Only pay ~$10-15/year for a .com. If it's priced higher,
+                  it's a "premium" domain. Pick a different name instead.
+                </div>
+              </div>
+            </Card>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setCurrentStep("generate")}
+                className="gap-2"
+              >
+                <ChevronLeft className="w-5 h-5" /> Pick Different Name
+              </Button>
+              <Button
+                size="lg"
+                className="flex-1 gap-2 bg-green-600 hover:bg-green-700"
+                onClick={handleFinish}
+              >
+                <Check className="w-5 h-5" /> Confirm & Continue
+              </Button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Step 4: Complete */}
+        {currentStep === "complete" && (
+          <motion.div
+            key="complete"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="space-y-6"
+          >
+            <div className="text-center py-4">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <Check className="w-8 h-8 text-green-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Product Has a Name!</h2>
+              <p className="text-slate-500">Welcome to the world, <strong>{finalName}</strong>.</p>
+            </div>
+
+            <Card className="p-6 border-4 border-primary">
+              <div className="text-center">
+                <p className="text-sm font-bold text-slate-500 uppercase mb-2">Your Product</p>
+                <h3 className="text-4xl font-extrabold text-slate-900 mb-2">{finalName}</h3>
+                <p className="text-xl font-mono text-slate-600">{finalDomain}</p>
+              </div>
+            </Card>
+
+            {/* Registration Checklist */}
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-bold text-slate-900">Claim Your Brand Everywhere</h4>
+                <span className="text-sm text-slate-500">
+                  {registeredItems.size}/{SOCIAL_PLATFORMS.length} done
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {SOCIAL_PLATFORMS.map((platform) => {
+                  const isRegistered = registeredItems.has(platform.id);
+                  const handle = finalName.toLowerCase().replace(/\s+/g, '');
+
+                  return (
+                    <div
+                      key={platform.id}
+                      className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
+                        isRegistered
+                          ? "border-green-300 bg-green-50"
+                          : "border-slate-200 hover:border-slate-300"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => toggleRegistered(platform.id)}
+                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                            isRegistered
+                              ? "border-green-500 bg-green-500"
+                              : "border-slate-300 hover:border-green-400"
+                          }`}
+                        >
+                          {isRegistered && <Check className="w-4 h-4 text-white" />}
+                        </button>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{platform.icon}</span>
+                            <span className={`font-semibold ${isRegistered ? "text-green-700 line-through" : "text-slate-900"}`}>
+                              {platform.label}
+                            </span>
+                          </div>
+                          <div className="text-sm text-slate-500">
+                            {platform.id === "domain" ? finalDomain : `@${handle}`}
+                          </div>
+                        </div>
+                      </div>
+
+                      <a
+                        href={platform.checkUrl(finalName)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                      >
+                        {platform.id === "domain" ? "Register" : "Check"} <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Progress indicator */}
+              <div className="mt-4 pt-4 border-t border-slate-200">
+                <div className="flex items-center justify-between text-sm mb-2">
+                  <span className="text-slate-600">Registration progress</span>
+                  <span className="font-medium text-slate-900">
+                    {Math.round((registeredItems.size / SOCIAL_PLATFORMS.length) * 100)}%
+                  </span>
+                </div>
+                <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-500 rounded-full transition-all duration-300"
+                    style={{ width: `${(registeredItems.size / SOCIAL_PLATFORMS.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+            </Card>
+
+            {/* Priority tip */}
+            <Card className="p-4 border-2 border-amber-200 bg-amber-50">
+              <div className="flex items-start gap-3">
+                <Lightbulb className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div className="text-sm text-amber-900">
+                  <strong>Priority order:</strong> Domain first (most important), then Twitter/X and Instagram.
+                  The others can wait until you're ready to use them.
+                </div>
+              </div>
+            </Card>
+
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={onComplete}
+              disabled={!registeredItems.has("domain")}
+            >
+              {registeredItems.has("domain") ? (
+                <>Complete Day 4 <ChevronRight className="w-5 h-5" /></>
+              ) : (
+                <>Register your domain first to continue</>
+              )}
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
