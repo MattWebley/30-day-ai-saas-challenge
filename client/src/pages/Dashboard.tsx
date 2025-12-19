@@ -54,6 +54,7 @@ export default function Dashboard() {
 
   const dayData = Array.isArray(allDays) ? allDays.find((d: any) => d.day === currentDay) : null;
   const dayProgress = Array.isArray(progress) ? progress.find((p: any) => p.day === currentDay) : null;
+  const previousDayProgress = Array.isArray(progress) ? progress.find((p: any) => p.day === currentDay - 1) : null;
 
   // Reset form when day changes
   useEffect(() => {
@@ -69,7 +70,7 @@ export default function Dashboard() {
   }, [currentDay, dayProgress]);
 
   // Handle completion
-  const handleComplete = async () => {
+  const handleComplete = async (componentData?: any) => {
     if (!dayData) return;
 
     try {
@@ -79,6 +80,7 @@ export default function Dashboard() {
           selectedSuggestion,
           microDecisionChoice,
           reflectionAnswer,
+          ...componentData,
         },
       });
 
@@ -247,8 +249,8 @@ export default function Dashboard() {
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day3CoreFeatures
                       dayId={currentDay}
-                      userIdea={dayProgress?.completionData?.selectedIdea || ""}
-                      userPainPoints={dayProgress?.completionData?.selectedPainPoints || []}
+                      userIdea={previousDayProgress?.completionData?.selectedIdea || previousDayProgress?.selectedIdea || ""}
+                      userPainPoints={previousDayProgress?.completionData?.selectedPainPoints || previousDayProgress?.selectedPainPoints || []}
                       onComplete={handleComplete}
                     />
                   </Card>
@@ -261,8 +263,8 @@ export default function Dashboard() {
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day4MvpRoadmap
                       dayId={currentDay}
-                      selectedFeatures={dayProgress?.completionData?.selectedFeatures || []}
-                      userIdea={dayProgress?.completionData?.selectedIdea || ""}
+                      selectedFeatures={previousDayProgress?.completionData?.selectedFeatures || previousDayProgress?.selectedFeatures || []}
+                      userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
                       onComplete={handleComplete}
                     />
                   </Card>
@@ -287,10 +289,10 @@ export default function Dashboard() {
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day6SummaryPRD
                       dayId={currentDay}
-                      userIdea={dayProgress?.completionData?.selectedIdea || ""}
-                      painPoints={dayProgress?.completionData?.selectedPainPoints || []}
-                      features={dayProgress?.completionData?.allFeatures || []}
-                      mvpFeatures={dayProgress?.completionData?.selectedMvpFeatures || []}
+                      userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
+                      painPoints={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedPainPoints || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedPainPoints || []}
+                      features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.completionData?.selectedFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.selectedFeatures || []}
+                      mvpFeatures={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.selectedMvpFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.selectedMvpFeatures || []}
                       onComplete={handleComplete}
                     />
                   </Card>
@@ -303,7 +305,7 @@ export default function Dashboard() {
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day7ReplitBuild
                       dayId={currentDay}
-                      prd={dayProgress?.completionData?.prd || ""}
+                      prd={previousDayProgress?.completionData?.prd || previousDayProgress?.prd || ""}
                       onComplete={handleComplete}
                     />
                   </Card>

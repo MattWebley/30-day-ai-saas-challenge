@@ -30,7 +30,11 @@ interface Idea {
 }
 
 interface Day2Props {
-  onComplete: () => void;
+  onComplete: (data: {
+    selectedIdea: string;
+    selectedIdeaTitle: string;
+    selectedPainPoints: string[];
+  }) => void;
 }
 
 const VALIDATION_PROMPTS = [
@@ -310,10 +314,19 @@ Return ONLY a numbered list, most painful first:
           </p>
         </div>
 
-        <Button 
-          size="lg" 
+        <Button
+          size="lg"
           className="mt-8 h-14 px-10 text-lg font-bold gap-2"
-          onClick={onComplete}
+          onClick={() => {
+            const selectedIdea = finalChoice !== null ? shortlistedIdeas[finalChoice] : null;
+            if (selectedIdea) {
+              onComplete({
+                selectedIdea: `${selectedIdea.title} - ${selectedIdea.desc}`,
+                selectedIdeaTitle: selectedIdea.title,
+                selectedPainPoints,
+              });
+            }
+          }}
           data-testid="button-complete-day2"
         >
           Complete Day 2 <ChevronRight className="w-5 h-5" />
