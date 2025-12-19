@@ -625,69 +625,71 @@ Return ONLY a numbered list, most painful first:
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
-                      className="mt-4"
+                      className="mt-4 bg-slate-50 rounded-lg p-4 border border-slate-200"
                     >
-                      <div className="bg-white rounded-lg border-2 border-slate-200 p-5">
-                        <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
-                          <Sparkles className="w-4 h-4 text-blue-600" />
-                          <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">AI Analysis</span>
-                        </div>
-                        <div className="space-y-3">
-                          {aiResponse.split('\n').map((line, idx) => {
-                            const trimmedLine = line.trim();
-                            if (!trimmedLine) return null;
+                      {aiResponse.split('\n').map((line, idx) => {
+                        const trimmedLine = line.trim();
+                        if (!trimmedLine) return null;
 
-                            // Helper function to render text with clickable URLs
-                            const renderWithLinks = (text: string) => {
-                              const urlRegex = /(https?:\/\/[^\s]+)/g;
-                              const parts = text.split(urlRegex);
+                        // Helper function to render text with clickable URLs
+                        const renderWithLinks = (text: string) => {
+                          const urlRegex = /(https?:\/\/[^\s]+)/g;
+                          const parts = text.split(urlRegex);
 
-                              return parts.map((part, i) => {
-                                if (part.match(urlRegex)) {
-                                  return (
-                                    <a
-                                      key={i}
-                                      href={part}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-blue-600 hover:text-blue-800 underline"
-                                    >
-                                      {part}
-                                    </a>
-                                  );
-                                }
-                                return <span key={i}>{part}</span>;
-                              });
-                            };
-
-                            // Check if line starts with bold markdown (**TEXT**)
-                            const boldMatch = trimmedLine.match(/^\*\*(.*?)\*\*:?\s*(.*)$/);
-                            if (boldMatch) {
+                          return parts.map((part, i) => {
+                            if (part.match(urlRegex)) {
                               return (
-                                <div key={idx} className="flex gap-2">
-                                  <span className="font-bold text-slate-900 min-w-[120px]">{boldMatch[1]}:</span>
-                                  <span className="text-slate-700 flex-1">{renderWithLinks(boldMatch[2])}</span>
-                                </div>
+                                <a
+                                  key={i}
+                                  href={part}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 underline font-medium"
+                                >
+                                  {part}
+                                </a>
                               );
                             }
+                            return <span key={i}>{part}</span>;
+                          });
+                        };
 
-                            // Check if it's a bullet point
-                            if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
-                              return (
-                                <div key={idx} className="flex gap-2 ml-4">
-                                  <span className="text-slate-400">•</span>
-                                  <span className="text-slate-700">{renderWithLinks(trimmedLine.substring(1).trim())}</span>
-                                </div>
-                              );
-                            }
+                        // Check if line starts with bold markdown (**TEXT**)
+                        const boldMatch = trimmedLine.match(/^\*\*(.*?)\*\*:?\s*(.*)$/);
+                        if (boldMatch) {
+                          return (
+                            <div key={idx} className="mb-3 last:mb-0">
+                              <div className="flex items-start gap-3">
+                                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider min-w-[110px] pt-0.5">
+                                  {boldMatch[1]}
+                                </span>
+                                <span className="text-slate-900 font-medium flex-1 leading-relaxed">
+                                  {renderWithLinks(boldMatch[2])}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        }
 
-                            // Regular text
-                            return (
-                              <p key={idx} className="text-slate-700">{renderWithLinks(trimmedLine)}</p>
-                            );
-                          })}
-                        </div>
-                      </div>
+                        // Check if it's a bullet point
+                        if (trimmedLine.startsWith('•') || trimmedLine.startsWith('-')) {
+                          return (
+                            <div key={idx} className="flex gap-2 ml-28 mb-1.5">
+                              <span className="text-slate-400 mt-1.5">•</span>
+                              <span className="text-slate-700 leading-relaxed">
+                                {renderWithLinks(trimmedLine.substring(1).trim())}
+                              </span>
+                            </div>
+                          );
+                        }
+
+                        // Regular text
+                        return (
+                          <p key={idx} className="text-slate-700 mb-2 leading-relaxed">
+                            {renderWithLinks(trimmedLine)}
+                          </p>
+                        );
+                      })}
                     </motion.div>
                   )}
                 </Card>
