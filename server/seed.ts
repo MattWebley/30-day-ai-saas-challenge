@@ -1597,7 +1597,6 @@ What comes next is up to you. But you've proven you can build. And that changes 
         reflectionQuestion: day.reflectionQuestion,
         tip: day.tip,
         lesson: day.lesson,
-        todoList: day.todoList,
         outcome: day.outcome,
         completionMessage: day.completionMessage,
         xpReward: day.xpReward,
