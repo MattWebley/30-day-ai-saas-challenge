@@ -25,29 +25,20 @@ import { Day4Naming } from "@/components/Day4Naming";
 import { Day5TechStack } from "@/components/Day5TechStack";
 import { Day6SummaryPRD } from "@/components/Day6SummaryPRD";
 import { Day7ReplitBuild } from "@/components/Day7ReplitBuild";
-import { Day8FirstBuild } from "@/components/Day8FirstBuild";
-import { Day9Branding } from "@/components/Day9Branding";
-import { Day10CoreFeature } from "@/components/Day10CoreFeature";
-import { Day11BugFixer } from "@/components/Day11BugFixer";
-import { Day12DesignAudit } from "@/components/Day12DesignAudit";
-import { Day13FeatureTwo } from "@/components/Day13FeatureTwo";
-import { Day14SafetyNet } from "@/components/Day14SafetyNet";
-import { Day15SuperpowerSelector } from "@/components/Day15SuperpowerSelector";
-import { Day16AIBrain } from "@/components/Day16AIBrain";
-import { Day17StripeSetup } from "@/components/Day17StripeSetup";
-import { Day18EmailSetup } from "@/components/Day18EmailSetup";
-import { Day19AuthSetup } from "@/components/Day19AuthSetup";
-import { Day20AdminDashboard } from "@/components/Day20AdminDashboard";
-import { Day21LaunchPrep } from "@/components/Day21LaunchPrep";
-import { Day22PremiumFeel } from "@/components/Day22PremiumFeel";
-import { Day23UserDashboard } from "@/components/Day23UserDashboard";
-import { Day24MobileAudit } from "@/components/Day24MobileAudit";
-import { Day25SpeedBoost } from "@/components/Day25SpeedBoost";
-import { Day26DataExport } from "@/components/Day26DataExport";
-import { Day27LandingPage } from "@/components/Day27LandingPage";
-import { Day28SecurityAudit } from "@/components/Day28SecurityAudit";
-import { Day29FinalChecklist } from "@/components/Day29FinalChecklist";
-import { Day30LaunchDay } from "@/components/Day30LaunchDay";
+import { Day8ClaudeCode } from "@/components/Day8ClaudeCode";
+import { Day9RealityCheck } from "@/components/Day9RealityCheck";
+import { Day10FixIterate } from "@/components/Day10FixIterate";
+import { Day11TestUSP } from "@/components/Day11TestUSP";
+import { Day12FeatureTesting } from "@/components/Day12FeatureTesting";
+import { Day13AIBrain } from "@/components/Day13AIBrain";
+import { Day14ConnectAPIs } from "@/components/Day14ConnectAPIs";
+import { Day15Authentication } from "@/components/Day15Authentication";
+import { Day16Email } from "@/components/Day16Email";
+import { Day17Onboarding } from "@/components/Day17Onboarding";
+import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
+import { Day19MobileReady } from "@/components/Day19MobileReady";
+import { Day20BrandBeauty } from "@/components/Day20BrandBeauty";
+import { Day21LaunchDay } from "@/components/Day21LaunchDay";
 import { DayChat } from "@/components/DayChat";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
@@ -121,7 +112,7 @@ export default function Dashboard() {
   const handleContinueFromModal = () => {
     setShowCompletionModal(false);
     // Navigate to next day if not the last day
-    if (currentDay < 30) {
+    if (currentDay < 21) {
       setLocation(`/dashboard/${currentDay + 1}`);
     }
   };
@@ -338,236 +329,119 @@ export default function Dashboard() {
               </>
             ) : currentDay === 8 ? (
               <>
-                {/* Day 8: First Build - Watch the Magic */}
+                {/* Day 8: Master Claude Code */}
                 <div className="space-y-4">
-                  <Day8FirstBuild
-                    dayId={currentDay}
-                    prd={(Array.isArray(progress) ? progress.find((p: any) => p.day === 6) : null)?.completionData?.prd || (Array.isArray(progress) ? progress.find((p: any) => p.day === 6) : null)?.prd || ""}
-                    onComplete={handleComplete}
-                  />
+                  <Day8ClaudeCode onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 9 ? (
               <>
-                {/* Day 9: Branding - Make it YOURS */}
+                {/* Day 9: Reality Check - PRD vs What Got Built */}
                 <div className="space-y-4">
-                  <Day9Branding
-                    dayId={currentDay}
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
+                  <Day9RealityCheck
+                    prd={(Array.isArray(progress) ? progress.find((p: any) => p.day === 6) : null)?.completionData?.prd || ""}
                     onComplete={handleComplete}
                   />
                 </div>
               </>
             ) : currentDay === 10 ? (
               <>
-                {/* Day 10: Core Feature - The MONEY Feature */}
+                {/* Day 10: Fix & Iterate */}
                 <div className="space-y-4">
-                  <Day10CoreFeature
-                    dayId={currentDay}
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
-                    onComplete={handleComplete}
-                  />
+                  <Day10FixIterate onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 11 ? (
               <>
-                {/* Day 11: Bug Fixer - 5-Minute Fixes */}
+                {/* Day 11: Test Your USP */}
                 <div className="space-y-4">
-                  <Day11BugFixer
-                    dayId={currentDay}
+                  <Day11TestUSP
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
               </>
             ) : currentDay === 12 ? (
               <>
-                {/* Day 12: Design Audit - 3-Minute Audit */}
+                {/* Day 12: Feature Testing */}
                 <div className="space-y-4">
-                  <Day12DesignAudit
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
+                  <Day12FeatureTesting onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 13 ? (
               <>
-                {/* Day 13: Feature Two - Add Stickiness */}
+                {/* Day 13: Connect AI Brain */}
                 <div className="space-y-4">
-                  <Day13FeatureTwo
-                    dayId={currentDay}
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
+                  <Day13AIBrain
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
               </>
             ) : currentDay === 14 ? (
               <>
-                {/* Day 14: Safety Net - Git & Version Control + Week 2 Celebration */}
+                {/* Day 14: Connect APIs */}
                 <div className="space-y-4">
-                  <Day14SafetyNet
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
+                  <Day14ConnectAPIs onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 15 ? (
               <>
-                {/* Day 15: Superpower Selector - API Integrations */}
+                {/* Day 15: User Authentication */}
                 <div className="space-y-4">
-                  <Day15SuperpowerSelector
-                    dayId={currentDay}
+                  <Day15Authentication
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
               </>
             ) : currentDay === 16 ? (
               <>
-                {/* Day 16: AI Brain - OpenAI Integration */}
+                {/* Day 16: Email Setup */}
                 <div className="space-y-4">
-                  <Day16AIBrain
-                    dayId={currentDay}
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
+                  <Day16Email
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
               </>
             ) : currentDay === 17 ? (
               <>
-                {/* Day 17: Stripe Setup - Payments */}
+                {/* Day 17: User Onboarding */}
                 <div className="space-y-4">
-                  <Day17StripeSetup
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
+                  <Day17Onboarding onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 18 ? (
               <>
-                {/* Day 18: Email Setup - Transactional Emails */}
+                {/* Day 18: Admin Dashboard */}
                 <div className="space-y-4">
-                  <Day18EmailSetup
-                    dayId={currentDay}
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || "Your App"}
-                    onComplete={handleComplete}
-                  />
+                  <Day18AdminDashboard onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 19 ? (
               <>
-                {/* Day 19: Auth Setup - Authentication */}
+                {/* Day 19: Mobile Ready */}
                 <div className="space-y-4">
-                  <Day19AuthSetup
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
+                  <Day19MobileReady onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 20 ? (
               <>
-                {/* Day 20: Admin Dashboard Builder */}
+                {/* Day 20: Brand & Beauty */}
                 <div className="space-y-4">
-                  <Day20AdminDashboard
-                    dayId={currentDay}
+                  <Day20BrandBeauty
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
               </>
             ) : currentDay === 21 ? (
               <>
-                {/* Day 21: Launch Prep - Week 3 Celebration */}
+                {/* Day 21: Launch Day! */}
                 <div className="space-y-4">
-                  <Day21LaunchPrep
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
-                </div>
-              </>
-            ) : currentDay === 22 ? (
-              <>
-                {/* Day 22: Premium Feel - UX Polish */}
-                <div className="space-y-4">
-                  <Day22PremiumFeel
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
-                </div>
-              </>
-            ) : currentDay === 23 ? (
-              <>
-                {/* Day 23: User Dashboard Builder */}
-                <div className="space-y-4">
-                  <Day23UserDashboard
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
-                </div>
-              </>
-            ) : currentDay === 24 ? (
-              <>
-                {/* Day 24: Mobile Audit */}
-                <div className="space-y-4">
-                  <Day24MobileAudit
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
-                </div>
-              </>
-            ) : currentDay === 25 ? (
-              <>
-                {/* Day 25: Speed Boost - Performance */}
-                <div className="space-y-4">
-                  <Day25SpeedBoost
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
-                </div>
-              </>
-            ) : currentDay === 26 ? (
-              <>
-                {/* Day 26: Data Export */}
-                <div className="space-y-4">
-                  <Day26DataExport
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
-                </div>
-              </>
-            ) : currentDay === 27 ? (
-              <>
-                {/* Day 27: Landing Page Generator */}
-                <div className="space-y-4">
-                  <Day27LandingPage
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
-                </div>
-              </>
-            ) : currentDay === 28 ? (
-              <>
-                {/* Day 28: Security Audit */}
-                <div className="space-y-4">
-                  <Day28SecurityAudit
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
-                </div>
-              </>
-            ) : currentDay === 29 ? (
-              <>
-                {/* Day 29: Final Checklist */}
-                <div className="space-y-4">
-                  <Day29FinalChecklist
-                    dayId={currentDay}
-                    onComplete={handleComplete}
-                  />
-                </div>
-              </>
-            ) : currentDay === 30 ? (
-              <>
-                {/* Day 30: Launch Day! */}
-                <div className="space-y-4">
-                  <Day30LaunchDay
-                    dayId={currentDay}
+                  <Day21LaunchDay
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>

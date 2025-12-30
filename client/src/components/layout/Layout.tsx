@@ -27,7 +27,7 @@ export function Layout({ children, currentDay = 1 }: LayoutProps) {
             alt="Matt Webley" 
             className="w-8 h-8 rounded-full"
           />
-          <span className="font-bold text-sm">30 Day AI SaaS Challenge</span>
+          <span className="font-bold text-sm">21 Day AI SaaS Challenge</span>
         </div>
       </div>
 

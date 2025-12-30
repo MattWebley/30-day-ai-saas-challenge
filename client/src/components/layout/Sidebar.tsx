@@ -6,10 +6,10 @@ import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
 import { useTestMode } from "@/contexts/TestModeContext";
-import { 
-  CheckCircle2, 
-  Lock, 
-  Trophy, 
+import {
+  CheckCircle2,
+  Lock,
+  Trophy,
   LayoutDashboard,
   Settings,
   LogOut,
@@ -17,7 +17,12 @@ import {
   Shield,
   Lightbulb,
   Target,
-  Rocket
+  Rocket,
+  Map,
+  Hammer,
+  FlaskConical,
+  Server,
+  Zap
 } from "lucide-react";
 
 interface SidebarProps {
@@ -139,10 +144,24 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
       : []
   );
 
-  const progress = stats ? Math.round((((stats as any).lastCompletedDay || 0) / 30) * 100) : 0;
+  const totalDays = 21;
+  const progress = stats ? Math.round((((stats as any).lastCompletedDay || 0) / totalDays) * 100) : 0;
   const lastCompleted = (stats as any)?.lastCompletedDay || 0;
-  
-  const maxVisibleDay = testMode ? 30 : Math.max(lastCompleted + 3, currentDay + 2, 3);
+
+  const maxVisibleDay = testMode ? totalDays : Math.max(lastCompleted + 3, currentDay + 2, 3);
+
+  // Milestone definitions for battle pass style progress
+  const milestones = [
+    { day: 7, label: "Plan", icon: Map, percentage: (7 / totalDays) * 100 },
+    { day: 10, label: "Build", icon: Hammer, percentage: (10 / totalDays) * 100 },
+    { day: 14, label: "Test", icon: FlaskConical, percentage: (14 / totalDays) * 100 },
+    { day: 18, label: "Scale", icon: Server, percentage: (18 / totalDays) * 100 },
+    { day: 21, label: "Launch", icon: Rocket, percentage: 100 },
+  ];
+
+  // Find current milestone
+  const currentMilestone = milestones.find(m => lastCompleted < m.day) || milestones[milestones.length - 1];
+  const currentMilestoneIndex = milestones.findIndex(m => m === currentMilestone);
   const visibleDays = challengeDays.filter((d: any) => d.day <= maxVisibleDay);
 
   const phases = Array.from(new Set(visibleDays.map((d: any) => d.phase)));
@@ -163,7 +182,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
               className="w-10 h-10 rounded-full"
             />
             <h1 className="font-bold text-sm tracking-tight text-sidebar-foreground leading-tight">
-              30 Day AI<br/>SaaS Challenge
+              21 Day AI<br/>SaaS Challenge
             </h1>
           </div>
           {onClose && (
@@ -177,12 +196,107 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
           )}
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            <span>Overall Progress</span>
-            <span>{progress}%</span>
+        {/* Battle Pass Style Progress */}
+        <div className="space-y-4">
+          {/* Current Level Display */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Level</p>
+              <p className="text-3xl font-black text-sidebar-foreground leading-none">
+                {lastCompleted}
+                <span className="text-sm font-medium text-muted-foreground ml-1">/ 21</span>
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Next</p>
+              <p className="text-sm font-bold text-primary">{currentMilestone.label}</p>
+            </div>
           </div>
-          <Progress value={progress} className="h-2" />
+
+          {/* Progress Track */}
+          <div className="relative pt-2 pb-1">
+            {/* Track background */}
+            <div className="absolute top-1/2 left-0 right-0 h-1.5 bg-slate-200 rounded-full -translate-y-1/2" />
+
+            {/* Filled track */}
+            <div
+              className="absolute top-1/2 left-0 h-1.5 bg-gradient-to-r from-primary via-primary to-primary/80 rounded-full -translate-y-1/2 transition-all duration-500"
+              style={{ width: `${progress}%` }}
+            />
+
+            {/* Milestone nodes */}
+            <div className="relative flex justify-between">
+              {milestones.map((milestone, index) => {
+                const isCompleted = lastCompleted >= milestone.day;
+                const isCurrent = currentMilestoneIndex === index;
+                const MilestoneIcon = milestone.icon;
+
+                return (
+                  <div key={milestone.day} className="flex flex-col items-center">
+                    {/* Node */}
+                    <div
+                      className={cn(
+                        "relative w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300",
+                        isCompleted
+                          ? "bg-primary text-white shadow-lg shadow-primary/30"
+                          : isCurrent
+                            ? "bg-white border-2 border-primary text-primary shadow-lg shadow-primary/20"
+                            : "bg-slate-100 border-2 border-slate-200 text-slate-400"
+                      )}
+                    >
+                      {isCompleted ? (
+                        <CheckCircle2 className="w-4 h-4" />
+                      ) : (
+                        <MilestoneIcon className="w-4 h-4" />
+                      )}
+
+                      {/* Current indicator pulse */}
+                      {isCurrent && !isCompleted && (
+                        <span className="absolute inset-0 rounded-full border-2 border-primary animate-ping opacity-30" />
+                      )}
+                    </div>
+
+                    {/* Label */}
+                    <span
+                      className={cn(
+                        "text-[10px] font-bold mt-1.5 uppercase tracking-wide",
+                        isCompleted
+                          ? "text-primary"
+                          : isCurrent
+                            ? "text-sidebar-foreground"
+                            : "text-muted-foreground/50"
+                      )}
+                    >
+                      {milestone.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* XP to next milestone */}
+          {currentMilestoneIndex >= 0 && lastCompleted < 21 && (
+            <div className="bg-slate-50 rounded-lg p-2.5 border border-slate-100">
+              <div className="flex items-center justify-between text-xs mb-1.5">
+                <span className="font-medium text-slate-600">
+                  <Zap className="w-3 h-3 inline mr-1 text-amber-500" />
+                  {currentMilestone.day - lastCompleted} days to {currentMilestone.label}
+                </span>
+                <span className="font-bold text-slate-900">
+                  {Math.round(((lastCompleted - (milestones[currentMilestoneIndex - 1]?.day || 0)) / (currentMilestone.day - (milestones[currentMilestoneIndex - 1]?.day || 0))) * 100)}%
+                </span>
+              </div>
+              <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all"
+                  style={{
+                    width: `${((lastCompleted - (milestones[currentMilestoneIndex - 1]?.day || 0)) / (currentMilestone.day - (milestones[currentMilestoneIndex - 1]?.day || 0))) * 100}%`
+                  }}
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Streak Display */}
