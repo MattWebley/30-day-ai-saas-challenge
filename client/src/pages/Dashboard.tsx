@@ -94,14 +94,12 @@ export default function Dashboard() {
 
   // Handle completion
   const handleComplete = async (componentData?: any) => {
-    console.log('handleComplete called', { dayData, currentDay, componentData });
     if (!dayData) {
       console.error('handleComplete: dayData is null/undefined, returning early');
       return;
     }
 
     try {
-      console.log('Calling completeDay.mutateAsync...');
       await completeDay.mutateAsync({
         day: currentDay,
         data: {
@@ -112,7 +110,6 @@ export default function Dashboard() {
         },
       });
 
-      console.log('completeDay succeeded, showing modal');
       // Show completion modal
       setShowCompletionModal(true);
     } catch (error) {
