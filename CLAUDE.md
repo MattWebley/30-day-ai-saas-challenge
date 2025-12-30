@@ -1,4 +1,4 @@
-# Project: 30 Day AI SaaS Challenge
+# Project: 21 Day AI SaaS Challenge
 
 ## Rules for Claude (Always Follow)
 
@@ -30,7 +30,14 @@
 ---
 
 ## Project Overview
-A gamified 30 Day AI SaaS Challenge application that guides users from idea to launch-ready product through daily 5-minute micro-tasks. The app provides structured guidance, tracks progress, and uses AI to personalize the learning experience.
+A gamified 21 Day AI SaaS Challenge application that guides users from idea to launch-ready product through daily 5-minute micro-tasks. The app provides structured guidance, tracks progress, and uses AI to personalize the learning experience.
+
+### Challenge Structure (21 Days)
+- **Week 1 (Days 1-7)**: Idea & Planning - Find idea, validate, features, name, tech stack, PRD
+- **Week 2 (Days 8-10)**: Build & Verify - Master Claude Code, reality check, fix & iterate
+- **Week 3 (Days 11-14)**: Make It Work - Test USP, feature testing, AI brain, APIs
+- **Week 4 (Days 15-18)**: Infrastructure - Auth, email, onboarding, admin dashboard
+- **Week 5 (Days 19-21)**: Polish & Launch - Mobile ready, brand polish, LAUNCH
 
 ## Tech Stack
 
@@ -92,8 +99,10 @@ components.json   - shadcn/ui component config
 - GitHub Repo: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
+- [ ] Test all Day 8-21 components end-to-end
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx (replace YOUR_AFFILIATE_ID placeholder)
-- [ ] Review existing features and create comprehensive task list
+- [ ] Add coaching call booking links to Day 1-7 and Days 19-21
+- [ ] Review battle pass progress bar styling on different screen sizes
 - [ ] Document current API endpoints
 - [ ] Add testing setup (unit & integration tests)
 - [ ] Document database schema
@@ -101,7 +110,8 @@ components.json   - shadcn/ui component config
 - [ ] Add environment variables documentation
 
 ## Known Issues
-- `.claude/` directory is untracked (needs decision: commit or gitignore)
+- `.claude/` directory is tracked in git (contains local settings)
+- Old feature/week1-restructure branch can be deleted (already merged)
 
 ---
 
@@ -198,6 +208,49 @@ components.json   - shadcn/ui component config
   - TypeScript check passing
   - Database seeded with latest content
   - Branch feature/week1-restructure successfully merged
+
+### 2025-12-30 (Session 2) - Major Restructure: 30 Days → 21 Days
+- Tasks Completed:
+  - Restructured entire challenge from 30 days to 21 days
+  - Created 14 new interactive Day components (Day8-Day21):
+    - Day8ClaudeCode.tsx - Claude Code mastery with prompt templates
+    - Day9RealityCheck.tsx - PRD vs Reality audit tool
+    - Day10FixIterate.tsx - Fix workflow with PAUSE button
+    - Day11TestUSP.tsx - USP verification checklist
+    - Day12FeatureTesting.tsx - Feature test suite builder
+    - Day13AIBrain.tsx - OpenAI integration setup
+    - Day14ConnectAPIs.tsx - API connections checklist
+    - Day15Authentication.tsx - Auth method selection (Replit Auth recommended)
+    - Day16Email.tsx - Email setup with Resend
+    - Day17Onboarding.tsx - User onboarding flow builder
+    - Day18AdminDashboard.tsx - Admin panel setup
+    - Day19MobileReady.tsx - Mobile responsiveness checks
+    - Day20BrandBeauty.tsx - Brand polish with color picker
+    - Day21LaunchDay.tsx - Pre-launch checklist + LAUNCH button
+  - Deleted 31 old/unused Day component files
+  - Updated seed.ts with new 21-day content structure
+  - Updated seed.ts to use onConflictDoUpdate (fixes stale data issue)
+  - Updated Dashboard.tsx with new component routing
+  - Created battle pass style progress tracker in Sidebar:
+    - Level display with current day / 21
+    - 5 milestone nodes: Plan, Build, Test, Scale, Launch
+    - Visual progress track with gradient fill
+    - Current milestone pulse animation
+    - XP progress bar to next milestone
+  - Updated branding from "30 Day" to "21 Day AI SaaS Challenge"
+  - Cleaned up database (removed days 22-30)
+- Fixes Applied:
+  - Fixed seed.ts using onConflictDoNothing (wasn't updating existing records)
+  - Fixed Day13AIBrain missing userIdea prop in Dashboard routing
+  - Removed days 22-30 from database
+- Notes:
+  - New 5-week structure focused on building (not sales/marketing)
+  - Days 1-7 unchanged (locked as requested)
+  - Each new day has interactive element, todo list, and outcome
+  - PAUSE functionality added to Day 10 for iterative work
+  - Coaching call placements: Idea validation (Days 1-7), Build a Business (Days 19-21)
+  - TypeScript check passing
+  - Database seeded with all 21 days
 
 ---
 
