@@ -45,7 +45,9 @@
       "Bash(/home/runner/workspace/client/src/components/Day5PRDGenerator.tsx )",
       "Bash(/home/runner/workspace/client/src/components/Day5MVPPrioritizer.tsx )",
       "Bash(/home/runner/workspace/client/src/components/Day4MvpRoadmap.tsx)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(npm run:*)",
+      "Bash(cat:*)"
     ]
   }
 }

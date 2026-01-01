@@ -84,7 +84,7 @@ async function seed() {
     // ============================================
     {
       day: 1,
-      title: "Choosing Your PERFECT $100K+ Idea",
+      title: "Choosing Your $100K+ Idea",
       description: "Use AI to generate personalized SaaS ideas based on your knowledge, skills, and interests - then shortlist the best ones.",
       phase: "Week 1: Idea & Planning",
       videoUrl: null,
