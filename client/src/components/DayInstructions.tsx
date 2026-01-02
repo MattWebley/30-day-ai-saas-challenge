@@ -39,8 +39,8 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
   ],
   6: [
     "Read today's lesson",
-    "Complete the micro-decision",
-    "Write your reflection"
+    "Make your choice",
+    "Note your key takeaway"
   ],
 };
 

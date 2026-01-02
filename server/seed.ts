@@ -76,9 +76,51 @@ async function seed() {
     await db.insert(badges).values(badge).onConflictDoNothing();
   }
 
-  // Seed day content (21 days)
+  // Seed day content (21 days + Start Here)
   console.log("Creating day content...");
   const dayContentData = [
+    // ============================================
+    // START HERE (Day 0)
+    // ============================================
+    {
+      day: 0,
+      title: "Start Here",
+      description: "Welcome to the 21 Day AI SaaS Challenge! Get motivated, learn the rules for success, and commit to your journey.",
+      phase: "Start",
+      videoUrl: null,
+      aiTaskType: null,
+      aiTaskTitle: null,
+      aiTaskDescription: null,
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: null,
+      microDecisionOptions: null,
+      reflectionQuestion: null,
+      tip: "This challenge has been carefully designed to take you from zero to launch-ready. Set a daily reminder, same time every day, and trust the process. The people who finish are the ones who show up consistently.",
+      lesson: `Welcome to the 21 Day AI SaaS Challenge!
+
+In the next 21 days, you're going to go from idea to launch-ready product. No fluff. No theory. Just focused action every single day.
+
+This isn't a course you watch. It's a challenge you DO.
+
+THE RULES FOR SUCCESS:
+
+1. SHOW UP DAILY - Some days are quick, some take longer. What matters is you show up and do the work.
+
+2. NEVER BREAK THE CHAIN - Show up every single day. Your streak is your commitment to yourself.
+
+3. DONE > PERFECT - A shipped product beats a perfect idea. Progress over perfection, always.
+
+4. NO SKIPPING - Every day builds on the last. Skip one, and you'll feel lost. Trust the process.
+
+You're about to join a small percentage of people who actually BUILD instead of just talking about it.
+
+Ready? Let's go.`,
+      outcome: "Commitment to the 21-day journey with a clear understanding of the rules for success",
+      completionMessage: "You've made the commitment. Now it's time to find your winning idea. See you on Day 1!",
+      xpReward: 50,
+      estimatedMinutes: 3,
+    },
     // ============================================
     // WEEK 1: IDEA & PLANNING (Days 1-7)
     // ============================================

@@ -18,6 +18,7 @@ import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress, useCompleteDay } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
 import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
+import { Day0StartHere } from "@/components/Day0StartHere";
 import { Day1IdeaGenerator } from "@/components/Day1IdeaGenerator";
 import { Day2IdeaValidator } from "@/components/Day2IdeaValidator";
 import { Day3CoreFeatures } from "@/components/Day3CoreFeatures";
@@ -52,8 +53,8 @@ export default function Dashboard() {
   const [reflectionAnswer, setReflectionAnswer] = useState<string>("");
   const [showCompletionModal, setShowCompletionModal] = useState(false);
 
-  // Determine current day from URL or default to 1
-  const currentDay = params?.day ? parseInt(params.day) : 1;
+  // Determine current day from URL or default to 0 (Start Here)
+  const currentDay = params?.day ? parseInt(params.day) : 0;
   
   // Fetch data
   const { dayContent: allDays, isLoading: daysLoading } = useDayContent();
@@ -101,7 +102,37 @@ export default function Dashboard() {
         },
       });
 
-      // Show completion modal
+      // Special handling for Day 0 (Start Here)
+      if (currentDay === 0) {
+        // Post commitment to discussion if user opted in
+        if (componentData?.shareToDiscussion && componentData?.accountabilityMessage) {
+          try {
+            await fetch("/api/comments", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                day: 0,
+                content: `🎯 My Commitment: ${componentData.accountabilityMessage}`
+              })
+            });
+          } catch (error) {
+            console.error("Failed to post commitment to discussion:", error);
+          }
+        }
+
+        if (componentData?.startDay1Now) {
+          // User chose to start Day 1 immediately
+          toast.success("Let's do this! Starting Day 1...");
+          setLocation("/dashboard/1");
+        } else {
+          // User chose to start tomorrow
+          toast.success("See you tomorrow! Your commitment is locked in.");
+          setLocation("/dashboard/1");
+        }
+        return;
+      }
+
+      // Show completion modal for other days
       setShowCompletionModal(true);
     } catch (error) {
       console.error("Failed to complete day:", error);
@@ -186,9 +217,11 @@ export default function Dashboard() {
 
         {/* Main Task Area */}
         <div className="space-y-8">
-            
-            {/* Day 1 Special: Idea Generator */}
-            {currentDay === 1 ? (
+
+            {/* Day 0: Start Here */}
+            {currentDay === 0 ? (
+              <Day0StartHere onComplete={handleComplete} />
+            ) : currentDay === 1 ? (
               <>
                 {/* Step 1: Today's Lesson */}
                 <div className="space-y-4">

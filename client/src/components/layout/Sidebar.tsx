@@ -20,8 +20,7 @@ import {
   Rocket,
   Map,
   Hammer,
-  FlaskConical,
-  Server,
+  Sparkles,
   Zap
 } from "lucide-react";
 
@@ -152,10 +151,10 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
 
   // Milestone definitions for battle pass style progress
   const milestones = [
+    { day: 4, label: "Idea", icon: Lightbulb, percentage: (4 / totalDays) * 100 },
     { day: 7, label: "Plan", icon: Map, percentage: (7 / totalDays) * 100 },
-    { day: 10, label: "Build", icon: Hammer, percentage: (10 / totalDays) * 100 },
-    { day: 14, label: "Test", icon: FlaskConical, percentage: (14 / totalDays) * 100 },
-    { day: 18, label: "Scale", icon: Server, percentage: (18 / totalDays) * 100 },
+    { day: 14, label: "Build", icon: Hammer, percentage: (14 / totalDays) * 100 },
+    { day: 18, label: "Polish", icon: Sparkles, percentage: (18 / totalDays) * 100 },
     { day: 21, label: "Launch", icon: Rocket, percentage: 100 },
   ];
 
@@ -374,7 +373,11 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
               <div className="space-y-0.5">
                 {visibleDays.filter((d: any) => d.phase === phase).map((day: any) => {
                   const isCompleted = completedDays.has(day.day);
-                  const isLocked = day.day > ((stats as any)?.lastCompletedDay || 0) + 1 && !isCompleted;
+                  // Day 0 is never locked, Day 1+ requires Day 0 completion first
+                  const hasCompletedDay0 = completedDays.has(0);
+                  const isLocked = day.day === 0
+                    ? false
+                    : (day.day > ((stats as any)?.lastCompletedDay || 0) + 1 && !isCompleted) || (!hasCompletedDay0 && day.day > 0);
                   const daysAhead = day.day - currentDay;
                   const fadeOpacity = daysAhead <= 0 || isCompleted ? 1 : daysAhead === 1 ? 0.7 : daysAhead === 2 ? 0.5 : daysAhead >= 3 ? 0.35 : 1;
                   
@@ -399,7 +402,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                                 ? "border-primary text-primary font-bold"
                                 : "border-muted-foreground/30 text-muted-foreground"
                           )}>
-                            {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5" /> : day.day}
+                            {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5" /> : day.day === 0 ? <Rocket className="w-3.5 h-3.5" /> : day.day}
                           </div>
                           <span className="truncate">{day.title}</span>
                         </div>
