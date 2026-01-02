@@ -94,12 +94,13 @@ components.json   - shadcn/ui component config
 
 ## Current Status
 - Status: In Progress
-- Last Session: 2026-01-01
+- Last Session: 2026-01-02
 - Current Branch: main
 - GitHub Repo: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
 - [ ] Test all Day 8-21 components end-to-end
+- [ ] Test Day 0 "Start Here" flow end-to-end
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx (replace YOUR_AFFILIATE_ID placeholder)
 - [ ] Add coaching call booking links to Day 1-7 and Days 19-21
 - [ ] Review battle pass progress bar styling on different screen sizes
@@ -262,6 +263,36 @@ components.json   - shadcn/ui component config
   - Brief session with single UI tweak
   - All pending tasks from previous session remain open
   - Next priority: Test Day 8-21 components end-to-end
+
+### 2026-01-02 - Day 0 "Start Here" Onboarding Experience
+- Tasks Completed:
+  - Created Day0StartHere.tsx - full onboarding/commitment flow:
+    - Welcome header with journey milestone preview (Idea → Plan → Build → Polish → Launch)
+    - 4 "Rules for Success" with tap-to-commit interaction and progress badge
+    - "What's Your Why" section - 8 selectable motivations + custom input
+    - 12-month income goal selector (6 preset options + custom)
+    - Accountability promise textarea with character minimum
+    - Share to community checkbox (posts to Day 0 discussion)
+    - Choice screen after completion: "Start Day 1 Now" or "Start Tomorrow"
+  - Updated Sidebar milestones from Plan/Build/Test/Scale/Launch to Idea/Plan/Build/Polish/Launch
+  - Added Day 0 to seed.ts with phase "Start"
+  - Updated Dashboard.tsx routing for Day 0 with redirect logic
+  - Auto-posts commitment to discussion when "share" is checked
+  - Updated DayInstructions.tsx language ("micro-decision" → "make your choice")
+  - Day 0 now gates Day 1 (must complete Start Here first)
+- Fixes Applied:
+  - Fixed duplicate tips issue (Matt Webley's tip vs Pro Tip)
+  - Fixed "5 minutes a day" claims throughout (changed to "show up daily")
+  - Fixed character counter showing "0/20" (now shows "At least X more characters")
+  - Fixed button hover states on choice screen (now using Button component)
+  - Clarified share checkbox text ("visible to others taking the challenge")
+- Notes:
+  - All user onboarding data saved: whyReasons, incomeGoal, accountabilityMessage, shareToDiscussion
+  - This data can be used for personalized nag/motivation emails
+  - Challenge now clearly positioned as "launch-ready" not "launch" (no sales/marketing covered)
+  - Database reseeded with Day 0 content
+  - TypeScript check passing
+  - Next priority: Test Day 0 flow end-to-end, then Day 8-21 components
 
 ---
 
