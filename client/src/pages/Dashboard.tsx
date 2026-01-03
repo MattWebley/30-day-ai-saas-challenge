@@ -238,7 +238,7 @@ export default function Dashboard() {
                     {dayData.lesson ? (
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">
                             {paragraph}
                           </p>
                         ))}
@@ -275,7 +275,7 @@ export default function Dashboard() {
                     {dayData.lesson ? (
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">
                             {paragraph}
                           </p>
                         ))}
@@ -309,7 +309,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -343,7 +343,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -376,7 +376,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -408,7 +408,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -444,7 +444,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -477,7 +477,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -507,7 +507,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -537,7 +537,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -567,7 +567,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -597,7 +597,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -624,7 +624,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -654,7 +654,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -684,7 +684,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -714,7 +714,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -744,7 +744,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -774,7 +774,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -804,7 +804,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -834,7 +834,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -864,7 +864,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -895,7 +895,7 @@ export default function Dashboard() {
                     {dayData.lesson ? (
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">
                             {paragraph}
                           </p>
                         ))}

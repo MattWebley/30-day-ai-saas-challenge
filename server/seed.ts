@@ -9,7 +9,7 @@ async function seed() {
   const badgeData = [
     {
       name: "First Steps",
-      description: "Completed Day 1: Found Your Million Dollar Idea",
+      description: "Completed Day 1: Chose Your $100K+ Idea",
       icon: "🎯",
       triggerType: "day_completed",
       triggerValue: 1,
@@ -43,8 +43,15 @@ async function seed() {
       triggerValue: 18,
     },
     {
+      name: "Launch Ready",
+      description: "Completed Week 5: Polish & Launch Prep (Days 19-20)",
+      icon: "✨",
+      triggerType: "day_completed",
+      triggerValue: 20,
+    },
+    {
       name: "The Launcher",
-      description: "Completed all 21 days and LAUNCHED!",
+      description: "Completed all 21 days and LAUNCHED your SaaS!",
       icon: "🚀",
       triggerType: "day_completed",
       triggerValue: 21,
