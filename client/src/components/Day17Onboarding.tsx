@@ -1,188 +1,256 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import {
   Sparkles,
-  Copy,
   CheckCircle2,
   ChevronRight,
-  Clock
+  Trophy,
+  ArrowRight,
+  Clock,
+  Target
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 
 interface Day17OnboardingProps {
-  onComplete: () => void;
+  appName: string;
+  onComplete: (data: { firstSuccess: string; onboardingTime: string; onboardingResult: string }) => void;
 }
 
-const ONBOARDING_PATTERNS = [
-  { id: "guided", name: "Guided First Action", desc: "Take users straight to main feature with example data" },
-  { id: "tour", name: "Quick Tour", desc: "3-4 tooltips pointing at key features" },
-  { id: "preferences", name: "Collect Preferences", desc: "Ask 2-3 questions, then personalize" },
-];
-
-const CHECKLIST = [
-  { id: "pattern", text: "Chose an onboarding pattern" },
-  { id: "implemented", text: "Implemented onboarding flow" },
-  { id: "first-success", text: "Users reach first success within 2 minutes" },
-  { id: "skip", text: "Added skip/dismiss option" },
-  { id: "tested", text: "Tested with fresh account" },
-];
-
-const ONBOARDING_PROMPT = `Add onboarding for new users:
-
-When a user first signs up:
-1. Show a welcome message with their name
-2. Take them to [main feature]
-3. Pre-fill with [example data] so they can try immediately
-4. After they [complete action], show a success message
-5. Then show quick tips for what to do next
-
-Mark onboarding as complete so they don't see it again.`;
-
-export function Day17Onboarding({ onComplete }: Day17OnboardingProps) {
-  const [selectedPattern, setSelectedPattern] = useState<string>("");
+export function Day17Onboarding({ appName, onComplete }: Day17OnboardingProps) {
+  const [step, setStep] = useState<"define" | "build" | "test">("define");
   const [firstSuccess, setFirstSuccess] = useState("");
-  const [checklistDone, setChecklistDone] = useState<Set<string>>(new Set());
-  const { toast } = useToast();
+  const [onboardingTime, setOnboardingTime] = useState("");
+  const [onboardingResult, setOnboardingResult] = useState("");
 
-  const toggleChecklist = (id: string) => {
-    const newDone = new Set(checklistDone);
-    if (newDone.has(id)) {
-      newDone.delete(id);
-    } else {
-      newDone.add(id);
-    }
-    setChecklistDone(newDone);
-  };
-
-  const copyPrompt = () => {
-    navigator.clipboard.writeText(ONBOARDING_PROMPT);
-    toast({
-      title: "Copied!",
-      description: "Onboarding prompt copied to clipboard",
-    });
-  };
-
-  const canComplete = selectedPattern && firstSuccess.length > 10 && checklistDone.size >= 4;
+  const canProceedToBuild = firstSuccess.length >= 15;
+  const canProceedToTest = true;
+  const canComplete = onboardingTime !== "" && onboardingResult.length >= 20;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="p-6 border-2 border-primary bg-gradient-to-br from-yellow-50 to-amber-50">
+      <Card className="p-6 border-2 border-slate-200 bg-white">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-amber-500 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
             <Sparkles className="w-7 h-7 text-white" />
           </div>
           <div>
             <h3 className="text-2xl font-extrabold text-slate-900">User Onboarding</h3>
-            <p className="text-slate-600 mt-1">Help new users understand and love your app in 2 minutes.</p>
+            <p className="text-slate-600 mt-1">Get new users to their "aha moment" as fast as possible.</p>
           </div>
         </div>
       </Card>
 
-      {/* 2-Minute Rule */}
-      <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-        <div className="flex items-start gap-3">
-          <Clock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <div>
-            <p className="font-medium text-amber-800">The 2-Minute Rule</p>
-            <p className="text-sm text-amber-700 mt-1">
-              Within 2 minutes of signing up, users should understand what your app does,
-              complete ONE action, and see value from it.
+      {/* Step 1: Define First Success */}
+      {step === "define" && (
+        <>
+          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
+            <div className="flex items-start gap-3">
+              <Clock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="text-sm text-amber-800">
+                <p className="font-medium">The 2-Minute Rule</p>
+                <p className="mt-1">
+                  Within 2 minutes of signing up, users should understand what your app does,
+                  complete ONE action, and see value from it. If it takes longer, they'll leave.
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">What's Their First Success?</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              What ONE action should new users complete to "get" your app? This is the moment they say "Oh, this is cool!"
             </p>
-          </div>
-        </div>
-      </Card>
 
-      {/* First Success */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-2 text-slate-900">What's Their First Success?</h4>
-        <p className="text-sm text-slate-600 mb-4">
-          What ONE action should new users complete to "get" your app?
-        </p>
-        <Textarea
-          placeholder="e.g., 'Generate their first AI post' or 'Save their first item' or 'See their first analysis result'"
-          value={firstSuccess}
-          onChange={(e) => setFirstSuccess(e.target.value)}
-          className="min-h-[80px]"
-        />
-      </Card>
+            <div className="space-y-3 mb-4">
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-sm text-slate-700">"Generate their first AI output"</p>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-sm text-slate-700">"Save their first item"</p>
+              </div>
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-sm text-slate-700">"See their first analysis result"</p>
+              </div>
+            </div>
 
-      {/* Onboarding Pattern */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-4 text-slate-900">Choose Onboarding Pattern</h4>
-        <div className="space-y-3">
-          {ONBOARDING_PATTERNS.map((pattern) => (
-            <div
-              key={pattern.id}
-              className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                selectedPattern === pattern.id
-                  ? "border-amber-500 bg-amber-50"
-                  : "border-slate-200 hover:border-slate-300"
-              }`}
-              onClick={() => setSelectedPattern(pattern.id)}
+            <Textarea
+              placeholder="New users should [complete what action] within their first 2 minutes. They'll know it worked when they see [what result]..."
+              value={firstSuccess}
+              onChange={(e) => setFirstSuccess(e.target.value)}
+              className="min-h-[100px]"
+            />
+          </Card>
+
+          {canProceedToBuild && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("build")}
             >
-              <div className="flex items-center gap-3">
-                <input
-                  type="radio"
-                  checked={selectedPattern === pattern.id}
-                  onChange={() => setSelectedPattern(pattern.id)}
-                  className="w-4 h-4"
-                />
+              Build Onboarding Flow <ArrowRight className="w-5 h-5" />
+            </Button>
+          )}
+        </>
+      )}
+
+      {/* Step 2: Build the Onboarding */}
+      {step === "build" && (
+        <>
+          <Card className="p-6 border-2 border-primary bg-primary/5">
+            <div className="flex items-center gap-3 mb-2">
+              <Target className="w-6 h-6 text-primary" />
+              <h4 className="font-bold text-lg text-slate-900">First Success Goal</h4>
+            </div>
+            <p className="text-slate-800 bg-white p-4 rounded-lg border border-slate-200">
+              "{firstSuccess}"
+            </p>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-4 text-slate-900">Build the Path to First Success</h4>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">1</div>
                 <div>
-                  <span className="font-medium text-slate-900">{pattern.name}</span>
-                  <p className="text-xs text-slate-600 mt-0.5">{pattern.desc}</p>
+                  <p className="font-medium text-slate-900">Welcome message with their name</p>
+                  <p className="text-sm text-slate-600">Make it personal, make it quick</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">2</div>
+                <div>
+                  <p className="font-medium text-slate-900">Point them directly to the main feature</p>
+                  <p className="text-sm text-slate-600">No tours, no explanations - let them DO</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">3</div>
+                <div>
+                  <p className="font-medium text-slate-900">Pre-fill with example data</p>
+                  <p className="text-sm text-slate-600">So they can click "Go" immediately</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">4</div>
+                <div>
+                  <p className="font-medium text-slate-900">Show a success message</p>
+                  <p className="text-sm text-slate-600">"Nice! You just [did thing]" - celebrate the win</p>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </Card>
+          </Card>
 
-      {/* Prompt Template */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-2 text-slate-900">Onboarding Prompt</h4>
-        <p className="text-sm text-slate-600 mb-4">Copy and customize for your app:</p>
-        <pre className="text-xs text-slate-700 whitespace-pre-wrap font-mono bg-slate-50 p-4 rounded border border-slate-200">
-          {ONBOARDING_PROMPT}
-        </pre>
-        <Button variant="outline" size="sm" className="mt-3 gap-2" onClick={copyPrompt}>
-          <Copy className="w-4 h-4" />
-          Copy Prompt
-        </Button>
-      </Card>
-
-      {/* Checklist */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-4 text-slate-900">Implementation Checklist</h4>
-        <div className="space-y-3">
-          {CHECKLIST.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 cursor-pointer hover:bg-slate-100"
-              onClick={() => toggleChecklist(item.id)}
-            >
-              <Checkbox
-                checked={checklistDone.has(item.id)}
-                onCheckedChange={() => toggleChecklist(item.id)}
-              />
-              <span className="text-sm text-slate-700">{item.text}</span>
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Tell Claude Code</h4>
+            <p className="text-sm text-slate-600 mb-4">Describe what to build:</p>
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm text-slate-700 font-mono">
+              "Add onboarding for new users:<br /><br />
+              1. When they first sign in, show a welcome<br />
+              2. Take them to [main feature]<br />
+              3. Pre-fill with [example data]<br />
+              4. After they complete it, show success<br />
+              5. Mark onboarding as done so they don't see it again"
             </div>
-          ))}
-        </div>
-      </Card>
+          </Card>
 
-      {/* Complete Button */}
-      {canComplete && (
-        <Button
-          size="lg"
-          className="w-full h-14 text-lg font-bold gap-2"
-          onClick={onComplete}
-        >
-          Onboarding Complete - Continue <ChevronRight className="w-5 h-5" />
-        </Button>
+          <Button
+            size="lg"
+            className="w-full h-14 text-lg font-bold gap-2"
+            onClick={() => setStep("test")}
+          >
+            <CheckCircle2 className="w-5 h-5" />
+            I Built It - Time to Test
+          </Button>
+        </>
+      )}
+
+      {/* Step 3: Test with Fresh Account */}
+      {step === "test" && (
+        <>
+          <Card className="p-6 border-2 border-primary bg-primary/5">
+            <div className="flex items-center gap-3 mb-2">
+              <Trophy className="w-6 h-6 text-primary" />
+              <h4 className="font-bold text-lg text-slate-900">Onboarding Built!</h4>
+            </div>
+            <p className="text-slate-700">
+              Now let's verify that new users can reach their first success quickly.
+            </p>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-4 text-slate-900">Time the Onboarding</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              Create a fresh account (or clear your data) and time how long it takes to reach first success.
+            </p>
+
+            <div className="flex items-center gap-4 mb-4">
+              <p className="text-sm font-medium text-slate-700">Time to first success:</p>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="number"
+                  placeholder="0"
+                  value={onboardingTime}
+                  onChange={(e) => setOnboardingTime(e.target.value)}
+                  className="w-20"
+                />
+                <span className="text-sm text-slate-600">seconds</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className={`p-3 rounded-lg ${Number(onboardingTime) <= 60 ? "bg-green-50 border border-green-200" : "bg-slate-50 border border-slate-200"}`}>
+                <p className={`text-sm font-medium ${Number(onboardingTime) <= 60 ? "text-green-800" : "text-slate-700"}`}>
+                  Under 60 seconds = Excellent
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${Number(onboardingTime) > 60 && Number(onboardingTime) <= 120 ? "bg-amber-50 border border-amber-200" : "bg-slate-50 border border-slate-200"}`}>
+                <p className={`text-sm font-medium ${Number(onboardingTime) > 60 && Number(onboardingTime) <= 120 ? "text-amber-800" : "text-slate-700"}`}>
+                  60-120 seconds = Acceptable
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${Number(onboardingTime) > 120 ? "bg-red-50 border border-red-200" : "bg-slate-50 border border-slate-200"}`}>
+                <p className={`text-sm font-medium ${Number(onboardingTime) > 120 ? "text-red-800" : "text-slate-700"}`}>
+                  Over 120 seconds = Needs work
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Document the Experience</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              What was it like going through onboarding as a new user?
+            </p>
+            <Textarea
+              placeholder="As a new user, I:
+1. Signed up and saw [welcome message]
+2. Was taken to [where]
+3. Completed [action] in [X] seconds
+4. The result was [good/confusing/needs work]
+5. I would improve [what]..."
+              value={onboardingResult}
+              onChange={(e) => setOnboardingResult(e.target.value)}
+              className="min-h-[140px]"
+            />
+          </Card>
+
+          {canComplete && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => onComplete({ firstSuccess, onboardingTime: `${onboardingTime} seconds`, onboardingResult })}
+            >
+              Save Onboarding & Continue <ChevronRight className="w-5 h-5" />
+            </Button>
+          )}
+        </>
       )}
     </div>
   );

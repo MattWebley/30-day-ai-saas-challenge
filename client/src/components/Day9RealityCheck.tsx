@@ -5,186 +5,216 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   ClipboardCheck,
   CheckCircle2,
-  AlertTriangle,
+  AlertCircle,
   XCircle,
   ChevronRight,
-  Plus,
-  Trash2
+  Trophy,
+  Target
 } from "lucide-react";
 
 interface Day9RealityCheckProps {
-  prd: string;
-  onComplete: (data: { auditResults: AuditItem[] }) => void;
+  userIdea: string;
+  onComplete: (data: {
+    workingWell: string;
+    needsFix: string;
+    biggestWin: string;
+    topPriority: string;
+  }) => void;
 }
 
-interface AuditItem {
-  id: string;
-  feature: string;
-  status: "works" | "partial" | "missing";
-  priority: "critical" | "important" | "nice";
-  notes: string;
-}
+export function Day9RealityCheck({ userIdea, onComplete }: Day9RealityCheckProps) {
+  const [step, setStep] = useState<"test" | "document" | "prioritize">("test");
+  const [workingWell, setWorkingWell] = useState("");
+  const [needsFix, setNeedsFix] = useState("");
+  const [biggestWin, setBiggestWin] = useState("");
+  const [topPriority, setTopPriority] = useState("");
 
-export function Day9RealityCheck({ prd, onComplete }: Day9RealityCheckProps) {
-  const [auditItems, setAuditItems] = useState<AuditItem[]>([]);
-  const [newFeature, setNewFeature] = useState("");
-
-  const addFeature = () => {
-    if (!newFeature.trim()) return;
-    setAuditItems([
-      ...auditItems,
-      {
-        id: Date.now().toString(),
-        feature: newFeature.trim(),
-        status: "works",
-        priority: "important",
-        notes: "",
-      },
-    ]);
-    setNewFeature("");
-  };
-
-  const updateItem = (id: string, updates: Partial<AuditItem>) => {
-    setAuditItems(auditItems.map((item) => (item.id === id ? { ...item, ...updates } : item)));
-  };
-
-  const removeItem = (id: string) => {
-    setAuditItems(auditItems.filter((item) => item.id !== id));
-  };
-
-  const statusIcon = (status: AuditItem["status"]) => {
-    switch (status) {
-      case "works":
-        return <CheckCircle2 className="w-5 h-5 text-green-600" />;
-      case "partial":
-        return <AlertTriangle className="w-5 h-5 text-amber-500" />;
-      case "missing":
-        return <XCircle className="w-5 h-5 text-red-500" />;
-    }
-  };
-
-  const issueCount = auditItems.filter((i) => i.status !== "works").length;
-  const criticalCount = auditItems.filter((i) => i.status !== "works" && i.priority === "critical").length;
-
-  const canComplete = auditItems.length >= 3;
+  const canProceedToDocument = true; // Always can proceed after reading instructions
+  const canProceedToPrioritize = workingWell.length >= 10 && needsFix.length >= 10;
+  const canComplete = biggestWin.length >= 10 && topPriority.length >= 10;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="p-6 border-2 border-primary bg-gradient-to-br from-amber-50 to-orange-50">
+      <Card className="p-6 border-2 border-slate-200 bg-white">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-amber-500 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
             <ClipboardCheck className="w-7 h-7 text-white" />
           </div>
           <div>
             <h3 className="text-2xl font-extrabold text-slate-900">The Reality Check</h3>
-            <p className="text-slate-600 mt-1">Audit what Replit built vs your PRD. Document every gap.</p>
+            <p className="text-slate-600 mt-1">Test your app like a real user and document what you find.</p>
           </div>
         </div>
       </Card>
 
-      {/* PRD Reference */}
-      {prd && (
-        <Card className="p-4 border-2 border-slate-200">
-          <h4 className="font-bold text-sm mb-2 text-slate-700">Your PRD (Reference)</h4>
-          <div className="max-h-40 overflow-y-auto text-xs text-slate-600 bg-slate-50 p-3 rounded whitespace-pre-wrap">
-            {prd.substring(0, 1000)}{prd.length > 1000 ? "..." : ""}
-          </div>
-        </Card>
-      )}
+      {/* Step 1: Test Instructions */}
+      {step === "test" && (
+        <>
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-4 text-slate-900">Your Testing Mission</h4>
+            <p className="text-slate-600 mb-4">
+              Open your app in a new browser tab and pretend you're a first-time user. Go through the entire experience:
+            </p>
 
-      {/* Add Feature */}
-      <Card className="p-4 border-2 border-slate-200">
-        <h4 className="font-bold text-sm mb-3 text-slate-900">Add Features to Audit</h4>
-        <div className="flex gap-2">
-          <Textarea
-            placeholder="Enter a feature from your PRD (e.g., 'User login', 'Dashboard', 'AI generation')"
-            value={newFeature}
-            onChange={(e) => setNewFeature(e.target.value)}
-            className="min-h-[60px]"
-          />
-          <Button onClick={addFeature} className="shrink-0">
-            <Plus className="w-4 h-4" />
-          </Button>
-        </div>
-      </Card>
-
-      {/* Audit Items */}
-      {auditItems.length > 0 && (
-        <Card className="p-4 border-2 border-slate-200">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="font-bold text-slate-900">Feature Audit ({auditItems.length} features)</h4>
-            {issueCount > 0 && (
-              <span className="text-sm text-amber-600 font-medium">
-                {issueCount} issues ({criticalCount} critical)
-              </span>
-            )}
-          </div>
-          <div className="space-y-4">
-            {auditItems.map((item) => (
-              <div key={item.id} className="border border-slate-200 rounded-lg p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    {statusIcon(item.status)}
-                    <span className="font-medium text-slate-900">{item.feature}</span>
-                  </div>
-                  <button onClick={() => removeItem(item.id)} className="text-slate-400 hover:text-red-500">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div>
-                    <label className="text-xs text-slate-500 block mb-1">Status</label>
-                    <select
-                      value={item.status}
-                      onChange={(e) => updateItem(item.id, { status: e.target.value as AuditItem["status"] })}
-                      className="w-full text-sm border border-slate-200 rounded px-2 py-1.5"
-                    >
-                      <option value="works">Works</option>
-                      <option value="partial">Partial / Buggy</option>
-                      <option value="missing">Missing</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-500 block mb-1">Priority</label>
-                    <select
-                      value={item.priority}
-                      onChange={(e) => updateItem(item.id, { priority: e.target.value as AuditItem["priority"] })}
-                      className="w-full text-sm border border-slate-200 rounded px-2 py-1.5"
-                    >
-                      <option value="critical">Critical</option>
-                      <option value="important">Important</option>
-                      <option value="nice">Nice to Have</option>
-                    </select>
-                  </div>
-                </div>
-                {item.status !== "works" && (
-                  <Textarea
-                    placeholder="Notes: What's wrong? What should it do?"
-                    value={item.notes}
-                    onChange={(e) => updateItem(item.id, { notes: e.target.value })}
-                    className="text-sm min-h-[60px]"
-                  />
-                )}
+            <div className="space-y-3">
+              <div className="flex gap-3 p-3 bg-slate-50 rounded-lg">
+                <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">1</div>
+                <p className="text-sm text-slate-700">Land on the homepage - does it make sense?</p>
               </div>
-            ))}
-          </div>
-        </Card>
+              <div className="flex gap-3 p-3 bg-slate-50 rounded-lg">
+                <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">2</div>
+                <p className="text-sm text-slate-700">Try to use the main feature - does it work?</p>
+              </div>
+              <div className="flex gap-3 p-3 bg-slate-50 rounded-lg">
+                <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">3</div>
+                <p className="text-sm text-slate-700">Click every button - do they do what you expect?</p>
+              </div>
+              <div className="flex gap-3 p-3 bg-slate-50 rounded-lg">
+                <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">4</div>
+                <p className="text-sm text-slate-700">Try to break it - enter weird data, click things twice</p>
+              </div>
+              <div className="flex gap-3 p-3 bg-slate-50 rounded-lg">
+                <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">5</div>
+                <p className="text-sm text-slate-700">Note EVERYTHING - what works, what doesn't, what confuses you</p>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
+            <p className="text-sm text-amber-800">
+              <strong>Be honest with yourself.</strong> This isn't about feeling good - it's about knowing exactly where you stand. Finding problems now is a WIN, not a failure.
+            </p>
+          </Card>
+
+          <Button
+            size="lg"
+            className="w-full h-14 text-lg font-bold gap-2"
+            onClick={() => setStep("document")}
+          >
+            I've Tested My App <ChevronRight className="w-5 h-5" />
+          </Button>
+        </>
       )}
 
-      {/* Complete Button */}
-      {canComplete && (
-        <Button
-          size="lg"
-          className="w-full h-14 text-lg font-bold gap-2"
-          onClick={() => onComplete({ auditResults: auditItems })}
-        >
-          Save Audit & Continue <ChevronRight className="w-5 h-5" />
-        </Button>
+      {/* Step 2: Document Findings */}
+      {step === "document" && (
+        <>
+          <Card className="p-6 border-2 border-green-200 bg-green-50">
+            <div className="flex items-center gap-3 mb-3">
+              <CheckCircle2 className="w-6 h-6 text-green-600" />
+              <h4 className="font-bold text-lg text-green-900">What's Working Well?</h4>
+            </div>
+            <p className="text-sm text-green-700 mb-4">
+              List everything that works. These are your wins - celebrate them!
+            </p>
+            <Textarea
+              placeholder="The homepage loads correctly...
+The main form saves data...
+The design looks clean..."
+              value={workingWell}
+              onChange={(e) => setWorkingWell(e.target.value)}
+              className="min-h-[120px] bg-white"
+            />
+          </Card>
+
+          <Card className="p-6 border-2 border-red-200 bg-red-50">
+            <div className="flex items-center gap-3 mb-3">
+              <AlertCircle className="w-6 h-6 text-red-600" />
+              <h4 className="font-bold text-lg text-red-900">What Needs Fixing?</h4>
+            </div>
+            <p className="text-sm text-red-700 mb-4">
+              List every issue, bug, or thing that's missing. Be specific.
+            </p>
+            <Textarea
+              placeholder="The submit button doesn't respond...
+Error messages aren't helpful...
+Missing the ability to delete items..."
+              value={needsFix}
+              onChange={(e) => setNeedsFix(e.target.value)}
+              className="min-h-[120px] bg-white"
+            />
+          </Card>
+
+          {canProceedToPrioritize && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("prioritize")}
+            >
+              Continue to Prioritize <ChevronRight className="w-5 h-5" />
+            </Button>
+          )}
+
+          {!canProceedToPrioritize && (
+            <p className="text-sm text-slate-500 text-center">
+              Fill in both sections to continue
+            </p>
+          )}
+        </>
       )}
 
-      {!canComplete && auditItems.length > 0 && (
-        <p className="text-sm text-slate-500 text-center">Add at least 3 features to audit</p>
+      {/* Step 3: Prioritize */}
+      {step === "prioritize" && (
+        <>
+          <Card className="p-6 border-2 border-primary bg-primary/5">
+            <div className="flex items-center gap-3 mb-2">
+              <Trophy className="w-6 h-6 text-primary" />
+              <h4 className="font-bold text-lg text-slate-900">Reality Check Complete!</h4>
+            </div>
+            <p className="text-slate-700">
+              You now have a clear picture of where your app stands. That's huge - most people skip this step and launch broken products.
+            </p>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <div className="flex items-center gap-3 mb-3">
+              <Trophy className="w-6 h-6 text-primary" />
+              <h4 className="font-bold text-lg text-slate-900">Your Biggest Win So Far</h4>
+            </div>
+            <p className="text-sm text-slate-600 mb-4">
+              What's the ONE thing about your app that makes you proud?
+            </p>
+            <Textarea
+              placeholder="I'm most proud of..."
+              value={biggestWin}
+              onChange={(e) => setBiggestWin(e.target.value)}
+              className="min-h-[80px]"
+            />
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <div className="flex items-center gap-3 mb-3">
+              <Target className="w-6 h-6 text-red-600" />
+              <h4 className="font-bold text-lg text-slate-900">Top Priority to Fix</h4>
+            </div>
+            <p className="text-sm text-slate-600 mb-4">
+              What's the ONE thing you MUST fix before anything else?
+            </p>
+            <Textarea
+              placeholder="The most important thing to fix is..."
+              value={topPriority}
+              onChange={(e) => setTopPriority(e.target.value)}
+              className="min-h-[80px]"
+            />
+          </Card>
+
+          {canComplete && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => onComplete({ workingWell, needsFix, biggestWin, topPriority })}
+            >
+              Save Reality Check & Continue <ChevronRight className="w-5 h-5" />
+            </Button>
+          )}
+
+          {!canComplete && (
+            <p className="text-sm text-slate-500 text-center">
+              Complete both sections to continue
+            </p>
+          )}
+        </>
       )}
     </div>
   );

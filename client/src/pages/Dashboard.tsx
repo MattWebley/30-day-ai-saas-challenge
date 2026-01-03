@@ -107,14 +107,19 @@ export default function Dashboard() {
         // Post commitment to discussion if user opted in
         if (componentData?.shareToDiscussion && componentData?.accountabilityMessage) {
           try {
-            await fetch("/api/comments", {
+            const response = await fetch("/api/comments", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
               body: JSON.stringify({
                 day: 0,
                 content: `🎯 My Commitment: ${componentData.accountabilityMessage}`
               })
             });
+            if (!response.ok) {
+              const errorData = await response.json().catch(() => ({}));
+              throw new Error(errorData.message || "Failed to post comment");
+            }
           } catch (error) {
             console.error("Failed to post commitment to discussion:", error);
           }
@@ -362,17 +367,20 @@ export default function Dashboard() {
               </>
             ) : currentDay === 8 ? (
               <>
-                {/* Day 8: Master Claude Code */}
+                {/* Day 8: First Build Win */}
                 <div className="space-y-4">
-                  <Day8ClaudeCode onComplete={handleComplete} />
+                  <Day8ClaudeCode
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 9 ? (
               <>
-                {/* Day 9: Reality Check - PRD vs What Got Built */}
+                {/* Day 9: Reality Check */}
                 <div className="space-y-4">
                   <Day9RealityCheck
-                    prd={(Array.isArray(progress) ? progress.find((p: any) => p.day === 6) : null)?.completionData?.prd || ""}
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -381,7 +389,10 @@ export default function Dashboard() {
               <>
                 {/* Day 10: Fix & Iterate */}
                 <div className="space-y-4">
-                  <Day10FixIterate onComplete={handleComplete} />
+                  <Day10FixIterate
+                    topPriority={(Array.isArray(progress) ? progress.find((p: any) => p.day === 9) : null)?.completionData?.topPriority || ""}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 11 ? (
@@ -389,7 +400,7 @@ export default function Dashboard() {
                 {/* Day 11: Test Your USP */}
                 <div className="space-y-4">
                   <Day11TestUSP
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || ""}
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -403,10 +414,10 @@ export default function Dashboard() {
               </>
             ) : currentDay === 13 ? (
               <>
-                {/* Day 13: Connect AI Brain */}
+                {/* Day 13: Add AI Brain */}
                 <div className="space-y-4">
                   <Day13AIBrain
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || ""}
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -415,7 +426,10 @@ export default function Dashboard() {
               <>
                 {/* Day 14: Connect APIs */}
                 <div className="space-y-4">
-                  <Day14ConnectAPIs onComplete={handleComplete} />
+                  <Day14ConnectAPIs
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 15 ? (
@@ -442,21 +456,30 @@ export default function Dashboard() {
               <>
                 {/* Day 17: User Onboarding */}
                 <div className="space-y-4">
-                  <Day17Onboarding onComplete={handleComplete} />
+                  <Day17Onboarding
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 18 ? (
               <>
                 {/* Day 18: Admin Dashboard */}
                 <div className="space-y-4">
-                  <Day18AdminDashboard onComplete={handleComplete} />
+                  <Day18AdminDashboard
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 19 ? (
               <>
                 {/* Day 19: Mobile Ready */}
                 <div className="space-y-4">
-                  <Day19MobileReady onComplete={handleComplete} />
+                  <Day19MobileReady
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 20 ? (

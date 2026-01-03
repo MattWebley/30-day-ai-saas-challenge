@@ -939,52 +939,54 @@ Keep it concise, professional, and compelling. 3-4 sentences maximum.`;
       const summary = summaryResponse.choices[0].message.content || "";
 
       // Generate full PRD
-      const prdPrompt = `You are a senior product manager. Create a complete Product Requirements Document (PRD) for this SaaS product.
+      const prdPrompt = `Create a PRD for this product. No fluff, no filler, no generic advice. Be extremely specific to THIS product.
 
-Product Idea: ${idea}
+PRODUCT: ${idea}
 
-Pain Points Addressed:
-${painPoints.map((p: string, i: number) => `${i + 1}. ${p}`).join('\n')}
+PAIN POINTS:
+${painPoints.map((p: string, i: number) => `- ${p}`).join('\n')}
 
-All Features:
-${features.map((f: string, i: number) => `${i + 1}. ${f}`).join('\n')}
+MVP FEATURES:
+${mvpFeatures.map((f: string, i: number) => `- ${f}`).join('\n')}
 
-MVP Features (Build First):
-${mvpFeatures.map((f: string, i: number) => `${i + 1}. ${f}`).join('\n')}
+ALL FEATURES:
+${features.map((f: string, i: number) => `- ${f}`).join('\n')}
 
-Create a professional PRD with these sections:
+OUTPUT FORMAT:
 
-# Product Requirements Document
+# ${idea} - PRD
 
-## 1. Product Overview
-[Brief description of what the product is and does]
+## What It Is
+[1-2 sentences. What does this specific product do?]
 
-## 2. Problem Statement
-[Clear description of the problems this product solves]
+## Who It's For
+[Specific user type. Not "businesses" - be precise: "freelance designers who..." or "e-commerce store owners with..."]
 
-## 3. Target Users
-[Who will use this product]
+## Core Problem
+[The #1 pain point this solves. One sentence.]
 
-## 4. Goals & Success Metrics
-[What success looks like - key metrics to track]
+## MVP Features
 
-## 5. MVP Feature Specifications
+[For EACH MVP feature, write:]
 
-For each MVP feature, provide:
-- Feature name
-- User story ("As a [user], I want to [action] so that [benefit]")
-- Acceptance criteria (what defines "done")
+### [Feature Name]
+**User does:** [Exact action user takes]
+**System does:** [Exact system response]
+**Done when:** [Specific completion criteria - testable]
 
-## 6. Post-MVP Features
-[List features to build after launch]
+## Data Model
+[List the core entities/tables needed. E.g., Users, Projects, Tasks - with key fields]
 
-## 7. Technical Considerations
-[Key technical requirements, integrations, data considerations]
+## API Endpoints
+[List 5-8 critical endpoints. Format: METHOD /path - what it does]
 
-## 8. Launch Checklist
-[Essential items needed before launch]
+## Third-Party Services
+[Only list if actually needed: Stripe, SendGrid, etc. with WHY]
 
-Be specific and actionable. This PRD should give a developer everything they need to start building.`;
+## Launch Blockers
+[5-7 specific items that MUST work before launch. Not generic - specific to this product]
+
+NO generic advice. NO "consider accessibility". NO "ensure security best practices". Only specific, actionable items for THIS product.`;
 
       const prdResponse = await openai.chat.completions.create({
         model: "gpt-4o",

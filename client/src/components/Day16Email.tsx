@@ -1,193 +1,246 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Mail,
-  Copy,
   CheckCircle2,
   ChevronRight,
-  ExternalLink
+  Trophy,
+  ArrowRight,
+  ExternalLink,
+  Zap,
+  Inbox
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 
 interface Day16EmailProps {
   appName: string;
-  onComplete: () => void;
+  onComplete: (data: { emailType: string; emailSent: boolean; testResult: string }) => void;
 }
 
-const EMAIL_TYPES = [
-  { id: "welcome", text: "Welcome email when user signs up", essential: true },
-  { id: "reset", text: "Password reset email (if using email auth)", essential: true },
-  { id: "notification", text: "Usage notifications", essential: false },
-  { id: "updates", text: "Feature update emails", essential: false },
-];
-
-const SETUP_STEPS = [
-  { id: "signup", text: "Signed up at resend.com", url: "https://resend.com" },
-  { id: "domain", text: "Verified domain (or using test mode)" },
-  { id: "key", text: "Added RESEND_API_KEY to Replit Secrets" },
-  { id: "integrated", text: "Integrated email sending in my app" },
-  { id: "tested", text: "Tested that emails arrive" },
-];
-
-const EMAIL_PROMPT = `Add email functionality using Resend:
-
-1. When a user signs up, send a welcome email:
-   - To: their email
-   - Subject: "Welcome to [Your App Name]!"
-   - Body: [Your welcome message]
-
-2. When [event happens], send a notification:
-   - To: the user's email
-   - Subject: "[Relevant subject]"
-   - Body: [Relevant message]
-
-Use RESEND_API_KEY from secrets.
-Handle errors gracefully - don't break the app if email fails.`;
-
 export function Day16Email({ appName, onComplete }: Day16EmailProps) {
-  const [emailTypes, setEmailTypes] = useState<Set<string>>(new Set());
-  const [setupDone, setSetupDone] = useState<Set<string>>(new Set());
-  const { toast } = useToast();
+  const [step, setStep] = useState<"plan" | "setup" | "test">("plan");
+  const [emailType, setEmailType] = useState("");
+  const [emailSent, setEmailSent] = useState(false);
+  const [testResult, setTestResult] = useState("");
 
-  const toggleEmailType = (id: string) => {
-    const newTypes = new Set(emailTypes);
-    if (newTypes.has(id)) {
-      newTypes.delete(id);
-    } else {
-      newTypes.add(id);
-    }
-    setEmailTypes(newTypes);
-  };
-
-  const toggleSetup = (id: string) => {
-    const newDone = new Set(setupDone);
-    if (newDone.has(id)) {
-      newDone.delete(id);
-    } else {
-      newDone.add(id);
-    }
-    setSetupDone(newDone);
-  };
-
-  const copyPrompt = () => {
-    const customPrompt = EMAIL_PROMPT.replace("[Your App Name]", appName || "[Your App Name]");
-    navigator.clipboard.writeText(customPrompt);
-    toast({
-      title: "Copied!",
-      description: "Email prompt copied to clipboard",
-    });
-  };
-
-  const canComplete = emailTypes.size >= 1 && setupDone.size >= 4;
+  const canProceedToSetup = emailType.length >= 10;
+  const canComplete = testResult.length >= 20;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="p-6 border-2 border-primary bg-gradient-to-br from-pink-50 to-rose-50">
+      <Card className="p-6 border-2 border-slate-200 bg-white">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-pink-500 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
             <Mail className="w-7 h-7 text-white" />
           </div>
           <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Email Setup</h3>
-            <p className="text-slate-600 mt-1">Send welcome emails and notifications to keep users engaged.</p>
+            <h3 className="text-2xl font-extrabold text-slate-900">Send Your First Email</h3>
+            <p className="text-slate-600 mt-1">Set up email so your app can communicate with users.</p>
           </div>
         </div>
       </Card>
 
-      {/* Cost Info */}
-      <Card className="p-4 border-2 border-green-200 bg-green-50">
-        <div className="flex items-center gap-3">
-          <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-          <div>
-            <p className="font-medium text-green-800">Resend Free Tier: 3,000 emails/month</p>
-            <p className="text-sm text-green-700">More than enough for your MVP</p>
-          </div>
-        </div>
-      </Card>
+      {/* Step 1: Plan What Email to Send */}
+      {step === "plan" && (
+        <>
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">What's Your First Email?</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              Start with ONE email type. The most common first email is a welcome email when someone signs up.
+            </p>
 
-      {/* Email Types */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-4 text-slate-900">What Emails Will You Send?</h4>
-        <div className="space-y-3">
-          {EMAIL_TYPES.map((type) => (
-            <div
-              key={type.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-slate-50 cursor-pointer hover:bg-slate-100"
-              onClick={() => toggleEmailType(type.id)}
-            >
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  checked={emailTypes.has(type.id)}
-                  onCheckedChange={() => toggleEmailType(type.id)}
-                />
-                <span className="text-sm text-slate-700">{type.text}</span>
+            <div className="space-y-3 mb-4">
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="font-medium text-sm text-slate-900">Welcome Email (most common)</p>
+                <p className="text-xs text-slate-600">Sent when a user creates an account</p>
               </div>
-              {type.essential && (
-                <span className="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded">Essential</span>
-              )}
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Prompt Template */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-2 text-slate-900">Email Integration Prompt</h4>
-        <p className="text-sm text-slate-600 mb-4">Copy and customize for your app:</p>
-        <pre className="text-xs text-slate-700 whitespace-pre-wrap font-mono bg-slate-50 p-4 rounded border border-slate-200">
-          {EMAIL_PROMPT}
-        </pre>
-        <Button variant="outline" size="sm" className="mt-3 gap-2" onClick={copyPrompt}>
-          <Copy className="w-4 h-4" />
-          Copy Prompt
-        </Button>
-      </Card>
-
-      {/* Setup Steps */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-4 text-slate-900">Setup Checklist</h4>
-        <div className="space-y-3">
-          {SETUP_STEPS.map((step) => (
-            <div
-              key={step.id}
-              className="flex items-center justify-between p-3 rounded-lg bg-slate-50 cursor-pointer hover:bg-slate-100"
-              onClick={() => toggleSetup(step.id)}
-            >
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  checked={setupDone.has(step.id)}
-                  onCheckedChange={() => toggleSetup(step.id)}
-                />
-                <span className="text-sm text-slate-700">{step.text}</span>
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="font-medium text-sm text-slate-900">Action Notification</p>
+                <p className="text-xs text-slate-600">Sent when something important happens</p>
               </div>
-              {step.url && (
-                <a
-                  href={step.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              )}
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="font-medium text-sm text-slate-900">Weekly Summary</p>
+                <p className="text-xs text-slate-600">Recap of user's activity</p>
+              </div>
             </div>
-          ))}
-        </div>
-      </Card>
 
-      {/* Complete Button */}
-      {canComplete && (
-        <Button
-          size="lg"
-          className="w-full h-14 text-lg font-bold gap-2"
-          onClick={onComplete}
-        >
-          Email Setup Complete - Continue <ChevronRight className="w-5 h-5" />
-        </Button>
+            <Textarea
+              placeholder="I'll add a [type] email that gets sent when [trigger]. It will say [brief content]..."
+              value={emailType}
+              onChange={(e) => setEmailType(e.target.value)}
+              className="min-h-[100px]"
+            />
+          </Card>
+
+          <Card className="p-4 border-2 border-green-200 bg-green-50">
+            <div className="flex items-start gap-3">
+              <Zap className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+              <div className="text-sm text-green-800">
+                <p className="font-medium">Resend: 3,000 emails/month free</p>
+                <p className="mt-1">
+                  That's more than enough for an MVP. Don't worry about cost until you have lots of users.
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {canProceedToSetup && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("setup")}
+            >
+              Set Up Email <ArrowRight className="w-5 h-5" />
+            </Button>
+          )}
+        </>
+      )}
+
+      {/* Step 2: Set Up Resend */}
+      {step === "setup" && (
+        <>
+          <Card className="p-6 border-2 border-primary bg-primary/5">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Your Email Plan</h4>
+            <p className="text-slate-800 bg-white p-4 rounded-lg border border-slate-200">
+              "{emailType}"
+            </p>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-4 text-slate-900">Resend Setup</h4>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">1</div>
+                <div>
+                  <p className="font-medium text-slate-900">Create Resend Account</p>
+                  <a
+                    href="https://resend.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline flex items-center gap-1"
+                  >
+                    resend.com <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">2</div>
+                <div>
+                  <p className="font-medium text-slate-900">Get Your API Key</p>
+                  <p className="text-sm text-slate-600">Dashboard → API Keys → Create</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">3</div>
+                <div>
+                  <p className="font-medium text-slate-900">Add to Replit Secrets</p>
+                  <p className="text-sm text-slate-600">Key name: RESEND_API_KEY</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">4</div>
+                <div>
+                  <p className="font-medium text-slate-900">Tell Claude Code to Add Email</p>
+                  <p className="text-sm text-slate-600">
+                    "Add email using Resend. When [trigger], send an email with subject '[subject]' and body '[message]'. Use RESEND_API_KEY from secrets."
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
+            <div className="flex items-start gap-3">
+              <Inbox className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              <div className="text-sm text-amber-800">
+                <p className="font-medium">For testing, Resend sends from your domain</p>
+                <p className="mt-1">
+                  In test mode, you can only send to your own email. That's fine for now - you just need to verify it works!
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          <Button
+            size="lg"
+            className="w-full h-14 text-lg font-bold gap-2"
+            onClick={() => setStep("test")}
+          >
+            <CheckCircle2 className="w-5 h-5" />
+            I Set It Up - Send Test Email
+          </Button>
+        </>
+      )}
+
+      {/* Step 3: Test and Verify */}
+      {step === "test" && (
+        <>
+          <Card className="p-6 border-2 border-primary bg-primary/5">
+            <div className="flex items-center gap-3 mb-2">
+              <Trophy className="w-6 h-6 text-primary" />
+              <h4 className="font-bold text-lg text-slate-900">Your App Can Send Email!</h4>
+            </div>
+            <p className="text-slate-700">
+              This is huge. Email is how you'll communicate with users, send notifications, and keep them engaged.
+            </p>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-4 text-slate-900">Send a Test Email</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              Trigger the email in your app. Did you receive it?
+            </p>
+
+            <div className="flex gap-3 mb-4">
+              <Button
+                variant={emailSent ? "default" : "outline"}
+                className="flex-1"
+                onClick={() => setEmailSent(true)}
+              >
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                Yes, I got the email!
+              </Button>
+              <Button
+                variant={!emailSent ? "outline" : "outline"}
+                className="flex-1"
+                onClick={() => setEmailSent(false)}
+              >
+                Not yet / Had issues
+              </Button>
+            </div>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Document the Result</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              What happened when you tested the email?
+            </p>
+            <Textarea
+              placeholder={emailSent
+                ? "I triggered [action] and received an email! The subject was [X] and the content looked [good/needs work]. It arrived in [X seconds]."
+                : "I tried to send an email but [what happened]. The error was [X]. I need to fix [Y]."
+              }
+              value={testResult}
+              onChange={(e) => setTestResult(e.target.value)}
+              className="min-h-[120px]"
+            />
+          </Card>
+
+          {canComplete && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => onComplete({ emailType, emailSent, testResult })}
+            >
+              Save Email Setup & Continue <ChevronRight className="w-5 h-5" />
+            </Button>
+          )}
+        </>
       )}
     </div>
   );

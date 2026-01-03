@@ -47,7 +47,8 @@
       "Bash(/home/runner/workspace/client/src/components/Day4MvpRoadmap.tsx)",
       "Bash(npx tsx:*)",
       "Bash(npm run:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(grep:*)"
     ]
   }
 }

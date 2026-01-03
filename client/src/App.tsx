@@ -11,6 +11,7 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/Landing";
 import Dashboard from "@/pages/Dashboard";
 import Badges from "@/pages/Badges";
+import BuildLog from "@/pages/BuildLog";
 import Settings from "@/pages/Settings";
 import Admin from "@/pages/Admin";
 
@@ -50,6 +51,7 @@ function Router() {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/dashboard/:day" component={Dashboard} />
             <Route path="/badges" component={Badges} />
+            <Route path="/build-log" component={BuildLog} />
             <Route path="/settings" component={Settings} />
             <Route path="/admin" component={Admin} />
           </>

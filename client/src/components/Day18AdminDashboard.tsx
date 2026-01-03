@@ -1,178 +1,272 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import {
   LayoutDashboard,
-  Copy,
   CheckCircle2,
   ChevronRight,
+  Trophy,
+  ArrowRight,
   Users,
   Activity,
-  TrendingUp
+  TrendingUp,
+  BarChart3
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 
 interface Day18AdminDashboardProps {
-  onComplete: () => void;
+  appName: string;
+  onComplete: (data: { metricsChosen: string; dashboardBuilt: boolean; currentStats: string }) => void;
 }
 
-const METRICS = [
-  { id: "total-users", icon: Users, text: "Total users count" },
-  { id: "new-users", icon: TrendingUp, text: "New users this week" },
-  { id: "active-users", icon: Activity, text: "Active users (last 7 days)" },
-  { id: "actions", icon: Activity, text: "Total main actions taken" },
-  { id: "recent", icon: Activity, text: "Recent activity list" },
+const METRIC_OPTIONS = [
+  { id: "total-users", icon: Users, name: "Total Users", desc: "How many people signed up" },
+  { id: "active-users", icon: Activity, name: "Active Users", desc: "Used app in last 7 days" },
+  { id: "new-users", icon: TrendingUp, name: "New This Week", desc: "Signups in past 7 days" },
+  { id: "total-actions", icon: BarChart3, name: "Total Actions", desc: "How many times main feature was used" },
 ];
 
-const CHECKLIST = [
-  { id: "created", text: "Created admin dashboard page" },
-  { id: "protected", text: "Protected it - only admins can access" },
-  { id: "metrics", text: "Added key metrics" },
-  { id: "activity", text: "Added recent activity list" },
-  { id: "myself", text: "Marked my account as admin" },
-];
-
-const ADMIN_PROMPT = `Create an admin dashboard at /admin:
-
-1. Protect it - only admin users can access
-2. Show these stats:
-   - Total users (count)
-   - Users signed up this week (count)
-   - Active users this week (used app in last 7 days)
-   - Total [main actions] (count of main feature usage)
-
-3. Show recent activity:
-   - Last 20 [actions] with user and timestamp
-
-4. Make it simple and clean - this is for me, not users
-
-Mark my account as admin.`;
-
-export function Day18AdminDashboard({ onComplete }: Day18AdminDashboardProps) {
-  const [metricsSelected, setMetricsSelected] = useState<Set<string>>(new Set());
-  const [checklistDone, setChecklistDone] = useState<Set<string>>(new Set());
-  const { toast } = useToast();
+export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboardProps) {
+  const [step, setStep] = useState<"choose" | "build" | "check">("choose");
+  const [selectedMetrics, setSelectedMetrics] = useState<Set<string>>(new Set());
+  const [dashboardBuilt, setDashboardBuilt] = useState(false);
+  const [currentStats, setCurrentStats] = useState("");
 
   const toggleMetric = (id: string) => {
-    const newSelected = new Set(metricsSelected);
+    const newSelected = new Set(selectedMetrics);
     if (newSelected.has(id)) {
       newSelected.delete(id);
     } else {
       newSelected.add(id);
     }
-    setMetricsSelected(newSelected);
+    setSelectedMetrics(newSelected);
   };
 
-  const toggleChecklist = (id: string) => {
-    const newDone = new Set(checklistDone);
-    if (newDone.has(id)) {
-      newDone.delete(id);
-    } else {
-      newDone.add(id);
-    }
-    setChecklistDone(newDone);
-  };
-
-  const copyPrompt = () => {
-    navigator.clipboard.writeText(ADMIN_PROMPT);
-    toast({
-      title: "Copied!",
-      description: "Admin dashboard prompt copied to clipboard",
-    });
-  };
-
-  const canComplete = metricsSelected.size >= 3 && checklistDone.size >= 4;
+  const canProceedToBuild = selectedMetrics.size >= 2;
+  const canComplete = currentStats.length >= 20;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="p-6 border-2 border-primary bg-gradient-to-br from-slate-50 to-gray-100">
+      <Card className="p-6 border-2 border-slate-200 bg-white">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-slate-700 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
             <LayoutDashboard className="w-7 h-7 text-white" />
           </div>
           <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Admin Dashboard</h3>
-            <p className="text-slate-600 mt-1">See what's happening in your app. Users, activity, metrics.</p>
+            <h3 className="text-2xl font-extrabold text-slate-900">Build Your Admin Dashboard</h3>
+            <p className="text-slate-600 mt-1">Know what's happening in your app. Data-driven decisions start here.</p>
           </div>
         </div>
       </Card>
 
-      {/* Why Admin */}
-      <Card className="p-4 border-2 border-slate-200">
-        <h4 className="font-bold text-sm mb-2 text-slate-900">Why You Need This</h4>
-        <ul className="text-sm text-slate-600 space-y-1">
-          <li>• Know who's signing up</li>
-          <li>• See which features are used</li>
-          <li>• Spot issues before users complain</li>
-          <li>• Make data-driven decisions</li>
-        </ul>
-      </Card>
+      {/* Step 1: Choose Metrics */}
+      {step === "choose" && (
+        <>
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">What Do You Want to Track?</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              Pick 2-4 metrics that matter for your app. You can always add more later.
+            </p>
 
-      {/* Metrics Selection */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-4 text-slate-900">What Metrics Will You Track?</h4>
-        <div className="space-y-3">
-          {METRICS.map((metric) => (
-            <div
-              key={metric.id}
-              className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 cursor-pointer hover:bg-slate-100"
-              onClick={() => toggleMetric(metric.id)}
-            >
-              <Checkbox
-                checked={metricsSelected.has(metric.id)}
-                onCheckedChange={() => toggleMetric(metric.id)}
-              />
-              <metric.icon className="w-4 h-4 text-slate-500" />
-              <span className="text-sm text-slate-700">{metric.text}</span>
+            <div className="space-y-3">
+              {METRIC_OPTIONS.map((metric) => (
+                <div
+                  key={metric.id}
+                  className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                    selectedMetrics.has(metric.id)
+                      ? "border-primary bg-primary/5"
+                      : "border-slate-200 hover:border-slate-300"
+                  }`}
+                  onClick={() => toggleMetric(metric.id)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedMetrics.has(metric.id)}
+                    onChange={() => toggleMetric(metric.id)}
+                    className="w-4 h-4"
+                  />
+                  <metric.icon className={`w-5 h-5 ${selectedMetrics.has(metric.id) ? "text-primary" : "text-slate-400"}`} />
+                  <div>
+                    <span className="font-medium text-slate-900">{metric.name}</span>
+                    <p className="text-xs text-slate-600">{metric.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </Card>
+          </Card>
 
-      {/* Prompt Template */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-2 text-slate-900">Admin Dashboard Prompt</h4>
-        <p className="text-sm text-slate-600 mb-4">Copy and customize for your app:</p>
-        <pre className="text-xs text-slate-700 whitespace-pre-wrap font-mono bg-slate-50 p-4 rounded border border-slate-200">
-          {ADMIN_PROMPT}
-        </pre>
-        <Button variant="outline" size="sm" className="mt-3 gap-2" onClick={copyPrompt}>
-          <Copy className="w-4 h-4" />
-          Copy Prompt
-        </Button>
-      </Card>
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-sm mb-2 text-slate-900">Why Track Metrics?</h4>
+            <ul className="text-sm text-slate-600 space-y-1">
+              <li>• Know if anyone is actually using your app</li>
+              <li>• See what features people engage with</li>
+              <li>• Spot problems before users complain</li>
+              <li>• Make decisions based on data, not gut</li>
+            </ul>
+          </Card>
 
-      {/* Checklist */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-4 text-slate-900">Implementation Checklist</h4>
-        <div className="space-y-3">
-          {CHECKLIST.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 cursor-pointer hover:bg-slate-100"
-              onClick={() => toggleChecklist(item.id)}
+          {canProceedToBuild && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("build")}
             >
-              <Checkbox
-                checked={checklistDone.has(item.id)}
-                onCheckedChange={() => toggleChecklist(item.id)}
-              />
-              <span className="text-sm text-slate-700">{item.text}</span>
-            </div>
-          ))}
-        </div>
-      </Card>
+              Build Admin Dashboard <ArrowRight className="w-5 h-5" />
+            </Button>
+          )}
+        </>
+      )}
 
-      {/* Complete Button */}
-      {canComplete && (
-        <Button
-          size="lg"
-          className="w-full h-14 text-lg font-bold gap-2"
-          onClick={onComplete}
-        >
-          Week 4 Complete - Continue <ChevronRight className="w-5 h-5" />
-        </Button>
+      {/* Step 2: Build the Dashboard */}
+      {step === "build" && (
+        <>
+          <Card className="p-6 border-2 border-primary bg-primary/5">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Your Metrics</h4>
+            <div className="flex flex-wrap gap-2">
+              {Array.from(selectedMetrics).map((id) => {
+                const metric = METRIC_OPTIONS.find(m => m.id === id);
+                return metric ? (
+                  <span key={id} className="px-3 py-1 bg-white rounded-full text-sm font-medium text-slate-700 border border-slate-200">
+                    {metric.name}
+                  </span>
+                ) : null;
+              })}
+            </div>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-4 text-slate-900">Build the Dashboard</h4>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">1</div>
+                <div>
+                  <p className="font-medium text-slate-900">Create /admin page</p>
+                  <p className="text-sm text-slate-600">Protected route - only you can access</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">2</div>
+                <div>
+                  <p className="font-medium text-slate-900">Add stat cards for each metric</p>
+                  <p className="text-sm text-slate-600">Big numbers, easy to read at a glance</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">3</div>
+                <div>
+                  <p className="font-medium text-slate-900">Add recent activity list</p>
+                  <p className="text-sm text-slate-600">Last 10-20 user actions with timestamps</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">4</div>
+                <div>
+                  <p className="font-medium text-slate-900">Mark your account as admin</p>
+                  <p className="text-sm text-slate-600">So you can access the dashboard</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Tell Claude Code</h4>
+            <p className="text-sm text-slate-600 mb-4">Describe what to build:</p>
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm text-slate-700 font-mono">
+              "Create an admin dashboard at /admin:<br /><br />
+              1. Only admin users can access<br />
+              2. Show: {Array.from(selectedMetrics).map(id => METRIC_OPTIONS.find(m => m.id === id)?.name).join(", ")}<br />
+              3. Add a list of recent user activity<br />
+              4. Make my account an admin<br />
+              5. Keep it simple - just stats and a list"
+            </div>
+          </Card>
+
+          <Button
+            size="lg"
+            className="w-full h-14 text-lg font-bold gap-2"
+            onClick={() => setStep("check")}
+          >
+            <CheckCircle2 className="w-5 h-5" />
+            I Built It - Check My Stats
+          </Button>
+        </>
+      )}
+
+      {/* Step 3: Check Your Stats */}
+      {step === "check" && (
+        <>
+          <Card className="p-6 border-2 border-primary bg-primary/5">
+            <div className="flex items-center gap-3 mb-2">
+              <Trophy className="w-6 h-6 text-primary" />
+              <h4 className="font-bold text-lg text-slate-900">Admin Dashboard Built!</h4>
+            </div>
+            <p className="text-slate-700">
+              You now have visibility into your app. No more guessing - you can see exactly what's happening.
+            </p>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-4 text-slate-900">Check Your Stats</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              Go to your admin dashboard. What do you see?
+            </p>
+
+            <div className="flex gap-3 mb-4">
+              <Button
+                variant={dashboardBuilt ? "default" : "outline"}
+                className="flex-1"
+                onClick={() => setDashboardBuilt(true)}
+              >
+                <CheckCircle2 className="w-4 h-4 mr-2" />
+                Dashboard works!
+              </Button>
+              <Button
+                variant={!dashboardBuilt ? "outline" : "outline"}
+                className="flex-1"
+                onClick={() => setDashboardBuilt(false)}
+              >
+                Still building
+              </Button>
+            </div>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">What Are Your Current Stats?</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              Record what you see on your dashboard right now:
+            </p>
+            <Textarea
+              placeholder="My current stats:
+- Total Users: [X]
+- Active Users: [X]
+- Total Actions: [X]
+- Most recent activity: [user did X at Y time]
+
+Observations: The dashboard shows [what I learned]..."
+              value={currentStats}
+              onChange={(e) => setCurrentStats(e.target.value)}
+              className="min-h-[140px]"
+            />
+          </Card>
+
+          {canComplete && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => onComplete({
+                metricsChosen: Array.from(selectedMetrics).map(id => METRIC_OPTIONS.find(m => m.id === id)?.name).join(", "),
+                dashboardBuilt,
+                currentStats
+              })}
+            >
+              Save Dashboard & Continue <ChevronRight className="w-5 h-5" />
+            </Button>
+          )}
+        </>
       )}
     </div>
   );

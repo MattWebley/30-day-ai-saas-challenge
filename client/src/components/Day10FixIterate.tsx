@@ -1,69 +1,44 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Wrench,
   CheckCircle2,
   Pause,
   Play,
   ChevronRight,
-  AlertTriangle
+  AlertTriangle,
+  Trophy,
+  ArrowRight
 } from "lucide-react";
 
 interface Day10FixIterateProps {
-  onComplete: () => void;
+  topPriority?: string;
+  onComplete: (data: { issueFixed: string; howYouFixedIt: string; stillNeedsToDo: string }) => void;
 }
 
-const FIX_WORKFLOW = [
-  { id: "pick", text: "Pick ONE issue from your Day 9 audit list" },
-  { id: "describe", text: "Describe the issue clearly to Claude Code" },
-  { id: "fix", text: "Let AI fix it" },
-  { id: "test", text: "Test immediately - does it work now?" },
-  { id: "commit", text: "If it works, commit to GitHub" },
-];
-
-const FIX_TIPS = [
-  "Don't batch fixes - one at a time",
-  "Commit working code before trying risky changes",
-  "It's OK to skip something and come back later",
-  "Ask Claude Code to EXPLAIN the problem if stuck",
-];
-
-export function Day10FixIterate({ onComplete }: Day10FixIterateProps) {
-  const [workflowChecked, setWorkflowChecked] = useState<Set<string>>(new Set());
-  const [fixCount, setFixCount] = useState(0);
+export function Day10FixIterate({ topPriority, onComplete }: Day10FixIterateProps) {
+  const [step, setStep] = useState<"focus" | "fix" | "done">("focus");
+  const [issueToFix, setIssueToFix] = useState(topPriority || "");
+  const [howYouFixedIt, setHowYouFixedIt] = useState("");
+  const [stillNeedsToDo, setStillNeedsToDo] = useState("");
   const [isPaused, setIsPaused] = useState(false);
 
-  const toggleWorkflow = (id: string) => {
-    const newChecked = new Set(workflowChecked);
-    if (newChecked.has(id)) {
-      newChecked.delete(id);
-    } else {
-      newChecked.add(id);
-    }
-    setWorkflowChecked(newChecked);
-  };
-
-  const incrementFix = () => {
-    setFixCount(fixCount + 1);
-    // Reset workflow for next fix
-    setWorkflowChecked(new Set());
-  };
-
-  const allWorkflowComplete = FIX_WORKFLOW.every((step) => workflowChecked.has(step.id));
+  const canProceedToFix = issueToFix.length >= 10;
+  const canComplete = howYouFixedIt.length >= 20;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="p-6 border-2 border-primary bg-gradient-to-br from-green-50 to-emerald-50">
+      <Card className="p-6 border-2 border-slate-200 bg-white">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-green-600 flex items-center justify-center">
+          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
             <Wrench className="w-7 h-7 text-white" />
           </div>
           <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Fix & Iterate</h3>
-            <p className="text-slate-600 mt-1">Work through your fix list. Take your time - use PAUSE if needed.</p>
+            <h3 className="text-2xl font-extrabold text-slate-900">Fix Your #1 Issue</h3>
+            <p className="text-slate-600 mt-1">Today's mission: Fix the most important thing from your reality check.</p>
           </div>
         </div>
       </Card>
@@ -73,10 +48,10 @@ export function Day10FixIterate({ onComplete }: Day10FixIterateProps) {
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
           <div>
-            <p className="font-medium text-amber-800">This day is designed to be PAUSED</p>
+            <p className="font-medium text-amber-800">Take Your Time</p>
             <p className="text-sm text-amber-700 mt-1">
-              If you have many fixes, take your time. Use the pause button below and come back when ready.
-              There's no prize for rushing - a working app is worth more than a fast launch.
+              If you need more than one session to fix things, that's totally fine.
+              Use the pause button and come back when ready. Quality over speed.
             </p>
           </div>
         </div>
@@ -88,7 +63,7 @@ export function Day10FixIterate({ onComplete }: Day10FixIterateProps) {
           <div>
             <h4 className="font-bold text-slate-900">Challenge Status</h4>
             <p className="text-sm text-slate-600">
-              {isPaused ? "Challenge paused - take your time fixing" : "Challenge active"}
+              {isPaused ? "Paused - take your time fixing" : "In progress"}
             </p>
           </div>
           <Button
@@ -104,79 +79,166 @@ export function Day10FixIterate({ onComplete }: Day10FixIterateProps) {
             ) : (
               <>
                 <Pause className="w-4 h-4" />
-                Pause Challenge
+                Pause
               </>
             )}
           </Button>
         </div>
       </Card>
 
-      {/* Fix Counter */}
-      <Card className="p-4 border-2 border-slate-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <h4 className="font-bold text-slate-900">Fixes Completed Today</h4>
-            <p className="text-sm text-slate-600">Track your progress</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-3xl font-black text-green-600">{fixCount}</span>
-          </div>
-        </div>
-      </Card>
+      {/* Step 1: Focus on ONE Issue */}
+      {step === "focus" && (
+        <>
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">What's the ONE thing to fix?</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              {topPriority
+                ? "Your top priority from yesterday's reality check:"
+                : "Describe the most important issue to fix right now:"}
+            </p>
+            <Textarea
+              placeholder="The issue I need to fix is..."
+              value={issueToFix}
+              onChange={(e) => setIssueToFix(e.target.value)}
+              className="min-h-[100px]"
+            />
+          </Card>
 
-      {/* Fix Workflow */}
-      <Card className="p-6 border-2 border-slate-200">
-        <h4 className="font-bold text-lg mb-4 text-slate-900">Current Fix Workflow</h4>
-        <div className="space-y-3">
-          {FIX_WORKFLOW.map((step, index) => (
-            <div
-              key={step.id}
-              className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 cursor-pointer hover:bg-slate-100"
-              onClick={() => toggleWorkflow(step.id)}
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="text-sm text-slate-700">
+              <strong>Why just ONE?</strong> Fixing one thing well beats half-fixing five things.
+              Once this works, you can tackle the next issue tomorrow.
+            </p>
+          </Card>
+
+          {canProceedToFix && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("fix")}
             >
-              <span className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600">
-                {index + 1}
-              </span>
-              <Checkbox
-                checked={workflowChecked.has(step.id)}
-                onCheckedChange={() => toggleWorkflow(step.id)}
-              />
-              <span className={`text-sm ${workflowChecked.has(step.id) ? "text-slate-500 line-through" : "text-slate-700"}`}>
-                {step.text}
-              </span>
+              Start Fixing <ArrowRight className="w-5 h-5" />
+            </Button>
+          )}
+        </>
+      )}
+
+      {/* Step 2: Fix It */}
+      {step === "fix" && (
+        <>
+          <Card className="p-6 border-2 border-primary bg-primary/5">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Your Mission</h4>
+            <p className="text-slate-800 bg-white p-4 rounded-lg border border-slate-200">
+              "{issueToFix}"
+            </p>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-4 text-slate-900">Fix Workflow</h4>
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">1</div>
+                <div>
+                  <p className="font-medium text-slate-900">Describe the problem to Claude Code</p>
+                  <p className="text-sm text-slate-600">"The [feature] is broken. It should [do X] but instead it [does Y]."</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">2</div>
+                <div>
+                  <p className="font-medium text-slate-900">Let Claude Code fix it</p>
+                  <p className="text-sm text-slate-600">Review the changes it suggests</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">3</div>
+                <div>
+                  <p className="font-medium text-slate-900">Test immediately</p>
+                  <p className="text-sm text-slate-600">Does the issue work correctly now?</p>
+                </div>
+              </div>
+
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">4</div>
+                <div>
+                  <p className="font-medium text-slate-900">Iterate if needed</p>
+                  <p className="text-sm text-slate-600">"That's closer, but now [describe remaining issue]"</p>
+                </div>
+              </div>
             </div>
-          ))}
-        </div>
-        {allWorkflowComplete && (
-          <Button onClick={incrementFix} className="w-full mt-4 gap-2" variant="outline">
-            <CheckCircle2 className="w-4 h-4" />
-            Mark Fix Complete & Start Next
+          </Card>
+
+          <Button
+            size="lg"
+            className="w-full h-14 text-lg font-bold gap-2"
+            onClick={() => setStep("done")}
+          >
+            <CheckCircle2 className="w-5 h-5" />
+            I Fixed It!
           </Button>
-        )}
-      </Card>
+        </>
+      )}
 
-      {/* Tips */}
-      <Card className="p-4 border-2 border-slate-200">
-        <h4 className="font-bold text-sm mb-3 text-slate-900">Fixing Tips</h4>
-        <ul className="space-y-2">
-          {FIX_TIPS.map((tip, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm text-slate-600">
-              <span className="text-green-600">•</span>
-              {tip}
-            </li>
-          ))}
-        </ul>
-      </Card>
+      {/* Step 3: Document the Fix */}
+      {step === "done" && (
+        <>
+          <Card className="p-6 border-2 border-primary bg-primary/5">
+            <div className="flex items-center gap-3 mb-2">
+              <Trophy className="w-6 h-6 text-primary" />
+              <h4 className="font-bold text-lg text-slate-900">Issue Fixed!</h4>
+            </div>
+            <p className="text-slate-700">
+              You just improved your app. Every fix gets you closer to something users will love.
+            </p>
+          </Card>
 
-      {/* Complete Button */}
-      {fixCount >= 1 && (
-        <Button
-          size="lg"
-          className="w-full h-14 text-lg font-bold gap-2"
-          onClick={onComplete}
-        >
-          {fixCount} Fix{fixCount !== 1 ? "es" : ""} Done - Continue <ChevronRight className="w-5 h-5" />
-        </Button>
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">What did you fix?</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              Describe the fix - both the problem and the solution:
+            </p>
+            <Textarea
+              placeholder="I fixed [issue] by [solution]. Now it [works correctly by doing X]."
+              value={howYouFixedIt}
+              onChange={(e) => setHowYouFixedIt(e.target.value)}
+              className="min-h-[120px]"
+            />
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">What's still on the list?</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              Quick note of other issues you still need to address (for your reference):
+            </p>
+            <Textarea
+              placeholder="Still need to fix:
+- Issue 2
+- Issue 3
+(or 'Nothing major - app is in good shape!')"
+              value={stillNeedsToDo}
+              onChange={(e) => setStillNeedsToDo(e.target.value)}
+              className="min-h-[100px]"
+            />
+          </Card>
+
+          {canComplete && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => onComplete({ issueFixed: issueToFix, howYouFixedIt, stillNeedsToDo })}
+            >
+              Save & Continue <ChevronRight className="w-5 h-5" />
+            </Button>
+          )}
+
+          {!canComplete && (
+            <p className="text-sm text-slate-500 text-center">
+              Describe how you fixed it ({20 - howYouFixedIt.length} more characters)
+            </p>
+          )}
+        </>
       )}
     </div>
   );
