@@ -14,10 +14,10 @@ import {
   Copy,
   FileText,
   GitBranch,
-  ChevronDown,
-  ChevronUp,
   Sun,
-  Moon
+  Moon,
+  AlertTriangle,
+  DollarSign
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -59,7 +59,6 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
   const [selectedWin, setSelectedWin] = useState("");
   const [customWin, setCustomWin] = useState("");
   const [whatYouBuilt, setWhatYouBuilt] = useState("");
-  const [showWorkflow, setShowWorkflow] = useState(false);
   const { toast } = useToast();
 
   const currentWin = customWin || selectedWin;
@@ -97,105 +96,144 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
         </div>
       </Card>
 
-      {/* Pro Workflow Section */}
-      <Card className="border-2 border-slate-200 bg-white overflow-hidden">
-        <button
-          onClick={() => setShowWorkflow(!showWorkflow)}
-          className="w-full p-4 flex items-center justify-between hover:bg-slate-50 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
-              <GitBranch className="w-5 h-5 text-violet-600" />
+      {/* Why Claude Code - Cost Warning */}
+      <Card className="p-6 border-2 border-amber-300 bg-amber-50">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-full bg-amber-200 flex items-center justify-center shrink-0">
+            <DollarSign className="w-6 h-6 text-amber-700" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-amber-900 mb-2">Why Claude Code? It'll Save You THOUSANDS.</h3>
+            <p className="text-amber-800 mb-3">
+              You CAN just use Replit's built-in AI agent on its own - it's easier to get started. But here's the truth:
+              <strong> it gets VERY expensive, VERY fast.</strong>
+            </p>
+            <p className="text-amber-800">
+              Using Claude Code in the Replit shell drops your development costs by thousands of dollars.
+              Same power, fraction of the price. The workflow below is how the pros do it.
+            </p>
+          </div>
+        </div>
+      </Card>
+
+      {/* Pro Workflow Section - Always Visible */}
+      <Card className="p-6 border-2 border-primary bg-white">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
+            <GitBranch className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">The Pro Workflow: CLAUDE.md + GitHub</h3>
+            <p className="text-slate-600">Safe, organized sessions with automatic context</p>
+          </div>
+        </div>
+
+        <div className="space-y-6">
+          {/* What is CLAUDE.md */}
+          <div className="bg-slate-50 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <FileText className="w-5 h-5 text-primary" />
+              <h4 className="font-bold text-slate-900">What is CLAUDE.md?</h4>
             </div>
-            <div className="text-left">
-              <h4 className="font-bold text-slate-900">The Pro Workflow (CLAUDE.md + GitHub)</h4>
-              <p className="text-sm text-slate-500">Safe, organized sessions with automatic context</p>
+            <p className="text-slate-700">
+              A file in your project root that stores project rules, context, tech stack, and session logs.
+              Claude reads it at the start of each session so <strong>you never have to repeat yourself</strong>.
+            </p>
+          </div>
+
+          {/* Safety Rules */}
+          <div>
+            <h4 className="font-bold text-slate-900 mb-3">Key Safety Rules</h4>
+            <div className="grid gap-2">
+              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+                <div>
+                  <span className="font-semibold text-slate-900">Commit before editing</span>
+                  <span className="text-slate-600"> - Always save working code first</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+                <div>
+                  <span className="font-semibold text-slate-900">Branch for risky changes</span>
+                  <span className="text-slate-600"> - New branch if it might break things</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+                <div>
+                  <span className="font-semibold text-slate-900">Never remove working features</span>
+                  <span className="text-slate-600"> - Unless explicitly asked</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
+                <div>
+                  <span className="font-semibold text-slate-900">Update session log daily</span>
+                  <span className="text-slate-600"> - Track what you did and discovered</span>
+                </div>
+              </div>
             </div>
           </div>
-          {showWorkflow ? (
-            <ChevronUp className="w-5 h-5 text-slate-400" />
-          ) : (
-            <ChevronDown className="w-5 h-5 text-slate-400" />
-          )}
-        </button>
 
-        {showWorkflow && (
-          <div className="p-6 pt-2 space-y-6 border-t border-slate-100">
-            {/* What is CLAUDE.md */}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <FileText className="w-4 h-4 text-slate-600" />
-                <h5 className="font-semibold text-slate-900">What is CLAUDE.md?</h5>
-              </div>
-              <p className="text-sm text-slate-600">
-                A file in your project root that stores project rules, context, tech stack, and session logs.
-                Claude reads it at the start of each session so you never have to repeat yourself.
-              </p>
-            </div>
-
-            {/* Safety Rules */}
-            <div className="bg-slate-50 rounded-lg p-4">
-              <h5 className="font-semibold text-slate-900 mb-2">Key Safety Rules</h5>
-              <ul className="text-sm text-slate-600 space-y-1">
-                <li>• <strong>Commit before editing</strong> - Always save working code first</li>
-                <li>• <strong>Branch for risky changes</strong> - New branch if it might break things</li>
-                <li>• <strong>Never remove working features</strong> - Unless explicitly asked</li>
-                <li>• <strong>Update session log daily</strong> - Track what you did and discovered</li>
-              </ul>
-            </div>
-
-            {/* Daily Prompts */}
+          {/* Daily Prompts */}
+          <div>
+            <h4 className="font-bold text-slate-900 mb-3">Your Daily Prompts (Copy These!)</h4>
             <div className="space-y-4">
               {/* Kickoff Prompt */}
-              <div className="border border-slate-200 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-2 bg-amber-50 border-b border-slate-200">
+              <div className="border-2 border-amber-200 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 bg-amber-100">
                   <div className="flex items-center gap-2">
-                    <Sun className="w-4 h-4 text-amber-600" />
-                    <span className="font-medium text-sm text-slate-900">Session Start Prompt</span>
+                    <Sun className="w-5 h-5 text-amber-600" />
+                    <span className="font-bold text-slate-900">Session START Prompt</span>
                   </div>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={() => copyToClipboard(KICKOFF_PROMPT, "Kickoff prompt")}
-                    className="h-7 gap-1 text-xs"
+                    className="gap-2 bg-white"
                   >
-                    <Copy className="w-3 h-3" />
+                    <Copy className="w-4 h-4" />
                     Copy
                   </Button>
                 </div>
-                <pre className="p-3 text-xs text-slate-700 whitespace-pre-wrap bg-white font-mono">
+                <pre className="p-4 text-sm text-slate-700 whitespace-pre-wrap bg-white font-mono">
                   {KICKOFF_PROMPT}
                 </pre>
               </div>
 
               {/* Wrap-up Prompt */}
-              <div className="border border-slate-200 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-2 bg-indigo-50 border-b border-slate-200">
+              <div className="border-2 border-indigo-200 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 bg-indigo-100">
                   <div className="flex items-center gap-2">
-                    <Moon className="w-4 h-4 text-indigo-600" />
-                    <span className="font-medium text-sm text-slate-900">Session End Prompt</span>
+                    <Moon className="w-5 h-5 text-indigo-600" />
+                    <span className="font-bold text-slate-900">Session END Prompt</span>
                   </div>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={() => copyToClipboard(WRAPUP_PROMPT, "Wrap-up prompt")}
-                    className="h-7 gap-1 text-xs"
+                    className="gap-2 bg-white"
                   >
-                    <Copy className="w-3 h-3" />
+                    <Copy className="w-4 h-4" />
                     Copy
                   </Button>
                 </div>
-                <pre className="p-3 text-xs text-slate-700 whitespace-pre-wrap bg-white font-mono">
+                <pre className="p-4 text-sm text-slate-700 whitespace-pre-wrap bg-white font-mono">
                   {WRAPUP_PROMPT}
                 </pre>
               </div>
             </div>
+          </div>
 
-            <p className="text-xs text-slate-500 italic">
-              Use these prompts every session. Claude will handle git, context, and progress tracking automatically.
+          <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-lg border border-primary/20">
+            <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+            <p className="text-sm text-slate-700">
+              <strong>Use these prompts every session.</strong> Claude will handle git, context, and progress tracking automatically.
+              No more explaining your project from scratch. No more lost work.
             </p>
           </div>
-        )}
+        </div>
       </Card>
 
       {/* Step 1: Choose What to Build */}
