@@ -62,7 +62,7 @@ export function DayCompletionModal({
                 transition={{ delay: 0.4 }}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-slate-100 rounded-full border-2 border-slate-200"
               >
-                <span className="text-slate-900 font-bold text-lg">Day {day}/30 Complete</span>
+                <span className="text-slate-900 font-bold text-lg">Day {day}/21 Complete</span>
               </motion.div>
 
               {/* Completion Message */}

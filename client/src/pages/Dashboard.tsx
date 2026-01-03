@@ -88,6 +88,7 @@ export default function Dashboard() {
   const handleComplete = async (componentData?: any) => {
     if (!dayData) {
       console.error('handleComplete: dayData is null/undefined, returning early');
+      toast.error("Day content not loaded. Please refresh the page.");
       return;
     }
 
