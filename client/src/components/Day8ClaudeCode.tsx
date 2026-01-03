@@ -12,11 +12,8 @@ import {
   ArrowRight,
   Trophy,
   Copy,
-  FileText,
-  GitBranch,
   Sun,
   Moon,
-  AlertTriangle,
   DollarSign
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -118,57 +115,30 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
         </div>
       </Card>
 
-      {/* Pro Workflow Section - Always Visible */}
+      {/* Simple Workflow Section */}
       <Card className="p-6 border-2 border-primary bg-white">
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-            <GitBranch className="w-6 h-6 text-white" />
+            <Terminal className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-900">The Pro Workflow: CLAUDE.md + GitHub</h3>
-            <p className="text-slate-600">Safe, organized sessions with automatic context</p>
+            <h3 className="text-xl font-bold text-slate-900">Your Daily Build Routine</h3>
+            <p className="text-slate-600">3 prompts. Copy, paste, build. That's it.</p>
           </div>
         </div>
 
-        <div className="space-y-6">
-          {/* Safety Rules */}
-          <div>
-            <h4 className="font-bold text-slate-900 mb-3">Key Safety Rules</h4>
-            <div className="grid gap-2">
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-                <div>
-                  <span className="font-semibold text-slate-900">Commit before editing</span>
-                  <span className="text-slate-600"> - Always save working code first</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-                <div>
-                  <span className="font-semibold text-slate-900">Branch for risky changes</span>
-                  <span className="text-slate-600"> - New branch if it might break things</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-                <div>
-                  <span className="font-semibold text-slate-900">Never remove working features</span>
-                  <span className="text-slate-600"> - Unless explicitly asked</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
-                <CheckCircle2 className="w-5 h-5 text-green-600 shrink-0" />
-                <div>
-                  <span className="font-semibold text-slate-900">Update session log daily</span>
-                  <span className="text-slate-600"> - Track what you did and discovered</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="bg-slate-50 rounded-lg p-4 mb-6">
+          <p className="text-slate-700">
+            <strong>Here's the deal:</strong> Every time you open Replit, you'll paste these 3 prompts.
+            The first one installs Claude Code. The second tells Claude what you're working on.
+            The third saves your work before you close. <strong>Never lose progress. Never start from scratch.</strong>
+          </p>
+        </div>
 
+        <div className="space-y-6">
           {/* Daily Prompts */}
           <div>
-            <h4 className="font-bold text-slate-900 mb-3">Your Daily Prompts (Copy These!)</h4>
+            <h4 className="font-bold text-slate-900 mb-3">Copy These 3 Prompts:</h4>
             <div className="space-y-4">
               {/* Install Command */}
               <div className="border-2 border-green-300 rounded-lg overflow-hidden">
@@ -244,8 +214,8 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
           <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-lg border border-primary/20">
             <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
             <p className="text-sm text-slate-700">
-              <strong>Use these prompts every session.</strong> Claude will handle git, context, and progress tracking automatically.
-              No more explaining your project from scratch. No more lost work.
+              <strong>That's it.</strong> Do this every time you open Replit and Claude will remember everything about your project.
+              No more explaining from scratch. No more lost work.
             </p>
           </div>
         </div>
