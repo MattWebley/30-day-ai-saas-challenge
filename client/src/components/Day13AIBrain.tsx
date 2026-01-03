@@ -23,7 +23,7 @@ interface Day13AIBrainProps {
 }
 
 export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
-  const [step, setStep] = useState<"plan" | "build" | "test">("plan");
+  const [step, setStep] = useState<"setup" | "test">("setup");
   const [aiFeature, setAiFeature] = useState("");
   const [aiTestResult, setAiTestResult] = useState("");
   const [aiWow, setAiWow] = useState("");
@@ -37,8 +37,6 @@ export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
     });
   };
 
-  const canProceedToBuild = aiFeature.length >= 20;
-  const canProceedToTest = true;
   const canComplete = aiTestResult.length >= 20 && aiWow.length >= 10;
 
   return (
@@ -56,63 +54,8 @@ export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
         </div>
       </Card>
 
-      {/* Step 1: Plan the AI Feature */}
-      {step === "plan" && (
+      {step === "setup" && (
         <>
-          <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">What Will AI Do In Your App?</h4>
-            <p className="text-sm text-slate-600 mb-4">
-              Describe ONE AI-powered feature that will make users say "wow":
-            </p>
-            <Textarea
-              placeholder="AI will [do what] when users [do what action].
-
-Example: 'AI will generate 5 social media posts when users paste a blog URL'
-Example: 'AI will analyze uploaded data and give actionable insights'
-Example: 'AI will answer questions about the user's documents'"
-              value={aiFeature}
-              onChange={(e) => setAiFeature(e.target.value)}
-              className="min-h-[120px]"
-            />
-            {userIdea && (
-              <p className="text-xs text-slate-500 mt-2">Your app: {userIdea}</p>
-            )}
-          </Card>
-
-          <Card className="p-4 border-2 border-green-200 bg-green-50">
-            <div className="flex items-start gap-3">
-              <Zap className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-              <div className="text-sm text-green-800">
-                <p className="font-medium">Cost is low</p>
-                <p className="mt-1">
-                  GPT-3.5: ~$0.002 per 1K tokens (500 calls for $1)<br />
-                  GPT-4: ~$0.06 per 1K tokens (more capable but pricier)
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          {canProceedToBuild && (
-            <Button
-              size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={() => setStep("build")}
-            >
-              Build This AI Feature <ArrowRight className="w-5 h-5" />
-            </Button>
-          )}
-        </>
-      )}
-
-      {/* Step 2: Build It */}
-      {step === "build" && (
-        <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">Your AI Feature</h4>
-            <p className="text-slate-800 bg-white p-4 rounded-lg border border-slate-200">
-              "{aiFeature}"
-            </p>
-          </Card>
 
           {/* Step 1: Create OpenAI Account */}
           <Card className="p-6 border-2 border-slate-200">
@@ -236,25 +179,53 @@ Example: 'AI will answer questions about the user's documents'"
             </div>
           </Card>
 
-          {/* Step 4: Tell Claude Code */}
+          {/* Step 4: Describe Your AI Feature */}
           <Card className="p-6 border-2 border-slate-200">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                 <span className="font-bold text-primary">4</span>
+              </div>
+              <h4 className="font-bold text-lg text-slate-900">Describe Your AI Feature</h4>
+            </div>
+
+            <div className="space-y-4">
+              <p className="text-sm text-slate-600">
+                What will AI do in your app? Describe ONE feature:
+              </p>
+              <Textarea
+                placeholder="AI will [do what] when users [do what action].
+
+Example: 'AI will generate 5 social media posts when users paste a blog URL'
+Example: 'AI will analyze uploaded data and give actionable insights'"
+                value={aiFeature}
+                onChange={(e) => setAiFeature(e.target.value)}
+                className="min-h-[100px]"
+              />
+              {userIdea && (
+                <p className="text-xs text-slate-500">Your app: {userIdea}</p>
+              )}
+            </div>
+          </Card>
+
+          {/* Step 5: Tell Claude Code */}
+          <Card className="p-6 border-2 border-slate-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                <span className="font-bold text-primary">5</span>
               </div>
               <h4 className="font-bold text-lg text-slate-900">Tell Claude Code to Build It</h4>
             </div>
 
             <div className="space-y-4">
               <p className="text-sm text-slate-600">
-                Now tell Claude Code what AI feature to add. Use this prompt as a starting point:
+                Copy this prompt and paste it into Claude Code:
               </p>
 
               <div className="relative">
                 <pre className="bg-slate-100 p-4 rounded-lg text-sm font-mono border border-slate-200 whitespace-pre-wrap">
 {`Add an AI feature to my app:
 
-${aiFeature}
+${aiFeature || "[Describe your AI feature above first]"}
 
 Use the OpenAI API. The API key is already stored in Replit Secrets as OPENAI_API_KEY.
 
@@ -265,10 +236,24 @@ Use GPT-3.5-turbo for speed and low cost. Make sure to handle errors gracefully.
                   size="sm"
                   onClick={() => copyToClipboard(`Add an AI feature to my app:\n\n${aiFeature}\n\nUse the OpenAI API. The API key is already stored in Replit Secrets as OPENAI_API_KEY.\n\nUse GPT-3.5-turbo for speed and low cost. Make sure to handle errors gracefully.`, "Claude Code prompt")}
                   className="absolute top-2 right-2 gap-2"
+                  disabled={!aiFeature}
                 >
                   <Copy className="w-4 h-4" />
                   Copy
                 </Button>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-4 border-2 border-green-200 bg-green-50">
+            <div className="flex items-start gap-3">
+              <Zap className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+              <div className="text-sm text-green-800">
+                <p className="font-medium">Cost is low</p>
+                <p className="mt-1">
+                  GPT-3.5: ~$0.002 per 1K tokens (500 calls for $1)<br />
+                  GPT-4: ~$0.06 per 1K tokens (more capable but pricier)
+                </p>
               </div>
             </div>
           </Card>
