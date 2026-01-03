@@ -152,11 +152,13 @@ Every day in Dashboard.tsx MUST follow this exact format:
 - [ ] Test all Day 8-21 components end-to-end
 - [ ] Test Day 0 "Start Here" flow end-to-end
 - [ ] Test My Progress page with real user data
+- [ ] Test Claude Code Guide page (/claude-code) after Day 8 completion
 - [ ] Review and update badges for 21-day challenge structure
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx (replace YOUR_AFFILIATE_ID placeholder)
 - [ ] Add coaching call booking links to Day 1-7 and Days 19-21
 - [ ] Enable "Book a Call" button in Day 2 when ready (add Calendly link + price)
 - [ ] Review battle pass progress bar styling on different screen sizes
+- [ ] Before launch: Set testMode default to false in TestModeContext.tsx
 - [ ] Document current API endpoints
 - [ ] Add testing setup (unit & integration tests)
 - [ ] Document database schema
@@ -495,6 +497,49 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - Port conflicts may be caused by orphaned node processes in Replit environment
   - Next session: Kill all node processes before starting, then debug Day 1 completion flow
   - Priority remains: Test Day 1 completion, Day 2 flow, and Day 0 onboarding
+
+### 2026-01-03 (Session 5) - Claude Code Guide & Day 8/13 Enhancements
+- Tasks Completed:
+  - **Day 8 - Complete Claude Code Workflow Guide**:
+    - Added cost savings messaging: "Why Claude Code? It'll save you THOUSANDS"
+    - Explains Replit AI is easy but expensive, Claude Code is same power at fraction of price
+    - Simplified "Your Daily Build Routine" - 3 prompts, copy/paste, build
+    - Step 1: Install Claude Code (green) - with "Run EVERY session" note
+    - Step 2: Session START Prompt (amber)
+    - Step 3: Session END Prompt (indigo)
+    - Removed technical jargon (git, commits, branches) for biz opp audience
+    - Updated Day 8 lesson in seed.ts with cost explanation
+  - **Claude Code Guide Page** (`/claude-code`):
+    - Created standalone page with all 3 prompts for easy access
+    - Large copy buttons, color-coded steps
+    - "Bookmark this page" call-to-action
+    - Added to sidebar navigation with BookOpen icon
+    - Locked until Day 8 complete (shows lock + "Day 8")
+    - Unlocks in test mode but still shows lock icon (clickable)
+  - **Day 13 - OpenAI API Setup Guide**:
+    - 5-step detailed setup flow (all visible immediately, no gating):
+      1. Create OpenAI Account & Add Credits ($5-10)
+      2. Get Your API Key (with "COPY IT NOW" warning)
+      3. Add Key to Replit Secrets (exact UI steps)
+      4. Describe Your AI Feature (inline textarea)
+      5. Tell Claude Code to Build It (copyable prompt)
+    - Direct links to platform.openai.com/signup and /api-keys
+    - Copy buttons for secret name and Claude Code prompt
+    - Cost info: GPT-3.5 ~$0.002 per 1K tokens
+  - **Configuration**:
+    - Set test mode default to ON (until launch)
+    - Updated reference from "pros" to "1:1 mentorship clients"
+- Fixes Applied:
+  - Fixed port 5000 conflicts by killing orphaned processes
+  - Changed Claude Code Guide icon from Terminal to BookOpen
+  - Made Claude Code Guide clickable in test mode while showing lock
+  - Removed gated "plan" step from Day 13 - all setup steps now visible immediately
+- Notes:
+  - All changes committed and pushed to main (10 commits this session)
+  - TypeScript check passing
+  - Database seeded with updated Day 8 lesson
+  - To launch: Change testMode default from `true` to `false` in TestModeContext.tsx
+  - Next priority: Test Day 1 completion flow, Day 2 flow, Day 0 onboarding
 
 ---
 
