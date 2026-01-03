@@ -244,6 +244,16 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
             </p>
           </Card>
 
+          {/* Soft CTA - Building narrative to hard CTA tomorrow */}
+          <Card className="p-5 border-2 border-slate-200 bg-slate-50">
+            <p className="text-sm text-slate-600">
+              <span className="font-semibold text-slate-800">Look at what you've built.</span>{" "}
+              A branded, professional SaaS product. This isn't a side project anymore - it's something
+              you could genuinely charge money for. Tomorrow you launch. After that? It's time to
+              think about turning this product into a <span className="font-semibold">business</span>.
+            </p>
+          </Card>
+
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-4 text-slate-900">Verify Your Brand</h4>
             <p className="text-sm text-slate-600 mb-4">

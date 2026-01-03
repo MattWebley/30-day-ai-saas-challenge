@@ -212,6 +212,15 @@ The most important one to fix is..."
             </p>
           </Card>
 
+          {/* Soft CTA - Building narrative */}
+          <Card className="p-5 border-2 border-slate-200 bg-slate-50">
+            <p className="text-sm text-slate-600">
+              <span className="font-semibold text-slate-800">Take a moment to realise what you're doing.</span>{" "}
+              You're not just playing around anymore - you're building a real product that works on any device.
+              That's more than most people ever do. Two more days and you'll have something you can actually sell.
+            </p>
+          </Card>
+
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Mobile Test Summary</h4>
             <p className="text-sm text-slate-600 mb-4">

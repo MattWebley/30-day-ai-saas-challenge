@@ -11,7 +11,8 @@ import {
   AlertTriangle,
   PartyPopper,
   ExternalLink,
-  Share2
+  Share2,
+  ArrowUpRight
 } from "lucide-react";
 
 interface Day21LaunchDayProps {
@@ -219,6 +220,32 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
               <li>• Polished the brand</li>
               <li>• And most importantly: <strong>SHIPPED</strong></li>
             </ul>
+          </Card>
+
+          {/* Hard CTA - Work with Matt */}
+          <Card className="p-6 border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50">
+            <h4 className="font-bold text-xl mb-3 text-slate-900">
+              You've Built a SaaS. Now Let's Build a Business.
+            </h4>
+            <p className="text-slate-700 mb-4">
+              Congratulations - you now have a working, saleable SaaS product. That puts you ahead of 99% of people
+              who just <span className="italic">talk</span> about building something. But a product isn't a business yet.
+            </p>
+            <p className="text-slate-700 mb-5">
+              If you want help with the next step - getting customers, pricing, marketing, and actually making money
+              from what you've built - let's talk. I offer 1:1 mentorship for SaaS founders who are ready to go from
+              product to profitable business.
+            </p>
+            <a
+              href="https://www.mattwebley.com/workwithmatt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex"
+            >
+              <Button size="lg" className="gap-2 bg-amber-600 hover:bg-amber-700">
+                Book a Call - Let's Talk <ArrowUpRight className="w-5 h-5" />
+              </Button>
+            </a>
           </Card>
 
           <Card className="p-6 border-2 border-slate-200">
