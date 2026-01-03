@@ -7,6 +7,13 @@ interface DayInstructionsProps {
 }
 
 const DAY_INSTRUCTIONS: Record<number, string[]> = {
+  0: [
+    "Read the rules for success",
+    "Commit to each rule by tapping",
+    "Choose your 'why' for building",
+    "Set your income goal",
+    "Write your accountability promise"
+  ],
   1: [
     "Fill in your background (knowledge, skills, interests)",
     "Click 'Generate 28 SaaS Ideas'",
@@ -28,24 +35,122 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Define your ideal customer (ICP)"
   ],
   4: [
-    "Review your features and ICP",
-    "Generate AI screen recommendations",
-    "Confirm your app flow"
+    "Generate AI name suggestions",
+    "Pick your favorite name",
+    "Register the .com domain",
+    "Claim all social media handles"
   ],
   5: [
-    "Review all your features",
-    "Categorize: Must Have / Nice to Have / Cut",
-    "Pick ONE killer feature for MVP"
+    "Set up Replit account",
+    "Set up Claude Pro account",
+    "Set up ChatGPT Plus account",
+    "Set up OpenAI API account",
+    "Confirm all tools are ready"
   ],
   6: [
-    "Read today's lesson",
-    "Make your choice",
-    "Note your key takeaway"
+    "Review your idea, features, and USP",
+    "Generate your PRD with AI",
+    "Copy PRD into Replit",
+    "Start your first build session"
+  ],
+  7: [
+    "Connect Claude Code to Replit",
+    "Set up GitHub repository",
+    "Learn the daily workflow",
+    "Complete your first build session"
+  ],
+  8: [
+    "Read the lesson on effective prompting",
+    "Choose a quick win to build",
+    "Build it with Claude Code",
+    "Document what you built"
+  ],
+  9: [
+    "Open your PRD from Day 6",
+    "Test every feature in your app",
+    "Mark each: WORKS / BROKEN / MISSING",
+    "Identify your top priority fix"
+  ],
+  10: [
+    "Pick ONE issue from your fix list",
+    "Describe it clearly to Claude Code",
+    "Fix it and test it",
+    "Document what you fixed"
+  ],
+  11: [
+    "Identify your USP feature",
+    "Test it end-to-end",
+    "Compare to competitors",
+    "Answer: Would someone pay for this?"
+  ],
+  12: [
+    "Test every button and form",
+    "Try to break things with weird inputs",
+    "Document all bugs found",
+    "Fix critical issues"
+  ],
+  13: [
+    "Get your OpenAI API key",
+    "Add it to Replit Secrets",
+    "Plan ONE AI feature",
+    "Build and test it"
+  ],
+  14: [
+    "Decide if you need additional APIs",
+    "If yes: sign up and get API keys",
+    "Integrate with Claude Code",
+    "Test the integration works"
+  ],
+  15: [
+    "Choose your auth method",
+    "Implement login/signup",
+    "Test the full auth flow",
+    "Verify user data is private"
+  ],
+  16: [
+    "Sign up for Resend",
+    "Verify your domain",
+    "Add API key to Replit Secrets",
+    "Send a test welcome email"
+  ],
+  17: [
+    "Define first user success moment",
+    "Build the onboarding path",
+    "Time the flow (under 2 mins)",
+    "Test as a new user"
+  ],
+  18: [
+    "Decide what metrics to track",
+    "Build your admin dashboard",
+    "Add user and activity stats",
+    "Check your numbers"
+  ],
+  19: [
+    "Open your app on your actual phone",
+    "Test all main features on mobile",
+    "Document any issues",
+    "Fix or note for later"
+  ],
+  20: [
+    "Pick your primary brand color",
+    "Apply consistent styling",
+    "Add your logo to the header",
+    "Verify it looks professional"
+  ],
+  21: [
+    "Run through pre-launch checklist",
+    "Fix any blocking issues",
+    "Click the LAUNCH button",
+    "Celebrate and plan next steps"
   ],
 };
 
 export function DayInstructions({ day, outcome }: DayInstructionsProps) {
-  const instructions = DAY_INSTRUCTIONS[day] || DAY_INSTRUCTIONS[6];
+  const instructions = DAY_INSTRUCTIONS[day] || [
+    "Read today's lesson",
+    "Complete the interactive exercise",
+    "Document your progress"
+  ];
 
   return (
     <Card className="p-4 border-2 border-slate-200 bg-slate-50 mb-6" data-testid="day-instructions">
