@@ -365,7 +365,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 My Progress
               </span>
             </Link>
-            {completedDays.has(8) || testMode ? (
+            {completedDays.has(8) ? (
               <Link href="/claude-code" onClick={handleNavClick}>
                 <span className={cn(
                   "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
@@ -375,6 +375,19 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 )}>
                   <BookOpen className="w-4 h-4" />
                   Claude Code Guide
+                </span>
+              </Link>
+            ) : testMode ? (
+              <Link href="/claude-code" onClick={handleNavClick}>
+                <span className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground/50 hover:bg-sidebar-accent/50 cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="w-4 h-4" />
+                    Claude Code Guide
+                  </div>
+                  <div className="flex items-center gap-1 text-xs">
+                    <Lock className="w-3 h-3" />
+                    <span>Day 8</span>
+                  </div>
                 </span>
               </Link>
             ) : (
