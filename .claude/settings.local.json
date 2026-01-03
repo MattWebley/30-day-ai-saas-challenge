@@ -54,7 +54,9 @@
       "Bash(fuser:*)",
       "Bash(ss:*)",
       "Bash(pkill:*)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:mr-follis.github.io)"
     ]
   }
 }
