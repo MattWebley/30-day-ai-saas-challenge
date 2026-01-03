@@ -416,6 +416,36 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - Progress page shows what decisions were made on each day
   - Next priority: Test complete user flow including new progress page
 
+### 2026-01-03 (Session 2) - Content & Format Consistency Pass
+- Tasks Completed:
+  - Added mentorship CTAs to Days 19-21:
+    - Day 19: Soft CTA about building something real
+    - Day 20: Soft CTA building narrative toward business
+    - Day 21: Hard CTA linking to mattwebley.com/workwithmatt
+  - Rewrote all Day 8-18 lessons in Matt's punchy writing style:
+    - ALL CAPS emphasis, short sentences, direct tone
+    - Matches existing Day 1-7 lesson format
+  - Fixed lesson rendering for Days 3-21 in Dashboard.tsx:
+    - Was only showing lessons for Days 1-2
+    - Added lesson + component pattern to all days
+  - Added `whitespace-pre-line` CSS class to preserve line breaks in lessons
+  - Completed DayInstructions.tsx with all 22 days:
+    - Was only Days 0-6, now includes all days 0-21
+    - Each day has 4-5 specific action items
+  - Updated badges to match new timeline:
+    - Fixed "First Steps" description (was "Million Dollar Idea", now "$100K+ Idea")
+    - Added "Launch Ready" badge for completing Day 20
+  - Documented Day Page Format in CLAUDE.md to prevent regression
+- Fixes Applied:
+  - Fixed line breaks not displaying in lessons (whitespace-pre-line)
+  - Fixed missing "What To Do Today" instructions for Days 7-21
+  - Fixed Week 5 missing badge (added "Launch Ready")
+- Notes:
+  - Every day now verified to have: lesson, to-do list, outcome, Matt's tip, interactive exercise
+  - Day format pattern documented in CLAUDE.md
+  - TypeScript check passing
+  - Database seeded with all content updates
+
 ---
 
 ## Project-Specific Rules
