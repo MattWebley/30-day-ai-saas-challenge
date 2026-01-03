@@ -92,6 +92,54 @@ components.json   - shadcn/ui component config
 
 ---
 
+## Day Page Format (CRITICAL - DO NOT BREAK)
+
+Every day in Dashboard.tsx MUST follow this exact format:
+
+1. **Header** - Day number, phase, title, description (automatic)
+2. **Matt Webley's Tip** - If tip exists in database (automatic)
+3. **DayInstructions** - "What To Do Today" + "Today's Outcome" (automatic)
+4. **Today's Lesson** (Step 1) - Rendered from `dayData.lesson`
+5. **Interactive Component** (Step 2) - The day-specific component
+
+### Code Pattern for Each Day:
+```tsx
+) : currentDay === X ? (
+  <>
+    {/* Today's Lesson */}
+    {dayData.lesson && (
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+          <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+        </div>
+        <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+          <div className="prose prose-slate max-w-none">
+            {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+              <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+            ))}
+          </div>
+        </Card>
+      </div>
+    )}
+    {/* Day X: Component Title */}
+    <div className="space-y-4 pt-4">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+        <h2 className="font-bold text-xl text-slate-900">Action Title Here</h2>
+      </div>
+      <DayXComponent ... />
+    </div>
+  </>
+```
+
+### Lessons Must:
+- Be stored in `seed.ts` in the `lesson` field for each day
+- Be written in Matt's punchy style (ALL CAPS emphasis, short sentences, direct)
+- Every day from 0-21 must have a lesson
+
+---
+
 ## Current Status
 - Status: In Progress
 - Last Session: 2026-01-03

@@ -299,8 +299,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 3 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 3: Core Features & USP */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Build Your Feature List</h2>
+                  </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day3CoreFeatures
                       dayId={currentDay}
@@ -313,8 +333,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 4 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 4: Naming Your Product */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Name & Claim Your Brand</h2>
+                  </div>
                   <Day4Naming
                     dayId={currentDay}
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
@@ -326,8 +366,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 5 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 5: Tech Stack Setup */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Set Up Your AI Toolkit</h2>
+                  </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day5TechStack
                       dayId={currentDay}
@@ -338,8 +398,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 6 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 6: Summary + PRD */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Generate Your PRD</h2>
+                  </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day6SummaryPRD
                       dayId={currentDay}
@@ -354,8 +434,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 7 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 7: PRD into Replit */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Start Building</h2>
+                  </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day7ReplitBuild
                       dayId={currentDay}
@@ -367,8 +467,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 8 ? (
               <>
-                {/* Day 8: First Build Win */}
-                <div className="space-y-4">
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
+                {/* Day 8: Master Claude Code */}
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Get Your First Win</h2>
+                  </div>
                   <Day8ClaudeCode
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
                     onComplete={handleComplete}
@@ -377,8 +497,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 9 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 9: Reality Check */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Audit Your Build</h2>
+                  </div>
                   <Day9RealityCheck
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
                     onComplete={handleComplete}
@@ -387,8 +527,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 10 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 10: Fix & Iterate */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Fix What's Broken</h2>
+                  </div>
                   <Day10FixIterate
                     topPriority={(Array.isArray(progress) ? progress.find((p: any) => p.day === 9) : null)?.completionData?.topPriority || ""}
                     onComplete={handleComplete}
@@ -397,8 +557,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 11 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 11: Test Your USP */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Verify Your USP</h2>
+                  </div>
                   <Day11TestUSP
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
                     onComplete={handleComplete}
@@ -407,15 +587,55 @@ export default function Dashboard() {
               </>
             ) : currentDay === 12 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 12: Feature Testing */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
+                  </div>
                   <Day12FeatureTesting onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 13 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 13: Add AI Brain */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Add AI Power</h2>
+                  </div>
                   <Day13AIBrain
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
                     onComplete={handleComplete}
@@ -424,8 +644,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 14 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 14: Connect APIs */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Connect What You Need</h2>
+                  </div>
                   <Day14ConnectAPIs
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
                     onComplete={handleComplete}
@@ -434,8 +674,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 15 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 15: User Authentication */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Add User Accounts</h2>
+                  </div>
                   <Day15Authentication
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
@@ -444,8 +704,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 16 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 16: Email Setup */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Set Up Email</h2>
+                  </div>
                   <Day16Email
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
@@ -454,8 +734,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 17 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 17: User Onboarding */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Build Onboarding</h2>
+                  </div>
                   <Day17Onboarding
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
@@ -464,8 +764,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 18 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 18: Admin Dashboard */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Build Your Dashboard</h2>
+                  </div>
                   <Day18AdminDashboard
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
@@ -474,8 +794,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 19 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 19: Mobile Ready */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Test on Mobile</h2>
+                  </div>
                   <Day19MobileReady
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
@@ -484,8 +824,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 20 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 20: Brand & Beauty */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Polish Your Brand</h2>
+                  </div>
                   <Day20BrandBeauty
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
@@ -494,8 +854,28 @@ export default function Dashboard() {
               </>
             ) : currentDay === 21 ? (
               <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
                 {/* Day 21: Launch Day! */}
-                <div className="space-y-4">
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Launch Your SaaS</h2>
+                  </div>
                   <Day21LaunchDay
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
                     onComplete={handleComplete}
