@@ -147,11 +147,15 @@ Every day in Dashboard.tsx MUST follow this exact format:
 - GitHub Repo: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
+- [ ] Test Day 1 completion flow (debug logging added - check console)
+- [ ] Test Day 2 new shortlist/validation flow end-to-end
 - [ ] Test all Day 8-21 components end-to-end
 - [ ] Test Day 0 "Start Here" flow end-to-end
 - [ ] Test My Progress page with real user data
+- [ ] Review and update badges for 21-day challenge structure
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx (replace YOUR_AFFILIATE_ID placeholder)
 - [ ] Add coaching call booking links to Day 1-7 and Days 19-21
+- [ ] Enable "Book a Call" button in Day 2 when ready (add Calendly link + price)
 - [ ] Review battle pass progress bar styling on different screen sizes
 - [ ] Document current API endpoints
 - [ ] Add testing setup (unit & integration tests)
@@ -162,6 +166,8 @@ Every day in Dashboard.tsx MUST follow this exact format:
 ## Known Issues
 - `.claude/` directory is tracked in git (contains local settings)
 - Old feature/week1-restructure branch can be deleted (already merged)
+- Day 1 completion may not work - debug logging added, needs testing
+- Badges may be outdated for 21-day structure (user reported)
 
 ---
 
@@ -445,6 +451,37 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - Day format pattern documented in CLAUDE.md
   - TypeScript check passing
   - Database seeded with all content updates
+
+### 2026-01-03 (Session 3) - Day 2 Redesign & Report Problem Feature
+- Tasks Completed:
+  - **Report Problem Feature**: Created ReportProblem.tsx component
+    - Captures debug info: user data, progress, browser info, timestamp
+    - Modal with problem description textarea
+    - Generates mailto link to matt@mattwebley.com with all debug data
+    - Added to Layout.tsx (mobile header + page footer on all pages)
+  - **Day 2 Complete Redesign**: New shortlist validation flow
+    - Shows "Your Shortlist from Day 1" with all 3-5 ideas
+    - Each idea displays Day 1 score and can get AI validation insights
+    - Validation shows: Demand Score (1-10), Competition Level, Top Risk
+    - User chooses ONE idea then selects 1-3 pain points
+    - Added action-over-perfection motivational message
+    - Added "Stuck? Book a Call" section with Coming Soon button
+  - Updated server route /api/progress/day2 to save new fields:
+    - chosenIdea, chosenIdeaTitle, selectedPainPoints, validationInsights
+  - Fixed Dashboard.tsx to read from userInputs instead of completionData
+  - Added debug logging to Day 1 completion flow for troubleshooting
+- Fixes Applied:
+  - Fixed DayCompletionModal showing "Day X/30" instead of "Day X/21"
+  - Added toast error when dayData is null in handleComplete
+  - Fixed all Dashboard references from completionData to userInputs
+  - Fixed field name from selectedIdea to chosenIdea for Day 2 data
+- Notes:
+  - User reported Day 1 completion "does nothing" - debug logging added
+  - User reported badges seem outdated - added to pending tasks
+  - Day 2 now has cleaner flow: see all ideas → validate → choose → pain points
+  - Book a Call button ready for Calendly link when pricing is set
+  - TypeScript check passing
+  - All changes committed and pushed to main
 
 ---
 
