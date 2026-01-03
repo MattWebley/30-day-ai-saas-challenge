@@ -131,18 +131,6 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
         </div>
 
         <div className="space-y-6">
-          {/* What is CLAUDE.md */}
-          <div className="bg-slate-50 rounded-lg p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <FileText className="w-5 h-5 text-primary" />
-              <h4 className="font-bold text-slate-900">What is CLAUDE.md?</h4>
-            </div>
-            <p className="text-slate-700">
-              A file in your project root that stores project rules, context, tech stack, and session logs.
-              Claude reads it at the start of each session so <strong>you never have to repeat yourself</strong>.
-            </p>
-          </div>
-
           {/* Safety Rules */}
           <div>
             <h4 className="font-bold text-slate-900 mb-3">Key Safety Rules</h4>
