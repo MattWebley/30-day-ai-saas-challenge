@@ -54,6 +54,8 @@ const WRAPUP_PROMPT = `I'm ending my coding session. Please:
    - Notes for next session
 4. Commit and push everything.`;
 
+const INSTALL_COMMAND = `npm install -g @anthropic-ai/claude-code && claude`;
+
 export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
   const [step, setStep] = useState<"choose" | "build" | "done">("choose");
   const [selectedWin, setSelectedWin] = useState("");
@@ -180,12 +182,37 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
           <div>
             <h4 className="font-bold text-slate-900 mb-3">Your Daily Prompts (Copy These!)</h4>
             <div className="space-y-4">
+              {/* Install Command */}
+              <div className="border-2 border-green-300 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 bg-green-100">
+                  <div className="flex items-center gap-2">
+                    <Terminal className="w-5 h-5 text-green-700" />
+                    <div>
+                      <span className="font-bold text-slate-900">Step 1: Install Claude Code</span>
+                      <span className="text-xs text-green-700 ml-2">(Run this EVERY session - Replit resets!)</span>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard(INSTALL_COMMAND, "Install command")}
+                    className="gap-2 bg-white"
+                  >
+                    <Copy className="w-4 h-4" />
+                    Copy
+                  </Button>
+                </div>
+                <pre className="p-4 text-sm text-slate-700 whitespace-pre-wrap bg-white font-mono">
+                  {INSTALL_COMMAND}
+                </pre>
+              </div>
+
               {/* Kickoff Prompt */}
               <div className="border-2 border-amber-200 rounded-lg overflow-hidden">
                 <div className="flex items-center justify-between px-4 py-3 bg-amber-100">
                   <div className="flex items-center gap-2">
                     <Sun className="w-5 h-5 text-amber-600" />
-                    <span className="font-bold text-slate-900">Session START Prompt</span>
+                    <span className="font-bold text-slate-900">Step 2: Session START Prompt</span>
                   </div>
                   <Button
                     variant="outline"
@@ -207,7 +234,7 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                 <div className="flex items-center justify-between px-4 py-3 bg-indigo-100">
                   <div className="flex items-center gap-2">
                     <Moon className="w-5 h-5 text-indigo-600" />
-                    <span className="font-bold text-slate-900">Session END Prompt</span>
+                    <span className="font-bold text-slate-900">Step 3: Session END Prompt</span>
                   </div>
                   <Button
                     variant="outline"
