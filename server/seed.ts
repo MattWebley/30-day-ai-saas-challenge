@@ -416,45 +416,40 @@ KEY NOTE: You HAVE to accept this is an EVER-CHANGING space. Things change CONST
       microDecisionOptions: JSON.stringify(["Not sure what to ask", "Results aren't what I want", "Don't know how to fix errors", "Everything feels overwhelming"]),
       reflectionQuestion: "What feature would you build if you knew Claude Code would get it right first time?",
       tip: "Claude Code works best when you're SPECIFIC. 'Make the button blue' is better than 'improve the design'. 'Add a login form with email and password' is better than 'add authentication'.",
-      lesson: `Claude Code is your AI pair programmer. But like any tool, you need to know HOW to use it.
+      lesson: `Here's what most people get WRONG about AI coding tools: They type vague nonsense and then complain when the AI doesn't read their mind.
 
-THE GOLDEN RULES OF CLAUDE CODE:
+"Make it look better" - USELESS.
+"Add padding of 16px around all cards" - USEFUL.
 
-1. BE SPECIFIC, NOT VAGUE
-❌ "Make it look better"
-✅ "Add padding of 16px around all cards, make the primary button larger with rounded corners"
+See the difference? SPECIFICITY is everything.
 
-2. ONE THING AT A TIME
-❌ "Add login, dashboard, settings, and notifications"
-✅ "Add a login form with email and password fields. Include validation and error messages."
+THE SECRET TO GETTING WHAT YOU WANT:
 
-3. GIVE CONTEXT
-❌ "Fix the bug"
-✅ "When I click the submit button, nothing happens. The form should send data to /api/submit and show a success message."
+1. ONE THING AT A TIME
+Don't say "Add login, dashboard, settings, and notifications" - that's FOUR things. The AI will mess up at least one of them.
 
-4. INCLUDE EXAMPLES
-❌ "Make it like other apps"
-✅ "Make the sidebar look like Notion's sidebar - collapsible, dark background, icons next to each item"
+Say: "Add a login form with email and password fields."
+Done? THEN ask for the dashboard.
 
-THE ESSENTIAL PROMPTS:
+2. DESCRIBE THE PROBLEM LIKE YOU'RE TALKING TO A HUMAN
+"Fix the bug" - TERRIBLE prompt.
+"When I click submit, nothing happens. It should show a success message." - GOOD prompt.
 
-FOR BUILDING:
-"Create a [component/feature] that [does what]. It should [requirements]. Style it to [match existing design]."
+The AI isn't psychic. TELL IT what's wrong and what you want.
 
-FOR FIXING:
-"I have a bug: [describe what's happening]. Expected: [what should happen]. Actual: [what's actually happening]. Here's the error: [paste error]"
+3. GIVE EXAMPLES
+"Make it look like Notion's sidebar" is 10x better than "make it look professional."
 
-FOR IMPROVING:
-"Improve the [component] by [specific change]. Keep the existing functionality but [add/change/remove] [specific thing]."
+WHY DOES THIS MATTER?
 
-WHEN THINGS GO WRONG:
-1. Don't panic - Claude Code can fix almost anything
-2. Describe the problem clearly
-3. Include error messages
-4. Say what you were trying to do
-5. Ask it to explain what went wrong
+Because the difference between someone who builds in DAYS and someone who's still stuck after WEEKS is almost ENTIRELY down to how they talk to the AI.
 
-The more you use Claude Code, the better you'll get at prompting it. Start simple, be specific, iterate.`,
+Good prompts = fast results.
+Bad prompts = frustration and wasted time.
+
+Start simple. Be specific. And when it doesn't work - describe what's wrong in DETAIL. The AI can fix almost anything if you tell it what's broken.
+
+This is your SUPERPOWER. Learn to use it.`,
       outcome: "Confident using Claude Code to build, fix, and improve your app with effective prompts",
       completionMessage: "You now know how to TALK to your AI. That's the skill that separates people who build fast from people who get frustrated. Tomorrow: we check what Replit actually built.",
       xpReward: 100,
@@ -475,53 +470,40 @@ The more you use Claude Code, the better you'll get at prompting it. Start simpl
       microDecisionOptions: JSON.stringify(["Better than expected!", "Close but needs work", "Missing key features", "Barely resembles my PRD"]),
       reflectionQuestion: "What's the ONE thing that must work perfectly before anything else?",
       tip: "This audit isn't about being disappointed - it's about having a CLEAR list of what to fix. Every SaaS starts rough. The magic is in the iteration.",
-      lesson: `Time for a reality check. What did Replit actually build?
+      lesson: `Alright. Time for a reality check.
 
-Here's the truth: AI-generated code is NEVER perfect on the first pass. That's not failure - that's NORMAL. Even the best developers iterate.
+Open your app RIGHT NOW and click through it. What actually works? What's broken? What's completely missing?
 
-Today we find the gaps so we can fix them.
+Here's a TRUTH that took me a while to accept: AI-generated code is NEVER perfect on the first pass. NEVER. And that's FINE. It's not failure - it's just how this works.
 
-THE AUDIT PROCESS:
+Even the best human developers iterate. The difference is the AI does 80% of the work in minutes instead of weeks.
 
-STEP 1: Open Your PRD
-Pull up the PRD you created on Day 6. This is your checklist.
+YOUR JOB TODAY:
 
-STEP 2: Test Every Feature
-Go through your app and check each feature from your PRD:
-✅ WORKS - Feature exists and works as expected
-⚠️ PARTIAL - Feature exists but doesn't work correctly
-❌ MISSING - Feature wasn't built at all
+1. Open your PRD from Day 6
+2. Go through EVERY feature you listed
+3. Mark each one: WORKS / BROKEN / MISSING
 
-STEP 3: Document Everything
-For each issue, write:
-- What should happen
-- What actually happens (or doesn't)
-- How important is it (Critical/Important/Nice-to-have)
+Be BRUTALLY honest. If it kind of works but not really - it's BROKEN. If you have to squint and pretend - it's BROKEN.
 
-STEP 4: Prioritize Your Fix List
-Order your issues:
-1. CRITICAL - App is broken without this
-2. IMPORTANT - Core functionality but can wait
-3. NICE-TO-HAVE - Polish and extras
+WHAT YOU'LL PROBABLY FIND:
 
-THE GAP CATEGORIES:
+- Some things work perfectly (nice!)
+- Some things are half-built (common)
+- Some things weren't even attempted (also common)
+- Some things work but look terrible (very common)
 
-BROKEN FEATURES
-- Things that exist but don't work
-- Buttons that don't click, forms that don't submit
-- These are usually quick fixes
+This isn't a disaster. This is INFORMATION. Now you know EXACTLY what to fix instead of vaguely feeling like "something's not right."
 
-MISSING FEATURES
-- Things from your PRD that weren't built
-- You'll need to prompt Claude Code to add these
-- Start with the core features, not the nice-to-haves
+THE PRIORITY QUESTION:
 
-WRONG IMPLEMENTATION
-- It works but not how you wanted
-- Describe specifically what should change
-- Give examples of the correct behavior
+What's the ONE thing that MUST work before anything else?
 
-After today, you'll have a clear, prioritized list of everything you need to fix. No more guessing - just execution.`,
+Your main feature? Authentication? The thing you'll charge money for?
+
+THAT'S what you fix first. Everything else can wait.
+
+Write it all down. Tomorrow we start fixing.`,
       outcome: "A complete audit of your app with a prioritized list of fixes and missing features",
       completionMessage: "You now have a MAP. Every gap between your vision and reality is documented. No more wondering what to work on - you have a clear fix list. Tomorrow: we start fixing.",
       xpReward: 100,
@@ -542,54 +524,42 @@ After today, you'll have a clear, prioritized list of everything you need to fix
       microDecisionOptions: JSON.stringify(["None - it's working!", "1-3 issues", "4-6 issues", "More than 6"]),
       reflectionQuestion: "What's the most satisfying bug you fixed today?",
       tip: "Take your TIME here. There's no rush. Use the PAUSE button if you need days or weeks to get through your fix list. Better to launch something that WORKS than rush a broken product.",
-      lesson: `This is the FIX DAY. Time to work through that list.
+      lesson: `Today we FIX things. One at a time.
 
-IMPORTANT: This day is designed to be PAUSED. If you have 20 things to fix, don't try to do them all in 5 minutes. Take your time. Come back tomorrow. Use the pause button.
+Here's the process: Pick the MOST important broken thing. Describe it to Claude Code. Let it fix it. Test it. Move on.
 
-THE FIX WORKFLOW:
+That's it. That's the whole day.
 
-1. PICK ONE ITEM
-Start with the highest priority unfixed item from your list.
+THE ONLY RULE THAT MATTERS:
 
-2. DESCRIBE IT CLEARLY
-Open Claude Code and describe:
-- What's wrong
-- What it should do instead
-- Any error messages you're seeing
+ONE. THING. AT. A. TIME.
 
-3. LET AI FIX IT
-Claude Code will make changes. Watch what it does.
+Don't try to batch fixes. Don't try to fix 10 things at once. That's how you break things that were already working.
 
-4. TEST IMMEDIATELY
-Does it work now? Yes → Mark it fixed, move to next. No → Describe what's still wrong.
+Fix one thing. Test it. Confirm it works. THEN move to the next thing.
 
-5. REPEAT
-Work through your list, one item at a time.
+WHAT IF IT'S NOT WORKING?
 
-FIXING TIPS:
+Describe it BETTER. Include:
+- What's happening (the bug)
+- What SHOULD happen (the expected behavior)
+- Any error messages you see
 
-DON'T BATCH FIXES
-Fix one thing, test it, then move on. Batching breaks things.
+The AI can fix almost anything if you describe the problem clearly.
 
-COMMIT WORKING CODE
-After fixing something critical, commit to GitHub. "Fixed login form validation" - this creates a save point.
+IMPORTANT - READ THIS:
 
-IT'S OK TO SKIP
-If something is taking forever, skip it and come back. Often the AI figures it out after you've fixed other things.
+This day is designed to be PAUSED.
 
-ASK FOR EXPLANATIONS
-"Why isn't this working?" is a valid prompt. Claude Code can explain the problem and solution.
+If you have 20 things to fix, you're not fixing them all today. That's fine. Use the pause button. Come back tomorrow. Come back next week. There's NO prize for rushing.
 
-THE PAUSE BUTTON:
+A working app is worth more than a fast launch.
 
-If you're overwhelmed:
-- Pause the challenge
-- Work on fixes at your own pace
-- Come back when you're ready
+COMMIT YOUR WINS:
 
-There's no prize for rushing. A working app is worth more than a fast launch.
+Every time something critical starts working, commit to GitHub. "Fixed login form" or "Fixed save button" - whatever it is. These are your save points. If something breaks later, you can go back.
 
-This phase is about getting your core features WORKING. Once they work, everything else is easier.`,
+Keep going until your core features WORK. Not perfect. Just WORKING.`,
       outcome: "Critical issues fixed, app is functional, ready to verify core features work",
       completionMessage: "You're iterating like a real developer. Fix, test, repeat. That's how ALL software gets built. If you need more time, use PAUSE. When ready, Week 3 is about making sure your USP actually delivers.",
       xpReward: 100,
@@ -614,64 +584,47 @@ This phase is about getting your core features WORKING. Once they work, everythi
       microDecisionOptions: JSON.stringify(["Works perfectly!", "Mostly works, minor issues", "Works but needs improvement", "Doesn't work yet"]),
       reflectionQuestion: "If you showed this USP to a potential customer, would they be impressed?",
       tip: "Your USP is what you'll SELL. Everything else is table stakes. If your USP doesn't make people say 'wow, that's cool' - it's not strong enough.",
-      lesson: `Your USP is your WEAPON. It's why people choose you over the 10 other tools that do something similar.
+      lesson: `Your USP is your WEAPON. It's the reason someone picks YOU over the 10 other tools that do something similar.
 
 Today we make sure that weapon is SHARP.
 
-WHAT MAKES A GOOD USP:
+THE QUESTION THAT MATTERS:
 
-1. IT'S DEMONSTRABLE
-You can SHOW it, not just describe it. "We have AI" is not a USP. "Our AI writes 10 posts in 30 seconds" is.
+If I showed my USP feature to a potential customer RIGHT NOW, would they say "Wow, that's cool - I'd pay for that"?
 
-2. IT'S DIFFERENT
-Competitors can't easily copy it, or they haven't done it yet.
+If the answer is anything other than a clear YES, we have work to do.
 
-3. IT SOLVES A REAL PAIN
-It's not a feature for the sake of features - it removes a genuine frustration.
+WHAT MAKES A USP ACTUALLY WORK:
 
-4. IT'S IMMEDIATELY UNDERSTOOD
-A user can see what it does in 5 seconds.
+1. You can SHOW it, not just describe it
+"We have AI" = NOT a USP
+"Our AI writes 10 posts in 30 seconds" = USP
 
-THE USP TEST:
+2. It's OBVIOUSLY different from competitors
+Can they do this too? If yes, it's not a USP.
 
-STEP 1: Identify Your USP
-What's the ONE thing that makes your app different? Write it down.
+3. It solves a REAL pain
+Not a feature for the sake of features. An actual frustration that people hate.
 
-STEP 2: Test The Core Flow
-Use your app to do the USP thing:
-- Does it work?
-- Is it fast?
-- Is the result good?
-- Would someone pay for this?
+THE TEST:
 
-STEP 3: Compare To Competitors
-Open a competitor's tool. Try to do the same thing.
-- Is yours faster?
-- Is yours easier?
-- Is the result better?
-- Is yours cheaper?
+1. Open your app
+2. Do the USP thing
+3. Ask yourself: Would I pay for this?
 
-If you can't honestly say YES to at least one of these, your USP needs work.
+Be HONEST. If you're making excuses ("well, once I add X it'll be better...") - it's not ready.
 
-STEP 4: Get Feedback
-Show someone (friend, family, potential user):
-"Watch me do this thing"
-Ask: "Would you pay $X/month for that?"
+Then open a competitor. Do the same thing with their tool. Is yours FASTER? EASIER? BETTER? CHEAPER?
 
-Their reaction tells you everything.
+If you can't say YES to at least one of those, your USP needs work.
 
-IF YOUR USP DOESN'T IMPRESS:
+THE BRUTAL TRUTH:
 
-Option 1: Improve the execution
-It's the right idea, just needs to work better.
+Your USP is what you'll put in your marketing. It's what you'll say on your landing page. It's what will make people click "Buy."
 
-Option 2: Make it more visible
-It works, but people can't see the value clearly.
+If it doesn't make YOU excited, it won't make THEM excited.
 
-Option 3: Pick a different USP
-Maybe feature #2 is actually more impressive.
-
-Your USP is your marketing message. Make it UNDENIABLE.`,
+Make it UNDENIABLE.`,
       outcome: "USP tested and working, clear value proposition that differentiates you from competitors",
       completionMessage: "You've verified your WEAPON works. Your USP is what will make people choose YOU. Tomorrow: we test all the other features.",
       xpReward: 100,
@@ -692,70 +645,45 @@ Your USP is your marketing message. Make it UNDENIABLE.`,
       microDecisionOptions: JSON.stringify(["None - all working!", "1-2 minor issues", "Several need fixes", "Most have problems"]),
       reflectionQuestion: "Which feature are you most proud of after testing?",
       tip: "Test like a user, not a developer. Click every button. Try to break things. Enter weird data. If it breaks for you, it'll break for customers.",
-      lesson: `Time to test EVERYTHING.
+      lesson: `Today you become your app's WORST enemy.
 
-Before you launch, you need to know every feature works. Not "probably works" - ACTUALLY works.
+Click every button. Fill every form. Try to BREAK things. Because if YOU can break it, your USERS definitely will.
 
 THE TESTING MINDSET:
 
-Think like someone who's NEVER seen your app:
-- Can they figure out what to do?
-- Do buttons do what they say?
-- Are error messages helpful?
-- Can they complete the main task?
+Pretend you've never seen your app before. You're not the builder - you're a confused user who just landed on this thing.
 
-THE FEATURE TEST PROCESS:
+- Can you figure out what to do?
+- Do buttons actually do what they say?
+- When something goes wrong, does it tell you WHY?
 
-FOR EACH FEATURE:
+TRY TO BREAK IT:
 
-1. HAPPY PATH
-Do the thing the feature is meant to do.
-Does it work? Is the result correct?
+Enter nothing. Submit empty forms.
+Enter garbage. asdfasdfasdf into every field.
+Enter EVERYTHING. Paste a novel into a text box.
+Do things in the wrong order. Skip steps. Go backwards.
 
-2. EDGE CASES
-Try weird inputs:
-- Empty fields
-- Very long text
-- Special characters
-- Numbers where text should be
-- Text where numbers should be
+What happens? Does it crash? Does it give a helpful error? Does it just... do nothing?
 
-3. ERROR HANDLING
-Make it fail on purpose:
-- Disconnect internet
-- Use wrong credentials
-- Submit invalid data
-What happens? Does it crash or fail gracefully?
+THE STUFF THAT'S EASY TO MISS:
 
-4. SPEED
-Is it fast enough? Users expect:
-- Page loads: Under 3 seconds
-- Actions: Under 1 second
-- AI tasks: Under 10 seconds (with loading indicator)
+- Loading states - is there a spinner when things are happening?
+- Success states - do you KNOW when something worked?
+- Error states - when it fails, do you know WHY?
+- Edge cases - what if someone enters an emoji? A really long name?
 
-WHAT TO LOOK FOR:
+WHEN YOU FIND BUGS:
 
-✅ Button does what label says
-✅ Form validates input before submit
-✅ Error messages explain what's wrong
-✅ Success states confirm what happened
-✅ Loading states show something is happening
-✅ Data saves and retrieves correctly
-✅ Navigation makes sense
+Write them down. Don't fix them yet. Finish testing first, THEN fix everything.
 
-FIXING AS YOU GO:
+Unless it's completely broken - then fix it now.
 
-When you find a bug:
-1. Write it down (briefly)
-2. Finish testing first
-3. Then fix all bugs together
+THE GOAL:
 
-OR if it's critical:
-1. Stop and fix it now
-2. Commit the fix
-3. Continue testing
+By the end of today, you should be able to use your app like a REAL user and have confidence it won't embarrass you.
 
-After today, you'll have confidence that your features actually WORK.`,
+Break it now, so your users don't break it later.`,
       outcome: "All features tested, bugs identified and fixed, app is reliable and ready",
       completionMessage: "Your app has been TESTED. You know what works and what doesn't. That's more than most founders know when they launch. Tomorrow: we add the AI brain.",
       xpReward: 100,
@@ -778,76 +706,44 @@ After today, you'll have confidence that your features actually WORK.`,
       tip: "The OpenAI API costs about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.",
       lesson: `Today your app gets a BRAIN.
 
-This is what makes AI SaaS different from regular SaaS. Your app can THINK.
+This is what makes AI SaaS different from regular SaaS. Your app doesn't just store data or display things - it THINKS.
 
-WHY ADD AI:
+And here's the thing: Users EXPECT this now. It's 2025. An app without AI feels like a website from 2010.
 
-1. IT'S YOUR MOAT
-Regular features can be copied easily. AI features are harder to replicate well.
+WHY THIS MATTERS:
 
-2. IT'S THE VALUE
-Users aren't paying for your UI - they're paying for what AI does for them.
+1. It's your MOAT. Regular features can be copied in a weekend. Good AI features are HARD to replicate.
 
-3. IT'S EXPECTED
-In 2025, users expect apps to be smart. No AI = feels outdated.
+2. It's the VALUE. Users aren't paying for your pretty buttons. They're paying for what the AI does for them.
 
-THE AI INTEGRATION:
+THE SIMPLE VERSION:
 
-STEP 1: Get API Keys
+1. Get an OpenAI API key (platform.openai.com)
+2. Store it in Replit Secrets (never in your code!)
+3. Tell Claude Code to add an AI feature
 
-OpenAI:
-- Go to platform.openai.com
-- Create account, add payment
-- API Keys → Create new key
-- Copy it somewhere safe
+That's it. The AI handles the rest.
 
-Claude (optional):
-- Go to console.anthropic.com
-- Create account
-- Get API key
+THE PROMPT:
 
-STEP 2: Store Keys Safely
+"Add an AI feature. When the user [does something], take their input, send it to OpenAI with this instruction: [what you want the AI to do], and show the result. Use the API key from secrets. Add a loading spinner."
 
-In Replit:
-- Go to Secrets (lock icon)
-- Add: OPENAI_API_KEY = [your key]
-- NEVER put keys in code!
+WHAT SHOULD YOUR AI DO?
 
-STEP 3: Add AI Feature
+Ask yourself: What manual task could the AI do that would make users say "THIS IS AMAZING"?
 
-Tell Claude Code:
-"Add an AI feature that [does what you want].
+- Generate something for them?
+- Analyze something for them?
+- Summarize something for them?
+- Suggest something for them?
 
-When user [triggers it]:
-1. Take their [input]
-2. Send to OpenAI with this instruction: [what AI should do]
-3. Show result in [where]
+Pick ONE thing. Get it working PERFECTLY. You can add more later.
 
-Use OPENAI_API_KEY from secrets.
-Add loading state while processing.
-Handle errors gracefully."
+THE COST REALITY:
 
-AI FEATURE IDEAS:
+OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.
 
-FOR CONTENT APPS:
-- Generate variations
-- Improve/rewrite text
-- Create summaries
-- Translate content
-
-FOR DATA APPS:
-- Analyze patterns
-- Generate insights
-- Predict outcomes
-- Categorize items
-
-FOR PRODUCTIVITY:
-- Auto-complete tasks
-- Suggest next steps
-- Summarize long content
-- Extract key points
-
-Start with ONE AI feature. Get it working perfectly. Then add more.`,
+This is the feature that makes your app worth paying for. Make it good.`,
       outcome: "AI API integrated, first AI-powered feature working in your app",
       completionMessage: "Your app can THINK now. That's the core of AI SaaS - intelligence built in. Tomorrow: connecting other APIs you might need.",
       xpReward: 100,
@@ -870,66 +766,42 @@ Start with ONE AI feature. Get it working perfectly. Then add more.`,
       tip: "Don't add APIs you don't need. Each integration is another thing that can break. Only add what's ESSENTIAL for your core use case.",
       lesson: `APIs let you plug in superpowers you'd never build yourself.
 
-But here's the key: Only add what you NEED.
+But here's the CRITICAL question: Do you ACTUALLY need another API?
 
-COMMON APIS AND WHEN TO USE THEM:
+Most apps don't need much beyond what you already have. AI? Done. Database? Done. If your app works without adding more stuff - STOP. Don't add complexity for the sake of it.
 
-FILE STORAGE (Cloudinary, AWS S3)
-Use if: Users need to upload/store files, images, documents
-Don't use if: Your app is text-only
+WHEN YOU ACTUALLY NEED AN API:
 
-ANALYTICS (Mixpanel, PostHog, Plausible)
-Use if: You need to understand user behavior
-Don't use if: You're pre-launch (add this later)
+- Users need to upload files? → You need storage (Cloudinary, S3)
+- You need real-time external data? → You need that specific API
+- You need to send emails? → We'll do that on Day 16
 
-EXTERNAL DATA (Various APIs)
-Use if: Your app needs real-time external data
-Examples: Weather, stocks, news, product data
+That's about it for most MVPs.
 
-EMAIL (Resend, SendGrid)
-Use if: You need to send transactional emails
-We'll cover this in detail on Day 16
+WHEN YOU DON'T NEED AN API (YET):
 
-PAYMENTS (Stripe)
-Use if: You're charging users
-We'll cover this when you're ready to monetize
+- Analytics → Add this AFTER launch, when you have users
+- Payments → Add this when you're ready to charge
+- Extra features → Add this when users ASK for it
 
-THE INTEGRATION PROCESS:
+THE RULE:
 
-1. IDENTIFY THE NEED
-"I need [capability] because users need to [do what]"
+Only add what's ESSENTIAL for your core use case. Every API is another thing that can break. Every integration is another account to manage.
 
-2. PICK THE SERVICE
-Research options. Usually go with the most popular - better docs, more examples.
+IF YOU DO NEED SOMETHING:
 
-3. GET CREDENTIALS
-Sign up, get API keys, add to Replit Secrets.
+1. Sign up for the service
+2. Get the API key
+3. Add it to Replit Secrets
+4. Tell Claude Code: "Integrate [service]. I need to [do what]. Use the API key from secrets."
 
-4. INTEGRATE
-Tell Claude Code:
-"Integrate [service] API.
-I need to [what you want to do].
-Use the API key from secrets.
-Handle errors gracefully."
+Done.
 
-5. TEST
-Make sure it works before moving on.
+THE HONEST TRUTH:
 
-INTEGRATION TIPS:
+If you're not sure whether you need an API, you probably don't. Ship without it. Add it when users tell you they need it.
 
-START MINIMAL
-Only integrate what's essential for launch. You can add more later.
-
-READ THE DOCS
-AI is helpful but API docs have the truth. Skim them at least.
-
-HANDLE ERRORS
-APIs fail sometimes. Your app shouldn't crash when they do.
-
-WATCH COSTS
-Some APIs charge per request. Understand pricing before going live.
-
-After today, your app should have all the external connections it needs to function.`,
+Simple apps are easier to build, easier to maintain, and easier to sell.`,
       outcome: "All necessary APIs connected, app has the integrations it needs to work",
       completionMessage: "Week 3 DONE. Your app has AI, it's tested, and it's connected to the services it needs. You have a WORKING product. Next week: the infrastructure that makes it ready for real users.",
       xpReward: 100,
@@ -954,66 +826,47 @@ After today, your app should have all the external connections it needs to funct
       microDecisionOptions: JSON.stringify(["Replit Auth (easiest)", "Email + Password", "Google/Social login", "Magic link (passwordless)"]),
       reflectionQuestion: "How important is it that users have their own accounts in your app?",
       tip: "Replit Auth is the FASTEST way to add login. It works, it's secure, and it takes minutes. Start there unless you have a specific reason not to.",
-      lesson: `Without auth, everyone sees everyone's data. Not great.
+      lesson: `Without authentication, everyone sees everyone's data.
 
-Today we fix that. Users get their own accounts.
+That's bad. Let's fix it.
 
-WHY AUTHENTICATION MATTERS:
+WHY YOU NEED AUTH:
 
-1. PRIVATE DATA
-Users can save things that only THEY can see.
+1. Users can save their OWN stuff that only THEY can see
+2. You can personalize the experience for each person
+3. You can't charge someone if you don't know who they are
+4. Apps without login feel sketchy and temporary
 
-2. PERSONALIZATION
-You can customize the experience per user.
+THE FASTEST OPTION (Just Do This):
 
-3. PAYMENTS
-Can't charge someone if you don't know who they are.
-
-4. TRUST
-Apps without login feel sketchy and temporary.
-
-AUTHENTICATION OPTIONS:
-
-REPLIT AUTH (Recommended)
-Pros: One-click setup, secure, handles everything
-Cons: Users need Replit account (actually fine for most)
-Best for: MVP, fast launch
-
-EMAIL + PASSWORD
-Pros: Traditional, users understand it
-Cons: You handle password resets, security
-Best for: Established apps with custom needs
-
-SOCIAL LOGIN (Google, GitHub, etc.)
-Pros: One-click for users, no password to remember
-Cons: More setup, dependency on third party
-Best for: Consumer apps, dev tools
-
-MAGIC LINK (Passwordless)
-Pros: No passwords, secure, modern
-Cons: Need email setup, slight friction
-Best for: Apps that already have email integration
-
-SETTING UP REPLIT AUTH:
+Use Replit Auth. One-click setup. Secure. Handles everything.
 
 Tell Claude Code:
-"Add Replit Auth to my app:
-1. Add a Login button in the header
-2. Show user's name/avatar when logged in
-3. Add a Logout button
-4. Protect [which pages] so only logged-in users can access
-5. Save user data (from [feature]) to their account
-6. Each user should only see their own data"
+"Add Replit Auth. Login button in the header. Show user's name when logged in. Logout button. Each user only sees their own data."
 
-AFTER AUTH IS SET UP:
+That's it. Auth done.
 
-Test these flows:
-1. New user signs up → Can they access protected pages?
-2. User creates data → Is it saved to their account?
-3. User logs out and back in → Is their data still there?
-4. Different user logs in → Do they see only their data?
+BUT WHAT IF...
 
-Authentication is table stakes. Get it working, then move on.`,
+"But users need a Replit account!" - Most don't care. For an MVP, this is FINE.
+
+"But I want Google login!" - More setup. Do it later if users ask.
+
+"But I want email/password!" - You handle password resets, security, all of it. More work for you. Skip this for now.
+
+The goal is to get auth WORKING so you can move forward. You can always change it later.
+
+TEST IT:
+
+1. Sign up as a new user
+2. Create some data
+3. Log out
+4. Log back in - is your data still there?
+5. Log in as a DIFFERENT user - do you see the first user's data? (You shouldn't!)
+
+If all that works, you're done.
+
+Auth is table stakes. Not exciting. Just necessary. Get it working and move on.`,
       outcome: "User authentication working, users can sign up, log in, and have private data",
       completionMessage: "Your app has USERS now. Real accounts, real data, real privacy. Tomorrow: email setup so you can communicate with those users.",
       xpReward: 100,
@@ -1034,74 +887,47 @@ Authentication is table stakes. Get it working, then move on.`,
       microDecisionOptions: JSON.stringify(["Welcome emails only", "Welcome + notifications", "Full transactional suite", "Not sure yet"]),
       reflectionQuestion: "What email would make a user think 'this app really cares about me'?",
       tip: "Resend is the easiest email API to set up. Free tier is generous. Start there.",
-      lesson: `Email isn't optional anymore. It's how you stay connected with users.
+      lesson: `Email is how you stay connected to your users when they're NOT in your app.
 
-THE EMAILS YOU NEED:
+Someone signs up → Welcome email.
+Something important happens → Notification email.
+They haven't been back → "We miss you" email.
 
-ESSENTIAL (Start Here):
-1. Welcome email - When they sign up
-2. Password reset - When they forget password (if using email auth)
+Without email, you're just hoping they remember you exist. That's not a strategy.
 
-IMPORTANT (Add Soon):
-3. Usage notifications - "You created X today"
-4. Feature updates - "New feature available"
+THE ONLY EMAILS THAT MATTER (for now):
 
-NICE TO HAVE (Later):
-5. Re-engagement - "We miss you"
-6. Weekly summaries - "Here's what happened"
+1. WELCOME EMAIL - When they sign up. "Hey, thanks for joining. Here's how to get started."
 
-EMAIL SERVICES:
+2. THAT'S IT - Seriously. Start with just one email. Add more when you have users.
 
-RESEND (Recommended)
-- Free: 3,000 emails/month
-- Easy API, great docs
-- Made for developers
-- resend.com
+THE SETUP (5 minutes):
 
-SENDGRID
-- Free: 100 emails/day
-- More established
-- sendgrid.com
-
-MAILGUN
-- Pay as you go
-- Good deliverability
-- mailgun.com
-
-SETTING UP RESEND:
+Use Resend. It's free for 3,000 emails/month. That's more than enough.
 
 1. Sign up at resend.com
 2. Verify your domain (follow their steps)
 3. Get API key
 4. Add to Replit Secrets: RESEND_API_KEY
 
-ADDING EMAILS TO YOUR APP:
+Then tell Claude Code:
+"When a user signs up, send them a welcome email using Resend. Subject: Welcome to [Your App]. Body: [Your message]. Use the API key from secrets."
 
-Tell Claude Code:
-"Add email functionality using Resend:
+Done.
 
-1. When a user signs up, send a welcome email:
-   - To: their email
-   - Subject: 'Welcome to [App Name]!'
-   - Body: [your welcome message]
+THE STUFF THAT DOESN'T MATTER YET:
 
-2. When [event happens], send a notification:
-   - To: the user's email
-   - Subject: '[relevant subject]'
-   - Body: [relevant message]
+Fancy HTML templates? Later.
+Automated sequences? Later.
+Analytics on opens/clicks? Later.
 
-Use RESEND_API_KEY from secrets.
-Handle errors gracefully - don't break the app if email fails."
+You just need ONE email working. The welcome email. Get that done, test it, move on.
 
-EMAIL BEST PRACTICES:
+PRO TIP:
 
-- Keep emails SHORT and useful
-- Don't spam - only send when there's value
-- Include unsubscribe option (legally required)
-- Test deliverability - check spam folder
-- Use a real from address (noreply is fine)
+Send a test email to yourself. Check your spam folder. If it ends up in spam, you have a domain verification issue. Fix it before launch.
 
-Emails keep users coming back. Set them up now.`,
+Emails keep users coming back. Set it up. Keep it simple.`,
       outcome: "Email service connected, welcome and notification emails working",
       completionMessage: "Your app can EMAIL users now. Welcome emails, notifications, the works. Tomorrow: making the first-run experience great.",
       xpReward: 100,
@@ -1122,76 +948,50 @@ Emails keep users coming back. Set them up now.`,
       microDecisionOptions: JSON.stringify(["Quick tour of features", "Get them to first success", "Collect preferences", "Just let them explore"]),
       reflectionQuestion: "What's the ONE thing a user must do to 'get' your app?",
       tip: "The best onboarding gets users to their first 'aha moment' as fast as possible. What's the smallest action that shows them the value?",
-      lesson: `First impressions are everything. Users decide in 2 minutes if your app is for them.
+      lesson: `First impressions are EVERYTHING.
 
-THE GOAL OF ONBOARDING:
+When someone signs up, you have about 2 minutes before they decide whether your app is for them or not. Two minutes. That's it.
 
-Get users to their first SUCCESS as fast as possible.
+THE ONLY GOAL OF ONBOARDING:
 
-Not "show them features"
-Not "explain everything"
-Just: Help them WIN quickly
+Get them to their first WIN as fast as humanly possible.
+
+Not "show them features." Not "explain everything." Just help them DO something and feel successful.
 
 THE 2-MINUTE RULE:
 
 Within 2 minutes of signing up, a user should:
 1. Understand what the app does
-2. Complete ONE action
-3. See value from that action
+2. DO the main thing
+3. See a result that makes them think "oh, that's cool"
 
-If they can't do this, they'll leave.
+If that takes more than 2 minutes? You'll lose most of them.
 
-ONBOARDING PATTERNS:
+THE SIMPLEST ONBOARDING THAT WORKS:
 
-PATTERN 1: GUIDED FIRST ACTION
-- After signup, take them straight to the main feature
-- Pre-fill example data
-- One button to get a result
-- "Wow, that was easy"
+1. They sign up
+2. Take them STRAIGHT to the main feature
+3. Pre-fill it with example data so they can try immediately
+4. One click to get a result
+5. "Wow, that was easy. I like this."
 
-PATTERN 2: QUICK TOUR
-- 3-4 tooltips pointing at key features
-- "Skip" button always visible
-- End with a clear call to action
-- Takes 30 seconds max
+Done.
 
-PATTERN 3: COLLECT PREFERENCES
-- Ask 2-3 questions
-- Use answers to customize their experience
-- Show them results immediately
-- "We personalized this for you"
+WHAT KILLS ONBOARDING:
 
-WHAT TO AVOID:
+- Long tutorials (no one watches them)
+- Too many steps before they get value
+- Forcing email verification before they can try the app
+- Empty states with no guidance
+- Feature dumps ("Here's 20 things you can do!")
 
-❌ Long tutorials (no one watches them)
-❌ Too many steps before value
-❌ Forcing email verification before trying app
-❌ Empty states with no guidance
-❌ Feature dumps (here's 20 things you can do!)
+THE QUESTION:
 
-BUILDING YOUR ONBOARDING:
+What's the ONE thing a user needs to do to "get" your app?
 
-Tell Claude Code:
-"Add onboarding for new users:
+That's your onboarding. Everything else is distraction.
 
-When a user first signs up:
-1. Show a welcome message with their name
-2. Take them to [main feature]
-3. Pre-fill with [example data] so they can try immediately
-4. After they [complete action], show a success message
-5. Then show quick tips for what to do next
-
-Mark onboarding as complete so they don't see it again."
-
-TEST YOUR ONBOARDING:
-
-1. Create a new test account
-2. Time how long until first success
-3. If > 2 minutes, simplify
-4. Ask someone unfamiliar to try it
-5. Watch where they get confused
-
-Good onboarding = users who stay.`,
+Make them successful in 2 minutes or less.`,
       outcome: "Smooth onboarding flow that gets users to their first success quickly",
       completionMessage: "New users now have a clear path to success. That's the difference between an app people try once and an app people keep using. Tomorrow: seeing what's happening in your app.",
       xpReward: 100,
@@ -1212,77 +1012,46 @@ Good onboarding = users who stay.`,
       microDecisionOptions: JSON.stringify(["User signups & activity", "Feature usage", "Errors & issues", "Revenue (when added)"]),
       reflectionQuestion: "What information would help you make better decisions about your app?",
       tip: "Your admin dashboard is for YOU, not users. Keep it simple - just the data you'll actually look at. You can add more later.",
-      lesson: `You need to see what's happening in your app. Not guess - KNOW.
+      lesson: `You need to see what's happening inside your app.
 
-AN ADMIN DASHBOARD SHOWS YOU:
+Not guess. Not assume. KNOW.
 
-1. WHO'S USING YOUR APP
-- How many users signed up
-- When they signed up
-- Who's active vs inactive
+How many users do you have? How many signed up this week? Are people actually USING the thing or just signing up and leaving?
 
-2. WHAT THEY'RE DOING
-- Which features are used most
-- How often they use the app
-- What content they create
+Right now, you probably don't know. Let's fix that.
 
-3. WHAT'S BREAKING
-- Error counts
-- Failed operations
-- User complaints
+THE SIMPLEST ADMIN DASHBOARD:
 
-4. HOW YOU'RE DOING
-- Growth trends
-- Usage patterns
-- Revenue (when you add payments)
+You don't need fancy graphs. You need FOUR numbers:
 
-SIMPLE ADMIN DASHBOARD:
+1. Total users (how many people have ever signed up)
+2. New users this week (are people still finding you?)
+3. Active users this week (are they coming back?)
+4. Total [main actions] (are they doing the thing?)
 
-Start with just these metrics:
-- Total users
-- New users this week
-- Active users this week
-- Total [main actions] taken
-- Recent activity list
+That's it. Four numbers. You can add more later.
 
-That's it. You can add more later.
-
-BUILDING YOUR DASHBOARD:
+THE SETUP:
 
 Tell Claude Code:
-"Create an admin dashboard at /admin:
+"Create an admin page at /admin. Only I can access it. Show me: total users, new users this week, active users this week, and total [actions]. Also show the last 20 [actions] with user and timestamp."
 
-1. Protect it - only admin users can access
-2. Show these stats:
-   - Total users (count)
-   - Users signed up this week (count)
-   - Active users this week (used app in last 7 days)
-   - Total [actions] (count of main feature usage)
+Done.
 
-3. Show recent activity:
-   - Last 20 [actions] with user and timestamp
+WHY THIS MATTERS:
 
-4. Make it simple and clean - this is for me, not users
+Without data, you're flying blind. You THINK things are going well. You HOPE people like it.
 
-Mark my account as admin."
+With data, you KNOW:
+- "Oh, 50 people signed up but only 5 came back" → Onboarding problem
+- "People are signing up but not using the main feature" → Feature problem
+- "Usage is growing every week" → Keep doing what you're doing
 
-WHAT TO DO WITH THIS DATA:
+DATA TELLS YOU WHAT TO FIX.
 
-DAILY CHECK:
-- Anyone new sign up?
-- Any issues to fix?
+This is the last piece of infrastructure. After this, your app is ready for real users.
 
-WEEKLY REVIEW:
-- Is usage growing?
-- What features are popular?
-- Where do people get stuck?
-
-MONTHLY ANALYSIS:
-- What should I build next?
-- What can I remove?
-- Is this working?
-
-Data helps you make better decisions. Start collecting it now.`,
+Build the dashboard. Check it every day. Make decisions based on what you see, not what you hope.`,
       outcome: "Admin dashboard showing users, activity, and key metrics",
       completionMessage: "Week 4 DONE. Your app has real infrastructure - auth, email, onboarding, and admin. It's not a toy anymore. Next week: polish and launch.",
       xpReward: 100,
