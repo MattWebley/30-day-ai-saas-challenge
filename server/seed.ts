@@ -1307,78 +1307,44 @@ Data helps you make better decisions. Start collecting it now.`,
       microDecisionOptions: JSON.stringify(["Looks great!", "Usable but not pretty", "Some things are broken", "Haven't checked yet"]),
       reflectionQuestion: "Can users complete the main task on their phone without frustration?",
       tip: "Test on a REAL phone, not just browser dev tools. The experience is different. Also try with one hand - can you reach all the buttons?",
-      lesson: `More than half your users will access your app on mobile.
+      lesson: `Here's a BRUTAL truth: More than HALF your users will access your app on their PHONE.
 
-If it doesn't work on phones, you're losing half your potential users.
+Not their laptop. Not their desktop. Their PHONE.
 
-MOBILE TESTING CHECKLIST:
+And if your app looks broken on mobile? They're GONE. They don't come back. They don't give you a second chance.
 
-LAYOUT:
-□ No horizontal scrolling
-□ Text is readable without zooming
-□ Buttons are tappable (not too small)
-□ Forms are usable
-□ Navigation works
+This isn't about being perfect. It's about being USABLE.
 
-FUNCTIONALITY:
-□ All features work on mobile
-□ Touch targets are big enough (44x44px minimum)
-□ No hover-only interactions
-□ Forms work with mobile keyboard
-□ File uploads work (if applicable)
+WHAT YOU'RE ACTUALLY TESTING:
 
-PERFORMANCE:
-□ Loads in under 3 seconds on 4G
-□ Images are optimized
-□ No unnecessary animations
-□ Works on slower phones
+1. DOES IT LOAD?
+Open your app on your actual phone (not browser dev tools - your REAL phone). Does it load? Fast? Good.
 
-TESTING PROCESS:
+2. CAN YOU READ IT?
+Without pinching and zooming? Text should be readable without squinting.
 
-1. BROWSER DEV TOOLS
-Open your app → F12 → Device toolbar
-Test at: 375px (iPhone SE), 390px (iPhone 14), 412px (Android)
+3. CAN YOU TAP THE BUTTONS?
+Are they big enough for a thumb? If you're missing buttons with your finger, they're too small.
 
-2. REAL DEVICE
-Send yourself the link
-Actually use it on your phone
-Try with one hand
+4. DOES THE MAIN THING WORK?
+Whatever your app DOES - can you do it on mobile? This is the only question that actually matters.
 
-3. DIFFERENT DEVICES
-Test on both iOS and Android if possible
-Ask friends with different phones to try
+THE FAST FIX:
 
-COMMON MOBILE ISSUES:
+Open Claude Code and say:
+"Test my app at 375px width. Fix anything that's broken. Make buttons at least 44px tall. Make text readable. No horizontal scrolling."
 
-ISSUE: Buttons too small
-FIX: "Make all buttons at least 44px tall with padding"
+That's it. Don't overthink it.
 
-ISSUE: Text too small
-FIX: "Body text should be at least 16px on mobile"
+HERE'S WHAT I WANT YOU TO REALISE:
 
-ISSUE: Horizontal scrolling
-FIX: "Check for elements with fixed widths, make them responsive"
+You're not just playing around anymore. You're building a REAL product that works on ANY device. Most people never get this far. They have ideas. They have dreams. They have "someday" plans.
 
-ISSUE: Forms are awkward
-FIX: "Make inputs full width on mobile, add proper input types"
+You have a product that's almost ready to sell.
 
-FIXING MOBILE ISSUES:
+Two more days. That's it. Two more days and you'll have something you can put a price tag on.
 
-Tell Claude Code:
-"Fix mobile responsiveness:
-
-1. On screens under 768px:
-   - Stack elements vertically
-   - Make buttons full width
-   - Increase touch targets to 44px minimum
-   - Hide non-essential elements
-
-2. Fix these specific issues:
-   [List what's broken]
-
-3. Test at 375px width"
-
-Build for mobile FIRST. Desktop users can handle more.`,
+Let that sink in.`,
       outcome: "App works perfectly on mobile devices, responsive and touch-friendly",
       completionMessage: "Your app works on mobile now. You just unlocked the majority of potential users. Tomorrow: making it LOOK as good as it works.",
       xpReward: 100,
@@ -1399,95 +1365,45 @@ Build for mobile FIRST. Desktop users can handle more.`,
       microDecisionOptions: JSON.stringify(["Need a logo", "Colors are inconsistent", "Typography needs work", "Overall needs polish"]),
       reflectionQuestion: "If someone landed on your app right now, would they think 'this looks professional'?",
       tip: "You don't need a perfect logo. A clean text logo in a nice font is better than a bad graphic. Focus on consistency over creativity.",
-      lesson: `Time to make your app LOOK professional.
+      lesson: `Let's talk about what REALLY matters here.
 
-This isn't about being pretty - it's about being CREDIBLE.
+Your app WORKS. It does the thing. But does it look like something worth paying for?
 
-Users judge quality by appearance. Fair or not, ugly = untrustworthy.
+Here's the truth: People judge your app in the first 3 seconds. Before they even USE it. They look at it and think "professional" or "amateur".
 
-LOGO OPTIONS:
+And that judgment directly affects what they'll pay.
 
-OPTION 1: TEXT LOGO (Recommended)
-Your app name in a nice font. Clean, simple, scalable.
-Tools: Canva, Figma (both free)
+THIS IS SIMPLER THAN YOU THINK:
 
-OPTION 2: ICON + TEXT
-Simple icon (emoji works!) + your name
-Good if you want something more memorable
+1. PICK ONE COLOR
+Seriously. Just one main color. Blue, green, purple, whatever. Use it for buttons, links, and accents. Everything else is white/gray backgrounds and dark text.
 
-OPTION 3: AI-GENERATED
-Use Midjourney, DALL-E, or similar
-Prompt: "Simple minimal logo for [app name], [description], app icon style"
+That's your brand. Done.
 
-Keep it SIMPLE. Complex logos look amateur.
+2. TEXT LOGO IS FINE
+You don't need a designer. Your app name in a clean font IS a logo. Canva takes 5 minutes. Don't overthink this.
 
-COLOR POLISH:
+3. MAKE IT CONSISTENT
+Same button style everywhere. Same card style everywhere. Same spacing everywhere. CONSISTENCY is what makes things look professional - not fancy graphics.
 
-Pick 3 colors maximum:
-1. Primary - Main brand color, used for buttons
-2. Background - Usually white or very light
-3. Accent - For highlights and secondary elements
-
-Use them CONSISTENTLY everywhere.
-
-TYPOGRAPHY POLISH:
-
-Pick 2 fonts maximum:
-1. Headings - Can be bolder, more personality
-2. Body - Must be highly readable
-
-Sizes:
-- Headings: 24-32px
-- Subheadings: 18-20px
-- Body: 16px
-- Small text: 14px
-
-CONSISTENCY CHECKLIST:
-
-□ Same colors everywhere
-□ Same fonts everywhere
-□ Same button styles
-□ Same spacing patterns
-□ Same border radius
-□ Logo on every page
-
-QUICK POLISH FIXES:
+THE QUICK FIX:
 
 Tell Claude Code:
-"Polish the visual design:
+"Make my app look consistent. Primary color is [pick one]. Same button style, same card style, same spacing on every page. Add a simple text logo in the header."
 
-1. COLORS:
-   - Primary: [your color]
-   - Background: [your color]
-   - Accent: [your color]
-   Apply consistently across all pages
+That's it. 15 minutes max.
 
-2. TYPOGRAPHY:
-   - Headings: [font], bold
-   - Body: [font], regular
-   - Ensure consistent sizing
+LOOK AT WHAT YOU'VE BUILT.
 
-3. SPACING:
-   - Consistent padding in cards (16px or 24px)
-   - Consistent margins between sections
-   - Add more whitespace where cramped
+Seriously. Open your app right now and look at it.
 
-4. CONSISTENCY:
-   - Same button style everywhere
-   - Same input style everywhere
-   - Same card style everywhere"
+This isn't a side project anymore. This isn't a "maybe someday" thing. This is a branded, professional-looking SaaS product that you built in 20 days.
 
-ADDING YOUR LOGO:
+Tomorrow you LAUNCH.
 
-Tell Claude Code:
-"Add my logo to the app:
-1. Show in header/navbar on all pages
-2. Show on login/signup page
-3. Add as favicon
+And after that? Well, having a product is just the first step. Turning it into a BUSINESS is a different challenge entirely.
 
-Logo is [describe or provide URL/file]"
-
-Professional appearance = professional perception.`,
+But let's get through tomorrow first. One day at a time.`,
       outcome: "App has consistent branding, logo, and professional visual design",
       completionMessage: "Your app LOOKS like a real product now. Consistent, polished, credible. Tomorrow: we LAUNCH.",
       xpReward: 100,
@@ -1508,112 +1424,65 @@ Professional appearance = professional perception.`,
       microDecisionOptions: JSON.stringify(["Excited and ready!", "Nervous but ready", "Want more polish first", "Terrified"]),
       reflectionQuestion: "What will you do to celebrate after you launch?",
       tip: "Done is better than perfect. You can always improve after launch. The goal today is to be LIVE, not to be flawless.",
-      lesson: `This is it. Launch day.
+      lesson: `LAUNCH DAY.
 
-Everything you've built over 21 days comes down to this: making it LIVE.
+21 days ago, you probably wondered if you could actually do this. Build a real SaaS product. With AI. From scratch.
 
-PRE-LAUNCH CHECKLIST:
+Look at where you are now.
 
-FUNCTIONALITY:
-□ Core feature works
-□ USP feature works
-□ Authentication works
-□ Users can sign up and log in
-□ Data saves correctly
-□ Emails send
-□ No major bugs
+THE PRE-LAUNCH REALITY CHECK:
 
-DESIGN:
-□ Looks professional
-□ Works on mobile
-□ Logo is visible
-□ Consistent branding
+Before you hit that button, confirm these things work:
 
-LEGAL (Quick Basics):
-□ Privacy policy (AI can write one)
-□ Terms of service (AI can write one)
-□ Cookie notice if needed
+1. Can someone sign up and log in? YES/NO
+2. Does your main feature work? YES/NO
+3. Does your USP feature work? YES/NO
+4. Does it work on mobile? YES/NO
+5. Does it look professional? YES/NO
 
-INFRASTRUCTURE:
-□ Custom domain connected (optional but recommended)
-□ SSL certificate active (https://)
-□ Error monitoring in place
+If you said YES to all of these - you're ready to launch.
 
-THE REAL COSTS:
+If you said NO to any of them - fix it now. Don't launch broken.
 
-Let's be honest about what this costs to run:
+WHAT THIS COSTS TO RUN:
 
-REPLIT:
-- Free tier works for MVP
-- Paid ($7-20/month) for custom domain and more resources
+Let's be HONEST about the numbers:
+- Replit: Free to start, $7-20/month for custom domain
+- OpenAI API: ~$20-50/month depending on usage
+- Email (Resend): Free for first 3,000 emails/month
+- Domain: $10-15/year
 
-OPENAI API:
-- Pay per use
-- GPT-3.5: ~$0.002 per 1K tokens (very cheap)
-- GPT-4: ~$0.06 per 1K tokens (more capable)
-- Budget $20-50/month to start
+Total: Under $50/month to start. That's less than most people spend on coffee.
 
-EMAIL (Resend):
-- Free tier: 3,000 emails/month (enough to start)
-- Paid: $20/month for more
+AFTER YOU CLICK LAUNCH:
 
-DOMAIN:
-- ~$10-15/year
+1. Test everything LIVE as a new user
+2. Share with 5-10 people you trust
+3. Watch your admin dashboard
+4. Fix what breaks (something always breaks)
 
-TOTAL TO START: $20-50/month
+YOU BUILT A SAAS. NOW WHAT?
 
-NOT INCLUDED (add later when needed):
-- Analytics
-- More storage
-- Better hosting
-- Marketing
+Here's the thing nobody tells you: Building a product is actually the EASY part.
 
-DEPLOYING:
+Turning that product into a BUSINESS? That's where most people get stuck.
 
-In Replit:
-1. Click "Deploy" button
-2. Choose deployment type (Autoscale for production)
-3. Confirm settings
-4. Your app is LIVE
+- How do you get your first paying customers?
+- How do you price it?
+- How do you market it when you're not a marketer?
+- How do you grow without burning out?
 
-CONNECTING DOMAIN (Optional):
+These are the questions that separate products that make money from products that sit there collecting dust.
 
-1. In Replit, go to deployment settings
-2. Add your custom domain
-3. Add DNS records at your domain provider
-4. Wait for propagation (can take hours)
+I've helped dozens of SaaS founders navigate this exact transition. From "I have a product" to "I have a profitable business."
 
-AFTER YOU LAUNCH:
+If you want help with the next step - getting customers, pricing strategy, marketing that actually works, and building a sustainable business around what you've built - let's talk.
 
-1. TEST EVERYTHING LIVE
-   Go through your app as a new user
+Book a call: www.mattwebley.com/workwithmatt
 
-2. SHARE WITH A FEW PEOPLE
-   Friends, family, potential users
-   Get feedback
+But first: LAUNCH THIS THING.
 
-3. MONITOR
-   Watch your admin dashboard
-   Check for errors
-
-4. ITERATE
-   Fix what breaks
-   Improve what's confusing
-   Add what's requested
-
-🎉 CONGRATULATIONS 🎉
-
-You just launched an AI SaaS.
-
-21 days ago you had an idea. Now you have a PRODUCT.
-
-Most people never get here. They plan forever. They dream forever. They "research" forever.
-
-You BUILT something. And you SHIPPED it.
-
-That's the difference between people who talk and people who DO.
-
-What comes next is up to you. But you've proven you can build. And that changes everything.`,
+You've earned it.`,
       outcome: "App is LIVE and accessible to the world. You launched!",
       completionMessage: "🚀 YOU LAUNCHED! 21 days. From idea to live product. You did what most people only dream about. The journey is just beginning, but you've proven you can BUILD. Congratulations!",
       xpReward: 200,
