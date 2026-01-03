@@ -218,6 +218,14 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
               No more explaining from scratch. No more lost work.
             </p>
           </div>
+
+          <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
+            <Terminal className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+            <p className="text-sm text-slate-700">
+              <strong>Good news:</strong> Once you complete today, you'll unlock the <strong>Claude Code Guide</strong> in the menu.
+              It has all 3 prompts in one place so you can easily copy them every session.
+            </p>
+          </div>
         </div>
       </Card>
 

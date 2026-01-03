@@ -22,7 +22,8 @@ import {
   Map,
   Hammer,
   Sparkles,
-  Zap
+  Zap,
+  Terminal
 } from "lucide-react";
 
 interface SidebarProps {
@@ -364,6 +365,30 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 My Progress
               </span>
             </Link>
+            {completedDays.has(8) ? (
+              <Link href="/claude-code" onClick={handleNavClick}>
+                <span className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                  location === "/claude-code"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                )}>
+                  <Terminal className="w-4 h-4" />
+                  Claude Code Guide
+                </span>
+              </Link>
+            ) : (
+              <div className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground/50 cursor-not-allowed">
+                <div className="flex items-center gap-3">
+                  <Terminal className="w-4 h-4" />
+                  Claude Code Guide
+                </div>
+                <div className="flex items-center gap-1 text-xs">
+                  <Lock className="w-3 h-3" />
+                  <span>Day 8</span>
+                </div>
+              </div>
+            )}
             <Link href="/admin" onClick={handleNavClick}>
               <span className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",

@@ -423,40 +423,34 @@ KEY NOTE: You HAVE to accept this is an EVER-CHANGING space. Things change CONST
       microDecisionOptions: JSON.stringify(["Not sure what to ask", "Results aren't what I want", "Don't know how to fix errors", "Everything feels overwhelming"]),
       reflectionQuestion: "What feature would you build if you knew Claude Code would get it right first time?",
       tip: "Claude Code works best when you're SPECIFIC. 'Make the button blue' is better than 'improve the design'. 'Add a login form with email and password' is better than 'add authentication'.",
-      lesson: `Here's what most people get WRONG about AI coding tools: They type vague nonsense and then complain when the AI doesn't read their mind.
+      lesson: `WHY CLAUDE CODE? It'll save you THOUSANDS.
 
-"Make it look better" - USELESS.
-"Add padding of 16px around all cards" - USEFUL.
+You CAN just use Replit's built-in AI on its own. It's easier to get started. But here's the truth: it gets VERY expensive, VERY fast. We're talking hundreds of dollars a month if you're building regularly.
 
-See the difference? SPECIFICITY is everything.
+Claude Code runs in Replit's shell. Same power. Fraction of the price.
+
+THE CATCH: Replit resets every time you close it. So you need to reinstall Claude Code each session. That's why I'm giving you 3 simple prompts to copy-paste every time.
+
+YOUR DAILY ROUTINE:
+1. Open Replit
+2. Paste the INSTALL prompt (installs Claude Code)
+3. Paste the START prompt (Claude catches up on your project)
+4. Build stuff
+5. Before closing, paste the END prompt (saves everything)
+
+That's it. Do this every time and you'll never lose work, never explain your project twice, and save a fortune on AI costs.
 
 THE SECRET TO GETTING WHAT YOU WANT:
 
-1. ONE THING AT A TIME
-Don't say "Add login, dashboard, settings, and notifications" - that's FOUR things. The AI will mess up at least one of them.
+Be SPECIFIC. "Make it look better" = USELESS. "Add 16px padding around all cards" = USEFUL.
 
-Say: "Add a login form with email and password fields."
-Done? THEN ask for the dashboard.
+ONE thing at a time. Don't ask for login, dashboard, AND settings. Ask for login. Wait. Then dashboard.
 
-2. DESCRIBE THE PROBLEM LIKE YOU'RE TALKING TO A HUMAN
-"Fix the bug" - TERRIBLE prompt.
-"When I click submit, nothing happens. It should show a success message." - GOOD prompt.
+Describe problems like you're talking to a human. "Fix the bug" = TERRIBLE. "When I click submit, nothing happens. It should show a success message." = GOOD.
 
-The AI isn't psychic. TELL IT what's wrong and what you want.
+The difference between building in DAYS vs being stuck for WEEKS comes down to how you talk to the AI. Good prompts = fast results.
 
-3. GIVE EXAMPLES
-"Make it look like Notion's sidebar" is 10x better than "make it look professional."
-
-WHY DOES THIS MATTER?
-
-Because the difference between someone who builds in DAYS and someone who's still stuck after WEEKS is almost ENTIRELY down to how they talk to the AI.
-
-Good prompts = fast results.
-Bad prompts = frustration and wasted time.
-
-Start simple. Be specific. And when it doesn't work - describe what's wrong in DETAIL. The AI can fix almost anything if you tell it what's broken.
-
-This is your SUPERPOWER. Learn to use it.`,
+Complete today and you'll unlock the CLAUDE CODE GUIDE in the menu - all 3 prompts in one place for easy access.`,
       outcome: "Confident using Claude Code to build, fix, and improve your app with effective prompts",
       completionMessage: "You now know how to TALK to your AI. That's the skill that separates people who build fast from people who get frustrated. Tomorrow: we check what Replit actually built.",
       xpReward: 100,
