@@ -110,7 +110,7 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
             </p>
             <p className="text-amber-800">
               Using Claude Code in the Replit shell drops your development costs by thousands of dollars.
-              Same power, fraction of the price. The workflow below is how the pros do it.
+              Same power, fraction of the price. The workflow below is how I teach my 1:1 mentorship clients to do it.
             </p>
           </div>
         </div>
