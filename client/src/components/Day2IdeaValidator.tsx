@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Check, Sparkles, Loader2, ChevronRight, Trophy, Flame, Plus, X, CheckCircle2, TrendingUp, Users, AlertTriangle, Target } from "lucide-react";
+import { Check, Sparkles, Loader2, ChevronRight, Trophy, Flame, Plus, X, CheckCircle2, TrendingUp, Users, AlertTriangle, Target, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -405,6 +405,13 @@ Return ONLY a numbered list:
         </p>
       </div>
 
+      {/* Action over perfection message */}
+      <Card className="p-5 border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <p className="text-blue-900 font-medium text-center">
+          <span className="font-bold">Remember:</span> Choosing an imperfect idea and TAKING ACTION beats endlessly second-guessing yourself. There is no perfect idea - only the one you actually build.
+        </p>
+      </Card>
+
       <div className="space-y-4">
         {shortlistedIdeas.map((idea, idx) => {
           const insight = validationInsights[idx];
@@ -484,6 +491,24 @@ Return ONLY a numbered list:
         <p className="text-sm text-slate-600 text-center">
           <span className="font-semibold">Pro tip:</span> Click "Get Validation Insights" on each idea to compare them, then choose the one that excites you most AND has decent demand.
         </p>
+      </Card>
+
+      {/* Stuck? Book a call */}
+      <Card className="p-6 border-2 border-slate-200 bg-white">
+        <div className="text-center space-y-3">
+          <h3 className="font-bold text-slate-900">Stuck? Can't Decide?</h3>
+          <p className="text-sm text-slate-600">
+            Sometimes you just need a fresh perspective. Book a 30-minute 1:1 call with Matt to talk through your ideas and get unstuck.
+          </p>
+          <Button
+            variant="outline"
+            className="gap-2 border-2"
+            disabled
+          >
+            <Calendar className="w-4 h-4" />
+            Book a Call - Coming Soon
+          </Button>
+        </div>
       </Card>
     </div>
   );
