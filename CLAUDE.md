@@ -94,13 +94,14 @@ components.json   - shadcn/ui component config
 
 ## Current Status
 - Status: In Progress
-- Last Session: 2026-01-02
+- Last Session: 2026-01-03
 - Current Branch: main
 - GitHub Repo: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
 - [ ] Test all Day 8-21 components end-to-end
 - [ ] Test Day 0 "Start Here" flow end-to-end
+- [ ] Test My Progress page with real user data
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx (replace YOUR_AFFILIATE_ID placeholder)
 - [ ] Add coaching call booking links to Day 1-7 and Days 19-21
 - [ ] Review battle pass progress bar styling on different screen sizes
@@ -330,6 +331,42 @@ components.json   - shadcn/ui component config
   - All 14 Day components completely rewritten (Day 8-21)
   - Each day now gives users a tangible win and sense of progress
   - Ready for testing
+
+### 2026-01-03 - My Progress Page & Day Component Enhancements
+- Tasks Completed:
+  - Created BuildLog.tsx: comprehensive "My Progress" page
+    - Shows all user decisions and milestones organized by phase (Start/Idea/Plan/Build/Polish/Launch)
+    - Accordion-based navigation with expandable day details
+    - Displays day-specific data (ideas, features, auth method, brand colors, etc.)
+    - Stats bar showing days completed, current streak, and total XP
+    - Empty state for new users with encouraging messaging
+  - Enhanced all Day 8-21 components with refined multi-step workflows:
+    - Day 8: Choose quick win → Build → Document what you built
+    - Day 9: Test → Document (works/needs fix) → Prioritize
+    - Day 10: Focus ONE issue → Fix → Document the fix
+    - Day 11: Define USP → Test live → Answer "would someone pay?"
+    - Day 12: Test mission → Document bugs → Fix/acknowledge
+    - Day 13: Plan AI feature → Build → Document wow factor
+    - Day 14: Decide API need → Connect ONE → Verify works
+    - Day 15: Choose auth → Implement → Test login flow
+    - Day 16: Plan email → Setup Resend → Send test
+    - Day 17: Define success → Build path → Time and test
+    - Day 18: Choose metrics → Build dashboard → Check stats
+    - Day 19: Test on phone → Document issues → Fix or note
+    - Day 20: Pick color → Apply branding → Verify professional
+    - Day 21: Pre-launch checklist → LAUNCH → Celebrate
+  - Added "My Progress" link to Sidebar navigation
+  - Updated App.tsx with /build-log route
+  - Updated Dashboard.tsx with correct component props
+  - Updated server/routes.ts for progress data retrieval
+- Fixes Applied:
+  - All component props correctly passed from Dashboard
+  - FileText icon import added to Sidebar
+- Notes:
+  - TypeScript check passing
+  - Users can now see their complete journey from Day 0 to Day 21
+  - Progress page shows what decisions were made on each day
+  - Next priority: Test complete user flow including new progress page
 
 ---
 
