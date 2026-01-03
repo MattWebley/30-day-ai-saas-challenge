@@ -371,14 +371,14 @@ Format: { "ideas": [...] }`;
   app.post("/api/progress/day2", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { chosenIdea } = req.body;
-      
+      const { chosenIdea, chosenIdeaTitle, selectedPainPoints, validationInsights } = req.body;
+
       const existing = await storage.getUserProgressForDay(userId, 2);
-      
+
       const progressData = {
-        userInputs: { chosenIdea },
+        userInputs: { chosenIdea, chosenIdeaTitle, selectedPainPoints, validationInsights },
       };
-      
+
       if (existing) {
         const updated = await storage.updateUserProgress(existing.id, progressData);
         res.json(updated);

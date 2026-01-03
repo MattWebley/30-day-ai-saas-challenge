@@ -86,14 +86,18 @@ export default function Dashboard() {
 
   // Handle completion
   const handleComplete = async (componentData?: any) => {
+    console.log('[Dashboard] handleComplete called', { currentDay, componentData });
+
     if (!dayData) {
       console.error('handleComplete: dayData is null/undefined, returning early');
       toast.error("Day content not loaded. Please refresh the page.");
       return;
     }
 
+    console.log('[Dashboard] dayData exists, calling API...');
+
     try {
-      await completeDay.mutateAsync({
+      const result = await completeDay.mutateAsync({
         day: currentDay,
         data: {
           selectedSuggestion,
@@ -102,6 +106,7 @@ export default function Dashboard() {
           ...componentData,
         },
       });
+      console.log('[Dashboard] API success:', result);
 
       // Special handling for Day 0 (Start Here)
       if (currentDay === 0) {
@@ -139,9 +144,10 @@ export default function Dashboard() {
       }
 
       // Show completion modal for other days
+      console.log('[Dashboard] Showing completion modal for day', currentDay);
       setShowCompletionModal(true);
     } catch (error) {
-      console.error("Failed to complete day:", error);
+      console.error("[Dashboard] Failed to complete day:", error);
       toast.error("Failed to complete day");
     }
   };
@@ -325,8 +331,8 @@ export default function Dashboard() {
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day3CoreFeatures
                       dayId={currentDay}
-                      userIdea={previousDayProgress?.completionData?.selectedIdea || previousDayProgress?.selectedIdea || ""}
-                      userPainPoints={previousDayProgress?.completionData?.selectedPainPoints || previousDayProgress?.selectedPainPoints || []}
+                      userIdea={previousDayProgress?.userInputs?.chosenIdea || previousDayProgress?.selectedIdea || ""}
+                      userPainPoints={previousDayProgress?.userInputs?.selectedPainPoints || previousDayProgress?.selectedPainPoints || []}
                       onComplete={handleComplete}
                     />
                   </Card>
@@ -358,9 +364,9 @@ export default function Dashboard() {
                   </div>
                   <Day4Naming
                     dayId={currentDay}
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
-                    painPoints={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedPainPoints || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedPainPoints || []}
-                    features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.completionData?.selectedFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.selectedFeatures || []}
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
+                    painPoints={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.selectedPainPoints || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedPainPoints || []}
+                    features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.selectedFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.selectedFeatures || []}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -424,10 +430,10 @@ export default function Dashboard() {
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day6SummaryPRD
                       dayId={currentDay}
-                      userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
-                      painPoints={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.selectedPainPoints || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedPainPoints || []}
-                      features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.completionData?.selectedFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.selectedFeatures || []}
-                      mvpFeatures={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.selectedMvpFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.selectedMvpFeatures || []}
+                      userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
+                      painPoints={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.selectedPainPoints || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedPainPoints || []}
+                      features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.selectedFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.selectedFeatures || []}
+                      mvpFeatures={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedMvpFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.selectedMvpFeatures || []}
                       onComplete={handleComplete}
                     />
                   </Card>
@@ -460,7 +466,7 @@ export default function Dashboard() {
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day7ReplitBuild
                       dayId={currentDay}
-                      prd={previousDayProgress?.completionData?.prd || previousDayProgress?.prd || ""}
+                      prd={previousDayProgress?.userInputs?.prd || previousDayProgress?.prd || ""}
                       onComplete={handleComplete}
                     />
                   </Card>
@@ -491,7 +497,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Get Your First Win</h2>
                   </div>
                   <Day8ClaudeCode
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -521,7 +527,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Audit Your Build</h2>
                   </div>
                   <Day9RealityCheck
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -551,7 +557,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Fix What's Broken</h2>
                   </div>
                   <Day10FixIterate
-                    topPriority={(Array.isArray(progress) ? progress.find((p: any) => p.day === 9) : null)?.completionData?.topPriority || ""}
+                    topPriority={(Array.isArray(progress) ? progress.find((p: any) => p.day === 9) : null)?.userInputs?.topPriority || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -581,7 +587,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Verify Your USP</h2>
                   </div>
                   <Day11TestUSP
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -638,7 +644,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Add AI Power</h2>
                   </div>
                   <Day13AIBrain
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -668,7 +674,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Connect What You Need</h2>
                   </div>
                   <Day14ConnectAPIs
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.completionData?.chosenIdea || ""}
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -698,7 +704,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Add User Accounts</h2>
                   </div>
                   <Day15Authentication
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -728,7 +734,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Set Up Email</h2>
                   </div>
                   <Day16Email
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -758,7 +764,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Build Onboarding</h2>
                   </div>
                   <Day17Onboarding
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -788,7 +794,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Build Your Dashboard</h2>
                   </div>
                   <Day18AdminDashboard
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -818,7 +824,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Test on Mobile</h2>
                   </div>
                   <Day19MobileReady
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -848,7 +854,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Polish Your Brand</h2>
                   </div>
                   <Day20BrandBeauty
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -878,7 +884,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Launch Your SaaS</h2>
                   </div>
                   <Day21LaunchDay
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.completionData?.chosenName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>

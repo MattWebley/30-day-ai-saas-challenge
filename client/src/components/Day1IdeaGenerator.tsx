@@ -463,7 +463,10 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
           <Button
             size="lg"
             className="w-full h-14 text-lg font-bold gap-2"
-            onClick={onComplete}
+            onClick={() => {
+              console.log('[Day1] Complete Day 1 button clicked');
+              onComplete();
+            }}
             data-testid="button-complete-day1"
           >
             Complete Day 1 <ChevronRight className="w-5 h-5" />
