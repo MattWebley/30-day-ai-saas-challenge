@@ -1,0 +1,223 @@
+import { useState, useRef, useEffect } from "react";
+import { MessageCircle, X, Send, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
+
+interface ChatWidgetProps {
+  currentDay?: number;
+}
+
+export function ChatWidget({ currentDay = 1 }: ChatWidgetProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Fetch user progress for context
+  const { data: progress } = useQuery<any[]>({
+    queryKey: ["/api/progress"],
+  });
+
+  // Fetch user data
+  const { data: user } = useQuery<any>({
+    queryKey: ["/api/auth/user"],
+  });
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isOpen]);
+
+  const sendMessage = useMutation({
+    mutationFn: async (message: string) => {
+      // Build context from progress
+      const day2 = progress?.find((p: any) => p.day === 2);
+      const day3 = progress?.find((p: any) => p.day === 3);
+      const day4 = progress?.find((p: any) => p.day === 4);
+      const day6 = progress?.find((p: any) => p.day === 6);
+
+      const context = {
+        currentDay,
+        completedDays: progress?.filter((p: any) => p.completed).map((p: any) => p.day) || [],
+        userIdea: day2?.userInputs?.chosenIdea || day2?.selectedIdea || null,
+        painPoints: day2?.userInputs?.selectedPainPoints || day2?.selectedPainPoints || [],
+        features: day3?.userInputs?.selectedFeatures || day3?.selectedFeatures || [],
+        mvpFeatures: day4?.userInputs?.selectedMvpFeatures || day4?.selectedMvpFeatures || [],
+        prd: day6?.userInputs?.prd || day6?.prd || null,
+        userName: user?.firstName || null,
+      };
+
+      const res = await apiRequest("POST", "/api/chat", {
+        message,
+        context,
+        history: messages.slice(-10), // Send last 10 messages for context
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
+    },
+    onError: () => {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Sorry, I had trouble responding. Please try again." },
+      ]);
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || sendMessage.isPending) return;
+
+    const userMessage = input.trim();
+    setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+    setInput("");
+    sendMessage.mutate(userMessage);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e);
+    }
+  };
+
+  return (
+    <>
+      {/* Floating Button */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:bg-primary/90 transition-all hover:scale-105 flex items-center justify-center"
+          aria-label="Open chat"
+        >
+          <MessageCircle className="w-6 h-6" />
+        </button>
+      )}
+
+      {/* Chat Window */}
+      {isOpen && (
+        <div className="fixed bottom-6 right-6 z-50 w-[380px] max-w-[calc(100vw-48px)] h-[500px] max-h-[calc(100vh-100px)] bg-white rounded-xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 bg-primary text-white">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                <MessageCircle className="w-4 h-4" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm">AI Build Coach</h3>
+                <p className="text-xs text-white/70">Here to help you build</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1 hover:bg-white/20 rounded transition-colors"
+              aria-label="Close chat"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.length === 0 && (
+              <div className="text-center py-8">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <MessageCircle className="w-6 h-6 text-primary" />
+                </div>
+                <h4 className="font-semibold text-slate-900 mb-1">How can I help?</h4>
+                <p className="text-sm text-slate-500 mb-4">
+                  I know your idea, features, and progress. Ask me anything about building your SaaS.
+                </p>
+                <div className="space-y-2">
+                  {[
+                    "I'm stuck on today's task",
+                    "How do I add authentication?",
+                    "Review my feature list",
+                  ].map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      onClick={() => {
+                        setInput(suggestion);
+                        inputRef.current?.focus();
+                      }}
+                      className="block w-full text-left px-3 py-2 text-sm bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors text-slate-700"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+              >
+                <div
+                  className={`max-w-[85%] rounded-xl px-4 py-2 ${
+                    msg.role === "user"
+                      ? "bg-primary text-white"
+                      : "bg-slate-100 text-slate-900"
+                  }`}
+                >
+                  <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                </div>
+              </div>
+            ))}
+
+            {sendMessage.isPending && (
+              <div className="flex justify-start">
+                <div className="bg-slate-100 rounded-xl px-4 py-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
+                </div>
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Input */}
+          <form onSubmit={handleSubmit} className="p-3 border-t border-slate-200">
+            <div className="flex gap-2">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Ask anything..."
+                className="flex-1 resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm focus:outline-none focus:border-primary min-h-[40px] max-h-[100px]"
+                rows={1}
+              />
+              <Button
+                type="submit"
+                size="icon"
+                disabled={!input.trim() || sendMessage.isPending}
+                className="flex-shrink-0"
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
+    </>
+  );
+}

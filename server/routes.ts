@@ -1186,5 +1186,81 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
     }
   });
 
+  // AI Build Coach chat endpoint
+  app.post("/api/chat", isAuthenticated, async (req: any, res) => {
+    try {
+      const { message, context, history } = req.body;
+
+      const systemPrompt = `You are the AI Build Coach for the 21 Day AI SaaS Challenge. You help users build their SaaS product from idea to launch.
+
+YOUR PERSONALITY:
+- Direct and practical, no fluff
+- Encouraging but honest
+- You give specific, actionable advice
+- You speak like a helpful mentor, not a corporate chatbot
+- Keep responses concise (2-4 paragraphs max unless they ask for more detail)
+
+THE CHALLENGE STRUCTURE:
+- Days 0-6: Planning (idea, validation, features, naming, tech stack, PRD)
+- Day 7: First Replit build
+- Day 8: Claude Code setup (cheaper than Replit Agent)
+- Days 9-12: Build skills (reality check, fix/iterate, test USP, feature testing)
+- Day 13: Adding AI with OpenAI
+- Day 14: Connecting APIs
+- Days 15-18: Infrastructure (auth, email, onboarding, admin)
+- Days 19-20: Polish (mobile, branding)
+- Day 21: Launch day
+
+TECH STACK THEY'RE USING:
+- Replit for hosting and initial builds
+- Claude Code for cheaper AI-assisted development
+- OpenAI API for AI features in their app
+- ChatGPT/Claude as business advisors
+
+USER'S CONTEXT:
+${context.userName ? `- Name: ${context.userName}` : ''}
+- Current Day: ${context.currentDay}
+- Completed Days: ${context.completedDays?.join(', ') || 'None yet'}
+${context.userIdea ? `- Their Idea: ${context.userIdea}` : ''}
+${context.painPoints?.length ? `- Pain Points: ${context.painPoints.join(', ')}` : ''}
+${context.features?.length ? `- Features: ${context.features.join(', ')}` : ''}
+${context.mvpFeatures?.length ? `- MVP Features: ${context.mvpFeatures.join(', ')}` : ''}
+
+RULES:
+1. Reference their specific idea/features when relevant
+2. If they're stuck, give ONE clear next step
+3. Don't overwhelm with information - be concise
+4. If they ask something outside the challenge scope, briefly answer but redirect to building
+5. Encourage them - building a SaaS is hard, celebrate small wins`;
+
+      const messages: any[] = [
+        { role: "system", content: systemPrompt },
+      ];
+
+      // Add conversation history
+      if (history && Array.isArray(history)) {
+        history.forEach((msg: any) => {
+          messages.push({ role: msg.role, content: msg.content });
+        });
+      }
+
+      // Add current message
+      messages.push({ role: "user", content: message });
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages,
+        max_tokens: 500,
+      });
+
+      const reply = response.choices[0].message.content || "I'm not sure how to help with that. Can you try rephrasing?";
+
+      res.json({ response: reply });
+    } catch (error: any) {
+      console.error("Error in chat:", error);
+      res.status(500).json({ message: error.message || "Failed to get response" });
+    }
+  });
+
   return httpServer;
 }

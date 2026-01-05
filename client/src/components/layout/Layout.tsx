@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Menu, X } from "lucide-react";
 import { ReportProblem } from "@/components/ReportProblem";
+import { ChatWidget } from "@/components/ChatWidget";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -73,6 +74,9 @@ export function Layout({ children, currentDay = 1 }: LayoutProps) {
           </div>
         </div>
       </main>
+
+      {/* Floating Chat Widget */}
+      <ChatWidget currentDay={currentDay} />
     </div>
   );
 }
