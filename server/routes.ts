@@ -1189,7 +1189,18 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
   // AI Build Coach chat endpoint
   app.post("/api/chat", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { message, context, history } = req.body;
+
+      // Check rate limits
+      const usageCheck = await storage.checkAndIncrementChatUsage(userId);
+      if (!usageCheck.allowed) {
+        return res.status(429).json({
+          error: "rate_limit",
+          message: usageCheck.reason,
+          resetIn: usageCheck.resetIn
+        });
+      }
 
       const systemPrompt = `You are the AI Build Coach for the 21 Day AI SaaS Challenge. You help users build their SaaS product from idea to launch.
 

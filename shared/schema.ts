@@ -260,3 +260,18 @@ export const insertBrandSettingsSchema = createInsertSchema(brandSettings).omit(
 
 export type BrandSettings = typeof brandSettings.$inferSelect;
 export type InsertBrandSettings = z.infer<typeof insertBrandSettingsSchema>;
+
+// Chat usage tracking for rate limiting
+export const chatUsage = pgTable("chat_usage", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
+  dailyCount: integer("daily_count").default(0),
+  hourlyCount: integer("hourly_count").default(0),
+  lastResetDate: timestamp("last_reset_date").defaultNow(),
+  lastHourReset: timestamp("last_hour_reset").defaultNow(),
+}, (table) => [
+  index("chat_usage_user_id_idx").on(table.userId),
+]);
+
+export type ChatUsage = typeof chatUsage.$inferSelect;
+export type InsertChatUsage = typeof chatUsage.$inferInsert;

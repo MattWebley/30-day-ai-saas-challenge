@@ -8,6 +8,7 @@ import {
   dayComments,
   userSpamStatus,
   brandSettings,
+  chatUsage,
   type User,
   type UpsertUser,
   type DayContent,
@@ -26,6 +27,7 @@ import {
   type InsertUserSpamStatus,
   type BrandSettings,
   type InsertBrandSettings,
+  type ChatUsage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -82,6 +84,10 @@ export interface IStorage {
   // Brand settings operations
   getBrandSettings(): Promise<BrandSettings | undefined>;
   updateBrandSettings(settings: Partial<InsertBrandSettings>): Promise<BrandSettings>;
+
+  // Chat usage operations
+  getChatUsage(userId: string): Promise<ChatUsage | undefined>;
+  checkAndIncrementChatUsage(userId: string): Promise<{ allowed: boolean; reason?: string; resetIn?: number }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -353,7 +359,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateBrandSettings(settings: Partial<InsertBrandSettings>): Promise<BrandSettings> {
     const existing = await this.getBrandSettings();
-    
+
     if (existing) {
       const [updated] = await db
         .update(brandSettings)
@@ -368,6 +374,88 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return created;
     }
+  }
+
+  // Chat usage operations
+  async getChatUsage(userId: string): Promise<ChatUsage | undefined> {
+    const [usage] = await db.select().from(chatUsage).where(eq(chatUsage.userId, userId));
+    return usage;
+  }
+
+  async checkAndIncrementChatUsage(userId: string): Promise<{ allowed: boolean; reason?: string; resetIn?: number }> {
+    const DAILY_LIMIT = 20;
+    const HOURLY_LIMIT = 10;
+
+    const now = new Date();
+    const existing = await this.getChatUsage(userId);
+
+    if (!existing) {
+      // First time user - create record and allow
+      await db.insert(chatUsage).values({
+        userId,
+        dailyCount: 1,
+        hourlyCount: 1,
+        lastResetDate: now,
+        lastHourReset: now,
+      });
+      return { allowed: true };
+    }
+
+    let dailyCount = existing.dailyCount || 0;
+    let hourlyCount = existing.hourlyCount || 0;
+    let lastResetDate = existing.lastResetDate || now;
+    let lastHourReset = existing.lastHourReset || now;
+
+    // Check if we need to reset daily count (new day)
+    const lastResetDay = new Date(lastResetDate).toDateString();
+    const todayDay = now.toDateString();
+    if (lastResetDay !== todayDay) {
+      dailyCount = 0;
+      lastResetDate = now;
+    }
+
+    // Check if we need to reset hourly count (more than 1 hour since last reset)
+    const hoursSinceReset = (now.getTime() - new Date(lastHourReset).getTime()) / (1000 * 60 * 60);
+    if (hoursSinceReset >= 1) {
+      hourlyCount = 0;
+      lastHourReset = now;
+    }
+
+    // Check limits
+    if (dailyCount >= DAILY_LIMIT) {
+      // Calculate time until midnight UTC
+      const tomorrow = new Date(now);
+      tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+      tomorrow.setUTCHours(0, 0, 0, 0);
+      const resetIn = Math.ceil((tomorrow.getTime() - now.getTime()) / (1000 * 60)); // minutes
+      return {
+        allowed: false,
+        reason: "You've been working hard today! The mentor needs a break. Try again tomorrow.",
+        resetIn
+      };
+    }
+
+    if (hourlyCount >= HOURLY_LIMIT) {
+      const resetIn = Math.ceil(60 - (hoursSinceReset * 60)); // minutes until hour reset
+      return {
+        allowed: false,
+        reason: `You're on fire! Let's pace ourselves. Try again in ${resetIn} minutes.`,
+        resetIn
+      };
+    }
+
+    // Increment and update
+    await db
+      .update(chatUsage)
+      .set({
+        dailyCount: dailyCount + 1,
+        hourlyCount: hourlyCount + 1,
+        lastResetDate,
+        lastHourReset,
+      })
+      .where(eq(chatUsage.userId, userId));
+
+    return { allowed: true };
   }
 }
 

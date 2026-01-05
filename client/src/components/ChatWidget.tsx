@@ -71,13 +71,24 @@ export function ChatWidget({ currentDay = 1 }: ChatWidgetProps) {
       return res.json();
     },
     onSuccess: (data) => {
-      setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
+      if (data.error === "rate_limit") {
+        setMessages((prev) => [...prev, { role: "assistant", content: data.message }]);
+      } else {
+        setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
+      }
     },
-    onError: () => {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: "Sorry, I had trouble responding. Please try again." },
-      ]);
+    onError: async (error: any) => {
+      // Try to parse error response for rate limit
+      let errorMessage = "Sorry, I had trouble responding. Please try again.";
+      try {
+        if (error.response) {
+          const data = await error.response.json();
+          if (data.error === "rate_limit") {
+            errorMessage = data.message;
+          }
+        }
+      } catch {}
+      setMessages((prev) => [...prev, { role: "assistant", content: errorMessage }]);
     },
   });
 
