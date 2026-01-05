@@ -317,15 +317,24 @@ The name you pick today will be on every invoice, every email, every conversatio
 4. OpenAI API - The brain of many projects, very cheap pay-as-you-go
 
 Why BOTH Claude AND ChatGPT?
-1. They are good at different things (and that changes, often)
-2. You can play them off against each other - get ONE to write something, pass it to the OTHER to critique
+They're good at different things (and that changes, often). You can play them off against each other - get ONE to write something, pass it to the OTHER to critique.
 
-I want you to start using ChatGPT and Claude for EVERYTHING you do...
-- Need help? Ask it.
-- Need an opinion from a user's perspective? Ask it.
-- Want a second opinion? Drop output from one LLM into the other.
+YOUR $500/HR BUSINESS ADVISOR
 
-STOP trying to do EVERYTHING yourself. The THINKING. The WRITING. The DESIGNING... EVERYTHING. Use AI for MOST things. It's SMARTER and BETTER because it has the COMBINED knowledge of all of HUMANITY.`,
+Here's what most people miss: These aren't just coding tools. You now have access to a business advisor that would cost $500/hour - available 24/7 for $20/month.
+
+USE IT FOR EVERYTHING:
+- Pricing decisions: "Should I charge $29 or $49/month?"
+- Feature prioritization: "Which 3 features should I build first?"
+- Copy and messaging: "Write me 5 taglines for my SaaS"
+- User perspective: "Act as my target customer and critique this"
+- Strategy: "I'm stuck between two approaches, help me think through it"
+
+The founders who WIN are the ones who treat AI as a THINKING PARTNER, not just a code generator.
+
+STOP trying to do everything yourself. The THINKING. The WRITING. The DESIGNING... EVERYTHING. Use AI for MOST things.
+
+From now on: STUCK? ASK. UNSURE? ASK. WANT VALIDATION? ASK.`,
       outcome: "Replit, Claude, ChatGPT, and OpenAI API accounts set up and ready to build",
       completionMessage: "Your AI toolkit is ready. You now have superpowers that would've cost $300K+ and taken years just a few years ago. Tomorrow: we create your PRD and start building.",
       xpReward: 100,
