@@ -104,10 +104,21 @@ export function ChatWidget({ currentDay = 1 }: ChatWidgetProps) {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-primary text-white rounded-full shadow-lg hover:bg-primary/90 transition-all hover:scale-105 flex items-center justify-center"
-          aria-label="Open chat"
+          className="fixed bottom-6 right-6 z-50 group"
+          aria-label="Open AI Mentor"
         >
-          <MessageCircle className="w-6 h-6" />
+          <div className="flex items-center gap-2 bg-white rounded-full shadow-lg border border-slate-200 pl-4 pr-2 py-2 hover:shadow-xl transition-all">
+            <span className="text-sm font-medium text-slate-700 group-hover:text-primary transition-colors">
+              Need help?
+            </span>
+            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-primary">
+              <img
+                src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png"
+                alt="AI Mentor"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
         </button>
       )}
 
@@ -117,12 +128,16 @@ export function ChatWidget({ currentDay = 1 }: ChatWidgetProps) {
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-primary text-white">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-                <MessageCircle className="w-4 h-4" />
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden">
+                <img
+                  src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png"
+                  alt="AI Mentor"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div>
-                <h3 className="font-semibold text-sm">AI Build Coach</h3>
-                <p className="text-xs text-white/70">Here to help you build</p>
+                <h3 className="font-semibold text-sm">Your AI SaaS Mentor</h3>
+                <p className="text-xs text-white/70">Trained by Matt Webley</p>
               </div>
             </div>
             <button
@@ -137,19 +152,26 @@ export function ChatWidget({ currentDay = 1 }: ChatWidgetProps) {
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {messages.length === 0 && (
-              <div className="text-center py-8">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <MessageCircle className="w-6 h-6 text-primary" />
+              <div className="text-center py-6">
+                <div className="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden border-2 border-primary/20">
+                  <img
+                    src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png"
+                    alt="AI Mentor"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
-                <h4 className="font-semibold text-slate-900 mb-1">How can I help?</h4>
-                <p className="text-sm text-slate-500 mb-4">
-                  I know your idea, features, and progress. Ask me anything about building your SaaS.
+                <h4 className="font-semibold text-slate-900 mb-1">I'm Your AI SaaS Mentor</h4>
+                <p className="text-sm text-slate-500 mb-2">
+                  Not just a chatbot - I know YOUR idea, YOUR features, and exactly where you are in the challenge.
+                </p>
+                <p className="text-xs text-slate-400 mb-4">
+                  Ask me anything: strategy, tech help, motivation, or "what should I do next?"
                 </p>
                 <div className="space-y-2">
                   {[
-                    "I'm stuck on today's task",
-                    "How do I add authentication?",
-                    "Review my feature list",
+                    "What should I focus on today?",
+                    "I'm stuck - help me get unstuck",
+                    "Give me feedback on my idea",
                   ].map((suggestion) => (
                     <button
                       key={suggestion}
