@@ -63,32 +63,39 @@ export function ChatWidget({ currentDay = 1 }: ChatWidgetProps) {
         userName: user?.firstName || null,
       };
 
-      const res = await apiRequest("POST", "/api/chat", {
-        message,
-        context,
-        history: messages.slice(-10), // Send last 10 messages for context
+      // Use fetch directly to handle errors better
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          message,
+          context,
+          history: messages.slice(-10),
+        }),
       });
-      return res.json();
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Return error data so onSuccess can handle rate limits
+        return { error: data.error || "server_error", message: data.message || "Something went wrong" };
+      }
+
+      return data;
     },
     onSuccess: (data) => {
       if (data.error === "rate_limit") {
         setMessages((prev) => [...prev, { role: "assistant", content: data.message }]);
+      } else if (data.error) {
+        setMessages((prev) => [...prev, { role: "assistant", content: `Sorry, something went wrong: ${data.message}` }]);
       } else {
         setMessages((prev) => [...prev, { role: "assistant", content: data.response }]);
       }
     },
-    onError: async (error: any) => {
-      // Try to parse error response for rate limit
-      let errorMessage = "Sorry, I had trouble responding. Please try again.";
-      try {
-        if (error.response) {
-          const data = await error.response.json();
-          if (data.error === "rate_limit") {
-            errorMessage = data.message;
-          }
-        }
-      } catch {}
-      setMessages((prev) => [...prev, { role: "assistant", content: errorMessage }]);
+    onError: (error: any) => {
+      console.error("Chat error:", error);
+      setMessages((prev) => [...prev, { role: "assistant", content: "Sorry, I couldn't connect. Please check your internet and try again." }]);
     },
   });
 

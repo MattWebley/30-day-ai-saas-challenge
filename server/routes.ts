@@ -1341,6 +1341,15 @@ ${customRules ? `ADDITIONAL RULES FROM ADMIN:\n${customRules}` : ''}`;
       res.json({ response: reply });
     } catch (error: any) {
       console.error("Error in chat:", error);
+
+      // Check for specific OpenAI errors
+      if (error.code === 'invalid_api_key' || error.message?.includes('API key')) {
+        return res.status(500).json({ message: "AI service not configured. Please contact support." });
+      }
+      if (error.code === 'insufficient_quota') {
+        return res.status(500).json({ message: "AI service temporarily unavailable. Please try again later." });
+      }
+
       res.status(500).json({ message: error.message || "Failed to get response" });
     }
   });
