@@ -275,3 +275,41 @@ export const chatUsage = pgTable("chat_usage", {
 
 export type ChatUsage = typeof chatUsage.$inferSelect;
 export type InsertChatUsage = typeof chatUsage.$inferInsert;
+
+// Chatbot settings - admin configurable
+export const chatbotSettings = pgTable("chatbot_settings", {
+  id: serial("id").primaryKey(),
+  customRules: text("custom_rules"), // Additional rules to append to system prompt
+  dailyLimit: integer("daily_limit").default(20),
+  hourlyLimit: integer("hourly_limit").default(10),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type ChatbotSettings = typeof chatbotSettings.$inferSelect;
+export type InsertChatbotSettings = typeof chatbotSettings.$inferInsert;
+
+// Chat messages - stores all conversations
+export const chatMessages = pgTable("chat_messages", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  role: varchar("role").notNull(), // 'user' or 'assistant'
+  content: text("content").notNull(),
+  flagged: boolean("flagged").default(false), // Potential abuse flag
+  flagReason: text("flag_reason"), // Why it was flagged
+  reviewed: boolean("reviewed").default(false), // Admin has reviewed
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("chat_messages_user_id_idx").on(table.userId),
+  index("chat_messages_flagged_idx").on(table.flagged),
+  index("chat_messages_created_at_idx").on(table.createdAt),
+]);
+
+export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
+  user: one(users, {
+    fields: [chatMessages.userId],
+    references: [users.id],
+  }),
+}));
+
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = typeof chatMessages.$inferInsert;

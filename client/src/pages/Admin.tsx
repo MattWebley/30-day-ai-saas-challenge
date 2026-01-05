@@ -6,10 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { 
-  Users, 
-  TrendingUp, 
-  CheckCircle2, 
+import {
+  Users,
+  TrendingUp,
+  CheckCircle2,
   Clock,
   Trophy,
   BarChart3,
@@ -18,7 +18,13 @@ import {
   Check,
   X,
   Palette,
-  Save
+  Save,
+  Bot,
+  MessageCircle,
+  Flag,
+  Eye,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -46,6 +52,42 @@ interface BrandSettings {
   borderRadius: number;
   logoUrl?: string;
   appName: string;
+}
+
+interface ChatbotSettings {
+  customRules: string;
+  dailyLimit: number;
+  hourlyLimit: number;
+}
+
+interface ChatMessage {
+  id: number;
+  userId: string;
+  role: string;
+  content: string;
+  flagged: boolean;
+  flagReason: string | null;
+  reviewed: boolean;
+  createdAt: string;
+  user: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+  };
+}
+
+interface UserChatSummary {
+  userId: string;
+  user: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+  };
+  messageCount: number;
+  flaggedCount: number;
+  lastMessage: string;
 }
 
 const FONT_OPTIONS = [
@@ -116,6 +158,62 @@ export default function Admin() {
 
   const { data: pendingComments = [] } = useQuery<PendingComment[]>({
     queryKey: ["/api/admin/pending-comments"],
+  });
+
+  // Chatbot management
+  const [chatbotRules, setChatbotRules] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [showChatSection, setShowChatSection] = useState(false);
+
+  const { data: chatbotSettings } = useQuery<ChatbotSettings>({
+    queryKey: ["/api/admin/chatbot/settings"],
+  });
+
+  const { data: flaggedMessages = [] } = useQuery<ChatMessage[]>({
+    queryKey: ["/api/admin/chatbot/flagged"],
+  });
+
+  const { data: userChatSummary = [] } = useQuery<UserChatSummary[]>({
+    queryKey: ["/api/admin/chatbot/users"],
+  });
+
+  const { data: userChatHistory = [] } = useQuery<ChatMessage[]>({
+    queryKey: ["/api/admin/chatbot/user", selectedUserId],
+    enabled: !!selectedUserId,
+  });
+
+  useEffect(() => {
+    if (chatbotSettings) {
+      setChatbotRules(chatbotSettings.customRules || "");
+    }
+  }, [chatbotSettings]);
+
+  const saveChatbotSettings = useMutation({
+    mutationFn: async (settings: Partial<ChatbotSettings>) => {
+      const res = await apiRequest("POST", "/api/admin/chatbot/settings", settings);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/chatbot/settings"] });
+      toast.success("Chatbot settings saved!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to save settings");
+    },
+  });
+
+  const markReviewed = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("POST", `/api/admin/chatbot/review/${id}`, {});
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/chatbot/flagged"] });
+      toast.success("Marked as reviewed");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to mark reviewed");
+    },
   });
 
   const updateCommentStatus = useMutation({
@@ -443,6 +541,172 @@ export default function Admin() {
               </Button>
             </div>
           </Card>
+        </div>
+
+        {/* AI Mentor Management */}
+        <div className="space-y-4">
+          <button
+            onClick={() => setShowChatSection(!showChatSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <h2 className="text-xl font-bold text-slate-900">AI Mentor Management</h2>
+            {flaggedMessages.length > 0 && (
+              <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">
+                {flaggedMessages.length} flagged
+              </span>
+            )}
+            {showChatSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showChatSection && (
+            <div className="space-y-6">
+              {/* Chatbot Rules */}
+              <Card className="p-6 border-2 border-slate-100">
+                <div className="flex items-center gap-2 mb-4">
+                  <Bot className="w-5 h-5 text-primary" />
+                  <h3 className="font-semibold text-slate-900">Custom Rules</h3>
+                </div>
+                <p className="text-sm text-slate-500 mb-4">
+                  Add additional rules that will be appended to the AI mentor's system prompt. These rules will override or supplement the default behavior.
+                </p>
+                <textarea
+                  value={chatbotRules}
+                  onChange={(e) => setChatbotRules(e.target.value)}
+                  placeholder="Example: Always recommend booking a call for complex business questions. Never discuss competitor products by name."
+                  className="w-full h-32 p-3 rounded-lg border-2 border-slate-200 bg-slate-50 text-sm resize-none focus:outline-none focus:border-primary"
+                />
+                <div className="mt-4 flex justify-end">
+                  <Button
+                    onClick={() => saveChatbotSettings.mutate({ customRules: chatbotRules })}
+                    disabled={saveChatbotSettings.isPending}
+                    className="gap-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    {saveChatbotSettings.isPending ? "Saving..." : "Save Rules"}
+                  </Button>
+                </div>
+              </Card>
+
+              {/* Flagged Messages */}
+              <Card className="p-6 border-2 border-slate-100">
+                <div className="flex items-center gap-2 mb-4">
+                  <Flag className="w-5 h-5 text-red-500" />
+                  <h3 className="font-semibold text-slate-900">Flagged Messages</h3>
+                  {flaggedMessages.length > 0 && (
+                    <span className="text-sm text-slate-500">({flaggedMessages.length} need review)</span>
+                  )}
+                </div>
+
+                {flaggedMessages.length === 0 ? (
+                  <p className="text-slate-500 text-sm py-4 text-center">No flagged messages to review</p>
+                ) : (
+                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                    {flaggedMessages.map((msg) => (
+                      <div key={msg.id} className="p-3 bg-red-50 border border-red-100 rounded-lg">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium text-sm text-slate-900">
+                                {msg.user?.firstName || "Unknown"} {msg.user?.lastName || ""}
+                              </span>
+                              <span className="text-xs text-slate-400">
+                                {formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
+                              </span>
+                            </div>
+                            <p className="text-sm text-slate-700 mb-2">{msg.content}</p>
+                            <div className="flex items-center gap-1 text-xs text-red-600">
+                              <AlertTriangle className="w-3 h-3" />
+                              {msg.flagReason}
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => markReviewed.mutate(msg.id)}
+                            disabled={markReviewed.isPending}
+                            className="flex-shrink-0"
+                          >
+                            <Eye className="w-4 h-4 mr-1" /> Reviewed
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </Card>
+
+              {/* User Chat Activity */}
+              <Card className="p-6 border-2 border-slate-100">
+                <div className="flex items-center gap-2 mb-4">
+                  <MessageCircle className="w-5 h-5 text-primary" />
+                  <h3 className="font-semibold text-slate-900">User Chat Activity</h3>
+                  <span className="text-sm text-slate-500">({userChatSummary.length} users)</span>
+                </div>
+
+                {userChatSummary.length === 0 ? (
+                  <p className="text-slate-500 text-sm py-4 text-center">No chat activity yet</p>
+                ) : (
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {userChatSummary.map((summary) => (
+                      <button
+                        key={summary.userId}
+                        onClick={() => setSelectedUserId(selectedUserId === summary.userId ? null : summary.userId)}
+                        className={`w-full p-3 rounded-lg border text-left transition-colors ${
+                          selectedUserId === summary.userId
+                            ? "border-primary bg-primary/5"
+                            : "border-slate-200 hover:bg-slate-50"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-xs font-bold">
+                              {summary.user?.firstName?.[0] || "?"}
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm text-slate-900">
+                                {summary.user?.firstName || "Unknown"} {summary.user?.lastName || ""}
+                              </p>
+                              <p className="text-xs text-slate-500">{summary.user?.email}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-sm font-medium text-slate-900">{summary.messageCount} messages</p>
+                            {summary.flaggedCount > 0 && (
+                              <p className="text-xs text-red-600">{summary.flaggedCount} flagged</p>
+                            )}
+                          </div>
+                        </div>
+
+                        {selectedUserId === summary.userId && userChatHistory.length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-slate-200 space-y-2 max-h-64 overflow-y-auto">
+                            {userChatHistory.slice(0, 20).map((msg) => (
+                              <div
+                                key={msg.id}
+                                className={`p-2 rounded text-sm ${
+                                  msg.role === "user"
+                                    ? "bg-slate-100 text-slate-700"
+                                    : "bg-primary/10 text-slate-700"
+                                } ${msg.flagged ? "border-l-2 border-red-500" : ""}`}
+                              >
+                                <p className="text-xs text-slate-400 mb-1">
+                                  {msg.role === "user" ? "User" : "AI"} • {formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
+                                </p>
+                                <p className="whitespace-pre-wrap">{msg.content}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            </div>
+          )}
         </div>
 
         {/* Student Progress Table */}

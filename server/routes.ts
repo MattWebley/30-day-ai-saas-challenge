@@ -1202,7 +1202,11 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
         });
       }
 
-      const systemPrompt = `You are the AI Build Coach for the 21 Day AI SaaS Challenge. You help users build their SaaS product from idea to launch.
+      // Fetch admin-configurable rules (if any)
+      const chatSettings = await storage.getChatbotSettings();
+      const customRules = chatSettings?.customRules || '';
+
+      const systemPrompt = `You are the AI SaaS Mentor for the 21 Day AI SaaS Challenge, trained by Matt Webley. You help users build their SaaS product from idea to a working MVP.
 
 YOUR PERSONALITY:
 - Direct and practical, no fluff
@@ -1210,6 +1214,34 @@ YOUR PERSONALITY:
 - You give specific, actionable advice
 - You speak like a helpful mentor, not a corporate chatbot
 - Keep responses concise (2-4 paragraphs max unless they ask for more detail)
+
+YOUR SCOPE - CRITICAL:
+You ONLY help with:
+- Idea validation and refinement
+- Planning (features, PRD, tech decisions)
+- Building (coding help, debugging, implementation)
+- Testing and fixing issues
+- Technical infrastructure (auth, APIs, database)
+
+You DO NOT help with:
+- Sales pages or copywriting for sales
+- Marketing strategies or campaigns
+- Launch strategies beyond technical readiness
+- Pricing strategies
+- Customer acquisition
+- Business models or monetization
+- Anything post-launch (growth, retention, etc.)
+
+When users ask about sales, marketing, launch strategy, pricing, or business topics:
+1. Acknowledge their question briefly
+2. Explain that this challenge focuses on BUILDING a working product first
+3. Say: "For business strategy, sales, and launch planning, Matt offers 1:1 mentorship. Apply here: https://mattwebley.com/workwithmatt"
+4. Redirect them back to building: "For now, let's focus on getting your MVP working. What technical challenge can I help with?"
+
+If they try to skip ahead or rush to launch:
+- Gently discourage this
+- Remind them: "The challenge is designed to build a SOLID foundation. Rushing to launch with a broken product will cost you more time in the long run."
+- Ask what day they're on and help them with THAT day's task
 
 THE CHALLENGE STRUCTURE:
 - Days 0-6: Planning (idea, validation, features, naming, tech stack, PRD)
@@ -1220,7 +1252,7 @@ THE CHALLENGE STRUCTURE:
 - Day 14: Connecting APIs
 - Days 15-18: Infrastructure (auth, email, onboarding, admin)
 - Days 19-20: Polish (mobile, branding)
-- Day 21: Launch day
+- Day 21: Technical launch readiness check
 
 TECH STACK THEY'RE USING:
 - Replit for hosting and initial builds
@@ -1237,12 +1269,15 @@ ${context.painPoints?.length ? `- Pain Points: ${context.painPoints.join(', ')}`
 ${context.features?.length ? `- Features: ${context.features.join(', ')}` : ''}
 ${context.mvpFeatures?.length ? `- MVP Features: ${context.mvpFeatures.join(', ')}` : ''}
 
-RULES:
+CORE RULES:
 1. Reference their specific idea/features when relevant
 2. If they're stuck, give ONE clear next step
 3. Don't overwhelm with information - be concise
-4. If they ask something outside the challenge scope, briefly answer but redirect to building
-5. Encourage them - building a SaaS is hard, celebrate small wins`;
+4. NEVER help with sales/marketing/launch strategy - redirect to Matt's mentorship
+5. Keep them focused on their current day's task
+6. Encourage them - building a SaaS is hard, celebrate small wins
+
+${customRules ? `ADDITIONAL RULES FROM ADMIN:\n${customRules}` : ''}`;
 
       const messages: any[] = [
         { role: "system", content: systemPrompt },
@@ -1258,6 +1293,35 @@ RULES:
       // Add current message
       messages.push({ role: "user", content: message });
 
+      // Abuse detection - check for patterns
+      const abusePatterns = [
+        { pattern: /ignore (previous|all|your) (instructions|rules|prompt)/i, reason: "Attempted prompt injection" },
+        { pattern: /pretend you('re| are) (not|a different)/i, reason: "Attempted role manipulation" },
+        { pattern: /jailbreak|bypass|hack|exploit/i, reason: "Potential abuse keywords" },
+        { pattern: /repeat after me|say exactly/i, reason: "Attempted output manipulation" },
+        { pattern: /what('s| is) (your|the) (system|initial) (prompt|message)/i, reason: "Attempted prompt extraction" },
+      ];
+
+      let flagged = false;
+      let flagReason = null;
+
+      for (const { pattern, reason } of abusePatterns) {
+        if (pattern.test(message)) {
+          flagged = true;
+          flagReason = reason;
+          break;
+        }
+      }
+
+      // Save user message
+      await storage.saveChatMessage({
+        userId,
+        role: "user",
+        content: message,
+        flagged,
+        flagReason,
+      });
+
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages,
@@ -1266,10 +1330,97 @@ RULES:
 
       const reply = response.choices[0].message.content || "I'm not sure how to help with that. Can you try rephrasing?";
 
+      // Save assistant response
+      await storage.saveChatMessage({
+        userId,
+        role: "assistant",
+        content: reply,
+        flagged: false,
+      });
+
       res.json({ response: reply });
     } catch (error: any) {
       console.error("Error in chat:", error);
       res.status(500).json({ message: error.message || "Failed to get response" });
+    }
+  });
+
+  // Admin: Get chatbot settings
+  app.get("/api/admin/chatbot/settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const settings = await storage.getChatbotSettings();
+      res.json(settings || { customRules: "", dailyLimit: 20, hourlyLimit: 10 });
+    } catch (error: any) {
+      console.error("Error fetching chatbot settings:", error);
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  // Admin: Update chatbot settings
+  app.post("/api/admin/chatbot/settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const { customRules, dailyLimit, hourlyLimit } = req.body;
+      const updated = await storage.updateChatbotSettings({ customRules, dailyLimit, hourlyLimit });
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating chatbot settings:", error);
+      res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
+  // Admin: Get all chat messages
+  app.get("/api/admin/chatbot/messages", isAuthenticated, async (req: any, res) => {
+    try {
+      const messages = await storage.getAllChatMessages();
+      res.json(messages);
+    } catch (error: any) {
+      console.error("Error fetching chat messages:", error);
+      res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  // Admin: Get flagged messages
+  app.get("/api/admin/chatbot/flagged", isAuthenticated, async (req: any, res) => {
+    try {
+      const flagged = await storage.getFlaggedMessages();
+      res.json(flagged);
+    } catch (error: any) {
+      console.error("Error fetching flagged messages:", error);
+      res.status(500).json({ message: "Failed to fetch flagged messages" });
+    }
+  });
+
+  // Admin: Get chat summary by user
+  app.get("/api/admin/chatbot/users", isAuthenticated, async (req: any, res) => {
+    try {
+      const summary = await storage.getUserChatSummary();
+      res.json(summary);
+    } catch (error: any) {
+      console.error("Error fetching user chat summary:", error);
+      res.status(500).json({ message: "Failed to fetch user summary" });
+    }
+  });
+
+  // Admin: Get specific user's chat history
+  app.get("/api/admin/chatbot/user/:userId", isAuthenticated, async (req: any, res) => {
+    try {
+      const messages = await storage.getChatMessages(req.params.userId);
+      res.json(messages);
+    } catch (error: any) {
+      console.error("Error fetching user messages:", error);
+      res.status(500).json({ message: "Failed to fetch user messages" });
+    }
+  });
+
+  // Admin: Mark message as reviewed
+  app.post("/api/admin/chatbot/review/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updated = await storage.markMessageReviewed(id);
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error marking message reviewed:", error);
+      res.status(500).json({ message: "Failed to mark reviewed" });
     }
   });
 

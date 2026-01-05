@@ -9,6 +9,8 @@ import {
   userSpamStatus,
   brandSettings,
   chatUsage,
+  chatbotSettings,
+  chatMessages,
   type User,
   type UpsertUser,
   type DayContent,
@@ -28,6 +30,10 @@ import {
   type BrandSettings,
   type InsertBrandSettings,
   type ChatUsage,
+  type ChatbotSettings,
+  type InsertChatbotSettings,
+  type ChatMessage,
+  type InsertChatMessage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -88,6 +94,18 @@ export interface IStorage {
   // Chat usage operations
   getChatUsage(userId: string): Promise<ChatUsage | undefined>;
   checkAndIncrementChatUsage(userId: string): Promise<{ allowed: boolean; reason?: string; resetIn?: number }>;
+
+  // Chatbot settings operations
+  getChatbotSettings(): Promise<ChatbotSettings | undefined>;
+  updateChatbotSettings(settings: Partial<InsertChatbotSettings>): Promise<ChatbotSettings>;
+
+  // Chat messages operations
+  saveChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  getChatMessages(userId: string): Promise<ChatMessage[]>;
+  getAllChatMessages(): Promise<(ChatMessage & { user: User })[]>;
+  getFlaggedMessages(): Promise<(ChatMessage & { user: User })[]>;
+  markMessageReviewed(id: number): Promise<ChatMessage | undefined>;
+  getUserChatSummary(): Promise<{ userId: string; user: User; messageCount: number; flaggedCount: number; lastMessage: Date }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -456,6 +474,119 @@ export class DatabaseStorage implements IStorage {
       .where(eq(chatUsage.userId, userId));
 
     return { allowed: true };
+  }
+
+  // Chatbot settings operations
+  async getChatbotSettings(): Promise<ChatbotSettings | undefined> {
+    const [settings] = await db.select().from(chatbotSettings).limit(1);
+    return settings;
+  }
+
+  async updateChatbotSettings(settings: Partial<InsertChatbotSettings>): Promise<ChatbotSettings> {
+    const existing = await this.getChatbotSettings();
+
+    if (existing) {
+      const [updated] = await db
+        .update(chatbotSettings)
+        .set({ ...settings, updatedAt: new Date() })
+        .where(eq(chatbotSettings.id, existing.id))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db
+        .insert(chatbotSettings)
+        .values(settings)
+        .returning();
+      return created;
+    }
+  }
+
+  // Chat messages operations
+  async saveChatMessage(message: InsertChatMessage): Promise<ChatMessage> {
+    const [created] = await db.insert(chatMessages).values(message).returning();
+    return created;
+  }
+
+  async getChatMessages(userId: string): Promise<ChatMessage[]> {
+    return await db
+      .select()
+      .from(chatMessages)
+      .where(eq(chatMessages.userId, userId))
+      .orderBy(desc(chatMessages.createdAt));
+  }
+
+  async getAllChatMessages(): Promise<(ChatMessage & { user: User })[]> {
+    const messages = await db
+      .select()
+      .from(chatMessages)
+      .orderBy(desc(chatMessages.createdAt))
+      .limit(500);
+
+    const messagesWithUsers = await Promise.all(
+      messages.map(async (msg) => {
+        const user = await this.getUser(msg.userId);
+        return { ...msg, user: user! };
+      })
+    );
+    return messagesWithUsers;
+  }
+
+  async getFlaggedMessages(): Promise<(ChatMessage & { user: User })[]> {
+    const messages = await db
+      .select()
+      .from(chatMessages)
+      .where(and(eq(chatMessages.flagged, true), eq(chatMessages.reviewed, false)))
+      .orderBy(desc(chatMessages.createdAt));
+
+    const messagesWithUsers = await Promise.all(
+      messages.map(async (msg) => {
+        const user = await this.getUser(msg.userId);
+        return { ...msg, user: user! };
+      })
+    );
+    return messagesWithUsers;
+  }
+
+  async markMessageReviewed(id: number): Promise<ChatMessage | undefined> {
+    const [updated] = await db
+      .update(chatMessages)
+      .set({ reviewed: true })
+      .where(eq(chatMessages.id, id))
+      .returning();
+    return updated;
+  }
+
+  async getUserChatSummary(): Promise<{ userId: string; user: User; messageCount: number; flaggedCount: number; lastMessage: Date }[]> {
+    // Get all messages grouped by user
+    const allMessages = await db
+      .select()
+      .from(chatMessages)
+      .orderBy(desc(chatMessages.createdAt));
+
+    // Group by user
+    const userMap = new Map<string, { messages: typeof allMessages; flagged: number }>();
+    allMessages.forEach((msg) => {
+      const existing = userMap.get(msg.userId) || { messages: [], flagged: 0 };
+      existing.messages.push(msg);
+      if (msg.flagged) existing.flagged++;
+      userMap.set(msg.userId, existing);
+    });
+
+    // Build summary
+    const summaries = await Promise.all(
+      Array.from(userMap.entries()).map(async ([userId, data]) => {
+        const user = await this.getUser(userId);
+        return {
+          userId,
+          user: user!,
+          messageCount: data.messages.length,
+          flaggedCount: data.flagged,
+          lastMessage: data.messages[0]?.createdAt || new Date(),
+        };
+      })
+    );
+
+    return summaries.sort((a, b) => b.messageCount - a.messageCount);
   }
 }
 
