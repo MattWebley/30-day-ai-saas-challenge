@@ -142,11 +142,13 @@ Every day in Dashboard.tsx MUST follow this exact format:
 
 ## Current Status
 - Status: In Progress
-- Last Session: 2026-01-03
+- Last Session: 2026-01-05
 - Current Branch: main
 - GitHub Repo: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
+- [ ] Debug AI Mentor chat bot (user reported "doesn't work" - check browser console for error)
+- [ ] Test Showcase feature end-to-end (Day 21 submission → admin approval → public gallery)
 - [ ] Test Day 1 completion flow (debug logging added - check console)
 - [ ] Test Day 2 new shortlist/validation flow end-to-end
 - [ ] Test all Day 8-21 components end-to-end
@@ -170,6 +172,7 @@ Every day in Dashboard.tsx MUST follow this exact format:
 - Old feature/week1-restructure branch can be deleted (already merged)
 - Day 1 completion may not work - debug logging added, needs testing
 - Badges may be outdated for 21-day structure (user reported)
+- AI Mentor chat bot reported not working - error handling improved, needs debugging (check browser console)
 
 ---
 
@@ -540,6 +543,46 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - Database seeded with updated Day 8 lesson
   - To launch: Change testMode default from `true` to `false` in TestModeContext.tsx
   - Next priority: Test Day 1 completion flow, Day 2 flow, Day 0 onboarding
+
+### 2026-01-05 - Showcase Feature & Admin Chat Management
+- Tasks Completed:
+  - **Showcase Feature** (complete):
+    - Added `showcase` table to database schema (appName, description, screenshotUrl, liveUrl, status, featured)
+    - Created storage methods for showcase CRUD operations
+    - Added API routes: POST /api/showcase, GET /api/showcase/mine, GET /api/showcase (public)
+    - Updated Day21LaunchDay.tsx with showcase submission form (requires screenshot before completing)
+    - Created public Showcase gallery page at `/showcase`:
+      - Hero section with CTA to join challenge
+      - Featured apps section with star badges
+      - Regular apps grid with creator attribution
+      - Responsive design with Framer Motion animations
+    - Added Showcase Moderation to admin panel:
+      - Collapsible section showing pending submissions
+      - Screenshot preview, app details, creator info
+      - Approve/Reject buttons
+      - Feature toggle to highlight exceptional apps
+  - **Admin Chat Management** (enhanced):
+    - AI Mentor Management section now open by default
+    - Added manual flag button to messages in user chat history
+    - Added `/api/admin/chatbot/flag/:id` endpoint
+    - Added `flagMessage` storage method
+    - Shows "Flagged" indicator on flagged messages
+  - **Chat Widget Error Handling** (improved):
+    - Use fetch directly instead of apiRequest for better error handling
+    - Show actual error messages from server in chat widget
+    - Added specific error handling for OpenAI API errors (invalid key, quota)
+    - Log errors to console for debugging
+- Fixes Applied:
+  - Fixed TypeScript error in Day21LaunchDay.tsx (added ShowcaseEntry interface for useQuery typing)
+  - Fixed chat widget not showing server errors (was silently failing)
+  - Added better OpenAI error messages on server side
+- Notes:
+  - User reported chat bot "doesn't work" - improved error handling to surface actual errors
+  - OPENAI_API_KEY is set in environment
+  - Showcase feature complete and ready for testing
+  - All changes committed and pushed (5 commits this session)
+  - TypeScript check passing
+  - Next priority: Debug why chat bot isn't working (check browser console for actual error)
 
 ---
 
