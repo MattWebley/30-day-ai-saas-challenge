@@ -408,7 +408,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">3</div>
                     <h2 className="font-bold text-xl text-slate-900">Your $500/hr Business Advisor</h2>
                   </div>
-                  <Card className="p-6 border-2 border-slate-200 border-l-4 border-l-primary shadow-none bg-white">
+                  <Card className="p-6 border-2 border-slate-200 shadow-none bg-white">
                     <div className="space-y-4">
                       <p className="text-slate-700 font-medium">
                         Here's what most people miss: These aren't just coding tools. You now have access to a business advisor that would cost $500/hour - available 24/7 for $20/month.
@@ -470,7 +470,7 @@ export default function Dashboard() {
                 </div>
                 {/* Replit Cost Warning */}
                 <div className="space-y-4 pt-4">
-                  <Card className="p-6 border-2 border-slate-200 border-l-4 border-l-primary shadow-none bg-white">
+                  <Card className="p-6 border-2 border-slate-200 shadow-none bg-white">
                     <div className="space-y-2">
                       <h3 className="font-bold text-slate-900">Heads Up About Replit Costs</h3>
                       <p className="text-slate-700">
