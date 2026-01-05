@@ -108,6 +108,7 @@ export interface IStorage {
   getAllChatMessages(): Promise<(ChatMessage & { user: User })[]>;
   getFlaggedMessages(): Promise<(ChatMessage & { user: User })[]>;
   markMessageReviewed(id: number): Promise<ChatMessage | undefined>;
+  flagMessage(id: number, reason: string): Promise<ChatMessage | undefined>;
   getUserChatSummary(): Promise<{ userId: string; user: User; messageCount: number; flaggedCount: number; lastMessage: Date }[]>;
 
   // Showcase operations
@@ -562,6 +563,15 @@ export class DatabaseStorage implements IStorage {
     const [updated] = await db
       .update(chatMessages)
       .set({ reviewed: true })
+      .where(eq(chatMessages.id, id))
+      .returning();
+    return updated;
+  }
+
+  async flagMessage(id: number, reason: string): Promise<ChatMessage | undefined> {
+    const [updated] = await db
+      .update(chatMessages)
+      .set({ flagged: true, flagReason: reason })
       .where(eq(chatMessages.id, id))
       .returning();
     return updated;

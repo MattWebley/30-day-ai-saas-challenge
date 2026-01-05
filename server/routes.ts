@@ -1433,6 +1433,19 @@ ${customRules ? `ADDITIONAL RULES FROM ADMIN:\n${customRules}` : ''}`;
     }
   });
 
+  // Admin: Manually flag a message
+  app.post("/api/admin/chatbot/flag/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { reason } = req.body;
+      const updated = await storage.flagMessage(id, reason || "Flagged by admin");
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error flagging message:", error);
+      res.status(500).json({ message: "Failed to flag message" });
+    }
+  });
+
   // Showcase routes
   // Submit to showcase (user)
   app.post("/api/showcase", isAuthenticated, async (req: any, res) => {

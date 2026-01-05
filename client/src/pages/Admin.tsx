@@ -184,7 +184,7 @@ export default function Admin() {
   // Chatbot management
   const [chatbotRules, setChatbotRules] = useState("");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [showChatSection, setShowChatSection] = useState(false);
+  const [showChatSection, setShowChatSection] = useState(true); // Open by default
 
   const { data: chatbotSettings } = useQuery<ChatbotSettings>({
     queryKey: ["/api/admin/chatbot/settings"],
@@ -269,6 +269,22 @@ export default function Admin() {
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to mark reviewed");
+    },
+  });
+
+  const flagMessage = useMutation({
+    mutationFn: async ({ id, reason }: { id: number; reason: string }) => {
+      const res = await apiRequest("POST", `/api/admin/chatbot/flag/${id}`, { reason });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/chatbot/flagged"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/chatbot/user", selectedUserId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/chatbot/users"] });
+      toast.success("Message flagged");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to flag message");
     },
   });
 
@@ -863,7 +879,7 @@ export default function Admin() {
                         </div>
 
                         {selectedUserId === summary.userId && userChatHistory.length > 0 && (
-                          <div className="mt-3 pt-3 border-t border-slate-200 space-y-2 max-h-64 overflow-y-auto">
+                          <div className="mt-3 pt-3 border-t border-slate-200 space-y-2 max-h-64 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                             {userChatHistory.slice(0, 20).map((msg) => (
                               <div
                                 key={msg.id}
@@ -873,10 +889,24 @@ export default function Admin() {
                                     : "bg-primary/10 text-slate-700"
                                 } ${msg.flagged ? "border-l-2 border-red-500" : ""}`}
                               >
-                                <p className="text-xs text-slate-400 mb-1">
-                                  {msg.role === "user" ? "User" : "AI"} • {formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
-                                </p>
-                                <p className="whitespace-pre-wrap">{msg.content}</p>
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs text-slate-400 mb-1">
+                                      {msg.role === "user" ? "User" : "AI"} • {formatDistanceToNow(new Date(msg.createdAt), { addSuffix: true })}
+                                      {msg.flagged && <span className="text-red-500 ml-2">• Flagged</span>}
+                                    </p>
+                                    <p className="whitespace-pre-wrap">{msg.content}</p>
+                                  </div>
+                                  {msg.role === "user" && !msg.flagged && (
+                                    <button
+                                      onClick={() => flagMessage.mutate({ id: msg.id, reason: "Manual flag by admin" })}
+                                      className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                                      title="Flag this message"
+                                    >
+                                      <Flag className="w-3 h-3" />
+                                    </button>
+                                  )}
+                                </div>
                               </div>
                             ))}
                           </div>
