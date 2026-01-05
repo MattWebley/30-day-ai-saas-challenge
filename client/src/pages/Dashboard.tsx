@@ -438,6 +438,26 @@ export default function Dashboard() {
                     />
                   </Card>
                 </div>
+                {/* Replit Cost Warning */}
+                <div className="space-y-4 pt-4">
+                  <Card className="p-6 border-2 border-amber-200 shadow-none bg-amber-50">
+                    <div className="flex gap-4">
+                      <div className="text-2xl">⚠️</div>
+                      <div className="space-y-2">
+                        <h3 className="font-bold text-amber-900">Heads Up About Replit Costs</h3>
+                        <p className="text-amber-800">
+                          Replit Agent is AMAZING but the fees add up FAST. You'll burn through credits quicker than you think.
+                        </p>
+                        <p className="text-amber-800 font-medium">
+                          DON'T PANIC. Tomorrow I'll show you how to drop your build costs to almost ZERO using Claude Code. Same power, fraction of the price.
+                        </p>
+                        <p className="text-amber-700 text-sm">
+                          For now, just get your PRD in and let Replit do its thing. We'll fix the money bleed tomorrow.
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                </div>
               </>
             ) : currentDay === 7 ? (
               <>

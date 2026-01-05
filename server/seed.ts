@@ -362,14 +362,7 @@ To make a decent PRD you need:
 THE PRD PROMPT:
 "I need a PRD for my SAAS I'm building in Replit. The SAAS NAME is [NAME], my CUSTOMER AVATAR is [AVATAR], The PROBLEM my SAAS solves is [PROBLEM], my FEATURE set is [FEATURES], my USP is [USP] and I want it to LOOK AND FEEL like [DESCRIPTION]."
 
-Check through it, change anything that's wrong, then PASTE IT INTO REPLIT and watch the MAGIC happen!
-
-HEADS UP ABOUT REPLIT COSTS:
-Replit Agent is AMAZING but the fees add up FAST. You'll burn through credits quicker than you think.
-
-DON'T PANIC. Tomorrow I'll show you how to drop your build costs to almost ZERO using Claude Code. Same power, fraction of the price.
-
-For now, just get your PRD in and let Replit do its thing. We'll fix the money bleed tomorrow.`,
+Check through it, change anything that's wrong, then PASTE IT INTO REPLIT and watch the MAGIC happen!`,
       outcome: "A complete PRD pasted into Replit with your first build session started",
       completionMessage: "You have a PRD. A real Product Requirements Document that tells you exactly what to build. Most founders skip this and wonder why they're still coding 6 months later. You're different. Tomorrow: Claude Code setup.",
       xpReward: 100,
