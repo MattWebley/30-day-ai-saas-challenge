@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { toast } from "sonner";
 import {
   Rocket,
   CheckCircle2,
@@ -12,12 +15,25 @@ import {
   PartyPopper,
   ExternalLink,
   Share2,
-  ArrowUpRight
+  ArrowUpRight,
+  Camera,
+  Image,
+  Loader2,
+  Star
 } from "lucide-react";
 
 interface Day21LaunchDayProps {
   appName: string;
   onComplete: (data: { appUrl: string; launchedAt: string; launchFeeling: string; nextSteps: string }) => void;
+}
+
+interface ShowcaseEntry {
+  id: number;
+  appName: string;
+  description: string;
+  screenshotUrl: string;
+  liveUrl: string | null;
+  status: string;
 }
 
 const PRE_LAUNCH_CHECKS = [
@@ -36,6 +52,45 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
   const [nextSteps, setNextSteps] = useState("");
   const [hasLaunched, setHasLaunched] = useState(false);
 
+  // Showcase submission
+  const [showcaseAppName, setShowcaseAppName] = useState(appName || "");
+  const [showcaseDescription, setShowcaseDescription] = useState("");
+  const [screenshotUrl, setScreenshotUrl] = useState("");
+  const [showcaseSubmitted, setShowcaseSubmitted] = useState(false);
+
+  // Check if user already submitted to showcase
+  const { data: existingShowcase } = useQuery<ShowcaseEntry | null>({
+    queryKey: ["/api/showcase/mine"],
+  });
+
+  useEffect(() => {
+    if (existingShowcase) {
+      setShowcaseSubmitted(true);
+      setShowcaseAppName(existingShowcase.appName || "");
+      setShowcaseDescription(existingShowcase.description || "");
+      setScreenshotUrl(existingShowcase.screenshotUrl || "");
+    }
+  }, [existingShowcase]);
+
+  const submitShowcase = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/showcase", {
+        appName: showcaseAppName,
+        description: showcaseDescription,
+        screenshotUrl,
+        liveUrl: appUrl,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      setShowcaseSubmitted(true);
+      toast.success("Submitted to showcase! It will appear after approval.");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to submit to showcase");
+    },
+  });
+
   const toggleCheck = (id: string) => {
     const newChecks = new Set(checksComplete);
     if (newChecks.has(id)) {
@@ -48,7 +103,8 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
 
   const allCriticalDone = PRE_LAUNCH_CHECKS.filter(c => c.critical).every(c => checksComplete.has(c.id));
   const canLaunch = allCriticalDone && appUrl.length >= 10;
-  const canComplete = hasLaunched && launchFeeling.length >= 20 && nextSteps.length >= 20;
+  const canSubmitShowcase = showcaseAppName.length >= 2 && showcaseDescription.length >= 20 && screenshotUrl.length >= 10;
+  const canComplete = hasLaunched && showcaseSubmitted && launchFeeling.length >= 20 && nextSteps.length >= 20;
 
   const handleLaunch = () => {
     setHasLaunched(true);
@@ -220,6 +276,111 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
               <li>• Polished the brand</li>
               <li>• And most importantly: <strong>SHIPPED</strong></li>
             </ul>
+          </Card>
+
+          {/* Showcase Submission */}
+          <Card className="p-6 border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                <Star className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h4 className="font-bold text-lg text-slate-900">Submit to the Showcase</h4>
+                <p className="text-sm text-slate-600">Show off what you built to inspire others</p>
+              </div>
+            </div>
+
+            {showcaseSubmitted ? (
+              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex items-center gap-2 text-green-700">
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span className="font-medium">Submitted to showcase!</span>
+                </div>
+                <p className="text-sm text-green-600 mt-1">
+                  Your app will appear in the gallery once approved.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    App Name
+                  </label>
+                  <Input
+                    placeholder="My Awesome SaaS"
+                    value={showcaseAppName}
+                    onChange={(e) => setShowcaseAppName(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    One-Line Description
+                  </label>
+                  <Textarea
+                    placeholder="What does your app do? Who is it for? (Keep it punchy!)"
+                    value={showcaseDescription}
+                    onChange={(e) => setShowcaseDescription(e.target.value)}
+                    className="min-h-[80px]"
+                  />
+                  <p className="text-xs text-slate-400 mt-1">{showcaseDescription.length}/200 characters</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Screenshot URL
+                  </label>
+                  <div className="flex items-start gap-2">
+                    <Camera className="w-5 h-5 text-slate-400 mt-2.5" />
+                    <div className="flex-1">
+                      <Input
+                        placeholder="https://i.imgur.com/your-screenshot.png"
+                        value={screenshotUrl}
+                        onChange={(e) => setScreenshotUrl(e.target.value)}
+                      />
+                      <p className="text-xs text-slate-500 mt-1">
+                        Take a screenshot of your app's main screen. Upload to{" "}
+                        <a href="https://imgur.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                          imgur.com
+                        </a>{" "}
+                        or similar and paste the direct image URL.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {screenshotUrl && (
+                  <div className="border border-slate-200 rounded-lg overflow-hidden">
+                    <img
+                      src={screenshotUrl}
+                      alt="App preview"
+                      className="w-full h-48 object-cover object-top"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+
+                <Button
+                  onClick={() => submitShowcase.mutate()}
+                  disabled={!canSubmitShowcase || submitShowcase.isPending}
+                  className="w-full gap-2"
+                >
+                  {submitShowcase.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Submitting...
+                    </>
+                  ) : (
+                    <>
+                      <Image className="w-4 h-4" />
+                      Submit to Showcase
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </Card>
 
           {/* Hard CTA - Work with Matt */}

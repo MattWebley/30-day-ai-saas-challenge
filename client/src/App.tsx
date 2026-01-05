@@ -15,6 +15,7 @@ import BuildLog from "@/pages/BuildLog";
 import ClaudeCodeGuide from "@/pages/ClaudeCodeGuide";
 import Settings from "@/pages/Settings";
 import Admin from "@/pages/Admin";
+import Showcase from "@/pages/Showcase";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -44,6 +45,8 @@ function Router() {
     <>
       <ScrollToTop />
       <Switch>
+        {/* Public routes */}
+        <Route path="/showcase" component={Showcase} />
         {!isAuthenticated ? (
           <Route path="/" component={Landing} />
         ) : (

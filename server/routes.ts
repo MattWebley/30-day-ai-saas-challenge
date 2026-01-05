@@ -1424,5 +1424,90 @@ ${customRules ? `ADDITIONAL RULES FROM ADMIN:\n${customRules}` : ''}`;
     }
   });
 
+  // Showcase routes
+  // Submit to showcase (user)
+  app.post("/api/showcase", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { appName, description, screenshotUrl, liveUrl } = req.body;
+
+      if (!appName || !description || !screenshotUrl) {
+        return res.status(400).json({ message: "App name, description, and screenshot are required" });
+      }
+
+      const entry = await storage.createShowcaseEntry({
+        userId,
+        appName,
+        description,
+        screenshotUrl,
+        liveUrl: liveUrl || null,
+      });
+
+      res.json(entry);
+    } catch (error: any) {
+      console.error("Error creating showcase entry:", error);
+      res.status(500).json({ message: "Failed to submit to showcase" });
+    }
+  });
+
+  // Get user's showcase entry
+  app.get("/api/showcase/mine", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const entry = await storage.getShowcaseEntry(userId);
+      res.json(entry || null);
+    } catch (error: any) {
+      console.error("Error fetching showcase entry:", error);
+      res.status(500).json({ message: "Failed to fetch showcase entry" });
+    }
+  });
+
+  // Get approved showcase (public)
+  app.get("/api/showcase", async (req, res) => {
+    try {
+      const entries = await storage.getApprovedShowcase();
+      res.json(entries);
+    } catch (error: any) {
+      console.error("Error fetching showcase:", error);
+      res.status(500).json({ message: "Failed to fetch showcase" });
+    }
+  });
+
+  // Admin: Get pending showcase entries
+  app.get("/api/admin/showcase/pending", isAuthenticated, async (req: any, res) => {
+    try {
+      const entries = await storage.getPendingShowcase();
+      res.json(entries);
+    } catch (error: any) {
+      console.error("Error fetching pending showcase:", error);
+      res.status(500).json({ message: "Failed to fetch pending showcase" });
+    }
+  });
+
+  // Admin: Update showcase status
+  app.post("/api/admin/showcase/:id/status", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      const updated = await storage.updateShowcaseStatus(id, status);
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating showcase status:", error);
+      res.status(500).json({ message: "Failed to update status" });
+    }
+  });
+
+  // Admin: Toggle featured
+  app.post("/api/admin/showcase/:id/feature", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updated = await storage.toggleShowcaseFeatured(id);
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error toggling featured:", error);
+      res.status(500).json({ message: "Failed to toggle featured" });
+    }
+  });
+
   return httpServer;
 }

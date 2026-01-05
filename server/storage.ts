@@ -34,6 +34,9 @@ import {
   type InsertChatbotSettings,
   type ChatMessage,
   type InsertChatMessage,
+  showcase,
+  type Showcase,
+  type InsertShowcase,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -106,6 +109,14 @@ export interface IStorage {
   getFlaggedMessages(): Promise<(ChatMessage & { user: User })[]>;
   markMessageReviewed(id: number): Promise<ChatMessage | undefined>;
   getUserChatSummary(): Promise<{ userId: string; user: User; messageCount: number; flaggedCount: number; lastMessage: Date }[]>;
+
+  // Showcase operations
+  createShowcaseEntry(entry: InsertShowcase): Promise<Showcase>;
+  getShowcaseEntry(userId: string): Promise<Showcase | undefined>;
+  getApprovedShowcase(): Promise<(Showcase & { user: User })[]>;
+  getPendingShowcase(): Promise<(Showcase & { user: User })[]>;
+  updateShowcaseStatus(id: number, status: string): Promise<Showcase | undefined>;
+  toggleShowcaseFeatured(id: number): Promise<Showcase | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -587,6 +598,81 @@ export class DatabaseStorage implements IStorage {
     );
 
     return summaries.sort((a, b) => b.messageCount - a.messageCount);
+  }
+
+  // Showcase operations
+  async createShowcaseEntry(entry: InsertShowcase): Promise<Showcase> {
+    // Check if user already has an entry
+    const existing = await this.getShowcaseEntry(entry.userId);
+    if (existing) {
+      // Update existing entry
+      const [updated] = await db
+        .update(showcase)
+        .set({ ...entry, status: "pending", createdAt: new Date() })
+        .where(eq(showcase.userId, entry.userId))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(showcase).values(entry).returning();
+    return created;
+  }
+
+  async getShowcaseEntry(userId: string): Promise<Showcase | undefined> {
+    const [entry] = await db.select().from(showcase).where(eq(showcase.userId, userId));
+    return entry;
+  }
+
+  async getApprovedShowcase(): Promise<(Showcase & { user: User })[]> {
+    const entries = await db
+      .select()
+      .from(showcase)
+      .where(eq(showcase.status, "approved"))
+      .orderBy(desc(showcase.featured), desc(showcase.createdAt));
+
+    const entriesWithUsers = await Promise.all(
+      entries.map(async (entry) => {
+        const user = await this.getUser(entry.userId);
+        return { ...entry, user: user! };
+      })
+    );
+    return entriesWithUsers;
+  }
+
+  async getPendingShowcase(): Promise<(Showcase & { user: User })[]> {
+    const entries = await db
+      .select()
+      .from(showcase)
+      .where(eq(showcase.status, "pending"))
+      .orderBy(desc(showcase.createdAt));
+
+    const entriesWithUsers = await Promise.all(
+      entries.map(async (entry) => {
+        const user = await this.getUser(entry.userId);
+        return { ...entry, user: user! };
+      })
+    );
+    return entriesWithUsers;
+  }
+
+  async updateShowcaseStatus(id: number, status: string): Promise<Showcase | undefined> {
+    const [updated] = await db
+      .update(showcase)
+      .set({ status })
+      .where(eq(showcase.id, id))
+      .returning();
+    return updated;
+  }
+
+  async toggleShowcaseFeatured(id: number): Promise<Showcase | undefined> {
+    const [entry] = await db.select().from(showcase).where(eq(showcase.id, id));
+    if (!entry) return undefined;
+
+    const [updated] = await db
+      .update(showcase)
+      .set({ featured: !entry.featured })
+      .where(eq(showcase.id, id))
+      .returning();
+    return updated;
   }
 }
 

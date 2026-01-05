@@ -24,7 +24,10 @@ import {
   Flag,
   Eye,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Image,
+  Star,
+  ExternalLink
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -88,6 +91,24 @@ interface UserChatSummary {
   messageCount: number;
   flaggedCount: number;
   lastMessage: string;
+}
+
+interface ShowcaseEntry {
+  id: number;
+  userId: string;
+  appName: string;
+  description: string;
+  screenshotUrl: string;
+  liveUrl: string | null;
+  status: string;
+  featured: boolean;
+  createdAt: string;
+  user: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+  };
 }
 
 const FONT_OPTIONS = [
@@ -180,6 +201,41 @@ export default function Admin() {
   const { data: userChatHistory = [] } = useQuery<ChatMessage[]>({
     queryKey: ["/api/admin/chatbot/user", selectedUserId],
     enabled: !!selectedUserId,
+  });
+
+  // Showcase management
+  const [showShowcaseSection, setShowShowcaseSection] = useState(false);
+
+  const { data: pendingShowcase = [] } = useQuery<ShowcaseEntry[]>({
+    queryKey: ["/api/admin/showcase/pending"],
+  });
+
+  const updateShowcaseStatus = useMutation({
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const res = await apiRequest("POST", `/api/admin/showcase/${id}/status`, { status });
+      return res.json();
+    },
+    onSuccess: (_, { status }) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/showcase/pending"] });
+      toast.success(status === "approved" ? "App approved and added to showcase!" : "App rejected");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to update status");
+    },
+  });
+
+  const toggleShowcaseFeatured = useMutation({
+    mutationFn: async ({ id, featured }: { id: number; featured: boolean }) => {
+      const res = await apiRequest("POST", `/api/admin/showcase/${id}/feature`, { featured });
+      return res.json();
+    },
+    onSuccess: (_, { featured }) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/showcase/pending"] });
+      toast.success(featured ? "App marked as featured!" : "Featured status removed");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to update featured status");
+    },
   });
 
   useEffect(() => {
@@ -379,6 +435,131 @@ export default function Admin() {
                 </div>
               ))}
             </Card>
+          )}
+        </div>
+
+        {/* Showcase Moderation */}
+        <div className="space-y-4">
+          <button
+            onClick={() => setShowShowcaseSection(!showShowcaseSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <h2 className="text-xl font-bold text-slate-900">Showcase Moderation</h2>
+            {pendingShowcase.length > 0 && (
+              <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">
+                {pendingShowcase.length} pending
+              </span>
+            )}
+            {showShowcaseSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showShowcaseSection && (
+            <div className="space-y-4">
+              {pendingShowcase.length === 0 ? (
+                <Card className="p-8 border-2 border-slate-100 text-center">
+                  <Image className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">No apps pending approval</p>
+                  <a href="/showcase" target="_blank" rel="noopener noreferrer" className="text-primary text-sm hover:underline mt-2 inline-block">
+                    View public showcase
+                  </a>
+                </Card>
+              ) : (
+                <div className="grid gap-4">
+                  {pendingShowcase.map((entry) => (
+                    <Card key={entry.id} className="p-0 border-2 border-slate-100 overflow-hidden">
+                      <div className="flex flex-col md:flex-row">
+                        {/* Screenshot */}
+                        <div className="w-full md:w-48 h-32 md:h-auto bg-slate-100 flex-shrink-0">
+                          <img
+                            src={entry.screenshotUrl}
+                            alt={entry.appName}
+                            className="w-full h-full object-cover object-top"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src =
+                                "https://placehold.co/400x300/f1f5f9/94a3b8?text=No+Preview";
+                            }}
+                          />
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 p-4">
+                          <div className="flex items-start justify-between gap-3 mb-2">
+                            <div>
+                              <h3 className="font-bold text-lg text-slate-900">{entry.appName}</h3>
+                              <p className="text-sm text-slate-500">
+                                by {entry.user?.firstName || "Unknown"} {entry.user?.lastName || ""} ({entry.user?.email})
+                              </p>
+                            </div>
+                            {entry.liveUrl && (
+                              <a
+                                href={entry.liveUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:text-primary/80"
+                              >
+                                <ExternalLink className="w-5 h-5" />
+                              </a>
+                            )}
+                          </div>
+
+                          <p className="text-sm text-slate-600 mb-4">{entry.description}</p>
+
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1 border-green-200 text-green-700 hover:bg-green-50"
+                              onClick={() => updateShowcaseStatus.mutate({ id: entry.id, status: "approved" })}
+                              disabled={updateShowcaseStatus.isPending}
+                            >
+                              <Check className="w-4 h-4" /> Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1 border-red-200 text-red-700 hover:bg-red-50"
+                              onClick={() => updateShowcaseStatus.mutate({ id: entry.id, status: "rejected" })}
+                              disabled={updateShowcaseStatus.isPending}
+                            >
+                              <X className="w-4 h-4" /> Reject
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className={`gap-1 ${
+                                entry.featured
+                                  ? "border-amber-200 text-amber-700 bg-amber-50"
+                                  : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                              }`}
+                              onClick={() => toggleShowcaseFeatured.mutate({ id: entry.id, featured: !entry.featured })}
+                              disabled={toggleShowcaseFeatured.isPending}
+                            >
+                              <Star className={`w-4 h-4 ${entry.featured ? "fill-amber-500" : ""}`} />
+                              {entry.featured ? "Featured" : "Feature"}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex justify-end">
+                <a
+                  href="/showcase"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary hover:underline"
+                >
+                  View public showcase page
+                </a>
+              </div>
+            </div>
           )}
         </div>
 

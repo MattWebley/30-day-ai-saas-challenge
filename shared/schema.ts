@@ -313,3 +313,29 @@ export const chatMessagesRelations = relations(chatMessages, ({ one }) => ({
 
 export type ChatMessage = typeof chatMessages.$inferSelect;
 export type InsertChatMessage = typeof chatMessages.$inferInsert;
+
+// Showcase - completed apps gallery
+export const showcase = pgTable("showcase", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  appName: varchar("app_name").notNull(),
+  description: text("description").notNull(),
+  screenshotUrl: text("screenshot_url").notNull(),
+  liveUrl: text("live_url"),
+  status: varchar("status").default("pending"), // 'pending' | 'approved' | 'rejected'
+  featured: boolean("featured").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("showcase_user_id_idx").on(table.userId),
+  index("showcase_status_idx").on(table.status),
+]);
+
+export const showcaseRelations = relations(showcase, ({ one }) => ({
+  user: one(users, {
+    fields: [showcase.userId],
+    references: [users.id],
+  }),
+}));
+
+export type Showcase = typeof showcase.$inferSelect;
+export type InsertShowcase = typeof showcase.$inferInsert;
