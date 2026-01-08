@@ -179,14 +179,13 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
           {milestones.map((milestone, index) => (
             <div key={milestone.label} className="text-center">
               <div className="relative">
-                <div className="w-10 h-10 mx-auto rounded-full bg-slate-100 border-2 border-slate-200 flex items-center justify-center">
-                  <span className="text-xs font-bold text-slate-600">{milestone.day}</span>
-                </div>
+                <div className="w-3 h-3 mx-auto rounded-full bg-slate-300" />
                 {index < milestones.length - 1 && (
-                  <div className="absolute top-1/2 left-[calc(50%+20px)] w-[calc(100%-40px)] h-0.5 bg-slate-200 -translate-y-1/2" />
+                  <div className="absolute top-1/2 left-[calc(50%+6px)] w-[calc(100%-12px)] h-0.5 bg-slate-200 -translate-y-1/2" />
                 )}
               </div>
               <p className="text-xs font-bold text-slate-700 mt-2">{milestone.label}</p>
+              <p className="text-[10px] text-slate-400">Day {milestone.day}</p>
             </div>
           ))}
         </div>
