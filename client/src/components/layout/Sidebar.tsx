@@ -6,6 +6,13 @@ import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
 import { useTestMode } from "@/contexts/TestModeContext";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   CheckCircle2,
   Lock,
@@ -25,6 +32,21 @@ import {
   Zap,
   BookOpen
 } from "lucide-react";
+
+interface Badge {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  triggerType: string;
+  triggerValue: number | null;
+}
+
+interface UserBadge {
+  id: number;
+  badgeId: number;
+  earnedAt: string;
+}
 
 interface SidebarProps {
   currentDay: number;
@@ -137,6 +159,15 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   const { progress: userProgress } = useUserProgress();
   const { stats } = useUserStats();
   const { testMode, setTestMode } = useTestMode();
+
+  // Fetch badges for preview
+  const { data: allBadges } = useQuery<Badge[]>({
+    queryKey: ["/api/badges"],
+  });
+  const { data: userBadges } = useQuery<UserBadge[]>({
+    queryKey: ["/api/badges/user"],
+  });
+  const earnedBadgeIds = new Set(userBadges?.map(ub => ub.badgeId) || []);
 
   const challengeDays = Array.isArray(allDays) ? allDays : [];
   const completedDays = new Set(
@@ -354,6 +385,49 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 Badge Collection
               </span>
             </Link>
+            {/* Badge Preview Row */}
+            {allBadges && allBadges.length > 0 && (
+              <TooltipProvider delayDuration={200}>
+                <div className="flex items-center gap-1 px-3 py-2 flex-wrap">
+                  {allBadges
+                    .sort((a, b) => {
+                      if (a.triggerType === 'day_completed' && b.triggerType === 'streak') return -1;
+                      if (a.triggerType === 'streak' && b.triggerType === 'day_completed') return 1;
+                      return (a.triggerValue || 0) - (b.triggerValue || 0);
+                    })
+                    .map((badge) => {
+                      const isEarned = earnedBadgeIds.has(badge.id);
+                      return (
+                        <Tooltip key={badge.id}>
+                          <TooltipTrigger asChild>
+                            <div
+                              className={cn(
+                                "w-7 h-7 rounded-full flex items-center justify-center text-sm cursor-pointer transition-all hover:scale-110",
+                                isEarned
+                                  ? "bg-primary/10 shadow-sm"
+                                  : "bg-slate-100 grayscale opacity-40"
+                              )}
+                            >
+                              {badge.icon}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top" className="max-w-[200px]">
+                            <p className="font-semibold">{badge.name}</p>
+                            <p className="text-xs text-muted-foreground">{badge.description}</p>
+                            {!isEarned && (
+                              <p className="text-xs text-amber-600 mt-1">
+                                {badge.triggerType === 'day_completed'
+                                  ? `Complete Day ${badge.triggerValue}`
+                                  : `${badge.triggerValue}-day streak`}
+                              </p>
+                            )}
+                          </TooltipContent>
+                        </Tooltip>
+                      );
+                    })}
+                </div>
+              </TooltipProvider>
+            )}
             <Link href="/build-log" onClick={handleNavClick}>
               <span className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
