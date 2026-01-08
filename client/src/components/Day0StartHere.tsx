@@ -63,8 +63,9 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
   ];
 
   const milestones = [
-    { day: 4, label: "Idea" },
-    { day: 7, label: "Plan" },
+    { day: 2, label: "Idea" },
+    { day: 4, label: "Plan" },
+    { day: 7, label: "Prepare" },
     { day: 14, label: "Build" },
     { day: 18, label: "Polish" },
     { day: 21, label: "Launch" }
@@ -174,7 +175,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
       {/* What You'll Achieve */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <h2 className="font-bold text-lg text-slate-900 mb-4">Your Journey</h2>
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-6 gap-2">
           {milestones.map((milestone, index) => (
             <div key={milestone.label} className="text-center">
               <div className="relative">

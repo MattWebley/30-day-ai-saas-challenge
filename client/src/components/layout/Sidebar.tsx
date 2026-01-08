@@ -153,8 +153,9 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
 
   // Milestone definitions for battle pass style progress
   const milestones = [
-    { day: 4, label: "Idea", icon: Lightbulb, percentage: (4 / totalDays) * 100 },
-    { day: 7, label: "Plan", icon: Map, percentage: (7 / totalDays) * 100 },
+    { day: 2, label: "Idea", icon: Lightbulb, percentage: (2 / totalDays) * 100 },
+    { day: 4, label: "Plan", icon: Map, percentage: (4 / totalDays) * 100 },
+    { day: 7, label: "Prepare", icon: Target, percentage: (7 / totalDays) * 100 },
     { day: 14, label: "Build", icon: Hammer, percentage: (14 / totalDays) * 100 },
     { day: 18, label: "Polish", icon: Sparkles, percentage: (18 / totalDays) * 100 },
     { day: 21, label: "Launch", icon: Rocket, percentage: 100 },
@@ -415,8 +416,9 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
 
           {/* Days grouped by milestone sections */}
           {[
-            { label: "Idea", minDay: 0, maxDay: 4 },
-            { label: "Plan", minDay: 5, maxDay: 7 },
+            { label: "Idea", minDay: 0, maxDay: 2 },
+            { label: "Plan", minDay: 3, maxDay: 4 },
+            { label: "Prepare", minDay: 5, maxDay: 7 },
             { label: "Build", minDay: 8, maxDay: 14 },
             { label: "Polish", minDay: 15, maxDay: 18 },
             { label: "Launch", minDay: 19, maxDay: 21 },
