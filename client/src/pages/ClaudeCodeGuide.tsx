@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Terminal, Sun, Moon, Copy, Sparkles, ArrowLeft } from "lucide-react";
+import { Terminal, Copy, Sparkles, ArrowLeft, Bug, AlertTriangle, RefreshCw, Clipboard, Bot, Shield } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 
@@ -146,6 +146,169 @@ export default function ClaudeCodeGuide() {
           </Card>
         </div>
 
+        {/* Debugging Section */}
+        <div className="mt-12">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center">
+              <Bug className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-extrabold text-slate-900">When Things Break</h2>
+              <p className="text-slate-600">Your 5-step debugging process</p>
+            </div>
+          </div>
+
+          <Card className="p-6 border-2 border-slate-200 bg-white mb-6">
+            <p className="text-lg text-slate-700">
+              <strong>Bugs happen.</strong> Don't panic. Follow this exact process and you'll fix
+              99% of issues without wasting hours. The key is escalation - start simple, get more
+              detailed if needed.
+            </p>
+          </Card>
+
+          <div className="space-y-4">
+            {/* Step 1: Tell Claude */}
+            <Card className="border-2 border-slate-200 overflow-hidden">
+              <div className="flex items-start gap-4 p-6">
+                <div className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold text-lg shrink-0">1</div>
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle className="w-5 h-5 text-red-500" />
+                    <h3 className="font-bold text-lg text-slate-900">Tell Claude Code What's Wrong</h3>
+                  </div>
+                  <p className="text-slate-600 mb-3">
+                    Describe the problem in plain English. Be specific about what you expected vs what happened.
+                  </p>
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <p className="text-sm font-mono text-slate-700">
+                      "The login button doesn't work. When I click it, nothing happens. It should take me to the dashboard."
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Step 2: Try Again */}
+            <Card className="border-2 border-slate-200 overflow-hidden">
+              <div className="flex items-start gap-4 p-6">
+                <div className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold text-lg shrink-0">2</div>
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <RefreshCw className="w-5 h-5 text-red-500" />
+                    <h3 className="font-bold text-lg text-slate-900">If It Doesn't Work, Say So</h3>
+                  </div>
+                  <p className="text-slate-600 mb-3">
+                    Claude's first attempt didn't fix it? Tell it directly. Ask for a different approach.
+                  </p>
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <p className="text-sm font-mono text-slate-700">
+                      "That didn't work. The button still does nothing. Try a different approach - maybe the click handler isn't attached properly?"
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Step 3: Copy Error */}
+            <Card className="border-2 border-slate-200 overflow-hidden">
+              <div className="flex items-start gap-4 p-6">
+                <div className="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold text-lg shrink-0">3</div>
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Clipboard className="w-5 h-5 text-red-500" />
+                    <h3 className="font-bold text-lg text-slate-900">Copy the Actual Error</h3>
+                  </div>
+                  <p className="text-slate-600 mb-3">
+                    Look in two places for error messages:
+                  </p>
+                  <div className="space-y-3">
+                    <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                      <p className="text-sm font-semibold text-slate-800 mb-1">Preview Window Error:</p>
+                      <p className="text-sm text-slate-600">Red error screens that appear in your app preview</p>
+                    </div>
+                    <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                      <p className="text-sm font-semibold text-slate-800 mb-1">Browser Console (F12 → Console tab):</p>
+                      <p className="text-sm text-slate-600">Red error messages that show the exact file and line number</p>
+                    </div>
+                  </div>
+                  <p className="text-slate-600 mt-3">
+                    <strong>Copy the ENTIRE error message</strong> and paste it to Claude Code. The more detail, the better.
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Step 4: Replit Agent */}
+            <Card className="border-2 border-amber-300 overflow-hidden">
+              <div className="flex items-start gap-4 p-6">
+                <div className="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center font-bold text-lg shrink-0">4</div>
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Bot className="w-5 h-5 text-amber-600" />
+                    <h3 className="font-bold text-lg text-slate-900">Use Replit's Debug Button</h3>
+                  </div>
+                  <p className="text-slate-600 mb-3">
+                    Still stuck? Replit has a secret weapon. When you see an error in the preview:
+                  </p>
+                  <ol className="list-decimal list-inside space-y-2 text-slate-700 mb-3">
+                    <li>Look for the <strong>"Debug with Agent"</strong> button on the error screen</li>
+                    <li>Click it and let Replit's AI analyze the problem</li>
+                    <li>Read what it says - it often finds the root cause</li>
+                    <li><strong>Don't let Replit fix it</strong> - just note what it found</li>
+                  </ol>
+                  <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                    <p className="text-sm text-amber-800">
+                      <strong>Why not let Replit fix it?</strong> Claude Code knows your whole project. Replit Agent doesn't.
+                      Use Replit for diagnosis, Claude Code for the fix.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Step 5: Tell Claude + Prevent */}
+            <Card className="border-2 border-green-300 overflow-hidden">
+              <div className="flex items-start gap-4 p-6">
+                <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-lg shrink-0">5</div>
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Shield className="w-5 h-5 text-green-600" />
+                    <h3 className="font-bold text-lg text-slate-900">Fix It & Prevent It Forever</h3>
+                  </div>
+                  <p className="text-slate-600 mb-3">
+                    Now tell Claude Code exactly what Replit found, and make sure it never happens again:
+                  </p>
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 mb-3">
+                    <p className="text-sm font-mono text-slate-700">
+                      "Replit Agent found the issue: [paste what Replit said]. Fix this and add a rule to CLAUDE.md so you never make this mistake again."
+                    </p>
+                  </div>
+                  <p className="text-slate-600">
+                    <strong>This is the key:</strong> By updating CLAUDE.md, you're training Claude Code on YOUR project's quirks.
+                    Each bug you fix this way makes future bugs less likely.
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Debug Summary */}
+          <Card className="p-6 border-2 border-red-200 bg-red-50 mt-6">
+            <h4 className="font-bold text-slate-900 mb-3">Quick Reference: The Debug Flow</h4>
+            <div className="flex flex-wrap gap-2 text-sm">
+              <span className="px-3 py-1 bg-white rounded-full border border-slate-200">1. Tell Claude</span>
+              <span className="text-slate-400">→</span>
+              <span className="px-3 py-1 bg-white rounded-full border border-slate-200">2. Try Again</span>
+              <span className="text-slate-400">→</span>
+              <span className="px-3 py-1 bg-white rounded-full border border-slate-200">3. Copy Error</span>
+              <span className="text-slate-400">→</span>
+              <span className="px-3 py-1 bg-white rounded-full border border-slate-200">4. Replit Debug</span>
+              <span className="text-slate-400">→</span>
+              <span className="px-3 py-1 bg-white rounded-full border border-slate-200">5. Fix + Prevent</span>
+            </div>
+          </Card>
+        </div>
+
         {/* Bottom Note */}
         <Card className="p-6 border-2 border-primary/30 bg-primary/5 mt-8">
           <div className="flex items-start gap-3">
@@ -155,7 +318,7 @@ export default function ClaudeCodeGuide() {
                 Bookmark this page! You'll use it every single time you build.
               </p>
               <p className="text-slate-600 mt-1">
-                These 3 prompts are the difference between chaos and progress. Use them every session.
+                These prompts and debugging steps are the difference between chaos and progress. Use them every session.
               </p>
             </div>
           </div>
