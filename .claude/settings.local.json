@@ -58,7 +58,8 @@
       "Bash(curl:*)",
       "WebFetch(domain:mr-follis.github.io)",
       "Bash(netstat:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(git revert:*)"
     ]
   }
 }
