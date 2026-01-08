@@ -149,12 +149,12 @@ Every day in Dashboard.tsx MUST follow this exact format:
 
 ## Current Status
 - Status: In Progress
-- Last Session: 2026-01-05
+- Last Session: 2026-01-08
 - Current Branch: main
 - GitHub Repo: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
-- [ ] Debug AI Mentor chat bot (user reported "doesn't work" - check browser console for error)
+- [ ] Test AI Mentor chat bot (improved error handling added - check browser console)
 - [ ] Test Showcase feature end-to-end (Day 21 submission → admin approval → public gallery)
 - [ ] Test Day 1 completion flow (debug logging added - check console)
 - [ ] Test Day 2 new shortlist/validation flow end-to-end
@@ -162,7 +162,6 @@ Every day in Dashboard.tsx MUST follow this exact format:
 - [ ] Test Day 0 "Start Here" flow end-to-end
 - [ ] Test My Progress page with real user data
 - [ ] Test Claude Code Guide page (/claude-code) after Day 8 completion
-- [ ] Review and update badges for 21-day challenge structure
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx (replace YOUR_AFFILIATE_ID placeholder)
 - [ ] Add coaching call booking links to Day 1-7 and Days 19-21
 - [ ] Enable "Book a Call" button in Day 2 when ready (add Calendly link + price)
@@ -178,8 +177,7 @@ Every day in Dashboard.tsx MUST follow this exact format:
 - `.claude/` directory is tracked in git (contains local settings)
 - Old feature/week1-restructure branch can be deleted (already merged)
 - Day 1 completion may not work - debug logging added, needs testing
-- Badges may be outdated for 21-day structure (user reported)
-- AI Mentor chat bot reported not working - error handling improved, needs debugging (check browser console)
+- AI Mentor chat bot reported not working - improved error handling added, needs browser console testing
 
 ---
 
@@ -590,6 +588,46 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - All changes committed and pushed (5 commits this session)
   - TypeScript check passing
   - Next priority: Debug why chat bot isn't working (check browser console for actual error)
+
+### 2026-01-08 - Chat Bot Debugging, Timeline & Badge Fixes
+- Tasks Completed:
+  - **AI Mentor Chat Bot Debugging**:
+    - Verified OpenAI API key is valid and working (tested directly)
+    - Added detailed auth validation in chat endpoint with specific error messages
+    - Enhanced error logging with structured output (message, code, status, type, stack)
+    - Added more specific OpenAI error detection: rate limits, quota, model not found, connection errors
+    - Improved frontend error handling with JSON parse error catching
+    - Added console logging for chat API errors
+  - **Timeline Milestone Fix**:
+    - Changed "Idea" milestone from Day 2 → Day 1 in Sidebar.tsx
+    - Changed "Idea" milestone from Day 2 → Day 1 in Day0StartHere.tsx
+  - **Badge System Overhaul**:
+    - Rewrote badges in seed.ts to align with timeline milestones:
+      - 💡 Ideator (Day 2): Completed Idea phase
+      - 🗺️ Strategist (Day 4): Completed Plan phase
+      - 🎯 Ready to Build (Day 8): Completed Prepare phase
+      - 🏗️ Builder (Day 14): Completed Build phase
+      - ✨ Polisher (Day 18): Completed Polish phase
+      - 🚀 The Launcher (Day 21): LAUNCHED!
+      - 🔥 On Fire! (7-day streak)
+      - ⚡ Unstoppable (14-day streak)
+      - 💎 Elite (21-day streak)
+    - Updated seed.ts to delete old badges before inserting new ones
+    - Rewrote Badges.tsx page to fetch from database API instead of mock data
+    - Badges page now shows Phase Badges and Streak Badges in separate sections
+    - Database seeded with new badges
+  - **Attempted (Reverted)**:
+    - Badge preview with tooltips in sidebar (user didn't like it - reverted)
+- Fixes Applied:
+  - Fixed timeline showing "Idea: Day 2" instead of "Idea: Day 1"
+  - Fixed Badges page using outdated mock data instead of database
+  - Improved chat endpoint error messages for better debugging
+- Notes:
+  - OpenAI API confirmed working - chat issues likely auth-related or frontend
+  - All badge-related pending task now complete
+  - 5 commits ahead of origin (git push failed due to auth - user to push manually)
+  - TypeScript check passing
+  - Next priority: Test chat bot with logged-in user, check browser console for errors
 
 ---
 
