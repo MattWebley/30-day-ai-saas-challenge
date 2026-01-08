@@ -4,83 +4,81 @@ import { dayContent, badges } from "@shared/schema";
 async function seed() {
   console.log("🌱 Seeding database...");
 
-  // Seed badges
+  // Seed badges - aligned with timeline milestones
+  // Idea (Day 1) → Plan (Day 4) → Prepare (Day 8) → Build (Day 14) → Polish (Day 18) → Launch (Day 21)
   console.log("Creating badges...");
   const badgeData = [
+    // Phase completion badges
     {
-      name: "First Steps",
-      description: "Completed Day 1: Chose Your $100K+ Idea",
-      icon: "🎯",
+      name: "Ideator",
+      description: "Completed Idea phase: Found your $100K+ idea",
+      icon: "💡",
       triggerType: "day_completed",
-      triggerValue: 1,
+      triggerValue: 2,
     },
     {
-      name: "Planner",
-      description: "Completed Week 1: Idea & Planning (Days 1-7)",
-      icon: "🔍",
+      name: "Strategist",
+      description: "Completed Plan phase: Features, naming & tech stack done",
+      icon: "🗺️",
       triggerType: "day_completed",
-      triggerValue: 7,
+      triggerValue: 4,
+    },
+    {
+      name: "Ready to Build",
+      description: "Completed Prepare phase: PRD done, first build complete",
+      icon: "🎯",
+      triggerType: "day_completed",
+      triggerValue: 8,
     },
     {
       name: "Builder",
-      description: "Completed Week 2: Build & Verify (Days 8-10)",
+      description: "Completed Build phase: Core features working",
       icon: "🏗️",
-      triggerType: "day_completed",
-      triggerValue: 10,
-    },
-    {
-      name: "Tester",
-      description: "Completed Week 3: Make It Work (Days 11-14)",
-      icon: "🧪",
       triggerType: "day_completed",
       triggerValue: 14,
     },
     {
-      name: "Integrator",
-      description: "Completed Week 4: Infrastructure (Days 15-18)",
-      icon: "⚡",
+      name: "Polisher",
+      description: "Completed Polish phase: Auth, email & admin done",
+      icon: "✨",
       triggerType: "day_completed",
       triggerValue: 18,
     },
     {
-      name: "Launch Ready",
-      description: "Completed Week 5: Polish & Launch Prep (Days 19-20)",
-      icon: "✨",
-      triggerType: "day_completed",
-      triggerValue: 20,
-    },
-    {
       name: "The Launcher",
-      description: "Completed all 21 days and LAUNCHED your SaaS!",
+      description: "LAUNCHED! You completed the 21 Day Challenge!",
       icon: "🚀",
       triggerType: "day_completed",
       triggerValue: 21,
     },
+    // Streak badges
     {
       name: "On Fire!",
-      description: "7-day streak",
+      description: "7-day streak - One week strong!",
       icon: "🔥",
       triggerType: "streak",
       triggerValue: 7,
     },
     {
       name: "Unstoppable",
-      description: "14-day streak",
+      description: "14-day streak - Two weeks of consistency!",
       icon: "⚡",
       triggerType: "streak",
       triggerValue: 14,
     },
     {
-      name: "Elite Consistency",
-      description: "21-day streak - Completed the entire challenge!",
+      name: "Elite",
+      description: "21-day streak - Perfect run through the challenge!",
       icon: "💎",
       triggerType: "streak",
       triggerValue: 21,
     },
   ];
 
+  // Clear existing badges and re-insert (badges don't have a unique constraint besides id)
+  await db.delete(badges);
   for (const badge of badgeData) {
-    await db.insert(badges).values(badge).onConflictDoNothing();
+    await db.insert(badges).values(badge);
   }
 
   // Seed day content (21 days + Start Here)
