@@ -27,6 +27,13 @@
 - Treat GitHub as the single source of truth.
 - All steps must be safe, reversible, and transparent.
 
+### Dev Server (CRITICAL)
+- **NEVER run `npm run dev` in background mode** - this causes stale processes that block port 5000
+- The `npm run dev` script automatically kills any process on port 5000 before starting
+- If port 5000 is blocked, run: `fuser -k 5000/tcp` to kill stale processes
+- Let the user start the dev server via Replit's Run button when possible
+- If you must start the server, use regular `npm run dev` (NOT with `run_in_background: true`)
+
 ---
 
 ## Project Overview
