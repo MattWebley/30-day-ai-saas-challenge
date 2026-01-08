@@ -761,22 +761,78 @@ export default function Admin() {
 
           {showChatSection && (
             <div className="space-y-6">
-              {/* Chatbot Rules */}
+              {/* Default Rules Display */}
               <Card className="p-6 border-2 border-slate-100">
                 <div className="flex items-center gap-2 mb-4">
-                  <Bot className="w-5 h-5 text-primary" />
+                  <Bot className="w-5 h-5 text-slate-600" />
+                  <h3 className="font-semibold text-slate-900">Default Chatbot Rules</h3>
+                  <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded">Read-only</span>
+                </div>
+
+                <div className="space-y-4 text-sm">
+                  <div>
+                    <h4 className="font-medium text-slate-900 mb-2">Response Style</h4>
+                    <ul className="space-y-1 text-slate-600 ml-4">
+                      <li>• Be BRIEF - max 2-3 sentences per point</li>
+                      <li>• Use bullet points for multiple items</li>
+                      <li>• Give ONE clear action, not a list of options</li>
+                      <li>• No fluff, no preamble, no "Great question!"</li>
+                      <li>• Get straight to the answer</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-slate-900 mb-2">Scope</h4>
+                    <div className="grid md:grid-cols-2 gap-4 ml-4">
+                      <div>
+                        <p className="text-slate-500 text-xs uppercase mb-1">Helps with:</p>
+                        <p className="text-slate-600">Ideas, planning, coding, debugging, tech decisions, APIs, auth, testing</p>
+                      </div>
+                      <div>
+                        <p className="text-slate-500 text-xs uppercase mb-1">Won't help with:</p>
+                        <p className="text-slate-600">Sales, marketing, pricing, business strategy, post-launch growth</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-slate-900 mb-2">Business Question Redirect</h4>
+                    <p className="text-slate-600 ml-4 italic">
+                      "This challenge focuses on building. For business strategy, see Matt's mentorship: mattwebley.com/workwithmatt"
+                    </p>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium text-slate-900 mb-2">Core Rules</h4>
+                    <ul className="space-y-1 text-slate-600 ml-4">
+                      <li>1. Reference user's idea/features when relevant</li>
+                      <li>2. ONE clear next step when stuck</li>
+                      <li>3. Keep them on their current day's task</li>
+                    </ul>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Custom Rules Editor */}
+              <Card className="p-6 border-2 border-slate-100">
+                <div className="flex items-center gap-2 mb-4">
+                  <Bot className="w-5 h-5 text-slate-600" />
                   <h3 className="font-semibold text-slate-900">Custom Rules</h3>
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Editable</span>
                 </div>
                 <p className="text-sm text-slate-500 mb-4">
-                  Add additional rules that will be appended to the AI mentor's system prompt. These rules will override or supplement the default behavior.
+                  Add additional rules that will be appended to the default rules above. These will be added to the AI mentor's system prompt.
                 </p>
                 <textarea
                   value={chatbotRules}
                   onChange={(e) => setChatbotRules(e.target.value)}
-                  placeholder="Example: Always recommend booking a call for complex business questions. Never discuss competitor products by name."
-                  className="w-full h-32 p-3 rounded-lg border-2 border-slate-200 bg-slate-50 text-sm resize-none focus:outline-none focus:border-primary"
+                  placeholder="Example:&#10;- Always recommend booking a call for complex business questions&#10;- Never discuss competitor products by name&#10;- Encourage users to complete one day at a time"
+                  className="w-full h-32 p-3 rounded-lg border-2 border-slate-200 bg-white text-sm resize-none focus:outline-none focus:border-slate-400"
                 />
-                <div className="mt-4 flex justify-end">
+                <div className="mt-4 flex items-center justify-between">
+                  <p className="text-xs text-slate-400">
+                    {chatbotRules.trim() ? `${chatbotRules.trim().split('\n').length} custom rule(s)` : 'No custom rules set'}
+                  </p>
                   <Button
                     onClick={() => saveChatbotSettings.mutate({ customRules: chatbotRules })}
                     disabled={saveChatbotSettings.isPending}
