@@ -1189,6 +1189,20 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
   // AI Build Coach chat endpoint
   app.post("/api/chat", isAuthenticated, async (req: any, res) => {
     try {
+      // Debug: Log user object to diagnose auth issues
+      if (!req.user) {
+        console.error("Chat error: req.user is undefined");
+        return res.status(401).json({ message: "User session not found. Please log in again." });
+      }
+      if (!req.user.claims) {
+        console.error("Chat error: req.user.claims is undefined", { user: req.user });
+        return res.status(401).json({ message: "Invalid session. Please log in again." });
+      }
+      if (!req.user.claims.sub) {
+        console.error("Chat error: req.user.claims.sub is undefined", { claims: req.user.claims });
+        return res.status(401).json({ message: "User ID not found. Please log in again." });
+      }
+
       const userId = req.user.claims.sub;
       const { message, context, history } = req.body;
 
@@ -1308,17 +1322,32 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       res.json({ response: reply });
     } catch (error: any) {
-      console.error("Error in chat:", error);
+      console.error("Error in chat:", {
+        message: error.message,
+        code: error.code,
+        status: error.status,
+        type: error.type,
+        stack: error.stack?.split('\n').slice(0, 3).join('\n'),
+      });
 
       // Check for specific OpenAI errors
-      if (error.code === 'invalid_api_key' || error.message?.includes('API key')) {
+      if (error.code === 'invalid_api_key' || error.message?.includes('API key') || error.message?.includes('Incorrect API key')) {
         return res.status(500).json({ message: "AI service not configured. Please contact support." });
       }
-      if (error.code === 'insufficient_quota') {
-        return res.status(500).json({ message: "AI service temporarily unavailable. Please try again later." });
+      if (error.code === 'insufficient_quota' || error.message?.includes('quota')) {
+        return res.status(500).json({ message: "AI service temporarily unavailable (quota exceeded). Please try again later." });
+      }
+      if (error.code === 'rate_limit_exceeded' || error.status === 429) {
+        return res.status(429).json({ message: "Too many requests to AI service. Please wait a moment and try again." });
+      }
+      if (error.code === 'model_not_found') {
+        return res.status(500).json({ message: "AI model configuration error. Please contact support." });
+      }
+      if (error.message?.includes('Connection') || error.code === 'ECONNREFUSED') {
+        return res.status(503).json({ message: "Could not connect to AI service. Please try again." });
       }
 
-      res.status(500).json({ message: error.message || "Failed to get response" });
+      res.status(500).json({ message: error.message || "Failed to get response from AI. Please try again." });
     }
   });
 

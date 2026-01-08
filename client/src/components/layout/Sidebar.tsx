@@ -152,8 +152,9 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   const maxVisibleDay = testMode ? totalDays : Math.max(lastCompleted + 3, currentDay + 2, 3);
 
   // Milestone definitions for battle pass style progress
+  // Day number shows when each phase begins (displayed to user)
   const milestones = [
-    { day: 2, label: "Idea", icon: Lightbulb, percentage: (2 / totalDays) * 100 },
+    { day: 1, label: "Idea", icon: Lightbulb, percentage: (2 / totalDays) * 100 },
     { day: 4, label: "Plan", icon: Map, percentage: (4 / totalDays) * 100 },
     { day: 8, label: "Prepare", icon: Target, percentage: (8 / totalDays) * 100 },
     { day: 14, label: "Build", icon: Hammer, percentage: (14 / totalDays) * 100 },

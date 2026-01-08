@@ -63,7 +63,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
   ];
 
   const milestones = [
-    { day: 2, label: "Idea" },
+    { day: 1, label: "Idea" },
     { day: 4, label: "Plan" },
     { day: 8, label: "Prepare" },
     { day: 14, label: "Build" },

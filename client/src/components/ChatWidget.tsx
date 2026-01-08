@@ -75,9 +75,16 @@ export function ChatWidget({ currentDay = 1 }: ChatWidgetProps) {
         }),
       });
 
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (parseError) {
+        console.error("Failed to parse chat response:", parseError);
+        return { error: "parse_error", message: "Received invalid response from server. Please try again." };
+      }
 
       if (!res.ok) {
+        console.error("Chat API error:", { status: res.status, data });
         // Return error data so onSuccess can handle rate limits
         return { error: data.error || "server_error", message: data.message || "Something went wrong" };
       }
