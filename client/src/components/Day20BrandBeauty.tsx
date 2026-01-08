@@ -4,12 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
-  Palette,
-  CheckCircle2,
   ChevronRight,
-  Trophy,
-  ArrowRight,
-  Sparkles
+  ArrowRight
 } from "lucide-react";
 
 interface Day20BrandBeautyProps {
@@ -39,30 +35,20 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <Palette className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Polish Your Brand</h3>
-            <p className="text-slate-600 mt-1">Make your app look professional and consistent.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Polish Your Brand</h3>
+        <p className="text-slate-600 mt-1">Make your app look professional and consistent.</p>
       </Card>
 
       {/* Step 1: Choose Brand Color */}
       {step === "choose" && (
         <>
           <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <div className="flex items-start gap-3">
-              <Sparkles className="w-5 h-5 text-slate-600 shrink-0 mt-0.5" />
-              <div className="text-sm text-slate-700">
-                <p className="font-medium">Keep It Simple</p>
-                <p className="mt-1">
-                  You don't need a fancy brand. Pick ONE primary color, use it consistently,
-                  and keep everything else clean (white/gray backgrounds, dark text).
-                </p>
-              </div>
+            <div className="text-sm text-slate-700">
+              <p className="font-medium">Keep It Simple</p>
+              <p className="mt-1">
+                You don't need a fancy brand. Pick ONE primary color, use it consistently,
+                and keep everything else clean (white/gray backgrounds, dark text).
+              </p>
             </div>
           </Card>
 
@@ -155,7 +141,7 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
       {/* Step 2: Apply Brand */}
       {step === "apply" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Your Brand Color</h4>
             <div className="flex items-center gap-4">
               <div
@@ -224,8 +210,7 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={() => setStep("done")}
           >
-            <CheckCircle2 className="w-5 h-5" />
-            I Applied the Brand
+            I Applied the Brand <ArrowRight className="w-5 h-5" />
           </Button>
         </>
       )}
@@ -233,11 +218,8 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
       {/* Step 3: Done */}
       {step === "done" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Brand Applied!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Brand Applied!</h4>
             <p className="text-slate-700">
               Your app now has consistent, professional branding. First impressions matter,
               and yours just got better.
@@ -266,7 +248,6 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
                 className="flex-1"
                 onClick={() => setBrandApplied(true)}
               >
-                <CheckCircle2 className="w-4 h-4 mr-2" />
                 Looks professional!
               </Button>
               <Button

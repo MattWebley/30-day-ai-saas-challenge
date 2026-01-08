@@ -2,19 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Brain,
-  CheckCircle2,
-  ChevronRight,
-  Trophy,
-  ArrowRight,
-  ExternalLink,
-  Zap,
-  Key,
-  Copy,
-  CreditCard,
-  Lock
-} from "lucide-react";
+import { ChevronRight, ExternalLink, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Day13AIBrainProps {
@@ -43,15 +31,8 @@ export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <Brain className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Add The AI Brain</h3>
-            <p className="text-slate-600 mt-1">Give your app intelligence. This is what makes AI SaaS special.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Add The AI Brain</h3>
+        <p className="text-slate-600 mt-1">Give your app intelligence. This is what makes AI SaaS special.</p>
       </Card>
 
       {step === "setup" && (
@@ -60,8 +41,8 @@ export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
           {/* Step 1: Create OpenAI Account */}
           <Card className="p-6 border-2 border-slate-200">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="font-bold text-green-700">1</span>
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                <span className="font-bold text-slate-700">1</span>
               </div>
               <h4 className="font-bold text-lg text-slate-900">Create OpenAI Account & Add Credits</h4>
             </div>
@@ -94,8 +75,8 @@ export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
           {/* Step 2: Get API Key */}
           <Card className="p-6 border-2 border-slate-200">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                <span className="font-bold text-amber-700">2</span>
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                <span className="font-bold text-slate-700">2</span>
               </div>
               <h4 className="font-bold text-lg text-slate-900">Get Your API Key</h4>
             </div>
@@ -111,10 +92,9 @@ export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
                 </ol>
               </div>
 
-              <div className="flex items-start gap-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
-                <Key className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                <p className="text-sm text-amber-800">
-                  Your API key looks like: <code className="bg-amber-100 px-1 rounded">sk-proj-xxxxxxxxxxxxx</code><br/>
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-sm text-slate-700">
+                  Your API key looks like: <code className="bg-slate-200 px-1 rounded">sk-proj-xxxxxxxxxxxxx</code><br/>
                   Keep it secret - anyone with this key can use your credits!
                 </p>
               </div>
@@ -133,8 +113,8 @@ export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
           {/* Step 3: Add to Replit Secrets */}
           <Card className="p-6 border-2 border-slate-200">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                <span className="font-bold text-indigo-700">3</span>
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                <span className="font-bold text-slate-700">3</span>
               </div>
               <h4 className="font-bold text-lg text-slate-900">Add Key to Replit Secrets</h4>
             </div>
@@ -169,9 +149,8 @@ export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
                 </Button>
               </div>
 
-              <div className="flex items-start gap-3 p-3 bg-indigo-50 rounded-lg border border-indigo-200">
-                <Lock className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
-                <p className="text-sm text-indigo-800">
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-sm text-slate-700">
                   <strong>Why Secrets?</strong> Your API key stays hidden from your code.
                   Anyone viewing your code can't steal it. Your app accesses it securely.
                 </p>
@@ -182,8 +161,8 @@ export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
           {/* Step 4: Describe Your AI Feature */}
           <Card className="p-6 border-2 border-slate-200">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                <span className="font-bold text-primary">4</span>
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                <span className="font-bold text-slate-700">4</span>
               </div>
               <h4 className="font-bold text-lg text-slate-900">Describe Your AI Feature</h4>
             </div>
@@ -210,8 +189,8 @@ Example: 'AI will analyze uploaded data and give actionable insights'"
           {/* Step 5: Tell Claude Code */}
           <Card className="p-6 border-2 border-slate-200">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                <span className="font-bold text-primary">5</span>
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center">
+                <span className="font-bold text-slate-700">5</span>
               </div>
               <h4 className="font-bold text-lg text-slate-900">Tell Claude Code to Build It</h4>
             </div>
@@ -245,17 +224,12 @@ Use GPT-3.5-turbo for speed and low cost. Make sure to handle errors gracefully.
             </div>
           </Card>
 
-          <Card className="p-4 border-2 border-green-200 bg-green-50">
-            <div className="flex items-start gap-3">
-              <Zap className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-              <div className="text-sm text-green-800">
-                <p className="font-medium">Cost is low</p>
-                <p className="mt-1">
-                  GPT-3.5: ~$0.002 per 1K tokens (500 calls for $1)<br />
-                  GPT-4: ~$0.06 per 1K tokens (more capable but pricier)
-                </p>
-              </div>
-            </div>
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="font-medium text-sm text-slate-900">Cost is low</p>
+            <p className="mt-1 text-sm text-slate-700">
+              GPT-3.5: ~$0.002 per 1K tokens (500 calls for $1)<br />
+              GPT-4: ~$0.06 per 1K tokens (more capable but pricier)
+            </p>
           </Card>
 
           <Button
@@ -263,7 +237,6 @@ Use GPT-3.5-turbo for speed and low cost. Make sure to handle errors gracefully.
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={() => setStep("test")}
           >
-            <CheckCircle2 className="w-5 h-5" />
             I Built It - Let's Test!
           </Button>
         </>
@@ -272,11 +245,8 @@ Use GPT-3.5-turbo for speed and low cost. Make sure to handle errors gracefully.
       {/* Step 3: Test and Document */}
       {step === "test" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Your App Has AI!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <h4 className="font-bold text-lg text-slate-900 mb-2">Your App Has AI!</h4>
             <p className="text-slate-700">
               You've added intelligence to your product. This is what separates you from basic tools.
             </p>

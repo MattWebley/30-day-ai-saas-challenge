@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Lightbulb, Target, Zap, CheckCircle2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 
 interface Feature {
@@ -89,65 +89,40 @@ export function Day3CoreFeatures({
       <div className="space-y-6">
         <Card className="p-6 border-2 border-slate-200 bg-white">
           <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <Lightbulb className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-slate-900 mb-2">Your Idea</h3>
-                <p className="text-slate-700">{userIdea}</p>
-              </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-2">Your Idea</h3>
+              <p className="text-slate-700">{userIdea}</p>
             </div>
 
-            <div className="flex items-start gap-3">
-              <Target className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
-              <div>
-                <h3 className="font-semibold text-slate-900 mb-2">Pain Points</h3>
-                <ul className="list-disc list-inside space-y-1 text-slate-700">
-                  {userPainPoints.map((pain, idx) => (
-                    <li key={idx}>{pain}</li>
-                  ))}
-                </ul>
-              </div>
+            <div>
+              <h3 className="font-semibold text-slate-900 mb-2">Pain Points</h3>
+              <ul className="list-disc list-inside space-y-1 text-slate-700">
+                {userPainPoints.map((pain, idx) => (
+                  <li key={idx}>{pain}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </Card>
 
-        <Card className="p-6 border-2 border-primary bg-gradient-to-br from-blue-50 to-indigo-50">
-          <div className="space-y-4 text-center">
-            <Zap className="w-12 h-12 text-primary mx-auto" />
-            <div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
-                Ready to Define Your Features?
-              </h3>
-              <p className="text-slate-600 mb-4">
-                AI will analyze your idea and generate:
-              </p>
-              <ul className="text-left space-y-2 max-w-md mx-auto mb-6">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-slate-700">
-                    <strong>Core Features:</strong> Essential features based on your pain points
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-slate-700">
-                    <strong>Shared Features:</strong> Must-haves your competitors all have
-                  </span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-slate-700">
-                    <strong>USP Features:</strong> Unique features that make you stand out
-                  </span>
-                </li>
-              </ul>
-            </div>
+        <Card className="p-6 border-2 border-slate-200 bg-white">
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-slate-900">
+              Ready to Define Your Features?
+            </h3>
+            <p className="text-slate-600">
+              AI will analyze your idea and generate:
+            </p>
+            <ul className="space-y-2 text-slate-700">
+              <li><strong>Core Features:</strong> Essential features based on your pain points</li>
+              <li><strong>Shared Features:</strong> Must-haves your competitors all have</li>
+              <li><strong>USP Features:</strong> Unique features that make you stand out</li>
+            </ul>
 
             <Button
               size="lg"
               onClick={() => generateFeatures.mutate()}
               disabled={generateFeatures.isPending}
-              className="w-full max-w-xs"
             >
               {generateFeatures.isPending ? (
                 <>
@@ -179,18 +154,15 @@ export function Day3CoreFeatures({
         {/* Core Features */}
         {coreFeatures.length > 0 && (
           <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Target className="w-5 h-5 text-primary" />
-              <h4 className="font-bold text-slate-900">Core Features</h4>
-            </div>
-            <p className="text-sm text-slate-600 mb-3">
+            <h4 className="font-bold text-slate-900 mb-1">Core Features</h4>
+            <p className="text-sm text-slate-500 mb-3">
               Essential features based on your pain points
             </p>
             <div className="space-y-3">
               {coreFeatures.map((feature, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-3 p-3 rounded-lg border-2 border-slate-200 bg-white hover:border-primary transition-colors"
+                  className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-300 transition-colors"
                 >
                   <Checkbox
                     checked={selectedFeatures.has(feature.name)}
@@ -210,18 +182,15 @@ export function Day3CoreFeatures({
         {/* Shared Features */}
         {sharedFeatures.length > 0 && (
           <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <CheckCircle2 className="w-5 h-5 text-amber-600" />
-              <h4 className="font-bold text-slate-900">Shared Must-Have Features</h4>
-            </div>
-            <p className="text-sm text-slate-600 mb-3">
+            <h4 className="font-bold text-slate-900 mb-1">Shared Must-Have Features</h4>
+            <p className="text-sm text-slate-500 mb-3">
               Features your competitors all have - you need these to compete
             </p>
             <div className="space-y-3">
               {sharedFeatures.map((feature, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-3 p-3 rounded-lg border-2 border-slate-200 bg-white hover:border-primary transition-colors"
+                  className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-300 transition-colors"
                 >
                   <Checkbox
                     checked={selectedFeatures.has(feature.name)}
@@ -241,18 +210,15 @@ export function Day3CoreFeatures({
         {/* USP Features */}
         {uspFeatures.length > 0 && (
           <div className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <Zap className="w-5 h-5 text-green-600" />
-              <h4 className="font-bold text-slate-900">Your Unique Features (USP)</h4>
-            </div>
-            <p className="text-sm text-slate-600 mb-3">
+            <h4 className="font-bold text-slate-900 mb-1">Your Unique Features (USP)</h4>
+            <p className="text-sm text-slate-500 mb-3">
               What makes you different from the competition
             </p>
             <div className="space-y-3">
               {uspFeatures.map((feature, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-3 p-3 rounded-lg border-2 border-slate-200 bg-white hover:border-primary transition-colors"
+                  className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-300 transition-colors"
                 >
                   <Checkbox
                     checked={selectedFeatures.has(feature.name)}

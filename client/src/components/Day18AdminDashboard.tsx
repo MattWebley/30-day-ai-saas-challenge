@@ -3,15 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  LayoutDashboard,
-  CheckCircle2,
   ChevronRight,
-  Trophy,
-  ArrowRight,
-  Users,
-  Activity,
-  TrendingUp,
-  BarChart3
+  ArrowRight
 } from "lucide-react";
 
 interface Day18AdminDashboardProps {
@@ -20,10 +13,10 @@ interface Day18AdminDashboardProps {
 }
 
 const METRIC_OPTIONS = [
-  { id: "total-users", icon: Users, name: "Total Users", desc: "How many people signed up" },
-  { id: "active-users", icon: Activity, name: "Active Users", desc: "Used app in last 7 days" },
-  { id: "new-users", icon: TrendingUp, name: "New This Week", desc: "Signups in past 7 days" },
-  { id: "total-actions", icon: BarChart3, name: "Total Actions", desc: "How many times main feature was used" },
+  { id: "total-users", name: "Total Users", desc: "How many people signed up" },
+  { id: "active-users", name: "Active Users", desc: "Used app in last 7 days" },
+  { id: "new-users", name: "New This Week", desc: "Signups in past 7 days" },
+  { id: "total-actions", name: "Total Actions", desc: "How many times main feature was used" },
 ];
 
 export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboardProps) {
@@ -49,15 +42,8 @@ export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboard
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <LayoutDashboard className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Build Your Admin Dashboard</h3>
-            <p className="text-slate-600 mt-1">Know what's happening in your app. Data-driven decisions start here.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Build Your Admin Dashboard</h3>
+        <p className="text-slate-600 mt-1">Know what's happening in your app. Data-driven decisions start here.</p>
       </Card>
 
       {/* Step 1: Choose Metrics */}
@@ -75,7 +61,7 @@ export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboard
                   key={metric.id}
                   className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
                     selectedMetrics.has(metric.id)
-                      ? "border-primary bg-primary/5"
+                      ? "border-slate-400 bg-slate-50"
                       : "border-slate-200 hover:border-slate-300"
                   }`}
                   onClick={() => toggleMetric(metric.id)}
@@ -86,7 +72,6 @@ export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboard
                     onChange={() => toggleMetric(metric.id)}
                     className="w-4 h-4"
                   />
-                  <metric.icon className={`w-5 h-5 ${selectedMetrics.has(metric.id) ? "text-primary" : "text-slate-400"}`} />
                   <div>
                     <span className="font-medium text-slate-900">{metric.name}</span>
                     <p className="text-xs text-slate-600">{metric.desc}</p>
@@ -121,7 +106,7 @@ export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboard
       {/* Step 2: Build the Dashboard */}
       {step === "build" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Your Metrics</h4>
             <div className="flex flex-wrap gap-2">
               {Array.from(selectedMetrics).map((id) => {
@@ -190,8 +175,7 @@ export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboard
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={() => setStep("check")}
           >
-            <CheckCircle2 className="w-5 h-5" />
-            I Built It - Check My Stats
+            I Built It - Check My Stats <ArrowRight className="w-5 h-5" />
           </Button>
         </>
       )}
@@ -199,11 +183,8 @@ export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboard
       {/* Step 3: Check Your Stats */}
       {step === "check" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Admin Dashboard Built!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Admin Dashboard Built!</h4>
             <p className="text-slate-700">
               You now have visibility into your app. No more guessing - you can see exactly what's happening.
             </p>
@@ -221,7 +202,6 @@ export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboard
                 className="flex-1"
                 onClick={() => setDashboardBuilt(true)}
               >
-                <CheckCircle2 className="w-4 h-4 mr-2" />
                 Dashboard works!
               </Button>
               <Button

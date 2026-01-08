@@ -5,19 +5,11 @@ import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
-  Sparkles,
   Loader2,
   Check,
   ChevronRight,
   ChevronLeft,
   ExternalLink,
-  Globe,
-  AlertCircle,
-  CheckCircle2,
-  AlertTriangle,
-  DollarSign,
-  Ban,
-  Lightbulb
 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -260,118 +252,87 @@ Return ONLY valid JSON:
             className="space-y-6"
           >
             {/* Hero */}
-            <Card className="p-6 border-2 border-primary bg-gradient-to-br from-blue-50 to-indigo-50">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-                  <Globe className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-extrabold text-slate-900">Name It RIGHT</h3>
-                  <p className="text-slate-600 mt-1">
-                    Your name is your first impression. Get this right.
-                  </p>
-                </div>
-              </div>
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <h3 className="text-2xl font-extrabold text-slate-900">Name It RIGHT</h3>
+              <p className="text-slate-600 mt-1">
+                Your name is your first impression. Get this right.
+              </p>
             </Card>
 
             {/* The Rules */}
             <Card className="p-6 border-2 border-slate-200 bg-white">
-              <h4 className="font-bold text-slate-900 text-lg mb-4 flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-amber-500" />
+              <h4 className="font-bold text-slate-900 text-lg mb-4">
                 The Golden Rules of SaaS Naming
               </h4>
               <div className="space-y-4">
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-bold text-green-900">Always get the .com</div>
-                    <div className="text-sm text-green-800">
-                      Not .io, not .co, not .app. The .com. It's what people type automatically.
-                      If you can't get the .com, pick a different name.
-                    </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                  <div className="font-bold text-slate-900">Always get the .com</div>
+                  <div className="text-sm text-slate-700">
+                    Not .io, not .co, not .app. The .com. It's what people type automatically.
+                    If you can't get the .com, pick a different name.
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-bold text-green-900">Keep it SHORT</div>
-                    <div className="text-sm text-green-800">
-                      1-2 words. Under 10 characters. Easy to type, easy to remember, easy to say out loud.
-                    </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                  <div className="font-bold text-slate-900">Keep it SHORT</div>
+                  <div className="text-sm text-slate-700">
+                    1-2 words. Under 10 characters. Easy to type, easy to remember, easy to say out loud.
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-bold text-green-900">Make it SPEAKABLE</div>
-                    <div className="text-sm text-green-800">
-                      Say it out loud. If you have to spell it for people, it's wrong.
-                      "It's Trello, T-R-E-L-L-O" is fine. "It's Xqyzt, X-Q-Y-Z-T" is not.
-                    </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                  <div className="font-bold text-slate-900">Make it SPEAKABLE</div>
+                  <div className="text-sm text-slate-700">
+                    Say it out loud. If you have to spell it for people, it's wrong.
+                    "It's Trello, T-R-E-L-L-O" is fine. "It's Xqyzt, X-Q-Y-Z-T" is not.
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-bold text-green-900">Be UNIQUE</div>
-                    <div className="text-sm text-green-800">
-                      "ProjectManager" is not a name. "Asana" is. Made-up words that sound good are
-                      often better than descriptive names.
-                    </div>
+                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                  <div className="font-bold text-slate-900">Be UNIQUE</div>
+                  <div className="text-sm text-slate-700">
+                    "ProjectManager" is not a name. "Asana" is. Made-up words that sound good are
+                    often better than descriptive names.
                   </div>
                 </div>
               </div>
             </Card>
 
             {/* What to AVOID */}
-            <Card className="p-6 border-2 border-red-200 bg-red-50">
-              <h4 className="font-bold text-red-900 text-lg mb-4 flex items-center gap-2">
-                <Ban className="w-5 h-5" />
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <h4 className="font-bold text-slate-900 text-lg mb-4">
                 What to AVOID
               </h4>
               <div className="space-y-3">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-bold text-red-900">No hyphens or numbers</div>
-                    <div className="text-sm text-red-800">
-                      "task-hub-123.com" looks cheap and confusing. Don't do it.
-                    </div>
+                <div>
+                  <div className="font-bold text-slate-900">No hyphens or numbers</div>
+                  <div className="text-sm text-slate-700">
+                    "task-hub-123.com" looks cheap and confusing. Don't do it.
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-bold text-red-900">Don't overpay for domains</div>
-                    <div className="text-sm text-red-800">
-                      A .com should cost ~$10-15/year. If someone wants $500+ for a domain, pick a different name.
-                      Domain squatters are not worth it at this stage.
-                    </div>
+                <div>
+                  <div className="font-bold text-slate-900">Don't overpay for domains</div>
+                  <div className="text-sm text-slate-700">
+                    A .com should cost ~$10-15/year. If someone wants $500+ for a domain, pick a different name.
+                    Domain squatters are not worth it at this stage.
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <div className="font-bold text-red-900">Don't be too generic</div>
-                    <div className="text-sm text-red-800">
-                      "Analytics Platform" or "Marketing Tool" - these aren't names, they're descriptions.
-                      You can't trademark a generic term.
-                    </div>
+                <div>
+                  <div className="font-bold text-slate-900">Don't be too generic</div>
+                  <div className="text-sm text-slate-700">
+                    "Analytics Platform" or "Marketing Tool" - these aren't names, they're descriptions.
+                    You can't trademark a generic term.
                   </div>
                 </div>
               </div>
             </Card>
 
             {/* Domain Pricing Education */}
-            <Card className="p-6 border-2 border-amber-200 bg-amber-50">
-              <h4 className="font-bold text-amber-900 text-lg mb-3 flex items-center gap-2">
-                <DollarSign className="w-5 h-5" />
+            <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+              <h4 className="font-bold text-slate-900 text-lg mb-3">
                 What Domains SHOULD Cost
               </h4>
-              <div className="space-y-2 text-sm text-amber-900">
+              <div className="space-y-2 text-sm text-slate-700">
                 <p>
                   <strong>Normal .com registration:</strong> $10-15/year
                 </p>
@@ -405,9 +366,6 @@ Return ONLY valid JSON:
             className="space-y-6"
           >
             <div className="text-center">
-              <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-7 h-7 text-white" />
-              </div>
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Generate Name Ideas</h2>
               <p className="text-slate-500 max-w-lg mx-auto">
                 AI will create names based on your idea, pain points, and features.
@@ -428,7 +386,7 @@ Return ONLY valid JSON:
                   ) : aiAttempts >= MAX_AI_ATTEMPTS ? (
                     <>No attempts left</>
                   ) : (
-                    <><Sparkles className="w-4 h-4" /> Generate 6 Name Ideas {aiAttempts > 0 ? `(${MAX_AI_ATTEMPTS - aiAttempts} left)` : ''}</>
+                    <>Generate 6 Name Ideas {aiAttempts > 0 ? `(${MAX_AI_ATTEMPTS - aiAttempts} left)` : ''}</>
                   )}
                 </Button>
               </div>
@@ -446,7 +404,7 @@ Return ONLY valid JSON:
                           onClick={() => selectName(i)}
                           className={`p-4 rounded-lg border-2 text-left transition-all ${
                             selectedIndex === i
-                              ? 'border-primary bg-blue-50'
+                              ? 'border-slate-400 bg-slate-50'
                               : 'border-slate-200 hover:border-slate-300 bg-white'
                           }`}
                         >
@@ -460,7 +418,6 @@ Return ONLY valid JSON:
                               </div>
                               <p className="text-sm text-slate-600 italic mb-2">"{suggestion.tagline}"</p>
                               <div className="flex items-center gap-2 mb-2">
-                                <Globe className="w-4 h-4 text-slate-400" />
                                 <span className="text-sm font-mono text-slate-700">{suggestion.domain}.com</span>
                               </div>
                               <p className="text-xs text-slate-500">{suggestion.why}</p>
@@ -524,9 +481,6 @@ Return ONLY valid JSON:
             className="space-y-6"
           >
             <div className="text-center">
-              <div className="w-14 h-14 rounded-full bg-green-600 flex items-center justify-center mx-auto mb-4">
-                <Check className="w-7 h-7 text-white" />
-              </div>
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Great Choice!</h2>
               <p className="text-slate-500">
                 Let's make sure you can get the domain.
@@ -550,50 +504,44 @@ Return ONLY valid JSON:
                   {isChecking ? (
                     <><Loader2 className="w-4 h-4 animate-spin" /> Checking...</>
                   ) : (
-                    <><Globe className="w-4 h-4" /> Check Domain Availability</>
+                    <>Check Domain Availability</>
                   )}
                 </Button>
 
                 {domainResults[finalDomain.replace('.com', '')] && (
                   <div className="mt-4">
                     {domainResults[finalDomain.replace('.com', '')].available ? (
-                      <div className="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
-                        <div className="flex items-start gap-3">
-                          <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5" />
-                          <div className="flex-1">
-                            <p className="font-bold text-green-900 mb-1">Likely Available!</p>
-                            <p className="text-sm text-green-700 mb-3">
-                              {finalDomain} appears to be available. Register it now before someone else does!
-                            </p>
-                            <Button
-                              className="gap-2 bg-green-600 hover:bg-green-700"
-                              onClick={() => window.open(`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}&aff=YOUR_AFFILIATE_ID`, '_blank')}
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                              Register on Namecheap (~$10/year)
-                            </Button>
-                          </div>
+                      <div className="p-4 bg-slate-50 border-2 border-slate-200 rounded-lg">
+                        <div className="flex-1">
+                          <p className="font-bold text-slate-900 mb-1">Likely Available!</p>
+                          <p className="text-sm text-slate-700 mb-3">
+                            {finalDomain} appears to be available. Register it now before someone else does!
+                          </p>
+                          <Button
+                            className="gap-2"
+                            onClick={() => window.open(`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}&aff=YOUR_AFFILIATE_ID`, '_blank')}
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                            Register on Namecheap (~$10/year)
+                          </Button>
                         </div>
                       </div>
                     ) : (
-                      <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-lg">
-                        <div className="flex items-start gap-3">
-                          <AlertCircle className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <p className="font-bold text-amber-900 mb-1">This domain might be taken</p>
-                            <p className="text-sm text-amber-700 mb-2">
-                              Check Namecheap to confirm. If it's premium-priced ($100+), go back and pick a different name.
-                            </p>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="gap-2"
-                              onClick={() => window.open(`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}&aff=YOUR_AFFILIATE_ID`, '_blank')}
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                              Check on Namecheap
-                            </Button>
-                          </div>
+                      <div className="p-4 bg-slate-50 border-2 border-slate-200 rounded-lg">
+                        <div>
+                          <p className="font-bold text-slate-900 mb-1">This domain might be taken</p>
+                          <p className="text-sm text-slate-700 mb-2">
+                            Check Namecheap to confirm. If it's premium-priced ($100+), go back and pick a different name.
+                          </p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="gap-2"
+                            onClick={() => window.open(`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}&aff=YOUR_AFFILIATE_ID`, '_blank')}
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                            Check on Namecheap
+                          </Button>
                         </div>
                       </div>
                     )}
@@ -603,13 +551,10 @@ Return ONLY valid JSON:
             </Card>
 
             {/* Important Reminder */}
-            <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-              <div className="flex items-start gap-3">
-                <DollarSign className="w-5 h-5 text-amber-600 mt-0.5" />
-                <div className="text-sm text-amber-900">
-                  <strong>Remember:</strong> Only pay ~$10-15/year for a .com. If it's priced higher,
-                  it's a "premium" domain. Pick a different name instead.
-                </div>
+            <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+              <div className="text-sm text-slate-700">
+                <strong>Remember:</strong> Only pay ~$10-15/year for a .com. If it's priced higher,
+                it's a "premium" domain. Pick a different name instead.
               </div>
             </Card>
 
@@ -642,14 +587,11 @@ Return ONLY valid JSON:
             className="space-y-6"
           >
             <div className="text-center py-4">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-green-600" />
-              </div>
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Product Has a Name!</h2>
               <p className="text-slate-500">Welcome to the world, <strong>{finalName}</strong>.</p>
             </div>
 
-            <Card className="p-6 border-4 border-primary">
+            <Card className="p-6 border-4 border-slate-400">
               <div className="text-center">
                 <p className="text-sm font-bold text-slate-500 uppercase mb-2">Your Product</p>
                 <h3 className="text-4xl font-extrabold text-slate-900 mb-2">{finalName}</h3>
@@ -708,7 +650,7 @@ Return ONLY valid JSON:
                         href={platform.checkUrl(finalName)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                        className="flex items-center gap-1 text-sm font-medium text-slate-700 hover:underline"
                       >
                         {platform.id === "domain" ? "Register" : "Check"} <ExternalLink className="w-3 h-3" />
                       </a>
@@ -735,13 +677,10 @@ Return ONLY valid JSON:
             </Card>
 
             {/* Priority tip */}
-            <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-              <div className="flex items-start gap-3">
-                <Lightbulb className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-amber-900">
-                  <strong>Priority order:</strong> Domain first (most important), then Twitter/X and Instagram.
-                  The others can wait until you're ready to use them.
-                </div>
+            <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+              <div className="text-sm text-slate-700">
+                <strong>Priority order:</strong> Domain first (most important), then Twitter/X and Instagram.
+                The others can wait until you're ready to use them.
               </div>
             </Card>
 

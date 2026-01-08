@@ -57,7 +57,8 @@
       "Bash(kill:*)",
       "Bash(curl:*)",
       "WebFetch(domain:mr-follis.github.io)",
-      "Bash(netstat:*)"
+      "Bash(netstat:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

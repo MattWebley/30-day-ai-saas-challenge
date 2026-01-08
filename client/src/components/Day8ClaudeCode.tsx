@@ -4,17 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
-  Terminal,
-  Zap,
-  CheckCircle2,
   ChevronRight,
-  Sparkles,
   ArrowRight,
-  Trophy,
   Copy,
-  Sun,
-  Moon,
-  DollarSign
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -84,47 +76,28 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <Terminal className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Your First Build Win</h3>
-            <p className="text-slate-600 mt-1">Today you'll add ONE thing to your app using Claude Code.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Your First Build Win</h3>
+        <p className="text-slate-600 mt-1">Today you'll add ONE thing to your app using Claude Code.</p>
       </Card>
 
       {/* Why Claude Code - Cost Warning */}
-      <Card className="p-6 border-2 border-amber-300 bg-amber-50">
-        <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-full bg-amber-200 flex items-center justify-center shrink-0">
-            <DollarSign className="w-6 h-6 text-amber-700" />
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-amber-900 mb-2">Why Claude Code? It'll Save You THOUSANDS.</h3>
-            <p className="text-amber-800 mb-3">
-              You CAN just use Replit's built-in AI agent on its own - it's easier to get started. But here's the truth:
-              <strong> it gets VERY expensive, VERY fast.</strong>
-            </p>
-            <p className="text-amber-800">
-              Using Claude Code in the Replit shell drops your development costs by thousands of dollars.
-              Same power, fraction of the price. The workflow below is how I teach my 1:1 mentorship clients to do it.
-            </p>
-          </div>
-        </div>
+      <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+        <h3 className="text-lg font-bold text-slate-900 mb-2">Why Claude Code? It'll Save You THOUSANDS.</h3>
+        <p className="text-slate-700 mb-3">
+          You CAN just use Replit's built-in AI agent on its own - it's easier to get started. But here's the truth:
+          <strong> it gets VERY expensive, VERY fast.</strong>
+        </p>
+        <p className="text-slate-700">
+          Using Claude Code in the Replit shell drops your development costs by thousands of dollars.
+          Same power, fraction of the price. The workflow below is how I teach my 1:1 mentorship clients to do it.
+        </p>
       </Card>
 
       {/* Simple Workflow Section */}
-      <Card className="p-6 border-2 border-primary bg-white">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-            <Terminal className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h3 className="text-xl font-bold text-slate-900">Your Daily Build Routine</h3>
-            <p className="text-slate-600">3 prompts. Copy, paste, build. That's it.</p>
-          </div>
+      <Card className="p-6 border-2 border-slate-200 bg-white">
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-slate-900">Your Daily Build Routine</h3>
+          <p className="text-slate-600">3 prompts. Copy, paste, build. That's it.</p>
         </div>
 
         <div className="bg-slate-50 rounded-lg p-4 mb-6">
@@ -141,14 +114,11 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
             <h4 className="font-bold text-slate-900 mb-3">Copy These 3 Prompts:</h4>
             <div className="space-y-4">
               {/* Install Command */}
-              <div className="border-2 border-green-300 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 bg-green-100">
-                  <div className="flex items-center gap-2">
-                    <Terminal className="w-5 h-5 text-green-700" />
-                    <div>
-                      <span className="font-bold text-slate-900">Step 1: Install Claude Code</span>
-                      <span className="text-xs text-green-700 ml-2">(Run this EVERY session - Replit resets!)</span>
-                    </div>
+              <div className="border-2 border-slate-200 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 bg-slate-50">
+                  <div>
+                    <span className="font-bold text-slate-900">Step 1: Install Claude Code</span>
+                    <span className="text-xs text-slate-600 ml-2">(Run this EVERY session - Replit resets!)</span>
                   </div>
                   <Button
                     variant="outline"
@@ -166,12 +136,9 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
               </div>
 
               {/* Kickoff Prompt */}
-              <div className="border-2 border-amber-200 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 bg-amber-100">
-                  <div className="flex items-center gap-2">
-                    <Sun className="w-5 h-5 text-amber-600" />
-                    <span className="font-bold text-slate-900">Step 2: Session START Prompt</span>
-                  </div>
+              <div className="border-2 border-slate-200 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 bg-slate-50">
+                  <span className="font-bold text-slate-900">Step 2: Session START Prompt</span>
                   <Button
                     variant="outline"
                     size="sm"
@@ -188,12 +155,9 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
               </div>
 
               {/* Wrap-up Prompt */}
-              <div className="border-2 border-indigo-200 rounded-lg overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-3 bg-indigo-100">
-                  <div className="flex items-center gap-2">
-                    <Moon className="w-5 h-5 text-indigo-600" />
-                    <span className="font-bold text-slate-900">Step 3: Session END Prompt</span>
-                  </div>
+              <div className="border-2 border-slate-200 rounded-lg overflow-hidden">
+                <div className="flex items-center justify-between px-4 py-3 bg-slate-50">
+                  <span className="font-bold text-slate-900">Step 3: Session END Prompt</span>
                   <Button
                     variant="outline"
                     size="sm"
@@ -211,16 +175,14 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
             </div>
           </div>
 
-          <div className="flex items-start gap-3 p-4 bg-primary/5 rounded-lg border border-primary/20">
-            <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
             <p className="text-sm text-slate-700">
               <strong>That's it.</strong> Do this every time you open Replit and Claude will remember everything about your project.
               No more explaining from scratch. No more lost work.
             </p>
           </div>
 
-          <div className="flex items-start gap-3 p-4 bg-green-50 rounded-lg border border-green-200">
-            <Terminal className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
+          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
             <p className="text-sm text-slate-700">
               <strong>Good news:</strong> Once you complete today, you'll unlock the <strong>Claude Code Guide</strong> in the menu.
               It has all 3 prompts in one place so you can easily copy them every session.
@@ -248,13 +210,13 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                   }}
                   className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
                     selectedWin === idea && !customWin
-                      ? "border-primary bg-primary/5"
+                      ? "border-slate-400 bg-slate-50"
                       : "border-slate-200 hover:border-slate-300"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                      selectedWin === idea && !customWin ? "border-primary bg-primary" : "border-slate-300"
+                      selectedWin === idea && !customWin ? "border-slate-600 bg-slate-600" : "border-slate-300"
                     }`}>
                       {selectedWin === idea && !customWin && (
                         <div className="w-2 h-2 rounded-full bg-white" />
@@ -295,11 +257,8 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
       {/* Step 2: Build It */}
       {step === "build" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-4">
-              <Zap className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Your Mission</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg text-slate-900 mb-4">Your Mission</h4>
             <p className="text-lg font-medium text-slate-800 bg-white p-4 rounded-lg border border-slate-200">
               "{currentWin}"
             </p>
@@ -343,8 +302,8 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
             </div>
           </Card>
 
-          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-            <p className="text-sm text-amber-800">
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="text-sm text-slate-700">
               <strong>Pro tip:</strong> If something breaks, don't panic. Tell Claude Code: "That broke [describe what's wrong]. Please fix it."
             </p>
           </Card>
@@ -354,7 +313,6 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={handleBuildComplete}
           >
-            <CheckCircle2 className="w-5 h-5" />
             I Built It!
           </Button>
         </>
@@ -363,11 +321,8 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
       {/* Step 3: Capture the Win */}
       {step === "done" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Congratulations!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg text-slate-900 mb-2">Congratulations!</h4>
             <p className="text-slate-700">
               You just used AI to build something real. This is exactly how professional developers work now.
             </p>
@@ -390,17 +345,14 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
           </Card>
 
           <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <div className="flex items-start gap-3">
-              <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <div className="text-sm text-slate-700">
-                <p className="font-medium">What you learned today:</p>
-                <ul className="mt-2 space-y-1 text-slate-600">
-                  <li>• Claude Code can build features for you</li>
-                  <li>• Being specific gets better results</li>
-                  <li>• You can iterate until it's right</li>
-                  <li>• Breaking things is normal - just fix them</li>
-                </ul>
-              </div>
+            <div className="text-sm text-slate-700">
+              <p className="font-medium">What you learned today:</p>
+              <ul className="mt-2 space-y-1 text-slate-600">
+                <li>- Claude Code can build features for you</li>
+                <li>- Being specific gets better results</li>
+                <li>- You can iterate until it's right</li>
+                <li>- Breaking things is normal - just fix them</li>
+              </ul>
             </div>
           </Card>
 

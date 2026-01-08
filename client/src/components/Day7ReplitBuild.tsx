@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ExternalLink, Code2, Rocket, CheckCircle2, Copy } from "lucide-react";
+import { ExternalLink, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Day7ReplitBuildProps {
@@ -69,18 +69,13 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
 
   return (
     <div className="space-y-6">
-      <Card className="p-6 border-2 border-primary bg-gradient-to-br from-blue-50 to-indigo-50">
+      <Card className="p-6 border-2 border-slate-200 bg-white">
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-              <Rocket className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">Time to Build!</h3>
-              <p className="text-slate-600">
-                Today you start building your SaaS in Replit
-              </p>
-            </div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">Time to Build!</h3>
+            <p className="text-slate-600">
+              Today you start building your SaaS in Replit
+            </p>
           </div>
         </div>
       </Card>
@@ -96,7 +91,7 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
           {BUILD_STEPS.map((step, idx) => (
             <div
               key={idx}
-              className="flex items-start gap-3 p-4 rounded-lg border-2 border-slate-200 bg-white hover:border-primary transition-colors"
+              className="flex items-start gap-3 p-4 rounded-lg border-2 border-slate-200 bg-white hover:border-slate-400 transition-colors"
             >
               <Checkbox
                 checked={completedSteps.has(idx)}
@@ -158,7 +153,6 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
             )}
             {allStepsComplete && (
               <div className="flex items-center gap-2 mt-2 text-green-600">
-                <CheckCircle2 className="w-5 h-5" />
                 <span className="font-medium">All steps complete! You're building!</span>
               </div>
             )}
@@ -174,36 +168,23 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
       </Card>
 
       {/* Tips */}
-      <Card className="p-6 border-2 border-amber-200 bg-amber-50">
+      <Card className="p-6 border-2 border-slate-200 bg-slate-50">
         <div className="space-y-3">
-          <h4 className="font-bold text-amber-900 flex items-center gap-2">
-            <Code2 className="w-5 h-5" />
+          <h4 className="font-bold text-slate-900">
             Pro Tips for Building in Replit
           </h4>
-          <ul className="space-y-2 text-sm text-amber-900">
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Start simple:</strong> Build one feature at a time, test it, then move to the next
-              </span>
+          <ul className="space-y-2 text-sm text-slate-700">
+            <li>
+              <strong>Start simple:</strong> Build one feature at a time, test it, then move to the next
             </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Use Claude Code:</strong> Ask it to explain any code you don't understand
-              </span>
+            <li>
+              <strong>Use Claude Code:</strong> Ask it to explain any code you don't understand
             </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Test constantly:</strong> Use Replit's built-in preview to test your app as you build
-              </span>
+            <li>
+              <strong>Test constantly:</strong> Use Replit's built-in preview to test your app as you build
             </li>
-            <li className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <span>
-                <strong>Don't overthink:</strong> Your MVP doesn't need to be perfect, it needs to work
-              </span>
+            <li>
+              <strong>Don't overthink:</strong> Your MVP doesn't need to be perfect, it needs to work
             </li>
           </ul>
         </div>

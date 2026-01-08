@@ -3,13 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Smartphone,
-  CheckCircle2,
   ChevronRight,
-  Trophy,
-  ArrowRight,
-  AlertTriangle,
-  XCircle
+  ArrowRight
 } from "lucide-react";
 
 interface Day19MobileReadyProps {
@@ -52,30 +47,20 @@ export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps)
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <Smartphone className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Test On Your Phone</h3>
-            <p className="text-slate-600 mt-1">Open your app on your actual phone and test everything.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Test On Your Phone</h3>
+        <p className="text-slate-600 mt-1">Open your app on your actual phone and test everything.</p>
       </Card>
 
       {/* Step 1: Test on Phone */}
       {step === "test" && (
         <>
-          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div className="text-sm text-amber-800">
-                <p className="font-medium">Use Your Actual Phone</p>
-                <p className="mt-1">
-                  Don't use browser dev tools - actually open your app URL on your phone.
-                  That's what your users will do.
-                </p>
-              </div>
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <div className="text-sm text-slate-700">
+              <p className="font-medium">Use Your Actual Phone</p>
+              <p className="mt-1">
+                Don't use browser dev tools - actually open your app URL on your phone.
+                That's what your users will do.
+              </p>
             </div>
           </Card>
 
@@ -110,7 +95,7 @@ export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps)
                       className="h-8 px-3"
                       onClick={() => setTestResult(test.id, true)}
                     >
-                      <CheckCircle2 className="w-4 h-4" />
+                      Pass
                     </Button>
                     <Button
                       size="sm"
@@ -118,7 +103,7 @@ export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps)
                       className="h-8 px-3"
                       onClick={() => setTestResult(test.id, false)}
                     >
-                      <XCircle className="w-4 h-4" />
+                      Fail
                     </Button>
                   </div>
                 </div>
@@ -151,9 +136,9 @@ export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps)
       {/* Step 2: Fix Issues */}
       {step === "fix" && (
         <>
-          <Card className="p-6 border-2 border-red-200 bg-red-50">
-            <h4 className="font-bold text-lg mb-2 text-red-900">Found Mobile Issues</h4>
-            <p className="text-sm text-red-700">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Found Mobile Issues</h4>
+            <p className="text-sm text-slate-700">
               You found some things that don't work well on mobile. Let's document and fix them.
             </p>
           </Card>
@@ -192,8 +177,7 @@ The most important one to fix is..."
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={() => setStep("done")}
           >
-            <CheckCircle2 className="w-5 h-5" />
-            I Fixed Them (or noted for later)
+            I Fixed Them (or noted for later) <ArrowRight className="w-5 h-5" />
           </Button>
         </>
       )}
@@ -201,11 +185,8 @@ The most important one to fix is..."
       {/* Step 3: Done */}
       {step === "done" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Mobile Tested!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Mobile Tested!</h4>
             <p className="text-slate-700">
               You've tested your app on an actual phone. Most builders skip this step and find out
               their app is broken on mobile after launch. Not you.

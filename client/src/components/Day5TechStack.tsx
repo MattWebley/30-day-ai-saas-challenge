@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CheckCircle2, ExternalLink, Code2, Zap } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 
 interface Tool {
   name: string;
@@ -76,18 +76,13 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
 
   return (
     <div className="space-y-6">
-      <Card className="p-6 border-2 border-primary bg-gradient-to-br from-blue-50 to-indigo-50">
+      <Card className="p-6 border-2 border-slate-200 bg-white">
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
-              <Zap className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold text-slate-900">Your AI Tech Stack</h3>
-              <p className="text-slate-600">
-                These tools will 10x your development speed
-              </p>
-            </div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-900">Your AI Tech Stack</h3>
+            <p className="text-slate-600">
+              These tools will 10x your development speed
+            </p>
           </div>
         </div>
       </Card>
@@ -95,7 +90,6 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
       {/* Required Tools */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <div className="flex items-center gap-2 mb-4">
-          <Code2 className="w-5 h-5 text-red-600" />
           <h4 className="font-bold text-slate-900">Required Tools</h4>
           <span className="text-xs bg-red-100 text-red-700 px-2 py-1 rounded font-medium">
             MUST HAVE
@@ -109,7 +103,7 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
           {REQUIRED_TOOLS.map((tool, idx) => (
             <div
               key={idx}
-              className="p-4 rounded-lg border-2 border-slate-200 bg-white hover:border-primary transition-colors"
+              className="p-4 rounded-lg border-2 border-slate-200 bg-white hover:border-slate-400 transition-colors"
             >
               <div className="flex items-start gap-3">
                 <Checkbox
@@ -142,7 +136,6 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
       {/* Optional Tools */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <div className="flex items-center gap-2 mb-4">
-          <CheckCircle2 className="w-5 h-5 text-amber-600" />
           <h4 className="font-bold text-slate-900">Optional Tools</h4>
           <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded font-medium">
             NICE TO HAVE

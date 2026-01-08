@@ -3,14 +3,9 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Mail,
-  CheckCircle2,
   ChevronRight,
-  Trophy,
   ArrowRight,
-  ExternalLink,
-  Zap,
-  Inbox
+  ExternalLink
 } from "lucide-react";
 
 interface Day16EmailProps {
@@ -31,15 +26,8 @@ export function Day16Email({ appName, onComplete }: Day16EmailProps) {
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <Mail className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Send Your First Email</h3>
-            <p className="text-slate-600 mt-1">Set up email so your app can communicate with users.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Send Your First Email</h3>
+        <p className="text-slate-600 mt-1">Set up email so your app can communicate with users.</p>
       </Card>
 
       {/* Step 1: Plan What Email to Send */}
@@ -74,15 +62,12 @@ export function Day16Email({ appName, onComplete }: Day16EmailProps) {
             />
           </Card>
 
-          <Card className="p-4 border-2 border-green-200 bg-green-50">
-            <div className="flex items-start gap-3">
-              <Zap className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-              <div className="text-sm text-green-800">
-                <p className="font-medium">Resend: 3,000 emails/month free</p>
-                <p className="mt-1">
-                  That's more than enough for an MVP. Don't worry about cost until you have lots of users.
-                </p>
-              </div>
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <div className="text-sm text-slate-700">
+              <p className="font-medium">Resend: 3,000 emails/month free</p>
+              <p className="mt-1">
+                That's more than enough for an MVP. Don't worry about cost until you have lots of users.
+              </p>
             </div>
           </Card>
 
@@ -101,7 +86,7 @@ export function Day16Email({ appName, onComplete }: Day16EmailProps) {
       {/* Step 2: Set Up Resend */}
       {step === "setup" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Your Email Plan</h4>
             <p className="text-slate-800 bg-white p-4 rounded-lg border border-slate-200">
               "{emailType}"
@@ -119,7 +104,7 @@ export function Day16Email({ appName, onComplete }: Day16EmailProps) {
                     href="https://resend.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-primary hover:underline flex items-center gap-1"
+                    className="text-sm text-slate-700 hover:underline flex items-center gap-1"
                   >
                     resend.com <ExternalLink className="w-3 h-3" />
                   </a>
@@ -154,15 +139,12 @@ export function Day16Email({ appName, onComplete }: Day16EmailProps) {
             </div>
           </Card>
 
-          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-            <div className="flex items-start gap-3">
-              <Inbox className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div className="text-sm text-amber-800">
-                <p className="font-medium">For testing, Resend sends from your domain</p>
-                <p className="mt-1">
-                  In test mode, you can only send to your own email. That's fine for now - you just need to verify it works!
-                </p>
-              </div>
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <div className="text-sm text-slate-700">
+              <p className="font-medium">For testing, Resend sends from your domain</p>
+              <p className="mt-1">
+                In test mode, you can only send to your own email. That's fine for now - you just need to verify it works!
+              </p>
             </div>
           </Card>
 
@@ -171,8 +153,7 @@ export function Day16Email({ appName, onComplete }: Day16EmailProps) {
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={() => setStep("test")}
           >
-            <CheckCircle2 className="w-5 h-5" />
-            I Set It Up - Send Test Email
+            I Set It Up - Send Test Email <ArrowRight className="w-5 h-5" />
           </Button>
         </>
       )}
@@ -180,11 +161,8 @@ export function Day16Email({ appName, onComplete }: Day16EmailProps) {
       {/* Step 3: Test and Verify */}
       {step === "test" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Your App Can Send Email!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Your App Can Send Email!</h4>
             <p className="text-slate-700">
               This is huge. Email is how you'll communicate with users, send notifications, and keep them engaged.
             </p>
@@ -202,7 +180,6 @@ export function Day16Email({ appName, onComplete }: Day16EmailProps) {
                 className="flex-1"
                 onClick={() => setEmailSent(true)}
               >
-                <CheckCircle2 className="w-4 h-4 mr-2" />
                 Yes, I got the email!
               </Button>
               <Button

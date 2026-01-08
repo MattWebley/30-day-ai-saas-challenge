@@ -2,15 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  TestTube2,
-  CheckCircle2,
-  ChevronRight,
-  Trophy,
-  ArrowRight,
-  AlertCircle,
-  Bug
-} from "lucide-react";
+import { ChevronRight, ArrowRight } from "lucide-react";
 
 interface Day12FeatureTestingProps {
   onComplete: (data: {
@@ -36,15 +28,8 @@ export function Day12FeatureTesting({ onComplete }: Day12FeatureTestingProps) {
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <TestTube2 className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Test Every Feature</h3>
-            <p className="text-slate-600 mt-1">Click every button. Try to break things. Find bugs before users do.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Test Every Feature</h3>
+        <p className="text-slate-600 mt-1">Click every button. Try to break things. Find bugs before users do.</p>
       </Card>
 
       {/* Step 1: Testing Mission */}
@@ -69,9 +54,9 @@ export function Day12FeatureTesting({ onComplete }: Day12FeatureTestingProps) {
                 <p className="text-sm text-red-800 font-medium">Error Handling</p>
                 <p className="text-xs text-red-700">What happens when things fail? Are errors helpful?</p>
               </div>
-              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <p className="text-sm text-blue-800 font-medium">Speed</p>
-                <p className="text-xs text-blue-700">Is everything fast enough? Anything annoyingly slow?</p>
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-sm text-slate-800 font-medium">Speed</p>
+                <p className="text-xs text-slate-700">Is everything fast enough? Anything annoyingly slow?</p>
               </div>
             </div>
           </Card>
@@ -118,12 +103,9 @@ export function Day12FeatureTesting({ onComplete }: Day12FeatureTestingProps) {
             </div>
           </Card>
 
-          <Card className="p-6 border-2 border-red-200 bg-red-50">
-            <div className="flex items-center gap-3 mb-3">
-              <Bug className="w-6 h-6 text-red-600" />
-              <h4 className="font-bold text-lg text-red-900">Bugs Found</h4>
-            </div>
-            <p className="text-sm text-red-700 mb-4">
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <h4 className="font-bold text-lg text-slate-900 mb-3">Bugs Found</h4>
+            <p className="text-sm text-slate-600 mb-4">
               List every bug, issue, or thing that didn't work as expected:
             </p>
             <Textarea
@@ -184,11 +166,8 @@ Still need to fix:
             />
           </Card>
 
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">You Just Did QA!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <h4 className="font-bold text-lg text-slate-900 mb-2">You Just Did QA!</h4>
             <p className="text-slate-700">
               Most indie hackers skip this step and launch broken products.
               You now know exactly what works and what doesn't. That's powerful.
@@ -208,8 +187,7 @@ Still need to fix:
                 })
               }
             >
-              <CheckCircle2 className="w-5 h-5" />
-              Save Testing Results & Continue
+              Save Testing Results & Continue <ChevronRight className="w-5 h-5" />
             </Button>
           )}
         </>

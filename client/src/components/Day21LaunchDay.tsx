@@ -7,19 +7,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "sonner";
 import {
-  Rocket,
-  CheckCircle2,
   ChevronRight,
-  Trophy,
-  AlertTriangle,
-  PartyPopper,
   ExternalLink,
-  Share2,
   ArrowUpRight,
-  Camera,
-  Image,
-  Loader2,
-  Star
+  Loader2
 } from "lucide-react";
 
 interface Day21LaunchDayProps {
@@ -115,30 +106,20 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <Rocket className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Launch Day</h3>
-            <p className="text-slate-600 mt-1">This is it. Time to share your creation with the world.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Launch Day</h3>
+        <p className="text-slate-600 mt-1">This is it. Time to share your creation with the world.</p>
       </Card>
 
       {/* Step 1: Pre-Launch Check */}
       {step === "check" && (
         <>
-          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div className="text-sm text-amber-800">
-                <p className="font-medium">Before You Launch</p>
-                <p className="mt-1">
-                  Make sure the critical items are done. Your app doesn't need to be perfect -
-                  it needs to work for the main use case.
-                </p>
-              </div>
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <div className="text-sm text-slate-700">
+              <p className="font-medium">Before You Launch</p>
+              <p className="mt-1">
+                Make sure the critical items are done. Your app doesn't need to be perfect -
+                it needs to work for the main use case.
+              </p>
             </div>
           </Card>
 
@@ -186,7 +167,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
               className="w-full h-14 text-lg font-bold gap-2"
               onClick={() => setStep("launch")}
             >
-              Ready to Launch <Rocket className="w-5 h-5" />
+              Ready to Launch
             </Button>
           )}
         </>
@@ -195,11 +176,8 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
       {/* Step 2: Launch */}
       {step === "launch" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <CheckCircle2 className="w-6 h-6 text-green-600" />
-              <h4 className="font-bold text-lg text-slate-900">Pre-Launch Complete!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Pre-Launch Complete!</h4>
             <p className="text-slate-700">
               Your app is ready. Let's make it official.
             </p>
@@ -221,7 +199,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
                 href={appUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-primary hover:underline mt-2"
+                className="inline-flex items-center gap-1 text-sm text-slate-700 hover:underline mt-2"
               >
                 Open {appName || "your app"} <ExternalLink className="w-3 h-3" />
               </a>
@@ -229,7 +207,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
           </Card>
 
           {canLaunch && (
-            <Card className="p-8 border-2 border-primary bg-gradient-to-br from-primary/5 to-primary/10">
+            <Card className="p-8 border-2 border-slate-400 bg-white">
               <div className="text-center">
                 <h4 className="font-bold text-2xl mb-3 text-slate-900">Ready to Launch?</h4>
                 <p className="text-slate-600 mb-6">
@@ -238,10 +216,9 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
                 </p>
                 <Button
                   size="lg"
-                  className="h-20 px-16 text-2xl font-bold gap-4 bg-primary hover:bg-primary/90"
+                  className="h-20 px-16 text-2xl font-bold gap-4"
                   onClick={handleLaunch}
                 >
-                  <Rocket className="w-8 h-8" />
                   LAUNCH {appName ? appName.toUpperCase() : "MY APP"}
                 </Button>
               </div>
@@ -253,50 +230,36 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
       {/* Step 3: Celebrate */}
       {step === "celebrate" && (
         <>
-          <Card className="p-8 border-2 border-green-300 bg-gradient-to-br from-green-50 to-emerald-50">
+          <Card className="p-8 border-2 border-slate-400 bg-white">
             <div className="text-center">
-              <PartyPopper className="w-16 h-16 text-green-600 mx-auto mb-4" />
-              <h4 className="font-bold text-3xl text-green-800 mb-2">YOU DID IT!</h4>
-              <p className="text-green-700 text-lg">
+              <h4 className="font-bold text-3xl text-slate-900 mb-2">YOU DID IT!</h4>
+              <p className="text-slate-700 text-lg">
                 {appName || "Your app"} is now LIVE. You built an AI SaaS product in 21 days.
               </p>
             </div>
           </Card>
 
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">What You Just Did</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">What You Just Did</h4>
             <ul className="text-slate-700 space-y-2">
-              <li>• Went from idea to working product</li>
-              <li>• Built with AI-powered features</li>
-              <li>• Added user authentication</li>
-              <li>• Tested on mobile</li>
-              <li>• Polished the brand</li>
-              <li>• And most importantly: <strong>SHIPPED</strong></li>
+              <li>Went from idea to working product</li>
+              <li>Built with AI-powered features</li>
+              <li>Added user authentication</li>
+              <li>Tested on mobile</li>
+              <li>Polished the brand</li>
+              <li>And most importantly: <strong>SHIPPED</strong></li>
             </ul>
           </Card>
 
           {/* Showcase Submission */}
-          <Card className="p-6 border-2 border-purple-200 bg-gradient-to-br from-purple-50 to-indigo-50">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <Star className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <h4 className="font-bold text-lg text-slate-900">Submit to the Showcase</h4>
-                <p className="text-sm text-slate-600">Show off what you built to inspire others</p>
-              </div>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <h4 className="font-bold text-lg mb-1 text-slate-900">Submit to the Showcase</h4>
+            <p className="text-sm text-slate-600 mb-4">Show off what you built to inspire others</p>
 
             {showcaseSubmitted ? (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <div className="flex items-center gap-2 text-green-700">
-                  <CheckCircle2 className="w-5 h-5" />
-                  <span className="font-medium">Submitted to showcase!</span>
-                </div>
-                <p className="text-sm text-green-600 mt-1">
+              <div className="p-4 bg-slate-100 border border-slate-200 rounded-lg">
+                <span className="font-medium text-slate-900">Submitted to showcase!</span>
+                <p className="text-sm text-slate-600 mt-1">
                   Your app will appear in the gallery once approved.
                 </p>
               </div>
@@ -330,22 +293,19 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
                   <label className="block text-sm font-medium text-slate-700 mb-1">
                     Screenshot URL
                   </label>
-                  <div className="flex items-start gap-2">
-                    <Camera className="w-5 h-5 text-slate-400 mt-2.5" />
-                    <div className="flex-1">
-                      <Input
-                        placeholder="https://i.imgur.com/your-screenshot.png"
-                        value={screenshotUrl}
-                        onChange={(e) => setScreenshotUrl(e.target.value)}
-                      />
-                      <p className="text-xs text-slate-500 mt-1">
-                        Take a screenshot of your app's main screen. Upload to{" "}
-                        <a href="https://imgur.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                          imgur.com
-                        </a>{" "}
-                        or similar and paste the direct image URL.
-                      </p>
-                    </div>
+                  <div className="flex-1">
+                    <Input
+                      placeholder="https://i.imgur.com/your-screenshot.png"
+                      value={screenshotUrl}
+                      onChange={(e) => setScreenshotUrl(e.target.value)}
+                    />
+                    <p className="text-xs text-slate-500 mt-1">
+                      Take a screenshot of your app's main screen. Upload to{" "}
+                      <a href="https://imgur.com" target="_blank" rel="noopener noreferrer" className="text-slate-700 hover:underline">
+                        imgur.com
+                      </a>{" "}
+                      or similar and paste the direct image URL.
+                    </p>
                   </div>
                 </div>
 
@@ -373,10 +333,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
                       Submitting...
                     </>
                   ) : (
-                    <>
-                      <Image className="w-4 h-4" />
-                      Submit to Showcase
-                    </>
+                    "Submit to Showcase"
                   )}
                 </Button>
               </div>
@@ -384,7 +341,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
           </Card>
 
           {/* Hard CTA - Work with Matt */}
-          <Card className="p-6 border-2 border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <h4 className="font-bold text-xl mb-3 text-slate-900">
               You've Built a SaaS. Now Let's Build a Business.
             </h4>
@@ -403,7 +360,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
               rel="noopener noreferrer"
               className="inline-flex"
             >
-              <Button size="lg" className="gap-2 bg-amber-600 hover:bg-amber-700">
+              <Button size="lg" className="gap-2">
                 Book a Call - Let's Talk <ArrowUpRight className="w-5 h-5" />
               </Button>
             </a>
@@ -429,10 +386,7 @@ The best part was [what]..."
           </Card>
 
           <Card className="p-6 border-2 border-slate-200">
-            <div className="flex items-center gap-2 mb-4">
-              <Share2 className="w-5 h-5 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">What's Next?</h4>
-            </div>
+            <h4 className="font-bold text-lg mb-2 text-slate-900">What's Next?</h4>
             <p className="text-sm text-slate-600 mb-4">
               You've launched. Now what? Write down your first 3 next steps:
             </p>
@@ -461,7 +415,7 @@ My goal for the next week is..."
           {canComplete && (
             <Button
               size="lg"
-              className="w-full h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
+              className="w-full h-14 text-lg font-bold gap-2"
               onClick={() => onComplete({
                 appUrl,
                 launchedAt: new Date().toISOString(),
@@ -469,8 +423,7 @@ My goal for the next week is..."
                 nextSteps
               })}
             >
-              <CheckCircle2 className="w-5 h-5" />
-              Complete the 21 Day Challenge
+              Complete the 21 Day Challenge <ChevronRight className="w-5 h-5" />
             </Button>
           )}
         </>

@@ -2,16 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Wrench,
-  CheckCircle2,
-  Pause,
-  Play,
-  ChevronRight,
-  AlertTriangle,
-  Trophy,
-  ArrowRight
-} from "lucide-react";
+import { Pause, Play, ChevronRight, ArrowRight } from "lucide-react";
 
 interface Day10FixIterateProps {
   topPriority?: string;
@@ -32,29 +23,17 @@ export function Day10FixIterate({ topPriority, onComplete }: Day10FixIterateProp
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <Wrench className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Fix Your #1 Issue</h3>
-            <p className="text-slate-600 mt-1">Today's mission: Fix the most important thing from your reality check.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Fix Your #1 Issue</h3>
+        <p className="text-slate-600 mt-1">Today's mission: Fix the most important thing from your reality check.</p>
       </Card>
 
       {/* Pause Notice */}
-      <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <div>
-            <p className="font-medium text-amber-800">Take Your Time</p>
-            <p className="text-sm text-amber-700 mt-1">
-              If you need more than one session to fix things, that's totally fine.
-              Use the pause button and come back when ready. Quality over speed.
-            </p>
-          </div>
-        </div>
+      <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+        <p className="font-medium text-slate-900">Take Your Time</p>
+        <p className="text-sm text-slate-700 mt-1">
+          If you need more than one session to fix things, that's totally fine.
+          Use the pause button and come back when ready. Quality over speed.
+        </p>
       </Card>
 
       {/* Pause Button */}
@@ -126,9 +105,9 @@ export function Day10FixIterate({ topPriority, onComplete }: Day10FixIterateProp
       {/* Step 2: Fix It */}
       {step === "fix" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
+          <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Your Mission</h4>
-            <p className="text-slate-800 bg-white p-4 rounded-lg border border-slate-200">
+            <p className="text-slate-800 bg-slate-50 p-4 rounded-lg border border-slate-200">
               "{issueToFix}"
             </p>
           </Card>
@@ -175,7 +154,6 @@ export function Day10FixIterate({ topPriority, onComplete }: Day10FixIterateProp
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={() => setStep("done")}
           >
-            <CheckCircle2 className="w-5 h-5" />
             I Fixed It!
           </Button>
         </>
@@ -184,11 +162,8 @@ export function Day10FixIterate({ topPriority, onComplete }: Day10FixIterateProp
       {/* Step 3: Document the Fix */}
       {step === "done" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Issue Fixed!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <h4 className="font-bold text-lg text-slate-900 mb-2">Issue Fixed!</h4>
             <p className="text-slate-700">
               You just improved your app. Every fix gets you closer to something users will love.
             </p>

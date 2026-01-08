@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, FileText, Download, Edit3, CheckCircle2 } from "lucide-react";
+import { Loader2, Download, Edit3 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 
 interface Day6SummaryPRDProps {
@@ -118,9 +118,8 @@ export function Day6SummaryPRD({
           </div>
         </Card>
 
-        <Card className="p-6 border-2 border-primary bg-gradient-to-br from-blue-50 to-indigo-50">
+        <Card className="p-6 border-2 border-slate-200 bg-white">
           <div className="space-y-4 text-center">
-            <FileText className="w-12 h-12 text-primary mx-auto" />
             <div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">
                 Ready to Create Your PRD?
@@ -129,23 +128,14 @@ export function Day6SummaryPRD({
                 AI will analyze everything you've done and create:
               </p>
               <ul className="text-left space-y-2 max-w-md mx-auto mb-6">
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-slate-700">
-                    <strong>Executive Summary:</strong> A concise overview of your product
-                  </span>
+                <li className="text-slate-700">
+                  <strong>Executive Summary:</strong> A concise overview of your product
                 </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-slate-700">
-                    <strong>Product Requirements Document:</strong> Complete spec for development
-                  </span>
+                <li className="text-slate-700">
+                  <strong>Product Requirements Document:</strong> Complete spec for development
                 </li>
-                <li className="flex items-start gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
-                  <span className="text-slate-700">
-                    <strong>Feature Specifications:</strong> Detailed requirements for each feature
-                  </span>
+                <li className="text-slate-700">
+                  <strong>Feature Specifications:</strong> Detailed requirements for each feature
                 </li>
               </ul>
             </div>

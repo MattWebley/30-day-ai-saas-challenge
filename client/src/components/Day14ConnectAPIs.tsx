@@ -2,15 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Plug,
-  CheckCircle2,
-  ChevronRight,
-  Trophy,
-  ArrowRight,
-  XCircle,
-  Zap
-} from "lucide-react";
+import { ChevronRight, ArrowRight } from "lucide-react";
 
 interface Day14ConnectAPIsProps {
   userIdea: string;
@@ -38,15 +30,8 @@ export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <Plug className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Connect External APIs</h3>
-            <p className="text-slate-600 mt-1">Add external services if your app needs them. Many MVPs don't.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Connect External APIs</h3>
+        <p className="text-slate-600 mt-1">Add external services if your app needs them. Many MVPs don't.</p>
       </Card>
 
       {/* Step 1: Do You Need APIs? */}
@@ -81,7 +66,6 @@ export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps
                 className="flex-1 h-14"
                 onClick={() => setNeedsAPIs(true)}
               >
-                <CheckCircle2 className="w-5 h-5 mr-2" />
                 Yes, I need an API
               </Button>
               <Button
@@ -89,22 +73,16 @@ export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps
                 className="flex-1 h-14"
                 onClick={() => setNeedsAPIs(false)}
               >
-                <XCircle className="w-5 h-5 mr-2" />
                 No, OpenAI is enough
               </Button>
             </div>
           </Card>
 
-          <Card className="p-4 border-2 border-green-200 bg-green-50">
-            <div className="flex items-start gap-3">
-              <Zap className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-              <div className="text-sm text-green-800">
-                <p className="font-medium">Most MVPs don't need extra APIs</p>
-                <p className="mt-1">
-                  If you're not sure, choose "No." You can always add APIs later when you actually need them.
-                </p>
-              </div>
-            </div>
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="font-medium text-sm text-slate-900">Most MVPs don't need extra APIs</p>
+            <p className="mt-1 text-sm text-slate-700">
+              If you're not sure, choose "No." You can always add APIs later when you actually need them.
+            </p>
           </Card>
 
           {canProceedToConnect && (
@@ -178,8 +156,7 @@ export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps
               className="w-full h-14 text-lg font-bold gap-2"
               onClick={() => setStep("verify")}
             >
-              <CheckCircle2 className="w-5 h-5" />
-              I Connected It - Verify
+              I Connected It - Verify <ArrowRight className="w-5 h-5" />
             </Button>
           )}
         </>
@@ -190,11 +167,8 @@ export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps
         <>
           {needsAPIs ? (
             <>
-              <Card className="p-6 border-2 border-primary bg-primary/5">
-                <div className="flex items-center gap-3 mb-2">
-                  <Trophy className="w-6 h-6 text-primary" />
-                  <h4 className="font-bold text-lg text-slate-900">API Connected!</h4>
-                </div>
+              <Card className="p-6 border-2 border-slate-200 bg-white">
+                <h4 className="font-bold text-lg text-slate-900 mb-2">API Connected!</h4>
                 <p className="text-slate-700">
                   You've extended your app's capabilities beyond just AI. Your app now integrates with external services.
                 </p>
@@ -214,11 +188,8 @@ export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps
               </Card>
             </>
           ) : (
-            <Card className="p-6 border-2 border-primary bg-primary/5">
-              <div className="flex items-center gap-3 mb-2">
-                <Trophy className="w-6 h-6 text-primary" />
-                <h4 className="font-bold text-lg text-slate-900">Smart Choice!</h4>
-              </div>
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <h4 className="font-bold text-lg text-slate-900 mb-2">Smart Choice!</h4>
               <p className="text-slate-700">
                 You decided to keep your MVP simple by not adding unnecessary APIs.
                 This means less complexity, fewer potential issues, and faster development.

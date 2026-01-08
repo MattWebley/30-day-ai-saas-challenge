@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Check, ChevronRight, Loader2, Plus, PenLine } from "lucide-react";
+import { Check, ChevronRight, Loader2, Plus } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "sonner";
@@ -235,13 +235,12 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="w-full h-14 text-lg font-bold gap-2"
                 onClick={handleGenerate}
                 data-testid="button-generate-ideas"
               >
-                <Sparkles className="w-5 h-5" />
                 Generate 28 SaaS Ideas
               </Button>
             </TooltipTrigger>
@@ -255,11 +254,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   if (step === 'generating') {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-6">
-        <div className="relative">
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-            <Loader2 className="w-10 h-10 text-primary animate-spin" />
-          </div>
-        </div>
+        <Loader2 className="w-10 h-10 text-slate-700 animate-spin" />
         <div className="text-center">
           <h3 className="text-xl font-bold text-slate-900 mb-2">Generating Your Ideas...</h3>
           <p className="text-slate-500">AI is analyzing your profile and finding the best opportunities</p>
@@ -308,11 +303,10 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
         )}
 
         {!showConfirmation && (
-          <Card className="p-4 border-2 border-dashed border-blue-300 bg-blue-50/50">
+          <Card className="p-4 border-2 border-dashed border-slate-300 bg-slate-50">
             {showCustomForm ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <PenLine className="w-5 h-5 text-blue-600" />
                   <h3 className="font-bold text-slate-900">Add Your Own Idea</h3>
                 </div>
                 <div>
@@ -362,7 +356,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
             ) : (
               <button
                 onClick={() => setShowCustomForm(true)}
-                className="w-full flex items-center justify-center gap-2 py-3 text-blue-700 font-semibold hover:text-blue-800 transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 py-3 text-slate-700 font-semibold hover:text-slate-900 transition-colors cursor-pointer"
                 data-testid="button-show-custom-form"
               >
                 <Plus className="w-5 h-5" />
@@ -426,8 +420,8 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
 
                       {!showConfirmation && (
                         <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                          isSelected 
-                            ? 'bg-primary border-primary text-white' 
+                          isSelected
+                            ? 'bg-slate-700 border-slate-700 text-white'
                             : 'border-slate-200'
                         }`}>
                           {isSelected && <Check className="w-5 h-5" />}

@@ -2,15 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  ClipboardCheck,
-  CheckCircle2,
-  AlertCircle,
-  XCircle,
-  ChevronRight,
-  Trophy,
-  Target
-} from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 interface Day9RealityCheckProps {
   userIdea: string;
@@ -37,15 +29,8 @@ export function Day9RealityCheck({ userIdea, onComplete }: Day9RealityCheckProps
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <ClipboardCheck className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">The Reality Check</h3>
-            <p className="text-slate-600 mt-1">Test your app like a real user and document what you find.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">The Reality Check</h3>
+        <p className="text-slate-600 mt-1">Test your app like a real user and document what you find.</p>
       </Card>
 
       {/* Step 1: Test Instructions */}
@@ -100,12 +85,9 @@ export function Day9RealityCheck({ userIdea, onComplete }: Day9RealityCheckProps
       {/* Step 2: Document Findings */}
       {step === "document" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
-            <div className="flex items-center gap-3 mb-3">
-              <CheckCircle2 className="w-6 h-6 text-green-600" />
-              <h4 className="font-bold text-lg text-green-900">What's Working Well?</h4>
-            </div>
-            <p className="text-sm text-green-700 mb-4">
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <h4 className="font-bold text-lg text-slate-900 mb-3">What's Working Well?</h4>
+            <p className="text-sm text-slate-600 mb-4">
               List everything that works. These are your wins - celebrate them!
             </p>
             <Textarea
@@ -118,12 +100,9 @@ The design looks clean..."
             />
           </Card>
 
-          <Card className="p-6 border-2 border-red-200 bg-red-50">
-            <div className="flex items-center gap-3 mb-3">
-              <AlertCircle className="w-6 h-6 text-red-600" />
-              <h4 className="font-bold text-lg text-red-900">What Needs Fixing?</h4>
-            </div>
-            <p className="text-sm text-red-700 mb-4">
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <h4 className="font-bold text-lg text-slate-900 mb-3">What Needs Fixing?</h4>
+            <p className="text-sm text-slate-600 mb-4">
               List every issue, bug, or thing that's missing. Be specific.
             </p>
             <Textarea
@@ -157,21 +136,15 @@ Missing the ability to delete items..."
       {/* Step 3: Prioritize */}
       {step === "prioritize" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Reality Check Complete!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <h4 className="font-bold text-lg text-slate-900 mb-2">Reality Check Complete!</h4>
             <p className="text-slate-700">
               You now have a clear picture of where your app stands. That's huge - most people skip this step and launch broken products.
             </p>
           </Card>
 
           <Card className="p-6 border-2 border-slate-200">
-            <div className="flex items-center gap-3 mb-3">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Your Biggest Win So Far</h4>
-            </div>
+            <h4 className="font-bold text-lg text-slate-900 mb-3">Your Biggest Win So Far</h4>
             <p className="text-sm text-slate-600 mb-4">
               What's the ONE thing about your app that makes you proud?
             </p>
@@ -184,10 +157,7 @@ Missing the ability to delete items..."
           </Card>
 
           <Card className="p-6 border-2 border-slate-200">
-            <div className="flex items-center gap-3 mb-3">
-              <Target className="w-6 h-6 text-red-600" />
-              <h4 className="font-bold text-lg text-slate-900">Top Priority to Fix</h4>
-            </div>
+            <h4 className="font-bold text-lg text-slate-900 mb-3">Top Priority to Fix</h4>
             <p className="text-sm text-slate-600 mb-4">
               What's the ONE thing you MUST fix before anything else?
             </p>

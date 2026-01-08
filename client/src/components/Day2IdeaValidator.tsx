@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Check, Sparkles, Loader2, ChevronRight, Trophy, Flame, Plus, X, CheckCircle2, TrendingUp, Users, AlertTriangle, Target, Calendar } from "lucide-react";
+import { Check, Loader2, ChevronRight, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -223,7 +223,6 @@ Return ONLY a numbered list:
   if (!day1Progress?.shortlistedIdeas?.length) {
     return (
       <Card className="p-8 border-2 border-amber-200 bg-amber-50 text-center">
-        <Trophy className="w-12 h-12 text-amber-500 mx-auto mb-4" />
         <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Day 1 First</h3>
         <p className="text-slate-600">
           Generate and shortlist 3-5 ideas in Day 1 before validating them here.
@@ -241,9 +240,6 @@ Return ONLY a numbered list:
         animate={{ opacity: 1, scale: 1 }}
         className="text-center py-8"
       >
-        <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6">
-          <Trophy className="w-10 h-10 text-green-600" />
-        </div>
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Chosen Idea</h2>
         <p className="text-slate-500 mb-6">This is the one you're building!</p>
 
@@ -265,11 +261,11 @@ Return ONLY a numbered list:
           </div>
         </Card>
 
-        <div className="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200 max-w-2xl mx-auto">
-          <p className="text-lg font-bold text-blue-900 mb-2">
+        <div className="mt-8 p-6 bg-slate-50 rounded-xl border border-slate-200 max-w-2xl mx-auto">
+          <p className="text-lg font-bold text-slate-900 mb-2">
             "There is NO perfect idea. The perfect idea is the one you BUILD."
           </p>
-          <p className="text-blue-700">
+          <p className="text-slate-700">
             You've made a decision. That puts you ahead of 90% of dreamers.
           </p>
         </div>
@@ -307,25 +303,22 @@ Return ONLY a numbered list:
         animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
       >
-        <Card className="p-5 border-2 border-primary bg-blue-50">
-          <div className="flex items-start gap-3">
-            <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-            <div>
-              <h3 className="font-bold text-slate-900">{idea.title}</h3>
-              <p className="text-sm text-slate-600 mt-1">{idea.desc}</p>
-            </div>
+        <Card className="p-5 border-2 border-slate-400 bg-slate-50">
+          <div>
+            <h3 className="font-bold text-slate-900">{idea.title}</h3>
+            <p className="text-sm text-slate-600 mt-1">{idea.desc}</p>
           </div>
         </Card>
 
         <div className="text-center">
           <h2 className="text-2xl font-bold text-slate-900 mb-2">What Pain Points Will You Solve?</h2>
           <p className="text-slate-500">Select 1-3 pain points to focus on</p>
-          <p className="text-sm text-primary font-semibold mt-2">{selectedPainPoints.length}/3 selected</p>
+          <p className="text-sm text-slate-700 font-semibold mt-2">{selectedPainPoints.length}/3 selected</p>
         </div>
 
         {loadingPainPoints ? (
           <Card className="p-12 text-center border-2 border-slate-200">
-            <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+            <Loader2 className="w-12 h-12 animate-spin text-slate-500 mx-auto mb-4" />
             <p className="text-slate-600">Identifying pain points...</p>
           </Card>
         ) : (
@@ -340,13 +333,13 @@ Return ONLY a numbered list:
                   <Card
                     key={`pain-${idx}`}
                     className={`p-4 border-2 cursor-pointer ${
-                      isSelected ? 'border-primary bg-blue-50' : 'border-slate-200 hover:border-primary'
+                      isSelected ? 'border-slate-400 bg-slate-50' : 'border-slate-200 hover:border-slate-400'
                     }`}
                     onClick={() => togglePainPoint(cleanPain)}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                        isSelected ? 'bg-primary border-primary text-white' : 'border-slate-300'
+                        isSelected ? 'bg-slate-700 border-slate-700 text-white' : 'border-slate-300'
                       }`}>
                         {isSelected && <Check className="w-4 h-4" />}
                       </div>
@@ -406,8 +399,8 @@ Return ONLY a numbered list:
       </div>
 
       {/* Action over perfection message */}
-      <Card className="p-5 border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50">
-        <p className="text-blue-900 font-medium text-center">
+      <Card className="p-5 border-2 border-slate-200 bg-slate-50">
+        <p className="text-slate-700 font-medium text-center">
           <span className="font-bold">Remember:</span> Choosing an imperfect idea and TAKING ACTION beats endlessly second-guessing yourself. There is no perfect idea - only the one you actually build.
         </p>
       </Card>
@@ -439,17 +432,15 @@ Return ONLY a numbered list:
                 {insight ? (
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-100">
                     <div className="text-center p-3 bg-slate-50 rounded-lg">
-                      <TrendingUp className={`w-5 h-5 mx-auto mb-1 ${insight.demandScore >= 7 ? 'text-green-600' : insight.demandScore >= 5 ? 'text-amber-600' : 'text-red-600'}`} />
                       <div className="text-lg font-bold text-slate-900">{insight.demandScore}/10</div>
                       <p className="text-xs text-slate-500">Demand</p>
                     </div>
                     <div className="text-center p-3 bg-slate-50 rounded-lg">
-                      <Users className="w-5 h-5 mx-auto mb-1 text-slate-600" />
                       <div className="text-sm font-bold text-slate-900">{insight.competitionLevel.split(' - ')[0]}</div>
                       <p className="text-xs text-slate-500">Competition</p>
                     </div>
                     <div className="col-span-2 p-3 bg-amber-50 rounded-lg">
-                      <AlertTriangle className="w-4 h-4 text-amber-600 mb-1" />
+                      <p className="text-xs text-slate-500 mb-1">Top Risk</p>
                       <p className="text-xs font-medium text-amber-900">{insight.topRisk}</p>
                     </div>
                   </div>
@@ -465,7 +456,7 @@ Return ONLY a numbered list:
                       {isLoading ? (
                         <><Loader2 className="w-4 h-4 animate-spin" /> Validating...</>
                       ) : (
-                        <><Sparkles className="w-4 h-4" /> Get Validation Insights</>
+                        <>Get Validation Insights</>
                       )}
                     </Button>
                   </div>
@@ -475,9 +466,8 @@ Return ONLY a numbered list:
                 <div className="pt-4 border-t border-slate-100">
                   <Button
                     onClick={() => handleChooseIdea(idx)}
-                    className="w-full gap-2"
+                    className="w-full"
                   >
-                    <Target className="w-4 h-4" />
                     Choose This Idea
                   </Button>
                 </div>
@@ -502,10 +492,9 @@ Return ONLY a numbered list:
           </p>
           <Button
             variant="outline"
-            className="gap-2 border-2"
+            className="border-2"
             disabled
           >
-            <Calendar className="w-4 h-4" />
             Book a Call - Coming Soon
           </Button>
         </div>

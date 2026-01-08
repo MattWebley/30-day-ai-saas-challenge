@@ -3,15 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Shield,
-  CheckCircle2,
   ChevronRight,
-  Trophy,
-  ArrowRight,
-  User,
-  Key,
-  Mail,
-  Sparkles
+  ArrowRight
 } from "lucide-react";
 
 interface Day15AuthenticationProps {
@@ -22,28 +15,24 @@ interface Day15AuthenticationProps {
 const AUTH_OPTIONS = [
   {
     id: "replit",
-    icon: Sparkles,
     name: "Replit Auth",
     desc: "One-click setup, works instantly",
     recommended: true,
   },
   {
     id: "email",
-    icon: Mail,
     name: "Email + Password",
     desc: "Classic approach, full control",
     recommended: false,
   },
   {
     id: "social",
-    icon: User,
     name: "Social Login",
     desc: "Google, GitHub login buttons",
     recommended: false,
   },
   {
     id: "magic",
-    icon: Key,
     name: "Magic Link",
     desc: "Passwordless via email",
     recommended: false,
@@ -64,15 +53,8 @@ export function Day15Authentication({ appName, onComplete }: Day15Authentication
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <Shield className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">Add User Authentication</h3>
-            <p className="text-slate-600 mt-1">Let users create accounts and keep their data private.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">Add User Authentication</h3>
+        <p className="text-slate-600 mt-1">Let users create accounts and keep their data private.</p>
       </Card>
 
       {/* Step 1: Choose Auth Method */}
@@ -90,7 +72,7 @@ export function Day15Authentication({ appName, onComplete }: Day15Authentication
                   key={option.id}
                   className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
                     selectedMethod === option.id
-                      ? "border-primary bg-primary/5"
+                      ? "border-slate-400 bg-slate-50"
                       : "border-slate-200 hover:border-slate-300"
                   }`}
                   onClick={() => setSelectedMethod(option.id)}
@@ -101,12 +83,11 @@ export function Day15Authentication({ appName, onComplete }: Day15Authentication
                     onChange={() => setSelectedMethod(option.id)}
                     className="w-4 h-4"
                   />
-                  <option.icon className={`w-5 h-5 ${selectedMethod === option.id ? "text-primary" : "text-slate-400"}`} />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-slate-900">{option.name}</span>
                       {option.recommended && (
-                        <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">Recommended</span>
+                        <span className="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded">Recommended</span>
                       )}
                     </div>
                     <p className="text-xs text-slate-600">{option.desc}</p>
@@ -117,16 +98,13 @@ export function Day15Authentication({ appName, onComplete }: Day15Authentication
           </Card>
 
           {selectedMethod === "replit" && (
-            <Card className="p-4 border-2 border-green-200 bg-green-50">
-              <div className="flex items-start gap-3">
-                <Sparkles className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                <div className="text-sm text-green-800">
-                  <p className="font-medium">Replit Auth is the fastest option</p>
-                  <p className="mt-1">
-                    Built into Replit, secure by default, and users can log in with their Replit account.
-                    Perfect for launching quickly.
-                  </p>
-                </div>
+            <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+              <div className="text-sm text-slate-700">
+                <p className="font-medium">Replit Auth is the fastest option</p>
+                <p className="mt-1">
+                  Built into Replit, secure by default, and users can log in with their Replit account.
+                  Perfect for launching quickly.
+                </p>
               </div>
             </Card>
           )}
@@ -146,7 +124,7 @@ export function Day15Authentication({ appName, onComplete }: Day15Authentication
       {/* Step 2: Implement Auth */}
       {step === "implement" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Your Choice: {AUTH_OPTIONS.find(o => o.id === selectedMethod)?.name}</h4>
             <p className="text-slate-700">Time to add login to your app!</p>
           </Card>
@@ -207,8 +185,7 @@ export function Day15Authentication({ appName, onComplete }: Day15Authentication
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={() => setStep("test")}
           >
-            <CheckCircle2 className="w-5 h-5" />
-            I Added Auth - Test It
+            I Added Auth - Test It <ArrowRight className="w-5 h-5" />
           </Button>
         </>
       )}
@@ -216,11 +193,8 @@ export function Day15Authentication({ appName, onComplete }: Day15Authentication
       {/* Step 3: Test and Document */}
       {step === "test" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Your App Has User Accounts!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Your App Has User Accounts!</h4>
             <p className="text-slate-700">
               This is a major milestone. Users can now have their own private data in your app.
             </p>

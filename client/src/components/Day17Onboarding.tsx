@@ -4,13 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
-  Sparkles,
-  CheckCircle2,
   ChevronRight,
-  Trophy,
-  ArrowRight,
-  Clock,
-  Target
+  ArrowRight
 } from "lucide-react";
 
 interface Day17OnboardingProps {
@@ -32,30 +27,20 @@ export function Day17Onboarding({ appName, onComplete }: Day17OnboardingProps) {
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
-            <Sparkles className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-extrabold text-slate-900">User Onboarding</h3>
-            <p className="text-slate-600 mt-1">Get new users to their "aha moment" as fast as possible.</p>
-          </div>
-        </div>
+        <h3 className="text-2xl font-extrabold text-slate-900">User Onboarding</h3>
+        <p className="text-slate-600 mt-1">Get new users to their "aha moment" as fast as possible.</p>
       </Card>
 
       {/* Step 1: Define First Success */}
       {step === "define" && (
         <>
-          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-            <div className="flex items-start gap-3">
-              <Clock className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div className="text-sm text-amber-800">
-                <p className="font-medium">The 2-Minute Rule</p>
-                <p className="mt-1">
-                  Within 2 minutes of signing up, users should understand what your app does,
-                  complete ONE action, and see value from it. If it takes longer, they'll leave.
-                </p>
-              </div>
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <div className="text-sm text-slate-700">
+              <p className="font-medium">The 2-Minute Rule</p>
+              <p className="mt-1">
+                Within 2 minutes of signing up, users should understand what your app does,
+                complete ONE action, and see value from it. If it takes longer, they'll leave.
+              </p>
             </div>
           </Card>
 
@@ -100,11 +85,8 @@ export function Day17Onboarding({ appName, onComplete }: Day17OnboardingProps) {
       {/* Step 2: Build the Onboarding */}
       {step === "build" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Target className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">First Success Goal</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">First Success Goal</h4>
             <p className="text-slate-800 bg-white p-4 rounded-lg border border-slate-200">
               "{firstSuccess}"
             </p>
@@ -165,8 +147,7 @@ export function Day17Onboarding({ appName, onComplete }: Day17OnboardingProps) {
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={() => setStep("test")}
           >
-            <CheckCircle2 className="w-5 h-5" />
-            I Built It - Time to Test
+            I Built It - Time to Test <ArrowRight className="w-5 h-5" />
           </Button>
         </>
       )}
@@ -174,11 +155,8 @@ export function Day17Onboarding({ appName, onComplete }: Day17OnboardingProps) {
       {/* Step 3: Test with Fresh Account */}
       {step === "test" && (
         <>
-          <Card className="p-6 border-2 border-primary bg-primary/5">
-            <div className="flex items-center gap-3 mb-2">
-              <Trophy className="w-6 h-6 text-primary" />
-              <h4 className="font-bold text-lg text-slate-900">Onboarding Built!</h4>
-            </div>
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Onboarding Built!</h4>
             <p className="text-slate-700">
               Now let's verify that new users can reach their first success quickly.
             </p>

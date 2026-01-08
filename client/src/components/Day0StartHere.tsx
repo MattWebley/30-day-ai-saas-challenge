@@ -4,21 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Rocket,
-  Target,
-  Clock,
-  CheckCircle2,
-  Flame,
-  AlertTriangle,
-  ArrowRight,
-  Lightbulb,
-  Map,
-  Hammer,
-  Sparkles,
-  MessageSquare,
-  Users
-} from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 
 interface Day0StartHereProps {
   onComplete: (data?: any) => void;
@@ -59,33 +45,29 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
 
   const successRules = [
     {
-      icon: Clock,
       title: "Show Up Daily",
       description: "Some days are quick, some take longer. What matters is you show up and do the work."
     },
     {
-      icon: Flame,
       title: "Never Break the Chain",
       description: "Show up every single day. Your streak is your commitment to yourself."
     },
     {
-      icon: Target,
       title: "Done > Perfect",
       description: "A shipped product beats a perfect idea. Progress over perfection, always."
     },
     {
-      icon: AlertTriangle,
       title: "No Skipping",
       description: "Every day builds on the last. Skip one, and you'll feel lost. Trust the process."
     }
   ];
 
   const milestones = [
-    { day: 4, label: "Idea", icon: Lightbulb, description: "Find & validate your winning idea" },
-    { day: 7, label: "Plan", icon: Map, description: "Complete your PRD & roadmap" },
-    { day: 14, label: "Build", icon: Hammer, description: "Core features working" },
-    { day: 18, label: "Polish", icon: Sparkles, description: "Auth, email & admin ready" },
-    { day: 21, label: "Launch", icon: Rocket, description: "Ship it to the world!" }
+    { day: 4, label: "Idea" },
+    { day: 7, label: "Plan" },
+    { day: 14, label: "Build" },
+    { day: 18, label: "Polish" },
+    { day: 21, label: "Launch" }
   ];
 
   const checkIfReady = (commitmentsSet: Set<number>, whysSet: Set<number>, customWhyText: string, income: number | null, customIncomeText: string, message: string) => {
@@ -180,9 +162,6 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
     <div className="space-y-8">
       {/* Welcome Header */}
       <div className="text-center space-y-4">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
-          <Rocket className="w-8 h-8 text-primary" />
-        </div>
         <h1 className="text-3xl font-black text-slate-900">
           Welcome to the 21 Day AI SaaS Challenge
         </h1>
@@ -193,26 +172,22 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
       </div>
 
       {/* What You'll Achieve */}
-      <Card className="p-6 border-2 border-slate-100 bg-white">
+      <Card className="p-6 border-2 border-slate-200 bg-white">
         <h2 className="font-bold text-lg text-slate-900 mb-4">Your Journey</h2>
         <div className="grid grid-cols-5 gap-2">
-          {milestones.map((milestone, index) => {
-            const Icon = milestone.icon;
-            return (
-              <div key={milestone.label} className="text-center">
-                <div className="relative">
-                  <div className="w-12 h-12 mx-auto rounded-full bg-slate-100 border-2 border-slate-200 flex items-center justify-center">
-                    <Icon className="w-5 h-5 text-slate-500" />
-                  </div>
-                  {index < milestones.length - 1 && (
-                    <div className="absolute top-1/2 left-[calc(50%+24px)] w-[calc(100%-48px)] h-0.5 bg-slate-200 -translate-y-1/2" />
-                  )}
+          {milestones.map((milestone, index) => (
+            <div key={milestone.label} className="text-center">
+              <div className="relative">
+                <div className="w-10 h-10 mx-auto rounded-full bg-slate-100 border-2 border-slate-200 flex items-center justify-center">
+                  <span className="text-xs font-bold text-slate-600">{milestone.day}</span>
                 </div>
-                <p className="text-xs font-bold text-slate-700 mt-2">{milestone.label}</p>
-                <p className="text-[10px] text-slate-500">Day {milestone.day}</p>
+                {index < milestones.length - 1 && (
+                  <div className="absolute top-1/2 left-[calc(50%+20px)] w-[calc(100%-40px)] h-0.5 bg-slate-200 -translate-y-1/2" />
+                )}
               </div>
-            );
-          })}
+              <p className="text-xs font-bold text-slate-700 mt-2">{milestone.label}</p>
+            </div>
+          ))}
         </div>
       </Card>
 
@@ -220,25 +195,20 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-bold text-lg text-slate-900">The Rules for Success</h2>
-          <span className={`text-sm font-bold px-3 py-1 rounded-full ${
+          <span className={`text-sm font-medium px-3 py-1 rounded-full ${
             commitments.size === successRules.length
-              ? "bg-primary/10 text-primary"
-              : "bg-amber-100 text-amber-700"
+              ? "bg-slate-100 text-slate-700"
+              : "bg-slate-100 text-slate-600"
           }`}>
-            {commitments.size === successRules.length ? (
-              <span className="flex items-center gap-1">
-                <CheckCircle2 className="w-4 h-4" />
-                All accepted
-              </span>
-            ) : (
-              `👆 Tap each to accept (${commitments.size}/4)`
-            )}
+            {commitments.size === successRules.length
+              ? "All accepted"
+              : `Tap each to accept (${commitments.size}/4)`
+            }
           </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {successRules.map((rule, index) => {
-            const Icon = rule.icon;
             const isCommitted = commitments.has(index);
 
             return (
@@ -246,23 +216,19 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
                 key={index}
                 className={`p-4 cursor-pointer transition-all border-2 ${
                   isCommitted
-                    ? "border-primary bg-primary/5"
+                    ? "border-slate-400 bg-slate-50"
                     : "border-slate-200 hover:border-slate-300 bg-white"
                 }`}
                 onClick={() => toggleCommitment(index)}
               >
                 <div className="flex items-start gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    isCommitted ? "bg-primary text-white" : "bg-slate-100 text-slate-500"
+                  <div className={`w-6 h-6 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                    isCommitted ? "bg-slate-700 border-slate-700" : "border-slate-300 bg-white"
                   }`}>
-                    {isCommitted ? (
-                      <CheckCircle2 className="w-5 h-5" />
-                    ) : (
-                      <Icon className="w-5 h-5" />
-                    )}
+                    {isCommitted && <Check className="w-4 h-4 text-white" />}
                   </div>
                   <div>
-                    <h3 className={`font-bold ${isCommitted ? "text-primary" : "text-slate-900"}`}>
+                    <h3 className="font-bold text-slate-900">
                       {rule.title}
                     </h3>
                     <p className="text-sm text-slate-600 mt-1">
@@ -294,7 +260,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
                 key={index}
                 className={`p-3 rounded-lg cursor-pointer border-2 transition-all ${
                   isSelected
-                    ? "border-primary bg-primary/5"
+                    ? "border-slate-400 bg-slate-50"
                     : "border-slate-200 hover:border-slate-300 bg-white"
                 }`}
                 onClick={() => toggleWhy(index)}
@@ -302,14 +268,11 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{option.emoji}</span>
                   <div className="flex-1 min-w-0">
-                    <p className={`font-semibold text-sm ${isSelected ? "text-primary" : "text-slate-900"}`}>
+                    <p className="font-semibold text-sm text-slate-900">
                       {option.label}
                     </p>
                     <p className="text-xs text-slate-500 truncate">{option.description}</p>
                   </div>
-                  {isSelected && (
-                    <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                  )}
                 </div>
               </div>
             );
@@ -328,8 +291,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
         </div>
 
         {(selectedWhys.size > 0 || customWhy.trim()) && (
-          <p className="text-xs text-primary font-medium flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3" />
+          <p className="text-xs text-slate-600 font-medium">
             Your why is set
           </p>
         )}
@@ -353,12 +315,12 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
                 key={option.value}
                 className={`p-3 rounded-lg cursor-pointer border-2 text-center transition-all ${
                   isSelected
-                    ? "border-primary bg-primary/5"
+                    ? "border-slate-400 bg-slate-50"
                     : "border-slate-200 hover:border-slate-300 bg-white"
                 }`}
                 onClick={() => selectIncome(option.value)}
               >
-                <p className={`font-bold text-lg ${isSelected ? "text-primary" : "text-slate-900"}`}>
+                <p className="font-bold text-lg text-slate-900">
                   {option.label}
                 </p>
                 <p className="text-xs text-slate-500">{option.description}</p>
@@ -379,8 +341,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
         </div>
 
         {(selectedIncome !== null || customIncome.trim()) && (
-          <p className="text-xs text-primary font-medium flex items-center gap-1">
-            <CheckCircle2 className="w-3 h-3" />
+          <p className="text-xs text-slate-600 font-medium">
             Income goal set
           </p>
         )}
@@ -388,16 +349,11 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
 
       {/* Accountability Message */}
       <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <MessageSquare className="w-4 h-4 text-primary" />
-          </div>
-          <div>
-            <h2 className="font-bold text-lg text-slate-900">Your Promise to Yourself</h2>
-            <p className="text-sm text-slate-600">
-              Write a commitment you can come back to when things get tough.
-            </p>
-          </div>
+        <div>
+          <h2 className="font-bold text-lg text-slate-900">Your Promise to Yourself</h2>
+          <p className="text-sm text-slate-600">
+            Write a commitment you can come back to when things get tough.
+          </p>
         </div>
 
         <Card className="p-4 border-2 border-slate-200 bg-white">
@@ -413,17 +369,13 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
             </p>
             <p className={`text-xs font-medium ${
               accountabilityMessage.trim().length >= minMessageLength
-                ? "text-primary"
+                ? "text-slate-700"
                 : "text-slate-400"
             }`}>
-              {accountabilityMessage.trim().length >= minMessageLength ? (
-                <span className="flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  Ready
-                </span>
-              ) : (
-                `At least ${minMessageLength - accountabilityMessage.trim().length} more characters`
-              )}
+              {accountabilityMessage.trim().length >= minMessageLength
+                ? "Ready"
+                : `At least ${minMessageLength - accountabilityMessage.trim().length} more characters`
+              }
             </p>
           </div>
 
@@ -435,16 +387,12 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
             <Checkbox
               checked={shareToDiscussion}
               onCheckedChange={(checked) => setShareToDiscussion(checked === true)}
-              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
             <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <Users className="w-4 h-4 text-slate-400" />
-                <span className="text-sm text-slate-600">
-                  Share my commitment with the community
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 ml-6 mt-0.5">
+              <span className="text-sm text-slate-600">
+                Share my commitment with the community
+              </span>
+              <p className="text-xs text-slate-400 mt-0.5">
                 Your promise will be visible to others taking the challenge
               </p>
             </div>
@@ -494,11 +442,8 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
 
       {/* Choice Screen */}
       {showChoice && (
-        <Card className="p-8 border-2 border-primary/20 bg-gradient-to-b from-primary/5 to-white">
+        <Card className="p-8 border-2 border-slate-200 bg-white">
           <div className="text-center space-y-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
-              <CheckCircle2 className="w-8 h-8 text-primary" />
-            </div>
             <div>
               <h2 className="text-2xl font-black text-slate-900">You're officially in!</h2>
               <p className="text-slate-600 mt-2">Your commitment has been locked. Now, what's next?</p>
@@ -508,9 +453,8 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
               <Button
                 onClick={handleStartNow}
                 variant="default"
-                className="h-auto p-6 rounded-xl flex flex-col items-start text-left gap-0"
+                className="h-auto p-6 rounded-xl flex flex-col items-center text-center gap-0"
               >
-                <Rocket className="w-8 h-8 mb-3" />
                 <p className="font-bold text-lg">I'm fired up - let's go!</p>
                 <p className="text-sm text-white/80 mt-1 font-normal">Start Day 1 right now</p>
               </Button>
@@ -518,9 +462,8 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
               <Button
                 onClick={handleStartTomorrow}
                 variant="outline"
-                className="h-auto p-6 rounded-xl flex flex-col items-start text-left gap-0 border-2"
+                className="h-auto p-6 rounded-xl flex flex-col items-center text-center gap-0 border-2"
               >
-                <Clock className="w-8 h-8 mb-3 text-slate-400" />
                 <p className="font-bold text-lg">I'll start fresh tomorrow</p>
                 <p className="text-sm text-slate-500 mt-1 font-normal">Begin Day 1 with full energy</p>
               </Button>
