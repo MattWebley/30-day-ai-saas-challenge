@@ -155,7 +155,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   const milestones = [
     { day: 2, label: "Idea", icon: Lightbulb, percentage: (2 / totalDays) * 100 },
     { day: 4, label: "Plan", icon: Map, percentage: (4 / totalDays) * 100 },
-    { day: 7, label: "Prepare", icon: Target, percentage: (7 / totalDays) * 100 },
+    { day: 8, label: "Prepare", icon: Target, percentage: (8 / totalDays) * 100 },
     { day: 14, label: "Build", icon: Hammer, percentage: (14 / totalDays) * 100 },
     { day: 18, label: "Polish", icon: Sparkles, percentage: (18 / totalDays) * 100 },
     { day: 21, label: "Launch", icon: Rocket, percentage: 100 },
@@ -418,8 +418,8 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
           {[
             { label: "Idea", minDay: 0, maxDay: 2 },
             { label: "Plan", minDay: 3, maxDay: 4 },
-            { label: "Prepare", minDay: 5, maxDay: 7 },
-            { label: "Build", minDay: 8, maxDay: 14 },
+            { label: "Prepare", minDay: 5, maxDay: 8 },
+            { label: "Build", minDay: 9, maxDay: 14 },
             { label: "Polish", minDay: 15, maxDay: 18 },
             { label: "Launch", minDay: 19, maxDay: 21 },
           ].map((section) => {
