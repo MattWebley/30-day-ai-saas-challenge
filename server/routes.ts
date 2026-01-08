@@ -1204,22 +1204,32 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
 
       // Fetch admin-configurable rules (if any)
       const chatSettings = await storage.getChatbotSettings();
+
+      // Use admin-configured values or defaults
+      const responseStyle = chatSettings?.responseStyle || `- Be BRIEF. Max 2-3 sentences per point.
+- Use bullet points for multiple items.
+- Give ONE clear action, not a list of options.
+- No fluff, no preamble, no "Great question!"
+- Get straight to the answer.`;
+
+      const scopeHelps = chatSettings?.scopeHelps || 'ideas, planning, coding, debugging, tech decisions, APIs, auth, testing';
+      const scopeWontHelp = chatSettings?.scopeWontHelp || 'sales, marketing, pricing, business strategy, post-launch growth';
+      const businessRedirect = chatSettings?.businessRedirect || 'This challenge focuses on building. For business strategy, see Matt\'s mentorship: https://mattwebley.com/workwithmatt';
+      const coreRules = chatSettings?.coreRules || `1. Reference their idea/features when relevant
+2. ONE clear next step when stuck
+3. Keep them on their current day's task`;
       const customRules = chatSettings?.customRules || '';
 
       const systemPrompt = `You are the AI Mentor for the 21 Day AI SaaS Challenge. Help users build their SaaS MVP.
 
 RESPONSE STYLE - CRITICAL:
-- Be BRIEF. Max 2-3 sentences per point.
-- Use bullet points for multiple items.
-- Give ONE clear action, not a list of options.
-- No fluff, no preamble, no "Great question!"
-- Get straight to the answer.
+${responseStyle}
 
 SCOPE:
-Help with: ideas, planning, coding, debugging, tech decisions, APIs, auth, testing.
-DON'T help with: sales, marketing, pricing, business strategy, post-launch growth.
+Help with: ${scopeHelps}.
+DON'T help with: ${scopeWontHelp}.
 
-For business/marketing questions, say: "This challenge focuses on building. For business strategy, see Matt's mentorship: https://mattwebley.com/workwithmatt" - then move on.
+For business/marketing questions, say: "${businessRedirect}" - then move on.
 
 CHALLENGE DAYS:
 0-6: Planning | 7: First build | 8: Claude Code | 9-14: Build & test | 15-18: Infrastructure | 19-21: Polish & launch-ready
@@ -1233,11 +1243,9 @@ ${context.features?.length ? `Features: ${context.features.join(', ')}` : ''}
 ${context.mvpFeatures?.length ? `MVP: ${context.mvpFeatures.join(', ')}` : ''}
 
 RULES:
-1. Reference their idea/features when relevant
-2. ONE clear next step when stuck
-3. Keep them on their current day's task
+${coreRules}
 
-${customRules ? `ADMIN RULES:\n${customRules}` : ''}`;
+${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       const messages: any[] = [
         { role: "system", content: systemPrompt },

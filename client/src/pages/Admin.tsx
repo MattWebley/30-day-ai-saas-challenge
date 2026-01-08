@@ -59,6 +59,11 @@ interface BrandSettings {
 
 interface ChatbotSettings {
   customRules: string;
+  responseStyle: string;
+  scopeHelps: string;
+  scopeWontHelp: string;
+  businessRedirect: string;
+  coreRules: string;
   dailyLimit: number;
   hourlyLimit: number;
 }
@@ -183,6 +188,11 @@ export default function Admin() {
 
   // Chatbot management
   const [chatbotRules, setChatbotRules] = useState("");
+  const [responseStyle, setResponseStyle] = useState("- Be BRIEF. Max 2-3 sentences per point.\n- Use bullet points for multiple items.\n- Give ONE clear action, not a list of options.\n- No fluff, no preamble, no \"Great question!\"\n- Get straight to the answer.");
+  const [scopeHelps, setScopeHelps] = useState("ideas, planning, coding, debugging, tech decisions, APIs, auth, testing");
+  const [scopeWontHelp, setScopeWontHelp] = useState("sales, marketing, pricing, business strategy, post-launch growth");
+  const [businessRedirect, setBusinessRedirect] = useState("This challenge focuses on building. For business strategy, see Matt's mentorship: https://mattwebley.com/workwithmatt");
+  const [coreRules, setCoreRules] = useState("1. Reference their idea/features when relevant\n2. ONE clear next step when stuck\n3. Keep them on their current day's task");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [showChatSection, setShowChatSection] = useState(true); // Open by default
 
@@ -241,6 +251,11 @@ export default function Admin() {
   useEffect(() => {
     if (chatbotSettings) {
       setChatbotRules(chatbotSettings.customRules || "");
+      if (chatbotSettings.responseStyle) setResponseStyle(chatbotSettings.responseStyle);
+      if (chatbotSettings.scopeHelps) setScopeHelps(chatbotSettings.scopeHelps);
+      if (chatbotSettings.scopeWontHelp) setScopeWontHelp(chatbotSettings.scopeWontHelp);
+      if (chatbotSettings.businessRedirect) setBusinessRedirect(chatbotSettings.businessRedirect);
+      if (chatbotSettings.coreRules) setCoreRules(chatbotSettings.coreRules);
     }
   }, [chatbotSettings]);
 
@@ -761,86 +776,99 @@ export default function Admin() {
 
           {showChatSection && (
             <div className="space-y-6">
-              {/* Default Rules Display */}
+              {/* Chatbot Rules Editor */}
               <Card className="p-6 border-2 border-slate-100">
-                <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center gap-2 mb-6">
                   <Bot className="w-5 h-5 text-slate-600" />
-                  <h3 className="font-semibold text-slate-900">Default Chatbot Rules</h3>
-                  <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded">Read-only</span>
+                  <h3 className="font-semibold text-slate-900">Chatbot System Prompt</h3>
+                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Editable</span>
                 </div>
 
-                <div className="space-y-4 text-sm">
+                <div className="space-y-6">
+                  {/* Response Style */}
                   <div>
-                    <h4 className="font-medium text-slate-900 mb-2">Response Style</h4>
-                    <ul className="space-y-1 text-slate-600 ml-4">
-                      <li>• Be BRIEF - max 2-3 sentences per point</li>
-                      <li>• Use bullet points for multiple items</li>
-                      <li>• Give ONE clear action, not a list of options</li>
-                      <li>• No fluff, no preamble, no "Great question!"</li>
-                      <li>• Get straight to the answer</li>
-                    </ul>
+                    <Label className="text-sm font-medium text-slate-900 mb-2 block">Response Style</Label>
+                    <p className="text-xs text-slate-500 mb-2">How the AI should format and deliver responses</p>
+                    <textarea
+                      value={responseStyle}
+                      onChange={(e) => setResponseStyle(e.target.value)}
+                      className="w-full h-28 p-3 rounded-lg border-2 border-slate-200 bg-white text-sm resize-none focus:outline-none focus:border-slate-400"
+                    />
                   </div>
 
-                  <div>
-                    <h4 className="font-medium text-slate-900 mb-2">Scope</h4>
-                    <div className="grid md:grid-cols-2 gap-4 ml-4">
-                      <div>
-                        <p className="text-slate-500 text-xs uppercase mb-1">Helps with:</p>
-                        <p className="text-slate-600">Ideas, planning, coding, debugging, tech decisions, APIs, auth, testing</p>
-                      </div>
-                      <div>
-                        <p className="text-slate-500 text-xs uppercase mb-1">Won't help with:</p>
-                        <p className="text-slate-600">Sales, marketing, pricing, business strategy, post-launch growth</p>
-                      </div>
+                  {/* Scope */}
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-sm font-medium text-slate-900 mb-2 block">Helps With</Label>
+                      <p className="text-xs text-slate-500 mb-2">Topics the AI will assist with</p>
+                      <textarea
+                        value={scopeHelps}
+                        onChange={(e) => setScopeHelps(e.target.value)}
+                        className="w-full h-20 p-3 rounded-lg border-2 border-slate-200 bg-white text-sm resize-none focus:outline-none focus:border-slate-400"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-slate-900 mb-2 block">Won't Help With</Label>
+                      <p className="text-xs text-slate-500 mb-2">Topics to redirect away from</p>
+                      <textarea
+                        value={scopeWontHelp}
+                        onChange={(e) => setScopeWontHelp(e.target.value)}
+                        className="w-full h-20 p-3 rounded-lg border-2 border-slate-200 bg-white text-sm resize-none focus:outline-none focus:border-slate-400"
+                      />
                     </div>
                   </div>
 
+                  {/* Business Redirect */}
                   <div>
-                    <h4 className="font-medium text-slate-900 mb-2">Business Question Redirect</h4>
-                    <p className="text-slate-600 ml-4 italic">
-                      "This challenge focuses on building. For business strategy, see Matt's mentorship: mattwebley.com/workwithmatt"
-                    </p>
+                    <Label className="text-sm font-medium text-slate-900 mb-2 block">Business Question Redirect</Label>
+                    <p className="text-xs text-slate-500 mb-2">Message shown when users ask about sales/marketing/business</p>
+                    <textarea
+                      value={businessRedirect}
+                      onChange={(e) => setBusinessRedirect(e.target.value)}
+                      className="w-full h-16 p-3 rounded-lg border-2 border-slate-200 bg-white text-sm resize-none focus:outline-none focus:border-slate-400"
+                    />
                   </div>
 
+                  {/* Core Rules */}
                   <div>
-                    <h4 className="font-medium text-slate-900 mb-2">Core Rules</h4>
-                    <ul className="space-y-1 text-slate-600 ml-4">
-                      <li>1. Reference user's idea/features when relevant</li>
-                      <li>2. ONE clear next step when stuck</li>
-                      <li>3. Keep them on their current day's task</li>
-                    </ul>
+                    <Label className="text-sm font-medium text-slate-900 mb-2 block">Core Rules</Label>
+                    <p className="text-xs text-slate-500 mb-2">Main behavior rules for the AI</p>
+                    <textarea
+                      value={coreRules}
+                      onChange={(e) => setCoreRules(e.target.value)}
+                      className="w-full h-24 p-3 rounded-lg border-2 border-slate-200 bg-white text-sm resize-none focus:outline-none focus:border-slate-400"
+                    />
                   </div>
-                </div>
-              </Card>
 
-              {/* Custom Rules Editor */}
-              <Card className="p-6 border-2 border-slate-100">
-                <div className="flex items-center gap-2 mb-4">
-                  <Bot className="w-5 h-5 text-slate-600" />
-                  <h3 className="font-semibold text-slate-900">Custom Rules</h3>
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Editable</span>
-                </div>
-                <p className="text-sm text-slate-500 mb-4">
-                  Add additional rules that will be appended to the default rules above. These will be added to the AI mentor's system prompt.
-                </p>
-                <textarea
-                  value={chatbotRules}
-                  onChange={(e) => setChatbotRules(e.target.value)}
-                  placeholder="Example:&#10;- Always recommend booking a call for complex business questions&#10;- Never discuss competitor products by name&#10;- Encourage users to complete one day at a time"
-                  className="w-full h-32 p-3 rounded-lg border-2 border-slate-200 bg-white text-sm resize-none focus:outline-none focus:border-slate-400"
-                />
-                <div className="mt-4 flex items-center justify-between">
-                  <p className="text-xs text-slate-400">
-                    {chatbotRules.trim() ? `${chatbotRules.trim().split('\n').length} custom rule(s)` : 'No custom rules set'}
-                  </p>
-                  <Button
-                    onClick={() => saveChatbotSettings.mutate({ customRules: chatbotRules })}
-                    disabled={saveChatbotSettings.isPending}
-                    className="gap-2"
-                  >
-                    <Save className="w-4 h-4" />
-                    {saveChatbotSettings.isPending ? "Saving..." : "Save Rules"}
-                  </Button>
+                  {/* Additional Custom Rules */}
+                  <div>
+                    <Label className="text-sm font-medium text-slate-900 mb-2 block">Additional Custom Rules</Label>
+                    <p className="text-xs text-slate-500 mb-2">Extra rules appended to the system prompt</p>
+                    <textarea
+                      value={chatbotRules}
+                      onChange={(e) => setChatbotRules(e.target.value)}
+                      placeholder="Example:&#10;- Always recommend booking a call for complex business questions&#10;- Never discuss competitor products by name"
+                      className="w-full h-24 p-3 rounded-lg border-2 border-slate-200 bg-white text-sm resize-none focus:outline-none focus:border-slate-400"
+                    />
+                  </div>
+
+                  <div className="pt-4 border-t border-slate-100 flex justify-end">
+                    <Button
+                      onClick={() => saveChatbotSettings.mutate({
+                        customRules: chatbotRules,
+                        responseStyle,
+                        scopeHelps,
+                        scopeWontHelp,
+                        businessRedirect,
+                        coreRules
+                      })}
+                      disabled={saveChatbotSettings.isPending}
+                      className="gap-2"
+                    >
+                      <Save className="w-4 h-4" />
+                      {saveChatbotSettings.isPending ? "Saving..." : "Save All Rules"}
+                    </Button>
+                  </div>
                 </div>
               </Card>
 

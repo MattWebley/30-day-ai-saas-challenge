@@ -280,6 +280,11 @@ export type InsertChatUsage = typeof chatUsage.$inferInsert;
 export const chatbotSettings = pgTable("chatbot_settings", {
   id: serial("id").primaryKey(),
   customRules: text("custom_rules"), // Additional rules to append to system prompt
+  responseStyle: text("response_style"), // Editable response style rules
+  scopeHelps: text("scope_helps"), // What the bot helps with
+  scopeWontHelp: text("scope_wont_help"), // What the bot won't help with
+  businessRedirect: text("business_redirect"), // Redirect message for business questions
+  coreRules: text("core_rules"), // Core behavior rules
   dailyLimit: integer("daily_limit").default(20),
   hourlyLimit: integer("hourly_limit").default(10),
   updatedAt: timestamp("updated_at").defaultNow(),
