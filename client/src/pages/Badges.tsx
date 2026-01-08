@@ -1,62 +1,165 @@
 import { Layout } from "@/components/layout/Layout";
-import { badges } from "@/lib/mock-data";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import * as Icons from "lucide-react";
-import { LucideIcon } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
+
+interface Badge {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  triggerType: string;
+  triggerValue: number | null;
+}
+
+interface UserBadge {
+  id: number;
+  badgeId: number;
+  earnedAt: string;
+}
 
 export default function Badges() {
+  // Fetch all available badges
+  const { data: allBadges, isLoading: loadingBadges } = useQuery<Badge[]>({
+    queryKey: ["/api/badges"],
+  });
+
+  // Fetch user's earned badges
+  const { data: userBadges, isLoading: loadingUserBadges } = useQuery<UserBadge[]>({
+    queryKey: ["/api/badges/user"],
+  });
+
+  const isLoading = loadingBadges || loadingUserBadges;
+
+  // Create a set of earned badge IDs for quick lookup
+  const earnedBadgeIds = new Set(userBadges?.map(ub => ub.badgeId) || []);
+
+  // Sort badges: phase badges first (by triggerValue), then streak badges
+  const sortedBadges = [...(allBadges || [])].sort((a, b) => {
+    if (a.triggerType === 'day_completed' && b.triggerType === 'streak') return -1;
+    if (a.triggerType === 'streak' && b.triggerType === 'day_completed') return 1;
+    return (a.triggerValue || 0) - (b.triggerValue || 0);
+  });
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-slate-900">Your Badges</h1>
           <p className="text-muted-foreground mt-2">
-            Collect all 9 badges to complete the challenge.
+            Collect all {allBadges?.length || 9} badges to complete the challenge.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {badges.map((badge, i) => {
-            const Icon = (Icons[badge.icon as keyof typeof Icons] as LucideIcon) || Icons.Trophy;
-            
-            return (
-              <motion.div
-                key={badge.id}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <Card className={cn(
-                  "p-8 flex flex-col items-center text-center gap-4 transition-none hover:shadow-lg",
-                  badge.earned 
-                    ? "bg-white border-slate-200" 
-                    : "bg-slate-50 border-slate-100 opacity-60 grayscale"
-                )}>
-                  <div className={cn(
-                    "w-20 h-20 rounded-full flex items-center justify-center mb-2",
-                    badge.earned 
-                      ? "bg-blue-50 text-primary shadow-inner" 
-                      : "bg-slate-200 text-slate-400"
-                  )}>
-                    <Icon className="w-10 h-10" />
-                  </div>
-                  
-                  <div>
-                    <h3 className="font-bold text-lg mb-1">{badge.name}</h3>
-                    <p className="text-sm text-muted-foreground">{badge.description}</p>
-                  </div>
+        {/* Phase Completion Badges */}
+        <div>
+          <h2 className="text-lg font-semibold text-slate-700 mb-4">Phase Badges</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedBadges
+              .filter(badge => badge.triggerType === 'day_completed')
+              .map((badge, i) => {
+                const isEarned = earnedBadgeIds.has(badge.id);
 
-                  {!badge.earned && (
-                    <div className="text-xs font-medium text-slate-400 uppercase tracking-widest mt-2">
-                      Locked
-                    </div>
-                  )}
-                </Card>
-              </motion.div>
-            );
-          })}
+                return (
+                  <motion.div
+                    key={badge.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <Card className={cn(
+                      "p-8 flex flex-col items-center text-center gap-4 transition-none hover:shadow-lg",
+                      isEarned
+                        ? "bg-white border-slate-200"
+                        : "bg-slate-50 border-slate-100 opacity-60 grayscale"
+                    )}>
+                      <div className={cn(
+                        "w-20 h-20 rounded-full flex items-center justify-center mb-2 text-4xl",
+                        isEarned
+                          ? "bg-blue-50 shadow-inner"
+                          : "bg-slate-200"
+                      )}>
+                        {badge.icon}
+                      </div>
+
+                      <div>
+                        <h3 className="font-bold text-lg mb-1">{badge.name}</h3>
+                        <p className="text-sm text-muted-foreground">{badge.description}</p>
+                        {badge.triggerValue && (
+                          <p className="text-xs text-slate-400 mt-2">Day {badge.triggerValue}</p>
+                        )}
+                      </div>
+
+                      {!isEarned && (
+                        <div className="text-xs font-medium text-slate-400 uppercase tracking-widest mt-2">
+                          Locked
+                        </div>
+                      )}
+                    </Card>
+                  </motion.div>
+                );
+              })}
+          </div>
+        </div>
+
+        {/* Streak Badges */}
+        <div>
+          <h2 className="text-lg font-semibold text-slate-700 mb-4">Streak Badges</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {sortedBadges
+              .filter(badge => badge.triggerType === 'streak')
+              .map((badge, i) => {
+                const isEarned = earnedBadgeIds.has(badge.id);
+
+                return (
+                  <motion.div
+                    key={badge.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <Card className={cn(
+                      "p-8 flex flex-col items-center text-center gap-4 transition-none hover:shadow-lg",
+                      isEarned
+                        ? "bg-white border-slate-200"
+                        : "bg-slate-50 border-slate-100 opacity-60 grayscale"
+                    )}>
+                      <div className={cn(
+                        "w-20 h-20 rounded-full flex items-center justify-center mb-2 text-4xl",
+                        isEarned
+                          ? "bg-amber-50 shadow-inner"
+                          : "bg-slate-200"
+                      )}>
+                        {badge.icon}
+                      </div>
+
+                      <div>
+                        <h3 className="font-bold text-lg mb-1">{badge.name}</h3>
+                        <p className="text-sm text-muted-foreground">{badge.description}</p>
+                      </div>
+
+                      {!isEarned && (
+                        <div className="text-xs font-medium text-slate-400 uppercase tracking-widest mt-2">
+                          Locked
+                        </div>
+                      )}
+                    </Card>
+                  </motion.div>
+                );
+              })}
+          </div>
         </div>
       </div>
     </Layout>
