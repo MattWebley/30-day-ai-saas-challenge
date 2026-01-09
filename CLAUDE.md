@@ -149,11 +149,12 @@ Every day in Dashboard.tsx MUST follow this exact format:
 
 ## Current Status
 - Status: In Progress
-- Last Session: 2026-01-08
+- Last Session: 2026-01-09
 - Current Branch: main
 - GitHub Repo: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
+- [ ] **NEXT SESSION: Decide what Day 12 should be** - Auth is just "ask Replit" (30 sec), need something useful. Options: First beta users, Add feedback button, Set up waitlist, or something else
 - [ ] Test AI Mentor chat bot (improved error handling added - check browser console)
 - [ ] Test Showcase feature end-to-end (Day 21 submission → admin approval → public gallery)
 - [ ] Test Day 1 completion flow (debug logging added - check console)
@@ -664,6 +665,42 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - 12 commits ahead of origin (git push failed due to auth - user to push manually)
   - TypeScript check passing, database reseeded
   - Next priority: Test the new day flow end-to-end
+
+### 2026-01-09 (Session 2) - Days 10-14 Content Improvements
+- Tasks Completed:
+  - **Day 10 (AI Brain)**: Added easy way to add secrets via Replit Agent natural language prompt
+  - **Day 11 (Add Superpowers / Connect APIs)**:
+    - Restructured page flow for better UX (Step 1: Ask Replit First, Step 2: Valid Reasons)
+    - Added prominent "Ask Replit First" guidance before adding external APIs
+    - Added web scraping section explaining what it is, why you'd need it, and Bright Data
+    - Fixed incorrect day reference (Day 16 → Day 13 for emails)
+    - Removed payments "Day 17" reference (no specific payments day exists)
+    - Updated seed.ts milestone comment to match actual structure
+  - **Day 12 (Let Users In / Auth)**:
+    - Simplified lesson - "Replit probably already has it", removed technical jargon
+    - Simplified component - check if auth exists first, add if needed
+    - Removed 4 auth method choices (was overcomplicating it)
+  - **Day 13 (Reach Your Users / Email)**:
+    - Complete rewrite as email sequence builder
+    - 5 email types to choose from: Welcome, Day 1 Check-in, Day 3 Nudge, Weekly Summary, Win-back
+    - Generates copyable Claude Code prompts for each selected email
+    - Dynamic prompts use app name
+    - Still includes Resend setup steps
+  - **Day Titles Renamed** (more engaging for biz opp audience):
+    - Day 11: Connect APIs → Add Superpowers
+    - Day 12: User Authentication → Let Users In
+    - Day 13: Email Setup → Reach Your Users
+    - Day 14: Build Mode → Heads Down
+  - **Cross-reference Audit**: Verified all day references across codebase are correct after reordering
+- Fixes Applied:
+  - Fixed Day 11 lesson saying "Day 16" for emails (now Day 13)
+  - Fixed Day 11 component saying "Payments covered Day 17" (removed day reference)
+  - Fixed seed.ts milestone comment (was outdated)
+- Notes:
+  - **Day 12 needs rethinking** - auth is just "ask Replit" (30 seconds), rest of day feels useless
+  - Options discussed: First beta users, Add feedback button, Set up waitlist - user to decide next session
+  - TypeScript check passing, database reseeded
+  - All changes committed and ready to push
 
 ---
 
