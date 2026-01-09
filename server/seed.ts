@@ -437,7 +437,7 @@ Complete today and you'll unlock the CLAUDE CODE GUIDE in the menu - all 3 promp
     },
     {
       day: 9,
-      title: "The Build-Test-Fix Loop",
+      title: "Find & Fix Your First Bug",
       description: "Learn the most important skill in software: finding bugs, describing them clearly, and fixing them with AI.",
       phase: "Week 2: Build & Verify",
       videoUrl: null,
