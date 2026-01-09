@@ -488,56 +488,56 @@ Simple? Yes. But this simple loop is what you'll do every single day of building
     },
     {
       day: 10,
-      title: "Fix & Iterate",
-      description: "Work through your fix list systematically. This is where you can PAUSE and take your time getting things right.",
+      title: "Build Mode",
+      description: "Get in the zone. Set a timer, pick a focus, and spend real time improving your app.",
       phase: "Week 2: Build & Verify",
       videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "Fix Session",
-      aiTaskDescription: "Use your prioritized list to fix issues one by one. Track your progress and celebrate wins.",
+      aiTaskType: "session",
+      aiTaskTitle: "Build Session",
+      aiTaskDescription: "Focused building time with timer. Pick your focus - new features, bug fixes, or design polish - and just build.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "How many critical issues did you find?",
-      microDecisionOptions: JSON.stringify(["None - it's working!", "1-3 issues", "4-6 issues", "More than 6"]),
-      reflectionQuestion: "What's the most satisfying bug you fixed today?",
-      tip: "Take your TIME here. There's no rush. Use the PAUSE button if you need days or weeks to get through your fix list. Better to launch something that WORKS than rush a broken product.",
-      lesson: `Today we FIX things. One at a time.
+      microDecisionQuestion: "What's calling you today?",
+      microDecisionOptions: JSON.stringify(["New Feature", "Bug Fixes", "Design & Polish", "Whatever Calls Me"]),
+      reflectionQuestion: "How did it feel to spend focused time building?",
+      tip: "The goal isn't perfection - it's immersion. Get lost in the work. Build, test, fix, improve. This is what being a builder feels like.",
+      lesson: `Yesterday you learned the loop. Today you LIVE it.
 
-Here's the process: Pick the MOST important broken thing. Describe it to Claude Code. Let it fix it. Test it. Move on.
+This is Build Mode. Real, focused time with your app. No hand-holding. Just you, Claude Code, and your vision.
 
-That's it. That's the whole day.
+THE VIBE:
 
-THE ONLY RULE THAT MATTERS:
+Set a timer. Minimize distractions. Phone away. Notifications off.
 
-ONE. THING. AT. A. TIME.
+Then just... build.
 
-Don't try to batch fixes. Don't try to fix 10 things at once. That's how you break things that were already working.
+Add a feature. Fix a bug. Make something prettier. Follow whatever calls to you. The magic happens when you stop thinking and start doing.
 
-Fix one thing. Test it. Confirm it works. THEN move to the next thing.
+WHY THIS MATTERS:
 
-WHAT IF IT'S NOT WORKING?
+Most people never spend REAL time on their projects. They dabble. They "plan to work on it." They watch tutorials.
 
-Describe it BETTER. Include:
-- What's happening (the bug)
-- What SHOULD happen (the expected behavior)
-- Any error messages you see
+But shipping requires BUILDING. And building requires time. Focused, uninterrupted time.
 
-The AI can fix almost anything if you describe the problem clearly.
+30 minutes of real building beats 3 hours of "thinking about building."
 
-IMPORTANT - READ THIS:
+WHAT TO EXPECT:
 
-This day is designed to be PAUSED.
+You might get frustrated. That's normal.
+You might get stuck. Ask Claude Code for help.
+You might break something. That's fine - fix it.
+You might get in the zone and lose track of time. THAT'S THE GOAL.
 
-If you have 20 things to fix, you're not fixing them all today. That's fine. Use the pause button. Come back tomorrow. Come back next week. There's NO prize for rushing.
+THE FLOW STATE:
 
-A working app is worth more than a fast launch.
+When you're in it, you know. Time disappears. Problems become puzzles. Fixes feel like wins.
 
-COMMIT YOUR WINS:
+Not every session hits flow state. That's okay. Show up anyway. The magic comes from consistency.
 
-Every time something critical starts working, commit to GitHub. "Fixed login form" or "Fixed save button" - whatever it is. These are your save points. If something breaks later, you can go back.
+Today's mission: Set a timer. Build something. Log what you shipped.
 
-Keep going until your core features WORK. Not perfect. Just WORKING.`,
-      outcome: "Critical issues fixed, app is functional, ready to verify core features work",
+Let's go.`,
+      outcome: "Completed a focused build session and shipped improvements to your app",
       completionMessage: "You're iterating like a real developer. Fix, test, repeat. That's how ALL software gets built. If you need more time, use PAUSE. When ready, Week 3 is about making sure your USP actually delivers.",
       xpReward: 100,
       estimatedMinutes: 5,
