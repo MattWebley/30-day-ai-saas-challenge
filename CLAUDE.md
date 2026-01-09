@@ -40,11 +40,11 @@
 A gamified 21 Day AI SaaS Challenge application that guides users from idea to launch-ready product through daily 5-minute micro-tasks. The app provides structured guidance, tracks progress, and uses AI to personalize the learning experience.
 
 ### Challenge Structure (21 Days)
-- **Week 1 (Days 1-7)**: Idea & Planning - Find idea, validate, features, name, tech stack, PRD
-- **Week 2 (Days 8-10)**: Build & Verify - Master Claude Code, reality check, fix & iterate
-- **Week 3 (Days 11-14)**: Make It Work - Test USP, feature testing, AI brain, APIs
-- **Week 4 (Days 15-18)**: Infrastructure - Auth, email, onboarding, admin dashboard
-- **Week 5 (Days 19-21)**: Polish & Launch - Mobile ready, brand polish, LAUNCH
+- **Idea & Planning (Days 0-7)**: Start Here, find idea, validate, features, name, tech stack, PRD, Claude Code setup
+- **Build & Verify (Days 8-10)**: Master Claude Code, first bug fix, add AI brain
+- **Make It Work (Days 11-14)**: Connect APIs, user auth, email setup, Build Mode
+- **Test & Refine (Days 15-18)**: Test USP, feature testing, onboarding, admin dashboard
+- **Polish & Launch (Days 19-21)**: Mobile ready, brand polish, LAUNCH
 
 ## Tech Stack
 
@@ -628,6 +628,42 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - 5 commits ahead of origin (git push failed due to auth - user to push manually)
   - TypeScript check passing
   - Next priority: Test chat bot with logged-in user, check browser console for errors
+
+### 2026-01-09 - Major Day Reordering (Days 10-16)
+- Tasks Completed:
+  - **Day 10-14 Reordering (First Pass)**:
+    - Moved AI Brain from Day 13 → Day 10
+    - Moved Connect APIs from Day 14 → Day 11
+    - Moved Test USP from Day 11 → Day 12
+    - Moved Feature Testing from Day 12 → Day 13
+    - Moved Build Mode from Day 10 → Day 14
+  - **Day 12-16 Reordering (Second Pass - Auth/Email Earlier)**:
+    - Moved User Authentication from Day 15 → Day 12
+    - Moved Email Setup from Day 16 → Day 13
+    - Moved Test USP from Day 12 → Day 15
+    - Moved Feature Testing from Day 13 → Day 16
+    - Day 14 remains Build Mode
+  - **Phase Name Updates**:
+    - Removed "Week X:" prefixes from all phases
+    - Renamed "Infrastructure" phase to "Test & Refine"
+  - **Build Mode (Day 14) Improvements**:
+    - Added prominent PAUSE messaging
+    - Explains users can spend multiple days in Build Mode
+    - Changed button text from "Complete Day 10" to "Complete Build Mode"
+    - Added "Not ready to move on?" card at end
+  - **Updated Files**:
+    - seed.ts - All day content reordered, phases renamed
+    - DayInstructions.tsx - To-do lists reordered
+    - Dashboard.tsx - Component routing updated
+    - Day10FixIterate.tsx - Added PAUSE messaging
+- Fixes Applied:
+  - Fixed hardcoded "Day 10" text in Build Mode component
+- Notes:
+  - New day flow: Learn tools (8-9) → AI Brain (10) → APIs (11) → Auth (12) → Email (13) → Build Mode (14) → Test (15-16) → Polish (17-18) → Launch (19-21)
+  - Build Mode now emphasizes PAUSE functionality for multi-day building
+  - 12 commits ahead of origin (git push failed due to auth - user to push manually)
+  - TypeScript check passing, database reseeded
+  - Next priority: Test the new day flow end-to-end
 
 ---
 
