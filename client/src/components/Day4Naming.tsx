@@ -502,7 +502,16 @@ Return ONLY valid JSON:
                               </div>
                               <p className="text-sm text-slate-600 italic mb-2">"{suggestion.tagline}"</p>
                               <div className="flex items-center gap-2 mb-2">
-                                <span className="text-sm font-mono text-slate-700">{suggestion.domain}.com</span>
+                                <a
+                                  href={`https://www.namecheap.com/domains/registration/results/?domain=${suggestion.domain}.com`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="text-sm font-mono text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                                >
+                                  {suggestion.domain}.com
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
                                 {isChecking ? (
                                   <span className="flex items-center gap-1 text-xs text-slate-400">
                                     <Loader2 className="w-3 h-3 animate-spin" /> Checking...
