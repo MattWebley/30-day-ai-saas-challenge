@@ -437,55 +437,52 @@ Complete today and you'll unlock the CLAUDE CODE GUIDE in the menu - all 3 promp
     },
     {
       day: 9,
-      title: "The Reality Check",
-      description: "Compare what Replit built against your PRD. Document what's working, what's missing, and what needs fixing.",
+      title: "The Build-Test-Fix Loop",
+      description: "Learn the most important skill in software: finding bugs, describing them clearly, and fixing them with AI.",
       phase: "Week 2: Build & Verify",
       videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "PRD vs Reality Audit",
-      aiTaskDescription: "AI helps you systematically compare your PRD features against what actually got built, creating a prioritized fix list.",
+      aiTaskType: "workflow",
+      aiTaskTitle: "Bug Fix Workflow",
+      aiTaskDescription: "Walk through finding a real bug in your app, describing it properly, and fixing it with Claude Code.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "How does the app compare to your vision?",
-      microDecisionOptions: JSON.stringify(["Better than expected!", "Close but needs work", "Missing key features", "Barely resembles my PRD"]),
-      reflectionQuestion: "What's the ONE thing that must work perfectly before anything else?",
-      tip: "This audit isn't about being disappointed - it's about having a CLEAR list of what to fix. Every SaaS starts rough. The magic is in the iteration.",
-      lesson: `Alright. Time for a reality check.
+      microDecisionQuestion: "What type of bug did you find?",
+      microDecisionOptions: JSON.stringify(["Something completely broken", "Works but looks wrong", "Missing feature", "Confusing behavior"]),
+      reflectionQuestion: "How did it feel to find a bug and fix it yourself?",
+      tip: "Finding bugs isn't failure - it's PROGRESS. The faster you find and fix them, the faster you ship. Pros find bugs constantly - they just fix them faster.",
+      lesson: `This is THE skill that separates people who ship from people who don't.
 
-Open your app RIGHT NOW and click through it. What actually works? What's broken? What's completely missing?
+BUILD → TEST → FIX → REPEAT
 
-Here's a TRUTH that took me a while to accept: AI-generated code is NEVER perfect on the first pass. NEVER. And that's FINE. It's not failure - it's just how this works.
+Every successful builder does this loop HUNDREDS of times. Today you'll learn it by doing it.
 
-Even the best human developers iterate. The difference is the AI does 80% of the work in minutes instead of weeks.
+THE LOOP EXPLAINED:
 
-YOUR JOB TODAY:
+1. BUILD something (or have AI build it)
+2. TEST it immediately - click everything, try to break it
+3. FIX what's broken (with Claude Code's help)
+4. REPEAT until it works
 
-1. Open your PRD from Day 6
-2. Go through EVERY feature you listed
-3. Mark each one: WORKS / BROKEN / MISSING
+WHY THIS MATTERS:
 
-Be BRUTALLY honest. If it kind of works but not really - it's BROKEN. If you have to squint and pretend - it's BROKEN.
+Most people build for HOURS without testing. Then they find 47 bugs at once and feel overwhelmed.
 
-WHAT YOU'LL PROBABLY FIND:
+Smart builders test CONSTANTLY. Find one bug, fix it, move on. Small wins stack up.
 
-- Some things work perfectly (nice!)
-- Some things are half-built (common)
-- Some things weren't even attempted (also common)
-- Some things work but look terrible (very common)
+THE SECRET TO GOOD BUG REPORTS:
 
-This isn't a disaster. This is INFORMATION. Now you know EXACTLY what to fix instead of vaguely feeling like "something's not right."
+Bad: "It's broken"
+Good: "When I click Save, the page refreshes but data isn't in the database"
 
-THE PRIORITY QUESTION:
+The more specific you are, the faster AI can help you fix it.
 
-What's the ONE thing that MUST work before anything else?
+TODAY'S MISSION:
 
-Your main feature? Authentication? The thing you'll charge money for?
+Find ONE bug in your app. Describe it clearly. Fix it with Claude Code. That's it.
 
-THAT'S what you fix first. Everything else can wait.
-
-Write it all down. Tomorrow we start fixing.`,
-      outcome: "A complete audit of your app with a prioritized list of fixes and missing features",
-      completionMessage: "You now have a MAP. Every gap between your vision and reality is documented. No more wondering what to work on - you have a clear fix list. Tomorrow: we start fixing.",
+Simple? Yes. But this simple loop is what you'll do every single day of building. Master it now.`,
+      outcome: "Found and fixed your first bug using the Build-Test-Fix loop",
+      completionMessage: "You just completed your first Build-Test-Fix loop! This is the skill that will carry you through everything. Finding bugs = progress. Tomorrow: more fixing and iterating.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
