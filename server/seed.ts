@@ -127,13 +127,13 @@ Ready? Let's go.`,
       estimatedMinutes: 3,
     },
     // ============================================
-    // WEEK 1: IDEA & PLANNING (Days 1-7)
+    // IDEA & PLANNING (Days 1-7)
     // ============================================
     {
       day: 1,
       title: "Choosing Your $100K+ Idea",
       description: "Use AI to generate personalized SaaS ideas based on your knowledge, skills, and interests - then shortlist the best ones.",
-      phase: "Week 1: Idea & Planning",
+      phase: "Idea & Planning",
       videoUrl: null,
       aiTaskType: "suggestion",
       aiTaskTitle: "AI Idea Generator",
@@ -169,7 +169,7 @@ Think NICHE - DO NOT THINK BROAD! The NICHER the BETTER usually...`,
       day: 2,
       title: "Will People Pay For This?",
       description: "Validate your idea by identifying real pain points, checking competitors, and creating your 'I help X with Y problem' statement.",
-      phase: "Week 1: Idea & Planning",
+      phase: "Idea & Planning",
       videoUrl: null,
       aiTaskType: "suggestion",
       aiTaskTitle: "Idea Validation & Pain Point Analysis",
@@ -203,7 +203,7 @@ The "I Help" Statement: By end of today, you should be able to say: "I help [SPE
       day: 3,
       title: "Core Features & Your USP",
       description: "Clone competitor's essential features AND identify 1-2 unique features that will set you apart from everyone else.",
-      phase: "Week 1: Idea & Planning",
+      phase: "Idea & Planning",
       videoUrl: null,
       aiTaskType: "suggestion",
       aiTaskTitle: "Feature Generation & USP Discovery",
@@ -235,7 +235,7 @@ CLONED CORE FEATURES + USP + LONGER FREE TRIAL + CHEAPER MONTHLY PRICE = WIN`,
       day: 4,
       title: "Name It & Claim It",
       description: "Choose a killer name, secure the .com domain (no exceptions!), and claim all your social handles before someone else does.",
-      phase: "Week 1: Idea & Planning",
+      phase: "Idea & Planning",
       videoUrl: null,
       aiTaskType: "suggestion",
       aiTaskTitle: "AI Name Generator",
@@ -285,7 +285,7 @@ The name you pick today will be on every invoice, every email, every conversatio
       day: 5,
       title: "AI Tech Stack Setup",
       description: "Sign up for Replit, Claude, ChatGPT, and OpenAI API - your AI-powered development toolkit.",
-      phase: "Week 1: Idea & Planning",
+      phase: "Idea & Planning",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Tool Setup Checklist",
@@ -314,7 +314,7 @@ They're good at different things (and that changes, often). You can play them of
       day: 6,
       title: "Summary + PRD Into Replit",
       description: "Finalize your plan, generate a professional Product Requirements Document with AI, and paste it into Replit to start building.",
-      phase: "Week 1: Idea & Planning",
+      phase: "Idea & Planning",
       videoUrl: null,
       aiTaskType: "template",
       aiTaskTitle: "PRD Generation",
@@ -351,7 +351,7 @@ Check through it, change anything that's wrong, then PASTE IT INTO REPLIT and wa
       day: 7,
       title: "Claude Code + GitHub Setup",
       description: "Connect Claude Code to Replit and GitHub, learn the daily workflow, and complete your first real build session.",
-      phase: "Week 1: Idea & Planning",
+      phase: "Idea & Planning",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Development Workflow Setup",
@@ -385,13 +385,13 @@ KEY NOTE: You HAVE to accept this is an EVER-CHANGING space. Things change CONST
     },
 
     // ============================================
-    // WEEK 2: BUILD & VERIFY (Days 8-10)
+    // BUILD & VERIFY (Days 8-10)
     // ============================================
     {
       day: 8,
       title: "Master Claude Code",
       description: "Learn how to effectively use Claude Code to build, fix, and iterate on your app. This is your superpower.",
-      phase: "Week 2: Build & Verify",
+      phase: "Build & Verify",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Claude Code Mastery",
@@ -439,7 +439,7 @@ Complete today and you'll unlock the CLAUDE CODE GUIDE in the menu - all 3 promp
       day: 9,
       title: "Find & Fix Your First Bug",
       description: "Learn the most important skill in software: finding bugs, describing them clearly, and fixing them with AI.",
-      phase: "Week 2: Build & Verify",
+      phase: "Build & Verify",
       videoUrl: null,
       aiTaskType: "workflow",
       aiTaskTitle: "Bug Fix Workflow",
@@ -490,7 +490,7 @@ Simple? Yes. But this simple loop is what you'll do every single day of building
       day: 10,
       title: "Add The AI Brain",
       description: "Integrate OpenAI API to make your app intelligent. This is what makes AI SaaS special.",
-      phase: "Week 2: Build & Verify",
+      phase: "Build & Verify",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "AI Integration",
@@ -554,7 +554,7 @@ This is the feature that makes your app worth paying for. Make it good.`,
       day: 11,
       title: "Connect APIs",
       description: "Add the external services your app needs - storage, analytics, or other integrations.",
-      phase: "Week 3: Make It Work",
+      phase: "Make It Work",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "API Connections",
@@ -610,189 +610,9 @@ Simple apps are easier to build, easier to maintain, and easier to sell.`,
     },
     {
       day: 12,
-      title: "Test Your USP",
-      description: "Your Unique Selling Point is why people will choose YOU over competitors. Today we verify it actually works.",
-      phase: "Week 3: Make It Work",
-      videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "USP Verification",
-      aiTaskDescription: "Test your unique selling point end-to-end. Does it deliver on its promise?",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "Does your USP feature work as intended?",
-      microDecisionOptions: JSON.stringify(["Works perfectly!", "Mostly works, minor issues", "Works but needs improvement", "Doesn't work yet"]),
-      reflectionQuestion: "If you showed this USP to a potential customer, would they be impressed?",
-      tip: "Your USP is what you'll SELL. Everything else is table stakes. If your USP doesn't make people say 'wow, that's cool' - it's not strong enough.",
-      lesson: `Your USP is your WEAPON. It's the reason someone picks YOU over the 10 other tools that do something similar.
-
-Today we make sure that weapon is SHARP.
-
-THE QUESTION THAT MATTERS:
-
-If I showed my USP feature to a potential customer RIGHT NOW, would they say "Wow, that's cool - I'd pay for that"?
-
-If the answer is anything other than a clear YES, we have work to do.
-
-WHAT MAKES A USP ACTUALLY WORK:
-
-1. You can SHOW it, not just describe it
-"We have AI" = NOT a USP
-"Our AI writes 10 posts in 30 seconds" = USP
-
-2. It's OBVIOUSLY different from competitors
-Can they do this too? If yes, it's not a USP.
-
-3. It solves a REAL pain
-Not a feature for the sake of features. An actual frustration that people hate.
-
-THE TEST:
-
-1. Open your app
-2. Do the USP thing
-3. Ask yourself: Would I pay for this?
-
-Be HONEST. If you're making excuses ("well, once I add X it'll be better...") - it's not ready.
-
-Then open a competitor. Do the same thing with their tool. Is yours FASTER? EASIER? BETTER? CHEAPER?
-
-If you can't say YES to at least one of those, your USP needs work.
-
-THE BRUTAL TRUTH:
-
-Your USP is what you'll put in your marketing. It's what you'll say on your landing page. It's what will make people click "Buy."
-
-If it doesn't make YOU excited, it won't make THEM excited.
-
-Make it UNDENIABLE.`,
-      outcome: "USP tested and working, clear value proposition that differentiates you from competitors",
-      completionMessage: "You've verified your WEAPON works. Your USP is what will make people choose YOU. Tomorrow: we test all the other features.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 13,
-      title: "Feature Testing",
-      description: "Systematically test every feature in your app. Find the bugs before your users do.",
-      phase: "Week 3: Make It Work",
-      videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "Feature Test Suite",
-      aiTaskDescription: "Create and run through a test checklist for every feature in your app.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "How many features have bugs?",
-      microDecisionOptions: JSON.stringify(["None - all working!", "1-2 minor issues", "Several need fixes", "Most have problems"]),
-      reflectionQuestion: "Which feature are you most proud of after testing?",
-      tip: "Test like a user, not a developer. Click every button. Try to break things. Enter weird data. If it breaks for you, it'll break for customers.",
-      lesson: `Today you become your app's WORST enemy.
-
-Click every button. Fill every form. Try to BREAK things. Because if YOU can break it, your USERS definitely will.
-
-THE TESTING MINDSET:
-
-Pretend you've never seen your app before. You're not the builder - you're a confused user who just landed on this thing.
-
-- Can you figure out what to do?
-- Do buttons actually do what they say?
-- When something goes wrong, does it tell you WHY?
-
-TRY TO BREAK IT:
-
-Enter nothing. Submit empty forms.
-Enter garbage. asdfasdfasdf into every field.
-Enter EVERYTHING. Paste a novel into a text box.
-Do things in the wrong order. Skip steps. Go backwards.
-
-What happens? Does it crash? Does it give a helpful error? Does it just... do nothing?
-
-THE STUFF THAT'S EASY TO MISS:
-
-- Loading states - is there a spinner when things are happening?
-- Success states - do you KNOW when something worked?
-- Error states - when it fails, do you know WHY?
-- Edge cases - what if someone enters an emoji? A really long name?
-
-WHEN YOU FIND BUGS:
-
-Write them down. Don't fix them yet. Finish testing first, THEN fix everything.
-
-Unless it's completely broken - then fix it now.
-
-THE GOAL:
-
-By the end of today, you should be able to use your app like a REAL user and have confidence it won't embarrass you.
-
-Break it now, so your users don't break it later.`,
-      outcome: "All features tested, bugs identified and fixed, app is reliable and ready",
-      completionMessage: "Your app has been TESTED. You know what works and what doesn't. That's more than most founders know when they launch. Tomorrow: focused building time to fix and improve.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 14,
-      title: "Build Mode",
-      description: "Get in the zone. Set a timer, pick a focus, and spend real time improving your app.",
-      phase: "Week 3: Make It Work",
-      videoUrl: null,
-      aiTaskType: "session",
-      aiTaskTitle: "Build Session",
-      aiTaskDescription: "Focused building time with timer. Pick your focus - new features, bug fixes, or design polish - and just build.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "What's calling you today?",
-      microDecisionOptions: JSON.stringify(["New Feature", "Bug Fixes", "Design & Polish", "Whatever Calls Me"]),
-      reflectionQuestion: "How did it feel to spend focused time building?",
-      tip: "The goal isn't perfection - it's immersion. Get lost in the work. Build, test, fix, improve. This is what being a builder feels like.",
-      lesson: `You've learned the tools. You've tested everything. Now it's time to BUILD.
-
-This is Build Mode. Real, focused time with your app. No hand-holding. Just you, Claude Code, and your vision.
-
-THE VIBE:
-
-Set a timer. Minimize distractions. Phone away. Notifications off.
-
-Then just... build.
-
-Add a feature. Fix a bug. Make something prettier. Follow whatever calls to you. The magic happens when you stop thinking and start doing.
-
-WHY THIS MATTERS:
-
-Most people never spend REAL time on their projects. They dabble. They "plan to work on it." They watch tutorials.
-
-But shipping requires BUILDING. And building requires time. Focused, uninterrupted time.
-
-30 minutes of real building beats 3 hours of "thinking about building."
-
-WHAT TO EXPECT:
-
-You might get frustrated. That's normal.
-You might get stuck. Ask Claude Code for help.
-You might break something. That's fine - fix it.
-You might get in the zone and lose track of time. THAT'S THE GOAL.
-
-THE FLOW STATE:
-
-When you're in it, you know. Time disappears. Problems become puzzles. Fixes feel like wins.
-
-Not every session hits flow state. That's okay. Show up anyway. The magic comes from consistency.
-
-Today's mission: Set a timer. Build something. Log what you shipped.
-
-Let's go.`,
-      outcome: "Completed a focused build session and shipped improvements to your app",
-      completionMessage: "Week 3 DONE. You've added AI, connected APIs, tested everything, and spent real time building. Your app is a WORKING product. Next week: the infrastructure that makes it ready for real users.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-
-    // ============================================
-    // WEEK 4: INFRASTRUCTURE (Days 15-18)
-    // ============================================
-    {
-      day: 15,
       title: "User Authentication",
       description: "Let users create accounts, log in, and have their own private data. Essential for any real SaaS.",
-      phase: "Week 4: Infrastructure",
+      phase: "Make It Work",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Auth Setup",
@@ -850,10 +670,10 @@ Auth is table stakes. Not exciting. Just necessary. Get it working and move on.`
       estimatedMinutes: 5,
     },
     {
-      day: 16,
+      day: 13,
       title: "Email Setup",
       description: "Set up transactional emails - welcome emails, notifications, and password resets. Keep users engaged.",
-      phase: "Week 4: Infrastructure",
+      phase: "Make It Work",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Email Integration",
@@ -906,7 +726,191 @@ Send a test email to yourself. Check your spam folder. If it ends up in spam, yo
 
 Emails keep users coming back. Set it up. Keep it simple.`,
       outcome: "Email service connected, welcome and notification emails working",
-      completionMessage: "Your app can EMAIL users now. Welcome emails, notifications, the works. Tomorrow: making the first-run experience great.",
+      completionMessage: "Your app can EMAIL users now. Welcome emails, notifications, the works. Tomorrow: focused building time to bring it all together.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 14,
+      title: "Build Mode",
+      description: "Get in the zone. Set a timer, pick a focus, and spend real time improving your app. Use PAUSE if you need more time.",
+      phase: "Make It Work",
+      videoUrl: null,
+      aiTaskType: "session",
+      aiTaskTitle: "Build Session",
+      aiTaskDescription: "Focused building time with timer. Pick your focus - new features, bug fixes, or design polish - and just build.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "What's calling you today?",
+      microDecisionOptions: JSON.stringify(["New Feature", "Bug Fixes", "Design & Polish", "Whatever Calls Me"]),
+      reflectionQuestion: "How did it feel to spend focused time building?",
+      tip: "The goal isn't perfection - it's immersion. Get lost in the work. Build, test, fix, improve. This is what being a builder feels like.",
+      lesson: `You've built the core. AI, APIs, Auth, Email. Now it's time to INTEGRATE and BUILD.
+
+This is Build Mode. Real, focused time with your app. No hand-holding. Just you, Claude Code, and your vision.
+
+THE VIBE:
+
+Set a timer. Minimize distractions. Phone away. Notifications off.
+
+Then just... build.
+
+Add a feature. Fix a bug. Make something prettier. Follow whatever calls to you. The magic happens when you stop thinking and start doing.
+
+WHY THIS MATTERS:
+
+Most people never spend REAL time on their projects. They dabble. They "plan to work on it." They watch tutorials.
+
+But shipping requires BUILDING. And building requires time. Focused, uninterrupted time.
+
+30 minutes of real building beats 3 hours of "thinking about building."
+
+WHAT TO EXPECT:
+
+You might get frustrated. That's normal.
+You might get stuck. Ask Claude Code for help.
+You might break something. That's fine - fix it.
+You might get in the zone and lose track of time. THAT'S THE GOAL.
+
+THE FLOW STATE:
+
+When you're in it, you know. Time disappears. Problems become puzzles. Fixes feel like wins.
+
+Not every session hits flow state. That's okay. Show up anyway. The magic comes from consistency.
+
+NEED MORE TIME?
+
+Hit the PAUSE button. Build Mode isn't a one-day thing. Some people spend multiple days here, and that's GOOD. Stay in Build Mode until you're ready to move on to testing.
+
+Today's mission: Set a timer. Build something. Log what you shipped.
+
+Let's go.`,
+      outcome: "Completed a focused build session and shipped improvements to your app",
+      completionMessage: "You've been building like a real developer. Your app has AI, APIs, auth, email, and whatever else you've added. If you need more time, use PAUSE. When ready, it's time to TEST everything.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+
+    // ============================================
+    // TEST & REFINE (Days 15-18)
+    // ============================================
+    {
+      day: 15,
+      title: "Test Your USP",
+      description: "Your Unique Selling Point is why people will choose YOU over competitors. Today we verify it actually works.",
+      phase: "Test & Refine",
+      videoUrl: null,
+      aiTaskType: "generator",
+      aiTaskTitle: "USP Verification",
+      aiTaskDescription: "Test your unique selling point end-to-end. Does it deliver on its promise?",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "Does your USP feature work as intended?",
+      microDecisionOptions: JSON.stringify(["Works perfectly!", "Mostly works, minor issues", "Works but needs improvement", "Doesn't work yet"]),
+      reflectionQuestion: "If you showed this USP to a potential customer, would they be impressed?",
+      tip: "Your USP is what you'll SELL. Everything else is table stakes. If your USP doesn't make people say 'wow, that's cool' - it's not strong enough.",
+      lesson: `Your USP is your WEAPON. It's the reason someone picks YOU over the 10 other tools that do something similar.
+
+Today we make sure that weapon is SHARP.
+
+THE QUESTION THAT MATTERS:
+
+If I showed my USP feature to a potential customer RIGHT NOW, would they say "Wow, that's cool - I'd pay for that"?
+
+If the answer is anything other than a clear YES, we have work to do.
+
+WHAT MAKES A USP ACTUALLY WORK:
+
+1. You can SHOW it, not just describe it
+"We have AI" = NOT a USP
+"Our AI writes 10 posts in 30 seconds" = USP
+
+2. It's OBVIOUSLY different from competitors
+Can they do this too? If yes, it's not a USP.
+
+3. It solves a REAL pain
+Not a feature for the sake of features. An actual frustration that people hate.
+
+THE TEST:
+
+1. Open your app
+2. Do the USP thing
+3. Ask yourself: Would I pay for this?
+
+Be HONEST. If you're making excuses ("well, once I add X it'll be better...") - it's not ready.
+
+Then open a competitor. Do the same thing with their tool. Is yours FASTER? EASIER? BETTER? CHEAPER?
+
+If you can't say YES to at least one of those, your USP needs work.
+
+THE BRUTAL TRUTH:
+
+Your USP is what you'll put in your marketing. It's what you'll say on your landing page. It's what will make people click "Buy."
+
+If it doesn't make YOU excited, it won't make THEM excited.
+
+Make it UNDENIABLE.`,
+      outcome: "USP tested and working, clear value proposition that differentiates you from competitors",
+      completionMessage: "You've verified your WEAPON works. Your USP is what will make people choose YOU. Tomorrow: we test all the other features.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 16,
+      title: "Feature Testing",
+      description: "Systematically test every feature in your app. Find the bugs before your users do.",
+      phase: "Test & Refine",
+      videoUrl: null,
+      aiTaskType: "generator",
+      aiTaskTitle: "Feature Test Suite",
+      aiTaskDescription: "Create and run through a test checklist for every feature in your app.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "How many features have bugs?",
+      microDecisionOptions: JSON.stringify(["None - all working!", "1-2 minor issues", "Several need fixes", "Most have problems"]),
+      reflectionQuestion: "Which feature are you most proud of after testing?",
+      tip: "Test like a user, not a developer. Click every button. Try to break things. Enter weird data. If it breaks for you, it'll break for customers.",
+      lesson: `Today you become your app's WORST enemy.
+
+Click every button. Fill every form. Try to BREAK things. Because if YOU can break it, your USERS definitely will.
+
+THE TESTING MINDSET:
+
+Pretend you've never seen your app before. You're not the builder - you're a confused user who just landed on this thing.
+
+- Can you figure out what to do?
+- Do buttons actually do what they say?
+- When something goes wrong, does it tell you WHY?
+
+TRY TO BREAK IT:
+
+Enter nothing. Submit empty forms.
+Enter garbage. asdfasdfasdf into every field.
+Enter EVERYTHING. Paste a novel into a text box.
+Do things in the wrong order. Skip steps. Go backwards.
+
+What happens? Does it crash? Does it give a helpful error? Does it just... do nothing?
+
+THE STUFF THAT'S EASY TO MISS:
+
+- Loading states - is there a spinner when things are happening?
+- Success states - do you KNOW when something worked?
+- Error states - when it fails, do you know WHY?
+- Edge cases - what if someone enters an emoji? A really long name?
+
+WHEN YOU FIND BUGS:
+
+Write them down. Don't fix them yet. Finish testing first, THEN fix everything.
+
+Unless it's completely broken - then fix it now.
+
+THE GOAL:
+
+By the end of today, you should be able to use your app like a REAL user and have confidence it won't embarrass you.
+
+Break it now, so your users don't break it later.`,
+      outcome: "All features tested, bugs identified and fixed, app is reliable and ready",
+      completionMessage: "Your app has been TESTED. You know what works and what doesn't. That's more than most founders know when they launch. Tomorrow: making the first-run experience great.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -914,7 +918,7 @@ Emails keep users coming back. Set it up. Keep it simple.`,
       day: 17,
       title: "User Onboarding",
       description: "Create a smooth first-run experience. Help new users understand and love your app in the first 2 minutes.",
-      phase: "Week 4: Infrastructure",
+      phase: "Test & Refine",
       videoUrl: null,
       aiTaskType: "generator",
       aiTaskTitle: "Onboarding Flow",
@@ -978,7 +982,7 @@ Make them successful in 2 minutes or less.`,
       day: 18,
       title: "Admin Dashboard",
       description: "Build a simple dashboard to see what's happening in your app. Users, activity, and key metrics.",
-      phase: "Week 4: Infrastructure",
+      phase: "Test & Refine",
       videoUrl: null,
       aiTaskType: "generator",
       aiTaskTitle: "Admin Panel",
@@ -1036,13 +1040,13 @@ Build the dashboard. Check it every day. Make decisions based on what you see, n
     },
 
     // ============================================
-    // WEEK 5: POLISH & LAUNCH (Days 19-21)
+    // POLISH & LAUNCH (Days 19-21)
     // ============================================
     {
       day: 19,
       title: "Mobile Ready",
       description: "Make your app work beautifully on phones and tablets. Most users will access on mobile.",
-      phase: "Week 5: Polish & Launch",
+      phase: "Polish & Launch",
       videoUrl: null,
       aiTaskType: "generator",
       aiTaskTitle: "Mobile Optimization",
@@ -1100,7 +1104,7 @@ Let that sink in.`,
       day: 20,
       title: "Brand & Beauty",
       description: "Polish the visuals. Logo, colors, typography. Make it look like a product people would pay for.",
-      phase: "Week 5: Polish & Launch",
+      phase: "Polish & Launch",
       videoUrl: null,
       aiTaskType: "generator",
       aiTaskTitle: "Visual Polish",
@@ -1159,7 +1163,7 @@ But let's get through tomorrow first. One day at a time.`,
       day: 21,
       title: "Launch Day",
       description: "Final checks, real costs, and GO LIVE. You're about to launch your AI SaaS.",
-      phase: "Week 5: Polish & Launch",
+      phase: "Polish & Launch",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Launch Checklist",

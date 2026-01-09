@@ -657,14 +657,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 12: Test Your USP */}
+                {/* Day 12: User Authentication */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Verify Your USP</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Add User Accounts</h2>
                   </div>
-                  <Day11TestUSP
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                  <Day15Authentication
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -687,13 +687,16 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 13: Feature Testing */}
+                {/* Day 13: Email Setup */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Set Up Email</h2>
                   </div>
-                  <Day12FeatureTesting onComplete={handleComplete} />
+                  <Day16Email
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 14 ? (
@@ -743,14 +746,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 15: User Authentication */}
+                {/* Day 15: Test Your USP */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Add User Accounts</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Verify Your USP</h2>
                   </div>
-                  <Day15Authentication
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                  <Day11TestUSP
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -773,16 +776,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 16: Email Setup */}
+                {/* Day 16: Feature Testing */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Set Up Email</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
                   </div>
-                  <Day16Email
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
-                    onComplete={handleComplete}
-                  />
+                  <Day12FeatureTesting onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 17 ? (

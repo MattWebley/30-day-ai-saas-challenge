@@ -232,6 +232,13 @@ export function Day10FixIterate({ topPriority, onComplete }: Day10FixIterateProp
             </p>
           </Card>
 
+          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
+            <p className="text-sm text-amber-800">
+              <strong>NEED MORE THAN ONE DAY?</strong> That's totally fine! Build Mode isn't a one-day thing.
+              Come back tomorrow and do another session. Use the PAUSE button in the sidebar to stay on this day until you're ready to move on.
+            </p>
+          </Card>
+
           {duration > 0 && (
             <Button
               size="lg"
@@ -422,13 +429,22 @@ export function Day10FixIterate({ topPriority, onComplete }: Day10FixIterateProp
                 howItFelt,
               })}
             >
-              Complete Day 10 <ChevronRight className="w-5 h-5" />
+              Complete Build Mode <ChevronRight className="w-5 h-5" />
             </Button>
           ) : (
             <p className="text-sm text-slate-500 text-center">
               Fill in what you worked on and shipped to continue
             </p>
           )}
+
+          <Card className="p-4 border-2 border-amber-300 bg-amber-50 mt-4">
+            <div className="text-center">
+              <p className="text-amber-900 font-bold text-lg mb-2">Not ready to move on?</p>
+              <p className="text-amber-800 text-sm mb-3">
+                Build Mode can take multiple days. Use the PAUSE button in the sidebar to stay here and do more build sessions.
+              </p>
+            </div>
+          </Card>
         </>
       )}
     </div>

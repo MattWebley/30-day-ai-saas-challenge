@@ -84,34 +84,34 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Test the integration works"
   ],
   12: [
-    "Identify your USP feature",
-    "Test it end-to-end",
-    "Compare to competitors",
-    "Answer: Would someone pay for this?"
-  ],
-  13: [
-    "Test every button and form",
-    "Try to break things with weird inputs",
-    "Document all bugs found",
-    "Fix critical issues"
-  ],
-  14: [
-    "Set a timer for focused building",
-    "Pick ONE focus: features, bugs, or polish",
-    "Build without distractions",
-    "Document what you shipped"
-  ],
-  15: [
     "Choose your auth method",
     "Implement login/signup",
     "Test the full auth flow",
     "Verify user data is private"
   ],
-  16: [
+  13: [
     "Sign up for Resend",
     "Verify your domain",
     "Add API key to Replit Secrets",
     "Send a test welcome email"
+  ],
+  14: [
+    "Set a timer for focused building",
+    "Pick ONE focus: features, bugs, or polish",
+    "Build without distractions",
+    "Use PAUSE if you need more time"
+  ],
+  15: [
+    "Identify your USP feature",
+    "Test it end-to-end",
+    "Compare to competitors",
+    "Answer: Would someone pay for this?"
+  ],
+  16: [
+    "Test every button and form",
+    "Try to break things with weird inputs",
+    "Document all bugs found",
+    "Fix critical issues"
   ],
   17: [
     "Define first user success moment",
