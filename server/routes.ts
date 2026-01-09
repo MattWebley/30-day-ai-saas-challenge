@@ -532,19 +532,27 @@ Format: { "ideas": [...] }`;
         .replace(/\/$/, '')
         .trim();
 
+      // Add timeout to DNS lookup
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => reject(new Error('DNS_TIMEOUT')), 3000);
+      });
+
       try {
-        // Try to resolve DNS - if it fails, domain is likely available
-        await dnsResolve(cleanDomain);
+        // Try to resolve DNS with timeout - if it fails, domain is likely available
+        await Promise.race([dnsResolve(cleanDomain), timeoutPromise]);
         // DNS resolved - domain is taken
         res.json({ domain: cleanDomain, available: false });
       } catch (dnsError: any) {
         if (dnsError.code === 'ENOTFOUND' || dnsError.code === 'ENODATA') {
           // No DNS records - domain is likely available
           res.json({ domain: cleanDomain, available: true });
+        } else if (dnsError.message === 'DNS_TIMEOUT') {
+          // Timeout - assume available (most invented names won't have DNS)
+          res.json({ domain: cleanDomain, available: true });
         } else {
-          // Other DNS error - assume unavailable to be safe
-          console.error("DNS lookup error:", dnsError);
-          res.json({ domain: cleanDomain, available: false });
+          // Other DNS error - assume available for invented names
+          console.error("DNS lookup error:", dnsError.code || dnsError.message);
+          res.json({ domain: cleanDomain, available: true });
         }
       }
     } catch (error: any) {

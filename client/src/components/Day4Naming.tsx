@@ -138,12 +138,34 @@ export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }
 
   const checkDomainAvailability = async (domain: string): Promise<boolean | null> => {
     try {
-      const res = await apiRequest("POST", "/api/check-domain", { domain: `${domain}.com` });
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+      const res = await fetch("/api/check-domain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ domain: `${domain}.com` }),
+        credentials: "include",
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        console.error("Domain check failed:", res.status);
+        return null;
+      }
+
       const data = await res.json();
       return data.available;
-    } catch (error) {
-      console.error("Domain check failed:", error);
-      return null; // Unknown
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        console.log("Domain check timed out for:", domain);
+      } else {
+        console.error("Domain check failed:", error);
+      }
+      return null; // Unknown - assume might be available
     }
   };
 
@@ -209,20 +231,19 @@ Return ONLY valid JSON:
       setNameSuggestions(names);
       setSelectedIndex(null);
 
-      // Check domain availability for all suggestions
+      // Check domain availability for all suggestions (update as each completes)
       if (names.length > 0) {
-        const results: Record<string, DomainCheckResult> = {};
-        await Promise.all(
-          names.map(async (suggestion: NameSuggestion) => {
-            const available = await checkDomainAvailability(suggestion.domain);
-            results[suggestion.domain] = {
+        names.forEach(async (suggestion: NameSuggestion) => {
+          const available = await checkDomainAvailability(suggestion.domain);
+          setDomainResults(prev => ({
+            ...prev,
+            [suggestion.domain]: {
               domain: `${suggestion.domain}.com`,
-              available: available === true,
+              available: available === null ? true : available, // Assume available if check fails
               checking: false,
-            };
-          })
-        );
-        setDomainResults(results);
+            },
+          }));
+        });
       }
     } catch (error) {
       console.error("Error generating names:", error);
