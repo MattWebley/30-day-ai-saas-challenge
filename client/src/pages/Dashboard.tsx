@@ -597,13 +597,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 10: Build Mode */}
+                {/* Day 10: Add AI Brain */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Enter Build Mode</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Add AI Power</h2>
                   </div>
-                  <Day10FixIterate
+                  <Day13AIBrain
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -626,13 +627,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 11: Test Your USP */}
+                {/* Day 11: Connect APIs */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Verify Your USP</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Connect What You Need</h2>
                   </div>
-                  <Day11TestUSP
+                  <Day14ConnectAPIs
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
@@ -656,13 +657,16 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 12: Feature Testing */}
+                {/* Day 12: Test Your USP */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Verify Your USP</h2>
                   </div>
-                  <Day12FeatureTesting onComplete={handleComplete} />
+                  <Day11TestUSP
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 13 ? (
@@ -683,16 +687,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 13: Add AI Brain */}
+                {/* Day 13: Feature Testing */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Add AI Power</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
                   </div>
-                  <Day13AIBrain
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
-                    onComplete={handleComplete}
-                  />
+                  <Day12FeatureTesting onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 14 ? (
@@ -713,14 +714,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 14: Connect APIs */}
+                {/* Day 14: Build Mode */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Connect What You Need</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Enter Build Mode</h2>
                   </div>
-                  <Day14ConnectAPIs
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                  <Day10FixIterate
                     onComplete={handleComplete}
                   />
                 </div>

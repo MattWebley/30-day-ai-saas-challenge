@@ -488,57 +488,61 @@ Simple? Yes. But this simple loop is what you'll do every single day of building
     },
     {
       day: 10,
-      title: "Build Mode",
-      description: "Get in the zone. Set a timer, pick a focus, and spend real time improving your app.",
+      title: "Add The AI Brain",
+      description: "Integrate OpenAI API to make your app intelligent. This is what makes AI SaaS special.",
       phase: "Week 2: Build & Verify",
       videoUrl: null,
-      aiTaskType: "session",
-      aiTaskTitle: "Build Session",
-      aiTaskDescription: "Focused building time with timer. Pick your focus - new features, bug fixes, or design polish - and just build.",
+      aiTaskType: "setup",
+      aiTaskTitle: "AI Integration",
+      aiTaskDescription: "Connect OpenAI API to your app and create your first AI-powered feature.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's calling you today?",
-      microDecisionOptions: JSON.stringify(["New Feature", "Bug Fixes", "Design & Polish", "Whatever Calls Me"]),
-      reflectionQuestion: "How did it feel to spend focused time building?",
-      tip: "The goal isn't perfection - it's immersion. Get lost in the work. Build, test, fix, improve. This is what being a builder feels like.",
-      lesson: `Yesterday you learned the loop. Today you LIVE it.
+      microDecisionQuestion: "What should AI do in your app?",
+      microDecisionOptions: JSON.stringify(["Generate content", "Analyze/summarize data", "Answer questions", "Automate tasks"]),
+      reflectionQuestion: "What manual task could AI do for your users that would make them say 'THIS IS AMAZING'?",
+      tip: "The OpenAI API costs about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.",
+      lesson: `Today your app gets a BRAIN.
 
-This is Build Mode. Real, focused time with your app. No hand-holding. Just you, Claude Code, and your vision.
+This is what makes AI SaaS different from regular SaaS. Your app doesn't just store data or display things - it THINKS.
 
-THE VIBE:
-
-Set a timer. Minimize distractions. Phone away. Notifications off.
-
-Then just... build.
-
-Add a feature. Fix a bug. Make something prettier. Follow whatever calls to you. The magic happens when you stop thinking and start doing.
+And here's the thing: Users EXPECT this now. It's 2025. An app without AI feels like a website from 2010.
 
 WHY THIS MATTERS:
 
-Most people never spend REAL time on their projects. They dabble. They "plan to work on it." They watch tutorials.
+1. It's your MOAT. Regular features can be copied in a weekend. Good AI features are HARD to replicate.
 
-But shipping requires BUILDING. And building requires time. Focused, uninterrupted time.
+2. It's the VALUE. Users aren't paying for your pretty buttons. They're paying for what the AI does for them.
 
-30 minutes of real building beats 3 hours of "thinking about building."
+THE SIMPLE VERSION:
 
-WHAT TO EXPECT:
+1. Get an OpenAI API key (platform.openai.com)
+2. Store it in Replit Secrets (never in your code!)
+3. Tell Claude Code to add an AI feature
 
-You might get frustrated. That's normal.
-You might get stuck. Ask Claude Code for help.
-You might break something. That's fine - fix it.
-You might get in the zone and lose track of time. THAT'S THE GOAL.
+That's it. The AI handles the rest.
 
-THE FLOW STATE:
+THE PROMPT:
 
-When you're in it, you know. Time disappears. Problems become puzzles. Fixes feel like wins.
+"Add an AI feature. When the user [does something], take their input, send it to OpenAI with this instruction: [what you want the AI to do], and show the result. Use the API key from secrets. Add a loading spinner."
 
-Not every session hits flow state. That's okay. Show up anyway. The magic comes from consistency.
+WHAT SHOULD YOUR AI DO?
 
-Today's mission: Set a timer. Build something. Log what you shipped.
+Ask yourself: What manual task could the AI do that would make users say "THIS IS AMAZING"?
 
-Let's go.`,
-      outcome: "Completed a focused build session and shipped improvements to your app",
-      completionMessage: "You're iterating like a real developer. Fix, test, repeat. That's how ALL software gets built. If you need more time, use PAUSE. When ready, Week 3 is about making sure your USP actually delivers.",
+- Generate something for them?
+- Analyze something for them?
+- Summarize something for them?
+- Suggest something for them?
+
+Pick ONE thing. Get it working PERFECTLY. You can add more later.
+
+THE COST REALITY:
+
+OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.
+
+This is the feature that makes your app worth paying for. Make it good.`,
+      outcome: "AI API integrated, first AI-powered feature working in your app",
+      completionMessage: "Your app can THINK now. That's the core of AI SaaS - intelligence built in. Tomorrow: connecting other APIs you might need.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -548,6 +552,64 @@ Let's go.`,
     // ============================================
     {
       day: 11,
+      title: "Connect APIs",
+      description: "Add the external services your app needs - storage, analytics, or other integrations.",
+      phase: "Week 3: Make It Work",
+      videoUrl: null,
+      aiTaskType: "setup",
+      aiTaskTitle: "API Connections",
+      aiTaskDescription: "Identify and connect any additional APIs your app needs to function properly.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "Which API does your app need most?",
+      microDecisionOptions: JSON.stringify(["File storage (images, docs)", "Analytics (tracking)", "External data source", "None - AI was enough"]),
+      reflectionQuestion: "What external service would make your app 10x more useful?",
+      tip: "Don't add APIs you don't need. Each integration is another thing that can break. Only add what's ESSENTIAL for your core use case.",
+      lesson: `APIs let you plug in superpowers you'd never build yourself.
+
+But here's the CRITICAL question: Do you ACTUALLY need another API?
+
+Most apps don't need much beyond what you already have. AI? Done. Database? Done. If your app works without adding more stuff - STOP. Don't add complexity for the sake of it.
+
+WHEN YOU ACTUALLY NEED AN API:
+
+- Users need to upload files? → You need storage (Cloudinary, S3)
+- You need real-time external data? → You need that specific API
+- You need to send emails? → We'll do that on Day 16
+
+That's about it for most MVPs.
+
+WHEN YOU DON'T NEED AN API (YET):
+
+- Analytics → Add this AFTER launch, when you have users
+- Payments → Add this when you're ready to charge
+- Extra features → Add this when users ASK for it
+
+THE RULE:
+
+Only add what's ESSENTIAL for your core use case. Every API is another thing that can break. Every integration is another account to manage.
+
+IF YOU DO NEED SOMETHING:
+
+1. Sign up for the service
+2. Get the API key
+3. Add it to Replit Secrets
+4. Tell Claude Code: "Integrate [service]. I need to [do what]. Use the API key from secrets."
+
+Done.
+
+THE HONEST TRUTH:
+
+If you're not sure whether you need an API, you probably don't. Ship without it. Add it when users tell you they need it.
+
+Simple apps are easier to build, easier to maintain, and easier to sell.`,
+      outcome: "All necessary APIs connected, app has the integrations it needs to work",
+      completionMessage: "Your app is connected to the outside world. AI brain? Check. Other APIs? If you need them, check. Tomorrow: we verify your USP actually delivers.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 12,
       title: "Test Your USP",
       description: "Your Unique Selling Point is why people will choose YOU over competitors. Today we verify it actually works.",
       phase: "Week 3: Make It Work",
@@ -608,7 +670,7 @@ Make it UNDENIABLE.`,
       estimatedMinutes: 5,
     },
     {
-      day: 12,
+      day: 13,
       title: "Feature Testing",
       description: "Systematically test every feature in your app. Find the bugs before your users do.",
       phase: "Week 3: Make It Work",
@@ -662,125 +724,63 @@ By the end of today, you should be able to use your app like a REAL user and hav
 
 Break it now, so your users don't break it later.`,
       outcome: "All features tested, bugs identified and fixed, app is reliable and ready",
-      completionMessage: "Your app has been TESTED. You know what works and what doesn't. That's more than most founders know when they launch. Tomorrow: we add the AI brain.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 13,
-      title: "Add The AI Brain",
-      description: "Integrate OpenAI or Claude API to make your app intelligent. This is what makes AI SaaS special.",
-      phase: "Week 3: Make It Work",
-      videoUrl: null,
-      aiTaskType: "setup",
-      aiTaskTitle: "AI Integration",
-      aiTaskDescription: "Connect OpenAI or Claude API to your app and create your first AI-powered feature.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "What should AI do in your app?",
-      microDecisionOptions: JSON.stringify(["Generate content", "Analyze/summarize data", "Answer questions", "Automate tasks"]),
-      reflectionQuestion: "What manual task could AI do for your users that would make them say 'THIS IS AMAZING'?",
-      tip: "The OpenAI API costs about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.",
-      lesson: `Today your app gets a BRAIN.
-
-This is what makes AI SaaS different from regular SaaS. Your app doesn't just store data or display things - it THINKS.
-
-And here's the thing: Users EXPECT this now. It's 2025. An app without AI feels like a website from 2010.
-
-WHY THIS MATTERS:
-
-1. It's your MOAT. Regular features can be copied in a weekend. Good AI features are HARD to replicate.
-
-2. It's the VALUE. Users aren't paying for your pretty buttons. They're paying for what the AI does for them.
-
-THE SIMPLE VERSION:
-
-1. Get an OpenAI API key (platform.openai.com)
-2. Store it in Replit Secrets (never in your code!)
-3. Tell Claude Code to add an AI feature
-
-That's it. The AI handles the rest.
-
-THE PROMPT:
-
-"Add an AI feature. When the user [does something], take their input, send it to OpenAI with this instruction: [what you want the AI to do], and show the result. Use the API key from secrets. Add a loading spinner."
-
-WHAT SHOULD YOUR AI DO?
-
-Ask yourself: What manual task could the AI do that would make users say "THIS IS AMAZING"?
-
-- Generate something for them?
-- Analyze something for them?
-- Summarize something for them?
-- Suggest something for them?
-
-Pick ONE thing. Get it working PERFECTLY. You can add more later.
-
-THE COST REALITY:
-
-OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.
-
-This is the feature that makes your app worth paying for. Make it good.`,
-      outcome: "AI API integrated, first AI-powered feature working in your app",
-      completionMessage: "Your app can THINK now. That's the core of AI SaaS - intelligence built in. Tomorrow: connecting other APIs you might need.",
+      completionMessage: "Your app has been TESTED. You know what works and what doesn't. That's more than most founders know when they launch. Tomorrow: focused building time to fix and improve.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 14,
-      title: "Connect APIs",
-      description: "Add the external services your app needs - storage, analytics, or other integrations.",
+      title: "Build Mode",
+      description: "Get in the zone. Set a timer, pick a focus, and spend real time improving your app.",
       phase: "Week 3: Make It Work",
       videoUrl: null,
-      aiTaskType: "setup",
-      aiTaskTitle: "API Connections",
-      aiTaskDescription: "Identify and connect any additional APIs your app needs to function properly.",
+      aiTaskType: "session",
+      aiTaskTitle: "Build Session",
+      aiTaskDescription: "Focused building time with timer. Pick your focus - new features, bug fixes, or design polish - and just build.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Which API does your app need most?",
-      microDecisionOptions: JSON.stringify(["File storage (images, docs)", "Analytics (tracking)", "External data source", "None - AI was enough"]),
-      reflectionQuestion: "What external service would make your app 10x more useful?",
-      tip: "Don't add APIs you don't need. Each integration is another thing that can break. Only add what's ESSENTIAL for your core use case.",
-      lesson: `APIs let you plug in superpowers you'd never build yourself.
+      microDecisionQuestion: "What's calling you today?",
+      microDecisionOptions: JSON.stringify(["New Feature", "Bug Fixes", "Design & Polish", "Whatever Calls Me"]),
+      reflectionQuestion: "How did it feel to spend focused time building?",
+      tip: "The goal isn't perfection - it's immersion. Get lost in the work. Build, test, fix, improve. This is what being a builder feels like.",
+      lesson: `You've learned the tools. You've tested everything. Now it's time to BUILD.
 
-But here's the CRITICAL question: Do you ACTUALLY need another API?
+This is Build Mode. Real, focused time with your app. No hand-holding. Just you, Claude Code, and your vision.
 
-Most apps don't need much beyond what you already have. AI? Done. Database? Done. If your app works without adding more stuff - STOP. Don't add complexity for the sake of it.
+THE VIBE:
 
-WHEN YOU ACTUALLY NEED AN API:
+Set a timer. Minimize distractions. Phone away. Notifications off.
 
-- Users need to upload files? → You need storage (Cloudinary, S3)
-- You need real-time external data? → You need that specific API
-- You need to send emails? → We'll do that on Day 16
+Then just... build.
 
-That's about it for most MVPs.
+Add a feature. Fix a bug. Make something prettier. Follow whatever calls to you. The magic happens when you stop thinking and start doing.
 
-WHEN YOU DON'T NEED AN API (YET):
+WHY THIS MATTERS:
 
-- Analytics → Add this AFTER launch, when you have users
-- Payments → Add this when you're ready to charge
-- Extra features → Add this when users ASK for it
+Most people never spend REAL time on their projects. They dabble. They "plan to work on it." They watch tutorials.
 
-THE RULE:
+But shipping requires BUILDING. And building requires time. Focused, uninterrupted time.
 
-Only add what's ESSENTIAL for your core use case. Every API is another thing that can break. Every integration is another account to manage.
+30 minutes of real building beats 3 hours of "thinking about building."
 
-IF YOU DO NEED SOMETHING:
+WHAT TO EXPECT:
 
-1. Sign up for the service
-2. Get the API key
-3. Add it to Replit Secrets
-4. Tell Claude Code: "Integrate [service]. I need to [do what]. Use the API key from secrets."
+You might get frustrated. That's normal.
+You might get stuck. Ask Claude Code for help.
+You might break something. That's fine - fix it.
+You might get in the zone and lose track of time. THAT'S THE GOAL.
 
-Done.
+THE FLOW STATE:
 
-THE HONEST TRUTH:
+When you're in it, you know. Time disappears. Problems become puzzles. Fixes feel like wins.
 
-If you're not sure whether you need an API, you probably don't. Ship without it. Add it when users tell you they need it.
+Not every session hits flow state. That's okay. Show up anyway. The magic comes from consistency.
 
-Simple apps are easier to build, easier to maintain, and easier to sell.`,
-      outcome: "All necessary APIs connected, app has the integrations it needs to work",
-      completionMessage: "Week 3 DONE. Your app has AI, it's tested, and it's connected to the services it needs. You have a WORKING product. Next week: the infrastructure that makes it ready for real users.",
+Today's mission: Set a timer. Build something. Log what you shipped.
+
+Let's go.`,
+      outcome: "Completed a focused build session and shipped improvements to your app",
+      completionMessage: "Week 3 DONE. You've added AI, connected APIs, tested everything, and spent real time building. Your app is a WORKING product. Next week: the infrastructure that makes it ready for real users.",
       xpReward: 100,
       estimatedMinutes: 5,
     },

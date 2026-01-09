@@ -72,34 +72,34 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Identify your top priority fix"
   ],
   10: [
-    "Pick ONE issue from your fix list",
-    "Describe it clearly to Claude Code",
-    "Fix it and test it",
-    "Document what you fixed"
-  ],
-  11: [
-    "Identify your USP feature",
-    "Test it end-to-end",
-    "Compare to competitors",
-    "Answer: Would someone pay for this?"
-  ],
-  12: [
-    "Test every button and form",
-    "Try to break things with weird inputs",
-    "Document all bugs found",
-    "Fix critical issues"
-  ],
-  13: [
     "Get your OpenAI API key",
     "Add it to Replit Secrets",
     "Plan ONE AI feature",
     "Build and test it"
   ],
-  14: [
+  11: [
     "Decide if you need additional APIs",
     "If yes: sign up and get API keys",
     "Integrate with Claude Code",
     "Test the integration works"
+  ],
+  12: [
+    "Identify your USP feature",
+    "Test it end-to-end",
+    "Compare to competitors",
+    "Answer: Would someone pay for this?"
+  ],
+  13: [
+    "Test every button and form",
+    "Try to break things with weird inputs",
+    "Document all bugs found",
+    "Fix critical issues"
+  ],
+  14: [
+    "Set a timer for focused building",
+    "Pick ONE focus: features, bugs, or polish",
+    "Build without distractions",
+    "Document what you shipped"
   ],
   15: [
     "Choose your auth method",
