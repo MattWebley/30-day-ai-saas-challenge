@@ -275,17 +275,6 @@ Rule: If you can't get it for under $20, pick a DIFFERENT name
 ❌ GENERIC NAMES
 "Analytics Platform" or "Marketing Tool" - you can't trademark these and they're forgettable.
 
-REGISTER EVERYTHING TODAY:
-
-1. DOMAIN: Use Namecheap (namecheap.com) - best prices, best interface
-2. TWITTER/X: twitter.com/[yourname] - check and register
-3. INSTAGRAM: instagram.com/[yourname] - check and register
-4. LINKEDIN: Create a company page
-5. TIKTOK: If relevant to your audience
-6. GITHUB: If you'll have any public code
-
-Grab them ALL. Even if you never use them. Someone WILL squat on them if you don't.
-
 The name you pick today will be on every invoice, every email, every conversation. Make it count.`,
       outcome: "Your product name chosen, .com domain registered, and all social handles claimed",
       completionMessage: "You have a NAME. A real brand that's YOURS. Domain secured, socials claimed. Nobody can take these from you now. Tomorrow: setting up your AI-powered development toolkit.",

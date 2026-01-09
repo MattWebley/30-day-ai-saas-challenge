@@ -39,49 +39,61 @@ interface Day4NamingProps {
 // Namecheap affiliate link
 const NAMECHEAP_AFFILIATE = "https://www.namecheap.com/?aff=YOUR_AFFILIATE_ID";
 
-// Social platforms to register
+// Social platforms to register - with direct signup URLs
 const SOCIAL_PLATFORMS = [
   {
     id: "domain",
     label: "Domain (.com)",
     icon: "🌐",
+    signupUrl: "https://www.namecheap.com/?aff=YOUR_AFFILIATE_ID",
     checkUrl: (name: string) => `https://www.namecheap.com/domains/registration/results/?domain=${name.toLowerCase().replace(/\s+/g, '')}.com&aff=YOUR_AFFILIATE_ID`,
-    description: "Your main website"
+    description: "Register your .com domain (~$10/year)",
+    priority: true
   },
   {
     id: "twitter",
     label: "Twitter / X",
     icon: "𝕏",
+    signupUrl: "https://twitter.com/i/flow/signup",
     checkUrl: (name: string) => `https://twitter.com/${name.toLowerCase().replace(/\s+/g, '')}`,
-    description: "Check if @handle is available"
+    description: "Create account & claim your @handle",
+    priority: true
   },
   {
     id: "instagram",
     label: "Instagram",
     icon: "📷",
+    signupUrl: "https://www.instagram.com/accounts/emailsignup/",
     checkUrl: (name: string) => `https://instagram.com/${name.toLowerCase().replace(/\s+/g, '')}`,
-    description: "Check if @handle is available"
+    description: "Create account & claim your @handle",
+    priority: true
   },
   {
     id: "linkedin",
     label: "LinkedIn Page",
     icon: "💼",
+    signupUrl: "https://www.linkedin.com/company/setup/new/",
     checkUrl: (name: string) => `https://www.linkedin.com/company/${name.toLowerCase().replace(/\s+/g, '-')}`,
-    description: "Create a company page"
+    description: "Create a company page for your product",
+    priority: false
   },
   {
     id: "tiktok",
     label: "TikTok",
     icon: "🎵",
+    signupUrl: "https://www.tiktok.com/signup",
     checkUrl: (name: string) => `https://tiktok.com/@${name.toLowerCase().replace(/\s+/g, '')}`,
-    description: "Check if @handle is available"
+    description: "If relevant to your audience",
+    priority: false
   },
   {
     id: "github",
     label: "GitHub",
     icon: "💻",
+    signupUrl: "https://github.com/signup",
     checkUrl: (name: string) => `https://github.com/${name.toLowerCase().replace(/\s+/g, '')}`,
-    description: "For your open source / code"
+    description: "For open source or public code",
+    priority: false
   },
 ];
 
@@ -601,15 +613,20 @@ Return ONLY valid JSON:
 
             {/* Registration Checklist */}
             <Card className="p-6 border-2 border-slate-200 bg-white">
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-bold text-slate-900">Claim Your Brand Everywhere</h4>
-                <span className="text-sm text-slate-500">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-bold text-slate-900 text-lg">Claim Your Brand Everywhere</h4>
+                <span className="text-sm font-medium text-slate-500">
                   {registeredItems.size}/{SOCIAL_PLATFORMS.length} done
                 </span>
               </div>
+              <p className="text-sm text-slate-600 mb-4">
+                Grab these NOW - even if you won't use them immediately. Someone WILL squat on them if you don't.
+              </p>
 
-              <div className="space-y-3">
-                {SOCIAL_PLATFORMS.map((platform) => {
+              {/* Priority platforms */}
+              <div className="space-y-3 mb-4">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Essential (Do These First)</p>
+                {SOCIAL_PLATFORMS.filter(p => p.priority).map((platform) => {
                   const isRegistered = registeredItems.has(platform.id);
                   const handle = finalName.toLowerCase().replace(/\s+/g, '');
 
@@ -640,19 +657,81 @@ Return ONLY valid JSON:
                               {platform.label}
                             </span>
                           </div>
-                          <div className="text-sm text-slate-500">
-                            {platform.id === "domain" ? finalDomain : `@${handle}`}
+                          <div className="text-xs text-slate-500">
+                            {platform.description}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <a
+                          href={platform.checkUrl(finalName)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-slate-500 hover:underline"
+                        >
+                          Check
+                        </a>
+                        <a
+                          href={platform.signupUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium bg-slate-900 text-white rounded-md hover:bg-slate-800"
+                        >
+                          Sign Up <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Optional platforms */}
+              <div className="space-y-3">
+                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Optional (When You're Ready)</p>
+                {SOCIAL_PLATFORMS.filter(p => !p.priority).map((platform) => {
+                  const isRegistered = registeredItems.has(platform.id);
+
+                  return (
+                    <div
+                      key={platform.id}
+                      className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
+                        isRegistered
+                          ? "border-green-300 bg-green-50"
+                          : "border-slate-100 hover:border-slate-200 bg-slate-50"
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => toggleRegistered(platform.id)}
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
+                            isRegistered
+                              ? "border-green-500 bg-green-500"
+                              : "border-slate-300 hover:border-green-400"
+                          }`}
+                        >
+                          {isRegistered && <Check className="w-3 h-3 text-white" />}
+                        </button>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span>{platform.icon}</span>
+                            <span className={`font-medium text-sm ${isRegistered ? "text-green-700 line-through" : "text-slate-700"}`}>
+                              {platform.label}
+                            </span>
+                          </div>
+                          <div className="text-xs text-slate-400">
+                            {platform.description}
                           </div>
                         </div>
                       </div>
 
                       <a
-                        href={platform.checkUrl(finalName)}
+                        href={platform.signupUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-sm font-medium text-slate-700 hover:underline"
+                        className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-slate-600 border border-slate-300 rounded hover:bg-white"
                       >
-                        {platform.id === "domain" ? "Register" : "Check"} <ExternalLink className="w-3 h-3" />
+                        Sign Up <ExternalLink className="w-3 h-3" />
                       </a>
                     </div>
                   );
@@ -673,14 +752,6 @@ Return ONLY valid JSON:
                     style={{ width: `${(registeredItems.size / SOCIAL_PLATFORMS.length) * 100}%` }}
                   />
                 </div>
-              </div>
-            </Card>
-
-            {/* Priority tip */}
-            <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-              <div className="text-sm text-slate-700">
-                <strong>Priority order:</strong> Domain first (most important), then Twitter/X and Instagram.
-                The others can wait until you're ready to use them.
               </div>
             </Card>
 
