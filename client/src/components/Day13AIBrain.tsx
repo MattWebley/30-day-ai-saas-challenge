@@ -120,33 +120,42 @@ export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
             </div>
 
             <div className="space-y-4">
-              <div className="bg-slate-50 p-4 rounded-lg">
-                <p className="text-sm text-slate-700 mb-3">
-                  Replit Secrets keeps your API key safe and hidden from your code:
+              {/* EASY WAY */}
+              <div className="bg-green-50 p-4 rounded-lg border-2 border-green-200">
+                <p className="font-bold text-green-800 mb-2">THE EASY WAY (Recommended)</p>
+                <p className="text-sm text-green-800 mb-3">
+                  Just tell Replit Agent in plain English:
                 </p>
-                <ol className="text-sm text-slate-700 space-y-2 list-decimal list-inside">
-                  <li>In Replit, click <strong>Tools</strong> in the left sidebar</li>
-                  <li>Click <strong>Secrets</strong></li>
-                  <li>Click <strong>+ New Secret</strong></li>
-                  <li>For <strong>Key</strong>, enter exactly: <code className="bg-slate-200 px-1 rounded">OPENAI_API_KEY</code></li>
-                  <li>For <strong>Value</strong>, paste your API key (the sk-proj-xxx thing)</li>
-                  <li>Click <strong>Add Secret</strong></li>
-                </ol>
+                <div className="relative">
+                  <pre className="bg-white p-3 rounded-lg text-sm font-mono border border-green-200 whitespace-pre-wrap text-slate-800">
+{`Add a secret called OPENAI_API_KEY with the value: [paste your key here]`}
+                  </pre>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard("Add a secret called OPENAI_API_KEY with the value: ", "Replit Agent prompt")}
+                    className="absolute top-2 right-2 gap-2 bg-white"
+                  >
+                    <Copy className="w-4 h-4" />
+                    Copy
+                  </Button>
+                </div>
+                <p className="text-xs text-green-700 mt-2">
+                  Replit Agent will add it to your Secrets automatically. Done in 2 seconds!
+                </p>
               </div>
 
-              <div className="flex items-center gap-2">
-                <code className="flex-1 bg-slate-100 p-3 rounded-lg text-sm font-mono border border-slate-200">
-                  OPENAI_API_KEY
-                </code>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => copyToClipboard("OPENAI_API_KEY", "Secret name")}
-                  className="gap-2"
-                >
-                  <Copy className="w-4 h-4" />
-                  Copy
-                </Button>
+              {/* MANUAL WAY */}
+              <div className="bg-slate-50 p-4 rounded-lg">
+                <p className="font-medium text-slate-700 mb-2">Manual way (if Agent doesn't work):</p>
+                <ol className="text-sm text-slate-600 space-y-1 list-decimal list-inside">
+                  <li>Click <strong>Tools</strong> in the left sidebar</li>
+                  <li>Click <strong>Secrets</strong></li>
+                  <li>Click <strong>+ New Secret</strong></li>
+                  <li>Key: <code className="bg-slate-200 px-1 rounded">OPENAI_API_KEY</code></li>
+                  <li>Value: paste your API key</li>
+                  <li>Click <strong>Add Secret</strong></li>
+                </ol>
               </div>
 
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">

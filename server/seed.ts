@@ -5,7 +5,7 @@ async function seed() {
   console.log("🌱 Seeding database...");
 
   // Seed badges - aligned with timeline milestones
-  // Idea (Day 1) → Plan (Day 4) → Prepare (Day 8) → Build (Day 14) → Polish (Day 18) → Launch (Day 21)
+  // Start (Day 0) → Idea (Day 1) → Plan (Day 4) → Build (Day 8) → Polish (Day 14) → Launch (Day 21)
   console.log("Creating badges...");
   const badgeData = [
     // Phase completion badges
@@ -552,7 +552,7 @@ This is the feature that makes your app worth paying for. Make it good.`,
     // ============================================
     {
       day: 11,
-      title: "Connect APIs",
+      title: "Add Superpowers",
       description: "Add the external services your app needs - storage, analytics, or other integrations.",
       phase: "Make It Work",
       videoUrl: null,
@@ -569,15 +569,18 @@ This is the feature that makes your app worth paying for. Make it good.`,
 
 But here's the CRITICAL question: Do you ACTUALLY need another API?
 
-Most apps don't need much beyond what you already have. AI? Done. Database? Done. If your app works without adding more stuff - STOP. Don't add complexity for the sake of it.
+REPLIT CAN PROBABLY DO IT ALREADY:
 
-WHEN YOU ACTUALLY NEED AN API:
+Before you go sign up for a new service, check if Replit Agent can just... do it. Replit has built-in support for databases, file handling, environment variables, and more. Just ASK: "Can you add file upload functionality?" - Replit might handle it natively.
 
-- Users need to upload files? → You need storage (Cloudinary, S3)
-- You need real-time external data? → You need that specific API
-- You need to send emails? → We'll do that on Day 16
+ONLY ADD AN EXTERNAL API WHEN:
 
-That's about it for most MVPs.
+- Replit CAN'T do it natively (specific external data, social media posting)
+- The external API is SIGNIFICANTLY cheaper (some services beat Replit's costs)
+- You need features that are genuinely impossible without it
+- You need to send emails? → We'll do that on Day 13
+
+Most apps don't need much beyond what you already have. AI? Done. Database? Done. If your app works without adding more stuff - STOP.
 
 WHEN YOU DON'T NEED AN API (YET):
 
@@ -585,9 +588,30 @@ WHEN YOU DON'T NEED AN API (YET):
 - Payments → Add this when you're ready to charge
 - Extra features → Add this when users ASK for it
 
+WHAT ABOUT WEB SCRAPING?
+
+Sometimes you need data that doesn't have an API. Competitor prices. Job listings. Product info. News articles. That's when you need web scraping.
+
+Web scraping = programmatically reading websites and extracting the data you need.
+
+WHY YOU MIGHT NEED IT:
+
+- Aggregating data from multiple sources (price comparison, job boards)
+- Monitoring competitors (prices, features, reviews)
+- Getting data that has no official API
+- The official API is too expensive or too limited
+
+THE PROBLEM: Websites don't like being scraped. They block you, show CAPTCHAs, rate-limit you.
+
+THE SOLUTION: Services like Bright Data handle the hard stuff - rotating proxies, CAPTCHA solving, browser fingerprinting. You just say "get me data from this URL" and they handle the rest.
+
+SHOULD YOU ADD SCRAPING?
+
+Only if your CORE product requires external data that has no API. Don't add it "just in case." If you need it, you'll know.
+
 THE RULE:
 
-Only add what's ESSENTIAL for your core use case. Every API is another thing that can break. Every integration is another account to manage.
+Ask Replit first. Only add external APIs when there's a REAL reason - something Replit can't do, or significant cost savings. Every API is another thing that can break.
 
 IF YOU DO NEED SOMETHING:
 
@@ -610,7 +634,7 @@ Simple apps are easier to build, easier to maintain, and easier to sell.`,
     },
     {
       day: 12,
-      title: "User Authentication",
+      title: "Let Users In",
       description: "Let users create accounts, log in, and have their own private data. Essential for any real SaaS.",
       phase: "Make It Work",
       videoUrl: null,
@@ -623,43 +647,34 @@ Simple apps are easier to build, easier to maintain, and easier to sell.`,
       microDecisionOptions: JSON.stringify(["Replit Auth (easiest)", "Email + Password", "Google/Social login", "Magic link (passwordless)"]),
       reflectionQuestion: "How important is it that users have their own accounts in your app?",
       tip: "Replit Auth is the FASTEST way to add login. It works, it's secure, and it takes minutes. Start there unless you have a specific reason not to.",
-      lesson: `Without authentication, everyone sees everyone's data.
+      lesson: `Authentication = managing who can access what.
 
-That's bad. Let's fix it.
+That's it. Nothing fancy.
 
-WHY YOU NEED AUTH:
+REPLIT PROBABLY ALREADY HAS IT:
 
-1. Users can save their OWN stuff that only THEY can see
-2. You can personalize the experience for each person
-3. You can't charge someone if you don't know who they are
-4. Apps without login feel sketchy and temporary
+Before you do anything, ask Replit Agent: "Does my app have user authentication?"
 
-THE FASTEST OPTION (Just Do This):
+If yes - you're done! Move on.
 
-Use Replit Auth. One-click setup. Secure. Handles everything.
+If no - tell Replit Agent: "Add user authentication so each user only sees their own data."
 
-Tell Claude Code:
-"Add Replit Auth. Login button in the header. Show user's name when logged in. Logout button. Each user only sees their own data."
+Replit handles the hard stuff. You don't need to understand OAuth, sessions, tokens, or any of that. Just ask for login, and it builds it.
 
-That's it. Auth done.
+WHY BOTHER?
 
-BUT WHAT IF...
+Without auth, everyone sees everyone's stuff. With auth:
+- Users get their OWN private data
+- You know who's using your app
+- You can charge people (can't bill someone anonymous)
 
-"But users need a Replit account!" - Most don't care. For an MVP, this is FINE.
+THAT'S LITERALLY IT:
 
-"But I want Google login!" - More setup. Do it later if users ask.
+1. Ask Replit if auth exists
+2. If not, ask Replit to add it
+3. Test: log in, create data, log out, log back in - is your data still there?
 
-"But I want email/password!" - You handle password resets, security, all of it. More work for you. Skip this for now.
-
-The goal is to get auth WORKING so you can move forward. You can always change it later.
-
-TEST IT:
-
-1. Sign up as a new user
-2. Create some data
-3. Log out
-4. Log back in - is your data still there?
-5. Log in as a DIFFERENT user - do you see the first user's data? (You shouldn't!)
+Don't overthink this. Auth is just "who are you?" so the app can show you YOUR stuff.
 
 If all that works, you're done.
 
@@ -671,7 +686,7 @@ Auth is table stakes. Not exciting. Just necessary. Get it working and move on.`
     },
     {
       day: 13,
-      title: "Email Setup",
+      title: "Reach Your Users",
       description: "Set up transactional emails - welcome emails, notifications, and password resets. Keep users engaged.",
       phase: "Make It Work",
       videoUrl: null,
@@ -732,7 +747,7 @@ Emails keep users coming back. Set it up. Keep it simple.`,
     },
     {
       day: 14,
-      title: "Build Mode",
+      title: "Heads Down",
       description: "Get in the zone. Set a timer, pick a focus, and spend real time improving your app. Use PAUSE if you need more time.",
       phase: "Make It Work",
       videoUrl: null,

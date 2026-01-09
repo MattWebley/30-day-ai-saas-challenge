@@ -4,180 +4,134 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   ChevronRight,
-  ArrowRight
+  ArrowRight,
+  Check,
+  HelpCircle
 } from "lucide-react";
 
 interface Day15AuthenticationProps {
   appName: string;
-  onComplete: (data: { authMethod: string; loginTestResult: string; userDataWorks: string }) => void;
+  onComplete: (data: { hasAuth: boolean; authStatus: string; testResult: string }) => void;
 }
 
-const AUTH_OPTIONS = [
-  {
-    id: "replit",
-    name: "Replit Auth",
-    desc: "One-click setup, works instantly",
-    recommended: true,
-  },
-  {
-    id: "email",
-    name: "Email + Password",
-    desc: "Classic approach, full control",
-    recommended: false,
-  },
-  {
-    id: "social",
-    name: "Social Login",
-    desc: "Google, GitHub login buttons",
-    recommended: false,
-  },
-  {
-    id: "magic",
-    name: "Magic Link",
-    desc: "Passwordless via email",
-    recommended: false,
-  },
-];
-
 export function Day15Authentication({ appName, onComplete }: Day15AuthenticationProps) {
-  const [step, setStep] = useState<"choose" | "implement" | "test">("choose");
-  const [selectedMethod, setSelectedMethod] = useState<string>("");
-  const [loginTestResult, setLoginTestResult] = useState("");
-  const [userDataWorks, setUserDataWorks] = useState("");
+  const [step, setStep] = useState<"check" | "add" | "test">("check");
+  const [hasAuth, setHasAuth] = useState<boolean | null>(null);
+  const [testResult, setTestResult] = useState("");
 
-  const canProceedToImplement = selectedMethod !== "";
-  const canProceedToTest = true;
-  const canComplete = loginTestResult.length >= 20 && userDataWorks.length >= 10;
+  const canComplete = testResult.length >= 20;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <h3 className="text-2xl font-extrabold text-slate-900">Add User Authentication</h3>
-        <p className="text-slate-600 mt-1">Let users create accounts and keep their data private.</p>
+        <h3 className="text-2xl font-extrabold text-slate-900">Let Users In</h3>
+        <p className="text-slate-600 mt-1">Auth = managing who can access what. Replit usually handles this for you.</p>
       </Card>
 
-      {/* Step 1: Choose Auth Method */}
-      {step === "choose" && (
+      {/* Step 1: Check if you already have auth */}
+      {step === "check" && (
         <>
-          <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">Choose Your Auth Method</h4>
-            <p className="text-sm text-slate-600 mb-4">
-              Pick ONE way for users to log in. You can always add more methods later.
+          <Card className="p-6 border-2 border-amber-200 bg-amber-50">
+            <h4 className="font-bold text-lg mb-2 text-amber-900">Step 1: Check If You Already Have Auth</h4>
+            <p className="text-sm text-amber-800 mb-3">
+              Ask Replit Agent:
             </p>
+            <div className="bg-white/60 p-3 rounded-lg mb-3">
+              <p className="text-sm text-amber-900 italic">"Does my app have user authentication? Can users log in and see only their own data?"</p>
+            </div>
+            <p className="text-sm text-amber-800">
+              Replit may have already built this for you. Check before adding anything new.
+            </p>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-4 text-slate-900">Does Your App Have Auth?</h4>
 
             <div className="space-y-3">
-              {AUTH_OPTIONS.map((option) => (
-                <div
-                  key={option.id}
-                  className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
-                    selectedMethod === option.id
-                      ? "border-slate-400 bg-slate-50"
-                      : "border-slate-200 hover:border-slate-300"
-                  }`}
-                  onClick={() => setSelectedMethod(option.id)}
-                >
-                  <input
-                    type="radio"
-                    checked={selectedMethod === option.id}
-                    onChange={() => setSelectedMethod(option.id)}
-                    className="w-4 h-4"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium text-slate-900">{option.name}</span>
-                      {option.recommended && (
-                        <span className="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded">Recommended</span>
-                      )}
-                    </div>
-                    <p className="text-xs text-slate-600">{option.desc}</p>
-                  </div>
+              <div
+                onClick={() => setHasAuth(true)}
+                className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                  hasAuth === true
+                    ? "border-green-400 bg-green-50"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  hasAuth === true ? "bg-green-500" : "bg-slate-200"
+                }`}>
+                  {hasAuth === true && <Check className="w-4 h-4 text-white" />}
                 </div>
-              ))}
+                <div>
+                  <p className="font-medium text-slate-900">Yes, auth already exists</p>
+                  <p className="text-sm text-slate-600">Users can log in and see their own data</p>
+                </div>
+              </div>
+
+              <div
+                onClick={() => setHasAuth(false)}
+                className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                  hasAuth === false
+                    ? "border-slate-400 bg-slate-50"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  hasAuth === false ? "bg-slate-500" : "bg-slate-200"
+                }`}>
+                  {hasAuth === false && <HelpCircle className="w-4 h-4 text-white" />}
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900">No, I need to add it</p>
+                  <p className="text-sm text-slate-600">Everyone sees everyone's data right now</p>
+                </div>
+              </div>
             </div>
           </Card>
 
-          {selectedMethod === "replit" && (
-            <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-              <div className="text-sm text-slate-700">
-                <p className="font-medium">Replit Auth is the fastest option</p>
-                <p className="mt-1">
-                  Built into Replit, secure by default, and users can log in with their Replit account.
-                  Perfect for launching quickly.
-                </p>
-              </div>
-            </Card>
-          )}
-
-          {canProceedToImplement && (
+          {hasAuth !== null && (
             <Button
               size="lg"
               className="w-full h-14 text-lg font-bold gap-2"
-              onClick={() => setStep("implement")}
+              onClick={() => setStep(hasAuth ? "test" : "add")}
             >
-              Implement {AUTH_OPTIONS.find(o => o.id === selectedMethod)?.name} <ArrowRight className="w-5 h-5" />
+              {hasAuth ? "Test My Auth" : "Add Auth"} <ArrowRight className="w-5 h-5" />
             </Button>
           )}
         </>
       )}
 
-      {/* Step 2: Implement Auth */}
-      {step === "implement" && (
+      {/* Step 2: Add Auth (only if needed) */}
+      {step === "add" && (
         <>
-          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">Your Choice: {AUTH_OPTIONS.find(o => o.id === selectedMethod)?.name}</h4>
-            <p className="text-slate-700">Time to add login to your app!</p>
-          </Card>
-
           <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">Implementation Steps</h4>
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">1</div>
-                <div>
-                  <p className="font-medium text-slate-900">Add a Login/Signup button</p>
-                  <p className="text-sm text-slate-600">Usually in the header, visible on every page</p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">2</div>
-                <div>
-                  <p className="font-medium text-slate-900">Show user info when logged in</p>
-                  <p className="text-sm text-slate-600">Display name/avatar, add a Logout button</p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">3</div>
-                <div>
-                  <p className="font-medium text-slate-900">Protect pages that need login</p>
-                  <p className="text-sm text-slate-600">Dashboard, user data, saved items, etc.</p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">4</div>
-                <div>
-                  <p className="font-medium text-slate-900">Save user data to their account</p>
-                  <p className="text-sm text-slate-600">Each user sees only their own data</p>
-                </div>
-              </div>
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Step 2: Ask Replit to Add Auth</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              Tell Replit Agent exactly what you need:
+            </p>
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+              <p className="text-sm text-slate-700 italic">
+                "Add user authentication to my app. I need:
+              </p>
+              <ul className="text-sm text-slate-700 italic mt-2 ml-4 space-y-1">
+                <li>• A login/signup button in the header</li>
+                <li>• Show the user's name when logged in</li>
+                <li>• A logout button</li>
+                <li>• Each user should only see their own data"</li>
+              </ul>
             </div>
           </Card>
 
-          <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">Tell Claude Code</h4>
-            <p className="text-sm text-slate-600 mb-4">Describe what you need:</p>
-            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm text-slate-700 font-mono">
-              "Add {AUTH_OPTIONS.find(o => o.id === selectedMethod)?.name} to my app:<br /><br />
-              1. Add Login button in header<br />
-              2. Show user name when logged in<br />
-              3. Add Logout button<br />
-              4. Protect the dashboard - only logged-in users<br />
-              5. Save [your main data] to user's account<br />
-              6. Users should only see their own data"
-            </div>
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="text-sm text-slate-700">
+              <strong>That's it.</strong> Replit handles the hard stuff - OAuth, sessions, tokens, security. You just describe what you want.
+            </p>
+          </Card>
+
+          <Card className="p-4 border-2 border-green-200 bg-green-50">
+            <p className="text-sm text-green-800">
+              <strong>Don't overthink this.</strong> Auth is just "who are you?" so the app shows you YOUR stuff. Get it working, move on.
+            </p>
           </Card>
 
           <Button
@@ -190,43 +144,43 @@ export function Day15Authentication({ appName, onComplete }: Day15Authentication
         </>
       )}
 
-      {/* Step 3: Test and Document */}
+      {/* Step 3: Test */}
       {step === "test" && (
         <>
-          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">Your App Has User Accounts!</h4>
-            <p className="text-slate-700">
-              This is a major milestone. Users can now have their own private data in your app.
+          <Card className="p-6 border-2 border-green-200 bg-green-50">
+            <h4 className="font-bold text-lg mb-2 text-green-900">
+              {hasAuth ? "Auth Already Working!" : "Auth Added!"}
+            </h4>
+            <p className="text-green-800">
+              Now let's make sure it actually works.
             </p>
           </Card>
 
           <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">Test the Login Flow</h4>
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Quick Auth Test</h4>
             <p className="text-sm text-slate-600 mb-4">
-              Test the complete login → use app → logout flow. What happened?
+              Do this simple test and tell me what happened:
             </p>
+
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-4">
+              <ol className="text-sm text-slate-700 space-y-2">
+                <li><strong>1.</strong> Log in as a user</li>
+                <li><strong>2.</strong> Create some data (save something)</li>
+                <li><strong>3.</strong> Log out</li>
+                <li><strong>4.</strong> Log back in - is your data still there?</li>
+                <li><strong>5.</strong> (Bonus) Log in as a different user - can you see the first user's data?</li>
+              </ol>
+            </div>
+
             <Textarea
-              placeholder="I tested login by:
-1. Clicked Login button → [what happened]
-2. Logged in as [method] → [what happened]
-3. Used the main feature → [could I see my data?]
-4. Logged out → [what happened]"
-              value={loginTestResult}
-              onChange={(e) => setLoginTestResult(e.target.value)}
+              placeholder="I tested it:
+- Logged in as [user] ✓
+- Created data: [what you saved]
+- Logged out and back in: [data was/wasn't there]
+- Different user test: [could/couldn't see other user's data]"
+              value={testResult}
+              onChange={(e) => setTestResult(e.target.value)}
               className="min-h-[140px]"
-            />
-          </Card>
-
-          <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">Does User Data Work?</h4>
-            <p className="text-sm text-slate-600 mb-4">
-              Can users save data and see only their own stuff?
-            </p>
-            <Textarea
-              placeholder="Yes/No - When I save something as user A, user B can/cannot see it because..."
-              value={userDataWorks}
-              onChange={(e) => setUserDataWorks(e.target.value)}
-              className="min-h-[80px]"
             />
           </Card>
 
@@ -235,12 +189,12 @@ export function Day15Authentication({ appName, onComplete }: Day15Authentication
               size="lg"
               className="w-full h-14 text-lg font-bold gap-2"
               onClick={() => onComplete({
-                authMethod: AUTH_OPTIONS.find(o => o.id === selectedMethod)?.name || selectedMethod,
-                loginTestResult,
-                userDataWorks
+                hasAuth: hasAuth ?? true,
+                authStatus: hasAuth ? "Already had auth" : "Added auth with Replit",
+                testResult
               })}
             >
-              Save Auth Setup & Continue <ChevronRight className="w-5 h-5" />
+              Save & Continue <ChevronRight className="w-5 h-5" />
             </Button>
           )}
         </>

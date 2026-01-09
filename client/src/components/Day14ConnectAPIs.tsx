@@ -11,9 +11,10 @@ interface Day14ConnectAPIsProps {
 
 const API_EXAMPLES = [
   { name: "File Storage", examples: "Cloudinary, AWS S3", when: "Users upload images/files" },
-  { name: "Payments", examples: "Stripe", when: "Charging users (covered Day 17)" },
+  { name: "Payments", examples: "Stripe", when: "When ready to charge users" },
   { name: "External Data", examples: "Weather API, stock prices", when: "Need real-time data" },
   { name: "Social APIs", examples: "Twitter, LinkedIn", when: "Post on behalf of users" },
+  { name: "Web Scraping", examples: "Bright Data", when: "Need data with no official API" },
 ];
 
 export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps) {
@@ -37,21 +38,35 @@ export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps
       {/* Step 1: Do You Need APIs? */}
       {step === "decide" && (
         <>
+          {/* Step 1a: Ask Replit First */}
+          <Card className="p-6 border-2 border-amber-200 bg-amber-50">
+            <h4 className="font-bold text-lg mb-2 text-amber-900">Step 1: Ask Replit First</h4>
+            <p className="text-sm text-amber-800 mb-3">
+              Before adding any external API, check if Replit can do it natively. Just ask Replit Agent:
+            </p>
+            <div className="bg-white/60 p-3 rounded-lg mb-3">
+              <p className="text-sm text-amber-900 italic">"Can you add file upload functionality?"</p>
+            </div>
+            <p className="text-sm text-amber-800">
+              Replit has built-in support for file uploads, databases, secrets, and basic image handling. You might not need an external API at all.
+            </p>
+          </Card>
+
+          {/* Step 1b: Valid Reasons for External APIs */}
           <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">Does Your App Need External APIs?</h4>
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Step 2: Check If You Have a Valid Reason</h4>
             <p className="text-sm text-slate-600 mb-4">
-              Many AI SaaS products only need the OpenAI API (already set up). External APIs add complexity.
+              Only add an external API if Replit can't do it, or if an external service is significantly cheaper:
             </p>
 
-            <div className="space-y-3 mb-6">
-              <p className="text-sm font-medium text-slate-700">Common APIs (only add if essential):</p>
+            <div className="space-y-2 mb-4">
               {API_EXAMPLES.map((api) => (
                 <div key={api.name} className="flex gap-3 p-3 bg-slate-50 rounded-lg">
                   <div className="flex-1">
                     <p className="font-medium text-slate-900 text-sm">{api.name}</p>
                     <p className="text-xs text-slate-500">{api.examples}</p>
                   </div>
-                  <p className="text-xs text-slate-600 italic">When: {api.when}</p>
+                  <p className="text-xs text-slate-600 italic self-center">{api.when}</p>
                 </div>
               ))}
             </div>
@@ -66,22 +81,34 @@ export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps
                 className="flex-1 h-14"
                 onClick={() => setNeedsAPIs(true)}
               >
-                Yes, I need an API
+                Yes, I need an external API
               </Button>
               <Button
                 variant={needsAPIs === false ? "default" : "outline"}
                 className="flex-1 h-14"
                 onClick={() => setNeedsAPIs(false)}
               >
-                No, OpenAI is enough
+                No, Replit can handle it
               </Button>
             </div>
           </Card>
 
+          {/* Web Scraping Explainer - separate card for those who need it */}
+          <Card className="p-5 border-2 border-indigo-200 bg-indigo-50">
+            <p className="font-bold text-sm text-indigo-900 mb-2">What's Web Scraping?</p>
+            <p className="text-sm text-indigo-800 mb-2">
+              Need data that doesn't have an API? Competitor prices, job listings, news articles? That's web scraping - programmatically extracting data from websites.
+            </p>
+            <p className="text-sm text-indigo-800">
+              <strong>The catch:</strong> Websites block scrapers. Services like <strong>Bright Data</strong> handle the hard stuff (proxies, CAPTCHAs, rate limits) so you don't have to.
+            </p>
+          </Card>
+
+          {/* Reassurance */}
           <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <p className="font-medium text-sm text-slate-900">Most MVPs don't need extra APIs</p>
+            <p className="font-medium text-sm text-slate-900">When in doubt, skip it</p>
             <p className="mt-1 text-sm text-slate-700">
-              If you're not sure, choose "No." You can always add APIs later when you actually need them.
+              Most MVPs don't need extra APIs. If you're not sure, choose "No." You can always add APIs later.
             </p>
           </Card>
 
