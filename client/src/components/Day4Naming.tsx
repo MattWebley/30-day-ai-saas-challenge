@@ -24,6 +24,7 @@ interface NameSuggestion {
 interface DomainCheckResult {
   domain: string;
   available: boolean;
+  checking?: boolean;
   price?: string;
   registrar?: string;
 }
@@ -135,69 +136,107 @@ export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }
     },
   });
 
+  const checkDomainAvailability = async (domain: string): Promise<boolean | null> => {
+    try {
+      const res = await apiRequest("POST", "/api/check-domain", { domain: `${domain}.com` });
+      const data = await res.json();
+      return data.available;
+    } catch (error) {
+      console.error("Domain check failed:", error);
+      return null; // Unknown
+    }
+  };
+
   const generateNames = async () => {
     if (aiAttempts >= MAX_AI_ATTEMPTS) return;
     setAiAttempts(prev => prev + 1);
     setIsGenerating(true);
+    setDomainResults({}); // Clear previous results
+
+    // Generate a random seed to ensure unique names each time
+    const randomSeed = Math.random().toString(36).substring(7);
 
     try {
-      const prompt = `You are a SaaS naming expert. Generate 6 unique, brandable product names for this startup:
+      const prompt = `You are a startup naming expert who specializes in finding AVAILABLE domain names. Generate 6 completely unique, invented product names.
 
-PRODUCT IDEA: ${userIdea}
+PRODUCT: ${userIdea}
 
-PROBLEMS IT SOLVES:
-${painPoints.length > 0 ? painPoints.map(p => `- ${p}`).join('\n') : '- General productivity/efficiency problems'}
+CRITICAL RULES - FOLLOW EXACTLY:
 
-KEY FEATURES:
-${features.length > 0 ? features.map(f => `- ${f}`).join('\n') : '- Core functionality for the target audience'}
+1. INVENT COMPLETELY NEW WORDS that don't exist yet. Examples of good invented names:
+   - Combine word fragments: "Klar" (clear) + "ify" = Klarify
+   - Mash syllables: "Vex" + "ara" = Vexara
+   - Add unique suffixes: -lio, -ara, -ovo, -ix, -sy, -zo
+   - Use uncommon letter combos: Q, X, Z, K combinations
 
-NAMING REQUIREMENTS (CRITICAL):
-1. SHORT - 1-2 words maximum, under 10 characters ideal
-2. EASY TO SPELL - No tricky spellings that people will get wrong
-3. MEMORABLE - Should stick in someone's head after hearing it once
-4. AVAILABLE .COM LIKELY - Avoid common dictionary words (those .coms are taken)
-5. NO HYPHENS OR NUMBERS - Ever. They look unprofessional.
-6. UNIQUE & BRANDABLE - Not generic like "TaskManager" or "DataHub"
+2. NEVER suggest these (ALL TAKEN):
+   - Real English words (Notion, Slack, Zoom - taken)
+   - Common tech suffixes on words (Taskly, Flowly, Appify - taken)
+   - Obvious compound words (Mailchimp, Dropbox style - taken)
+   - Anything you've heard of before
 
-NAME STYLES TO MIX:
-- Made-up words (Spotify, Trello, Asana)
-- Compound words (Mailchimp, Dropbox, Basecamp)
-- Misspellings (Lyft, Fiverr, Tumblr)
-- Short real words (Slack, Zoom, Notion)
-- Prefixes/Suffixes (Shopify, Webflow, Loomly)
+3. MAKE THEM PRONOUNCEABLE but unique:
+   - 5-8 characters ideal
+   - Easy to say out loud
+   - Memorable sound
+
+4. USE THIS RANDOMIZER TO BE UNIQUE: ${randomSeed}
+
+GOOD EXAMPLES (the STYLE to follow, not these exact names):
+- Qorvo, Zuora, Klaviyo, Airtable, Webflow, Retool, Loom
+- Invented: Zyphra, Korlix, Venndo, Plexivo, Traxly, Quentis
+
+BAD EXAMPLES (too generic, definitely taken):
+- Flowly, Taskify, DataHub, AppBase, CloudSync, QuickTask
 
 For each name provide:
-- name: The product name (1-2 words max)
-- domain: Just the domain name part (no .com)
-- tagline: 5-7 word tagline explaining what it does
-- why: One sentence on why this name works for this specific product
+- name: The invented product name
+- domain: The domain (lowercase, no spaces)
+- tagline: 5-7 word tagline
+- why: Why this name fits the product
 
 Return ONLY valid JSON:
 {
   "names": [
-    {"name": "Example", "domain": "example", "tagline": "Short tagline here", "why": "Why it works..."}
+    {"name": "Invented Name", "domain": "inventedname", "tagline": "Short tagline here", "why": "Why it works..."}
   ]
 }`;
 
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
       const data = await res.json();
       const parsed = JSON.parse(data.response);
-      setNameSuggestions(parsed.names || []);
+      const names = parsed.names || [];
+      setNameSuggestions(names);
       setSelectedIndex(null);
+
+      // Check domain availability for all suggestions
+      if (names.length > 0) {
+        const results: Record<string, DomainCheckResult> = {};
+        await Promise.all(
+          names.map(async (suggestion: NameSuggestion) => {
+            const available = await checkDomainAvailability(suggestion.domain);
+            results[suggestion.domain] = {
+              domain: `${suggestion.domain}.com`,
+              available: available === true,
+              checking: false,
+            };
+          })
+        );
+        setDomainResults(results);
+      }
     } catch (error) {
       console.error("Error generating names:", error);
-      // Fallback names based on the idea
-      const ideaWords = userIdea.toLowerCase().split(' ');
-      const fallbackNames = [
-        { name: "Flowly", domain: "flowly", tagline: "Work smarter, not harder", why: "Suggests smooth workflow" },
-        { name: "Zestify", domain: "zestify", tagline: "Add energy to your day", why: "Energetic and memorable" },
-        { name: "Snapwise", domain: "snapwise", tagline: "Quick decisions, better results", why: "Implies speed and intelligence" },
-        { name: "Pulsehub", domain: "pulsehub", tagline: "Keep your finger on the pulse", why: "Central and dynamic" },
-        { name: "Brevity", domain: "brevityapp", tagline: "Less noise, more signal", why: "Suggests simplicity" },
-        { name: "Launchly", domain: "launchly", tagline: "From idea to launch, fast", why: "Action-oriented and catchy" },
-      ];
+      // Fallback with truly random names
+      const suffixes = ['ovo', 'ara', 'lix', 'zio', 'vex', 'qor'];
+      const prefixes = ['Kla', 'Vor', 'Zep', 'Qua', 'Nex', 'Pry'];
+      const fallbackNames = prefixes.map((pre, i) => ({
+        name: `${pre}${suffixes[i]}`,
+        domain: `${pre.toLowerCase()}${suffixes[i]}`,
+        tagline: "Your smart solution awaits",
+        why: "Unique invented name likely available"
+      }));
       setNameSuggestions(fallbackNames);
-      toast.error("AI unavailable - showing example names");
+      toast.error("AI unavailable - showing generated names");
     }
     setIsGenerating(false);
   };
@@ -405,11 +444,19 @@ Return ONLY valid JSON:
 
               {nameSuggestions.length > 0 && (
                 <div className="space-y-4">
-                  <h3 className="font-bold text-slate-900 text-lg">Pick Your Favorite:</h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-slate-900 text-lg">Pick Your Favorite:</h3>
+                    <span className="text-xs text-slate-500">
+                      {Object.keys(domainResults).length > 0 ? "Availability checked" : "Checking availability..."}
+                    </span>
+                  </div>
 
                   <div className="grid gap-3">
                     {nameSuggestions.map((suggestion, i) => {
                       const domainCheck = domainResults[suggestion.domain];
+                      const isAvailable = domainCheck?.available;
+                      const isChecking = !domainCheck;
+
                       return (
                         <button
                           key={i}
@@ -417,7 +464,11 @@ Return ONLY valid JSON:
                           className={`p-4 rounded-lg border-2 text-left transition-all ${
                             selectedIndex === i
                               ? 'border-slate-400 bg-slate-50'
-                              : 'border-slate-200 hover:border-slate-300 bg-white'
+                              : isAvailable
+                                ? 'border-green-200 hover:border-green-300 bg-green-50/50'
+                                : domainCheck && !isAvailable
+                                  ? 'border-red-200 hover:border-red-300 bg-red-50/30'
+                                  : 'border-slate-200 hover:border-slate-300 bg-white'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3">
@@ -431,6 +482,19 @@ Return ONLY valid JSON:
                               <p className="text-sm text-slate-600 italic mb-2">"{suggestion.tagline}"</p>
                               <div className="flex items-center gap-2 mb-2">
                                 <span className="text-sm font-mono text-slate-700">{suggestion.domain}.com</span>
+                                {isChecking ? (
+                                  <span className="flex items-center gap-1 text-xs text-slate-400">
+                                    <Loader2 className="w-3 h-3 animate-spin" /> Checking...
+                                  </span>
+                                ) : isAvailable ? (
+                                  <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+                                    <Check className="w-3 h-3" /> Likely Available
+                                  </span>
+                                ) : (
+                                  <span className="text-xs font-medium text-red-600 bg-red-100 px-2 py-0.5 rounded-full">
+                                    Likely Taken
+                                  </span>
+                                )}
                               </div>
                               <p className="text-xs text-slate-500">{suggestion.why}</p>
                             </div>
@@ -438,6 +502,11 @@ Return ONLY valid JSON:
                         </button>
                       );
                     })}
+                  </div>
+
+                  {/* Tip about availability */}
+                  <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg">
+                    <strong>Tip:</strong> "Likely Available" means no website exists yet. Always verify on Namecheap before purchasing - some domains may be registered but not in use.
                   </div>
 
                   {selectedIndex !== null && (

@@ -4,6 +4,10 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertUserProgressSchema, insertDayContentSchema } from "@shared/schema";
 import OpenAI from "openai";
+import dns from "dns";
+import { promisify } from "util";
+
+const dnsResolve = promisify(dns.resolve);
 
 // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -499,7 +503,7 @@ Format: { "ideas": [...] }`;
   app.post("/api/ai-prompt", isAuthenticated, async (req: any, res) => {
     try {
       const { prompt } = req.body;
-      
+
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [{ role: "user", content: prompt }],
@@ -509,6 +513,43 @@ Format: { "ideas": [...] }`;
     } catch (error: any) {
       console.error("Error running AI prompt:", error);
       res.status(500).json({ message: error.message || "Failed to run AI prompt" });
+    }
+  });
+
+  // Domain availability check endpoint
+  app.post("/api/check-domain", isAuthenticated, async (req: any, res) => {
+    try {
+      const { domain } = req.body;
+
+      if (!domain || typeof domain !== 'string') {
+        return res.status(400).json({ message: "Domain is required" });
+      }
+
+      // Clean the domain - remove protocol, www, and trailing slashes
+      const cleanDomain = domain.toLowerCase()
+        .replace(/^https?:\/\//, '')
+        .replace(/^www\./, '')
+        .replace(/\/$/, '')
+        .trim();
+
+      try {
+        // Try to resolve DNS - if it fails, domain is likely available
+        await dnsResolve(cleanDomain);
+        // DNS resolved - domain is taken
+        res.json({ domain: cleanDomain, available: false });
+      } catch (dnsError: any) {
+        if (dnsError.code === 'ENOTFOUND' || dnsError.code === 'ENODATA') {
+          // No DNS records - domain is likely available
+          res.json({ domain: cleanDomain, available: true });
+        } else {
+          // Other DNS error - assume unavailable to be safe
+          console.error("DNS lookup error:", dnsError);
+          res.json({ domain: cleanDomain, available: false });
+        }
+      }
+    } catch (error: any) {
+      console.error("Error checking domain:", error);
+      res.status(500).json({ message: error.message || "Failed to check domain" });
     }
   });
 
