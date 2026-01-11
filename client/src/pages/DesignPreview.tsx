@@ -130,13 +130,13 @@ export default function DesignPreview() {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-2xl mx-auto p-4 sm:p-6">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-slate-900 mb-2">Design System Preview</h1>
-          <p className="text-slate-600">Compare the three design approaches side by side. Click one to select it.</p>
+          <p className="text-slate-600">Compare the three design approaches. Click one to select it.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="space-y-8">
           {/* Style 1: Minimal */}
           <div
             className={`cursor-pointer transition-all ${selectedStyle === 'minimal' ? 'ring-4 ring-primary ring-offset-4 rounded-2xl' : ''}`}
