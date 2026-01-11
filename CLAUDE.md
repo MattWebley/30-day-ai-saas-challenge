@@ -34,6 +34,31 @@
 - Let the user start the dev server via Replit's Run button when possible
 - If you must start the server, use regular `npm run dev` (NOT with `run_in_background: true`)
 
+### Design System (CRITICAL - NEVER DEVIATE)
+The app uses the **Minimal Clean** design system defined in `/client/src/lib/design-system.ts`.
+
+**ALWAYS use these styles. NEVER create random colored boxes or deviate from this system.**
+
+Core rules:
+- **Cards**: White background (`bg-white`), thin border (`border border-slate-200`), rounded (`rounded-lg`)
+- **Info/tip boxes**: Same as cards - NO colored backgrounds (no amber, green, indigo, etc.)
+- **Interactive options**: White bg, slate border default, primary border when selected
+- **Text**: `text-slate-900` for headings, `text-slate-600` for body, `text-slate-500` for muted
+- **Emphasis**: Use `bg-slate-50` sparingly for subtle highlight, never bright colors
+- **Success states**: Green text (`text-green-600`) only, not green backgrounds
+
+Import and use the design system:
+```tsx
+import { ds, cx } from "@/lib/design-system";
+
+// Examples:
+<div className={ds.cardWithPadding}>...</div>
+<div className={ds.infoBox}>...</div>
+<div className={selected ? ds.optionSelected : ds.optionDefault}>...</div>
+```
+
+**If tempted to add a colored background box - STOP. Use `ds.infoBox` or `ds.infoBoxHighlight` instead.**
+
 ---
 
 ## Project Overview
