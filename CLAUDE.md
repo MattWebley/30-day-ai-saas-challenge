@@ -40,24 +40,33 @@ The app uses the **Minimal Clean** design system defined in `/client/src/lib/des
 **ALWAYS use these styles. NEVER create random colored boxes or deviate from this system.**
 
 Core rules:
-- **Cards**: White background (`bg-white`), thin border (`border border-slate-200`), rounded (`rounded-lg`)
-- **Info/tip boxes**: Same as cards - NO colored backgrounds (no amber, green, indigo, etc.)
+- **Cards**: White background (`bg-white`), `border-2 border-slate-200`, use `<Card>` component
+- **Info/tip boxes**: Use `bg-slate-50` with `border-2 border-slate-200` - NO colored backgrounds
 - **Interactive options**: White bg, slate border default, primary border when selected
-- **Text**: `text-slate-900` for headings, `text-slate-600` for body, `text-slate-500` for muted
 - **Emphasis**: Use `bg-slate-50` sparingly for subtle highlight, never bright colors
 - **Success states**: Green text (`text-green-600`) only, not green backgrounds
 
-Import and use the design system:
-```tsx
-import { ds, cx } from "@/lib/design-system";
+### Typography (CRITICAL - MATCH LESSON STYLING)
+Interactive component text MUST match lesson text styling. Use these classes directly (no design-system for text):
 
-// Examples:
-<div className={ds.cardWithPadding}>...</div>
-<div className={ds.infoBox}>...</div>
-<div className={selected ? ds.optionSelected : ds.optionDefault}>...</div>
+- **Body text**: `text-slate-700` (NOT text-sm, NOT text-slate-600)
+- **Card headers**: `text-lg font-bold text-slate-900`
+- **Labels/emphasis**: `text-slate-700 font-medium`
+- **Hint/secondary text**: `text-slate-600`
+- **Page titles**: `text-2xl font-extrabold text-slate-900`
+
+**NEVER use `text-sm` for body text. NEVER use `text-slate-500` for readable content.**
+
+Example card structure:
+```tsx
+<Card className="p-6 border-2 border-slate-200 bg-white">
+  <h4 className="text-lg font-bold text-slate-900 mb-2">Card Title</h4>
+  <p className="text-slate-700 mb-4">Body text that matches lesson styling.</p>
+  <p className="text-slate-600">Secondary hint text.</p>
+</Card>
 ```
 
-**If tempted to add a colored background box - STOP. Use `ds.infoBox` or `ds.infoBoxHighlight` instead.**
+**If tempted to use text-sm or text-slate-500 for body content - STOP. Use text-slate-700 instead.**
 
 ---
 
@@ -174,7 +183,7 @@ Every day in Dashboard.tsx MUST follow this exact format:
 
 ## Current Status
 - Status: In Progress
-- Last Session: 2026-01-09
+- Last Session: 2026-01-11
 - Current Branch: main
 - GitHub Repo: MattWebley/30-day-ai-saas-challenge
 
@@ -726,6 +735,41 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - Options discussed: First beta users, Add feedback button, Set up waitlist - user to decide next session
   - TypeScript check passing, database reseeded
   - All changes committed and ready to push
+
+### 2026-01-11 - Typography Unification & Design System Update
+- Tasks Completed:
+  - **Component File Renaming** (from previous session):
+    - Renamed Day component files to match their actual day positions
+    - Day13AIBrain.tsx → Day10AIBrain.tsx
+    - Day14ConnectAPIs.tsx → Day11AddSuperpowers.tsx
+    - Day16Email.tsx → Day13ReachUsers.tsx
+    - Day10FixIterate.tsx → Day14HeadsDown.tsx
+    - Day11TestUSP.tsx → Day15TestUSP.tsx
+    - Day12FeatureTesting.tsx → Day16FeatureTesting.tsx
+  - **Typography Unification**:
+    - Updated design-system.ts to match lesson text styling
+    - `ds.body`: `text-sm text-slate-600` → `text-slate-700` (matches lessons)
+    - `ds.label`: `text-sm font-medium text-slate-700` → `text-slate-700 font-medium`
+    - `ds.muted`: `text-sm text-slate-500` → `text-slate-600`
+    - All Day components using ds.body/label/muted now automatically match lesson styling
+  - **CLAUDE.md Typography Rule**:
+    - Added comprehensive typography section to Design System rules
+    - Documents that interactive components MUST match lesson text styling
+    - Body text: `text-slate-700` (NOT text-sm)
+    - Headers: `text-lg font-bold text-slate-900`
+    - Labels: `text-slate-700 font-medium`
+    - Muted: `text-slate-600`
+  - **Day8ClaudeCode.tsx Manual Update**:
+    - Fully rewrote to use lesson-matching typography as template
+    - Removed ds imports, uses direct Tailwind classes
+- Fixes Applied:
+  - Fixed typography inconsistency across all Day components
+  - Interactive sections now match lesson text size and color
+- Notes:
+  - Updated design-system.ts as single source of truth for typography
+  - All components using ds.body/muted/label automatically get correct styling
+  - TypeScript check passing
+  - 14 commits ahead of origin before push
 
 ---
 
