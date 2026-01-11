@@ -11,11 +11,11 @@
  * - Primary color only for interactive/selected states
  * - Clean, minimal, professional
  *
- * TYPOGRAPHY (only 4 text styles):
+ * TYPOGRAPHY (matches lesson styling - no text-sm for body):
  * - heading: Card/section headers (text-lg font-bold text-slate-900)
- * - body: Main content (text-sm text-slate-600)
- * - label: Form labels (text-sm font-medium text-slate-700)
- * - muted: Helper text (text-sm text-slate-500)
+ * - body: Main content (text-slate-700) - MATCHES LESSONS
+ * - label: Form labels, emphasis (text-slate-700 font-medium)
+ * - muted: Hints, secondary (text-slate-600)
  *
  * SPACING:
  * - Card padding: p-5
@@ -32,14 +32,14 @@ export const ds = {
   /** Card/section heading - use for all card titles */
   heading: "text-lg font-bold text-slate-900",
 
-  /** Body text - main content */
-  body: "text-sm text-slate-600",
+  /** Body text - matches lesson styling (no text-sm) */
+  body: "text-slate-700",
 
-  /** Label - form labels and small headers */
-  label: "text-sm font-medium text-slate-700",
+  /** Label - emphasis, form labels (matches lesson subheadlines) */
+  label: "text-slate-700 font-medium",
 
-  /** Muted - helper text, hints, secondary info */
-  muted: "text-sm text-slate-500",
+  /** Muted - hints, secondary info */
+  muted: "text-slate-600",
 
   /** Small caps label - for data display labels */
   capsLabel: "text-xs font-semibold text-slate-500 uppercase tracking-wide",
@@ -130,10 +130,10 @@ export const ds = {
   titleXl: "text-lg font-bold text-slate-900",
 
   /** @deprecated Use ds.body instead */
-  text: "text-sm text-slate-600",
+  text: "text-slate-700",
 
   /** @deprecated Use ds.muted instead */
-  textMuted: "text-sm text-slate-500",
+  textMuted: "text-slate-600",
 
 } as const;
 
