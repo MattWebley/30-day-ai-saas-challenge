@@ -25,19 +25,19 @@ const API_EXAMPLES = [
 ];
 
 export function Day14ConnectAPIs({ userIdea, appName, onComplete }: Day14ConnectAPIsProps) {
+  // Auth state
+  const [hasAuth, setHasAuth] = useState<boolean | null>(null);
+
   // API state
   const [needsAPIs, setNeedsAPIs] = useState<boolean | null>(null);
   const [apiConnected, setApiConnected] = useState("");
   const [connectionResult, setConnectionResult] = useState("");
   const [apiSectionComplete, setApiSectionComplete] = useState(false);
 
-  // Auth state
-  const [hasAuth, setHasAuth] = useState<boolean | null>(null);
-
   // Completion logic
-  const apiDone = apiSectionComplete;
   const authDone = hasAuth !== null;
-  const canComplete = apiDone && authDone;
+  const apiDone = apiSectionComplete;
+  const canComplete = authDone && apiDone;
 
   const handleApiComplete = () => {
     setApiSectionComplete(true);
@@ -51,133 +51,16 @@ export function Day14ConnectAPIs({ userIdea, appName, onComplete }: Day14Connect
           <Zap className="w-6 h-6 text-primary" />
           <h3 className="text-2xl font-extrabold text-slate-900">Add Superpowers</h3>
         </div>
-        <p className="text-slate-600">Two quick tasks: external APIs (if needed) + user authentication.</p>
+        <p className="text-slate-600">Two quick tasks: user authentication + external APIs (if needed).</p>
       </Card>
 
       {/* ============================================ */}
-      {/* PART 1: EXTERNAL APIs */}
+      {/* PART 1: USER AUTHENTICATION */}
       {/* ============================================ */}
       <div className="relative">
         <div className="flex items-center gap-3 mb-4">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${apiDone ? 'bg-green-500' : 'bg-primary'}`}>
-            {apiDone ? <Check className="w-5 h-5" /> : '1'}
-          </div>
-          <h4 className="font-bold text-lg text-slate-900">External APIs</h4>
-          {apiDone && <span className="text-sm text-green-600 font-medium">Done!</span>}
-        </div>
-
-        {!apiSectionComplete ? (
-          <div className="space-y-4 pl-11">
-            {/* Ask Replit First */}
-            <Card className="p-5 border-2 border-amber-200 bg-amber-50">
-              <h5 className="font-bold text-amber-900 mb-2">Ask Replit First</h5>
-              <p className="text-sm text-amber-800 mb-2">
-                Before adding any external API, check if Replit can do it natively:
-              </p>
-              <div className="bg-white/60 p-3 rounded-lg">
-                <p className="text-sm text-amber-900 italic">"Can you add file upload functionality?"</p>
-              </div>
-            </Card>
-
-            {/* API Examples */}
-            <Card className="p-5 border-2 border-slate-200">
-              <h5 className="font-bold text-slate-900 mb-3">Valid Reasons for External APIs</h5>
-              <div className="space-y-2 mb-4">
-                {API_EXAMPLES.map((api) => (
-                  <div key={api.name} className="flex gap-3 p-2 bg-slate-50 rounded-lg">
-                    <div className="flex-1">
-                      <p className="font-medium text-slate-900 text-sm">{api.name}</p>
-                      <p className="text-xs text-slate-500">{api.examples}</p>
-                    </div>
-                    <p className="text-xs text-slate-600 italic self-center">{api.when}</p>
-                  </div>
-                ))}
-              </div>
-
-              {userIdea && (
-                <p className="text-xs text-slate-500 mb-4">Your app: {userIdea}</p>
-              )}
-
-              <div className="flex gap-3">
-                <Button
-                  variant={needsAPIs === true ? "default" : "outline"}
-                  className="flex-1"
-                  onClick={() => setNeedsAPIs(true)}
-                >
-                  Yes, I need an API
-                </Button>
-                <Button
-                  variant={needsAPIs === false ? "default" : "outline"}
-                  className="flex-1"
-                  onClick={() => setNeedsAPIs(false)}
-                >
-                  No, Replit handles it
-                </Button>
-              </div>
-            </Card>
-
-            {/* If they need an API, show the fields */}
-            {needsAPIs === true && (
-              <Card className="p-5 border-2 border-slate-200">
-                <h5 className="font-bold text-slate-900 mb-2">Which API?</h5>
-                <Textarea
-                  placeholder="I'm adding [API name] because..."
-                  value={apiConnected}
-                  onChange={(e) => setApiConnected(e.target.value)}
-                  className="min-h-[80px] mb-3"
-                />
-                <h5 className="font-bold text-slate-900 mb-2">Did it work?</h5>
-                <Textarea
-                  placeholder="I tested it by... and it worked/didn't work because..."
-                  value={connectionResult}
-                  onChange={(e) => setConnectionResult(e.target.value)}
-                  className="min-h-[80px]"
-                />
-              </Card>
-            )}
-
-            {/* If they chose No */}
-            {needsAPIs === false && (
-              <Card className="p-4 border-2 border-green-200 bg-green-50">
-                <p className="text-green-800 font-medium">Smart choice! Keep it simple.</p>
-              </Card>
-            )}
-
-            {/* Complete Part 1 button */}
-            {needsAPIs !== null && (needsAPIs === false || (apiConnected.length > 5 && connectionResult.length > 5)) && (
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleApiComplete}
-              >
-                <Check className="w-4 h-4 mr-2" />
-                Mark APIs Complete
-              </Button>
-            )}
-          </div>
-        ) : (
-          <div className="pl-11">
-            <Card className="p-4 border-2 border-green-200 bg-green-50">
-              <p className="text-green-800">
-                {needsAPIs
-                  ? `Connected: ${apiConnected.slice(0, 50)}${apiConnected.length > 50 ? '...' : ''}`
-                  : "Decided to skip external APIs - keeping it simple!"
-                }
-              </p>
-            </Card>
-          </div>
-        )}
-      </div>
-
-      {/* ============================================ */}
-      {/* PART 2: USER AUTHENTICATION */}
-      {/* ============================================ */}
-      <div className="relative pt-4">
-        <div className="absolute top-0 left-0 right-0 border-t-2 border-slate-200"></div>
-
-        <div className="flex items-center gap-3 mb-4 pt-4">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${authDone ? 'bg-green-500' : 'bg-primary'}`}>
-            {authDone ? <Check className="w-5 h-5" /> : '2'}
+            {authDone ? <Check className="w-5 h-5" /> : '1'}
           </div>
           <div className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-slate-600" />
@@ -271,6 +154,123 @@ export function Day14ConnectAPIs({ userIdea, appName, onComplete }: Day14Connect
             </Card>
           )}
         </div>
+      </div>
+
+      {/* ============================================ */}
+      {/* PART 2: EXTERNAL APIs */}
+      {/* ============================================ */}
+      <div className="relative pt-4">
+        <div className="absolute top-0 left-0 right-0 border-t-2 border-slate-200"></div>
+
+        <div className="flex items-center gap-3 mb-4 pt-4">
+          <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white ${apiDone ? 'bg-green-500' : 'bg-primary'}`}>
+            {apiDone ? <Check className="w-5 h-5" /> : '2'}
+          </div>
+          <h4 className="font-bold text-lg text-slate-900">External APIs</h4>
+          {apiDone && <span className="text-sm text-green-600 font-medium">Done!</span>}
+        </div>
+
+        {!apiSectionComplete ? (
+          <div className="space-y-4 pl-11">
+            {/* Ask Replit First */}
+            <Card className="p-5 border-2 border-amber-200 bg-amber-50">
+              <h5 className="font-bold text-amber-900 mb-2">Ask Replit First</h5>
+              <p className="text-sm text-amber-800 mb-2">
+                Before adding any external API, check if Replit can do it natively:
+              </p>
+              <div className="bg-white/60 p-3 rounded-lg">
+                <p className="text-sm text-amber-900 italic">"Can you add file upload functionality?"</p>
+              </div>
+            </Card>
+
+            {/* API Examples */}
+            <Card className="p-5 border-2 border-slate-200">
+              <h5 className="font-bold text-slate-900 mb-3">Valid Reasons for External APIs</h5>
+              <div className="space-y-2 mb-4">
+                {API_EXAMPLES.map((api) => (
+                  <div key={api.name} className="flex gap-3 p-2 bg-slate-50 rounded-lg">
+                    <div className="flex-1">
+                      <p className="font-medium text-slate-900 text-sm">{api.name}</p>
+                      <p className="text-xs text-slate-500">{api.examples}</p>
+                    </div>
+                    <p className="text-xs text-slate-600 italic self-center">{api.when}</p>
+                  </div>
+                ))}
+              </div>
+
+              {userIdea && (
+                <p className="text-xs text-slate-500 mb-4">Your app: {userIdea}</p>
+              )}
+
+              <div className="flex gap-3">
+                <Button
+                  variant={needsAPIs === true ? "default" : "outline"}
+                  className="flex-1"
+                  onClick={() => setNeedsAPIs(true)}
+                >
+                  Yes, I need an API
+                </Button>
+                <Button
+                  variant={needsAPIs === false ? "default" : "outline"}
+                  className="flex-1"
+                  onClick={() => setNeedsAPIs(false)}
+                >
+                  No, Replit handles it
+                </Button>
+              </div>
+            </Card>
+
+            {/* If they need an API, show the fields */}
+            {needsAPIs === true && (
+              <Card className="p-5 border-2 border-slate-200">
+                <h5 className="font-bold text-slate-900 mb-2">Which API?</h5>
+                <Textarea
+                  placeholder="I'm adding [API name] because..."
+                  value={apiConnected}
+                  onChange={(e) => setApiConnected(e.target.value)}
+                  className="min-h-[80px] mb-3"
+                />
+                <h5 className="font-bold text-slate-900 mb-2">Did it work?</h5>
+                <Textarea
+                  placeholder="I tested it by... and it worked/didn't work because..."
+                  value={connectionResult}
+                  onChange={(e) => setConnectionResult(e.target.value)}
+                  className="min-h-[80px]"
+                />
+              </Card>
+            )}
+
+            {/* If they chose No */}
+            {needsAPIs === false && (
+              <Card className="p-4 border-2 border-green-200 bg-green-50">
+                <p className="text-green-800 font-medium">Smart choice! Keep it simple.</p>
+              </Card>
+            )}
+
+            {/* Complete Part 2 button */}
+            {needsAPIs !== null && (needsAPIs === false || (apiConnected.length > 5 && connectionResult.length > 5)) && (
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleApiComplete}
+              >
+                <Check className="w-4 h-4 mr-2" />
+                Mark APIs Complete
+              </Button>
+            )}
+          </div>
+        ) : (
+          <div className="pl-11">
+            <Card className="p-4 border-2 border-green-200 bg-green-50">
+              <p className="text-green-800">
+                {needsAPIs
+                  ? `Connected: ${apiConnected.slice(0, 50)}${apiConnected.length > 50 ? '...' : ''}`
+                  : "Decided to skip external APIs - keeping it simple!"
+                }
+              </p>
+            </Card>
+          </div>
+        )}
       </div>
 
       {/* ============================================ */}

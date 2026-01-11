@@ -553,65 +553,56 @@ This is the feature that makes your app worth paying for. Make it good.`,
     {
       day: 11,
       title: "Add Superpowers",
-      description: "Add external APIs (if needed) and make sure users can log in to their own accounts.",
+      description: "Make sure users can log in to their own accounts, then add external APIs if needed.",
       phase: "Make It Work",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "APIs + Auth",
-      aiTaskDescription: "Connect external APIs if needed, and ensure user authentication is working.",
+      aiTaskTitle: "Auth + APIs",
+      aiTaskDescription: "Ensure user authentication is working, then connect external APIs if needed.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "Which API does your app need most?",
       microDecisionOptions: JSON.stringify(["File storage (images, docs)", "Analytics (tracking)", "External data source", "None - AI was enough"]),
       reflectionQuestion: "What external service would make your app 10x more useful?",
-      tip: "Two quick tasks today: external APIs (probably skip it) and auth (probably already done). Most apps need neither - check before adding.",
-      lesson: `APIs let you plug in superpowers you'd never build yourself.
+      tip: "Two quick tasks today: auth (probably already done) and external APIs (probably skip it). Most apps need neither - check before adding.",
+      lesson: `Two quick tasks today. Let's knock them out.
 
-But here's the CRITICAL question: Do you ACTUALLY need another API?
+PART 1: USER AUTHENTICATION
+
+Auth just means "who are you?" so your app shows the right person their stuff.
+
+Good news: Replit probably already has it. Ask Replit Agent: "Does my app have user authentication?"
+
+If YES - you're done with this part. Move on.
+
+If NO - add it with one prompt: "Add user authentication. Login/signup button in header, show user's name when logged in, logout button, each user only sees their own data."
+
+That's it. Replit handles OAuth, sessions, tokens - all the security stuff. You just describe what you want.
+
+Replit Auth is the fastest option. But if you need something specific, you can also use Firebase Auth, Auth0, Clerk, or Supabase Auth. For most MVPs, Replit Auth is plenty.
+
+Don't overthink this. Auth is solved. Ask if you have it, add it if you don't, move on.
+
+PART 2: EXTERNAL APIs
+
+APIs let you plug in superpowers you'd never build yourself. But do you ACTUALLY need one?
 
 REPLIT CAN PROBABLY DO IT ALREADY:
 
-Before you go sign up for a new service, check if Replit Agent can just... do it. Replit has built-in support for databases, file handling, environment variables, and more. Just ASK: "Can you add file upload functionality?" - Replit might handle it natively.
+Before you sign up for a new service, check if Replit Agent can just... do it. Replit has built-in support for databases, file handling, environment variables, and more. Just ASK: "Can you add file upload functionality?" - Replit might handle it natively.
 
 ONLY ADD AN EXTERNAL API WHEN:
 
 - Replit CAN'T do it natively (specific external data, social media posting)
-- The external API is SIGNIFICANTLY cheaper (some services beat Replit's costs)
+- The external API is SIGNIFICANTLY cheaper
 - You need features that are genuinely impossible without it
 - You need to send emails? → We'll do that on Day 13
-
-Most apps don't need much beyond what you already have. AI? Done. Database? Done. If your app works without adding more stuff - STOP.
 
 WHEN YOU DON'T NEED AN API (YET):
 
 - Analytics → Add this AFTER launch, when you have users
 - Payments → Add this when you're ready to charge
 - Extra features → Add this when users ASK for it
-
-WHAT ABOUT WEB SCRAPING?
-
-Sometimes you need data that doesn't have an API. Competitor prices. Job listings. Product info. News articles. That's when you need web scraping.
-
-Web scraping = programmatically reading websites and extracting the data you need.
-
-WHY YOU MIGHT NEED IT:
-
-- Aggregating data from multiple sources (price comparison, job boards)
-- Monitoring competitors (prices, features, reviews)
-- Getting data that has no official API
-- The official API is too expensive or too limited
-
-THE PROBLEM: Websites don't like being scraped. They block you, show CAPTCHAs, rate-limit you.
-
-THE SOLUTION: Services like Bright Data handle the hard stuff - rotating proxies, CAPTCHA solving, browser fingerprinting. You just say "get me data from this URL" and they handle the rest.
-
-SHOULD YOU ADD SCRAPING?
-
-Only if your CORE product requires external data that has no API. Don't add it "just in case." If you need it, you'll know.
-
-THE RULE:
-
-Ask Replit first. Only add external APIs when there's a REAL reason - something Replit can't do, or significant cost savings. Every API is another thing that can break.
 
 IF YOU DO NEED SOMETHING:
 
@@ -620,27 +611,11 @@ IF YOU DO NEED SOMETHING:
 3. Add it to Replit Secrets
 4. Tell Claude Code: "Integrate [service]. I need to [do what]. Use the API key from secrets."
 
-Done.
-
 THE HONEST TRUTH:
 
-If you're not sure whether you need an API, you probably don't. Ship without it. Add it when users tell you they need it.
-
-Simple apps are easier to build, easier to maintain, and easier to sell.
-
-PART 2: USER AUTHENTICATION
-
-Auth just means "who are you?" so your app shows the right person their stuff.
-
-Good news: Replit probably already has it. Ask Replit Agent: "Does my app have user authentication?"
-
-If NOT, add it with one prompt: "Add user authentication. Login/signup button in header, show user's name when logged in, logout button, each user only sees their own data."
-
-That's it. Replit handles OAuth, sessions, tokens - all the security stuff. You just describe what you want.
-
-Don't overthink this. Auth is solved. Ask if you have it, add it if you don't, move on.`,
-      outcome: "External APIs connected (if needed) and user authentication verified/added",
-      completionMessage: "Your app has superpowers. APIs? Only if you need them. Auth? Sorted. Tomorrow: time to capture your progress and show off what you've built.",
+If you're not sure whether you need an API, you probably don't. Ship without it. Add it when users tell you they need it. Simple apps are easier to build, easier to maintain, and easier to sell.`,
+      outcome: "User authentication verified/added, external APIs connected (if needed)",
+      completionMessage: "Your app has superpowers. Auth? Sorted. APIs? Only if you need them. Tomorrow: time to capture your progress and show off what you've built.",
       xpReward: 100,
       estimatedMinutes: 5,
     },

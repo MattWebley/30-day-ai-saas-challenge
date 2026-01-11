@@ -78,11 +78,11 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Build and test it"
   ],
   11: [
-    "Decide if you need additional APIs",
-    "If yes: sign up, get API keys, integrate",
     "Check if your app has user authentication",
     "If not: ask Replit to add login/signup",
-    "Test that users see only their own data"
+    "Decide if you need additional APIs",
+    "If yes: sign up, get API keys, integrate",
+    "Test that everything works"
   ],
   12: [
     "Take a screenshot of your app's current state",
