@@ -2,11 +2,18 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronRight, ArrowRight } from "lucide-react";
+import { ChevronRight, ArrowRight, Check, Shield, Zap } from "lucide-react";
 
 interface Day14ConnectAPIsProps {
   userIdea: string;
-  onComplete: (data: { needsAPIs: boolean; apiConnected: string; connectionResult: string }) => void;
+  appName: string;
+  onComplete: (data: {
+    needsAPIs: boolean;
+    apiConnected: string;
+    connectionResult: string;
+    hasAuth: boolean;
+    authStatus: string;
+  }) => void;
 }
 
 const API_EXAMPLES = [
@@ -17,22 +24,30 @@ const API_EXAMPLES = [
   { name: "Web Scraping", examples: "Bright Data", when: "Need data with no official API" },
 ];
 
-export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps) {
-  const [step, setStep] = useState<"decide" | "connect" | "verify">("decide");
+export function Day14ConnectAPIs({ userIdea, appName, onComplete }: Day14ConnectAPIsProps) {
+  const [step, setStep] = useState<"decide" | "connect" | "verify" | "auth">("decide");
   const [needsAPIs, setNeedsAPIs] = useState<boolean | null>(null);
   const [apiConnected, setApiConnected] = useState("");
   const [connectionResult, setConnectionResult] = useState("");
 
+  // Auth state
+  const [hasAuth, setHasAuth] = useState<boolean | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
+
   const canProceedToConnect = needsAPIs !== null;
   const canProceedToVerify = needsAPIs === false || apiConnected.length >= 10;
-  const canComplete = needsAPIs === false || connectionResult.length >= 20;
+  const canProceedToAuth = needsAPIs === false || connectionResult.length >= 20;
+  const canComplete = authChecked;
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <h3 className="text-2xl font-extrabold text-slate-900">Connect External APIs</h3>
-        <p className="text-slate-600 mt-1">Add external services if your app needs them. Many MVPs don't.</p>
+        <div className="flex items-center gap-3 mb-2">
+          <Zap className="w-6 h-6 text-primary" />
+          <h3 className="text-2xl font-extrabold text-slate-900">Add Superpowers</h3>
+        </div>
+        <p className="text-slate-600">Two quick tasks: external APIs (if needed) + user authentication.</p>
       </Card>
 
       {/* Step 1: Do You Need APIs? */}
@@ -225,6 +240,129 @@ export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps
             </Card>
           )}
 
+          {canProceedToAuth && (
+            <Button
+              size="lg"
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("auth")}
+            >
+              Next: User Authentication <ArrowRight className="w-5 h-5" />
+            </Button>
+          )}
+        </>
+      )}
+
+      {/* Step 4: User Authentication */}
+      {step === "auth" && (
+        <>
+          {/* Separator */}
+          <div className="relative py-4">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t-2 border-slate-200"></div>
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-slate-50 px-4 text-sm font-medium text-slate-500 flex items-center gap-2">
+                <Shield className="w-4 h-4" />
+                PART 2: USER AUTHENTICATION
+              </span>
+            </div>
+          </div>
+
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <h4 className="font-bold text-lg mb-2 text-slate-900">Let Users In</h4>
+            <p className="text-slate-600">
+              Auth = managing who can access what. Replit usually handles this for you.
+            </p>
+          </Card>
+
+          <Card className="p-6 border-2 border-amber-200 bg-amber-50">
+            <h4 className="font-bold text-lg mb-2 text-amber-900">Check If You Already Have Auth</h4>
+            <p className="text-sm text-amber-800 mb-3">
+              Ask Replit Agent:
+            </p>
+            <div className="bg-white/60 p-3 rounded-lg mb-3">
+              <p className="text-sm text-amber-900 italic">"Does my app have user authentication? Can users log in and see only their own data?"</p>
+            </div>
+            <p className="text-sm text-amber-800">
+              Replit may have already built this for you. Check before adding anything new.
+            </p>
+          </Card>
+
+          <Card className="p-6 border-2 border-slate-200">
+            <h4 className="font-bold text-lg mb-4 text-slate-900">Does Your App Have Auth?</h4>
+
+            <div className="space-y-3">
+              <div
+                onClick={() => {
+                  setHasAuth(true);
+                  setAuthChecked(true);
+                }}
+                className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                  hasAuth === true
+                    ? "border-green-400 bg-green-50"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  hasAuth === true ? "bg-green-500" : "bg-slate-200"
+                }`}>
+                  {hasAuth === true && <Check className="w-4 h-4 text-white" />}
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900">Yes, auth already exists</p>
+                  <p className="text-sm text-slate-600">Users can log in and see their own data</p>
+                </div>
+              </div>
+
+              <div
+                onClick={() => {
+                  setHasAuth(false);
+                  setAuthChecked(true);
+                }}
+                className={`flex items-center gap-4 p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                  hasAuth === false
+                    ? "border-slate-400 bg-slate-50"
+                    : "border-slate-200 hover:border-slate-300"
+                }`}
+              >
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                  hasAuth === false ? "bg-slate-500" : "bg-slate-200"
+                }`}>
+                  {hasAuth === false && <Check className="w-4 h-4 text-white" />}
+                </div>
+                <div>
+                  <p className="font-medium text-slate-900">No, I need to add it</p>
+                  <p className="text-sm text-slate-600">Everyone sees everyone's data right now</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Add auth instructions (only show if they don't have it) */}
+          {hasAuth === false && (
+            <Card className="p-6 border-2 border-slate-200">
+              <h4 className="font-bold text-lg mb-2 text-slate-900">Ask Replit to Add Auth</h4>
+              <p className="text-sm text-slate-600 mb-4">
+                Tell Replit Agent exactly what you need:
+              </p>
+              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <p className="text-sm text-slate-700 italic">
+                  "Add user authentication to my app. I need:
+                </p>
+                <ul className="text-sm text-slate-700 italic mt-2 ml-4 space-y-1">
+                  <li>• A login/signup button in the header</li>
+                  <li>• Show the user's name when logged in</li>
+                  <li>• A logout button</li>
+                  <li>• Each user should only see their own data"</li>
+                </ul>
+              </div>
+              <p className="text-sm text-slate-500 mt-3">
+                That's it. Replit handles OAuth, sessions, tokens, security - you just describe what you want.
+              </p>
+            </Card>
+          )}
+
+          {/* Completion */}
           {canComplete && (
             <Button
               size="lg"
@@ -232,10 +370,12 @@ export function Day14ConnectAPIs({ userIdea, onComplete }: Day14ConnectAPIsProps
               onClick={() => onComplete({
                 needsAPIs: needsAPIs || false,
                 apiConnected: needsAPIs ? apiConnected : "None needed",
-                connectionResult: needsAPIs ? connectionResult : "Decided to keep MVP simple without extra APIs"
+                connectionResult: needsAPIs ? connectionResult : "Decided to keep MVP simple without extra APIs",
+                hasAuth: hasAuth ?? true,
+                authStatus: hasAuth ? "Already had auth" : "Added auth with Replit"
               })}
             >
-              Save & Continue <ChevronRight className="w-5 h-5" />
+              Complete Day 11 <ChevronRight className="w-5 h-5" />
             </Button>
           )}
         </>

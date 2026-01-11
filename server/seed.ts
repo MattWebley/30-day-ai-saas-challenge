@@ -553,18 +553,18 @@ This is the feature that makes your app worth paying for. Make it good.`,
     {
       day: 11,
       title: "Add Superpowers",
-      description: "Add the external services your app needs - storage, analytics, or other integrations.",
+      description: "Add external APIs (if needed) and make sure users can log in to their own accounts.",
       phase: "Make It Work",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "API Connections",
-      aiTaskDescription: "Identify and connect any additional APIs your app needs to function properly.",
+      aiTaskTitle: "APIs + Auth",
+      aiTaskDescription: "Connect external APIs if needed, and ensure user authentication is working.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "Which API does your app need most?",
       microDecisionOptions: JSON.stringify(["File storage (images, docs)", "Analytics (tracking)", "External data source", "None - AI was enough"]),
       reflectionQuestion: "What external service would make your app 10x more useful?",
-      tip: "Don't add APIs you don't need. Each integration is another thing that can break. Only add what's ESSENTIAL for your core use case.",
+      tip: "Two quick tasks today: external APIs (probably skip it) and auth (probably already done). Most apps need neither - check before adding.",
       lesson: `APIs let you plug in superpowers you'd never build yourself.
 
 But here's the CRITICAL question: Do you ACTUALLY need another API?
@@ -626,61 +626,75 @@ THE HONEST TRUTH:
 
 If you're not sure whether you need an API, you probably don't. Ship without it. Add it when users tell you they need it.
 
-Simple apps are easier to build, easier to maintain, and easier to sell.`,
-      outcome: "All necessary APIs connected, app has the integrations it needs to work",
-      completionMessage: "Your app is connected to the outside world. AI brain? Check. Other APIs? If you need them, check. Tomorrow: we verify your USP actually delivers.",
+Simple apps are easier to build, easier to maintain, and easier to sell.
+
+PART 2: USER AUTHENTICATION
+
+Auth just means "who are you?" so your app shows the right person their stuff.
+
+Good news: Replit probably already has it. Ask Replit Agent: "Does my app have user authentication?"
+
+If NOT, add it with one prompt: "Add user authentication. Login/signup button in header, show user's name when logged in, logout button, each user only sees their own data."
+
+That's it. Replit handles OAuth, sessions, tokens - all the security stuff. You just describe what you want.
+
+Don't overthink this. Auth is solved. Ask if you have it, add it if you don't, move on.`,
+      outcome: "External APIs connected (if needed) and user authentication verified/added",
+      completionMessage: "Your app has superpowers. APIs? Only if you need them. Auth? Sorted. Tomorrow: time to capture your progress and show off what you've built.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 12,
-      title: "Let Users In",
-      description: "Let users create accounts, log in, and have their own private data. Essential for any real SaaS.",
+      title: "Capture Your Progress",
+      description: "Document what you've built so far. Screenshot your app, share your progress, and celebrate the halfway point.",
       phase: "Make It Work",
       videoUrl: null,
-      aiTaskType: "setup",
-      aiTaskTitle: "Auth Setup",
-      aiTaskDescription: "Set up user authentication with Replit Auth or another auth provider.",
+      aiTaskType: "reflection",
+      aiTaskTitle: "Progress Capture",
+      aiTaskDescription: "Take a screenshot and document your build progress so far.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What auth method do you prefer?",
-      microDecisionOptions: JSON.stringify(["Replit Auth (easiest)", "Email + Password", "Google/Social login", "Magic link (passwordless)"]),
-      reflectionQuestion: "How important is it that users have their own accounts in your app?",
-      tip: "Replit Auth is the FASTEST way to add login. It works, it's secure, and it takes minutes. Start there unless you have a specific reason not to.",
-      lesson: `Authentication = managing who can access what.
+      microDecisionQuestion: "What's the most impressive part of your app right now?",
+      microDecisionOptions: JSON.stringify(["The AI features", "The user interface", "The core functionality", "How far I've come"]),
+      reflectionQuestion: "If you showed this to someone today, what would impress them most?",
+      tip: "This screenshot becomes part of your build journey. When you launch, you'll have a 'before and after' story to share.",
+      lesson: `Halfway there. Time to see how far you've come.
 
-That's it. Nothing fancy.
+You've been heads-down building. Today, you step back and LOOK at what you've created.
 
-REPLIT PROBABLY ALREADY HAS IT:
+WHY CAPTURE PROGRESS?
 
-Before you do anything, ask Replit Agent: "Does my app have user authentication?"
+1. PROOF - Screenshots don't lie. This is real evidence of what you built.
+2. MOTIVATION - Seeing progress fuels more progress.
+3. YOUR STORY - These become your "before and after" launch content.
+4. ACCOUNTABILITY - Sharing commits you to finishing.
 
-If yes - you're done! Move on.
+WHAT TO CAPTURE:
 
-If no - tell Replit Agent: "Add user authentication so each user only sees their own data."
+Take a screenshot of your app RIGHT NOW. Not when it's "perfect" - NOW. This is your Day 12 snapshot. Raw. Real.
 
-Replit handles the hard stuff. You don't need to understand OAuth, sessions, tokens, or any of that. Just ask for login, and it builds it.
+THE TWO-SENTENCE SUMMARY:
 
-WHY BOTHER?
+Answer these two questions:
+- What does my app do? (One sentence)
+- What works right now? (One sentence)
 
-Without auth, everyone sees everyone's stuff. With auth:
-- Users get their OWN private data
-- You know who's using your app
-- You can charge people (can't bill someone anonymous)
+That's your progress update.
 
-THAT'S LITERALLY IT:
+SHARE IT (OPTIONAL):
 
-1. Ask Replit if auth exists
-2. If not, ask Replit to add it
-3. Test: log in, create data, log out, log back in - is your data still there?
+The best way to stay motivated? Tell someone. Share your screenshot with the community. Celebrate. Get feedback. See what others are building.
 
-Don't overthink this. Auth is just "who are you?" so the app can show you YOUR stuff.
+NO SHAME IN THE GAME:
 
-If all that works, you're done.
+Your app doesn't need to be pretty. It doesn't need to be perfect. It just needs to EXIST. And it does. That's more than 99% of people who "want to build an app."
 
-Auth is table stakes. Not exciting. Just necessary. Get it working and move on.`,
-      outcome: "User authentication working, users can sign up, log in, and have private data",
-      completionMessage: "Your app has USERS now. Real accounts, real data, real privacy. Tomorrow: email setup so you can communicate with those users.",
+YOU'RE ACTUALLY DOING IT.
+
+Take the screenshot. Write the summary. Move on. Tomorrow: email setup so you can reach your users.`,
+      outcome: "Screenshot taken, progress documented, halfway point celebrated",
+      completionMessage: "Look at that! You've got PROOF of what you're building. This screenshot is the start of your launch story. Tomorrow: email setup so you can communicate with users.",
       xpReward: 100,
       estimatedMinutes: 5,
     },

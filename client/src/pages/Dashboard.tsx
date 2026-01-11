@@ -33,7 +33,7 @@ import { Day11TestUSP } from "@/components/Day11TestUSP";
 import { Day12FeatureTesting } from "@/components/Day12FeatureTesting";
 import { Day13AIBrain } from "@/components/Day13AIBrain";
 import { Day14ConnectAPIs } from "@/components/Day14ConnectAPIs";
-import { Day15Authentication } from "@/components/Day15Authentication";
+import { Day12CaptureProgress } from "@/components/Day12CaptureProgress";
 import { Day16Email } from "@/components/Day16Email";
 import { Day17Onboarding } from "@/components/Day17Onboarding";
 import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
@@ -627,14 +627,15 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 11: Connect APIs */}
+                {/* Day 11: Add Superpowers (APIs + Auth) */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Connect What You Need</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Add Superpowers</h2>
                   </div>
                   <Day14ConnectAPIs
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -657,13 +658,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 12: User Authentication */}
+                {/* Day 12: Capture Your Progress */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Add User Accounts</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Document Your Build</h2>
                   </div>
-                  <Day15Authentication
+                  <Day12CaptureProgress
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />

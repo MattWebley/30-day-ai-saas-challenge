@@ -79,15 +79,16 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
   ],
   11: [
     "Decide if you need additional APIs",
-    "If yes: sign up and get API keys",
-    "Integrate with Claude Code",
-    "Test the integration works"
+    "If yes: sign up, get API keys, integrate",
+    "Check if your app has user authentication",
+    "If not: ask Replit to add login/signup",
+    "Test that users see only their own data"
   ],
   12: [
-    "Choose your auth method",
-    "Implement login/signup",
-    "Test the full auth flow",
-    "Verify user data is private"
+    "Take a screenshot of your app's current state",
+    "Write a 2-sentence summary of where you're at",
+    "Share to the community (optional)",
+    "Celebrate your progress so far!"
   ],
   13: [
     "Sign up for Resend",
