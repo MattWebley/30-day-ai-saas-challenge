@@ -16,6 +16,7 @@ import ClaudeCodeGuide from "@/pages/ClaudeCodeGuide";
 import Settings from "@/pages/Settings";
 import Admin from "@/pages/Admin";
 import Showcase from "@/pages/Showcase";
+import DesignPreview from "@/pages/DesignPreview";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -59,6 +60,7 @@ function Router() {
             <Route path="/claude-code" component={ClaudeCodeGuide} />
             <Route path="/settings" component={Settings} />
             <Route path="/admin" component={Admin} />
+            <Route path="/design-preview" component={DesignPreview} />
           </>
         )}
         <Route component={NotFound} />
