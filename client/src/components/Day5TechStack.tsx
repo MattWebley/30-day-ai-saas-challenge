@@ -79,8 +79,8 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
       <div className={ds.cardWithPadding}>
         <div className="space-y-4">
           <div>
-            <h3 className={ds.titleXl}>Your AI Tech Stack</h3>
-            <p className={ds.text}>
+            <h3 className={ds.heading}>Your AI Tech Stack</h3>
+            <p className={ds.body}>
               These tools will 10x your development speed
             </p>
           </div>
@@ -90,12 +90,12 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
       {/* Required Tools */}
       <div className={ds.cardWithPadding}>
         <div className="flex items-center gap-2 mb-4">
-          <h4 className={ds.title}>Required Tools</h4>
+          <h4 className={ds.label}>Required Tools</h4>
           <span className="text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded font-medium">
             MUST HAVE
           </span>
         </div>
-        <p className={ds.textMuted + " mb-4"}>
+        <p className={ds.muted + " mb-4"}>
           These are essential - you need both to build your SaaS
         </p>
 
@@ -115,9 +115,9 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-2xl">{tool.icon}</span>
-                    <h5 className={ds.title}>{tool.name}</h5>
+                    <h5 className={ds.label}>{tool.name}</h5>
                   </div>
-                  <p className={ds.textMuted + " mb-3"}>{tool.description}</p>
+                  <p className={ds.muted + " mb-3"}>{tool.description}</p>
                   <Button
                     variant="outline"
                     size="sm"
@@ -137,12 +137,12 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
       {/* Optional Tools */}
       <div className={ds.cardWithPadding}>
         <div className="flex items-center gap-2 mb-4">
-          <h4 className={ds.title}>Optional Tools</h4>
+          <h4 className={ds.label}>Optional Tools</h4>
           <span className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded font-medium">
             NICE TO HAVE
           </span>
         </div>
-        <p className={ds.textMuted + " mb-4"}>
+        <p className={ds.muted + " mb-4"}>
           Helpful but not required - you can add these later
         </p>
 
@@ -162,9 +162,9 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-2xl">{tool.icon}</span>
-                    <h5 className={ds.title}>{tool.name}</h5>
+                    <h5 className={ds.label}>{tool.name}</h5>
                   </div>
-                  <p className={ds.textMuted + " mb-3"}>{tool.description}</p>
+                  <p className={ds.muted + " mb-3"}>{tool.description}</p>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -185,11 +185,11 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
       <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between">
           <div>
-            <p className={ds.title}>
+            <p className={ds.label}>
               {completedTools.size} of {REQUIRED_TOOLS.length + OPTIONAL_TOOLS.length} tools set up
             </p>
             {!allRequiredComplete && (
-              <p className={ds.textMuted + " mt-1"}>
+              <p className={ds.muted + " mt-1"}>
                 Complete both required tools to continue
               </p>
             )}

@@ -72,8 +72,8 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
       <div className={ds.cardWithPadding}>
         <div className="space-y-4">
           <div>
-            <h3 className={ds.titleXl}>Time to Build!</h3>
-            <p className={ds.text}>
+            <h3 className={ds.heading}>Time to Build!</h3>
+            <p className={ds.body}>
               Today you start building your SaaS in Replit
             </p>
           </div>
@@ -82,8 +82,8 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
 
       {/* Build Steps */}
       <div className={ds.cardWithPadding}>
-        <h4 className={ds.title + " mb-4"}>Build Steps</h4>
-        <p className={ds.textMuted + " mb-4"}>
+        <h4 className={ds.label + " mb-4"}>Build Steps</h4>
+        <p className={ds.muted + " mb-4"}>
           Follow these steps to get started building your SaaS
         </p>
 
@@ -102,7 +102,7 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between gap-2 mb-2">
-                    <h5 className={ds.title}>
+                    <h5 className={ds.label}>
                       {idx + 1}. {step.title}
                     </h5>
                     {step.url && (
@@ -117,7 +117,7 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
                       </Button>
                     )}
                   </div>
-                  <p className={ds.textMuted}>{step.description}</p>
+                  <p className={ds.muted}>{step.description}</p>
                 </div>
               </div>
             </div>
@@ -128,7 +128,7 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
       {/* PRD */}
       <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between mb-4">
-          <h4 className={ds.title}>Your PRD</h4>
+          <h4 className={ds.label}>Your PRD</h4>
           <Button variant="outline" size="sm" onClick={handleCopyPRD} className="gap-2">
             <Copy className="w-4 h-4" />
             Copy PRD
@@ -136,7 +136,7 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
         </div>
 
         <div className={ds.infoBoxHighlight + " max-h-[400px] overflow-y-auto"}>
-          <pre className={ds.textMuted + " whitespace-pre-wrap font-mono text-xs"}>
+          <pre className={ds.muted + " whitespace-pre-wrap font-mono text-xs"}>
             {prd}
           </pre>
         </div>
@@ -146,11 +146,11 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
       <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between">
           <div>
-            <p className={ds.title}>
+            <p className={ds.label}>
               {completedSteps.size} of {BUILD_STEPS.length} steps completed
             </p>
             {!allStepsComplete && (
-              <p className={ds.textMuted + " mt-1"}>
+              <p className={ds.muted + " mt-1"}>
                 Complete all steps to continue
               </p>
             )}
@@ -173,20 +173,20 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
       {/* Tips */}
       <div className={ds.infoBoxHighlight}>
         <div className="space-y-3">
-          <h4 className={ds.title}>
+          <h4 className={ds.label}>
             Pro Tips for Building in Replit
           </h4>
           <ul className="space-y-2">
-            <li className={ds.textMuted}>
+            <li className={ds.muted}>
               <strong>Start simple:</strong> Build one feature at a time, test it, then move to the next
             </li>
-            <li className={ds.textMuted}>
+            <li className={ds.muted}>
               <strong>Use Claude Code:</strong> Ask it to explain any code you don't understand
             </li>
-            <li className={ds.textMuted}>
+            <li className={ds.muted}>
               <strong>Test constantly:</strong> Use Replit's built-in preview to test your app as you build
             </li>
-            <li className={ds.textMuted}>
+            <li className={ds.muted}>
               <strong>Don't overthink:</strong> Your MVP doesn't need to be perfect, it needs to work
             </li>
           </ul>

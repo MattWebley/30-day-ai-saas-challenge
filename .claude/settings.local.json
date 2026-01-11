@@ -61,7 +61,9 @@
       "Bash(npx tsc:*)",
       "Bash(git revert:*)",
       "Bash(node:*)",
-      "Bash(npx drizzle-kit push:*)"
+      "Bash(npx drizzle-kit push:*)",
+      "Bash(ls:*)",
+      "Bash(git mv:*)"
     ]
   }
 }

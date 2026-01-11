@@ -223,8 +223,8 @@ Return ONLY a numbered list:
   if (!day1Progress?.shortlistedIdeas?.length) {
     return (
       <div className={`${ds.cardWithPadding} text-center`}>
-        <h3 className={`${ds.titleLg} mb-2`}>Complete Day 1 First</h3>
-        <p className={ds.text}>
+        <h3 className={`${ds.heading} mb-2`}>Complete Day 1 First</h3>
+        <p className={ds.body}>
           Generate and shortlist 3-5 ideas in Day 1 before validating them here.
         </p>
       </div>
@@ -240,19 +240,19 @@ Return ONLY a numbered list:
         animate={{ opacity: 1, scale: 1 }}
         className="text-center py-8"
       >
-        <h2 className={`${ds.titleXl} mb-2`}>Your Chosen Idea</h2>
-        <p className={`${ds.textMuted} mb-6`}>This is the one you're building!</p>
+        <h2 className={`${ds.heading} mb-2`}>Your Chosen Idea</h2>
+        <p className={`${ds.muted} mb-6`}>This is the one you're building!</p>
 
         <div className={`${ds.cardWithPadding} max-w-2xl mx-auto text-left`}>
-          <h3 className={`${ds.titleLg} mb-2`}>{idea.title}</h3>
-          <p className={`${ds.text} mb-3`}>{idea.desc}</p>
-          <p className={`${ds.textMuted} mb-4`}>Target: {idea.targetCustomer}</p>
+          <h3 className={`${ds.heading} mb-2`}>{idea.title}</h3>
+          <p className={`${ds.body} mb-3`}>{idea.desc}</p>
+          <p className={`${ds.muted} mb-4`}>Target: {idea.targetCustomer}</p>
 
           <div className="pt-4 border-t border-slate-200">
             <p className={`${ds.label} uppercase mb-2`}>Pain Points You're Solving:</p>
             <ul className="space-y-1">
               {selectedPainPoints.map((pain, i) => (
-                <li key={i} className={`${ds.textMuted} flex items-start gap-2`}>
+                <li key={i} className={`${ds.muted} flex items-start gap-2`}>
                   <span className={ds.successText}>•</span>
                   <span>{pain}</span>
                 </li>
@@ -262,10 +262,10 @@ Return ONLY a numbered list:
         </div>
 
         <div className={`mt-8 ${ds.infoBoxHighlight} max-w-2xl mx-auto`}>
-          <p className={`${ds.titleLg} mb-2`}>
+          <p className={`${ds.heading} mb-2`}>
             "There is NO perfect idea. The perfect idea is the one you BUILD."
           </p>
-          <p className={ds.text}>
+          <p className={ds.body}>
             You've made a decision. That puts you ahead of 90% of dreamers.
           </p>
         </div>
@@ -305,21 +305,21 @@ Return ONLY a numbered list:
       >
         <div className={ds.optionSelected}>
           <div>
-            <h3 className={ds.title}>{idea.title}</h3>
-            <p className={`${ds.textMuted} mt-1`}>{idea.desc}</p>
+            <h3 className={ds.label}>{idea.title}</h3>
+            <p className={`${ds.muted} mt-1`}>{idea.desc}</p>
           </div>
         </div>
 
         <div className="text-center">
-          <h2 className={`${ds.titleXl} mb-2`}>What Pain Points Will You Solve?</h2>
-          <p className={ds.textMuted}>Select 1-3 pain points to focus on</p>
+          <h2 className={`${ds.heading} mb-2`}>What Pain Points Will You Solve?</h2>
+          <p className={ds.muted}>Select 1-3 pain points to focus on</p>
           <p className={`${ds.label} mt-2`}>{selectedPainPoints.length}/3 selected</p>
         </div>
 
         {loadingPainPoints ? (
           <div className={`${ds.cardWithPadding} p-12 text-center`}>
             <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
-            <p className={ds.text}>Identifying pain points...</p>
+            <p className={ds.body}>Identifying pain points...</p>
           </div>
         ) : (
           <>
@@ -339,7 +339,7 @@ Return ONLY a numbered list:
                       <div className={isSelected ? ds.checkSelected : ds.checkDefault}>
                         {isSelected && <Check className="w-3 h-3 text-white" />}
                       </div>
-                      <p className={ds.text}>{cleanPain}</p>
+                      <p className={ds.body}>{cleanPain}</p>
                     </div>
                   </div>
                 );
@@ -388,15 +388,15 @@ Return ONLY a numbered list:
   return (
     <div className={ds.section}>
       <div className="text-center">
-        <h2 className={`${ds.titleXl} mb-2`}>Your Shortlist from Day 1</h2>
-        <p className={ds.textMuted}>
+        <h2 className={`${ds.heading} mb-2`}>Your Shortlist from Day 1</h2>
+        <p className={ds.muted}>
           You selected {shortlistedIdeas.length} ideas. Now validate them and choose ONE to build.
         </p>
       </div>
 
       {/* Action over perfection message */}
       <div className={ds.infoBoxHighlight}>
-        <p className={`${ds.text} text-center`}>
+        <p className={`${ds.body} text-center`}>
           <span className="font-bold text-slate-900">Remember:</span> Choosing an imperfect idea and TAKING ACTION beats endlessly second-guessing yourself. There is no perfect idea - only the one you actually build.
         </p>
       </div>
@@ -413,13 +413,13 @@ Return ONLY a numbered list:
                 <div>
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h3 className={ds.titleLg}>{idea.title}</h3>
-                      <p className={`${ds.textMuted} mt-1`}>{idea.desc}</p>
-                      <p className={`${ds.textMuted} mt-2`}>Target: {idea.targetCustomer}</p>
+                      <h3 className={ds.heading}>{idea.title}</h3>
+                      <p className={`${ds.muted} mt-1`}>{idea.desc}</p>
+                      <p className={`${ds.muted} mt-2`}>Target: {idea.targetCustomer}</p>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-slate-900">{idea.totalScore}/25</div>
-                      <p className={ds.textMuted}>Day 1 Score</p>
+                      <p className={ds.muted}>Day 1 Score</p>
                     </div>
                   </div>
                 </div>
@@ -428,15 +428,15 @@ Return ONLY a numbered list:
                 {insight ? (
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-100">
                     <div className={`${ds.infoBoxHighlight} text-center`}>
-                      <div className={ds.titleLg}>{insight.demandScore}/10</div>
-                      <p className={ds.textMuted}>Demand</p>
+                      <div className={ds.heading}>{insight.demandScore}/10</div>
+                      <p className={ds.muted}>Demand</p>
                     </div>
                     <div className={`${ds.infoBoxHighlight} text-center`}>
-                      <div className={ds.title}>{insight.competitionLevel.split(' - ')[0]}</div>
-                      <p className={ds.textMuted}>Competition</p>
+                      <div className={ds.label}>{insight.competitionLevel.split(' - ')[0]}</div>
+                      <p className={ds.muted}>Competition</p>
                     </div>
                     <div className={`col-span-2 ${ds.infoBoxHighlight}`}>
-                      <p className={`${ds.textMuted} mb-1`}>Top Risk</p>
+                      <p className={`${ds.muted} mb-1`}>Top Risk</p>
                       <p className={`${ds.label}`}>{insight.topRisk}</p>
                     </div>
                   </div>
@@ -474,7 +474,7 @@ Return ONLY a numbered list:
       </div>
 
       <div className={ds.infoBox}>
-        <p className={`${ds.textMuted} text-center`}>
+        <p className={`${ds.muted} text-center`}>
           <span className="font-semibold text-slate-700">Pro tip:</span> Click "Get Validation Insights" on each idea to compare them, then choose the one that excites you most AND has decent demand.
         </p>
       </div>
@@ -482,8 +482,8 @@ Return ONLY a numbered list:
       {/* Stuck? Book a call */}
       <div className={ds.cardWithPadding}>
         <div className="text-center space-y-3">
-          <h3 className={ds.title}>Stuck? Can't Decide?</h3>
-          <p className={ds.textMuted}>
+          <h3 className={ds.label}>Stuck? Can't Decide?</h3>
+          <p className={ds.muted}>
             Sometimes you just need a fresh perspective. Book a 30-minute 1:1 call with Matt to talk through your ideas and get unstuck.
           </p>
           <Button

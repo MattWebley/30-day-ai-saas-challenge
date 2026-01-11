@@ -309,7 +309,7 @@ Return ONLY valid JSON:
       {userIdea && (
         <div className={ds.infoBoxHighlight}>
           <p className={ds.label + " uppercase tracking-wide mb-1"}>Naming Your Product:</p>
-          <p className={ds.title}>{userIdea}</p>
+          <p className={ds.label}>{userIdea}</p>
         </div>
       )}
 
@@ -326,43 +326,43 @@ Return ONLY valid JSON:
             {/* Hero */}
             <div className={ds.cardWithPadding}>
               <h3 className="text-2xl font-extrabold text-slate-900">Name It RIGHT</h3>
-              <p className={ds.text + " mt-1"}>
+              <p className={ds.body + " mt-1"}>
                 Your name is your first impression. Get this right.
               </p>
             </div>
 
             {/* The Rules */}
             <div className={ds.cardWithPadding}>
-              <h4 className={ds.titleLg + " mb-4"}>
+              <h4 className={ds.heading + " mb-4"}>
                 The Golden Rules of SaaS Naming
               </h4>
               <div className="space-y-4">
                 <div className={ds.infoBoxHighlight}>
-                  <div className={ds.title}>Always get the .com</div>
-                  <div className={ds.textMuted}>
+                  <div className={ds.label}>Always get the .com</div>
+                  <div className={ds.muted}>
                     Not .io, not .co, not .app. The .com. It's what people type automatically.
                     If you can't get the .com, pick a different name.
                   </div>
                 </div>
 
                 <div className={ds.infoBoxHighlight}>
-                  <div className={ds.title}>Keep it SHORT</div>
-                  <div className={ds.textMuted}>
+                  <div className={ds.label}>Keep it SHORT</div>
+                  <div className={ds.muted}>
                     1-2 words. Under 10 characters. Easy to type, easy to remember, easy to say out loud.
                   </div>
                 </div>
 
                 <div className={ds.infoBoxHighlight}>
-                  <div className={ds.title}>Make it SPEAKABLE</div>
-                  <div className={ds.textMuted}>
+                  <div className={ds.label}>Make it SPEAKABLE</div>
+                  <div className={ds.muted}>
                     Say it out loud. If you have to spell it for people, it's wrong.
                     "It's Trello, T-R-E-L-L-O" is fine. "It's Xqyzt, X-Q-Y-Z-T" is not.
                   </div>
                 </div>
 
                 <div className={ds.infoBoxHighlight}>
-                  <div className={ds.title}>Be UNIQUE</div>
-                  <div className={ds.textMuted}>
+                  <div className={ds.label}>Be UNIQUE</div>
+                  <div className={ds.muted}>
                     "ProjectManager" is not a name. "Asana" is. Made-up words that sound good are
                     often better than descriptive names.
                   </div>
@@ -372,26 +372,26 @@ Return ONLY valid JSON:
 
             {/* What to AVOID */}
             <div className={ds.cardWithPadding}>
-              <h4 className={ds.titleLg + " mb-4"}>
+              <h4 className={ds.heading + " mb-4"}>
                 What to AVOID
               </h4>
               <div className="space-y-3">
                 <div>
-                  <div className={ds.title}>No hyphens or numbers</div>
-                  <div className={ds.textMuted}>
+                  <div className={ds.label}>No hyphens or numbers</div>
+                  <div className={ds.muted}>
                     "task-hub-123.com" looks cheap and confusing. Don't do it.
                   </div>
                 </div>
                 <div>
-                  <div className={ds.title}>Don't overpay for domains</div>
-                  <div className={ds.textMuted}>
+                  <div className={ds.label}>Don't overpay for domains</div>
+                  <div className={ds.muted}>
                     A .com should cost ~$10-15/year. If someone wants $500+ for a domain, pick a different name.
                     Domain squatters are not worth it at this stage.
                   </div>
                 </div>
                 <div>
-                  <div className={ds.title}>Don't be too generic</div>
-                  <div className={ds.textMuted}>
+                  <div className={ds.label}>Don't be too generic</div>
+                  <div className={ds.muted}>
                     "Analytics Platform" or "Marketing Tool" - these aren't names, they're descriptions.
                     You can't trademark a generic term.
                   </div>
@@ -401,17 +401,17 @@ Return ONLY valid JSON:
 
             {/* Domain Pricing Education */}
             <div className={ds.infoBoxHighlight}>
-              <h4 className={ds.titleLg + " mb-3"}>
+              <h4 className={ds.heading + " mb-3"}>
                 What Domains SHOULD Cost
               </h4>
               <div className="space-y-2">
-                <p className={ds.textMuted}>
+                <p className={ds.muted}>
                   <strong>Normal .com registration:</strong> $10-15/year
                 </p>
-                <p className={ds.textMuted}>
+                <p className={ds.muted}>
                   <strong>If someone wants $100+:</strong> It's a "premium" domain owned by a squatter. Skip it.
                 </p>
-                <p className={ds.textMuted}>
+                <p className={ds.muted}>
                   <strong>Rule of thumb:</strong> If you can't get the .com for under $20, pick a different name.
                   Your energy is better spent building than negotiating with domain hoarders.
                 </p>
@@ -439,7 +439,7 @@ Return ONLY valid JSON:
           >
             <div className="text-center">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Generate Name Ideas</h2>
-              <p className={ds.textMuted + " max-w-lg mx-auto"}>
+              <p className={ds.muted + " max-w-lg mx-auto"}>
                 AI will create names based on your idea, pain points, and features.
               </p>
             </div>
@@ -466,8 +466,8 @@ Return ONLY valid JSON:
               {nameSuggestions.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className={ds.titleLg}>Pick Your Favorite:</h3>
-                    <span className={ds.textMuted}>
+                    <h3 className={ds.heading}>Pick Your Favorite:</h3>
+                    <span className={ds.muted}>
                       {Object.keys(domainResults).length > 0 ? "Availability checked" : "Checking availability..."}
                     </span>
                   </div>
@@ -536,7 +536,7 @@ Return ONLY valid JSON:
 
                   {/* Tip about availability */}
                   <div className={ds.infoBoxHighlight}>
-                    <p className={ds.textMuted}>
+                    <p className={ds.muted}>
                       <strong>Tip:</strong> "Likely Available" means no website exists yet. Always verify on Namecheap before purchasing - some domains may be registered but not in use.
                     </p>
                   </div>
@@ -595,7 +595,7 @@ Return ONLY valid JSON:
           >
             <div className="text-center">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Great Choice!</h2>
-              <p className={ds.textMuted}>
+              <p className={ds.muted}>
                 Let's make sure you can get the domain.
               </p>
             </div>
@@ -605,7 +605,7 @@ Return ONLY valid JSON:
                 <div className={ds.infoBoxHighlight + " text-center p-6"}>
                   <p className={ds.label + " uppercase mb-2"}>Your Product Name</p>
                   <h3 className="text-3xl font-extrabold text-slate-900">{finalName}</h3>
-                  <p className={ds.text + " text-lg font-mono mt-2"}>{finalDomain}</p>
+                  <p className={ds.body + " text-lg font-mono mt-2"}>{finalDomain}</p>
                 </div>
 
                 <Button
@@ -626,8 +626,8 @@ Return ONLY valid JSON:
                     {domainResults[finalDomain.replace('.com', '')].available ? (
                       <div className={ds.infoBoxHighlight}>
                         <div className="flex-1">
-                          <p className={ds.title + " mb-1"}>Likely Available!</p>
-                          <p className={ds.textMuted + " mb-3"}>
+                          <p className={ds.label + " mb-1"}>Likely Available!</p>
+                          <p className={ds.muted + " mb-3"}>
                             {finalDomain} appears to be available. Register it now before someone else does!
                           </p>
                           <Button
@@ -642,8 +642,8 @@ Return ONLY valid JSON:
                     ) : (
                       <div className={ds.infoBoxHighlight}>
                         <div>
-                          <p className={ds.title + " mb-1"}>This domain might be taken</p>
-                          <p className={ds.textMuted + " mb-2"}>
+                          <p className={ds.label + " mb-1"}>This domain might be taken</p>
+                          <p className={ds.muted + " mb-2"}>
                             Check Namecheap to confirm. If it's premium-priced ($100+), go back and pick a different name.
                           </p>
                           <Button
@@ -665,7 +665,7 @@ Return ONLY valid JSON:
 
             {/* Important Reminder */}
             <div className={ds.infoBoxHighlight}>
-              <p className={ds.textMuted}>
+              <p className={ds.muted}>
                 <strong>Remember:</strong> Only pay ~$10-15/year for a .com. If it's priced higher,
                 it's a "premium" domain. Pick a different name instead.
               </p>
@@ -701,26 +701,26 @@ Return ONLY valid JSON:
           >
             <div className="text-center py-4">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Product Has a Name!</h2>
-              <p className={ds.textMuted}>Welcome to the world, <strong>{finalName}</strong>.</p>
+              <p className={ds.muted}>Welcome to the world, <strong>{finalName}</strong>.</p>
             </div>
 
             <div className="bg-white border-2 border-primary rounded-lg p-6">
               <div className="text-center">
                 <p className={ds.label + " uppercase mb-2"}>Your Product</p>
                 <h3 className="text-4xl font-extrabold text-slate-900 mb-2">{finalName}</h3>
-                <p className={ds.text + " text-xl font-mono"}>{finalDomain}</p>
+                <p className={ds.body + " text-xl font-mono"}>{finalDomain}</p>
               </div>
             </div>
 
             {/* Registration Checklist */}
             <div className={ds.cardWithPadding}>
               <div className="flex items-center justify-between mb-2">
-                <h4 className={ds.titleLg}>Claim Your Brand Everywhere</h4>
-                <span className={ds.textMuted}>
+                <h4 className={ds.heading}>Claim Your Brand Everywhere</h4>
+                <span className={ds.muted}>
                   {registeredItems.size}/{SOCIAL_PLATFORMS.length} done
                 </span>
               </div>
-              <p className={ds.textMuted + " mb-4"}>
+              <p className={ds.muted + " mb-4"}>
                 Grab these NOW - even if you won't use them immediately. Someone WILL squat on them if you don't.
               </p>
 

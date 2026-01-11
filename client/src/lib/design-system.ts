@@ -10,9 +10,40 @@
  * - No colored background boxes (no amber, green, indigo backgrounds)
  * - Primary color only for interactive/selected states
  * - Clean, minimal, professional
+ *
+ * TYPOGRAPHY (only 4 text styles):
+ * - heading: Card/section headers (text-lg font-bold text-slate-900)
+ * - body: Main content (text-sm text-slate-600)
+ * - label: Form labels (text-sm font-medium text-slate-700)
+ * - muted: Helper text (text-sm text-slate-500)
+ *
+ * SPACING:
+ * - Card padding: p-5
+ * - Between sections: space-y-4
+ * - After headings: mb-3
+ * - After labels: mb-2
  */
 
 export const ds = {
+  // ===========================================
+  // TYPOGRAPHY (simplified - only 4 styles)
+  // ===========================================
+
+  /** Card/section heading - use for all card titles */
+  heading: "text-lg font-bold text-slate-900",
+
+  /** Body text - main content */
+  body: "text-sm text-slate-600",
+
+  /** Label - form labels and small headers */
+  label: "text-sm font-medium text-slate-700",
+
+  /** Muted - helper text, hints, secondary info */
+  muted: "text-sm text-slate-500",
+
+  /** Small caps label - for data display labels */
+  capsLabel: "text-xs font-semibold text-slate-500 uppercase tracking-wide",
+
   // ===========================================
   // CARDS & CONTAINERS
   // ===========================================
@@ -43,52 +74,21 @@ export const ds = {
   checkSelected: "w-5 h-5 rounded-full bg-primary flex items-center justify-center",
 
   // ===========================================
-  // INFO & TIPS
+  // INFO BOXES
   // ===========================================
 
-  /** Info box - for tips, prompts, explanations (NO colored backgrounds) */
+  /** Info box - for tips, prompts, explanations */
   infoBox: "bg-white border border-slate-200 rounded-lg p-4",
 
-  /** Highlighted info - slightly emphasized but still minimal */
+  /** Highlighted info - slightly emphasized */
   infoBoxHighlight: "bg-slate-50 border border-slate-200 rounded-lg p-4",
 
   // ===========================================
-  // TEXT STYLES
+  // BUTTONS (use with Button component)
   // ===========================================
 
-  /** Section title */
-  title: "text-slate-900 font-semibold",
-
-  /** Large title */
-  titleLg: "text-lg text-slate-900 font-bold",
-
-  /** Extra large title */
-  titleXl: "text-xl text-slate-900 font-bold",
-
-  /** Body text */
-  text: "text-slate-600",
-
-  /** Small/muted text */
-  textMuted: "text-slate-500 text-sm",
-
-  /** Label text */
-  label: "text-slate-700 font-medium text-sm",
-
-  // ===========================================
-  // FORM ELEMENTS
-  // ===========================================
-
-  /** Text input styling is handled by shadcn - just use default Input */
-
-  /** Textarea - use default component */
-
-  // ===========================================
-  // BUTTONS
-  // ===========================================
-
-  /** Primary button - use default Button component */
-
-  /** Secondary/outline button - use Button variant="outline" */
+  /** Primary action button classes */
+  btnPrimary: "w-full h-12 text-base font-semibold",
 
   // ===========================================
   // LAYOUT
@@ -97,24 +97,43 @@ export const ds = {
   /** Divider line between sections */
   divider: "border-t border-slate-200 my-6",
 
-  /** Step indicator - numbered circle (incomplete) */
-  stepCircle: "w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold",
+  /** Step indicator - numbered circle */
+  stepCircle: "w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold",
 
   /** Step indicator - completed */
-  stepCircleComplete: "w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center",
+  stepCircleComplete: "w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center",
 
   // ===========================================
-  // FEEDBACK STATES (use sparingly)
+  // FEEDBACK STATES
   // ===========================================
 
-  /** Success state - only for confirmed completion */
+  /** Success text */
   successText: "text-green-600",
 
-  /** Success container - minimal, only when needed */
+  /** Success container */
   successBox: "bg-white border border-green-300 rounded-lg p-4",
 
   /** Error text */
   errorText: "text-red-600",
+
+  // ===========================================
+  // LEGACY (deprecated - use new typography instead)
+  // ===========================================
+
+  /** @deprecated Use ds.heading instead */
+  title: "text-sm font-semibold text-slate-900",
+
+  /** @deprecated Use ds.heading instead */
+  titleLg: "text-lg font-bold text-slate-900",
+
+  /** @deprecated Use ds.heading instead */
+  titleXl: "text-lg font-bold text-slate-900",
+
+  /** @deprecated Use ds.body instead */
+  text: "text-sm text-slate-600",
+
+  /** @deprecated Use ds.muted instead */
+  textMuted: "text-sm text-slate-500",
 
 } as const;
 

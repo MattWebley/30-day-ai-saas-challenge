@@ -49,9 +49,9 @@ export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddS
       <div className={ds.cardWithPadding}>
         <div className="flex items-center gap-2 mb-1">
           <Zap className="w-5 h-5 text-primary" />
-          <h3 className={ds.titleXl}>Add Superpowers</h3>
+          <h3 className={ds.heading}>Add Superpowers</h3>
         </div>
-        <p className={ds.text}>Two quick tasks: user authentication + external APIs (if needed).</p>
+        <p className={ds.body}>Two quick tasks: user authentication + external APIs (if needed).</p>
       </div>
 
       {/* ============================================ */}
@@ -64,7 +64,7 @@ export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddS
           </div>
           <div className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-slate-400" />
-            <h4 className={ds.titleLg}>User Authentication</h4>
+            <h4 className={ds.heading}>User Authentication</h4>
           </div>
           {authDone && <span className={`text-sm font-medium ${ds.successText}`}>Done!</span>}
         </div>
@@ -76,21 +76,21 @@ export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddS
               <Info className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
               <div>
                 <p className={ds.label}>Ask Replit Agent:</p>
-                <p className={`${ds.text} mt-1 italic`}>"Does my app have user authentication? Can users log in and see only their own data?"</p>
+                <p className={`${ds.body} mt-1 italic`}>"Does my app have user authentication? Can users log in and see only their own data?"</p>
               </div>
             </div>
           </div>
 
           {/* External auth options note */}
           <div className={ds.infoBoxHighlight}>
-            <p className={ds.text}>
+            <p className={ds.body}>
               <strong className="text-slate-900">Replit Auth is the fastest option</strong> - it just works, it's secure, and takes minutes. But if you need something specific, you can also integrate <span className="text-slate-900">Firebase Auth</span>, <span className="text-slate-900">Auth0</span>, <span className="text-slate-900">Clerk</span>, or <span className="text-slate-900">Supabase Auth</span>.
             </p>
           </div>
 
           {/* Yes/No selection */}
           <div className={ds.cardWithPadding}>
-            <p className={`${ds.title} mb-3`}>Does your app have auth?</p>
+            <p className={`${ds.label} mb-3`}>Does your app have auth?</p>
             <div className="space-y-2">
               <div
                 onClick={() => setHasAuth(true)}
@@ -102,7 +102,7 @@ export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddS
                   </div>
                   <div>
                     <p className="text-slate-900 font-medium">Yes, auth already exists</p>
-                    <p className={ds.textMuted}>Users can log in and see their own data</p>
+                    <p className={ds.muted}>Users can log in and see their own data</p>
                   </div>
                 </div>
               </div>
@@ -117,7 +117,7 @@ export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddS
                   </div>
                   <div>
                     <p className="text-slate-900 font-medium">No, I need to add it</p>
-                    <p className={ds.textMuted}>Everyone sees everyone's data right now</p>
+                    <p className={ds.muted}>Everyone sees everyone's data right now</p>
                   </div>
                 </div>
               </div>
@@ -127,8 +127,8 @@ export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddS
           {/* Add auth instructions */}
           {hasAuth === false && (
             <div className={ds.cardWithPadding}>
-              <p className={`${ds.title} mb-2`}>Ask Replit to Add Auth</p>
-              <p className={`${ds.textMuted} mb-3`}>Tell Replit Agent:</p>
+              <p className={`${ds.label} mb-2`}>Ask Replit to Add Auth</p>
+              <p className={`${ds.muted} mb-3`}>Tell Replit Agent:</p>
               <div className={ds.infoBoxHighlight}>
                 <p className="text-slate-700 italic text-sm">
                   "Add user authentication to my app. I need:
@@ -140,7 +140,7 @@ export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddS
                   <li>• Each user should only see their own data"</li>
                 </ul>
               </div>
-              <p className={`${ds.textMuted} mt-3`}>
+              <p className={`${ds.muted} mt-3`}>
                 Replit handles OAuth, sessions, tokens - you just describe what you want.
               </p>
             </div>
@@ -159,7 +159,7 @@ export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddS
           <div className={apiDone ? ds.stepCircleComplete : ds.stepCircle}>
             {apiDone ? <Check className="w-5 h-5" /> : '2'}
           </div>
-          <h4 className={ds.titleLg}>External APIs</h4>
+          <h4 className={ds.heading}>External APIs</h4>
           {apiDone && <span className={`text-sm font-medium ${ds.successText}`}>Done!</span>}
         </div>
 
@@ -171,33 +171,33 @@ export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddS
                 <Info className="w-5 h-5 text-slate-400 mt-0.5 shrink-0" />
                 <div>
                   <p className={ds.label}>Ask Replit First</p>
-                  <p className={`${ds.text} mt-1`}>
+                  <p className={`${ds.body} mt-1`}>
                     Before adding any external API, check if Replit can do it natively:
                   </p>
-                  <p className={`${ds.text} mt-2 italic`}>"Can you add file upload functionality?"</p>
+                  <p className={`${ds.body} mt-2 italic`}>"Can you add file upload functionality?"</p>
                 </div>
               </div>
             </div>
 
             {/* API Examples */}
             <div className={ds.cardWithPadding}>
-              <p className={`${ds.title} mb-3`}>Valid Reasons for External APIs</p>
+              <p className={`${ds.label} mb-3`}>Valid Reasons for External APIs</p>
               <div className="space-y-2 mb-4">
                 {API_EXAMPLES.map((api) => (
                   <div key={api.name} className={ds.infoBoxHighlight}>
                     <div className="flex gap-3">
                       <div className="flex-1">
                         <p className="font-medium text-slate-900 text-sm">{api.name}</p>
-                        <p className={ds.textMuted}>{api.examples}</p>
+                        <p className={ds.muted}>{api.examples}</p>
                       </div>
-                      <p className={`${ds.textMuted} italic self-center`}>{api.when}</p>
+                      <p className={`${ds.muted} italic self-center`}>{api.when}</p>
                     </div>
                   </div>
                 ))}
               </div>
 
               {userIdea && (
-                <p className={`${ds.textMuted} mb-4`}>Your app: {userIdea}</p>
+                <p className={`${ds.muted} mb-4`}>Your app: {userIdea}</p>
               )}
 
               <div className="flex gap-3">
@@ -221,14 +221,14 @@ export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddS
             {/* If they need an API, show the fields */}
             {needsAPIs === true && (
               <div className={ds.cardWithPadding}>
-                <p className={`${ds.title} mb-2`}>Which API?</p>
+                <p className={`${ds.label} mb-2`}>Which API?</p>
                 <Textarea
                   placeholder="I'm adding [API name] because..."
                   value={apiConnected}
                   onChange={(e) => setApiConnected(e.target.value)}
                   className="min-h-[80px] mb-4"
                 />
-                <p className={`${ds.title} mb-2`}>Did it work?</p>
+                <p className={`${ds.label} mb-2`}>Did it work?</p>
                 <Textarea
                   placeholder="I tested it by... and it worked/didn't work because..."
                   value={connectionResult}

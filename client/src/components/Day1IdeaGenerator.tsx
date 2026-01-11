@@ -174,8 +174,8 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
     return (
       <div className={ds.section}>
         <div className="text-center mb-8">
-          <h2 className={`${ds.titleXl} mb-2`}>Let's Find Your Perfect SaaS Idea</h2>
-          <p className={ds.textMuted}>Tell us about yourself and we'll generate 28 personalized ideas scored against Matt's criteria</p>
+          <h2 className={`${ds.heading} mb-2`}>Let's Find Your Perfect SaaS Idea</h2>
+          <p className={ds.muted}>Tell us about yourself and we'll generate 28 personalized ideas scored against Matt's criteria</p>
         </div>
 
         <div className="grid gap-6">
@@ -256,8 +256,8 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
       <div className="flex flex-col items-center justify-center py-16 space-y-6">
         <Loader2 className="w-10 h-10 text-primary animate-spin" />
         <div className="text-center">
-          <h3 className={`${ds.titleLg} mb-2`}>Generating Your Ideas...</h3>
-          <p className={ds.textMuted}>AI is analyzing your profile and finding the best opportunities</p>
+          <h3 className={`${ds.heading} mb-2`}>Generating Your Ideas...</h3>
+          <p className={ds.muted}>AI is analyzing your profile and finding the best opportunities</p>
         </div>
       </div>
     );
@@ -270,10 +270,10 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
       <div className={ds.section}>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className={ds.titleLg}>
+            <h2 className={ds.heading}>
               {showConfirmation ? `Your Top ${selectedIdeas.length} Ideas` : "Select Your Top 3-5 Ideas"}
             </h2>
-            <p className={ds.textMuted}>
+            <p className={ds.muted}>
               {showConfirmation
                 ? "These ideas will carry through to Day 2 for validation"
                 : `${selectedIdeas.length} selected (need 3-5) - Pick the ideas that excite you most`}
@@ -307,7 +307,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
             {showCustomForm ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <h3 className={ds.title}>Add Your Own Idea</h3>
+                  <h3 className={ds.label}>Add Your Own Idea</h3>
                 </div>
                 <div>
                   <label className={`block ${ds.label} mb-1`}>Idea Name</label>
@@ -394,14 +394,14 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <span className={ds.textMuted}>#{actualIndex + 1}</span>
-                          <h3 className={ds.title}>{idea.title}</h3>
+                          <span className={ds.muted}>#{actualIndex + 1}</span>
+                          <h3 className={ds.label}>{idea.title}</h3>
                           <span className={`px-3 py-1 ${scoreColors.badge} text-sm font-bold rounded-full`}>
                             {idea.totalScore}/25
                           </span>
                         </div>
-                        <p className={`${ds.textMuted} mb-3`}>{idea.desc}</p>
-                        <p className={`${ds.textMuted} mb-3`}>
+                        <p className={`${ds.muted} mb-3`}>{idea.desc}</p>
+                        <p className={`${ds.muted} mb-3`}>
                           <span className="font-medium">Target:</span> {idea.targetCustomer}
                         </p>
 
@@ -413,7 +413,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                           <ScoreBar label="Monetization" score={idea.scores.monetization} />
                         </div>
 
-                        <p className={`${ds.textMuted} mt-3 italic`}>"{idea.whyThisWorks}"</p>
+                        <p className={`${ds.muted} mt-3 italic`}>"{idea.whyThisWorks}"</p>
                       </div>
 
                       {!showConfirmation && (

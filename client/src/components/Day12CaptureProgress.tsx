@@ -8,9 +8,7 @@ import {
   Check,
   Share2,
   Trophy,
-  Info,
 } from "lucide-react";
-import { ds } from "@/lib/design-system";
 
 interface Day12CaptureProgressProps {
   appName: string;
@@ -22,6 +20,20 @@ interface Day12CaptureProgressProps {
   }) => void;
 }
 
+/**
+ * UNIFORM TYPOGRAPHY (proposed standard):
+ * - Card header: text-lg font-bold text-slate-900
+ * - Body text: text-sm text-slate-600
+ * - Labels: text-sm font-medium text-slate-700
+ * - Muted/helper: text-sm text-slate-500
+ *
+ * UNIFORM SPACING:
+ * - Card padding: p-5
+ * - Between sections: space-y-4
+ * - After header: mb-3
+ * - After labels: mb-2
+ */
+
 export function Day12CaptureProgress({ appName, onComplete }: Day12CaptureProgressProps) {
   const [step, setStep] = useState<"screenshot" | "summary" | "share">("screenshot");
   const [screenshotUrl, setScreenshotUrl] = useState("");
@@ -31,26 +43,25 @@ export function Day12CaptureProgress({ appName, onComplete }: Day12CaptureProgre
 
   const canProceedToSummary = screenshotUrl.length > 0;
   const canProceedToShare = whatItDoes.length >= 10 && whatWorks.length >= 10;
-  const canComplete = true; // Can always complete from share step
 
   return (
-    <div className={ds.section}>
-      {/* Header */}
-      <div className={ds.cardWithPadding}>
-        <div className="flex items-center gap-3 mb-2">
-          <Camera className="w-6 h-6 text-primary" />
-          <h3 className={ds.titleXl}>Capture Your Progress</h3>
+    <div className="space-y-4">
+      {/* Header Card */}
+      <div className="bg-white border border-slate-200 rounded-lg p-5">
+        <div className="flex items-center gap-3 mb-1">
+          <Camera className="w-5 h-5 text-primary" />
+          <h3 className="text-lg font-bold text-slate-900">Document Your Build</h3>
         </div>
-        <p className={ds.text}>You're halfway through the challenge. Let's document what you've built.</p>
+        <p className="text-sm text-slate-600">You're halfway through. Let's capture what you've built so far.</p>
       </div>
 
       {/* Celebration Banner */}
-      <div className={ds.infoBoxHighlight}>
+      <div className="bg-slate-50 border border-slate-200 rounded-lg p-5">
         <div className="flex items-center gap-3">
-          <Trophy className="w-8 h-8 text-primary" />
+          <Trophy className="w-6 h-6 text-primary" />
           <div>
-            <p className={ds.title}>Halfway Point!</p>
-            <p className={ds.textMuted}>Day 12 of 21 - You're actually doing this.</p>
+            <p className="text-sm font-semibold text-slate-900">Halfway Point!</p>
+            <p className="text-sm text-slate-500">Day 12 of 21 - You're actually doing this.</p>
           </div>
         </div>
       </div>
@@ -58,43 +69,40 @@ export function Day12CaptureProgress({ appName, onComplete }: Day12CaptureProgre
       {/* Step 1: Screenshot */}
       {step === "screenshot" && (
         <>
-          <div className={ds.cardWithPadding}>
-            <h4 className={`${ds.titleLg} mb-2`}>Step 1: Take a Screenshot</h4>
-            <p className={`${ds.textMuted} mb-4`}>
-              Open your app and take a screenshot of the main screen. Don't wait until it's "perfect" - capture it NOW.
+          <div className="bg-white border border-slate-200 rounded-lg p-5">
+            <h4 className="text-lg font-bold text-slate-900 mb-3">Step 1: Take a Screenshot</h4>
+            <p className="text-sm text-slate-600 mb-4">
+              Open your app and take a screenshot of the main screen. Don't wait for perfect - capture it NOW.
             </p>
 
             <div className="space-y-4">
-              <div className={ds.infoBoxHighlight}>
-                <p className={`${ds.label} mb-2`}>How to take a screenshot:</p>
-                <ul className={`${ds.textMuted} space-y-1`}>
-                  <li><strong className="text-slate-700">Mac:</strong> Cmd + Shift + 4</li>
-                  <li><strong className="text-slate-700">Windows:</strong> Win + Shift + S</li>
-                  <li><strong className="text-slate-700">Chrome:</strong> Right-click → Inspect → Device toolbar → Screenshot</li>
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                <p className="text-sm font-medium text-slate-700 mb-2">How to take a screenshot:</p>
+                <ul className="text-sm text-slate-600 space-y-1">
+                  <li><span className="font-medium">Mac:</span> Cmd + Shift + 4</li>
+                  <li><span className="font-medium">Windows:</span> Win + Shift + S</li>
+                  <li><span className="font-medium">Chrome:</span> Right-click → Inspect → Device toolbar</li>
                 </ul>
               </div>
 
               <div>
-                <label className={`block ${ds.label} mb-2`}>
-                  Paste or enter your screenshot URL:
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                  Paste your screenshot URL:
                 </label>
-                <div className="flex gap-2">
-                  <Input
-                    type="url"
-                    placeholder="https://i.imgur.com/... or paste image URL"
-                    value={screenshotUrl}
-                    onChange={(e) => setScreenshotUrl(e.target.value)}
-                    className="flex-1"
-                  />
-                </div>
-                <p className={`${ds.textMuted} mt-2`}>
-                  Tip: Upload to <a href="https://imgur.com/upload" target="_blank" rel="noopener noreferrer" className="text-primary underline">imgur.com</a> (free, no account needed) and paste the direct link.
+                <Input
+                  type="url"
+                  placeholder="https://i.imgur.com/..."
+                  value={screenshotUrl}
+                  onChange={(e) => setScreenshotUrl(e.target.value)}
+                />
+                <p className="text-sm text-slate-500 mt-2">
+                  Tip: Upload to <a href="https://imgur.com/upload" target="_blank" rel="noopener noreferrer" className="text-primary underline">imgur.com</a> (free) and paste the link.
                 </p>
               </div>
 
               {screenshotUrl && (
-                <div className={ds.infoBoxHighlight}>
-                  <p className={`${ds.textMuted} mb-2`}>Preview:</p>
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                  <p className="text-sm text-slate-500 mb-2">Preview:</p>
                   <img
                     src={screenshotUrl}
                     alt="App screenshot preview"
@@ -108,25 +116,13 @@ export function Day12CaptureProgress({ appName, onComplete }: Day12CaptureProgre
             </div>
           </div>
 
-          <div className={ds.infoBox}>
-            <div className="flex items-start gap-3">
-              <Info className="w-5 h-5 text-slate-400 mt-0.5" />
-              <div>
-                <p className={ds.label}>Why this matters</p>
-                <p className={ds.textMuted}>
-                  This screenshot becomes part of your build journey. When you launch, you'll have a "before and after" story to share.
-                </p>
-              </div>
-            </div>
-          </div>
-
           {canProceedToSummary && (
             <Button
               size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
+              className="w-full h-12 text-base font-semibold"
               onClick={() => setStep("summary")}
             >
-              Next: Write Summary <ChevronRight className="w-5 h-5" />
+              Next: Write Summary <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
           )}
         </>
@@ -135,15 +131,15 @@ export function Day12CaptureProgress({ appName, onComplete }: Day12CaptureProgre
       {/* Step 2: Two-Sentence Summary */}
       {step === "summary" && (
         <>
-          <div className={ds.cardWithPadding}>
-            <h4 className={`${ds.titleLg} mb-2`}>Step 2: Two-Sentence Summary</h4>
-            <p className={`${ds.textMuted} mb-4`}>
+          <div className="bg-white border border-slate-200 rounded-lg p-5">
+            <h4 className="text-lg font-bold text-slate-900 mb-3">Step 2: Two-Sentence Summary</h4>
+            <p className="text-sm text-slate-600 mb-4">
               Answer these two questions in one sentence each. Keep it simple.
             </p>
 
             <div className="space-y-4">
               <div>
-                <label className={`block ${ds.label} mb-2`}>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   What does {appName || "your app"} do?
                 </label>
                 <Textarea
@@ -152,11 +148,11 @@ export function Day12CaptureProgress({ appName, onComplete }: Day12CaptureProgre
                   onChange={(e) => setWhatItDoes(e.target.value)}
                   className="min-h-[80px]"
                 />
-                <p className={`${ds.textMuted} mt-1`}>{whatItDoes.length} characters</p>
+                <p className="text-sm text-slate-500 mt-1">{whatItDoes.length} characters</p>
               </div>
 
               <div>
-                <label className={`block ${ds.label} mb-2`}>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
                   What works right now?
                 </label>
                 <Textarea
@@ -165,7 +161,7 @@ export function Day12CaptureProgress({ appName, onComplete }: Day12CaptureProgre
                   onChange={(e) => setWhatWorks(e.target.value)}
                   className="min-h-[80px]"
                 />
-                <p className={`${ds.textMuted} mt-1`}>{whatWorks.length} characters</p>
+                <p className="text-sm text-slate-500 mt-1">{whatWorks.length} characters</p>
               </div>
             </div>
           </div>
@@ -173,10 +169,10 @@ export function Day12CaptureProgress({ appName, onComplete }: Day12CaptureProgre
           {canProceedToShare && (
             <Button
               size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
+              className="w-full h-12 text-base font-semibold"
               onClick={() => setStep("share")}
             >
-              Next: Share & Celebrate <ChevronRight className="w-5 h-5" />
+              Next: Share & Celebrate <ChevronRight className="w-5 h-5 ml-2" />
             </Button>
           )}
         </>
@@ -185,21 +181,21 @@ export function Day12CaptureProgress({ appName, onComplete }: Day12CaptureProgre
       {/* Step 3: Share & Complete */}
       {step === "share" && (
         <>
-          <div className={ds.cardWithPadding}>
-            <div className="flex items-center gap-3 mb-3">
-              <div className={ds.stepCircleComplete}>
-                <Check className="w-5 h-5" />
+          <div className="bg-white border border-slate-200 rounded-lg p-5">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-7 h-7 rounded-full bg-green-500 text-white flex items-center justify-center">
+                <Check className="w-4 h-4" />
               </div>
-              <h4 className={ds.titleLg}>Progress Captured!</h4>
+              <h4 className="text-lg font-bold text-slate-900">Progress Captured!</h4>
             </div>
-            <p className={ds.text}>
+            <p className="text-sm text-slate-600">
               You've got proof of what you're building. This is YOUR journey.
             </p>
           </div>
 
           {/* Preview */}
-          <div className={ds.cardWithPadding}>
-            <h4 className={`${ds.titleLg} mb-4`}>Your Day 12 Snapshot</h4>
+          <div className="bg-white border border-slate-200 rounded-lg p-5">
+            <h4 className="text-lg font-bold text-slate-900 mb-4">Your Day 12 Snapshot</h4>
 
             {screenshotUrl && (
               <img
@@ -209,54 +205,51 @@ export function Day12CaptureProgress({ appName, onComplete }: Day12CaptureProgre
               />
             )}
 
-            <div className={`${ds.infoBoxHighlight} space-y-3`}>
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3">
               <div>
-                <p className={`${ds.label} uppercase`}>What it does:</p>
-                <p className="text-slate-900">{whatItDoes}</p>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">What it does</p>
+                <p className="text-sm text-slate-900 mt-1">{whatItDoes}</p>
               </div>
               <div>
-                <p className={`${ds.label} uppercase`}>What works:</p>
-                <p className="text-slate-900">{whatWorks}</p>
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">What works</p>
+                <p className="text-sm text-slate-900 mt-1">{whatWorks}</p>
               </div>
             </div>
           </div>
 
           {/* Share Option */}
-          <div className={ds.cardWithPadding}>
-            <div className="flex items-start gap-4">
-              <div
-                onClick={() => setSharedToCommunity(!sharedToCommunity)}
-                className={sharedToCommunity ? ds.checkSelected : ds.checkDefault}
-                style={{ cursor: 'pointer' }}
-              >
+          <div className="bg-white border border-slate-200 rounded-lg p-5">
+            <div
+              className="flex items-start gap-4 cursor-pointer"
+              onClick={() => setSharedToCommunity(!sharedToCommunity)}
+            >
+              <div className={`w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${sharedToCommunity ? 'bg-primary' : 'bg-slate-100'}`}>
                 {sharedToCommunity && <Check className="w-3 h-3 text-white" />}
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2">
                   <Share2 className="w-4 h-4 text-slate-600" />
-                  <p className={ds.title}>Share to Community</p>
+                  <p className="text-sm font-semibold text-slate-900">Share to Community</p>
                 </div>
-                <p className={ds.textMuted}>
-                  Post your progress to the Day 12 discussion. See what others are building. Get encouragement.
+                <p className="text-sm text-slate-500 mt-1">
+                  Post your progress to the Day 12 discussion. See what others are building.
                 </p>
               </div>
             </div>
           </div>
 
-          {canComplete && (
-            <Button
-              size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={() => onComplete({
-                screenshotUrl,
-                whatItDoes,
-                whatWorks,
-                sharedToCommunity
-              })}
-            >
-              Complete Day 12 <ChevronRight className="w-5 h-5" />
-            </Button>
-          )}
+          <Button
+            size="lg"
+            className="w-full h-12 text-base font-semibold"
+            onClick={() => onComplete({
+              screenshotUrl,
+              whatItDoes,
+              whatWorks,
+              sharedToCommunity
+            })}
+          >
+            Complete Day 12 <ChevronRight className="w-5 h-5 ml-2" />
+          </Button>
         </>
       )}
     </div>

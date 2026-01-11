@@ -166,7 +166,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
         <h1 className="text-3xl font-black text-slate-900">
           Welcome to the 21 Day AI SaaS Challenge
         </h1>
-        <p className={`text-lg ${ds.text} max-w-2xl mx-auto`}>
+        <p className={`text-lg ${ds.body} max-w-2xl mx-auto`}>
           In the next 21 days, you'll go from idea to launch-ready product.
           One task a day. No fluff. Just action and accountability.
         </p>
@@ -174,7 +174,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
 
       {/* What You'll Achieve */}
       <div className={ds.cardWithPadding}>
-        <h2 className={`${ds.titleLg} mb-4`}>Your Journey</h2>
+        <h2 className={`${ds.heading} mb-4`}>Your Journey</h2>
         <div className="grid grid-cols-6 gap-2">
           {milestones.map((milestone, index) => (
             <div key={milestone.label} className="text-center">
@@ -194,8 +194,8 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
       {/* Success Rules */}
       <div className={ds.section}>
         <div className="flex items-center justify-between">
-          <h2 className={ds.titleLg}>The Rules for Success</h2>
-          <span className={`${ds.textMuted} px-3 py-1 rounded-full bg-slate-50`}>
+          <h2 className={ds.heading}>The Rules for Success</h2>
+          <span className={`${ds.muted} px-3 py-1 rounded-full bg-slate-50`}>
             {commitments.size === successRules.length
               ? "All accepted"
               : `Tap each to accept (${commitments.size}/4)`
@@ -218,10 +218,10 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
                     {isCommitted && <Check className="w-3 h-3 text-white" />}
                   </div>
                   <div>
-                    <h3 className={ds.title}>
+                    <h3 className={ds.label}>
                       {rule.title}
                     </h3>
-                    <p className={`${ds.textMuted} mt-1`}>
+                    <p className={`${ds.muted} mt-1`}>
                       {rule.description}
                     </p>
                   </div>
@@ -235,8 +235,8 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
       {/* Your Why - Vision Board */}
       <div className={ds.section}>
         <div>
-          <h2 className={ds.titleLg}>What's Your Why?</h2>
-          <p className={ds.textMuted}>
+          <h2 className={ds.heading}>What's Your Why?</h2>
+          <p className={ds.muted}>
             Select all that apply. This is what you're really doing this for.
           </p>
         </div>
@@ -254,10 +254,10 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{option.emoji}</span>
                   <div className="flex-1 min-w-0">
-                    <p className={ds.title}>
+                    <p className={ds.label}>
                       {option.label}
                     </p>
-                    <p className={`${ds.textMuted} truncate`}>{option.description}</p>
+                    <p className={`${ds.muted} truncate`}>{option.description}</p>
                   </div>
                 </div>
               </div>
@@ -277,7 +277,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
         </div>
 
         {(selectedWhys.size > 0 || customWhy.trim()) && (
-          <p className={`${ds.textMuted} font-medium`}>
+          <p className={`${ds.muted} font-medium`}>
             Your why is set
           </p>
         )}
@@ -286,8 +286,8 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
       {/* Income Goal */}
       <div className={ds.section}>
         <div>
-          <h2 className={ds.titleLg}>Your 12-Month Income Goal</h2>
-          <p className={ds.textMuted}>
+          <h2 className={ds.heading}>Your 12-Month Income Goal</h2>
+          <p className={ds.muted}>
             What monthly income would be life-changing for you a year from now?
           </p>
         </div>
@@ -302,10 +302,10 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
                 className={`${isSelected ? ds.optionSelected : ds.optionDefault} text-center`}
                 onClick={() => selectIncome(option.value)}
               >
-                <p className={ds.titleLg}>
+                <p className={ds.heading}>
                   {option.label}
                 </p>
-                <p className={ds.textMuted}>{option.description}</p>
+                <p className={ds.muted}>{option.description}</p>
               </div>
             );
           })}
@@ -323,7 +323,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
         </div>
 
         {(selectedIncome !== null || customIncome.trim()) && (
-          <p className={`${ds.textMuted} font-medium`}>
+          <p className={`${ds.muted} font-medium`}>
             Income goal set
           </p>
         )}
@@ -332,8 +332,8 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
       {/* Accountability Message */}
       <div className={ds.section}>
         <div>
-          <h2 className={ds.titleLg}>Your Promise to Yourself</h2>
-          <p className={ds.textMuted}>
+          <h2 className={ds.heading}>Your Promise to Yourself</h2>
+          <p className={ds.muted}>
             Write a commitment you can come back to when things get tough.
           </p>
         </div>
@@ -346,7 +346,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
             className="min-h-[120px] resize-none border-0 p-0 focus-visible:ring-0 text-slate-700 placeholder:text-slate-400"
           />
           <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100">
-            <p className={ds.textMuted}>
+            <p className={ds.muted}>
               This is your commitment. Make it count.
             </p>
             <p className={`text-xs font-medium ${
@@ -371,7 +371,7 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
               onCheckedChange={(checked) => setShareToDiscussion(checked === true)}
             />
             <div className="flex-1">
-              <span className={ds.textMuted}>
+              <span className={ds.muted}>
                 Share my commitment with the community
               </span>
               <p className="text-xs text-slate-400 mt-0.5">
@@ -427,8 +427,8 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
         <div className={`${ds.cardWithPadding} p-8`}>
           <div className="text-center space-y-6">
             <div>
-              <h2 className={ds.titleXl}>You're officially in!</h2>
-              <p className={`${ds.text} mt-2`}>Your commitment has been locked. Now, what's next?</p>
+              <h2 className={ds.heading}>You're officially in!</h2>
+              <p className={`${ds.body} mt-2`}>Your commitment has been locked. Now, what's next?</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
@@ -447,11 +447,11 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
                 className="h-auto p-6 rounded-xl flex flex-col items-center text-center gap-0 border-2"
               >
                 <p className="font-bold text-lg">I'll start fresh tomorrow</p>
-                <p className={`${ds.textMuted} mt-1 font-normal`}>Begin Day 1 with full energy</p>
+                <p className={`${ds.muted} mt-1 font-normal`}>Begin Day 1 with full energy</p>
               </Button>
             </div>
 
-            <p className={ds.textMuted}>
+            <p className={ds.muted}>
               Either way, you've made the commitment. We'll be here when you're ready.
             </p>
           </div>
