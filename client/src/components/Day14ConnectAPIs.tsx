@@ -197,6 +197,12 @@ export function Day14ConnectAPIs({ userIdea, appName, onComplete }: Day14Connect
             </div>
           </Card>
 
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="text-sm text-slate-700">
+              <strong>Replit Auth is the fastest option</strong> - it just works, it's secure, and takes minutes. But if you need something specific, you can also integrate external providers like <span className="text-slate-900">Firebase Auth</span>, <span className="text-slate-900">Auth0</span>, <span className="text-slate-900">Clerk</span>, or <span className="text-slate-900">Supabase Auth</span>. For most MVPs, Replit Auth is plenty.
+            </p>
+          </Card>
+
           <Card className="p-5 border-2 border-slate-200">
             <h5 className="font-bold text-slate-900 mb-3">Does Your App Have Auth?</h5>
 
