@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -9,6 +8,7 @@ import {
   Copy,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ds } from "@/lib/design-system";
 
 interface Day8ClaudeCodeProps {
   userIdea: string;
@@ -75,33 +75,33 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card className="p-6 border-2 border-slate-200 bg-white">
+      <div className={ds.cardWithPadding}>
         <h3 className="text-2xl font-extrabold text-slate-900">Your First Build Win</h3>
-        <p className="text-slate-600 mt-1">Today you'll add ONE thing to your app using Claude Code.</p>
-      </Card>
+        <p className={ds.text + " mt-1"}>Today you'll add ONE thing to your app using Claude Code.</p>
+      </div>
 
       {/* Why Claude Code - Cost Warning */}
-      <Card className="p-6 border-2 border-slate-200 bg-slate-50">
-        <h3 className="text-lg font-bold text-slate-900 mb-2">Why Claude Code? It'll Save You THOUSANDS.</h3>
-        <p className="text-slate-700 mb-3">
+      <div className={ds.infoBoxHighlight}>
+        <h3 className={ds.titleLg + " mb-2"}>Why Claude Code? It'll Save You THOUSANDS.</h3>
+        <p className={ds.text + " mb-3"}>
           You CAN just use Replit's built-in AI agent on its own - it's easier to get started. But here's the truth:
           <strong> it gets VERY expensive, VERY fast.</strong>
         </p>
-        <p className="text-slate-700">
+        <p className={ds.text}>
           Using Claude Code in the Replit shell drops your development costs by thousands of dollars.
           Same power, fraction of the price. The workflow below is how I teach my 1:1 mentorship clients to do it.
         </p>
-      </Card>
+      </div>
 
       {/* Simple Workflow Section */}
-      <Card className="p-6 border-2 border-slate-200 bg-white">
+      <div className={ds.cardWithPadding}>
         <div className="mb-4">
-          <h3 className="text-xl font-bold text-slate-900">Your Daily Build Routine</h3>
-          <p className="text-slate-600">3 prompts. Copy, paste, build. That's it.</p>
+          <h3 className={ds.titleXl}>Your Daily Build Routine</h3>
+          <p className={ds.text}>3 prompts. Copy, paste, build. That's it.</p>
         </div>
 
-        <div className="bg-slate-50 rounded-lg p-4 mb-6">
-          <p className="text-slate-700">
+        <div className={ds.infoBoxHighlight + " mb-6"}>
+          <p className={ds.text}>
             <strong>Here's the deal:</strong> Every time you open Replit, you'll paste these 3 prompts.
             The first one installs Claude Code. The second tells Claude what you're working on.
             The third saves your work before you close. <strong>Never lose progress. Never start from scratch.</strong>
@@ -111,14 +111,14 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
         <div className="space-y-6">
           {/* Daily Prompts */}
           <div>
-            <h4 className="font-bold text-slate-900 mb-3">Copy These 3 Prompts:</h4>
+            <h4 className={ds.title + " mb-3"}>Copy These 3 Prompts:</h4>
             <div className="space-y-4">
               {/* Install Command */}
-              <div className="border-2 border-slate-200 rounded-lg overflow-hidden">
+              <div className={ds.card + " overflow-hidden"}>
                 <div className="flex items-center justify-between px-4 py-3 bg-slate-50">
                   <div>
-                    <span className="font-bold text-slate-900">Step 1: Install Claude Code</span>
-                    <span className="text-xs text-slate-600 ml-2">(Run this EVERY session - Replit resets!)</span>
+                    <span className={ds.title}>Step 1: Install Claude Code</span>
+                    <span className={ds.textMuted + " ml-2"}>(Run this EVERY session - Replit resets!)</span>
                   </div>
                   <Button
                     variant="outline"
@@ -130,15 +130,15 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                     Copy
                   </Button>
                 </div>
-                <pre className="p-4 text-sm text-slate-700 whitespace-pre-wrap bg-white font-mono">
+                <pre className={ds.textMuted + " p-4 whitespace-pre-wrap bg-white font-mono"}>
                   {INSTALL_COMMAND}
                 </pre>
               </div>
 
               {/* Kickoff Prompt */}
-              <div className="border-2 border-slate-200 rounded-lg overflow-hidden">
+              <div className={ds.card + " overflow-hidden"}>
                 <div className="flex items-center justify-between px-4 py-3 bg-slate-50">
-                  <span className="font-bold text-slate-900">Step 2: Session START Prompt</span>
+                  <span className={ds.title}>Step 2: Session START Prompt</span>
                   <Button
                     variant="outline"
                     size="sm"
@@ -149,15 +149,15 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                     Copy
                   </Button>
                 </div>
-                <pre className="p-4 text-sm text-slate-700 whitespace-pre-wrap bg-white font-mono">
+                <pre className={ds.textMuted + " p-4 whitespace-pre-wrap bg-white font-mono"}>
                   {KICKOFF_PROMPT}
                 </pre>
               </div>
 
               {/* Wrap-up Prompt */}
-              <div className="border-2 border-slate-200 rounded-lg overflow-hidden">
+              <div className={ds.card + " overflow-hidden"}>
                 <div className="flex items-center justify-between px-4 py-3 bg-slate-50">
-                  <span className="font-bold text-slate-900">Step 3: Session END Prompt</span>
+                  <span className={ds.title}>Step 3: Session END Prompt</span>
                   <Button
                     variant="outline"
                     size="sm"
@@ -168,35 +168,35 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                     Copy
                   </Button>
                 </div>
-                <pre className="p-4 text-sm text-slate-700 whitespace-pre-wrap bg-white font-mono">
+                <pre className={ds.textMuted + " p-4 whitespace-pre-wrap bg-white font-mono"}>
                   {WRAPUP_PROMPT}
                 </pre>
               </div>
             </div>
           </div>
 
-          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-            <p className="text-sm text-slate-700">
+          <div className={ds.infoBoxHighlight}>
+            <p className={ds.textMuted}>
               <strong>That's it.</strong> Do this every time you open Replit and Claude will remember everything about your project.
               No more explaining from scratch. No more lost work.
             </p>
           </div>
 
-          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
-            <p className="text-sm text-slate-700">
+          <div className={ds.infoBoxHighlight}>
+            <p className={ds.textMuted}>
               <strong>Good news:</strong> Once you complete today, you'll unlock the <strong>Claude Code Guide</strong> in the menu.
               It has all 3 prompts in one place so you can easily copy them every session.
             </p>
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Step 1: Choose What to Build */}
       {step === "choose" && (
         <>
-          <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">Pick Your Quick Win</h4>
-            <p className="text-sm text-slate-600 mb-4">
+          <div className={ds.cardWithPadding}>
+            <h4 className={ds.titleLg + " mb-2"}>Pick Your Quick Win</h4>
+            <p className={ds.textMuted + " mb-4"}>
               What ONE thing will make your app better today? Keep it small and achievable.
             </p>
 
@@ -208,28 +208,22 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                     setSelectedWin(idea);
                     setCustomWin("");
                   }}
-                  className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
-                    selectedWin === idea && !customWin
-                      ? "border-slate-400 bg-slate-50"
-                      : "border-slate-200 hover:border-slate-300"
-                  }`}
+                  className={selectedWin === idea && !customWin ? ds.optionSelected : ds.optionDefault}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                      selectedWin === idea && !customWin ? "border-slate-600 bg-slate-600" : "border-slate-300"
-                    }`}>
+                    <div className={selectedWin === idea && !customWin ? ds.checkSelected : ds.checkDefault}>
                       {selectedWin === idea && !customWin && (
                         <div className="w-2 h-2 rounded-full bg-white" />
                       )}
                     </div>
-                    <span className="text-sm text-slate-700">{idea}</span>
+                    <span className={ds.textMuted}>{idea}</span>
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="pt-4 border-t border-slate-200">
-              <label className="text-sm font-medium text-slate-700">Or describe your own:</label>
+              <label className={ds.label}>Or describe your own:</label>
               <Input
                 placeholder="I want to add..."
                 value={customWin}
@@ -240,7 +234,7 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                 className="mt-2"
               />
             </div>
-          </Card>
+          </div>
 
           {currentWin && (
             <Button
@@ -257,56 +251,56 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
       {/* Step 2: Build It */}
       {step === "build" && (
         <>
-          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
-            <h4 className="font-bold text-lg text-slate-900 mb-4">Your Mission</h4>
-            <p className="text-lg font-medium text-slate-800 bg-white p-4 rounded-lg border border-slate-200">
+          <div className={ds.infoBoxHighlight}>
+            <h4 className={ds.titleLg + " mb-4"}>Your Mission</h4>
+            <p className={ds.title + " bg-white p-4 rounded-lg border border-slate-200"}>
               "{currentWin}"
             </p>
-          </Card>
+          </div>
 
-          <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">How to Build It</h4>
+          <div className={ds.cardWithPadding}>
+            <h4 className={ds.titleLg + " mb-4"}>How to Build It</h4>
 
             <div className="space-y-4">
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">1</div>
+                <div className={ds.stepCircle + " shrink-0"}>1</div>
                 <div>
-                  <p className="font-medium text-slate-900">Open Claude Code in your Replit project</p>
-                  <p className="text-sm text-slate-600">Make sure you're in your app's directory</p>
+                  <p className={ds.title}>Open Claude Code in your Replit project</p>
+                  <p className={ds.textMuted}>Make sure you're in your app's directory</p>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">2</div>
+                <div className={ds.stepCircle + " shrink-0"}>2</div>
                 <div>
-                  <p className="font-medium text-slate-900">Tell Claude Code exactly what you want</p>
-                  <p className="text-sm text-slate-600">Be specific: "Add a [thing] that [does what] on the [where]"</p>
+                  <p className={ds.title}>Tell Claude Code exactly what you want</p>
+                  <p className={ds.textMuted}>Be specific: "Add a [thing] that [does what] on the [where]"</p>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">3</div>
+                <div className={ds.stepCircle + " shrink-0"}>3</div>
                 <div>
-                  <p className="font-medium text-slate-900">Test it immediately</p>
-                  <p className="text-sm text-slate-600">Refresh your app and make sure it works</p>
+                  <p className={ds.title}>Test it immediately</p>
+                  <p className={ds.textMuted}>Refresh your app and make sure it works</p>
                 </div>
               </div>
 
               <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 shrink-0">4</div>
+                <div className={ds.stepCircle + " shrink-0"}>4</div>
                 <div>
-                  <p className="font-medium text-slate-900">Iterate if needed</p>
-                  <p className="text-sm text-slate-600">Not quite right? Tell Claude Code what to change</p>
+                  <p className={ds.title}>Iterate if needed</p>
+                  <p className={ds.textMuted}>Not quite right? Tell Claude Code what to change</p>
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <p className="text-sm text-slate-700">
+          <div className={ds.infoBoxHighlight}>
+            <p className={ds.textMuted}>
               <strong>Pro tip:</strong> If something breaks, don't panic. Tell Claude Code: "That broke [describe what's wrong]. Please fix it."
             </p>
-          </Card>
+          </div>
 
           <Button
             size="lg"
@@ -321,16 +315,16 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
       {/* Step 3: Capture the Win */}
       {step === "done" && (
         <>
-          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
-            <h4 className="font-bold text-lg text-slate-900 mb-2">Congratulations!</h4>
-            <p className="text-slate-700">
+          <div className={ds.infoBoxHighlight}>
+            <h4 className={ds.titleLg + " mb-2"}>Congratulations!</h4>
+            <p className={ds.text}>
               You just used AI to build something real. This is exactly how professional developers work now.
             </p>
-          </Card>
+          </div>
 
-          <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">Document Your Win</h4>
-            <p className="text-sm text-slate-600 mb-4">
+          <div className={ds.cardWithPadding}>
+            <h4 className={ds.titleLg + " mb-2"}>Document Your Win</h4>
+            <p className={ds.textMuted + " mb-4"}>
               Describe what you built. This goes in your Build Log as proof of progress.
             </p>
             <Textarea
@@ -339,22 +333,22 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
               onChange={(e) => setWhatYouBuilt(e.target.value)}
               className="min-h-[120px]"
             />
-            <p className="text-xs text-slate-500 mt-2">
+            <p className={ds.textMuted + " mt-2"}>
               Be specific! Future you will appreciate the details.
             </p>
-          </Card>
+          </div>
 
-          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <div className="text-sm text-slate-700">
-              <p className="font-medium">What you learned today:</p>
-              <ul className="mt-2 space-y-1 text-slate-600">
-                <li>- Claude Code can build features for you</li>
-                <li>- Being specific gets better results</li>
-                <li>- You can iterate until it's right</li>
-                <li>- Breaking things is normal - just fix them</li>
+          <div className={ds.infoBoxHighlight}>
+            <div>
+              <p className={ds.title}>What you learned today:</p>
+              <ul className="mt-2 space-y-1">
+                <li className={ds.textMuted}>- Claude Code can build features for you</li>
+                <li className={ds.textMuted}>- Being specific gets better results</li>
+                <li className={ds.textMuted}>- You can iterate until it's right</li>
+                <li className={ds.textMuted}>- Breaking things is normal - just fix them</li>
               </ul>
             </div>
-          </Card>
+          </div>
 
           {whatYouBuilt.length >= 20 && (
             <Button
@@ -367,7 +361,7 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
           )}
 
           {whatYouBuilt.length > 0 && whatYouBuilt.length < 20 && (
-            <p className="text-sm text-slate-500 text-center">
+            <p className={ds.textMuted + " text-center"}>
               Add a bit more detail ({20 - whatYouBuilt.length} more characters)
             </p>
           )}

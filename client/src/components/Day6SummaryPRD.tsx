@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Download, Edit3 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+import { ds } from "@/lib/design-system";
 
 interface Day6SummaryPRDProps {
   dayId: number;
@@ -86,55 +86,55 @@ export function Day6SummaryPRD({
   if (step === "generate") {
     return (
       <div className="space-y-6">
-        <Card className="p-6 border-2 border-slate-200 bg-white">
-          <h3 className="text-lg font-bold text-slate-900 mb-4">Your Journey So Far</h3>
+        <div className={ds.cardWithPadding}>
+          <h3 className={ds.titleLg + " mb-4"}>Your Journey So Far</h3>
 
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold text-slate-900 mb-2">Your Idea</h4>
-              <p className="text-slate-700">{userIdea}</p>
+              <h4 className={ds.title + " mb-2"}>Your Idea</h4>
+              <p className={ds.text}>{userIdea}</p>
             </div>
 
             <div>
-              <h4 className="font-semibold text-slate-900 mb-2">Pain Points</h4>
-              <ul className="list-disc list-inside space-y-1 text-slate-700">
+              <h4 className={ds.title + " mb-2"}>Pain Points</h4>
+              <ul className="list-disc list-inside space-y-1">
                 {painPoints.map((pain, idx) => (
-                  <li key={idx}>{pain}</li>
+                  <li key={idx} className={ds.text}>{pain}</li>
                 ))}
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold text-slate-900 mb-2">MVP Features ({mvpFeatures.length})</h4>
-              <ul className="list-disc list-inside space-y-1 text-slate-700">
+              <h4 className={ds.title + " mb-2"}>MVP Features ({mvpFeatures.length})</h4>
+              <ul className="list-disc list-inside space-y-1">
                 {mvpFeatures.slice(0, 5).map((feature, idx) => (
-                  <li key={idx}>{feature}</li>
+                  <li key={idx} className={ds.text}>{feature}</li>
                 ))}
                 {mvpFeatures.length > 5 && (
-                  <li className="text-slate-500">+ {mvpFeatures.length - 5} more...</li>
+                  <li className={ds.textMuted}>+ {mvpFeatures.length - 5} more...</li>
                 )}
               </ul>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-6 border-2 border-slate-200 bg-white">
+        <div className={ds.cardWithPadding}>
           <div className="space-y-4 text-center">
             <div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
+              <h3 className={ds.titleXl + " mb-2"}>
                 Ready to Create Your PRD?
               </h3>
-              <p className="text-slate-600 mb-4">
+              <p className={ds.textMuted + " mb-4"}>
                 AI will analyze everything you've done and create:
               </p>
               <ul className="text-left space-y-2 max-w-md mx-auto mb-6">
-                <li className="text-slate-700">
+                <li className={ds.text}>
                   <strong>Executive Summary:</strong> A concise overview of your product
                 </li>
-                <li className="text-slate-700">
+                <li className={ds.text}>
                   <strong>Product Requirements Document:</strong> Complete spec for development
                 </li>
-                <li className="text-slate-700">
+                <li className={ds.text}>
                   <strong>Feature Specifications:</strong> Detailed requirements for each feature
                 </li>
               </ul>
@@ -156,7 +156,7 @@ export function Day6SummaryPRD({
               )}
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -164,9 +164,9 @@ export function Day6SummaryPRD({
   if (step === "edit") {
     return (
       <div className="space-y-6">
-        <Card className="p-6 border-2 border-slate-200 bg-white">
-          <h3 className="text-lg font-bold text-slate-900 mb-4">Edit Your PRD</h3>
-          <p className="text-slate-600 mb-4">
+        <div className={ds.cardWithPadding}>
+          <h3 className={ds.titleLg + " mb-4"}>Edit Your PRD</h3>
+          <p className={ds.textMuted + " mb-4"}>
             Make any changes you'd like to your Product Requirements Document.
           </p>
 
@@ -185,7 +185,7 @@ export function Day6SummaryPRD({
               Cancel
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -193,16 +193,16 @@ export function Day6SummaryPRD({
   // Review step
   return (
     <div className="space-y-6">
-      <Card className="p-6 border-2 border-slate-200 bg-white">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">Executive Summary</h3>
+      <div className={ds.cardWithPadding}>
+        <h3 className={ds.titleLg + " mb-4"}>Executive Summary</h3>
         <div className="prose prose-slate max-w-none">
-          <p className="text-slate-700 whitespace-pre-line">{summary}</p>
+          <p className={ds.text + " whitespace-pre-line"}>{summary}</p>
         </div>
-      </Card>
+      </div>
 
-      <Card className="p-6 border-2 border-slate-200 bg-white">
+      <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-bold text-slate-900">Product Requirements Document</h3>
+          <h3 className={ds.titleLg}>Product Requirements Document</h3>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={handleEdit} className="gap-2">
               <Edit3 className="w-4 h-4" />
@@ -215,18 +215,18 @@ export function Day6SummaryPRD({
           </div>
         </div>
 
-        <div className="bg-slate-50 p-4 rounded-lg border-2 border-slate-200 max-h-[600px] overflow-y-auto">
-          <pre className="text-sm text-slate-700 whitespace-pre-wrap font-mono">
+        <div className={ds.infoBoxHighlight + " max-h-[600px] overflow-y-auto"}>
+          <pre className={ds.textMuted + " whitespace-pre-wrap font-mono"}>
             {prd}
           </pre>
         </div>
-      </Card>
+      </div>
 
-      <Card className="p-6 border-2 border-slate-200 bg-white">
+      <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium text-slate-900">Your PRD is ready!</p>
-            <p className="text-sm text-slate-600 mt-1">
+            <p className={ds.title}>Your PRD is ready!</p>
+            <p className={ds.textMuted + " mt-1"}>
               You can edit or download it above, then continue to start building
             </p>
           </div>
@@ -234,7 +234,7 @@ export function Day6SummaryPRD({
             Continue to Build
           </Button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

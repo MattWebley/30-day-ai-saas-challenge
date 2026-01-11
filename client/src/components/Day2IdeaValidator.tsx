@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Check, Loader2, ChevronRight, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import { ds } from "@/lib/design-system";
 
 interface Idea {
   title: string;
@@ -222,12 +222,12 @@ Return ONLY a numbered list:
   // No shortlist - need Day 1
   if (!day1Progress?.shortlistedIdeas?.length) {
     return (
-      <Card className="p-8 border-2 border-amber-200 bg-amber-50 text-center">
-        <h3 className="text-xl font-bold text-slate-900 mb-2">Complete Day 1 First</h3>
-        <p className="text-slate-600">
+      <div className={`${ds.cardWithPadding} text-center`}>
+        <h3 className={`${ds.titleLg} mb-2`}>Complete Day 1 First</h3>
+        <p className={ds.text}>
           Generate and shortlist 3-5 ideas in Day 1 before validating them here.
         </p>
-      </Card>
+      </div>
     );
   }
 
@@ -240,32 +240,32 @@ Return ONLY a numbered list:
         animate={{ opacity: 1, scale: 1 }}
         className="text-center py-8"
       >
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Chosen Idea</h2>
-        <p className="text-slate-500 mb-6">This is the one you're building!</p>
+        <h2 className={`${ds.titleXl} mb-2`}>Your Chosen Idea</h2>
+        <p className={`${ds.textMuted} mb-6`}>This is the one you're building!</p>
 
-        <Card className="p-6 border-2 border-green-400 bg-green-50 max-w-2xl mx-auto text-left">
-          <h3 className="text-xl font-bold text-slate-900 mb-2">{idea.title}</h3>
-          <p className="text-slate-600 mb-3">{idea.desc}</p>
-          <p className="text-sm text-slate-500 mb-4">Target: {idea.targetCustomer}</p>
+        <div className={`${ds.cardWithPadding} max-w-2xl mx-auto text-left`}>
+          <h3 className={`${ds.titleLg} mb-2`}>{idea.title}</h3>
+          <p className={`${ds.text} mb-3`}>{idea.desc}</p>
+          <p className={`${ds.textMuted} mb-4`}>Target: {idea.targetCustomer}</p>
 
-          <div className="pt-4 border-t border-green-200">
-            <p className="text-xs font-semibold text-slate-500 uppercase mb-2">Pain Points You're Solving:</p>
+          <div className="pt-4 border-t border-slate-200">
+            <p className={`${ds.label} uppercase mb-2`}>Pain Points You're Solving:</p>
             <ul className="space-y-1">
               {selectedPainPoints.map((pain, i) => (
-                <li key={i} className="text-sm text-slate-700 flex items-start gap-2">
-                  <span className="text-green-600">•</span>
+                <li key={i} className={`${ds.textMuted} flex items-start gap-2`}>
+                  <span className={ds.successText}>•</span>
                   <span>{pain}</span>
                 </li>
               ))}
             </ul>
           </div>
-        </Card>
+        </div>
 
-        <div className="mt-8 p-6 bg-slate-50 rounded-xl border border-slate-200 max-w-2xl mx-auto">
-          <p className="text-lg font-bold text-slate-900 mb-2">
+        <div className={`mt-8 ${ds.infoBoxHighlight} max-w-2xl mx-auto`}>
+          <p className={`${ds.titleLg} mb-2`}>
             "There is NO perfect idea. The perfect idea is the one you BUILD."
           </p>
-          <p className="text-slate-700">
+          <p className={ds.text}>
             You've made a decision. That puts you ahead of 90% of dreamers.
           </p>
         </div>
@@ -301,26 +301,26 @@ Return ONLY a numbered list:
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-6"
+        className={ds.section}
       >
-        <Card className="p-5 border-2 border-slate-400 bg-slate-50">
+        <div className={ds.optionSelected}>
           <div>
-            <h3 className="font-bold text-slate-900">{idea.title}</h3>
-            <p className="text-sm text-slate-600 mt-1">{idea.desc}</p>
+            <h3 className={ds.title}>{idea.title}</h3>
+            <p className={`${ds.textMuted} mt-1`}>{idea.desc}</p>
           </div>
-        </Card>
+        </div>
 
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">What Pain Points Will You Solve?</h2>
-          <p className="text-slate-500">Select 1-3 pain points to focus on</p>
-          <p className="text-sm text-slate-700 font-semibold mt-2">{selectedPainPoints.length}/3 selected</p>
+          <h2 className={`${ds.titleXl} mb-2`}>What Pain Points Will You Solve?</h2>
+          <p className={ds.textMuted}>Select 1-3 pain points to focus on</p>
+          <p className={`${ds.label} mt-2`}>{selectedPainPoints.length}/3 selected</p>
         </div>
 
         {loadingPainPoints ? (
-          <Card className="p-12 text-center border-2 border-slate-200">
-            <Loader2 className="w-12 h-12 animate-spin text-slate-500 mx-auto mb-4" />
-            <p className="text-slate-600">Identifying pain points...</p>
-          </Card>
+          <div className={`${ds.cardWithPadding} p-12 text-center`}>
+            <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto mb-4" />
+            <p className={ds.text}>Identifying pain points...</p>
+          </div>
         ) : (
           <>
             <div className="grid gap-3">
@@ -330,22 +330,18 @@ Return ONLY a numbered list:
                 const isSelected = selectedPainPoints.includes(cleanPain);
 
                 return (
-                  <Card
+                  <div
                     key={`pain-${idx}`}
-                    className={`p-4 border-2 cursor-pointer ${
-                      isSelected ? 'border-slate-400 bg-slate-50' : 'border-slate-200 hover:border-slate-400'
-                    }`}
+                    className={isSelected ? ds.optionSelected : ds.optionDefault}
                     onClick={() => togglePainPoint(cleanPain)}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                        isSelected ? 'bg-slate-700 border-slate-700 text-white' : 'border-slate-300'
-                      }`}>
-                        {isSelected && <Check className="w-4 h-4" />}
+                      <div className={isSelected ? ds.checkSelected : ds.checkDefault}>
+                        {isSelected && <Check className="w-3 h-3 text-white" />}
                       </div>
-                      <p className="text-slate-700 font-medium">{cleanPain}</p>
+                      <p className={ds.text}>{cleanPain}</p>
                     </div>
-                  </Card>
+                  </div>
                 );
               })}
             </div>
@@ -390,20 +386,20 @@ Return ONLY a numbered list:
 
   // Main shortlist view
   return (
-    <div className="space-y-6">
+    <div className={ds.section}>
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Shortlist from Day 1</h2>
-        <p className="text-slate-500">
+        <h2 className={`${ds.titleXl} mb-2`}>Your Shortlist from Day 1</h2>
+        <p className={ds.textMuted}>
           You selected {shortlistedIdeas.length} ideas. Now validate them and choose ONE to build.
         </p>
       </div>
 
       {/* Action over perfection message */}
-      <Card className="p-5 border-2 border-slate-200 bg-slate-50">
-        <p className="text-slate-700 font-medium text-center">
-          <span className="font-bold">Remember:</span> Choosing an imperfect idea and TAKING ACTION beats endlessly second-guessing yourself. There is no perfect idea - only the one you actually build.
+      <div className={ds.infoBoxHighlight}>
+        <p className={`${ds.text} text-center`}>
+          <span className="font-bold text-slate-900">Remember:</span> Choosing an imperfect idea and TAKING ACTION beats endlessly second-guessing yourself. There is no perfect idea - only the one you actually build.
         </p>
-      </Card>
+      </div>
 
       <div className="space-y-4">
         {shortlistedIdeas.map((idea, idx) => {
@@ -411,19 +407,19 @@ Return ONLY a numbered list:
           const isLoading = loadingValidation === idx;
 
           return (
-            <Card key={idx} className="p-5 border-2 border-slate-200">
+            <div key={idx} className={ds.cardWithPadding}>
               <div className="flex flex-col gap-4">
                 {/* Idea header */}
                 <div>
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h3 className="font-bold text-lg text-slate-900">{idea.title}</h3>
-                      <p className="text-sm text-slate-600 mt-1">{idea.desc}</p>
-                      <p className="text-xs text-slate-400 mt-2">Target: {idea.targetCustomer}</p>
+                      <h3 className={ds.titleLg}>{idea.title}</h3>
+                      <p className={`${ds.textMuted} mt-1`}>{idea.desc}</p>
+                      <p className={`${ds.textMuted} mt-2`}>Target: {idea.targetCustomer}</p>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-slate-900">{idea.totalScore}/25</div>
-                      <p className="text-xs text-slate-500">Day 1 Score</p>
+                      <p className={ds.textMuted}>Day 1 Score</p>
                     </div>
                   </div>
                 </div>
@@ -431,17 +427,17 @@ Return ONLY a numbered list:
                 {/* Validation insights */}
                 {insight ? (
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-100">
-                    <div className="text-center p-3 bg-slate-50 rounded-lg">
-                      <div className="text-lg font-bold text-slate-900">{insight.demandScore}/10</div>
-                      <p className="text-xs text-slate-500">Demand</p>
+                    <div className={`${ds.infoBoxHighlight} text-center`}>
+                      <div className={ds.titleLg}>{insight.demandScore}/10</div>
+                      <p className={ds.textMuted}>Demand</p>
                     </div>
-                    <div className="text-center p-3 bg-slate-50 rounded-lg">
-                      <div className="text-sm font-bold text-slate-900">{insight.competitionLevel.split(' - ')[0]}</div>
-                      <p className="text-xs text-slate-500">Competition</p>
+                    <div className={`${ds.infoBoxHighlight} text-center`}>
+                      <div className={ds.title}>{insight.competitionLevel.split(' - ')[0]}</div>
+                      <p className={ds.textMuted}>Competition</p>
                     </div>
-                    <div className="col-span-2 p-3 bg-amber-50 rounded-lg">
-                      <p className="text-xs text-slate-500 mb-1">Top Risk</p>
-                      <p className="text-xs font-medium text-amber-900">{insight.topRisk}</p>
+                    <div className={`col-span-2 ${ds.infoBoxHighlight}`}>
+                      <p className={`${ds.textMuted} mb-1`}>Top Risk</p>
+                      <p className={`${ds.label}`}>{insight.topRisk}</p>
                     </div>
                   </div>
                 ) : (
@@ -472,22 +468,22 @@ Return ONLY a numbered list:
                   </Button>
                 </div>
               </div>
-            </Card>
+            </div>
           );
         })}
       </div>
 
-      <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-        <p className="text-sm text-slate-600 text-center">
-          <span className="font-semibold">Pro tip:</span> Click "Get Validation Insights" on each idea to compare them, then choose the one that excites you most AND has decent demand.
+      <div className={ds.infoBox}>
+        <p className={`${ds.textMuted} text-center`}>
+          <span className="font-semibold text-slate-700">Pro tip:</span> Click "Get Validation Insights" on each idea to compare them, then choose the one that excites you most AND has decent demand.
         </p>
-      </Card>
+      </div>
 
       {/* Stuck? Book a call */}
-      <Card className="p-6 border-2 border-slate-200 bg-white">
+      <div className={ds.cardWithPadding}>
         <div className="text-center space-y-3">
-          <h3 className="font-bold text-slate-900">Stuck? Can't Decide?</h3>
-          <p className="text-sm text-slate-600">
+          <h3 className={ds.title}>Stuck? Can't Decide?</h3>
+          <p className={ds.textMuted}>
             Sometimes you just need a fresh perspective. Book a 30-minute 1:1 call with Matt to talk through your ideas and get unstuck.
           </p>
           <Button
@@ -498,7 +494,7 @@ Return ONLY a numbered list:
             Book a Call - Coming Soon
           </Button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

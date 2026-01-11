@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
@@ -15,6 +14,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ds } from "@/lib/design-system";
 
 interface Idea {
   title: string;
@@ -149,9 +149,9 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   };
 
   const getTotalScoreColor = (total: number) => {
-    if (total >= 20) return { border: 'border-green-400', bg: 'bg-green-50', badge: 'bg-green-500 text-white', glow: 'shadow-green-200' };
-    if (total >= 15) return { border: 'border-amber-400', bg: 'bg-amber-50', badge: 'bg-amber-500 text-white', glow: 'shadow-amber-200' };
-    return { border: 'border-red-400', bg: 'bg-red-50', badge: 'bg-red-500 text-white', glow: 'shadow-red-200' };
+    if (total >= 20) return { border: 'border-slate-200', bg: 'bg-white', badge: 'bg-green-500 text-white' };
+    if (total >= 15) return { border: 'border-slate-200', bg: 'bg-white', badge: 'bg-amber-500 text-white' };
+    return { border: 'border-slate-200', bg: 'bg-white', badge: 'bg-slate-400 text-white' };
   };
 
   const ScoreBar = ({ label, score }: { label: string; score: number }) => {
@@ -172,15 +172,15 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
 
   if (step === 'inputs') {
     return (
-      <div className="space-y-6">
+      <div className={ds.section}>
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Let's Find Your Perfect SaaS Idea</h2>
-          <p className="text-slate-500">Tell us about yourself and we'll generate 28 personalized ideas scored against Matt's criteria</p>
+          <h2 className={`${ds.titleXl} mb-2`}>Let's Find Your Perfect SaaS Idea</h2>
+          <p className={ds.textMuted}>Tell us about yourself and we'll generate 28 personalized ideas scored against Matt's criteria</p>
         </div>
 
         <div className="grid gap-6">
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className={`block ${ds.label} mb-2`}>
               What do you know a lot about? (Knowledge/Expertise)
             </label>
             <Textarea
@@ -193,7 +193,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className={`block ${ds.label} mb-2`}>
               What are you good at? (Skills)
             </label>
             <Textarea
@@ -206,7 +206,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className={`block ${ds.label} mb-2`}>
               What do you enjoy doing? (Interests/Passions)
             </label>
             <Textarea
@@ -219,7 +219,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
+            <label className={`block ${ds.label} mb-2`}>
               What's your work experience? (Optional)
             </label>
             <Textarea
@@ -254,10 +254,10 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   if (step === 'generating') {
     return (
       <div className="flex flex-col items-center justify-center py-16 space-y-6">
-        <Loader2 className="w-10 h-10 text-slate-700 animate-spin" />
+        <Loader2 className="w-10 h-10 text-primary animate-spin" />
         <div className="text-center">
-          <h3 className="text-xl font-bold text-slate-900 mb-2">Generating Your Ideas...</h3>
-          <p className="text-slate-500">AI is analyzing your profile and finding the best opportunities</p>
+          <h3 className={`${ds.titleLg} mb-2`}>Generating Your Ideas...</h3>
+          <p className={ds.textMuted}>AI is analyzing your profile and finding the best opportunities</p>
         </div>
       </div>
     );
@@ -267,15 +267,15 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
     const showConfirmation = step === 'shortlist';
 
     return (
-      <div className="space-y-6">
+      <div className={ds.section}>
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className={ds.titleLg}>
               {showConfirmation ? `Your Top ${selectedIdeas.length} Ideas` : "Select Your Top 3-5 Ideas"}
             </h2>
-            <p className="text-slate-500 text-sm">
-              {showConfirmation 
-                ? "These ideas will carry through to Day 2 for validation" 
+            <p className={ds.textMuted}>
+              {showConfirmation
+                ? "These ideas will carry through to Day 2 for validation"
                 : `${selectedIdeas.length} selected (need 3-5) - Pick the ideas that excite you most`}
             </p>
           </div>
@@ -303,14 +303,14 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
         )}
 
         {!showConfirmation && (
-          <Card className="p-4 border-2 border-dashed border-slate-300 bg-slate-50">
+          <div className={`${ds.infoBoxHighlight} border-dashed`}>
             {showCustomForm ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <h3 className="font-bold text-slate-900">Add Your Own Idea</h3>
+                  <h3 className={ds.title}>Add Your Own Idea</h3>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Idea Name</label>
+                  <label className={`block ${ds.label} mb-1`}>Idea Name</label>
                   <Input
                     placeholder="e.g. AI Resume Builder"
                     value={customIdea.title}
@@ -319,7 +319,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                  <label className={`block ${ds.label} mb-1`}>Description</label>
                   <Textarea
                     placeholder="What does your idea do? What problem does it solve?"
                     value={customIdea.desc}
@@ -329,7 +329,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Target Customer (optional)</label>
+                  <label className={`block ${ds.label} mb-1`}>Target Customer (optional)</label>
                   <Input
                     placeholder="e.g. Job seekers, freelancers..."
                     value={customIdea.targetCustomer}
@@ -363,7 +363,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                 Already have an idea? Add your own!
               </button>
             )}
-          </Card>
+          </div>
         )}
 
         <div className="space-y-4">
@@ -386,27 +386,25 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: displayIndex * 0.05 }}
                 >
-                  <Card
-                    className={`p-5 border-2 cursor-pointer shadow-md ${scoreColors.border} ${
-                      isSelected ? scoreColors.bg : 'bg-white hover:shadow-lg'
-                    }`}
+                  <div
+                    className={isSelected ? ds.optionSelected : ds.optionDefault}
                     onClick={() => !showConfirmation && toggleIdeaSelection(actualIndex)}
                     data-testid={`idea-card-${actualIndex}`}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                          <span className="text-xs font-bold text-slate-400">#{actualIndex + 1}</span>
-                          <h3 className="font-bold text-slate-900">{idea.title}</h3>
+                          <span className={ds.textMuted}>#{actualIndex + 1}</span>
+                          <h3 className={ds.title}>{idea.title}</h3>
                           <span className={`px-3 py-1 ${scoreColors.badge} text-sm font-bold rounded-full`}>
                             {idea.totalScore}/25
                           </span>
                         </div>
-                        <p className="text-slate-600 text-sm mb-3">{idea.desc}</p>
-                        <p className="text-xs text-slate-400 mb-3">
+                        <p className={`${ds.textMuted} mb-3`}>{idea.desc}</p>
+                        <p className={`${ds.textMuted} mb-3`}>
                           <span className="font-medium">Target:</span> {idea.targetCustomer}
                         </p>
-                        
+
                         <div className="grid grid-cols-2 gap-x-6 gap-y-1">
                           <ScoreBar label="Market Demand" score={idea.scores.marketDemand} />
                           <ScoreBar label="Skill Match" score={idea.scores.skillMatch} />
@@ -415,20 +413,16 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                           <ScoreBar label="Monetization" score={idea.scores.monetization} />
                         </div>
 
-                        <p className="text-xs text-slate-500 mt-3 italic">"{idea.whyThisWorks}"</p>
+                        <p className={`${ds.textMuted} mt-3 italic`}>"{idea.whyThisWorks}"</p>
                       </div>
 
                       {!showConfirmation && (
-                        <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                          isSelected
-                            ? 'bg-slate-700 border-slate-700 text-white'
-                            : 'border-slate-200'
-                        }`}>
-                          {isSelected && <Check className="w-5 h-5" />}
+                        <div className={isSelected ? ds.checkSelected : ds.checkDefault}>
+                          {isSelected && <Check className="w-3 h-3 text-white" />}
                         </div>
                       )}
                     </div>
-                  </Card>
+                  </div>
                 </motion.div>
               );
             })}

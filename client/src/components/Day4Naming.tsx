@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { ds } from "@/lib/design-system";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
@@ -307,10 +307,10 @@ Return ONLY valid JSON:
     <div className="space-y-6">
       {/* Context Card */}
       {userIdea && (
-        <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-          <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Naming Your Product:</p>
-          <p className="font-semibold text-slate-900">{userIdea}</p>
-        </Card>
+        <div className={ds.infoBoxHighlight}>
+          <p className={ds.label + " uppercase tracking-wide mb-1"}>Naming Your Product:</p>
+          <p className={ds.title}>{userIdea}</p>
+        </div>
       )}
 
       <AnimatePresence mode="wait">
@@ -324,99 +324,99 @@ Return ONLY valid JSON:
             className="space-y-6"
           >
             {/* Hero */}
-            <Card className="p-6 border-2 border-slate-200 bg-white">
+            <div className={ds.cardWithPadding}>
               <h3 className="text-2xl font-extrabold text-slate-900">Name It RIGHT</h3>
-              <p className="text-slate-600 mt-1">
+              <p className={ds.text + " mt-1"}>
                 Your name is your first impression. Get this right.
               </p>
-            </Card>
+            </div>
 
             {/* The Rules */}
-            <Card className="p-6 border-2 border-slate-200 bg-white">
-              <h4 className="font-bold text-slate-900 text-lg mb-4">
+            <div className={ds.cardWithPadding}>
+              <h4 className={ds.titleLg + " mb-4"}>
                 The Golden Rules of SaaS Naming
               </h4>
               <div className="space-y-4">
-                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                  <div className="font-bold text-slate-900">Always get the .com</div>
-                  <div className="text-sm text-slate-700">
+                <div className={ds.infoBoxHighlight}>
+                  <div className={ds.title}>Always get the .com</div>
+                  <div className={ds.textMuted}>
                     Not .io, not .co, not .app. The .com. It's what people type automatically.
                     If you can't get the .com, pick a different name.
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                  <div className="font-bold text-slate-900">Keep it SHORT</div>
-                  <div className="text-sm text-slate-700">
+                <div className={ds.infoBoxHighlight}>
+                  <div className={ds.title}>Keep it SHORT</div>
+                  <div className={ds.textMuted}>
                     1-2 words. Under 10 characters. Easy to type, easy to remember, easy to say out loud.
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                  <div className="font-bold text-slate-900">Make it SPEAKABLE</div>
-                  <div className="text-sm text-slate-700">
+                <div className={ds.infoBoxHighlight}>
+                  <div className={ds.title}>Make it SPEAKABLE</div>
+                  <div className={ds.textMuted}>
                     Say it out loud. If you have to spell it for people, it's wrong.
                     "It's Trello, T-R-E-L-L-O" is fine. "It's Xqyzt, X-Q-Y-Z-T" is not.
                   </div>
                 </div>
 
-                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200">
-                  <div className="font-bold text-slate-900">Be UNIQUE</div>
-                  <div className="text-sm text-slate-700">
+                <div className={ds.infoBoxHighlight}>
+                  <div className={ds.title}>Be UNIQUE</div>
+                  <div className={ds.textMuted}>
                     "ProjectManager" is not a name. "Asana" is. Made-up words that sound good are
                     often better than descriptive names.
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
 
             {/* What to AVOID */}
-            <Card className="p-6 border-2 border-slate-200 bg-white">
-              <h4 className="font-bold text-slate-900 text-lg mb-4">
+            <div className={ds.cardWithPadding}>
+              <h4 className={ds.titleLg + " mb-4"}>
                 What to AVOID
               </h4>
               <div className="space-y-3">
                 <div>
-                  <div className="font-bold text-slate-900">No hyphens or numbers</div>
-                  <div className="text-sm text-slate-700">
+                  <div className={ds.title}>No hyphens or numbers</div>
+                  <div className={ds.textMuted}>
                     "task-hub-123.com" looks cheap and confusing. Don't do it.
                   </div>
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900">Don't overpay for domains</div>
-                  <div className="text-sm text-slate-700">
+                  <div className={ds.title}>Don't overpay for domains</div>
+                  <div className={ds.textMuted}>
                     A .com should cost ~$10-15/year. If someone wants $500+ for a domain, pick a different name.
                     Domain squatters are not worth it at this stage.
                   </div>
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900">Don't be too generic</div>
-                  <div className="text-sm text-slate-700">
+                  <div className={ds.title}>Don't be too generic</div>
+                  <div className={ds.textMuted}>
                     "Analytics Platform" or "Marketing Tool" - these aren't names, they're descriptions.
                     You can't trademark a generic term.
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
 
             {/* Domain Pricing Education */}
-            <Card className="p-6 border-2 border-slate-200 bg-slate-50">
-              <h4 className="font-bold text-slate-900 text-lg mb-3">
+            <div className={ds.infoBoxHighlight}>
+              <h4 className={ds.titleLg + " mb-3"}>
                 What Domains SHOULD Cost
               </h4>
-              <div className="space-y-2 text-sm text-slate-700">
-                <p>
+              <div className="space-y-2">
+                <p className={ds.textMuted}>
                   <strong>Normal .com registration:</strong> $10-15/year
                 </p>
-                <p>
+                <p className={ds.textMuted}>
                   <strong>If someone wants $100+:</strong> It's a "premium" domain owned by a squatter. Skip it.
                 </p>
-                <p>
+                <p className={ds.textMuted}>
                   <strong>Rule of thumb:</strong> If you can't get the .com for under $20, pick a different name.
                   Your energy is better spent building than negotiating with domain hoarders.
                 </p>
               </div>
-            </Card>
+            </div>
 
             <Button
               className="w-full"
@@ -439,13 +439,13 @@ Return ONLY valid JSON:
           >
             <div className="text-center">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Generate Name Ideas</h2>
-              <p className="text-slate-500 max-w-lg mx-auto">
+              <p className={ds.textMuted + " max-w-lg mx-auto"}>
                 AI will create names based on your idea, pain points, and features.
               </p>
             </div>
 
             {/* AI Generator */}
-            <Card className="p-6 border-2 border-slate-200 bg-white">
+            <div className={ds.cardWithPadding}>
               <div className="text-center mb-6">
                 <Button
                   size="lg"
@@ -466,8 +466,8 @@ Return ONLY valid JSON:
               {nameSuggestions.length > 0 && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-slate-900 text-lg">Pick Your Favorite:</h3>
-                    <span className="text-xs text-slate-500">
+                    <h3 className={ds.titleLg}>Pick Your Favorite:</h3>
+                    <span className={ds.textMuted}>
                       {Object.keys(domainResults).length > 0 ? "Availability checked" : "Checking availability..."}
                     </span>
                   </div>
@@ -535,8 +535,10 @@ Return ONLY valid JSON:
                   </div>
 
                   {/* Tip about availability */}
-                  <div className="text-xs text-slate-500 bg-slate-50 p-3 rounded-lg">
-                    <strong>Tip:</strong> "Likely Available" means no website exists yet. Always verify on Namecheap before purchasing - some domains may be registered but not in use.
+                  <div className={ds.infoBoxHighlight}>
+                    <p className={ds.textMuted}>
+                      <strong>Tip:</strong> "Likely Available" means no website exists yet. Always verify on Namecheap before purchasing - some domains may be registered but not in use.
+                    </p>
                   </div>
 
                   {selectedIndex !== null && (
@@ -553,7 +555,7 @@ Return ONLY valid JSON:
 
               {/* Custom Name Option */}
               <div className="mt-6 pt-6 border-t border-slate-200">
-                <p className="text-sm font-medium text-slate-700 mb-3">Already have a name in mind?</p>
+                <p className={ds.label + " mb-3"}>Already have a name in mind?</p>
                 <div className="flex gap-2">
                   <Input
                     placeholder="Enter your product name..."
@@ -570,7 +572,7 @@ Return ONLY valid JSON:
                   </Button>
                 </div>
               </div>
-            </Card>
+            </div>
 
             <Button
               variant="outline"
@@ -593,17 +595,17 @@ Return ONLY valid JSON:
           >
             <div className="text-center">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Great Choice!</h2>
-              <p className="text-slate-500">
+              <p className={ds.textMuted}>
                 Let's make sure you can get the domain.
               </p>
             </div>
 
-            <Card className="p-6 border-2 border-slate-200 bg-white">
+            <div className={ds.cardWithPadding}>
               <div className="space-y-4">
-                <div className="text-center p-6 bg-slate-50 rounded-xl border-2 border-slate-200">
-                  <p className="text-sm font-bold text-slate-500 uppercase mb-2">Your Product Name</p>
+                <div className={ds.infoBoxHighlight + " text-center p-6"}>
+                  <p className={ds.label + " uppercase mb-2"}>Your Product Name</p>
                   <h3 className="text-3xl font-extrabold text-slate-900">{finalName}</h3>
-                  <p className="text-lg font-mono text-slate-600 mt-2">{finalDomain}</p>
+                  <p className={ds.text + " text-lg font-mono mt-2"}>{finalDomain}</p>
                 </div>
 
                 <Button
@@ -622,10 +624,10 @@ Return ONLY valid JSON:
                 {domainResults[finalDomain.replace('.com', '')] && (
                   <div className="mt-4">
                     {domainResults[finalDomain.replace('.com', '')].available ? (
-                      <div className="p-4 bg-slate-50 border-2 border-slate-200 rounded-lg">
+                      <div className={ds.infoBoxHighlight}>
                         <div className="flex-1">
-                          <p className="font-bold text-slate-900 mb-1">Likely Available!</p>
-                          <p className="text-sm text-slate-700 mb-3">
+                          <p className={ds.title + " mb-1"}>Likely Available!</p>
+                          <p className={ds.textMuted + " mb-3"}>
                             {finalDomain} appears to be available. Register it now before someone else does!
                           </p>
                           <Button
@@ -638,10 +640,10 @@ Return ONLY valid JSON:
                         </div>
                       </div>
                     ) : (
-                      <div className="p-4 bg-slate-50 border-2 border-slate-200 rounded-lg">
+                      <div className={ds.infoBoxHighlight}>
                         <div>
-                          <p className="font-bold text-slate-900 mb-1">This domain might be taken</p>
-                          <p className="text-sm text-slate-700 mb-2">
+                          <p className={ds.title + " mb-1"}>This domain might be taken</p>
+                          <p className={ds.textMuted + " mb-2"}>
                             Check Namecheap to confirm. If it's premium-priced ($100+), go back and pick a different name.
                           </p>
                           <Button
@@ -659,15 +661,15 @@ Return ONLY valid JSON:
                   </div>
                 )}
               </div>
-            </Card>
+            </div>
 
             {/* Important Reminder */}
-            <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-              <div className="text-sm text-slate-700">
+            <div className={ds.infoBoxHighlight}>
+              <p className={ds.textMuted}>
                 <strong>Remember:</strong> Only pay ~$10-15/year for a .com. If it's priced higher,
                 it's a "premium" domain. Pick a different name instead.
-              </div>
-            </Card>
+              </p>
+            </div>
 
             <div className="flex gap-3">
               <Button
@@ -699,26 +701,26 @@ Return ONLY valid JSON:
           >
             <div className="text-center py-4">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Product Has a Name!</h2>
-              <p className="text-slate-500">Welcome to the world, <strong>{finalName}</strong>.</p>
+              <p className={ds.textMuted}>Welcome to the world, <strong>{finalName}</strong>.</p>
             </div>
 
-            <Card className="p-6 border-4 border-slate-400">
+            <div className="bg-white border-2 border-primary rounded-lg p-6">
               <div className="text-center">
-                <p className="text-sm font-bold text-slate-500 uppercase mb-2">Your Product</p>
+                <p className={ds.label + " uppercase mb-2"}>Your Product</p>
                 <h3 className="text-4xl font-extrabold text-slate-900 mb-2">{finalName}</h3>
-                <p className="text-xl font-mono text-slate-600">{finalDomain}</p>
+                <p className={ds.text + " text-xl font-mono"}>{finalDomain}</p>
               </div>
-            </Card>
+            </div>
 
             {/* Registration Checklist */}
-            <Card className="p-6 border-2 border-slate-200 bg-white">
+            <div className={ds.cardWithPadding}>
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-bold text-slate-900 text-lg">Claim Your Brand Everywhere</h4>
-                <span className="text-sm font-medium text-slate-500">
+                <h4 className={ds.titleLg}>Claim Your Brand Everywhere</h4>
+                <span className={ds.textMuted}>
                   {registeredItems.size}/{SOCIAL_PLATFORMS.length} done
                 </span>
               </div>
-              <p className="text-sm text-slate-600 mb-4">
+              <p className={ds.textMuted + " mb-4"}>
                 Grab these NOW - even if you won't use them immediately. Someone WILL squat on them if you don't.
               </p>
 
@@ -852,7 +854,7 @@ Return ONLY valid JSON:
                   />
                 </div>
               </div>
-            </Card>
+            </div>
 
             <Button
               size="lg"

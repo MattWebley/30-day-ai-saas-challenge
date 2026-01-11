@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ExternalLink, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ds } from "@/lib/design-system";
 
 interface Day7ReplitBuildProps {
   dayId: number;
@@ -69,21 +69,21 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
 
   return (
     <div className="space-y-6">
-      <Card className="p-6 border-2 border-slate-200 bg-white">
+      <div className={ds.cardWithPadding}>
         <div className="space-y-4">
           <div>
-            <h3 className="text-xl font-bold text-slate-900">Time to Build!</h3>
-            <p className="text-slate-600">
+            <h3 className={ds.titleXl}>Time to Build!</h3>
+            <p className={ds.text}>
               Today you start building your SaaS in Replit
             </p>
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Build Steps */}
-      <Card className="p-6 border-2 border-slate-200 bg-white">
-        <h4 className="font-bold text-slate-900 mb-4">Build Steps</h4>
-        <p className="text-sm text-slate-600 mb-4">
+      <div className={ds.cardWithPadding}>
+        <h4 className={ds.title + " mb-4"}>Build Steps</h4>
+        <p className={ds.textMuted + " mb-4"}>
           Follow these steps to get started building your SaaS
         </p>
 
@@ -91,69 +91,72 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
           {BUILD_STEPS.map((step, idx) => (
             <div
               key={idx}
-              className="flex items-start gap-3 p-4 rounded-lg border-2 border-slate-200 bg-white hover:border-slate-400 transition-colors"
+              className={completedSteps.has(idx) ? ds.optionSelected : ds.optionDefault}
+              onClick={() => toggleStep(idx)}
             >
-              <Checkbox
-                checked={completedSteps.has(idx)}
-                onCheckedChange={() => toggleStep(idx)}
-                className="mt-1"
-              />
-              <div className="flex-1">
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <h5 className="font-semibold text-slate-900">
-                    {idx + 1}. {step.title}
-                  </h5>
-                  {step.url && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-2"
-                      onClick={() => window.open(step.url, "_blank")}
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      Open
-                    </Button>
-                  )}
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  checked={completedSteps.has(idx)}
+                  onCheckedChange={() => toggleStep(idx)}
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <h5 className={ds.title}>
+                      {idx + 1}. {step.title}
+                    </h5>
+                    {step.url && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="gap-2"
+                        onClick={(e) => { e.stopPropagation(); window.open(step.url, "_blank"); }}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Open
+                      </Button>
+                    )}
+                  </div>
+                  <p className={ds.textMuted}>{step.description}</p>
                 </div>
-                <p className="text-sm text-slate-600">{step.description}</p>
               </div>
             </div>
           ))}
         </div>
-      </Card>
+      </div>
 
       {/* PRD */}
-      <Card className="p-6 border-2 border-slate-200 bg-white">
+      <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between mb-4">
-          <h4 className="font-bold text-slate-900">Your PRD</h4>
+          <h4 className={ds.title}>Your PRD</h4>
           <Button variant="outline" size="sm" onClick={handleCopyPRD} className="gap-2">
             <Copy className="w-4 h-4" />
             Copy PRD
           </Button>
         </div>
 
-        <div className="bg-slate-50 p-4 rounded-lg border-2 border-slate-200 max-h-[400px] overflow-y-auto">
-          <pre className="text-xs text-slate-700 whitespace-pre-wrap font-mono">
+        <div className={ds.infoBoxHighlight + " max-h-[400px] overflow-y-auto"}>
+          <pre className={ds.textMuted + " whitespace-pre-wrap font-mono text-xs"}>
             {prd}
           </pre>
         </div>
-      </Card>
+      </div>
 
       {/* Continue Button */}
-      <Card className="p-6 border-2 border-slate-200 bg-white">
+      <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between">
           <div>
-            <p className="font-medium text-slate-900">
+            <p className={ds.title}>
               {completedSteps.size} of {BUILD_STEPS.length} steps completed
             </p>
             {!allStepsComplete && (
-              <p className="text-sm text-slate-600 mt-1">
+              <p className={ds.textMuted + " mt-1"}>
                 Complete all steps to continue
               </p>
             )}
             {allStepsComplete && (
-              <div className="flex items-center gap-2 mt-2 text-green-600">
-                <span className="font-medium">All steps complete! You're building!</span>
+              <div className="flex items-center gap-2 mt-2">
+                <span className={ds.successText + " font-medium"}>All steps complete! You're building!</span>
               </div>
             )}
           </div>
@@ -165,30 +168,30 @@ export function Day7ReplitBuild({ dayId, prd, onComplete }: Day7ReplitBuildProps
             {allStepsComplete ? "Complete Week 1" : "Complete All Steps First"}
           </Button>
         </div>
-      </Card>
+      </div>
 
       {/* Tips */}
-      <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+      <div className={ds.infoBoxHighlight}>
         <div className="space-y-3">
-          <h4 className="font-bold text-slate-900">
+          <h4 className={ds.title}>
             Pro Tips for Building in Replit
           </h4>
-          <ul className="space-y-2 text-sm text-slate-700">
-            <li>
+          <ul className="space-y-2">
+            <li className={ds.textMuted}>
               <strong>Start simple:</strong> Build one feature at a time, test it, then move to the next
             </li>
-            <li>
+            <li className={ds.textMuted}>
               <strong>Use Claude Code:</strong> Ask it to explain any code you don't understand
             </li>
-            <li>
+            <li className={ds.textMuted}>
               <strong>Test constantly:</strong> Use Replit's built-in preview to test your app as you build
             </li>
-            <li>
+            <li className={ds.textMuted}>
               <strong>Don't overthink:</strong> Your MVP doesn't need to be perfect, it needs to work
             </li>
           </ul>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

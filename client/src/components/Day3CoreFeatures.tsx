@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+import { ds } from "@/lib/design-system";
 
 interface Feature {
   name: string;
@@ -87,36 +87,36 @@ export function Day3CoreFeatures({
   if (step === "generate") {
     return (
       <div className="space-y-6">
-        <Card className="p-6 border-2 border-slate-200 bg-white">
+        <div className={ds.cardWithPadding}>
           <div className="space-y-4">
             <div>
-              <h3 className="font-semibold text-slate-900 mb-2">Your Idea</h3>
-              <p className="text-slate-700">{userIdea}</p>
+              <h3 className={ds.title + " mb-2"}>Your Idea</h3>
+              <p className={ds.text}>{userIdea}</p>
             </div>
 
             <div>
-              <h3 className="font-semibold text-slate-900 mb-2">Pain Points</h3>
-              <ul className="list-disc list-inside space-y-1 text-slate-700">
+              <h3 className={ds.title + " mb-2"}>Pain Points</h3>
+              <ul className="list-disc list-inside space-y-1">
                 {userPainPoints.map((pain, idx) => (
-                  <li key={idx}>{pain}</li>
+                  <li key={idx} className={ds.text}>{pain}</li>
                 ))}
               </ul>
             </div>
           </div>
-        </Card>
+        </div>
 
-        <Card className="p-6 border-2 border-slate-200 bg-white">
+        <div className={ds.cardWithPadding}>
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-slate-900">
+            <h3 className={ds.titleXl}>
               Ready to Define Your Features?
             </h3>
-            <p className="text-slate-600">
+            <p className={ds.textMuted}>
               AI will analyze your idea and generate:
             </p>
-            <ul className="space-y-2 text-slate-700">
-              <li><strong>Core Features:</strong> Essential features based on your pain points</li>
-              <li><strong>Shared Features:</strong> Must-haves your competitors all have</li>
-              <li><strong>USP Features:</strong> Unique features that make you stand out</li>
+            <ul className="space-y-2">
+              <li className={ds.text}><strong>Core Features:</strong> Essential features based on your pain points</li>
+              <li className={ds.text}><strong>Shared Features:</strong> Must-haves your competitors all have</li>
+              <li className={ds.text}><strong>USP Features:</strong> Unique features that make you stand out</li>
             </ul>
 
             <Button
@@ -134,7 +134,7 @@ export function Day3CoreFeatures({
               )}
             </Button>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
@@ -142,11 +142,11 @@ export function Day3CoreFeatures({
   // Select step
   return (
     <div className="space-y-6">
-      <Card className="p-6 border-2 border-slate-200 bg-white">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">
+      <div className={ds.cardWithPadding}>
+        <h3 className={ds.titleLg + " mb-4"}>
           Select Your Features
         </h3>
-        <p className="text-slate-600 mb-6">
+        <p className={ds.textMuted + " mb-6"}>
           Review the features below and select which ones you want to include in your product.
           All features are pre-selected, but you can uncheck any you don't want.
         </p>
@@ -154,24 +154,27 @@ export function Day3CoreFeatures({
         {/* Core Features */}
         {coreFeatures.length > 0 && (
           <div className="mb-6">
-            <h4 className="font-bold text-slate-900 mb-1">Core Features</h4>
-            <p className="text-sm text-slate-500 mb-3">
+            <h4 className={ds.title + " mb-1"}>Core Features</h4>
+            <p className={ds.textMuted + " mb-3"}>
               Essential features based on your pain points
             </p>
             <div className="space-y-3">
               {coreFeatures.map((feature, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-300 transition-colors"
+                  className={selectedFeatures.has(feature.name) ? ds.optionSelected : ds.optionDefault}
+                  onClick={() => toggleFeature(feature.name)}
                 >
-                  <Checkbox
-                    checked={selectedFeatures.has(feature.name)}
-                    onCheckedChange={() => toggleFeature(feature.name)}
-                    className="mt-1"
-                  />
-                  <div>
-                    <h5 className="font-semibold text-slate-900">{feature.name}</h5>
-                    <p className="text-sm text-slate-600">{feature.description}</p>
+                  <div className="flex items-start gap-3">
+                    <Checkbox
+                      checked={selectedFeatures.has(feature.name)}
+                      onCheckedChange={() => toggleFeature(feature.name)}
+                      className="mt-1"
+                    />
+                    <div>
+                      <h5 className={ds.title}>{feature.name}</h5>
+                      <p className={ds.textMuted}>{feature.description}</p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -182,24 +185,27 @@ export function Day3CoreFeatures({
         {/* Shared Features */}
         {sharedFeatures.length > 0 && (
           <div className="mb-6">
-            <h4 className="font-bold text-slate-900 mb-1">Shared Must-Have Features</h4>
-            <p className="text-sm text-slate-500 mb-3">
+            <h4 className={ds.title + " mb-1"}>Shared Must-Have Features</h4>
+            <p className={ds.textMuted + " mb-3"}>
               Features your competitors all have - you need these to compete
             </p>
             <div className="space-y-3">
               {sharedFeatures.map((feature, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-300 transition-colors"
+                  className={selectedFeatures.has(feature.name) ? ds.optionSelected : ds.optionDefault}
+                  onClick={() => toggleFeature(feature.name)}
                 >
-                  <Checkbox
-                    checked={selectedFeatures.has(feature.name)}
-                    onCheckedChange={() => toggleFeature(feature.name)}
-                    className="mt-1"
-                  />
-                  <div>
-                    <h5 className="font-semibold text-slate-900">{feature.name}</h5>
-                    <p className="text-sm text-slate-600">{feature.description}</p>
+                  <div className="flex items-start gap-3">
+                    <Checkbox
+                      checked={selectedFeatures.has(feature.name)}
+                      onCheckedChange={() => toggleFeature(feature.name)}
+                      className="mt-1"
+                    />
+                    <div>
+                      <h5 className={ds.title}>{feature.name}</h5>
+                      <p className={ds.textMuted}>{feature.description}</p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -210,24 +216,27 @@ export function Day3CoreFeatures({
         {/* USP Features */}
         {uspFeatures.length > 0 && (
           <div className="mb-6">
-            <h4 className="font-bold text-slate-900 mb-1">Your Unique Features (USP)</h4>
-            <p className="text-sm text-slate-500 mb-3">
+            <h4 className={ds.title + " mb-1"}>Your Unique Features (USP)</h4>
+            <p className={ds.textMuted + " mb-3"}>
               What makes you different from the competition
             </p>
             <div className="space-y-3">
               {uspFeatures.map((feature, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-3 p-3 rounded-lg border border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-300 transition-colors"
+                  className={selectedFeatures.has(feature.name) ? ds.optionSelected : ds.optionDefault}
+                  onClick={() => toggleFeature(feature.name)}
                 >
-                  <Checkbox
-                    checked={selectedFeatures.has(feature.name)}
-                    onCheckedChange={() => toggleFeature(feature.name)}
-                    className="mt-1"
-                  />
-                  <div>
-                    <h5 className="font-semibold text-slate-900">{feature.name}</h5>
-                    <p className="text-sm text-slate-600">{feature.description}</p>
+                  <div className="flex items-start gap-3">
+                    <Checkbox
+                      checked={selectedFeatures.has(feature.name)}
+                      onCheckedChange={() => toggleFeature(feature.name)}
+                      className="mt-1"
+                    />
+                    <div>
+                      <h5 className={ds.title}>{feature.name}</h5>
+                      <p className={ds.textMuted}>{feature.description}</p>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -235,8 +244,8 @@ export function Day3CoreFeatures({
           </div>
         )}
 
-        <div className="flex items-center justify-between pt-4 border-t-2 border-slate-200">
-          <p className="text-sm text-slate-600">
+        <div className="flex items-center justify-between pt-4 border-t border-slate-200">
+          <p className={ds.textMuted}>
             {selectedFeatures.size} feature{selectedFeatures.size !== 1 ? "s" : ""} selected
           </p>
           <Button
@@ -247,7 +256,7 @@ export function Day3CoreFeatures({
             Continue with Selected Features
           </Button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }
