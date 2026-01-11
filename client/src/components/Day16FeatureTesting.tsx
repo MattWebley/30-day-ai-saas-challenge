@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronRight, ArrowRight } from "lucide-react";
 
-interface Day12FeatureTestingProps {
+interface Day16FeatureTestingProps {
   onComplete: (data: {
     featuresTestedCount: number;
     bugsFound: string;
@@ -13,7 +13,7 @@ interface Day12FeatureTestingProps {
   }) => void;
 }
 
-export function Day12FeatureTesting({ onComplete }: Day12FeatureTestingProps) {
+export function Day16FeatureTesting({ onComplete }: Day16FeatureTestingProps) {
   const [step, setStep] = useState<"test" | "document" | "fix">("test");
   const [featuresCount, setFeaturesCount] = useState<number>(0);
   const [bugsFound, setBugsFound] = useState("");

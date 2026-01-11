@@ -5,12 +5,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronRight, ExternalLink, Copy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-interface Day13AIBrainProps {
+interface Day10AIBrainProps {
   userIdea: string;
   onComplete: (data: { aiFeature: string; aiTestResult: string; aiWow: string }) => void;
 }
 
-export function Day13AIBrain({ userIdea, onComplete }: Day13AIBrainProps) {
+export function Day10AIBrain({ userIdea, onComplete }: Day10AIBrainProps) {
   const [step, setStep] = useState<"setup" | "test">("setup");
   const [aiFeature, setAiFeature] = useState("");
   const [aiTestResult, setAiTestResult] = useState("");

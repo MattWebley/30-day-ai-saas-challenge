@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-interface Day16EmailProps {
+interface Day13ReachUsersProps {
   appName: string;
   onComplete: (data: { selectedEmails: string[]; sequence: string; setupComplete: boolean }) => void;
 }
@@ -57,7 +57,7 @@ const EMAIL_TYPES = [
   },
 ];
 
-export function Day16Email({ appName, onComplete }: Day16EmailProps) {
+export function Day13ReachUsers({ appName, onComplete }: Day13ReachUsersProps) {
   const [step, setStep] = useState<"sequence" | "prompts" | "setup">("sequence");
   const [selectedEmails, setSelectedEmails] = useState<string[]>(["welcome", "day1"]);
   const [customNotes, setCustomNotes] = useState("");

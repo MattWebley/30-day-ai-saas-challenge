@@ -17,7 +17,7 @@ import {
   Coffee
 } from "lucide-react";
 
-interface Day10FixIterateProps {
+interface Day14HeadsDownProps {
   topPriority?: string;
   onComplete: (data: {
     focusArea: string;
@@ -42,7 +42,7 @@ const DURATION_OPTIONS = [
   { minutes: 60, label: "60 min", description: "Deep work" },
 ];
 
-export function Day10FixIterate({ topPriority, onComplete }: Day10FixIterateProps) {
+export function Day14HeadsDown({ topPriority, onComplete }: Day14HeadsDownProps) {
   const [step, setStep] = useState<"setup" | "focus" | "duration" | "building" | "reflect">("setup");
   const [focusArea, setFocusArea] = useState<string>("");
   const [duration, setDuration] = useState<number>(0);

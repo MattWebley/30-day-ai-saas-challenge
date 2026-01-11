@@ -28,13 +28,13 @@ import { Day6SummaryPRD } from "@/components/Day6SummaryPRD";
 import { Day7ReplitBuild } from "@/components/Day7ReplitBuild";
 import { Day8ClaudeCode } from "@/components/Day8ClaudeCode";
 import { Day9RealityCheck } from "@/components/Day9RealityCheck";
-import { Day10FixIterate } from "@/components/Day10FixIterate";
-import { Day11TestUSP } from "@/components/Day11TestUSP";
-import { Day12FeatureTesting } from "@/components/Day12FeatureTesting";
-import { Day13AIBrain } from "@/components/Day13AIBrain";
-import { Day14ConnectAPIs } from "@/components/Day14ConnectAPIs";
+import { Day10AIBrain } from "@/components/Day10AIBrain";
+import { Day11AddSuperpowers } from "@/components/Day11AddSuperpowers";
 import { Day12CaptureProgress } from "@/components/Day12CaptureProgress";
-import { Day16Email } from "@/components/Day16Email";
+import { Day13ReachUsers } from "@/components/Day13ReachUsers";
+import { Day14HeadsDown } from "@/components/Day14HeadsDown";
+import { Day15TestUSP } from "@/components/Day15TestUSP";
+import { Day16FeatureTesting } from "@/components/Day16FeatureTesting";
 import { Day17Onboarding } from "@/components/Day17Onboarding";
 import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
 import { Day19MobileReady } from "@/components/Day19MobileReady";
@@ -44,6 +44,23 @@ import { DayChat } from "@/components/DayChat";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
 import { toast } from "sonner";
+
+// Helper to detect subheadlines in lessons (short lines ending with ":" or all-caps patterns)
+const isSubheadline = (paragraph: string): boolean => {
+  const trimmed = paragraph.trim();
+  // Short lines ending with colon are subheadlines
+  if (trimmed.length < 80 && trimmed.endsWith(':')) return true;
+  // Known patterns
+  if (trimmed.startsWith('STEP ')) return true;
+  if (trimmed.startsWith('PART ')) return true;
+  if (trimmed.startsWith('THE ') && trimmed.length < 50) return true;
+  if (trimmed.startsWith('BUILD →')) return true;
+  if (trimmed === 'The WINNING FORMULA') return true;
+  // Short all-caps lines
+  const upperRatio = (trimmed.match(/[A-Z]/g) || []).length / trimmed.length;
+  if (trimmed.length < 60 && upperRatio > 0.6) return true;
+  return false;
+};
 
 export default function Dashboard() {
   const [match, params] = useRoute("/dashboard/:day");
@@ -316,7 +333,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -350,7 +367,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -383,7 +400,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -445,7 +462,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -498,7 +515,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -531,7 +548,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -561,7 +578,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -591,7 +608,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -603,7 +620,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
                     <h2 className="font-bold text-xl text-slate-900">Add AI Power</h2>
                   </div>
-                  <Day13AIBrain
+                  <Day10AIBrain
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
@@ -621,7 +638,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -633,7 +650,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
                     <h2 className="font-bold text-xl text-slate-900">Add Superpowers</h2>
                   </div>
-                  <Day14ConnectAPIs
+                  <Day11AddSuperpowers
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
@@ -652,7 +669,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -682,7 +699,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -694,7 +711,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
                     <h2 className="font-bold text-xl text-slate-900">Set Up Email</h2>
                   </div>
-                  <Day16Email
+                  <Day13ReachUsers
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
@@ -712,7 +729,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -724,7 +741,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
                     <h2 className="font-bold text-xl text-slate-900">Enter Build Mode</h2>
                   </div>
-                  <Day10FixIterate
+                  <Day14HeadsDown
                     onComplete={handleComplete}
                   />
                 </div>
@@ -741,7 +758,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -753,7 +770,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
                     <h2 className="font-bold text-xl text-slate-900">Verify Your USP</h2>
                   </div>
-                  <Day11TestUSP
+                  <Day15TestUSP
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
@@ -771,7 +788,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -783,7 +800,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
                     <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
                   </div>
-                  <Day12FeatureTesting onComplete={handleComplete} />
+                  <Day16FeatureTesting onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 17 ? (
@@ -798,7 +815,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -828,7 +845,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -858,7 +875,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -888,7 +905,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>
@@ -918,7 +935,7 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0 whitespace-pre-line">{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
                         ))}
                       </div>
                     </Card>

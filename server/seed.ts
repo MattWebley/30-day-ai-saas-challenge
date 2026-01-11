@@ -150,7 +150,7 @@ If you've been in KDP, print on demand, Amazon FBA, online courses, or ANY busin
 
 Why? Because getting someone to buy a "cute goldfish app" is HARD. Getting them to buy something that helps them MAKE MORE MONEY? That's an EASY sell! These people see tools as ESSENTIAL INVESTMENTS, not "nice to haves."
 
-THE 4-POINT FILTER - Your BULLETPROOF AI SAAS App Scorecard:
+THE 4-POINT FILTER:
 
 1. PAIN INTENSITY - Is this a HATED, FREQUENT, DIFFICULT, SLOW or COSTLY task?
 2. CASH PROXIMITY - Does it help them EARN or SAVE money (or time)?
@@ -183,17 +183,24 @@ Think NICHE - DO NOT THINK BROAD! The NICHER the BETTER usually...`,
       lesson: `There's absolutely NO point trying to build a SaaS if you aren't going to make any MONEY at it! Here's the 3-step framework to validate your idea:
 
 STEP 1: Ask your LLM
+
 Just straight up ASK ChatGPT or Claude if your idea is likely a VIABLE idea. Will this make money or not? And WHY? Tell it to BE HONEST and NOT sugar coat it.
 
 STEP 2: Look for competitors SELLING something similar
+
 If there are other products on the market already with similar FEATURES that solve the SAME problems, then chances are you can make something BETTER, FASTER, CHEAPER and take some of their market share.
 
 STEP 3: ASK your target market
+
 If you can TALK to people that have the PROBLEM that your SAAS is looking to solve and simply see if they LIKE the idea - you learn lots this way.
 
-BONUS - TRUST YOUR GUT. It NEVER lets me down!
+BONUS: TRUST YOUR GUT.
 
-The "I Help" Statement: By end of today, you should be able to say: "I help [SPECIFIC PERSON] solve [PAINFUL PROBLEM] so they can [DESIRED OUTCOME]."`,
+It NEVER lets me down!
+
+The "I Help" Statement:
+
+By end of today, you should be able to say: "I help [SPECIFIC PERSON] solve [PAINFUL PROBLEM] so they can [DESIRED OUTCOME]."`,
       outcome: "One validated SaaS idea with 1-3 specific, painful problems it solves - and your 'I help X with Y' statement",
       completionMessage: "The hardest decision is behind you. You picked ONE idea and identified the exact pains it solves. That's what separates builders from dreamers. Now we turn these pain points into features.",
       xpReward: 100,
@@ -217,14 +224,17 @@ The "I Help" Statement: By end of today, you should be able to say: "I help [SPE
       lesson: `The TRUTH is, if you just create something with the SAME feature set as a competitor then YOU can have a WILDLY successful business! BUT... Why create some "clone" when you can have ALL of their best features AND be 10-20% better by including ONE feature they don't have!
 
 STEP 1: List Essential Core Features
+
 These are the features that your competitors have that if YOU don't have them, most people will NOT switch to yours or even consider it. Where multiple competitors share the same features, this forms YOUR feature set.
 
 STEP 2: Find Your USP
+
 Ask ChatGPT or Claude: "I am building SAAS for [NICHE]. My target market are [AVATAR] and the problem my SAAS solves is [PROBLEM]. Write me 28 USP ideas that my competition doesn't likely have that would make my software better than theirs."
 
 Go through them and PICK one or two that excite you. If results are generic, tell it: "I want these USP ideas to be so wild, it'd shock people in the space. NOTHING generic will do."
 
 The WINNING FORMULA:
+
 CLONED CORE FEATURES + USP + LONGER FREE TRIAL + CHEAPER MONTHLY PRICE = WIN`,
       outcome: "A complete feature list: core features you MUST have, competitive must-haves, and 1-2 unique USP features",
       completionMessage: "You know what beats a 'perfect' feature list? One that you can actually build. You just defined your core features, what competitors have, and what makes you DIFFERENT. Tomorrow: naming and MVP roadmap.",
@@ -248,32 +258,23 @@ CLONED CORE FEATURES + USP + LONGER FREE TRIAL + CHEAPER MONTHLY PRICE = WIN`,
       tip: "NEVER pay more than $10-15/year for a .com domain. If someone wants $100+, it's a domain squatter. Change the name instead. Your time is better spent building than negotiating with hoarders.",
       lesson: `Your name is your first impression. Get this RIGHT.
 
-THE GOLDEN RULES OF SAAS NAMING:
+THE GOLDEN RULES:
 
-1. ALWAYS GET THE .COM
-Not .io, not .co, not .app. The .com. It's what people type automatically. If you can't get the .com for a reasonable price, CHANGE THE NAME.
+1. ALWAYS GET THE .COM - Not .io, not .co, not .app. The .com. It's what people type automatically. If you can't get the .com for a reasonable price, CHANGE THE NAME.
 
-2. KEEP IT SHORT
-1-2 words maximum. Under 10 characters is ideal. If you can't fit it in a Twitter handle, it's too long.
+2. KEEP IT SHORT - 1-2 words maximum. Under 10 characters is ideal. If you can't fit it in a Twitter handle, it's too long.
 
-3. MAKE IT SPEAKABLE
-Say it out loud. If you have to spell it for people every time, it's WRONG. "It's Trello, T-R-E-L-L-O" is fine. "It's Xqyzt, X-Q-Y-Z-T" is not.
+3. MAKE IT SPEAKABLE - Say it out loud. If you have to spell it for people every time, it's WRONG. "It's Trello, T-R-E-L-L-O" is fine. "It's Xqyzt, X-Q-Y-Z-T" is not.
 
-4. BE UNIQUE
-"ProjectManager" is not a name - it's a description. "Asana" is a name. Made-up words that SOUND good are often better than descriptive names.
+4. BE UNIQUE - "ProjectManager" is not a name - it's a description. "Asana" is a name. Made-up words that SOUND good are often better than descriptive names.
 
 WHAT TO AVOID:
 
-❌ HYPHENS OR NUMBERS
-"task-hub-123.com" looks cheap and confusing. Just don't.
+❌ HYPHENS OR NUMBERS - "task-hub-123.com" looks cheap and confusing. Just don't.
 
-❌ OVERPAYING FOR DOMAINS
-Normal .com registration: $10-15/year on Namecheap
-If it's $100+: It's a "premium" domain owned by a squatter
-Rule: If you can't get it for under $20, pick a DIFFERENT name
+❌ OVERPAYING FOR DOMAINS - Normal .com registration: $10-15/year on Namecheap. If it's $100+, it's a "premium" domain owned by a squatter. If you can't get it for under $20, pick a DIFFERENT name.
 
-❌ GENERIC NAMES
-"Analytics Platform" or "Marketing Tool" - you can't trademark these and they're forgettable.
+❌ GENERIC NAMES - "Analytics Platform" or "Marketing Tool" - you can't trademark these and they're forgettable.
 
 The name you pick today will be on every invoice, every email, every conversation. Make it count.`,
       outcome: "Your product name chosen, .com domain registered, and all social handles claimed",
@@ -303,7 +304,8 @@ The name you pick today will be on every invoice, every email, every conversatio
 3. Replit - The main AI agent SAAS builder where your software lives
 4. OpenAI API - The brain of many projects, very cheap pay-as-you-go
 
-Why BOTH Claude AND ChatGPT?
+WHY BOTH CLAUDE AND CHATGPT?
+
 They're good at different things (and that changes, often). You can play them off against each other - get ONE to write something, pass it to the OTHER to critique.`,
       outcome: "Replit, Claude, ChatGPT, and OpenAI API accounts set up and ready to build",
       completionMessage: "Your AI toolkit is ready. You now have superpowers that would've cost $300K+ and taken years just a few years ago. Tomorrow: we create your PRD and start building.",
@@ -325,12 +327,14 @@ They're good at different things (and that changes, often). You can play them of
       microDecisionOptions: JSON.stringify(["Brief overview", "Standard detail", "Very detailed", "Everything included"]),
       reflectionQuestion: "Looking at everything you've defined, what excites you most about building this?",
       tip: "Use ChatGPT for the PRD - in my experience it does a better job 99% of the time. But still worth checking Claude's version too.",
-      lesson: `What is a PRD?
+      lesson: `WHAT IS A PRD?
+
 A PRD (Product Requirements Document) is your SAAS blueprint. A detailed written plan that outlines EXACTLY what you're going to build.
 
 We FEED the PRD to Replit, which will start to BUILD our software on its own! LIKE MAGIC!
 
-To make a decent PRD you need:
+TO MAKE A DECENT PRD YOU NEED:
+
 - SAAS NAME
 - CUSTOMER AVATAR
 - PROBLEM (your SAAS solves)
@@ -339,6 +343,7 @@ To make a decent PRD you need:
 - LOOK AND FEEL (preferred colors, style - you CAN screenshot tools you like and feed them to Replit)
 
 THE PRD PROMPT:
+
 "I need a PRD for my SAAS I'm building in Replit. The SAAS NAME is [NAME], my CUSTOMER AVATAR is [AVATAR], The PROBLEM my SAAS solves is [PROBLEM], my FEATURE set is [FEATURES], my USP is [USP] and I want it to LOOK AND FEEL like [DESCRIPTION]."
 
 Check through it, change anything that's wrong, then PASTE IT INTO REPLIT and watch the MAGIC happen!`,
@@ -364,20 +369,27 @@ Check through it, change anything that's wrong, then PASTE IT INTO REPLIT and wa
       tip: "Get into the habit of using the entire app AS you build it. This prevents you breaking something and not knowing about it until later.",
       lesson: `The AI Agent we are using is already FASTER, CHEAPER and BETTER than LARGE teams of SENIOR developers.
 
-WITH HUMANS: Simple features can take weeks or months. Debugging can take weeks. Everything is SLOW, CUMBERSOME & EXPENSIVE!
+WITH HUMANS:
 
-WITH AI: You tell it what you want, and it BUILDS it. Often in minutes.
+Simple features can take weeks or months. Debugging can take weeks. Everything is SLOW, CUMBERSOME & EXPENSIVE!
+
+WITH AI:
+
+You tell it what you want, and it BUILDS it. Often in minutes.
 
 Is it perfect? No. But it will only get BETTER. If it can't do something you want today, GIVE IT A COUPLE OF WEEKS AND IT PROBABLY WILL!
 
 DAILY WORKFLOW:
+
 1. Start your session with a clear goal
 2. Tell the agent what you want to build or fix
 3. Review what it creates
 4. Test it in the app
 5. Iterate until it works
 
-KEY NOTE: You HAVE to accept this is an EVER-CHANGING space. Things change CONSTANTLY. Don't FEAR this. EMBRACE it.`,
+KEY NOTE:
+
+You HAVE to accept this is an EVER-CHANGING space. Things change CONSTANTLY. Don't FEAR this. EMBRACE it.`,
       outcome: "Claude Code connected to Replit and GitHub, first build session complete",
       completionMessage: "Week 1 DONE. You have a validated idea, a clear plan, tools set up, and you've started building. While others are still 'thinking about it,' you're DOING it. Next week: we verify what got built.",
       xpReward: 100,
@@ -402,15 +414,18 @@ KEY NOTE: You HAVE to accept this is an EVER-CHANGING space. Things change CONST
       microDecisionOptions: JSON.stringify(["Not sure what to ask", "Results aren't what I want", "Don't know how to fix errors", "Everything feels overwhelming"]),
       reflectionQuestion: "What feature would you build if you knew Claude Code would get it right first time?",
       tip: "Claude Code works best when you're SPECIFIC. 'Make the button blue' is better than 'improve the design'. 'Add a login form with email and password' is better than 'add authentication'.",
-      lesson: `WHY CLAUDE CODE? It'll save you THOUSANDS.
+      lesson: `WHY CLAUDE CODE?
 
-You CAN just use Replit's built-in AI on its own. It's easier to get started. But here's the truth: it gets VERY expensive, VERY fast. We're talking hundreds of dollars a month if you're building regularly.
+It'll save you THOUSANDS. You CAN just use Replit's built-in AI on its own. It's easier to get started. But here's the truth: it gets VERY expensive, VERY fast. We're talking hundreds of dollars a month if you're building regularly.
 
 Claude Code runs in Replit's shell. Same power. Fraction of the price.
 
-THE CATCH: Replit resets every time you close it. So you need to reinstall Claude Code each session. That's why I'm giving you 3 simple prompts to copy-paste every time.
+THE CATCH:
+
+Replit resets every time you close it. So you need to reinstall Claude Code each session. That's why I'm giving you 3 simple prompts to copy-paste every time.
 
 YOUR DAILY ROUTINE:
+
 1. Open Replit
 2. Paste the INSTALL prompt (installs Claude Code)
 3. Paste the START prompt (Claude catches up on your project)
@@ -465,9 +480,7 @@ THE LOOP EXPLAINED:
 
 WHY THIS MATTERS:
 
-Most people build for HOURS without testing. Then they find 47 bugs at once and feel overwhelmed.
-
-Smart builders test CONSTANTLY. Find one bug, fix it, move on. Small wins stack up.
+Most people build for HOURS without testing. Then they find 47 bugs at once and feel overwhelmed. Smart builders test CONSTANTLY. Find one bug, fix it, move on. Small wins stack up.
 
 THE SECRET TO GOOD BUG REPORTS:
 
@@ -478,9 +491,7 @@ The more specific you are, the faster AI can help you fix it.
 
 TODAY'S MISSION:
 
-Find ONE bug in your app. Describe it clearly. Fix it with Claude Code. That's it.
-
-Simple? Yes. But this simple loop is what you'll do every single day of building. Master it now.`,
+Find ONE bug in your app. Describe it clearly. Fix it with Claude Code. That's it. Simple? Yes. But this simple loop is what you'll do every single day of building. Master it now.`,
       outcome: "Found and fixed your first bug using the Build-Test-Fix loop",
       completionMessage: "You just completed your first Build-Test-Fix loop! This is the skill that will carry you through everything. Finding bugs = progress. Tomorrow: more fixing and iterating.",
       xpReward: 100,
@@ -503,14 +514,11 @@ Simple? Yes. But this simple loop is what you'll do every single day of building
       tip: "The OpenAI API costs about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.",
       lesson: `Today your app gets a BRAIN.
 
-This is what makes AI SaaS different from regular SaaS. Your app doesn't just store data or display things - it THINKS.
-
-And here's the thing: Users EXPECT this now. It's 2025. An app without AI feels like a website from 2010.
+This is what makes AI SaaS different from regular SaaS. Your app doesn't just store data or display things - it THINKS. And here's the thing: Users EXPECT this now. It's 2025. An app without AI feels like a website from 2010.
 
 WHY THIS MATTERS:
 
 1. It's your MOAT. Regular features can be copied in a weekend. Good AI features are HARD to replicate.
-
 2. It's the VALUE. Users aren't paying for your pretty buttons. They're paying for what the AI does for them.
 
 THE SIMPLE VERSION:
@@ -527,20 +535,13 @@ THE PROMPT:
 
 WHAT SHOULD YOUR AI DO?
 
-Ask yourself: What manual task could the AI do that would make users say "THIS IS AMAZING"?
-
-- Generate something for them?
-- Analyze something for them?
-- Summarize something for them?
-- Suggest something for them?
+Ask yourself: What manual task could the AI do that would make users say "THIS IS AMAZING"? Generate something for them? Analyze something for them? Summarize something for them? Suggest something for them?
 
 Pick ONE thing. Get it working PERFECTLY. You can add more later.
 
 THE COST REALITY:
 
-OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.
-
-This is the feature that makes your app worth paying for. Make it good.`,
+OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD. This is the feature that makes your app worth paying for. Make it good.`,
       outcome: "AI API integrated, first AI-powered feature working in your app",
       completionMessage: "Your app can THINK now. That's the core of AI SaaS - intelligence built in. Tomorrow: connecting other APIs you might need.",
       xpReward: 100,
@@ -577,11 +578,7 @@ If YES - you're done with this part. Move on.
 
 If NO - add it with one prompt: "Add user authentication. Login/signup button in header, show user's name when logged in, logout button, each user only sees their own data."
 
-That's it. Replit handles OAuth, sessions, tokens - all the security stuff. You just describe what you want.
-
-Replit Auth is the fastest option. But if you need something specific, you can also use Firebase Auth, Auth0, Clerk, or Supabase Auth. For most MVPs, Replit Auth is plenty.
-
-Don't overthink this. Auth is solved. Ask if you have it, add it if you don't, move on.
+That's it. Replit handles OAuth, sessions, tokens - all the security stuff. You just describe what you want. Replit Auth is the fastest option. But if you need something specific, you can also use Firebase Auth, Auth0, Clerk, or Supabase Auth. For most MVPs, Replit Auth is plenty. Don't overthink this. Auth is solved. Ask if you have it, add it if you don't, move on.
 
 PART 2: EXTERNAL APIs
 
@@ -651,11 +648,7 @@ Take a screenshot of your app RIGHT NOW. Not when it's "perfect" - NOW. This is 
 
 THE TWO-SENTENCE SUMMARY:
 
-Answer these two questions:
-- What does my app do? (One sentence)
-- What works right now? (One sentence)
-
-That's your progress update.
+Answer these two questions: What does my app do? (One sentence) What works right now? (One sentence) That's your progress update.
 
 SHARE IT (OPTIONAL):
 
@@ -665,9 +658,7 @@ NO SHAME IN THE GAME:
 
 Your app doesn't need to be pretty. It doesn't need to be perfect. It just needs to EXIST. And it does. That's more than 99% of people who "want to build an app."
 
-YOU'RE ACTUALLY DOING IT.
-
-Take the screenshot. Write the summary. Move on. Tomorrow: email setup so you can reach your users.`,
+YOU'RE ACTUALLY DOING IT. Take the screenshot. Write the summary. Move on. Tomorrow: email setup so you can reach your users.`,
       outcome: "Screenshot taken, progress documented, halfway point celebrated",
       completionMessage: "Look at that! You've got PROOF of what you're building. This screenshot is the start of your launch story. Tomorrow: email setup so you can communicate with users.",
       xpReward: 100,
@@ -690,16 +681,13 @@ Take the screenshot. Write the summary. Move on. Tomorrow: email setup so you ca
       tip: "Resend is the easiest email API to set up. Free tier is generous. Start there.",
       lesson: `Email is how you stay connected to your users when they're NOT in your app.
 
-Someone signs up → Welcome email.
-Something important happens → Notification email.
-They haven't been back → "We miss you" email.
+Someone signs up → Welcome email. Something important happens → Notification email. They haven't been back → "We miss you" email.
 
 Without email, you're just hoping they remember you exist. That's not a strategy.
 
 THE ONLY EMAILS THAT MATTER (for now):
 
 1. WELCOME EMAIL - When they sign up. "Hey, thanks for joining. Here's how to get started."
-
 2. THAT'S IT - Seriously. Start with just one email. Add more when you have users.
 
 THE SETUP (5 minutes):
@@ -711,24 +699,17 @@ Use Resend. It's free for 3,000 emails/month. That's more than enough.
 3. Get API key
 4. Add to Replit Secrets: RESEND_API_KEY
 
-Then tell Claude Code:
-"When a user signs up, send them a welcome email using Resend. Subject: Welcome to [Your App]. Body: [Your message]. Use the API key from secrets."
-
-Done.
+Then tell Claude Code: "When a user signs up, send them a welcome email using Resend. Subject: Welcome to [Your App]. Body: [Your message]. Use the API key from secrets." Done.
 
 THE STUFF THAT DOESN'T MATTER YET:
 
-Fancy HTML templates? Later.
-Automated sequences? Later.
-Analytics on opens/clicks? Later.
+Fancy HTML templates? Later. Automated sequences? Later. Analytics on opens/clicks? Later.
 
 You just need ONE email working. The welcome email. Get that done, test it, move on.
 
 PRO TIP:
 
-Send a test email to yourself. Check your spam folder. If it ends up in spam, you have a domain verification issue. Fix it before launch.
-
-Emails keep users coming back. Set it up. Keep it simple.`,
+Send a test email to yourself. Check your spam folder. If it ends up in spam, you have a domain verification issue. Fix it before launch. Emails keep users coming back. Set it up. Keep it simple.`,
       outcome: "Email service connected, welcome and notification emails working",
       completionMessage: "Your app can EMAIL users now. Welcome emails, notifications, the works. Tomorrow: focused building time to bring it all together.",
       xpReward: 100,
@@ -755,9 +736,7 @@ This is Build Mode. Real, focused time with your app. No hand-holding. Just you,
 
 THE VIBE:
 
-Set a timer. Minimize distractions. Phone away. Notifications off.
-
-Then just... build.
+Set a timer. Minimize distractions. Phone away. Notifications off. Then just... build.
 
 Add a feature. Fix a bug. Make something prettier. Follow whatever calls to you. The magic happens when you stop thinking and start doing.
 
@@ -765,30 +744,21 @@ WHY THIS MATTERS:
 
 Most people never spend REAL time on their projects. They dabble. They "plan to work on it." They watch tutorials.
 
-But shipping requires BUILDING. And building requires time. Focused, uninterrupted time.
-
-30 minutes of real building beats 3 hours of "thinking about building."
+But shipping requires BUILDING. And building requires time. Focused, uninterrupted time. 30 minutes of real building beats 3 hours of "thinking about building."
 
 WHAT TO EXPECT:
 
-You might get frustrated. That's normal.
-You might get stuck. Ask Claude Code for help.
-You might break something. That's fine - fix it.
-You might get in the zone and lose track of time. THAT'S THE GOAL.
+You might get frustrated. That's normal. You might get stuck. Ask Claude Code for help. You might break something. That's fine - fix it. You might get in the zone and lose track of time. THAT'S THE GOAL.
 
 THE FLOW STATE:
 
-When you're in it, you know. Time disappears. Problems become puzzles. Fixes feel like wins.
-
-Not every session hits flow state. That's okay. Show up anyway. The magic comes from consistency.
+When you're in it, you know. Time disappears. Problems become puzzles. Fixes feel like wins. Not every session hits flow state. That's okay. Show up anyway. The magic comes from consistency.
 
 NEED MORE TIME?
 
 Hit the PAUSE button. Build Mode isn't a one-day thing. Some people spend multiple days here, and that's GOOD. Stay in Build Mode until you're ready to move on to testing.
 
-Today's mission: Set a timer. Build something. Log what you shipped.
-
-Let's go.`,
+Today's mission: Set a timer. Build something. Log what you shipped. Let's go.`,
       outcome: "Completed a focused build session and shipped improvements to your app",
       completionMessage: "You've been building like a real developer. Your app has AI, APIs, auth, email, and whatever else you've added. If you need more time, use PAUSE. When ready, it's time to TEST everything.",
       xpReward: 100,
@@ -819,21 +789,13 @@ Today we make sure that weapon is SHARP.
 
 THE QUESTION THAT MATTERS:
 
-If I showed my USP feature to a potential customer RIGHT NOW, would they say "Wow, that's cool - I'd pay for that"?
-
-If the answer is anything other than a clear YES, we have work to do.
+If I showed my USP feature to a potential customer RIGHT NOW, would they say "Wow, that's cool - I'd pay for that"? If the answer is anything other than a clear YES, we have work to do.
 
 WHAT MAKES A USP ACTUALLY WORK:
 
-1. You can SHOW it, not just describe it
-"We have AI" = NOT a USP
-"Our AI writes 10 posts in 30 seconds" = USP
-
-2. It's OBVIOUSLY different from competitors
-Can they do this too? If yes, it's not a USP.
-
-3. It solves a REAL pain
-Not a feature for the sake of features. An actual frustration that people hate.
+1. You can SHOW it, not just describe it - "We have AI" = NOT a USP. "Our AI writes 10 posts in 30 seconds" = USP.
+2. It's OBVIOUSLY different from competitors - Can they do this too? If yes, it's not a USP.
+3. It solves a REAL pain - Not a feature for the sake of features. An actual frustration that people hate.
 
 THE TEST:
 
@@ -843,17 +805,13 @@ THE TEST:
 
 Be HONEST. If you're making excuses ("well, once I add X it'll be better...") - it's not ready.
 
-Then open a competitor. Do the same thing with their tool. Is yours FASTER? EASIER? BETTER? CHEAPER?
-
-If you can't say YES to at least one of those, your USP needs work.
+Then open a competitor. Do the same thing with their tool. Is yours FASTER? EASIER? BETTER? CHEAPER? If you can't say YES to at least one of those, your USP needs work.
 
 THE BRUTAL TRUTH:
 
 Your USP is what you'll put in your marketing. It's what you'll say on your landing page. It's what will make people click "Buy."
 
-If it doesn't make YOU excited, it won't make THEM excited.
-
-Make it UNDENIABLE.`,
+If it doesn't make YOU excited, it won't make THEM excited. Make it UNDENIABLE.`,
       outcome: "USP tested and working, clear value proposition that differentiates you from competitors",
       completionMessage: "You've verified your WEAPON works. Your USP is what will make people choose YOU. Tomorrow: we test all the other features.",
       xpReward: 100,
@@ -880,18 +838,11 @@ Click every button. Fill every form. Try to BREAK things. Because if YOU can bre
 
 THE TESTING MINDSET:
 
-Pretend you've never seen your app before. You're not the builder - you're a confused user who just landed on this thing.
-
-- Can you figure out what to do?
-- Do buttons actually do what they say?
-- When something goes wrong, does it tell you WHY?
+Pretend you've never seen your app before. You're not the builder - you're a confused user who just landed on this thing. Can you figure out what to do? Do buttons actually do what they say? When something goes wrong, does it tell you WHY?
 
 TRY TO BREAK IT:
 
-Enter nothing. Submit empty forms.
-Enter garbage. asdfasdfasdf into every field.
-Enter EVERYTHING. Paste a novel into a text box.
-Do things in the wrong order. Skip steps. Go backwards.
+Enter nothing. Submit empty forms. Enter garbage. asdfasdfasdf into every field. Enter EVERYTHING. Paste a novel into a text box. Do things in the wrong order. Skip steps. Go backwards.
 
 What happens? Does it crash? Does it give a helpful error? Does it just... do nothing?
 
@@ -904,15 +855,11 @@ THE STUFF THAT'S EASY TO MISS:
 
 WHEN YOU FIND BUGS:
 
-Write them down. Don't fix them yet. Finish testing first, THEN fix everything.
-
-Unless it's completely broken - then fix it now.
+Write them down. Don't fix them yet. Finish testing first, THEN fix everything. Unless it's completely broken - then fix it now.
 
 THE GOAL:
 
-By the end of today, you should be able to use your app like a REAL user and have confidence it won't embarrass you.
-
-Break it now, so your users don't break it later.`,
+By the end of today, you should be able to use your app like a REAL user and have confidence it won't embarrass you. Break it now, so your users don't break it later.`,
       outcome: "All features tested, bugs identified and fixed, app is reliable and ready",
       completionMessage: "Your app has been TESTED. You know what works and what doesn't. That's more than most founders know when they launch. Tomorrow: making the first-run experience great.",
       xpReward: 100,
@@ -939,9 +886,7 @@ When someone signs up, you have about 2 minutes before they decide whether your 
 
 THE ONLY GOAL OF ONBOARDING:
 
-Get them to their first WIN as fast as humanly possible.
-
-Not "show them features." Not "explain everything." Just help them DO something and feel successful.
+Get them to their first WIN as fast as humanly possible. Not "show them features." Not "explain everything." Just help them DO something and feel successful.
 
 THE 2-MINUTE RULE:
 
@@ -972,11 +917,7 @@ WHAT KILLS ONBOARDING:
 
 THE QUESTION:
 
-What's the ONE thing a user needs to do to "get" your app?
-
-That's your onboarding. Everything else is distraction.
-
-Make them successful in 2 minutes or less.`,
+What's the ONE thing a user needs to do to "get" your app? That's your onboarding. Everything else is distraction. Make them successful in 2 minutes or less.`,
       outcome: "Smooth onboarding flow that gets users to their first success quickly",
       completionMessage: "New users now have a clear path to success. That's the difference between an app people try once and an app people keep using. Tomorrow: seeing what's happening in your app.",
       xpReward: 100,
@@ -1001,14 +942,11 @@ Make them successful in 2 minutes or less.`,
 
 Not guess. Not assume. KNOW.
 
-How many users do you have? How many signed up this week? Are people actually USING the thing or just signing up and leaving?
-
-Right now, you probably don't know. Let's fix that.
+How many users do you have? How many signed up this week? Are people actually USING the thing or just signing up and leaving? Right now, you probably don't know. Let's fix that.
 
 THE SIMPLEST ADMIN DASHBOARD:
 
 You don't need fancy graphs. You need FOUR numbers:
-
 1. Total users (how many people have ever signed up)
 2. New users this week (are people still finding you?)
 3. Active users this week (are they coming back?)
@@ -1018,10 +956,7 @@ That's it. Four numbers. You can add more later.
 
 THE SETUP:
 
-Tell Claude Code:
-"Create an admin page at /admin. Only I can access it. Show me: total users, new users this week, active users this week, and total [actions]. Also show the last 20 [actions] with user and timestamp."
-
-Done.
+Tell Claude Code: "Create an admin page at /admin. Only I can access it. Show me: total users, new users this week, active users this week, and total [actions]. Also show the last 20 [actions] with user and timestamp." Done.
 
 WHY THIS MATTERS:
 
@@ -1032,11 +967,7 @@ With data, you KNOW:
 - "People are signing up but not using the main feature" → Feature problem
 - "Usage is growing every week" → Keep doing what you're doing
 
-DATA TELLS YOU WHAT TO FIX.
-
-This is the last piece of infrastructure. After this, your app is ready for real users.
-
-Build the dashboard. Check it every day. Make decisions based on what you see, not what you hope.`,
+DATA TELLS YOU WHAT TO FIX. This is the last piece of infrastructure. After this, your app is ready for real users. Build the dashboard. Check it every day. Make decisions based on what you see, not what you hope.`,
       outcome: "Admin dashboard showing users, activity, and key metrics",
       completionMessage: "Week 4 DONE. Your app has real infrastructure - auth, email, onboarding, and admin. It's not a toy anymore. Next week: polish and launch.",
       xpReward: 100,
@@ -1065,40 +996,24 @@ Build the dashboard. Check it every day. Make decisions based on what you see, n
 
 Not their laptop. Not their desktop. Their PHONE.
 
-And if your app looks broken on mobile? They're GONE. They don't come back. They don't give you a second chance.
-
-This isn't about being perfect. It's about being USABLE.
+And if your app looks broken on mobile? They're GONE. They don't come back. They don't give you a second chance. This isn't about being perfect. It's about being USABLE.
 
 WHAT YOU'RE ACTUALLY TESTING:
 
-1. DOES IT LOAD?
-Open your app on your actual phone (not browser dev tools - your REAL phone). Does it load? Fast? Good.
-
-2. CAN YOU READ IT?
-Without pinching and zooming? Text should be readable without squinting.
-
-3. CAN YOU TAP THE BUTTONS?
-Are they big enough for a thumb? If you're missing buttons with your finger, they're too small.
-
-4. DOES THE MAIN THING WORK?
-Whatever your app DOES - can you do it on mobile? This is the only question that actually matters.
+1. DOES IT LOAD? Open your app on your actual phone (not browser dev tools - your REAL phone). Does it load? Fast? Good.
+2. CAN YOU READ IT? Without pinching and zooming? Text should be readable without squinting.
+3. CAN YOU TAP THE BUTTONS? Are they big enough for a thumb? If you're missing buttons with your finger, they're too small.
+4. DOES THE MAIN THING WORK? Whatever your app DOES - can you do it on mobile? This is the only question that actually matters.
 
 THE FAST FIX:
 
-Open Claude Code and say:
-"Test my app at 375px width. Fix anything that's broken. Make buttons at least 44px tall. Make text readable. No horizontal scrolling."
-
-That's it. Don't overthink it.
+Open Claude Code and say: "Test my app at 375px width. Fix anything that's broken. Make buttons at least 44px tall. Make text readable. No horizontal scrolling." That's it. Don't overthink it.
 
 HERE'S WHAT I WANT YOU TO REALISE:
 
 You're not just playing around anymore. You're building a REAL product that works on ANY device. Most people never get this far. They have ideas. They have dreams. They have "someday" plans.
 
-You have a product that's almost ready to sell.
-
-Two more days. That's it. Two more days and you'll have something you can put a price tag on.
-
-Let that sink in.`,
+You have a product that's almost ready to sell. Two more days. That's it. Two more days and you'll have something you can put a price tag on. Let that sink in.`,
       outcome: "App works perfectly on mobile devices, responsive and touch-friendly",
       completionMessage: "Your app works on mobile now. You just unlocked the majority of potential users. Tomorrow: making it LOOK as good as it works.",
       xpReward: 100,
@@ -1123,41 +1038,25 @@ Let that sink in.`,
 
 Your app WORKS. It does the thing. But does it look like something worth paying for?
 
-Here's the truth: People judge your app in the first 3 seconds. Before they even USE it. They look at it and think "professional" or "amateur".
-
-And that judgment directly affects what they'll pay.
+Here's the truth: People judge your app in the first 3 seconds. Before they even USE it. They look at it and think "professional" or "amateur". And that judgment directly affects what they'll pay.
 
 THIS IS SIMPLER THAN YOU THINK:
 
-1. PICK ONE COLOR
-Seriously. Just one main color. Blue, green, purple, whatever. Use it for buttons, links, and accents. Everything else is white/gray backgrounds and dark text.
-
-That's your brand. Done.
-
-2. TEXT LOGO IS FINE
-You don't need a designer. Your app name in a clean font IS a logo. Canva takes 5 minutes. Don't overthink this.
-
-3. MAKE IT CONSISTENT
-Same button style everywhere. Same card style everywhere. Same spacing everywhere. CONSISTENCY is what makes things look professional - not fancy graphics.
+1. PICK ONE COLOR - Seriously. Just one main color. Blue, green, purple, whatever. Use it for buttons, links, and accents. Everything else is white/gray backgrounds and dark text. That's your brand. Done.
+2. TEXT LOGO IS FINE - You don't need a designer. Your app name in a clean font IS a logo. Canva takes 5 minutes. Don't overthink this.
+3. MAKE IT CONSISTENT - Same button style everywhere. Same card style everywhere. Same spacing everywhere. CONSISTENCY is what makes things look professional - not fancy graphics.
 
 THE QUICK FIX:
 
-Tell Claude Code:
-"Make my app look consistent. Primary color is [pick one]. Same button style, same card style, same spacing on every page. Add a simple text logo in the header."
-
-That's it. 15 minutes max.
+Tell Claude Code: "Make my app look consistent. Primary color is [pick one]. Same button style, same card style, same spacing on every page. Add a simple text logo in the header." That's it. 15 minutes max.
 
 LOOK AT WHAT YOU'VE BUILT.
 
 Seriously. Open your app right now and look at it.
 
-This isn't a side project anymore. This isn't a "maybe someday" thing. This is a branded, professional-looking SaaS product that you built in 20 days.
+This isn't a side project anymore. This isn't a "maybe someday" thing. This is a branded, professional-looking SaaS product that you built in 20 days. Tomorrow you LAUNCH.
 
-Tomorrow you LAUNCH.
-
-And after that? Well, having a product is just the first step. Turning it into a BUSINESS is a different challenge entirely.
-
-But let's get through tomorrow first. One day at a time.`,
+And after that? Well, having a product is just the first step. Turning it into a BUSINESS is a different challenge entirely. But let's get through tomorrow first. One day at a time.`,
       outcome: "App has consistent branding, logo, and professional visual design",
       completionMessage: "Your app LOOKS like a real product now. Consistent, polished, credible. Tomorrow: we LAUNCH.",
       xpReward: 100,
@@ -1187,16 +1086,13 @@ Look at where you are now.
 THE PRE-LAUNCH REALITY CHECK:
 
 Before you hit that button, confirm these things work:
-
 1. Can someone sign up and log in? YES/NO
 2. Does your main feature work? YES/NO
 3. Does your USP feature work? YES/NO
 4. Does it work on mobile? YES/NO
 5. Does it look professional? YES/NO
 
-If you said YES to all of these - you're ready to launch.
-
-If you said NO to any of them - fix it now. Don't launch broken.
+If you said YES to all of these - you're ready to launch. If you said NO to any of them - fix it now. Don't launch broken.
 
 WHAT THIS COSTS TO RUN:
 
@@ -1217,26 +1113,17 @@ AFTER YOU CLICK LAUNCH:
 
 YOU BUILT A SAAS. NOW WHAT?
 
-Here's the thing nobody tells you: Building a product is actually the EASY part.
+Here's the thing nobody tells you: Building a product is actually the EASY part. Turning that product into a BUSINESS? That's where most people get stuck.
 
-Turning that product into a BUSINESS? That's where most people get stuck.
+How do you get your first paying customers? How do you price it? How do you market it when you're not a marketer? How do you grow without burning out?
 
-- How do you get your first paying customers?
-- How do you price it?
-- How do you market it when you're not a marketer?
-- How do you grow without burning out?
-
-These are the questions that separate products that make money from products that sit there collecting dust.
-
-I've helped dozens of SaaS founders navigate this exact transition. From "I have a product" to "I have a profitable business."
+These are the questions that separate products that make money from products that sit there collecting dust. I've helped dozens of SaaS founders navigate this exact transition. From "I have a product" to "I have a profitable business."
 
 If you want help with the next step - getting customers, pricing strategy, marketing that actually works, and building a sustainable business around what you've built - let's talk.
 
 Book a call: www.mattwebley.com/workwithmatt
 
-But first: LAUNCH THIS THING.
-
-You've earned it.`,
+But first: LAUNCH THIS THING. You've earned it.`,
       outcome: "App is LIVE and accessible to the world. You launched!",
       completionMessage: "🚀 YOU LAUNCHED! 21 days. From idea to live product. You did what most people only dream about. The journey is just beginning, but you've proven you can BUILD. Congratulations!",
       xpReward: 200,

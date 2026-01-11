@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ChevronRight, ArrowRight } from "lucide-react";
 
-interface Day11TestUSPProps {
+interface Day15TestUSPProps {
   userIdea: string;
   onComplete: (data: { uspDescription: string; uspDemo: string; wouldPay: string }) => void;
 }
 
-export function Day11TestUSP({ userIdea, onComplete }: Day11TestUSPProps) {
+export function Day15TestUSP({ userIdea, onComplete }: Day15TestUSPProps) {
   const [step, setStep] = useState<"define" | "test" | "validate">("define");
   const [uspDescription, setUspDescription] = useState("");
   const [uspDemo, setUspDemo] = useState("");

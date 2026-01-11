@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChevronRight, Check, Shield, Zap, Info } from "lucide-react";
 import { ds } from "@/lib/design-system";
 
-interface Day14ConnectAPIsProps {
+interface Day11AddSuperpowersProps {
   userIdea: string;
   appName: string;
   onComplete: (data: {
@@ -24,7 +24,7 @@ const API_EXAMPLES = [
   { name: "Web Scraping", examples: "Bright Data", when: "Need data with no official API" },
 ];
 
-export function Day14ConnectAPIs({ userIdea, appName, onComplete }: Day14ConnectAPIsProps) {
+export function Day11AddSuperpowers({ userIdea, appName, onComplete }: Day11AddSuperpowersProps) {
   // Auth state
   const [hasAuth, setHasAuth] = useState<boolean | null>(null);
 
