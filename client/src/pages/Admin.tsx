@@ -596,13 +596,22 @@ export default function Admin() {
 
         {/* Brand Pack */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <h2 className="text-xl font-bold text-slate-900">Brand Pack</h2>
-            <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">
-              App-wide
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-bold text-slate-900">Brand Pack</h2>
+              <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">
+                App-wide
+              </span>
+            </div>
+            <a
+              href="/design-preview"
+              className="text-sm font-medium text-primary hover:underline flex items-center gap-1"
+            >
+              <Palette className="w-4 h-4" />
+              Preview Design Styles
+            </a>
           </div>
-          
+
           <Card className="p-6 border-2 border-slate-100">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="space-y-2">
