@@ -80,30 +80,31 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Build and test it with Claude Code"
   ],
   11: [
-    "Check if your app has user authentication",
-    "If not: ask Replit to add login/signup",
-    "Sign up for Resend (email service)",
-    "Add RESEND_API_KEY to Replit Secrets",
-    "Set up your welcome email"
+    "Ask Replit: 'Can you do X without an external API?'",
+    "Identify which superpowers your app actually needs",
+    "If payments: Set up Stripe",
+    "If scraping: Set up Bright Data",
+    "Test any APIs you connect"
   ],
   12: [
+    "Ask Replit: 'Does my app have user authentication?'",
+    "If yes: Test login/logout flow",
+    "If no: Add auth with one prompt",
+    "Verify each user sees only their own data"
+  ],
+  13: [
+    "Sign up for Resend (free)",
+    "Get your API key",
+    "Add RESEND_API_KEY to Replit Secrets",
+    "Set up your welcome email",
+    "Test by signing up with a new account"
+  ],
+  14: [
     "THIS IS THE PAUSE POINT",
     "Set a timer for focused building",
     "Pick a focus: features, bugs, or polish",
     "Build without distractions",
     "Stay here until your app is ready (use PAUSE)"
-  ],
-  13: [
-    "Continue building and polishing",
-    "Focus on UI consistency",
-    "Fix remaining bugs",
-    "Make it look professional"
-  ],
-  14: [
-    "Review what works vs what doesn't",
-    "Document known issues",
-    "Ensure core features are ready",
-    "Prepare for testing phase"
   ],
   15: [
     "Identify your USP feature",

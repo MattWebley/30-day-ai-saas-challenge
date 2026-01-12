@@ -539,80 +539,223 @@ OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overth
     // ============================================
     {
       day: 11,
-      title: "Ready for Launch",
-      description: "Two quick setup tasks: verify authentication is working, then set up your welcome email.",
+      title: "Add Superpowers",
+      description: "Connect external APIs to give your app capabilities beyond what you could build yourself - payments, data, integrations.",
       phase: "Make It Work",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "Auth + Email Setup",
-      aiTaskDescription: "Ensure users can log in, then create your welcome email sequence.",
+      aiTaskTitle: "API Connections",
+      aiTaskDescription: "Identify and connect the external APIs your app needs to deliver real value.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Does your app have user authentication?",
-      microDecisionOptions: JSON.stringify(["Yes, it works", "No, need to add it", "Not sure", "Don't need it"]),
-      reflectionQuestion: "What will your welcome email say to make new users feel excited?",
-      tip: "Auth is probably already done (Replit adds it by default). Email takes 5 minutes with Resend. Don't overthink either - just verify they work.",
-      lesson: `Two quick setup tasks to make your app user-ready.
+      microDecisionQuestion: "What superpower does your app need?",
+      microDecisionOptions: JSON.stringify(["Payments (Stripe)", "Data/Scraping", "Third-party integration", "None needed yet"]),
+      reflectionQuestion: "What can your app do now that it couldn't do before?",
+      tip: "Before adding ANY external API, ask Replit Agent first: 'Can you do [thing] without an external service?' Often Replit can handle it natively. Only add APIs when truly necessary.",
+      lesson: `Your app has an AI brain. Now let's give it SUPERPOWERS.
 
-PART 1: USER AUTHENTICATION
+External APIs let your app do things that would be impossible to build yourself. Payments. Data feeds. Third-party integrations. These are the things that turn a toy into a real product.
 
-Auth just means "who are you?" so your app shows the right person their stuff.
+BUT FIRST - ASK REPLIT:
 
-Good news: Replit probably already has it. Ask Replit Agent: "Does my app have user authentication?"
+Before you add ANY external service, ask Replit Agent: "Can you help me [do the thing] without an external API?"
 
-If YES - you're done with this part. Move on.
+You'd be SURPRISED how much Replit can do natively. Database? Built in. Auth? Built in. File storage? Built in. Only reach for external APIs when Replit genuinely can't do what you need.
 
-If NO - add it with one prompt: "Add user authentication. Login/signup button in header, show user's name when logged in, logout button, each user only sees their own data."
+COMMON SUPERPOWERS:
 
-That's it. Replit handles OAuth, sessions, tokens - all the security stuff. You just describe what you want.
+1. PAYMENTS (Stripe)
+If you're charging money, you need Stripe. It's the standard.
+- Sign up at stripe.com
+- Get your API keys (test mode first!)
+- Add to Replit Secrets: STRIPE_SECRET_KEY
+- Tell Claude Code: "Add Stripe checkout for [your pricing]"
 
-PART 2: WELCOME EMAIL
+2. WEB SCRAPING (Bright Data)
+Need data from other websites? That's web scraping. It's powerful but USE IT RESPONSIBLY.
+- Only scrape public data
+- Respect rate limits
+- Check the site's terms of service
+Bright Data is the go-to service for this.
 
-Every SaaS needs at least ONE email - the welcome email. When someone signs up, they should get a "Hey, welcome! Here's how to get started" message.
+3. OTHER INTEGRATIONS
+Need to connect to Slack? Google Sheets? A specific industry tool? Most have APIs. Google "[service name] API" and look for their developer docs.
 
-THE SETUP (5 minutes):
+THE RULE:
 
-Use Resend. It's free for 3,000 emails/month.
+Add ONE superpower at a time. Get it working. Test it. Then consider the next one.
 
-1. Sign up at resend.com
-2. Get your API key
-3. Add to Replit Secrets: RESEND_API_KEY
-4. Tell Claude Code to send welcome emails on signup
+Don't go API-crazy. Every external dependency is something that can break. Keep it minimal until you KNOW you need it.
 
-You don't need fancy templates or automated sequences yet. Just one working welcome email that confirms they signed up and tells them what to do next.
+WHAT IF YOU DON'T NEED ANY?
 
-WHY BOTHER?
+That's fine! Many successful SaaS apps are just:
+- A database (Replit has it)
+- User accounts (Replit has it)
+- AI features (you added yesterday)
+- Good UX (that's on you)
 
-Without email, you have NO way to reach users after they leave your app. Email is your only direct line back to them. Set it up now. Keep it simple.`,
-      outcome: "User authentication verified/added, welcome email set up with Resend",
-      completionMessage: "Auth works. Email works. Your app is ready for REAL users. Tomorrow: the most important day - heads down building.",
+If your app works without external APIs, skip this day. Move on. Don't add complexity for the sake of it.`,
+      outcome: "External APIs connected (if needed), or confirmed app works without them",
+      completionMessage: "Your app now has superpowers - or you've confirmed it doesn't need them. Both are wins. Tomorrow: making sure users can log in.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 12,
+      title: "Let Users In",
+      description: "Make sure users can sign up, log in, and see only their own data. Authentication is what makes your app multi-user.",
+      phase: "Make It Work",
+      videoUrl: null,
+      aiTaskType: "setup",
+      aiTaskTitle: "User Authentication",
+      aiTaskDescription: "Verify or add user authentication so each user has their own account and data.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "Does your app have user authentication?",
+      microDecisionOptions: JSON.stringify(["Yes, it works", "No, need to add it", "Not sure", "Don't need it"]),
+      reflectionQuestion: "Can users sign up and see only their own data?",
+      tip: "Replit probably already added auth when you first built your app. Check before adding it again. Ask Replit: 'Does my app have user authentication?'",
+      lesson: `Authentication = "Who are you?"
+
+It's how your app knows which user is which, so everyone sees their OWN stuff, not everyone else's.
+
+GOOD NEWS:
+
+Replit probably already has it. When you built your app, Replit Agent likely added authentication automatically. Before doing ANYTHING, check:
+
+Ask Replit Agent: "Does my app have user authentication? Can users sign up, log in, and see only their own data?"
+
+If YES - you're DONE. Move to the next day. Seriously. Don't overcomplicate this.
+
+If NO - add it with ONE prompt:
+
+"Add user authentication. I need:
+- Login/signup button in the header
+- Show the user's name when logged in
+- Logout button
+- Each user should only see their own data"
+
+That's it. Replit handles all the hard stuff - OAuth, sessions, tokens, security. You just describe what you want.
+
+WHAT AUTH GIVES YOU:
+
+1. USERS - People can create accounts
+2. PRIVACY - Each person sees only their stuff
+3. PERSISTENCE - Their data is saved and waiting when they come back
+4. MONETIZATION - You know who to charge (later)
+
+WITHOUT AUTH:
+
+Everyone sees the same data. There's no "your account." You can't have paying customers because you don't know who anyone is.
+
+THE TEST:
+
+1. Sign up with a test email
+2. Add some data
+3. Log out
+4. Sign up with a DIFFERENT test email
+5. Can you see the first account's data? You shouldn't.
+
+If each account is isolated, auth is working. Done.`,
+      outcome: "Users can sign up, log in, and each user sees only their own data",
+      completionMessage: "Users can now log in and have their own accounts. Your app is no longer a single-player game. Tomorrow: reaching your users with email.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 13,
+      title: "Reach Your Users",
+      description: "Set up email so you can communicate with users - welcome emails, updates, and notifications.",
+      phase: "Make It Work",
+      videoUrl: null,
+      aiTaskType: "setup",
+      aiTaskTitle: "Email Setup",
+      aiTaskDescription: "Connect Resend for transactional emails and set up your welcome email.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "What's your first email priority?",
+      microDecisionOptions: JSON.stringify(["Welcome email", "Password reset", "Activity notifications", "Weekly digest"]),
+      reflectionQuestion: "What will your welcome email say to make new users feel excited?",
+      tip: "Start with ONE email - the welcome email. You can add more later. Resend is free for 3,000 emails/month which is plenty to start.",
+      lesson: `Without email, you have NO way to reach users after they leave your app.
+
+They sign up. They leave. They forget about you. Game over.
+
+Email is your direct line back to them. It's how you:
+- Welcome new signups
+- Remind inactive users
+- Announce new features
+- Reset passwords
+- Send notifications
+
+TODAY'S GOAL: Get ONE email working - the welcome email.
+
+THE SETUP (10 minutes):
+
+1. SIGN UP FOR RESEND
+Go to resend.com and create an account. It's free for 3,000 emails/month.
+
+2. GET YOUR API KEY
+In the Resend dashboard, create an API key. Copy it immediately.
+
+3. ADD TO REPLIT SECRETS
+In your Replit project, go to Secrets (the lock icon). Add:
+Name: RESEND_API_KEY
+Value: [paste your key]
+
+4. TELL CLAUDE CODE TO ADD EMAIL
+"When a new user signs up, send them a welcome email using Resend. The email should:
+- Welcome them by name
+- Tell them what to do first
+- Include a link back to the app
+Use the RESEND_API_KEY from secrets."
+
+YOUR WELCOME EMAIL SHOULD:
+
+- Be SHORT (3-4 sentences max)
+- Feel personal (use their name)
+- Give ONE clear action ("Click here to get started")
+- Set expectations ("Here's what you can do with [app name]")
+
+EXAMPLE:
+
+"Hey [Name]! Welcome to [App]. You're all set up and ready to go. Click here to [do the main thing]. If you have any questions, just reply to this email. - [Your name]"
+
+That's it. One email. Working. You can add more emails later (password reset, notifications, weekly updates). But start with this one.
+
+WHY RESEND?
+
+It's simple, reliable, and free to start. The API is clean. Claude Code knows how to use it. Don't overthink email providers - Resend works.`,
+      outcome: "Resend connected, welcome email sending to new signups",
+      completionMessage: "You can now REACH your users. That's huge. Email is your lifeline to customers. Tomorrow: heads down building.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 14,
       title: "Heads Down",
       description: "THE PAUSE POINT. Get in the zone, build, fix, iterate. Stay here as long as you need - days or weeks. Move on when ready.",
       phase: "Make It Work",
       videoUrl: null,
       aiTaskType: "session",
       aiTaskTitle: "Build Mode",
-      aiTaskDescription: "Focused building time with timer. This is THE pause point - stay here until your app is ready.",
+      aiTaskDescription: "Focused building time. This is THE pause point - stay here until your app is ready for testing.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "What's calling you today?",
       microDecisionOptions: JSON.stringify(["New Feature", "Bug Fixes", "Design & Polish", "Whatever Calls Me"]),
       reflectionQuestion: "How did it feel to spend focused time building?",
-      tip: "THIS IS THE PAUSE POINT. You can stay on Day 12 for days or weeks. Build, iterate, fix. Only move on when your app is ready for testing.",
+      tip: "THIS IS THE PAUSE POINT. You can stay on Day 14 for days or weeks. Build, iterate, fix. Only move on when your app is ready for testing.",
       lesson: `THIS IS THE PAUSE POINT.
 
 Stop. Read this carefully.
 
 Build Mode isn't a one-day thing. This is where you STAY until your app is ready. Some people spend one day here. Some spend two weeks. Both are fine.
 
-THE RULE: Stay on Day 12 until you're ready to move on.
+THE RULE: Stay on Day 14 until you're ready to move on.
 
-Use the PAUSE button in the sidebar to stay here. Do build sessions. Fix bugs. Add features. Come back tomorrow and do another session.
+Use the PAUSE button in the sidebar. Do build sessions. Fix bugs. Add features. Come back tomorrow and do another session. And another. And another.
 
 WHY THIS MATTERS:
 
@@ -621,6 +764,16 @@ You've learned the skills. You have the tools. You have the plan. Now it's time 
 Most people never spend REAL time on their projects. They dabble. They "plan to work on it." They watch tutorials.
 
 But shipping requires BUILDING. And building requires time. Focused, uninterrupted time.
+
+WHAT YOU SHOULD HAVE BY NOW:
+
+- Core features from your PRD
+- AI-powered functionality
+- User authentication
+- Email setup
+- Any APIs you need
+
+Now it's about making it all WORK TOGETHER. Smoothly. Reliably.
 
 THE VIBE:
 
@@ -632,10 +785,6 @@ WHAT TO EXPECT:
 
 You might get frustrated. That's normal. You might get stuck. Ask Claude Code for help. You might break something. That's fine - fix it. You might get in the zone and lose track of time. THAT'S THE GOAL.
 
-THE FLOW STATE:
-
-When you're in it, you know. Time disappears. Problems become puzzles. Fixes feel like wins.
-
 WHEN TO MOVE ON:
 
 Your app should:
@@ -646,137 +795,7 @@ Your app should:
 
 When you hit that point, complete this day and move to testing. Until then? Keep building.`,
       outcome: "Completed build session(s), app is ready for testing and user feedback",
-      completionMessage: "You've been building like a real developer. Your app is starting to take shape. If you need more time, use PAUSE. When ready, it's time to TEST everything.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 13,
-      title: "Keep Building",
-      description: "Extended build time. Polish what you've built, add finishing touches, fix remaining issues.",
-      phase: "Make It Work",
-      videoUrl: null,
-      aiTaskType: "session",
-      aiTaskTitle: "Polish Session",
-      aiTaskDescription: "Continue building and polishing. Focus on UI improvements, edge cases, and user experience.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "What needs the most attention?",
-      microDecisionOptions: JSON.stringify(["UI/UX improvements", "Bug fixes", "Missing features", "Performance issues"]),
-      reflectionQuestion: "What part of your app are you most proud of right now?",
-      tip: "This is bonus building time. If Day 12 was enough, great! If you need more time to polish, use it.",
-      lesson: `Still building? Good.
-
-Day 12 was Build Mode. Day 13 is KEEP building.
-
-Some people finish in one focused session. Others need more time. Neither is wrong.
-
-TODAY'S FOCUS: Polish what you've built.
-
-THE POLISH CHECKLIST:
-
-Does everything LOOK consistent?
-- Same fonts everywhere?
-- Same button styles?
-- Same spacing and padding?
-- Colors that make sense together?
-
-Does everything WORK consistently?
-- Loading states show when things are happening?
-- Error messages are helpful?
-- Success messages confirm actions?
-- Nothing breaks when you enter weird data?
-
-Does it FEEL professional?
-- Would you be embarrassed to show this to someone?
-- If yes, fix whatever causes that feeling.
-
-THE MINDSET:
-
-This isn't about perfection. It's about making it good enough that you're not apologizing when you show people.
-
-"Sorry, that button's broken" = not ready.
-"Yeah, it's basic but it works" = ready.
-
-If you did everything in Day 12 and feel good, this day is quick. If you need more time, take it.
-
-THE GOAL:
-
-By the end of today, your app should be something you'd let a stranger try without needing to stand over their shoulder and explain everything.
-
-That's the bar. Hit it and move on.`,
-      outcome: "App polished, UI consistent, major issues fixed",
-      completionMessage: "More polish. More progress. Your app is getting closer to something you'd proudly show off. Tomorrow: final prep before testing.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 14,
-      title: "Pre-Test Prep",
-      description: "Final check before testing phase. Make sure your app is stable, documented, and ready for user feedback.",
-      phase: "Make It Work",
-      videoUrl: null,
-      aiTaskType: "reflection",
-      aiTaskTitle: "Ready Check",
-      aiTaskDescription: "Final review before moving to testing. Document what works, what doesn't, and what to test.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "How would you rate your app right now?",
-      microDecisionOptions: JSON.stringify(["Ready to test!", "Almost there", "Needs more work", "Not sure"]),
-      reflectionQuestion: "What are you most excited for users to try?",
-      tip: "Testing starts tomorrow. Take a moment to step back and see how far you've come. Then let's find the bugs before your users do.",
-      lesson: `Tomorrow the testing begins. Let's make sure you're ready.
-
-THE STATUS CHECK:
-
-Take a breath. Open your app. Look at it like a stranger would.
-
-What WORKS?
-- Core features functional?
-- AI feature doing its thing?
-- Auth working?
-- Data saving correctly?
-
-What DOESN'T (yet)?
-- Known bugs you haven't fixed?
-- Features you planned but haven't built?
-- Things that look ugly?
-
-Be honest. You're not launching tomorrow. You're TESTING tomorrow. Bugs are expected. That's why we test.
-
-THE DOCUMENTATION:
-
-Write down (just for yourself):
-1. What the app does (one sentence)
-2. The main feature that should impress people
-3. Known issues that you know about
-4. Things you're not sure about
-
-This becomes your testing guide.
-
-THE MINDSET SHIFT:
-
-Building mode = "Add features, fix bugs, make it better"
-Testing mode = "Try to break it, find problems, be the user"
-
-Different mindset. Different approach. Tomorrow you're not the builder - you're the tester trying to find everything wrong.
-
-ARE YOU READY?
-
-If you've been through Days 8-13 honestly, you should have:
-- A working app with core features
-- AI integration
-- User authentication
-- At least one working email
-- A decent UI
-
-Is it perfect? No. Is it enough to test? Yes.
-
-If you're NOT ready - go back to Day 12. Use PAUSE. Take more time. No shame.
-
-If you ARE ready - let's test this thing.`,
-      outcome: "App reviewed, documented, and ready for user testing",
-      completionMessage: "Build phase COMPLETE. You have a working app that's ready for real testing. Tomorrow we put it through its paces and find everything that needs fixing.",
+      completionMessage: "You've been building like a real developer. Your app is taking shape. If you need more time, use PAUSE. When ready, it's time to TEST everything.",
       xpReward: 100,
       estimatedMinutes: 5,
     },

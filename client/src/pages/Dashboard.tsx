@@ -29,10 +29,10 @@ import { Day7ReplitBuild } from "@/components/Day7ReplitBuild";
 import { Day8ClaudeCode } from "@/components/Day8ClaudeCode";
 import { Day9RealityCheck } from "@/components/Day9RealityCheck";
 import { Day10AIBrain } from "@/components/Day10AIBrain";
-import { Day11ReadyForLaunch } from "@/components/Day11ReadyForLaunch";
-import { Day12HeadsDown } from "@/components/Day12HeadsDown";
-import { Day13KeepBuilding } from "@/components/Day13KeepBuilding";
-import { Day14PreTestPrep } from "@/components/Day14PreTestPrep";
+import { Day11AddSuperpowers } from "@/components/Day11AddSuperpowers";
+import { Day12LetUsersIn } from "@/components/Day12LetUsersIn";
+import { Day13ReachYourUsers } from "@/components/Day13ReachYourUsers";
+import { Day14HeadsDown } from "@/components/Day14HeadsDown";
 import { Day15TestUSP } from "@/components/Day15TestUSP";
 import { Day16FeatureTesting } from "@/components/Day16FeatureTesting";
 import { Day17Onboarding } from "@/components/Day17Onboarding";
@@ -644,15 +644,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 11: Ready for Launch (Auth + Email) */}
+                {/* Day 11: Add Superpowers (APIs) */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Ready for Launch</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Add Your Superpowers</h2>
                   </div>
-                  <Day11ReadyForLaunch
+                  <Day11AddSuperpowers
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -675,13 +674,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 12: Heads Down - THE PAUSE POINT */}
+                {/* Day 12: Let Users In (Auth) */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Build Mode</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Set Up Authentication</h2>
                   </div>
-                  <Day12HeadsDown
+                  <Day12LetUsersIn
                     onComplete={handleComplete}
                   />
                 </div>
@@ -704,13 +703,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 13: Keep Building */}
+                {/* Day 13: Reach Your Users (Email) */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Keep Building</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Set Up Email</h2>
                   </div>
-                  <Day13KeepBuilding
+                  <Day13ReachYourUsers
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -733,15 +733,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 14: Pre-Test Prep */}
+                {/* Day 14: Heads Down - THE PAUSE POINT */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Pre-Test Prep</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Build Mode</h2>
                   </div>
-                  <Day14PreTestPrep
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                  <Day14HeadsDown
                     onComplete={handleComplete}
                   />
                 </div>
