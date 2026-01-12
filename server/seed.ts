@@ -665,7 +665,7 @@ If each account is isolated, auth is working. Done.`,
     },
     {
       day: 13,
-      title: "Reach Your Users",
+      title: "Email Setup",
       description: "Set up email so you can communicate with users - welcome emails, updates, and notifications.",
       phase: "Make It Work",
       videoUrl: null,
