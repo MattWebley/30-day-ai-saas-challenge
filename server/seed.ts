@@ -603,7 +603,7 @@ If your app works without external APIs, skip this day. Move on. Don't add compl
     },
     {
       day: 12,
-      title: "Let Users In",
+      title: "Add Login",
       description: "Make sure users can sign up, log in, and see only their own data. Authentication is what makes your app multi-user.",
       phase: "Make It Work",
       videoUrl: null,
