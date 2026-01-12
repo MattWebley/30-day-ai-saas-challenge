@@ -420,20 +420,6 @@ It'll save you THOUSANDS. You CAN just use Replit's built-in AI on its own. It's
 
 Claude Code runs in Replit's shell. Same power. Fraction of the price.
 
-THE CATCH:
-
-Replit resets every time you close it. So you need to reinstall Claude Code each session. That's why I'm giving you 3 simple prompts to copy-paste every time.
-
-YOUR DAILY ROUTINE:
-
-1. Open Replit
-2. Paste the INSTALL prompt (installs Claude Code)
-3. Paste the START prompt (Claude catches up on your project)
-4. Build stuff
-5. Before closing, paste the END prompt (saves everything)
-
-That's it. Do this every time and you'll never lose work, never explain your project twice, and save a fortune on AI costs.
-
 THE SECRET TO GETTING WHAT YOU WANT:
 
 Be SPECIFIC. "Make it look better" = USELESS. "Add 16px padding around all cards" = USEFUL.
@@ -549,24 +535,24 @@ OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overth
     },
 
     // ============================================
-    // WEEK 3: MAKE IT WORK (Days 11-14)
+    // MAKE IT WORK (Days 11-14)
     // ============================================
     {
       day: 11,
-      title: "Add Superpowers",
-      description: "Make sure users can log in to their own accounts, then add external APIs if needed.",
+      title: "Ready for Launch",
+      description: "Two quick setup tasks: verify authentication is working, then set up your welcome email.",
       phase: "Make It Work",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "Auth + APIs",
-      aiTaskDescription: "Ensure user authentication is working, then connect external APIs if needed.",
+      aiTaskTitle: "Auth + Email Setup",
+      aiTaskDescription: "Ensure users can log in, then create your welcome email sequence.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Which API does your app need most?",
-      microDecisionOptions: JSON.stringify(["File storage (images, docs)", "Analytics (tracking)", "External data source", "None - AI was enough"]),
-      reflectionQuestion: "What external service would make your app 10x more useful?",
-      tip: "Two quick tasks today: auth (probably already done) and external APIs (probably skip it). Most apps need neither - check before adding.",
-      lesson: `Two quick tasks today. Let's knock them out.
+      microDecisionQuestion: "Does your app have user authentication?",
+      microDecisionOptions: JSON.stringify(["Yes, it works", "No, need to add it", "Not sure", "Don't need it"]),
+      reflectionQuestion: "What will your welcome email say to make new users feel excited?",
+      tip: "Auth is probably already done (Replit adds it by default). Email takes 5 minutes with Resend. Don't overthink either - just verify they work.",
+      lesson: `Two quick setup tasks to make your app user-ready.
 
 PART 1: USER AUTHENTICATION
 
@@ -578,173 +564,69 @@ If YES - you're done with this part. Move on.
 
 If NO - add it with one prompt: "Add user authentication. Login/signup button in header, show user's name when logged in, logout button, each user only sees their own data."
 
-That's it. Replit handles OAuth, sessions, tokens - all the security stuff. You just describe what you want. Replit Auth is the fastest option. But if you need something specific, you can also use Firebase Auth, Auth0, Clerk, or Supabase Auth. For most MVPs, Replit Auth is plenty. Don't overthink this. Auth is solved. Ask if you have it, add it if you don't, move on.
+That's it. Replit handles OAuth, sessions, tokens - all the security stuff. You just describe what you want.
 
-PART 2: EXTERNAL APIs
+PART 2: WELCOME EMAIL
 
-APIs let you plug in superpowers you'd never build yourself. But do you ACTUALLY need one?
+Every SaaS needs at least ONE email - the welcome email. When someone signs up, they should get a "Hey, welcome! Here's how to get started" message.
 
-REPLIT CAN PROBABLY DO IT ALREADY:
+THE SETUP (5 minutes):
 
-Before you sign up for a new service, check if Replit Agent can just... do it. Replit has built-in support for databases, file handling, environment variables, and more. Just ASK: "Can you add file upload functionality?" - Replit might handle it natively.
+Use Resend. It's free for 3,000 emails/month.
 
-ONLY ADD AN EXTERNAL API WHEN:
+1. Sign up at resend.com
+2. Get your API key
+3. Add to Replit Secrets: RESEND_API_KEY
+4. Tell Claude Code to send welcome emails on signup
 
-- Replit CAN'T do it natively (specific external data, social media posting)
-- The external API is SIGNIFICANTLY cheaper
-- You need features that are genuinely impossible without it
-- You need to send emails? → We'll do that on Day 13
+You don't need fancy templates or automated sequences yet. Just one working welcome email that confirms they signed up and tells them what to do next.
 
-WHEN YOU DON'T NEED AN API (YET):
+WHY BOTHER?
 
-- Analytics → Add this AFTER launch, when you have users
-- Payments → Add this when you're ready to charge
-- Extra features → Add this when users ASK for it
-
-IF YOU DO NEED SOMETHING:
-
-1. Sign up for the service
-2. Get the API key
-3. Add it to Replit Secrets
-4. Tell Claude Code: "Integrate [service]. I need to [do what]. Use the API key from secrets."
-
-THE HONEST TRUTH:
-
-If you're not sure whether you need an API, you probably don't. Ship without it. Add it when users tell you they need it. Simple apps are easier to build, easier to maintain, and easier to sell.`,
-      outcome: "User authentication verified/added, external APIs connected (if needed)",
-      completionMessage: "Your app has superpowers. Auth? Sorted. APIs? Only if you need them. Tomorrow: time to capture your progress and show off what you've built.",
+Without email, you have NO way to reach users after they leave your app. Email is your only direct line back to them. Set it up now. Keep it simple.`,
+      outcome: "User authentication verified/added, welcome email set up with Resend",
+      completionMessage: "Auth works. Email works. Your app is ready for REAL users. Tomorrow: the most important day - heads down building.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 12,
-      title: "Capture Your Progress",
-      description: "Document what you've built so far. Screenshot your app, share your progress, and celebrate the halfway point.",
-      phase: "Make It Work",
-      videoUrl: null,
-      aiTaskType: "reflection",
-      aiTaskTitle: "Progress Capture",
-      aiTaskDescription: "Take a screenshot and document your build progress so far.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "What's the most impressive part of your app right now?",
-      microDecisionOptions: JSON.stringify(["The AI features", "The user interface", "The core functionality", "How far I've come"]),
-      reflectionQuestion: "If you showed this to someone today, what would impress them most?",
-      tip: "This screenshot becomes part of your build journey. When you launch, you'll have a 'before and after' story to share.",
-      lesson: `Halfway there. Time to see how far you've come.
-
-You've been heads-down building. Today, you step back and LOOK at what you've created.
-
-WHY CAPTURE PROGRESS?
-
-1. PROOF - Screenshots don't lie. This is real evidence of what you built.
-2. MOTIVATION - Seeing progress fuels more progress.
-3. YOUR STORY - These become your "before and after" launch content.
-4. ACCOUNTABILITY - Sharing commits you to finishing.
-
-WHAT TO CAPTURE:
-
-Take a screenshot of your app RIGHT NOW. Not when it's "perfect" - NOW. This is your Day 12 snapshot. Raw. Real.
-
-THE TWO-SENTENCE SUMMARY:
-
-Answer these two questions: What does my app do? (One sentence) What works right now? (One sentence) That's your progress update.
-
-SHARE IT (OPTIONAL):
-
-The best way to stay motivated? Tell someone. Share your screenshot with the community. Celebrate. Get feedback. See what others are building.
-
-NO SHAME IN THE GAME:
-
-Your app doesn't need to be pretty. It doesn't need to be perfect. It just needs to EXIST. And it does. That's more than 99% of people who "want to build an app."
-
-YOU'RE ACTUALLY DOING IT. Take the screenshot. Write the summary. Move on. Tomorrow: email setup so you can reach your users.`,
-      outcome: "Screenshot taken, progress documented, halfway point celebrated",
-      completionMessage: "Look at that! You've got PROOF of what you're building. This screenshot is the start of your launch story. Tomorrow: email setup so you can communicate with users.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 13,
-      title: "Reach Your Users",
-      description: "Set up transactional emails - welcome emails, notifications, and password resets. Keep users engaged.",
-      phase: "Make It Work",
-      videoUrl: null,
-      aiTaskType: "setup",
-      aiTaskTitle: "Email Integration",
-      aiTaskDescription: "Connect an email service to send transactional emails to your users.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "What emails does your app need to send?",
-      microDecisionOptions: JSON.stringify(["Welcome emails only", "Welcome + notifications", "Full transactional suite", "Not sure yet"]),
-      reflectionQuestion: "What email would make a user think 'this app really cares about me'?",
-      tip: "Resend is the easiest email API to set up. Free tier is generous. Start there.",
-      lesson: `Email is how you stay connected to your users when they're NOT in your app.
-
-Someone signs up → Welcome email. Something important happens → Notification email. They haven't been back → "We miss you" email.
-
-Without email, you're just hoping they remember you exist. That's not a strategy.
-
-THE ONLY EMAILS THAT MATTER (for now):
-
-1. WELCOME EMAIL - When they sign up. "Hey, thanks for joining. Here's how to get started."
-2. THAT'S IT - Seriously. Start with just one email. Add more when you have users.
-
-THE SETUP (5 minutes):
-
-Use Resend. It's free for 3,000 emails/month. That's more than enough.
-
-1. Sign up at resend.com
-2. Verify your domain (follow their steps)
-3. Get API key
-4. Add to Replit Secrets: RESEND_API_KEY
-
-Then tell Claude Code: "When a user signs up, send them a welcome email using Resend. Subject: Welcome to [Your App]. Body: [Your message]. Use the API key from secrets." Done.
-
-THE STUFF THAT DOESN'T MATTER YET:
-
-Fancy HTML templates? Later. Automated sequences? Later. Analytics on opens/clicks? Later.
-
-You just need ONE email working. The welcome email. Get that done, test it, move on.
-
-PRO TIP:
-
-Send a test email to yourself. Check your spam folder. If it ends up in spam, you have a domain verification issue. Fix it before launch. Emails keep users coming back. Set it up. Keep it simple.`,
-      outcome: "Email service connected, welcome and notification emails working",
-      completionMessage: "Your app can EMAIL users now. Welcome emails, notifications, the works. Tomorrow: focused building time to bring it all together.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 14,
       title: "Heads Down",
-      description: "Get in the zone. Set a timer, pick a focus, and spend real time improving your app. Use PAUSE if you need more time.",
+      description: "THE PAUSE POINT. Get in the zone, build, fix, iterate. Stay here as long as you need - days or weeks. Move on when ready.",
       phase: "Make It Work",
       videoUrl: null,
       aiTaskType: "session",
-      aiTaskTitle: "Build Session",
-      aiTaskDescription: "Focused building time with timer. Pick your focus - new features, bug fixes, or design polish - and just build.",
+      aiTaskTitle: "Build Mode",
+      aiTaskDescription: "Focused building time with timer. This is THE pause point - stay here until your app is ready.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "What's calling you today?",
       microDecisionOptions: JSON.stringify(["New Feature", "Bug Fixes", "Design & Polish", "Whatever Calls Me"]),
       reflectionQuestion: "How did it feel to spend focused time building?",
-      tip: "The goal isn't perfection - it's immersion. Get lost in the work. Build, test, fix, improve. This is what being a builder feels like.",
-      lesson: `You've built the core. AI, APIs, Auth, Email. Now it's time to INTEGRATE and BUILD.
+      tip: "THIS IS THE PAUSE POINT. You can stay on Day 12 for days or weeks. Build, iterate, fix. Only move on when your app is ready for testing.",
+      lesson: `THIS IS THE PAUSE POINT.
 
-This is Build Mode. Real, focused time with your app. No hand-holding. Just you, Claude Code, and your vision.
+Stop. Read this carefully.
+
+Build Mode isn't a one-day thing. This is where you STAY until your app is ready. Some people spend one day here. Some spend two weeks. Both are fine.
+
+THE RULE: Stay on Day 12 until you're ready to move on.
+
+Use the PAUSE button in the sidebar to stay here. Do build sessions. Fix bugs. Add features. Come back tomorrow and do another session.
+
+WHY THIS MATTERS:
+
+You've learned the skills. You have the tools. You have the plan. Now it's time to actually BUILD the thing.
+
+Most people never spend REAL time on their projects. They dabble. They "plan to work on it." They watch tutorials.
+
+But shipping requires BUILDING. And building requires time. Focused, uninterrupted time.
 
 THE VIBE:
 
 Set a timer. Minimize distractions. Phone away. Notifications off. Then just... build.
 
-Add a feature. Fix a bug. Make something prettier. Follow whatever calls to you. The magic happens when you stop thinking and start doing.
-
-WHY THIS MATTERS:
-
-Most people never spend REAL time on their projects. They dabble. They "plan to work on it." They watch tutorials.
-
-But shipping requires BUILDING. And building requires time. Focused, uninterrupted time. 30 minutes of real building beats 3 hours of "thinking about building."
+Add a feature. Fix a bug. Make something prettier. Follow whatever calls to you.
 
 WHAT TO EXPECT:
 
@@ -752,15 +634,149 @@ You might get frustrated. That's normal. You might get stuck. Ask Claude Code fo
 
 THE FLOW STATE:
 
-When you're in it, you know. Time disappears. Problems become puzzles. Fixes feel like wins. Not every session hits flow state. That's okay. Show up anyway. The magic comes from consistency.
+When you're in it, you know. Time disappears. Problems become puzzles. Fixes feel like wins.
 
-NEED MORE TIME?
+WHEN TO MOVE ON:
 
-Hit the PAUSE button. Build Mode isn't a one-day thing. Some people spend multiple days here, and that's GOOD. Stay in Build Mode until you're ready to move on to testing.
+Your app should:
+- Have the core features working
+- Handle basic errors gracefully
+- Look decent (not perfect, decent)
+- Be something you'd show to a real person
 
-Today's mission: Set a timer. Build something. Log what you shipped. Let's go.`,
-      outcome: "Completed a focused build session and shipped improvements to your app",
-      completionMessage: "You've been building like a real developer. Your app has AI, APIs, auth, email, and whatever else you've added. If you need more time, use PAUSE. When ready, it's time to TEST everything.",
+When you hit that point, complete this day and move to testing. Until then? Keep building.`,
+      outcome: "Completed build session(s), app is ready for testing and user feedback",
+      completionMessage: "You've been building like a real developer. Your app is starting to take shape. If you need more time, use PAUSE. When ready, it's time to TEST everything.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 13,
+      title: "Keep Building",
+      description: "Extended build time. Polish what you've built, add finishing touches, fix remaining issues.",
+      phase: "Make It Work",
+      videoUrl: null,
+      aiTaskType: "session",
+      aiTaskTitle: "Polish Session",
+      aiTaskDescription: "Continue building and polishing. Focus on UI improvements, edge cases, and user experience.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "What needs the most attention?",
+      microDecisionOptions: JSON.stringify(["UI/UX improvements", "Bug fixes", "Missing features", "Performance issues"]),
+      reflectionQuestion: "What part of your app are you most proud of right now?",
+      tip: "This is bonus building time. If Day 12 was enough, great! If you need more time to polish, use it.",
+      lesson: `Still building? Good.
+
+Day 12 was Build Mode. Day 13 is KEEP building.
+
+Some people finish in one focused session. Others need more time. Neither is wrong.
+
+TODAY'S FOCUS: Polish what you've built.
+
+THE POLISH CHECKLIST:
+
+Does everything LOOK consistent?
+- Same fonts everywhere?
+- Same button styles?
+- Same spacing and padding?
+- Colors that make sense together?
+
+Does everything WORK consistently?
+- Loading states show when things are happening?
+- Error messages are helpful?
+- Success messages confirm actions?
+- Nothing breaks when you enter weird data?
+
+Does it FEEL professional?
+- Would you be embarrassed to show this to someone?
+- If yes, fix whatever causes that feeling.
+
+THE MINDSET:
+
+This isn't about perfection. It's about making it good enough that you're not apologizing when you show people.
+
+"Sorry, that button's broken" = not ready.
+"Yeah, it's basic but it works" = ready.
+
+If you did everything in Day 12 and feel good, this day is quick. If you need more time, take it.
+
+THE GOAL:
+
+By the end of today, your app should be something you'd let a stranger try without needing to stand over their shoulder and explain everything.
+
+That's the bar. Hit it and move on.`,
+      outcome: "App polished, UI consistent, major issues fixed",
+      completionMessage: "More polish. More progress. Your app is getting closer to something you'd proudly show off. Tomorrow: final prep before testing.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 14,
+      title: "Pre-Test Prep",
+      description: "Final check before testing phase. Make sure your app is stable, documented, and ready for user feedback.",
+      phase: "Make It Work",
+      videoUrl: null,
+      aiTaskType: "reflection",
+      aiTaskTitle: "Ready Check",
+      aiTaskDescription: "Final review before moving to testing. Document what works, what doesn't, and what to test.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "How would you rate your app right now?",
+      microDecisionOptions: JSON.stringify(["Ready to test!", "Almost there", "Needs more work", "Not sure"]),
+      reflectionQuestion: "What are you most excited for users to try?",
+      tip: "Testing starts tomorrow. Take a moment to step back and see how far you've come. Then let's find the bugs before your users do.",
+      lesson: `Tomorrow the testing begins. Let's make sure you're ready.
+
+THE STATUS CHECK:
+
+Take a breath. Open your app. Look at it like a stranger would.
+
+What WORKS?
+- Core features functional?
+- AI feature doing its thing?
+- Auth working?
+- Data saving correctly?
+
+What DOESN'T (yet)?
+- Known bugs you haven't fixed?
+- Features you planned but haven't built?
+- Things that look ugly?
+
+Be honest. You're not launching tomorrow. You're TESTING tomorrow. Bugs are expected. That's why we test.
+
+THE DOCUMENTATION:
+
+Write down (just for yourself):
+1. What the app does (one sentence)
+2. The main feature that should impress people
+3. Known issues that you know about
+4. Things you're not sure about
+
+This becomes your testing guide.
+
+THE MINDSET SHIFT:
+
+Building mode = "Add features, fix bugs, make it better"
+Testing mode = "Try to break it, find problems, be the user"
+
+Different mindset. Different approach. Tomorrow you're not the builder - you're the tester trying to find everything wrong.
+
+ARE YOU READY?
+
+If you've been through Days 8-13 honestly, you should have:
+- A working app with core features
+- AI integration
+- User authentication
+- At least one working email
+- A decent UI
+
+Is it perfect? No. Is it enough to test? Yes.
+
+If you're NOT ready - go back to Day 12. Use PAUSE. Take more time. No shame.
+
+If you ARE ready - let's test this thing.`,
+      outcome: "App reviewed, documented, and ready for user testing",
+      completionMessage: "Build phase COMPLETE. You have a working app that's ready for real testing. Tomorrow we put it through its paces and find everything that needs fixing.",
       xpReward: 100,
       estimatedMinutes: 5,
     },

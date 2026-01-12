@@ -72,35 +72,37 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Identify your top priority fix"
   ],
   10: [
-    "Get your OpenAI API key",
-    "Add it to Replit Secrets",
-    "Plan ONE AI feature",
-    "Build and test it"
+    "Create OpenAI account & add credits",
+    "Get your API key (copy it immediately!)",
+    "Add key to Replit Secrets",
+    "Describe your AI feature",
+    "Build and test it with Claude Code"
   ],
   11: [
     "Check if your app has user authentication",
     "If not: ask Replit to add login/signup",
-    "Decide if you need additional APIs",
-    "If yes: sign up, get API keys, integrate",
-    "Test that everything works"
+    "Sign up for Resend (email service)",
+    "Add RESEND_API_KEY to Replit Secrets",
+    "Set up your welcome email"
   ],
   12: [
-    "Take a screenshot of your app's current state",
-    "Write a 2-sentence summary of where you're at",
-    "Share to the community (optional)",
-    "Celebrate your progress so far!"
+    "THIS IS THE PAUSE POINT",
+    "Set a timer for focused building",
+    "Pick a focus: features, bugs, or polish",
+    "Build without distractions",
+    "Stay here until your app is ready (use PAUSE)"
   ],
   13: [
-    "Sign up for Resend",
-    "Verify your domain",
-    "Add API key to Replit Secrets",
-    "Send a test welcome email"
+    "Continue building and polishing",
+    "Focus on UI consistency",
+    "Fix remaining bugs",
+    "Make it look professional"
   ],
   14: [
-    "Set a timer for focused building",
-    "Pick ONE focus: features, bugs, or polish",
-    "Build without distractions",
-    "Use PAUSE if you need more time"
+    "Review what works vs what doesn't",
+    "Document known issues",
+    "Ensure core features are ready",
+    "Prepare for testing phase"
   ],
   15: [
     "Identify your USP feature",

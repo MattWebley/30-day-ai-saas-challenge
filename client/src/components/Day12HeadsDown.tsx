@@ -14,10 +14,11 @@ import {
   Pause,
   Clock,
   Trophy,
-  Coffee
+  Coffee,
+  AlertCircle
 } from "lucide-react";
 
-interface Day14HeadsDownProps {
+interface Day12HeadsDownProps {
   topPriority?: string;
   onComplete: (data: {
     focusArea: string;
@@ -42,7 +43,7 @@ const DURATION_OPTIONS = [
   { minutes: 60, label: "60 min", description: "Deep work" },
 ];
 
-export function Day14HeadsDown({ topPriority, onComplete }: Day14HeadsDownProps) {
+export function Day12HeadsDown({ topPriority, onComplete }: Day12HeadsDownProps) {
   const [step, setStep] = useState<"setup" | "focus" | "duration" | "building" | "reflect">("setup");
   const [focusArea, setFocusArea] = useState<string>("");
   const [duration, setDuration] = useState<number>(0);
@@ -102,11 +103,30 @@ export function Day14HeadsDown({ topPriority, onComplete }: Day14HeadsDownProps)
 
   return (
     <div className="space-y-6">
+      {/* THE PAUSE POINT MESSAGE */}
+      <Card className="p-6 border-4 border-amber-300 bg-amber-50">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-full bg-amber-400 flex items-center justify-center shrink-0">
+            <AlertCircle className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h3 className="text-xl font-extrabold text-amber-900">THIS IS THE PAUSE POINT</h3>
+            <p className="text-amber-800 mt-2">
+              <strong>Stay here as long as you need.</strong> This isn't a one-day thing.
+              Build Mode can take days or weeks. Do build sessions, iterate, fix bugs, add features.
+            </p>
+            <p className="text-amber-700 mt-2 text-sm">
+              Use the <strong>PAUSE button</strong> in the sidebar to stay on this day. Move on when your app is ready.
+            </p>
+          </div>
+        </div>
+      </Card>
+
       {/* Setup */}
       {step === "setup" && (
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h3 className="text-2xl font-extrabold text-slate-900">Build Mode</h3>
+            <h3 className="text-2xl font-extrabold text-slate-900">Heads Down - Build Mode</h3>
             <p className="text-slate-600 mt-2">
               Time to get in the zone. You'll set a timer, pick a focus, and just BUILD.
             </p>
@@ -129,8 +149,8 @@ export function Day14HeadsDown({ topPriority, onComplete }: Day14HeadsDownProps)
             </div>
           </Card>
 
-          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-            <p className="text-sm text-amber-800">
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="text-sm text-slate-700">
               <strong>The goal isn't perfection.</strong> It's immersion. Spend real time improving your app.
               Fix things, add things, tweak things. Get lost in the work.
             </p>
@@ -225,17 +245,10 @@ export function Day14HeadsDown({ topPriority, onComplete }: Day14HeadsDownProps)
             })}
           </div>
 
-          <Card className="p-4 border-2 border-blue-200 bg-blue-50">
-            <p className="text-sm text-blue-800">
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="text-sm text-slate-700">
               <strong>Pro tip:</strong> Start with 30 minutes if you're new to focused building.
               It's better to finish strong than burn out.
-            </p>
-          </Card>
-
-          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-            <p className="text-sm text-amber-800">
-              <strong>NEED MORE THAN ONE DAY?</strong> That's totally fine! Build Mode isn't a one-day thing.
-              Come back tomorrow and do another session. Use the PAUSE button in the sidebar to stay on this day until you're ready to move on.
             </p>
           </Card>
 
@@ -386,7 +399,7 @@ export function Day14HeadsDown({ topPriority, onComplete }: Day14HeadsDownProps)
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="font-bold text-lg text-slate-900 mb-3">How did it feel?</h4>
             <p className="text-sm text-slate-600 mb-3">Were you in the zone? Frustrated? Excited?</p>
-            <div className="flex gap-2 mb-3">
+            <div className="flex gap-2 mb-3 flex-wrap">
               {["🔥 In the zone", "😤 Bit frustrating", "🎉 Great progress", "🤔 Learning a lot"].map((mood) => (
                 <button
                   key={mood}
@@ -437,11 +450,14 @@ export function Day14HeadsDown({ topPriority, onComplete }: Day14HeadsDownProps)
             </p>
           )}
 
-          <Card className="p-4 border-2 border-amber-300 bg-amber-50 mt-4">
+          <Card className="p-4 border-4 border-amber-300 bg-amber-50 mt-4">
             <div className="text-center">
               <p className="text-amber-900 font-bold text-lg mb-2">Not ready to move on?</p>
               <p className="text-amber-800 text-sm mb-3">
-                Build Mode can take multiple days. Use the PAUSE button in the sidebar to stay here and do more build sessions.
+                Build Mode can take multiple days or weeks. Use the <strong>PAUSE button</strong> in the sidebar to stay here and do more build sessions.
+              </p>
+              <p className="text-amber-700 text-xs">
+                Only move on when your app is ready for testing and polish.
               </p>
             </div>
           </Card>

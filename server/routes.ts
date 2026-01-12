@@ -309,7 +309,7 @@ SCORING CRITERIA (rate each 1-5):
 1. Market Demand - Is there proven demand? Are competitors making money?
 2. Skill Match - Does it align with their skills and knowledge?
 3. Passion Fit - Will they enjoy working on this?
-4. Speed to MVP - Can they build an MVP in 30 days?
+4. Speed to MVP - Can they build an MVP in 21 days?
 5. Monetization - Clear path to $1k+ MRR?
 
 For each idea, provide:
@@ -1195,12 +1195,31 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
     try {
       const id = parseInt(req.params.id);
       const { status } = req.body; // 'approved' or 'rejected'
-      
+
       const updated = await storage.updateCommentStatus(id, status);
       res.json(updated);
     } catch (error: any) {
       console.error("Error updating comment status:", error);
       res.status(500).json({ message: error.message || "Failed to update comment" });
+    }
+  });
+
+  // Admin: Delete comment
+  app.delete("/api/comments/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+
+      const id = parseInt(req.params.id);
+      await storage.deleteComment(id);
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error deleting comment:", error);
+      res.status(500).json({ message: error.message || "Failed to delete comment" });
     }
   });
 
@@ -1215,7 +1234,7 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
         accentColor: "#007BFF",
         fontFamily: "Poppins",
         borderRadius: 6,
-        appName: "30 Day AI SaaS Challenge",
+        appName: "21 Day AI SaaS Challenge",
       });
     } catch (error) {
       console.error("Error fetching brand settings:", error);

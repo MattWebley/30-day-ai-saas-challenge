@@ -771,6 +771,71 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - TypeScript check passing
   - 14 commits ahead of origin before push
 
+### 2026-01-12 - Build Section (Days 10-14) Complete Restructure
+- Tasks Completed:
+  - **Implemented Plan from Plan Mode** (Build section improvement):
+    - Day 10: Added step gating to AI Brain (5 steps, must complete each before seeing next)
+    - Day 11: Created "Ready for Launch" (merged Auth + Email into single day)
+    - Day 12: Moved Heads Down/Build Mode here (THE PAUSE POINT)
+    - Day 13: Created "Keep Building" (extended polish time)
+    - Day 14: Created "Pre-Test Prep" (final check before testing)
+  - **New Component Files Created**:
+    - Day11ReadyForLaunch.tsx - Auth verification + Welcome email setup
+    - Day12HeadsDown.tsx - Build Mode with prominent PAUSE messaging
+    - Day13KeepBuilding.tsx - Extended build time, UI/UX polish focus
+    - Day14PreTestPrep.tsx - Readiness assessment and documentation
+  - **Updated Existing Files**:
+    - Day10AIBrain.tsx - Added 5-step gating with progress indicator
+    - seed.ts - New titles, lessons, outcomes for Days 10-14
+    - DayInstructions.tsx - Updated instructions for Days 10-14
+    - Dashboard.tsx - Updated imports and component routing
+  - **Deleted Old Component Files**:
+    - Day11AddSuperpowers.tsx (replaced by Day11ReadyForLaunch)
+    - Day12CaptureProgress.tsx (replaced by Day12HeadsDown)
+    - Day13ReachUsers.tsx (merged into Day 11, replaced by Day13KeepBuilding)
+    - Day14HeadsDown.tsx (moved to Day 12, replaced by Day14PreTestPrep)
+- New Day Structure:
+  - Day 10: Add The AI Brain (step-gated setup)
+  - Day 11: Ready for Launch (Auth + Email - quick setup tasks)
+  - Day 12: Heads Down - THE PAUSE POINT (build mode, can stay for days/weeks)
+  - Day 13: Keep Building (extended polish time)
+  - Day 14: Pre-Test Prep (document status, prepare for testing)
+- Key Changes:
+  - Day 12 is now THE pause point with explicit "stay here" messaging
+  - PAUSE button guidance prominently displayed
+  - Auth moved earlier (was causing Day 12 to feel hollow)
+  - Email setup merged with Auth (both are "ready to launch" tasks)
+  - Screenshot capture already in Day 21 (no change needed)
+- Notes:
+  - TypeScript check passing
+  - Database seeded with new content
+  - All old component files deleted
+  - New flow: Learn tools (8-9) → AI Brain (10) → Ready for Launch (11) → BUILD MODE (12) → Polish (13) → Pre-Test (14) → Test & Refine (15-18) → Launch (19-21)
+
+### 2026-01-12 (Session 2) - Admin Delete Comments & 30→21 Day Fixes
+- Tasks Completed:
+  - **Admin-Only Comment Delete Feature**:
+    - Added `isAdmin` boolean field to users schema
+    - Added `deleteComment` storage method
+    - Created DELETE `/api/comments/:id` endpoint (checks isAdmin)
+    - Updated DayChat.tsx with trash button (only visible to admins)
+    - Set Matt's user as admin in database (id: 43411523)
+  - **Fixed "30 Day" References**:
+    - Updated schema.ts comment (30-day → 21-day curriculum)
+    - Updated routes.ts AI prompt (30 days → 21 days)
+    - Verified index.html already correct (21 Day)
+    - Brand settings default already correct (21 Day)
+- Files Modified:
+  - shared/schema.ts - Added isAdmin field, updated comment
+  - server/storage.ts - Added deleteComment method
+  - server/routes.ts - Added DELETE endpoint, fixed 30→21 reference
+  - client/src/components/DayChat.tsx - Added admin delete button
+- Notes:
+  - TypeScript check passing
+  - Database schema pushed (isAdmin field added)
+  - Matt's user set as admin directly in database
+  - Brand settings table is empty so uses default "21 Day AI SaaS Challenge"
+
 ---
 
 ## Project-Specific Rules

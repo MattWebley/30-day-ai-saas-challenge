@@ -141,7 +141,7 @@ export default function Admin() {
     accentColor: "#007BFF",
     fontFamily: "Poppins",
     borderRadius: 6,
-    appName: "30 Day AI SaaS Challenge",
+    appName: "21 Day AI SaaS Challenge",
   });
 
   useEffect(() => {
@@ -154,7 +154,7 @@ export default function Admin() {
         fontFamily: brandSettings.fontFamily || "Poppins",
         borderRadius: brandSettings.borderRadius || 6,
         logoUrl: brandSettings.logoUrl || "",
-        appName: brandSettings.appName || "30 Day AI SaaS Challenge",
+        appName: brandSettings.appName || "21 Day AI SaaS Challenge",
       });
     }
   }, [brandSettings]);
@@ -375,7 +375,7 @@ export default function Admin() {
                 <Trophy className="w-6 h-6 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500">Completed 30 Days</p>
+                <p className="text-sm font-medium text-slate-500">Completed 21 Days</p>
                 <p className="text-2xl font-bold text-slate-900">{stats.completedChallenges}</p>
               </div>
             </div>

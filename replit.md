@@ -1,8 +1,8 @@
-# 30 Day AI SaaS Challenge
+# 21 Day AI SaaS Challenge
 
 ## Overview
 
-A gamified daily challenge application that guides users from zero to a working AI SaaS MVP in 30 days. Each day delivers structured micro-tasks (5 minutes or less) with AI-generated suggestions, pre-filled templates, micro-decisions, and reflections. The platform features a badge reward system, progress tracking, and daily curriculum content organized into phases (Clarifier, Blueprint Architect, Maker Mode, MVP Builder, Refinement Specialist).
+A gamified daily challenge application that guides users from zero to a launch-ready AI SaaS in 21 days. Each day delivers structured micro-tasks with AI-generated suggestions, pre-filled templates, micro-decisions, and reflections. The platform features a badge reward system, progress tracking, and daily curriculum content organized into phases (Idea, Plan, Build, Polish, Launch).
 
 ## User Preferences
 
@@ -83,7 +83,7 @@ A gamified daily challenge application that guides users from zero to a working 
 ### Key Data Models
 - **Users**: Authentication and profile data
 - **Sessions**: PostgreSQL-backed session storage
-- **Day Content**: 30-day curriculum with phases, AI task types, suggestions
+- **Day Content**: 21-day curriculum with phases, AI task types, suggestions
 - **User Progress**: Per-day completion tracking with micro-decisions and reflections
 - **Badges**: Achievement system with triggers based on day completion
 - **User Stats**: Aggregate statistics (streaks, completed days)

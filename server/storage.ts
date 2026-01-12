@@ -85,6 +85,7 @@ export interface IStorage {
   createDayComment(comment: InsertDayComment): Promise<DayComment>;
   updateCommentStatus(id: number, status: string): Promise<DayComment | undefined>;
   getPendingComments(): Promise<(DayComment & { user: User })[]>;
+  deleteComment(id: number): Promise<void>;
   
   // Spam status operations
   getUserSpamStatus(userId: string): Promise<UserSpamStatus | undefined>;
@@ -346,6 +347,10 @@ export class DatabaseStorage implements IStorage {
       })
     );
     return commentsWithUsers;
+  }
+
+  async deleteComment(id: number): Promise<void> {
+    await db.delete(dayComments).where(eq(dayComments.id, id));
   }
 
   // Spam status operations

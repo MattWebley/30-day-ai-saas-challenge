@@ -3,9 +3,10 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { MessageCircle, Send, AlertCircle } from "lucide-react";
+import { MessageCircle, Send, AlertCircle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Comment {
   id: number;
@@ -27,8 +28,11 @@ interface DayChatProps {
 
 export function DayChat({ day }: DayChatProps) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [newComment, setNewComment] = useState("");
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+
+  const isAdmin = (user as any)?.isAdmin === true;
 
   const { data: comments = [], isLoading } = useQuery<Comment[]>({
     queryKey: [`/api/comments/${day}`],
@@ -51,6 +55,20 @@ export function DayChat({ day }: DayChatProps) {
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to post comment");
+    },
+  });
+
+  const deleteComment = useMutation({
+    mutationFn: async (commentId: number) => {
+      const res = await apiRequest("DELETE", `/api/comments/${commentId}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/comments/${day}`] });
+      toast.success("Comment deleted");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete comment");
     },
   });
 
@@ -138,6 +156,16 @@ export function DayChat({ day }: DayChatProps) {
                     <span className="text-xs text-slate-400">
                       {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                     </span>
+                    {isAdmin && (
+                      <button
+                        onClick={() => deleteComment.mutate(comment.id)}
+                        disabled={deleteComment.isPending}
+                        className="ml-auto p-1 text-slate-400 hover:text-red-500 transition-colors"
+                        title="Delete comment"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                   <p className="text-slate-600 text-sm whitespace-pre-wrap break-words">
                     {comment.content}
