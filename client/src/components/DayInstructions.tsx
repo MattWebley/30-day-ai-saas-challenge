@@ -66,10 +66,11 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Document what you built"
   ],
   9: [
-    "Open your PRD from Day 6",
-    "Test every feature in your app",
-    "Mark each: WORKS / BROKEN / MISSING",
-    "Identify your top priority fix"
+    "Learn the Build-Test-Fix workflow",
+    "Open your app and find ONE bug",
+    "Describe the bug clearly",
+    "Fix it with Claude Code",
+    "Verify the fix works"
   ],
   10: [
     "Create OpenAI account & add credits",
