@@ -1288,11 +1288,11 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
       const chatSettings = await storage.getChatbotSettings();
 
       // Use admin-configured values or defaults
-      const responseStyle = chatSettings?.responseStyle || `- Be BRIEF. Max 2-3 sentences per point.
-- Use bullet points for multiple items.
-- Give ONE clear action, not a list of options.
-- No fluff, no preamble, no "Great question!"
-- Get straight to the answer.`;
+      const responseStyle = chatSettings?.responseStyle || `- Be helpful and conversational, like a knowledgeable friend.
+- Explain things clearly - use examples when helpful.
+- Use formatting (bullets, code blocks) when it aids clarity.
+- Give actionable guidance with context on why.
+- Be encouraging but genuine - no over-the-top praise.`;
 
       const scopeHelps = chatSettings?.scopeHelps || 'ideas, planning, coding, debugging, tech decisions, APIs, auth, testing';
       const scopeWontHelp = chatSettings?.scopeWontHelp || 'sales, marketing, pricing, business strategy, post-launch growth';
