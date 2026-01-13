@@ -33,10 +33,10 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "The 4 Rules",
       points: [
-        "1. SHOW UP DAILY — consistency beats intensity",
-        "2. NEVER BREAK THE CHAIN — your streak matters",
-        "3. DONE > PERFECT — ship beats polish",
-        "4. NO SKIPPING — each day builds on the last",
+        "1. SHOW UP DAILY -consistency beats intensity",
+        "2. NEVER BREAK THE CHAIN -your streak matters",
+        "3. DONE > PERFECT -ship beats polish",
+        "4. NO SKIPPING -each day builds on the last",
       ],
     },
     {
@@ -61,10 +61,10 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "The 4-Point Filter",
       points: [
-        "PAIN INTENSITY — Is this task hated/frequent/costly?",
-        "CASH PROXIMITY — Does it help earn or save money?",
-        "SPEED TO MVP — Can you ship in 14 days?",
-        "PERSONAL ADVANTAGE — Your knowledge, access, audience?",
+        "PAIN INTENSITY -Is this task hated/frequent/costly?",
+        "CASH PROXIMITY -Does it help earn or save money?",
+        "SPEED TO MVP -Can you ship in 14 days?",
+        "PERSONAL ADVANTAGE -Your knowledge, access, audience?",
       ],
     },
     {
@@ -73,7 +73,7 @@ const slideContent: Record<number, Slide[]> = {
         "Generate 28 personalized ideas using AI",
         "Score each against the 4-point filter",
         "Shortlist your top 3-5 ideas",
-        "Don't overthink — trust your gut",
+        "Don't overthink -trust your gut",
       ],
     },
   ],
@@ -89,9 +89,9 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "The 3-Step Validation",
       points: [
-        "1. ASK YOUR LLM — Is this viable? Be BRUTALLY honest",
-        "2. FIND COMPETITORS — If 3+ exist, demand is proven",
-        "3. ASK YOUR TARGET — Talk to real people with the problem",
+        "1. ASK YOUR LLM -Is this viable? Be BRUTALLY honest",
+        "2. FIND COMPETITORS -If 3+ exist, demand is proven",
+        "3. ASK YOUR TARGET -Talk to real people with the problem",
       ],
     },
     {
@@ -136,7 +136,7 @@ const slideContent: Record<number, Slide[]> = {
       title: "Day 4: Name & Claim",
       points: [
         "Your name is your first impression",
-        "ALWAYS get the .com — no exceptions",
+        "ALWAYS get the .com -no exceptions",
         "If you can't get .com cheap, CHANGE THE NAME",
       ],
     },
@@ -164,17 +164,17 @@ const slideContent: Record<number, Slide[]> = {
       title: "Day 5: AI Tech Stack",
       points: [
         "These tools are your SUPERPOWERS",
-        "Total cost: ~$50/month — accept it as cost of doing business",
-        "Get PAID accounts — don't skimp here",
+        "Total cost: ~$50/month -accept it as cost of doing business",
+        "Get PAID accounts -don't skimp here",
       ],
     },
     {
       title: "Your AI Stack",
       points: [
-        "ChatGPT Plus (~$20/mo) — advice, content, ideas",
-        "Claude Pro (~$20/mo) — second opinion, different strengths",
-        "Replit — where your software LIVES",
-        "OpenAI API — the brain of your app (pay-as-you-go)",
+        "ChatGPT Plus (~$20/mo) -advice, content, ideas",
+        "Claude Pro (~$20/mo) -second opinion, different strengths",
+        "Replit -where your software LIVES",
+        "OpenAI API -the brain of your app (pay-as-you-go)",
       ],
     },
     {
@@ -183,7 +183,7 @@ const slideContent: Record<number, Slide[]> = {
         "They're good at DIFFERENT things",
         "Play them off each other for better results",
         "One writes, the other critiques",
-        "This changes constantly — stay flexible",
+        "This changes constantly -stay flexible",
       ],
     },
   ],
@@ -211,7 +211,7 @@ const slideContent: Record<number, Slide[]> = {
       title: "Your Task Today",
       points: [
         "Use ChatGPT to generate your PRD",
-        "Review it — change anything wrong",
+        "Review it -change anything wrong",
         "Paste it into Replit",
         "Watch it start building FOR you",
       ],
@@ -223,7 +223,7 @@ const slideContent: Record<number, Slide[]> = {
       points: [
         "AI agents are FASTER, CHEAPER, BETTER than dev teams",
         "What took weeks with humans = MINUTES with AI",
-        "This is an ever-changing space — EMBRACE it",
+        "This is an ever-changing space -EMBRACE it",
       ],
     },
     {
@@ -299,7 +299,7 @@ const slideContent: Record<number, Slide[]> = {
         "Find ONE bug in your app",
         "Describe it CLEARLY (not just 'it's broken')",
         "Fix it with Claude Code",
-        "Congratulations — you just did the loop!",
+        "Congratulations -you just did the loop!",
       ],
     },
   ],
@@ -308,7 +308,7 @@ const slideContent: Record<number, Slide[]> = {
       title: "Day 10: Add The AI Brain",
       points: [
         "This is what makes AI SaaS SPECIAL",
-        "Users EXPECT intelligence now — it's 2025",
+        "Users EXPECT intelligence now -it's 2025",
         "An app without AI feels like a website from 2010",
       ],
     },
@@ -343,8 +343,8 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "Common Superpowers",
       points: [
-        "PAYMENTS: Stripe — the standard for charging money",
-        "SCRAPING: Bright Data — get data from other sites",
+        "PAYMENTS: Stripe -the standard for charging money",
+        "SCRAPING: Bright Data -get data from other sites",
         "INTEGRATIONS: Most services have APIs",
         "Add ONE at a time. Test. Then consider the next.",
       ],
@@ -373,8 +373,8 @@ const slideContent: Record<number, Slide[]> = {
       points: [
         "Replit probably ALREADY has it",
         "Check first: 'Does my app have user authentication?'",
-        "If YES — you're DONE. Move on.",
-        "If NO — one prompt adds it all",
+        "If YES -you're DONE. Move on.",
+        "If NO -one prompt adds it all",
       ],
     },
     {
@@ -441,7 +441,7 @@ const slideContent: Record<number, Slide[]> = {
         "Handles errors gracefully",
         "Looks decent (not perfect, DECENT)",
         "Something you'd show to a real person",
-        "When you hit that — move to testing",
+        "When you hit that -move to testing",
       ],
     },
   ],
@@ -459,7 +459,7 @@ const slideContent: Record<number, Slide[]> = {
       points: [
         "Show your USP to a potential customer RIGHT NOW",
         "Would they say 'Wow, I'd pay for that'?",
-        "If not a clear YES — we have work to do",
+        "If not a clear YES -we have work to do",
         "No excuses ('once I add X...')",
       ],
     },
@@ -468,7 +468,7 @@ const slideContent: Record<number, Slide[]> = {
       points: [
         "Open your app. Do the USP thing.",
         "Ask yourself: Would I pay for this?",
-        "Compare to a competitor — is yours BETTER?",
+        "Compare to a competitor -is yours BETTER?",
         "Make it UNDENIABLE",
       ],
     },
@@ -485,9 +485,9 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "Try To Break It",
       points: [
-        "Enter NOTHING — submit empty forms",
-        "Enter GARBAGE — asdfasdf in every field",
-        "Enter EVERYTHING — paste a novel",
+        "Enter NOTHING -submit empty forms",
+        "Enter GARBAGE -asdfasdf in every field",
+        "Enter EVERYTHING -paste a novel",
         "Do things in the WRONG ORDER",
         "What happens?",
       ],
@@ -496,7 +496,7 @@ const slideContent: Record<number, Slide[]> = {
       title: "Your Task Today",
       points: [
         "Test like a USER, not a developer",
-        "Write down bugs — don't fix yet",
+        "Write down bugs -don't fix yet",
         "Finish testing, THEN fix everything",
         "Break it now so users don't break it later",
       ],
@@ -543,10 +543,10 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "The 4 Numbers You Need",
       points: [
-        "TOTAL USERS — how many ever signed up",
-        "NEW THIS WEEK — are people finding you?",
-        "ACTIVE THIS WEEK — are they coming back?",
-        "TOTAL ACTIONS — are they doing the thing?",
+        "TOTAL USERS -how many ever signed up",
+        "NEW THIS WEEK -are people finding you?",
+        "ACTIVE THIS WEEK -are they coming back?",
+        "TOTAL ACTIONS -are they doing the thing?",
       ],
     },
     {
@@ -565,7 +565,7 @@ const slideContent: Record<number, Slide[]> = {
       title: "Day 19: Mobile Ready",
       points: [
         "More than HALF your users will be on their PHONE",
-        "If it looks broken on mobile — they're GONE",
+        "If it looks broken on mobile -they're GONE",
         "No second chances",
       ],
     },
@@ -600,9 +600,9 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "This Is Simpler Than You Think",
       points: [
-        "PICK ONE COLOR — use it everywhere",
-        "TEXT LOGO IS FINE — your name in a clean font",
-        "MAKE IT CONSISTENT — same style everywhere",
+        "PICK ONE COLOR -use it everywhere",
+        "TEXT LOGO IS FINE -your name in a clean font",
+        "MAKE IT CONSISTENT -same style everywhere",
         "Consistency = professional",
       ],
     },
