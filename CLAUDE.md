@@ -991,6 +991,41 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - TypeScript check passing
   - All changes committed and pushed to GitHub
 
+### 2026-01-13 (Session 6) - Day 9 Move to Prepare & Days 19-21 Polish
+- Tasks Completed:
+  - **Day 9 moved to Prepare section**: "Master Claude Code" is now in Prepare phase (days 5-9), Build starts at Day 10
+    - Updated seed.ts phase from "Build & Verify" to "Prepare"
+    - Updated Sidebar.tsx day ranges (Prepare: 5-9, Build: 10-18)
+    - Updated Sidebar.tsx milestone marker (Build at day 10)
+    - Updated Day0StartHere.tsx milestones to match
+  - **Days 19-21 lessons rewritten in Matt's voice**:
+    - Added ALL CAPS emphasis, short punchy sentences
+    - Day 19: "BRUTAL truth about traffic", "THE SALES MACHINE", "THE AI WARNING"
+    - Day 20: "A product NOBODY knows about makes $0", "THE OVERWHELM TRAP", "THE SECRET"
+    - Day 21: "99% of people NEVER do", "THE SAAS MATH IS BEAUTIFUL", "THE FOUR PILLARS"
+  - **Added proper earnings disclaimers** (legal protection):
+    - Day 20: Replaced "typical results" with proper disclaimer
+    - Day 21: Added disclaimer after income milestones
+    - Seed.ts Day 21 lesson: Added inline disclaimer
+    - All disclaimers: "hypothetical examples", "no income guaranteed", "most products never generate significant revenue"
+  - **Day 20 "Change" button**: Added ability to change strategies after selection (projection & complete steps)
+  - **Day 20 projections removed**: Stripped all income projections from Day 20
+    - Removed projection step entirely
+    - Removed price point, success level, customer projections
+    - Removed 12-month growth chart and revenue calculations
+    - ~200 lines of code removed
+    - Day 20 now pure strategy selection only
+- Fixes Applied:
+  - Fixed sidebar showing Day 9 in Build instead of Prepare
+  - Fixed Day0StartHere milestones (removed "Polish", updated Build to day 10)
+  - Fixed earnings disclaimer language ("typical results" → proper legal disclaimer)
+  - Removed duplicate income projections between Day 20 and Day 21
+- Notes:
+  - Clean separation: Day 20 = pick channels (WHAT), Day 21 = money math (WHY)
+  - All pending tasks from CLAUDE.md remain (testing, affiliate IDs, booking links)
+  - TypeScript check passing
+  - All changes committed and pushed to GitHub (5 commits this session)
+
 ---
 
 ## Project-Specific Rules
