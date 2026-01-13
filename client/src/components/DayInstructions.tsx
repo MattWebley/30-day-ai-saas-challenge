@@ -132,10 +132,10 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Submit to the Showcase (screenshot + testimonial)"
   ],
   19: [
-    "Set your monthly income goal",
-    "Pick your price point ($9-$199/month)",
-    "Calculate how many customers you need",
-    "Understand the gap between app and business"
+    "Understand the sales machine concept",
+    "Learn how to convert without rejection or selling",
+    "See the free trial formula",
+    "Understand why AI sales pages don't convert well"
   ],
   20: [
     "Browse 50+ customer acquisition strategies",
@@ -145,8 +145,9 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "See your 12-month revenue projection"
   ],
   21: [
-    "See what turns an app into a business",
-    "Understand the four pillars of SaaS",
+    "Calculate your income potential",
+    "Set your monthly goal and price point",
+    "Understand the gap between app and business",
     "Choose your path forward",
     "Write your commitment statement"
   ],

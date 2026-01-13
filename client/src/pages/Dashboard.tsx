@@ -36,7 +36,7 @@ import { Day12LetUsersIn } from "@/components/Day12LetUsersIn";
 import { Day13ReachYourUsers } from "@/components/Day13ReachYourUsers";
 import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
 import { Day19MobileReady } from "@/components/Day19MobileReady";
-import { Day19TheMoney } from "@/components/Day19TheMoney";
+import { Day19TheSalesMachine } from "@/components/Day19TheSalesMachine";
 import { Day20TheLaunch } from "@/components/Day20TheLaunch";
 import { Day21LaunchDay } from "@/components/Day21LaunchDay";
 import { Day17BuildItOut } from "@/components/Day17BuildItOut";
@@ -943,13 +943,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 19: The Money - Earnings Calculator */}
+                {/* Day 19: The Sales Machine */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Calculate Your Potential</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Build Your Sales Machine</h2>
                   </div>
-                  <Day19TheMoney
+                  <Day19TheSalesMachine
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
                     onComplete={handleComplete}
                   />

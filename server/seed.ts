@@ -1062,62 +1062,74 @@ This isn't just about recognition - it's about proving to yourself (and others) 
     },
     {
       day: 19,
-      title: "The Money",
-      description: "Let's talk about what your app could actually earn. It's time to do the math.",
+      title: "The Sales Machine",
+      description: "Before you get traffic, you need a system to convert it. Let's build your sales machine.",
       phase: "Launch",
       videoUrl: null,
-      aiTaskType: "calculator",
-      aiTaskTitle: "Income Calculator",
-      aiTaskDescription: "Calculate your potential earnings and understand what it takes to hit your income goals.",
+      aiTaskType: "education",
+      aiTaskTitle: "Sales Process",
+      aiTaskDescription: "Understand how to convert strangers into customers while you sleep.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's your monthly income goal?",
-      microDecisionOptions: JSON.stringify(["$1,000/month", "$2,500/month", "$5,000/month", "$10,000/month"]),
-      reflectionQuestion: "How many customers would you need at $29/month to hit your goal?",
-      tip: "SaaS math is beautiful. Every customer pays you again next month. 100 customers at $29/month = $34,800/year. That's a salary.",
-      lesson: `You built something people could pay for. Let's talk about money.
+      microDecisionQuestion: "What matters most to you about selling?",
+      microDecisionOptions: JSON.stringify(["No rejection", "Works while I sleep", "No awkward sales calls", "Automated system"]),
+      reflectionQuestion: "What would it mean to wake up to new customers without having done any selling?",
+      tip: "A sales machine converts strangers to customers automatically. No rejection, no selling, works 24/7. But AI-generated sales pages usually don't convert well out of the box.",
+      lesson: `Before you drive traffic anywhere, you need THIS.
 
-THE SAAS MATH:
+THE SALES MACHINE:
 
-Unlike one-time sales, SaaS is RECURRING revenue.
+It's a system that takes someone who has never heard of you and turns them into a paying customer - WITHOUT you having to be there.
 
-Every customer you get pays you again next month. And the month after. And the month after that.
+Stranger → Visitor → Free Trial → Customer
 
-100 customers at $29/month = $2,900/month = $34,800/year
+THE BEAUTIFUL PART:
 
-That's not a side project. That's a salary.
+NO REJECTION
+People find your page. They read it. They decide on their own.
+If they're not interested, they just leave. No awkward conversations.
 
-THE BEAUTIFUL THING:
+NO "SELLING"
+You're not convincing anyone. You're not doing calls.
+You present the offer. They decide. Done.
 
-You don't need millions of users. You don't need to go viral.
+WORKS 24/7
+Your sales page works while you're sleeping, eating, building, living.
+It doesn't get tired. It doesn't take days off.
 
-To make $5,000/month at $29/month, you need: 173 customers
+THE FREE TRIAL FORMULA:
 
-That's a small town Facebook group. A niche subreddit. A tiny fraction of LinkedIn.
+1. Show the problem they have (they need to feel seen)
+2. Show the solution your app provides
+3. Make the offer irresistible: "Try it free. No credit card."
+4. Remove all risk from their decision
 
-173 people who have the problem you solve. That's it.
+When done right, people convince THEMSELVES. You just make it easy.
 
-WHAT COULD YOU DO WITH:
+THE WARNING ABOUT AI:
 
-$1,000/month - Covers a car payment, nice dinner out every week
-$2,500/month - Part-time income, real validation
-$5,000/month - Replace a salary, work from anywhere
-$10,000/month - Six figures annually, life-changing money
+You might think: "I'll just ask ChatGPT to write my sales page."
 
-All of this is possible with HUNDREDS of customers, not millions.
+Here's the truth nobody tells you:
 
-THE GAP:
+AI produces professional-looking copy that sounds "marketing-y" but doesn't CONNECT. Generic benefits. Bullet points that look impressive but are emotionally flat.
 
-You have an APP. To make money, you need a BUSINESS.
+What actually converts: Copy that makes them think "this person GETS me." Specific language YOUR customers use. Stories that build real trust.
 
-The difference?
-- An app: You built something that works
-- A business: You know how to get customers and keep them paying
+AI-generated sales pages typically convert at 0.5-1%.
+A well-crafted sales page? 3-10%. Sometimes higher.
 
-Today you'll figure out your target. What income goal makes this worth it?
-Tomorrow we'll build your launch plan. Day 21, we'll talk about the business.`,
-      outcome: "Income goal set with pricing strategy and customer target calculated",
-      completionMessage: "You've done the math. You know exactly how many customers you need and at what price point. The numbers are achievable. Tomorrow: your launch strategy.",
+That's not a small difference. That's the difference between a hobby and a business.
+
+WHAT THIS MEANS:
+
+Getting your sales process right is a skill. You can learn it over time. Or you can work with someone who already knows it.
+
+Either way, don't expect to just prompt your way to great conversion rates.
+
+Tomorrow: Now that you understand the sales machine, we'll pick WHERE to send traffic.`,
+      outcome: "Understood the sales machine concept and AI limitations",
+      completionMessage: "You understand how conversion works. No rejection, no selling, works while you sleep - when done right. Tomorrow: picking your customer acquisition strategies.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -1189,57 +1201,61 @@ The plan isn't complicated. But having one AT ALL puts you ahead of 90% of launc
     },
     {
       day: 21,
-      title: "Build Your Business",
-      description: "You have an app. Now let's talk about turning it into a real business.",
+      title: "The Money",
+      description: "Let's see what your app could actually earn - and what it takes to get there.",
       phase: "Launch",
       videoUrl: null,
-      aiTaskType: "vision",
-      aiTaskTitle: "Business Vision",
-      aiTaskDescription: "See the big picture of what it takes to go from app to business.",
+      aiTaskType: "calculator",
+      aiTaskTitle: "Income Calculator",
+      aiTaskDescription: "Calculate your potential earnings and see the path to your income goals.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "What's your next step after this challenge?",
       microDecisionOptions: JSON.stringify(["Figure it out myself", "Get expert guidance", "Take a break first", "Not sure yet"]),
-      reflectionQuestion: "What would your life look like with 200 paying customers?",
-      tip: "You did something most people never will - you built something. But an app isn't a business yet. The next phase is learning how to get and keep customers.",
+      reflectionQuestion: "What would your life look like with your target number of paying customers?",
+      tip: "You did something most people never will - you built something. The SaaS math is beautiful: every customer pays you again next month.",
       lesson: `You did something most people never will.
 
 You went from idea to working product in 21 days. You're now in the top 1% of people who actually BUILD things.
 
-PICTURE THIS IN 12 MONTHS:
+THE SAAS MATH IS BEAUTIFUL:
 
-Your app has 200+ paying customers.
-Your phone buzzes with Stripe notifications: $5,000+/month coming in.
-You wake up to emails from happy users.
-You work when you want. From where you want. On something YOU built.
+Unlike one-time sales, SaaS is RECURRING revenue.
 
-That's not a fantasy. That's what happens when you turn an app into a business.
+Every customer you get pays you again next month. And the month after. And the month after that.
 
-THE FOUR PILLARS OF A SAAS BUSINESS:
+100 customers at $29/month = $2,900/month = $34,800/year
 
-1. CUSTOMER ACQUISITION
-How do you consistently get new customers every month?
-- Which channels work for YOUR audience?
-- How much does each customer cost to acquire?
-- Can you make it repeatable?
+That's not a side project. That's a salary.
 
-2. PRICING & MONETIZATION
-How do you maximize revenue?
-- What's your pricing strategy?
-- Annual vs monthly?
-- When do you raise prices?
+WHAT COULD YOU DO WITH:
 
-3. RETENTION & GROWTH
-How do you keep customers paying?
-- What makes them stay vs leave?
-- How do you reduce churn?
-- How do you get referrals?
+$1,000/month - Covers a car payment, nice dinner out every week
+$2,500/month - Part-time income, real validation
+$5,000/month - Replace a salary, work from anywhere
+$10,000/month - Six figures annually, life-changing money
 
-4. OPERATIONS & SCALE
-How do you run this without burning out?
-- Support at scale
-- When to hire help
-- Systems and automation
+All of this is possible with HUNDREDS of customers, not millions.
+
+THE GAP BETWEEN APP AND BUSINESS:
+
+You have an APP if you:
+- Built something that works
+- Maybe have a few users
+- Wait for customers to find you
+
+You have a BUSINESS if you:
+- Know exactly who your customer is
+- Have a repeatable way to reach them
+- Can turn strangers into paying customers
+- Keep them paying month after month
+
+THE FOUR PILLARS YOU NEED:
+
+1. CUSTOMER ACQUISITION - How do you get customers?
+2. SALES & CONVERSION - How do you turn visitors into buyers?
+3. RETENTION & GROWTH - How do you keep them paying?
+4. OPERATIONS & SCALE - How do you not burn out?
 
 THE HARD TRUTH:
 
