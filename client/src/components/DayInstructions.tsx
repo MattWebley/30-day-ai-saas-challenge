@@ -138,10 +138,11 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Understand the gap between app and business"
   ],
   20: [
-    "Pick ONE platform for your launch",
-    "Set your launch date (2-4 weeks out)",
-    "Review the 4-week launch timeline",
-    "Commit to your #1 action for each week"
+    "Browse 18 customer acquisition strategies",
+    "Filter by cost, time, and effort",
+    "Pick your top 3 strategies",
+    "Set your price point",
+    "See your 12-month revenue projection"
   ],
   21: [
     "See what turns an app into a business",
