@@ -728,74 +728,52 @@ WHY RESEND?
 
 It's simple, reliable, and free to start. The API is clean. Claude Code knows how to use it. Don't overthink email providers - Resend works.`,
       outcome: "Resend connected, welcome email sending to new signups",
-      completionMessage: "You can now REACH your users. That's huge. Email is your lifeline to customers. Tomorrow: heads down building.",
+      completionMessage: "You can now REACH your users. That's huge. Email is your lifeline to customers. Tomorrow: mobile optimization.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 14,
-      title: "Heads Down",
-      description: "THE PAUSE POINT. Get in the zone, build, fix, iterate. Stay here as long as you need - days or weeks. Move on when ready.",
+      title: "Mobile Ready",
+      description: "Make your app work beautifully on phones and tablets. Most users will access on mobile.",
       phase: "Make It Work",
       videoUrl: null,
-      aiTaskType: "session",
-      aiTaskTitle: "Build Mode",
-      aiTaskDescription: "Focused building time. This is THE pause point - stay here until your app is ready for testing.",
+      aiTaskType: "generator",
+      aiTaskTitle: "Mobile Optimization",
+      aiTaskDescription: "Test and fix your app's mobile experience across different screen sizes.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's calling you today?",
-      microDecisionOptions: JSON.stringify(["New Feature", "Bug Fixes", "Design & Polish", "Whatever Calls Me"]),
-      reflectionQuestion: "How did it feel to spend focused time building?",
-      tip: "THIS IS THE PAUSE POINT. You can stay on Day 14 for days or weeks. Build, iterate, fix. Only move on when your app is ready for testing.",
-      lesson: `THIS IS THE PAUSE POINT.
+      microDecisionQuestion: "How does your app look on mobile right now?",
+      microDecisionOptions: JSON.stringify(["Looks great!", "Usable but not pretty", "Some things are broken", "Haven't checked yet"]),
+      reflectionQuestion: "Can users complete the main task on their phone without frustration?",
+      tip: "Test on a REAL phone, not just browser dev tools. The experience is different. Also try with one hand - can you reach all the buttons?",
+      lesson: `Here's a BRUTAL truth: More than HALF your users will access your app on their PHONE.
 
-Stop. Read this carefully.
+Not their laptop. Not their desktop. Their PHONE.
 
-Build Mode isn't a one-day thing. This is where you STAY until your app is ready. Some people spend one day here. Some spend two weeks. Both are fine.
+And if your app looks broken on mobile? They're GONE. They don't come back. They don't give you a second chance. This isn't about being perfect. It's about being USABLE.
 
-THE RULE: Stay on Day 14 until you're ready to move on.
+WHAT YOU'RE ACTUALLY TESTING:
 
-Use the PAUSE button in the sidebar. Do build sessions. Fix bugs. Add features. Come back tomorrow and do another session. And another. And another.
+1. DOES IT LOAD? Open your app on your actual phone (not browser dev tools - your REAL phone). Does it load? Fast? Good.
+2. CAN YOU READ IT? Without pinching and zooming? Text should be readable without squinting.
+3. CAN YOU TAP THE BUTTONS? Are they big enough for a thumb? If you're missing buttons with your finger, they're too small.
+4. DOES THE MAIN THING WORK? Whatever your app DOES - can you do it on mobile? This is the only question that actually matters.
 
-WHY THIS MATTERS:
+THE FAST FIX:
 
-You've learned the skills. You have the tools. You have the plan. Now it's time to actually BUILD the thing.
+Open Claude Code and say: "Test my app at 375px width. Fix anything that's broken. Make buttons at least 44px tall. Make text readable. No horizontal scrolling." That's it. Don't overthink it.
 
-Most people never spend REAL time on their projects. They dabble. They "plan to work on it." They watch tutorials.
+DO THIS NOW:
 
-But shipping requires BUILDING. And building requires time. Focused, uninterrupted time.
+1. Open your app on your phone
+2. Try the main feature
+3. Note what's broken or awkward
+4. Fix it with Claude Code
 
-WHAT YOU SHOULD HAVE BY NOW:
-
-- Core features from your PRD
-- AI-powered functionality
-- User authentication
-- Email setup
-- Any APIs you need
-
-Now it's about making it all WORK TOGETHER. Smoothly. Reliably.
-
-THE VIBE:
-
-Set a timer. Minimize distractions. Phone away. Notifications off. Then just... build.
-
-Add a feature. Fix a bug. Make something prettier. Follow whatever calls to you.
-
-WHAT TO EXPECT:
-
-You might get frustrated. That's normal. You might get stuck. Ask Claude Code for help. You might break something. That's fine - fix it. You might get in the zone and lose track of time. THAT'S THE GOAL.
-
-WHEN TO MOVE ON:
-
-Your app should:
-- Have the core features working
-- Handle basic errors gracefully
-- Look decent (not perfect, decent)
-- Be something you'd show to a real person
-
-When you hit that point, complete this day and move to testing. Until then? Keep building.`,
-      outcome: "Completed build session(s), app is ready for testing and user feedback",
-      completionMessage: "You've been building like a real developer. Your app is taking shape. If you need more time, use PAUSE. When ready, it's time to TEST everything.",
+Mobile optimization isn't about perfection. It's about: Can someone USE this on their phone? Yes or no.`,
+      outcome: "App works on mobile devices - responsive and touch-friendly",
+      completionMessage: "Your app works on mobile now. You just unlocked the majority of potential users. Tomorrow: user onboarding.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -805,103 +783,6 @@ When you hit that point, complete this day and move to testing. Until then? Keep
     // ============================================
     {
       day: 15,
-      title: "Test Your USP",
-      description: "Your Unique Selling Point is why people will choose YOU over competitors. Today we verify it actually works.",
-      phase: "Test & Refine",
-      videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "USP Verification",
-      aiTaskDescription: "Test your unique selling point end-to-end. Does it deliver on its promise?",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "Does your USP feature work as intended?",
-      microDecisionOptions: JSON.stringify(["Works perfectly!", "Mostly works, minor issues", "Works but needs improvement", "Doesn't work yet"]),
-      reflectionQuestion: "If you showed this USP to a potential customer, would they be impressed?",
-      tip: "Your USP is what you'll SELL. Everything else is table stakes. If your USP doesn't make people say 'wow, that's cool' - it's not strong enough.",
-      lesson: `Your USP is your WEAPON. It's the reason someone picks YOU over the 10 other tools that do something similar.
-
-Today we make sure that weapon is SHARP.
-
-THE QUESTION THAT MATTERS:
-
-If I showed my USP feature to a potential customer RIGHT NOW, would they say "Wow, that's cool - I'd pay for that"? If the answer is anything other than a clear YES, we have work to do.
-
-WHAT MAKES A USP ACTUALLY WORK:
-
-1. You can SHOW it, not just describe it - "We have AI" = NOT a USP. "Our AI writes 10 posts in 30 seconds" = USP.
-2. It's OBVIOUSLY different from competitors - Can they do this too? If yes, it's not a USP.
-3. It solves a REAL pain - Not a feature for the sake of features. An actual frustration that people hate.
-
-THE TEST:
-
-1. Open your app
-2. Do the USP thing
-3. Ask yourself: Would I pay for this?
-
-Be HONEST. If you're making excuses ("well, once I add X it'll be better...") - it's not ready.
-
-Then open a competitor. Do the same thing with their tool. Is yours FASTER? EASIER? BETTER? CHEAPER? If you can't say YES to at least one of those, your USP needs work.
-
-THE BRUTAL TRUTH:
-
-Your USP is what you'll put in your marketing. It's what you'll say on your landing page. It's what will make people click "Buy."
-
-If it doesn't make YOU excited, it won't make THEM excited. Make it UNDENIABLE.`,
-      outcome: "USP tested and working, clear value proposition that differentiates you from competitors",
-      completionMessage: "You've verified your WEAPON works. Your USP is what will make people choose YOU. Tomorrow: we test all the other features.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 16,
-      title: "Feature Testing",
-      description: "Systematically test every feature in your app. Find the bugs before your users do.",
-      phase: "Test & Refine",
-      videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "Feature Test Suite",
-      aiTaskDescription: "Create and run through a test checklist for every feature in your app.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "How many features have bugs?",
-      microDecisionOptions: JSON.stringify(["None - all working!", "1-2 minor issues", "Several need fixes", "Most have problems"]),
-      reflectionQuestion: "Which feature are you most proud of after testing?",
-      tip: "Test like a user, not a developer. Click every button. Try to break things. Enter weird data. If it breaks for you, it'll break for customers.",
-      lesson: `Today you become your app's WORST enemy.
-
-Click every button. Fill every form. Try to BREAK things. Because if YOU can break it, your USERS definitely will.
-
-THE TESTING MINDSET:
-
-Pretend you've never seen your app before. You're not the builder - you're a confused user who just landed on this thing. Can you figure out what to do? Do buttons actually do what they say? When something goes wrong, does it tell you WHY?
-
-TRY TO BREAK IT:
-
-Enter nothing. Submit empty forms. Enter garbage. asdfasdfasdf into every field. Enter EVERYTHING. Paste a novel into a text box. Do things in the wrong order. Skip steps. Go backwards.
-
-What happens? Does it crash? Does it give a helpful error? Does it just... do nothing?
-
-THE STUFF THAT'S EASY TO MISS:
-
-- Loading states - is there a spinner when things are happening?
-- Success states - do you KNOW when something worked?
-- Error states - when it fails, do you know WHY?
-- Edge cases - what if someone enters an emoji? A really long name?
-
-WHEN YOU FIND BUGS:
-
-Write them down. Don't fix them yet. Finish testing first, THEN fix everything. Unless it's completely broken - then fix it now.
-
-THE GOAL:
-
-By the end of today, you should be able to use your app like a REAL user and have confidence it won't embarrass you. Break it now, so your users don't break it later.`,
-      outcome: "All features tested, bugs identified and fixed, app is reliable and ready",
-      completionMessage: "Your app has been TESTED. You know what works and what doesn't. That's more than most founders know when they launch. Tomorrow: making the first-run experience great.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 17,
       title: "User Onboarding",
       description: "Create a smooth first-run experience. Help new users understand and love your app in the first 2 minutes.",
       phase: "Test & Refine",
@@ -959,7 +840,7 @@ What's the ONE thing a user needs to do to "get" your app? That's your onboardin
       estimatedMinutes: 5,
     },
     {
-      day: 18,
+      day: 16,
       title: "Admin Dashboard",
       description: "Build a simple dashboard to see what's happening in your app. Users, activity, and key metrics.",
       phase: "Test & Refine",
@@ -998,13 +879,149 @@ WHY THIS MATTERS:
 Without data, you're flying blind. You THINK things are going well. You HOPE people like it.
 
 With data, you KNOW:
-- "Oh, 50 people signed up but only 5 came back" → Onboarding problem
-- "People are signing up but not using the main feature" → Feature problem
-- "Usage is growing every week" → Keep doing what you're doing
+- "Oh, 50 people signed up but only 5 came back" -> Onboarding problem
+- "People are signing up but not using the main feature" -> Feature problem
+- "Usage is growing every week" -> Keep doing what you're doing
 
-DATA TELLS YOU WHAT TO FIX. This is the last piece of infrastructure. After this, your app is ready for real users. Build the dashboard. Check it every day. Make decisions based on what you see, not what you hope.`,
+DATA TELLS YOU WHAT TO FIX. Build the dashboard. Check it every day. Make decisions based on what you see, not what you hope.`,
       outcome: "Admin dashboard showing users, activity, and key metrics",
-      completionMessage: "Week 4 DONE. Your app has real infrastructure - auth, email, onboarding, and admin. It's not a toy anymore. Next week: polish and launch.",
+      completionMessage: "You can now SEE what's happening in your app. Data beats guessing. Tomorrow: THE BUILD PHASE.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 17,
+      title: "Build It Out",
+      description: "THE PAUSE POINT. You've learned 95% of what you need. Now BUILD. Stay here as long as you need - days or weeks.",
+      phase: "Test & Refine",
+      videoUrl: null,
+      aiTaskType: "session",
+      aiTaskTitle: "Build Mode",
+      aiTaskDescription: "This is THE pause point. Build, fix, iterate. Stay here until your app is ready.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "What are you focusing on today?",
+      microDecisionOptions: JSON.stringify(["Core features", "Bug fixes", "UI polish", "New functionality"]),
+      reflectionQuestion: "What's the ONE thing that would make your app significantly better?",
+      tip: "THIS IS THE PAUSE POINT. Use the PAUSE button. Stay on Day 17 for as long as you need. Days. Weeks. Build until you're ready.",
+      lesson: `STOP. READ THIS CAREFULLY.
+
+This is THE PAUSE POINT.
+
+You've now learned 95% of everything you need to build a SaaS. AI integration. APIs. Auth. Email. Mobile. Onboarding. Admin dashboard. The tools are in your hands.
+
+Now it's time to actually BUILD.
+
+THE RULE: Stay on Day 17 until your app is READY.
+
+Some people spend one day here. Some spend two weeks. Some spend a month. ALL OF THAT IS FINE.
+
+Use the PAUSE button in the sidebar. Come back tomorrow and keep building. And the next day. And the next.
+
+WHAT "READY" MEANS:
+
+Your app should:
+- Have all core features working
+- Handle errors gracefully (no crashes)
+- Work on mobile
+- Look decent (not perfect - decent)
+- Be something you'd show to a stranger
+
+If you're not there yet? KEEP BUILDING.
+
+WHAT TO DO EACH SESSION:
+
+1. Pick ONE thing to work on
+2. Build it or fix it
+3. Test it
+4. Repeat
+
+Don't try to do everything. One thing at a time. Small wins stack up.
+
+WHEN YOU GET STUCK:
+
+- Describe the problem clearly to Claude Code
+- If it's a bug: "When I click X, Y happens instead of Z"
+- If it's a feature: "I want users to be able to do X"
+- If you're lost: Take a break. Come back tomorrow.
+
+THE MINDSET:
+
+This isn't a race. This is where real builders spend their time. In the code. Making things work. Finding bugs and fixing them. Adding polish.
+
+Everyone wants to launch. But launching garbage doesn't help anyone. Build something you're proud of FIRST.
+
+WHEN TO MOVE ON:
+
+When your app is something you'd be comfortable showing to real users. When it works. When it doesn't embarrass you.
+
+Then - and only then - move to Day 18.`,
+      outcome: "App is built out, tested, and ready for final polish and launch",
+      completionMessage: "You've put in the work. Your app is taking shape. If you need more time, use PAUSE. When ready, it's time to TEST and POLISH.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 18,
+      title: "Test Everything",
+      description: "Systematically test your USP and every feature. Find the bugs before your users do.",
+      phase: "Test & Refine",
+      videoUrl: null,
+      aiTaskType: "generator",
+      aiTaskTitle: "Full Test Suite",
+      aiTaskDescription: "Test your USP and all features. Click everything. Try to break it.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "How did testing go?",
+      microDecisionOptions: JSON.stringify(["Everything works!", "Found minor issues", "Found major issues", "Need more building time"]),
+      reflectionQuestion: "Would you feel confident letting a paying customer use this right now?",
+      tip: "Test like a user, not a developer. Click every button. Try to break things. Enter weird data. If it breaks for you, it'll break for customers.",
+      lesson: `Today you become your app's WORST enemy.
+
+Click every button. Fill every form. Try to BREAK things. Because if YOU can break it, your USERS definitely will.
+
+FIRST: TEST YOUR USP
+
+Your Unique Selling Point is your WEAPON. It's why people choose YOU.
+
+1. Open your app
+2. Do the USP thing
+3. Ask yourself: Would I pay for this?
+4. Compare to a competitor - is yours better?
+
+If your USP doesn't make you think "yeah, that's pretty cool" - go back to Day 17 and improve it.
+
+THEN: TEST EVERYTHING ELSE
+
+The testing mindset: Pretend you've never seen your app before. You're a confused user who just landed here.
+
+TRY TO BREAK IT:
+
+- Enter nothing. Submit empty forms.
+- Enter garbage. asdfasdfasdf everywhere.
+- Enter EVERYTHING. Paste a novel into a text box.
+- Do things in the wrong order.
+- Click the same button 10 times fast.
+- Use it on mobile.
+
+What happens? Does it crash? Does it give a helpful error? Does it just... do nothing?
+
+WHAT TO LOOK FOR:
+
+- Loading states - is there a spinner?
+- Success states - do you KNOW when it worked?
+- Error states - when it fails, do you know WHY?
+- Edge cases - emoji? Long names? Special characters?
+
+WHEN YOU FIND BUGS:
+
+Fix them NOW. You're about to launch. Every bug you find is a bug your users won't hit.
+
+THE GOAL:
+
+By end of today, you should be able to say: "I've clicked every button, tested every feature, and I'm confident this works."`,
+      outcome: "All features tested, bugs fixed, app is reliable and ready for launch",
+      completionMessage: "Your app has been battle-tested. You know it works. That confidence is worth everything. Tomorrow: making it beautiful.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -1014,48 +1031,6 @@ DATA TELLS YOU WHAT TO FIX. This is the last piece of infrastructure. After this
     // ============================================
     {
       day: 19,
-      title: "Mobile Ready",
-      description: "Make your app work beautifully on phones and tablets. Most users will access on mobile.",
-      phase: "Polish & Launch",
-      videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "Mobile Optimization",
-      aiTaskDescription: "Test and fix your app's mobile experience across different screen sizes.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "How does your app look on mobile right now?",
-      microDecisionOptions: JSON.stringify(["Looks great!", "Usable but not pretty", "Some things are broken", "Haven't checked yet"]),
-      reflectionQuestion: "Can users complete the main task on their phone without frustration?",
-      tip: "Test on a REAL phone, not just browser dev tools. The experience is different. Also try with one hand - can you reach all the buttons?",
-      lesson: `Here's a BRUTAL truth: More than HALF your users will access your app on their PHONE.
-
-Not their laptop. Not their desktop. Their PHONE.
-
-And if your app looks broken on mobile? They're GONE. They don't come back. They don't give you a second chance. This isn't about being perfect. It's about being USABLE.
-
-WHAT YOU'RE ACTUALLY TESTING:
-
-1. DOES IT LOAD? Open your app on your actual phone (not browser dev tools - your REAL phone). Does it load? Fast? Good.
-2. CAN YOU READ IT? Without pinching and zooming? Text should be readable without squinting.
-3. CAN YOU TAP THE BUTTONS? Are they big enough for a thumb? If you're missing buttons with your finger, they're too small.
-4. DOES THE MAIN THING WORK? Whatever your app DOES - can you do it on mobile? This is the only question that actually matters.
-
-THE FAST FIX:
-
-Open Claude Code and say: "Test my app at 375px width. Fix anything that's broken. Make buttons at least 44px tall. Make text readable. No horizontal scrolling." That's it. Don't overthink it.
-
-HERE'S WHAT I WANT YOU TO REALISE:
-
-You're not just playing around anymore. You're building a REAL product that works on ANY device. Most people never get this far. They have ideas. They have dreams. They have "someday" plans.
-
-You have a product that's almost ready to sell. Two more days. That's it. Two more days and you'll have something you can put a price tag on. Let that sink in.`,
-      outcome: "App works perfectly on mobile devices, responsive and touch-friendly",
-      completionMessage: "Your app works on mobile now. You just unlocked the majority of potential users. Tomorrow: making it LOOK as good as it works.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 20,
       title: "Brand & Beauty",
       description: "Polish the visuals. Logo, colors, typography. Make it look like a product people would pay for.",
       phase: "Polish & Launch",
@@ -1089,23 +1064,74 @@ LOOK AT WHAT YOU'VE BUILT.
 
 Seriously. Open your app right now and look at it.
 
-This isn't a side project anymore. This isn't a "maybe someday" thing. This is a branded, professional-looking SaaS product that you built in 20 days. Tomorrow you LAUNCH.
-
-And after that? Well, having a product is just the first step. Turning it into a BUSINESS is a different challenge entirely. But let's get through tomorrow first. One day at a time.`,
+This isn't a side project anymore. This isn't a "maybe someday" thing. This is a branded, professional-looking SaaS product that you built. Two more days and you LAUNCH.`,
       outcome: "App has consistent branding, logo, and professional visual design",
-      completionMessage: "Your app LOOKS like a real product now. Consistent, polished, credible. Tomorrow: we LAUNCH.",
+      completionMessage: "Your app LOOKS like a real product now. Consistent, polished, credible. Almost there!",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 20,
+      title: "Final Prep",
+      description: "Last checks before launch. Make sure everything is ready.",
+      phase: "Polish & Launch",
+      videoUrl: null,
+      aiTaskType: "setup",
+      aiTaskTitle: "Pre-Launch",
+      aiTaskDescription: "Final preparations before launch day.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "How ready do you feel?",
+      microDecisionOptions: JSON.stringify(["Ready to launch!", "Almost there", "Need more time", "Not sure"]),
+      reflectionQuestion: "What's the ONE thing you'd regret not fixing before launch?",
+      tip: "If something is bugging you, fix it now. You'll feel better launching something you're proud of.",
+      lesson: `Tomorrow you launch.
+
+Take a breath. Look at what you've built.
+
+TODAY'S JOB: Final sweep.
+
+Go through your app one more time. Not to rebuild it. Not to add features. Just to make sure everything is RIGHT.
+
+THE FINAL CHECKLIST:
+
+1. Does signup/login work?
+2. Does your main feature work?
+3. Does your USP feature work?
+4. Does it work on mobile?
+5. Does it look professional?
+6. Are there any obvious bugs?
+7. Is there anything that would embarrass you?
+
+If you find something - fix it NOW.
+
+IF EVERYTHING WORKS:
+
+Great. You're ready. Get some rest. Tomorrow is launch day.
+
+IF YOU'RE NOT READY:
+
+That's okay too. Go back to Day 17. Keep building. There's no shame in taking more time.
+
+But be honest with yourself: Are you "not ready" or are you just scared?
+
+Fear is normal. Perfectionism is a trap. At some point, you have to ship.
+
+Done is better than perfect. You can always improve after launch.`,
+      outcome: "Final checks complete, ready for launch",
+      completionMessage: "Everything is ready. Tomorrow, you launch. Get some rest. You've earned it.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 21,
       title: "Launch Day",
-      description: "Final checks, real costs, and GO LIVE. You're about to launch your AI SaaS.",
+      description: "GO LIVE. You're about to launch your AI SaaS.",
       phase: "Polish & Launch",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "Launch Checklist",
-      aiTaskDescription: "Final pre-launch checklist and deployment to production.",
+      aiTaskTitle: "Launch",
+      aiTaskDescription: "Final launch checklist and GO LIVE.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "How do you feel about launching?",
@@ -1160,7 +1186,7 @@ Book a call: www.mattwebley.com/workwithmatt
 
 But first: LAUNCH THIS THING. You've earned it.`,
       outcome: "App is LIVE and accessible to the world. You launched!",
-      completionMessage: "🚀 YOU LAUNCHED! 21 days. From idea to live product. You did what most people only dream about. The journey is just beginning, but you've proven you can BUILD. Congratulations!",
+      completionMessage: "YOU LAUNCHED! 21 days. From idea to live product. You did what most people only dream about. The journey is just beginning, but you've proven you can BUILD. Congratulations!",
       xpReward: 200,
       estimatedMinutes: 10,
     },

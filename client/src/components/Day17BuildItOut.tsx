@@ -7,34 +7,74 @@ import {
   Pause,
   RotateCcw,
   CheckCircle2,
+  Circle,
   Zap,
   Bug,
   Paintbrush,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Wrench,
+  HelpCircle
 } from "lucide-react";
 
-interface Day14HeadsDownProps {
+interface Day17BuildItOutProps {
   onComplete: (data: {
     focusArea: string;
     sessionMinutes: number;
     accomplishments: string;
+    checklistProgress: string[];
   }) => void;
 }
 
 const FOCUS_OPTIONS = [
-  { id: "feature", label: "New Feature", icon: Zap, color: "bg-blue-100 text-blue-600" },
+  { id: "feature", label: "Core Features", icon: Zap, color: "bg-blue-100 text-blue-600" },
   { id: "bugs", label: "Bug Fixes", icon: Bug, color: "bg-amber-100 text-amber-600" },
-  { id: "polish", label: "Design & Polish", icon: Paintbrush, color: "bg-purple-100 text-purple-600" },
-  { id: "whatever", label: "Whatever Calls Me", icon: Sparkles, color: "bg-green-100 text-green-600" },
+  { id: "polish", label: "UI Polish", icon: Paintbrush, color: "bg-purple-100 text-purple-600" },
+  { id: "whatever", label: "New Functionality", icon: Sparkles, color: "bg-green-100 text-green-600" },
 ];
 
-export function Day14HeadsDown({ onComplete }: Day14HeadsDownProps) {
-  const [step, setStep] = useState<"intro" | "focus" | "build" | "done">("intro");
+const BUILD_CHECKLIST = [
+  "Core features from PRD working",
+  "AI feature(s) integrated",
+  "User authentication working",
+  "Email setup complete",
+  "Mobile responsive",
+  "Onboarding flow built",
+  "Admin dashboard working",
+  "No major bugs or crashes",
+];
+
+const COMMON_ISSUES = [
+  {
+    problem: "Button does nothing when clicked",
+    solution: "Check browser console for errors. Tell Claude Code: 'When I click [button], nothing happens. Check for errors and fix.'",
+  },
+  {
+    problem: "Data not saving",
+    solution: "Ask: 'When I [action], the data should save but it doesn't persist. Debug the save function.'",
+  },
+  {
+    problem: "Page looks broken on mobile",
+    solution: "Tell Claude Code: 'Fix mobile layout at 375px width. No horizontal scrolling, readable text, tappable buttons.'",
+  },
+  {
+    problem: "AI feature not working",
+    solution: "Check if OPENAI_API_KEY is in Replit Secrets. Ask: 'Debug my AI feature - it's not returning results.'",
+  },
+  {
+    problem: "User sees other users' data",
+    solution: "Critical auth bug. Ask: 'Ensure each user only sees their own data. Filter all queries by user ID.'",
+  },
+];
+
+export function Day17BuildItOut({ onComplete }: Day17BuildItOutProps) {
+  const [step, setStep] = useState<"intro" | "checklist" | "focus" | "build" | "done">("intro");
   const [focusArea, setFocusArea] = useState<string | null>(null);
   const [timerRunning, setTimerRunning] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [accomplishments, setAccomplishments] = useState("");
+  const [checkedItems, setCheckedItems] = useState<string[]>([]);
+  const [showDebugging, setShowDebugging] = useState(false);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -56,7 +96,14 @@ export function Day14HeadsDown({ onComplete }: Day14HeadsDownProps) {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const toggleChecked = (item: string) => {
+    setCheckedItems((prev) =>
+      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
+    );
+  };
+
   const sessionMinutes = Math.ceil(seconds / 60);
+  const checklistProgress = Math.round((checkedItems.length / BUILD_CHECKLIST.length) * 100);
 
   return (
     <div className="space-y-6">
@@ -69,39 +116,122 @@ export function Day14HeadsDown({ onComplete }: Day14HeadsDownProps) {
               <div>
                 <h4 className="font-bold text-amber-900 text-lg">THIS IS THE PAUSE POINT</h4>
                 <p className="text-amber-800 mt-1">
-                  Build Mode isn't a one-day thing. This is where you STAY until your app is ready.
+                  You've learned 95% of everything you need. Now it's time to BUILD.
                 </p>
-                <p className="text-amber-700 text-sm mt-2">
-                  Some people spend one day here. Some spend two weeks. Both are fine.
+                <p className="text-amber-700 mt-2">
+                  Stay here as long as you need - days, weeks, whatever it takes. Use the <strong>PAUSE button</strong> in the sidebar to come back tomorrow.
                 </p>
               </div>
             </div>
           </Card>
 
           <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg text-slate-900 mb-4">What You Should Have By Now</h4>
-            <div className="space-y-2">
+            <h4 className="font-bold text-lg text-slate-900 mb-3">The Skills You Have</h4>
+            <div className="grid grid-cols-2 gap-2 text-slate-700">
               {[
-                "Core features from your PRD",
-                "AI-powered functionality",
-                "User authentication",
-                "Email setup",
-                "Any APIs you need",
-              ].map((item, i) => (
-                <div key={i} className="flex items-center gap-2 text-slate-700">
+                "AI Integration",
+                "External APIs",
+                "User Auth",
+                "Email Setup",
+                "Mobile Design",
+                "User Onboarding",
+                "Admin Dashboard",
+                "Claude Code",
+              ].map((skill, i) => (
+                <div key={i} className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-green-600" />
-                  <span>{item}</span>
+                  <span>{skill}</span>
                 </div>
               ))}
             </div>
-            <p className="text-slate-600 mt-4">
-              Now it's about making it all WORK TOGETHER. Smoothly. Reliably.
-            </p>
           </Card>
 
+          <Button
+            size="lg"
+            className="w-full h-14 text-lg font-bold gap-2"
+            onClick={() => setStep("checklist")}
+          >
+            Review Build Checklist <CheckCircle2 className="w-5 h-5" />
+          </Button>
+        </>
+      )}
+
+      {/* Checklist */}
+      {step === "checklist" && (
+        <>
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-lg text-slate-900">Build Checklist</h4>
+              <span className="text-sm text-slate-600">{checkedItems.length}/{BUILD_CHECKLIST.length} complete</span>
+            </div>
+            <div className="w-full bg-slate-100 rounded-full h-2 mb-4">
+              <div
+                className="bg-primary h-2 rounded-full transition-all"
+                style={{ width: `${checklistProgress}%` }}
+              />
+            </div>
+            <p className="text-slate-600 mb-4">
+              Check off what's working. This helps you see what still needs attention.
+            </p>
+            <div className="space-y-3">
+              {BUILD_CHECKLIST.map((item) => {
+                const isChecked = checkedItems.includes(item);
+                return (
+                  <button
+                    key={item}
+                    onClick={() => toggleChecked(item)}
+                    className="w-full flex items-center gap-3 p-3 rounded-lg border-2 border-slate-200 hover:border-slate-300 bg-white text-left transition-colors"
+                  >
+                    {isChecked ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                    ) : (
+                      <Circle className="w-5 h-5 text-slate-300 flex-shrink-0" />
+                    )}
+                    <span className={isChecked ? "text-slate-500 line-through" : "text-slate-700"}>
+                      {item}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </Card>
+
+          {/* Common Issues Section */}
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <button
+              onClick={() => setShowDebugging(!showDebugging)}
+              className="w-full flex items-center justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <Wrench className="w-5 h-5 text-slate-600" />
+                <h4 className="font-bold text-lg text-slate-900">Common Issues & Fixes</h4>
+              </div>
+              <HelpCircle className={`w-5 h-5 text-slate-400 transition-transform ${showDebugging ? "rotate-180" : ""}`} />
+            </button>
+            {showDebugging && (
+              <div className="mt-4 space-y-4">
+                {COMMON_ISSUES.map((issue, i) => (
+                  <div key={i} className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                    <p className="font-medium text-slate-900 mb-1">{issue.problem}</p>
+                    <p className="text-slate-600 text-sm">{issue.solution}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          {/* When to Move On */}
           <Card className="p-6 border-2 border-blue-200 bg-blue-50">
-            <p className="text-blue-800">
-              <strong>Use the PAUSE button</strong> in the sidebar to stay on this day. Come back tomorrow and do another session. And another. Until your app is ready.
+            <h4 className="font-bold text-blue-900 mb-3">When to Move On</h4>
+            <p className="text-blue-800 mb-3">Your app is ready when:</p>
+            <ul className="space-y-2 text-blue-700">
+              <li>• Core features work without crashing</li>
+              <li>• You'd show it to a stranger without apologizing</li>
+              <li>• It does what you said it would do</li>
+              <li>• It looks decent (not perfect - decent)</li>
+            </ul>
+            <p className="text-blue-800 mt-3 font-medium">
+              If you're not there yet, that's fine. Keep building.
             </p>
           </Card>
 
@@ -119,7 +249,7 @@ export function Day14HeadsDown({ onComplete }: Day14HeadsDownProps) {
       {step === "focus" && (
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg text-slate-900 mb-4">What's calling you today?</h4>
+            <h4 className="font-bold text-lg text-slate-900 mb-4">What are you focusing on today?</h4>
             <div className="grid grid-cols-2 gap-3">
               {FOCUS_OPTIONS.map((option) => {
                 const Icon = option.icon;
@@ -200,8 +330,8 @@ export function Day14HeadsDown({ onComplete }: Day14HeadsDownProps) {
           </Card>
 
           <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <p className="text-slate-600 text-sm">
-              <strong>Tip:</strong> If you get stuck, ask Claude Code for help. If you break something, that's fine - fix it. The goal is progress, not perfection.
+            <p className="text-slate-600">
+              <strong>Stuck?</strong> Describe the problem clearly to Claude Code. "When I click X, Y happens instead of Z."
             </p>
           </Card>
 
@@ -230,7 +360,7 @@ export function Day14HeadsDown({ onComplete }: Day14HeadsDownProps) {
               <div>
                 <h4 className="font-bold text-xl text-green-900">Build Session Complete!</h4>
                 <p className="text-green-700">
-                  {sessionMinutes} minute{sessionMinutes !== 1 ? "s" : ""} of focused building. Nice work.
+                  {sessionMinutes} minute{sessionMinutes !== 1 ? "s" : ""} of focused building.
                 </p>
               </div>
             </div>
@@ -243,22 +373,21 @@ export function Day14HeadsDown({ onComplete }: Day14HeadsDownProps) {
 
           <Card className="p-6 border-2 border-amber-200 bg-amber-50">
             <h4 className="font-bold text-amber-900 mb-2">Not Ready to Move On?</h4>
-            <p className="text-amber-800 text-sm">
-              Use the <strong>PAUSE button</strong> in the sidebar to stay on Day 14. Come back tomorrow for another build session. Only complete this day when your app is ready for testing.
+            <p className="text-amber-800">
+              Use the <strong>PAUSE button</strong> in the sidebar. Come back tomorrow for another session. Stay on Day 17 until your app is ready.
             </p>
           </Card>
 
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="font-bold text-lg text-slate-900 mb-3">Ready to Move On?</h4>
-            <p className="text-slate-700 mb-4">Your app should:</p>
+            <p className="text-slate-700 mb-3">Your app should:</p>
             <ul className="space-y-2 text-slate-600 mb-4">
               <li>• Have core features working</li>
               <li>• Handle basic errors gracefully</li>
-              <li>• Look decent (not perfect, decent)</li>
               <li>• Be something you'd show to a real person</li>
             </ul>
             <p className="text-slate-700">
-              If you hit that bar, complete this day. If not, use PAUSE and keep building.
+              If that's you, complete this day. If not, PAUSE and keep building.
             </p>
           </Card>
 
@@ -269,9 +398,10 @@ export function Day14HeadsDown({ onComplete }: Day14HeadsDownProps) {
               focusArea: focusArea || "whatever",
               sessionMinutes,
               accomplishments,
+              checklistProgress: checkedItems,
             })}
           >
-            Complete Day 14 <CheckCircle2 className="w-5 h-5" />
+            Complete Day 17 <CheckCircle2 className="w-5 h-5" />
           </Button>
         </>
       )}

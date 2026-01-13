@@ -100,53 +100,53 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Test by signing up with a new account"
   ],
   14: [
-    "THIS IS THE PAUSE POINT",
-    "Set a timer for focused building",
-    "Pick a focus: features, bugs, or polish",
-    "Build without distractions",
-    "Stay here until your app is ready (use PAUSE)"
+    "Open your app on your actual phone",
+    "Test all main features on mobile",
+    "Document any issues",
+    "Fix with Claude Code"
   ],
   15: [
-    "Identify your USP feature",
-    "Test it end-to-end",
-    "Compare to competitors",
-    "Answer: Would someone pay for this?"
-  ],
-  16: [
-    "Test every button and form",
-    "Try to break things with weird inputs",
-    "Document all bugs found",
-    "Fix critical issues"
-  ],
-  17: [
     "Define first user success moment",
     "Build the onboarding path",
     "Time the flow (under 2 mins)",
     "Test as a new user"
   ],
-  18: [
+  16: [
     "Decide what metrics to track",
     "Build your admin dashboard",
     "Add user and activity stats",
     "Check your numbers"
   ],
-  19: [
-    "Open your app on your actual phone",
-    "Test all main features on mobile",
-    "Document any issues",
-    "Fix or note for later"
+  17: [
+    "THIS IS THE PAUSE POINT",
+    "Review the build checklist",
+    "Pick ONE thing to work on",
+    "Build until your app is ready",
+    "Use PAUSE - stay here as long as you need"
   ],
-  20: [
+  18: [
+    "Test your USP end-to-end",
+    "Click every button, fill every form",
+    "Try to break things with weird inputs",
+    "Fix all bugs you find"
+  ],
+  19: [
     "Pick your primary brand color",
     "Apply consistent styling",
     "Add your logo to the header",
     "Verify it looks professional"
   ],
+  20: [
+    "Final sweep through your app",
+    "Check the pre-launch list",
+    "Fix anything that bugs you",
+    "Get ready for tomorrow"
+  ],
   21: [
-    "Run through pre-launch checklist",
-    "Fix any blocking issues",
+    "Confirm everything works",
     "Click the LAUNCH button",
-    "Celebrate and plan next steps"
+    "Test as a new user",
+    "Celebrate!"
   ],
 };
 

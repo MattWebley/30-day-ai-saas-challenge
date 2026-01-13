@@ -32,14 +32,13 @@ import { Day10AIBrain } from "@/components/Day10AIBrain";
 import { Day11AddSuperpowers } from "@/components/Day11AddSuperpowers";
 import { Day12LetUsersIn } from "@/components/Day12LetUsersIn";
 import { Day13ReachYourUsers } from "@/components/Day13ReachYourUsers";
-import { Day14HeadsDown } from "@/components/Day14HeadsDown";
-import { Day15TestUSP } from "@/components/Day15TestUSP";
-import { Day16FeatureTesting } from "@/components/Day16FeatureTesting";
 import { Day17Onboarding } from "@/components/Day17Onboarding";
 import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
 import { Day19MobileReady } from "@/components/Day19MobileReady";
 import { Day20BrandBeauty } from "@/components/Day20BrandBeauty";
 import { Day21LaunchDay } from "@/components/Day21LaunchDay";
+import { Day17BuildItOut } from "@/components/Day17BuildItOut";
+import { Day18TestEverything } from "@/components/Day18TestEverything";
 import { DayChat } from "@/components/DayChat";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
@@ -776,13 +775,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 14: Heads Down - THE PAUSE POINT */}
+                {/* Day 14: Mobile Ready */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Build Mode</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Test on Mobile</h2>
                   </div>
-                  <Day14HeadsDown
+                  <Day19MobileReady
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -808,14 +808,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 15: Test Your USP */}
+                {/* Day 15: User Onboarding */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Verify Your USP</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Build Onboarding</h2>
                   </div>
-                  <Day15TestUSP
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                  <Day17Onboarding
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -841,13 +841,16 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 16: Feature Testing */}
+                {/* Day 16: Admin Dashboard */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Build Your Dashboard</h2>
                   </div>
-                  <Day16FeatureTesting onComplete={handleComplete} />
+                  <Day18AdminDashboard
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 17 ? (
@@ -871,16 +874,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 17: User Onboarding */}
+                {/* Day 17: Build It Out - THE PAUSE POINT */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Build Onboarding</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Build Mode</h2>
                   </div>
-                  <Day17Onboarding
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
-                    onComplete={handleComplete}
-                  />
+                  <Day17BuildItOut onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 18 ? (
@@ -904,14 +904,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 18: Admin Dashboard */}
+                {/* Day 18: Test Everything */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Build Your Dashboard</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
                   </div>
-                  <Day18AdminDashboard
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                  <Day18TestEverything
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -937,40 +937,7 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 19: Mobile Ready */}
-                <div className="space-y-4 pt-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Test on Mobile</h2>
-                  </div>
-                  <Day19MobileReady
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
-                    onComplete={handleComplete}
-                  />
-                </div>
-              </>
-            ) : currentDay === 20 ? (
-              <>
-                {/* Today's Lesson */}
-                {dayData.lesson && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
-                      </div>
-                      <VideoSlides day={20} />
-                    </div>
-                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                      <div className="prose prose-slate max-w-none">
-                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
-                        ))}
-                      </div>
-                    </Card>
-                  </div>
-                )}
-                {/* Day 20: Brand & Beauty */}
+                {/* Day 19: Brand & Beauty */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
