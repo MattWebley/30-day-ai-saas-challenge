@@ -6,18 +6,16 @@ import {
   Rocket,
   Filter,
   Check,
-  DollarSign,
   Clock,
   Zap,
   Target,
-  TrendingUp,
   Users,
   Star
 } from "lucide-react";
 
 interface Day20TheLaunchProps {
   appName: string;
-  onComplete: (data: { selectedStrategies: string[]; projectedCustomers: number; projectedRevenue: number }) => void;
+  onComplete: (data: { selectedStrategies: string[] }) => void;
 }
 
 interface Strategy {
@@ -831,15 +829,13 @@ const CATEGORY_LABELS = {
 };
 
 export function Day20TheLaunch({ appName, onComplete }: Day20TheLaunchProps) {
-  const [step, setStep] = useState<"intro" | "strategies" | "projection" | "complete">("intro");
+  const [step, setStep] = useState<"intro" | "strategies" | "complete">("intro");
   const [selectedStrategies, setSelectedStrategies] = useState<string[]>([]);
   const [filters, setFilters] = useState({
     cost: "all" as "all" | "free" | "low" | "medium" | "high",
     time: "all" as "all" | "quick" | "medium" | "slow",
     effort: "all" as "all" | "easy" | "hard",
   });
-  const [projectionLevel, setProjectionLevel] = useState<"low" | "mid" | "high">("mid");
-  const [pricePoint, setPricePoint] = useState(29);
 
   const filteredStrategies = useMemo(() => {
     return STRATEGIES.filter((s) => {
@@ -860,28 +856,6 @@ export function Day20TheLaunch({ appName, onComplete }: Day20TheLaunchProps) {
   };
 
   const selectedStrategyData = STRATEGIES.filter((s) => selectedStrategies.includes(s.id));
-
-  const projectedCustomers = useMemo(() => {
-    return selectedStrategyData.reduce((sum, s) => sum + s.customersPerMonth[projectionLevel], 0);
-  }, [selectedStrategyData, projectionLevel]);
-
-  const projectedMonthlyRevenue = projectedCustomers * pricePoint;
-  const projectedYearlyRevenue = projectedMonthlyRevenue * 12;
-
-  // Calculate cumulative growth over 12 months (each month adds projected new customers)
-  const cumulativeMonths = useMemo(() => {
-    const months = [];
-    let totalCustomers = 0;
-    for (let i = 1; i <= 12; i++) {
-      totalCustomers += projectedCustomers;
-      months.push({
-        month: i,
-        customers: totalCustomers,
-        mrr: totalCustomers * pricePoint,
-      });
-    }
-    return months;
-  }, [projectedCustomers, pricePoint]);
 
   return (
     <div className="space-y-6">
@@ -1025,8 +999,8 @@ export function Day20TheLaunch({ appName, onComplete }: Day20TheLaunchProps) {
                 )}
               </div>
               {selectedStrategies.length >= 1 && (
-                <Button onClick={() => setStep("projection")} className="gap-2">
-                  See Projection <TrendingUp className="w-4 h-4" />
+                <Button onClick={() => setStep("complete")} className="gap-2">
+                  Done <Check className="w-4 h-4" />
                 </Button>
               )}
             </div>
@@ -1120,163 +1094,15 @@ export function Day20TheLaunch({ appName, onComplete }: Day20TheLaunchProps) {
             <Button
               size="lg"
               className="w-full h-14 text-lg font-bold gap-2"
-              onClick={() => setStep("projection")}
+              onClick={() => setStep("complete")}
             >
-              See My Growth Projection <TrendingUp className="w-5 h-5" />
+              Lock In My {selectedStrategies.length === 1 ? "Strategy" : "Strategies"} <ChevronRight className="w-5 h-5" />
             </Button>
           )}
         </>
       )}
 
-      {/* Step 3: Projection */}
-      {step === "projection" && (
-        <>
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <div className="flex items-center justify-between mb-4">
-              <h4 className="font-bold text-lg text-slate-900">Your Selected Strategies</h4>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setStep("strategies")}
-                className="text-slate-600"
-              >
-                Change
-              </Button>
-            </div>
-            <div className="space-y-2">
-              {selectedStrategyData.map((s) => (
-                <div key={s.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                  <span className="font-medium text-slate-900">{s.name}</span>
-                  <span className="text-sm text-slate-600">~{s.customersPerMonth[projectionLevel]} customers/mo</span>
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">Adjust Your Projection</h4>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Success Level</label>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["low", "mid", "high"] as const).map((level) => (
-                    <button
-                      key={level}
-                      onClick={() => setProjectionLevel(level)}
-                      className={`p-3 rounded-lg border-2 text-center transition-all ${
-                        projectionLevel === level
-                          ? "border-primary bg-primary/5"
-                          : "border-slate-200 hover:border-slate-300"
-                      }`}
-                    >
-                      <p className="font-bold text-slate-900 capitalize">{level === "mid" ? "Medium" : level}</p>
-                      <p className="text-xs text-slate-500">
-                        {level === "low" ? "Conservative" : level === "mid" ? "Realistic" : "Optimistic"}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Price Point</label>
-                <div className="flex gap-2">
-                  {[9, 29, 49, 99, 199].map((price) => (
-                    <button
-                      key={price}
-                      onClick={() => setPricePoint(price)}
-                      className={`flex-1 p-2 rounded-lg border-2 text-center transition-all ${
-                        pricePoint === price
-                          ? "border-primary bg-primary/5"
-                          : "border-slate-200 hover:border-slate-300"
-                      }`}
-                    >
-                      <span className="font-bold text-slate-900">${price}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
-            <div className="text-center mb-6">
-              <p className="text-slate-600 mb-1">Projected New Customers Per Month</p>
-              <p className="text-4xl font-extrabold text-slate-900">{projectedCustomers}</p>
-            </div>
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="p-4 bg-white rounded-lg">
-                <p className="text-slate-600 text-sm">Monthly Revenue</p>
-                <p className="text-2xl font-bold text-slate-900">${projectedMonthlyRevenue.toLocaleString()}</p>
-              </div>
-              <div className="p-4 bg-white rounded-lg">
-                <p className="text-slate-600 text-sm">Yearly Revenue</p>
-                <p className="text-2xl font-bold text-slate-900">${projectedYearlyRevenue.toLocaleString()}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">12-Month Growth Projection</h4>
-            <p className="text-sm text-slate-600 mb-4">
-              If you add ~{projectedCustomers} new customers each month (and keep most of them):
-            </p>
-
-            {/* Simple bar chart */}
-            <div className="space-y-2">
-              {[1, 3, 6, 12].map((month) => {
-                const data = cumulativeMonths[month - 1];
-                const maxMrr = cumulativeMonths[11].mrr;
-                const width = (data.mrr / maxMrr) * 100;
-
-                return (
-                  <div key={month} className="flex items-center gap-3">
-                    <span className="w-16 text-sm text-slate-600">Month {month}</span>
-                    <div className="flex-1 h-8 bg-slate-100 rounded-lg overflow-hidden">
-                      <div
-                        className="h-full bg-primary transition-all duration-500"
-                        style={{ width: `${width}%` }}
-                      />
-                    </div>
-                    <span className="w-28 text-sm font-medium text-slate-900 text-right">
-                      ${data.mrr.toLocaleString()}/mo
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-6 p-4 bg-slate-50 rounded-lg text-center">
-              <p className="text-slate-600">After 12 months with these strategies:</p>
-              <p className="text-3xl font-extrabold text-slate-900 mt-1">
-                {cumulativeMonths[11].customers} customers
-              </p>
-              <p className="text-xl font-bold text-green-600">
-                ${cumulativeMonths[11].mrr.toLocaleString()}/month MRR
-              </p>
-            </div>
-          </Card>
-
-          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <p className="text-slate-600 text-sm">
-              <strong>Earnings Disclaimer:</strong> These numbers are hypothetical examples for educational purposes only.
-              No income is guaranteed. Most software products never generate significant revenue.
-              Your results depend entirely on your execution, market conditions, product quality, and many other factors outside our control.
-            </p>
-          </Card>
-
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("complete")}
-          >
-            Lock In My Strategy <ChevronRight className="w-5 h-5" />
-          </Button>
-        </>
-      )}
-
-      {/* Step 4: Complete */}
+      {/* Step 3: Complete */}
       {step === "complete" && (
         <>
           <Card className="p-8 border-2 border-green-200 bg-green-50">
@@ -1329,30 +1155,12 @@ export function Day20TheLaunch({ appName, onComplete }: Day20TheLaunchProps) {
             ))}
           </Card>
 
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">Your 12-Month Potential</h4>
-            <div className="grid grid-cols-2 gap-4 text-center">
-              <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="text-3xl font-bold text-slate-900">{cumulativeMonths[11].customers}</p>
-                <p className="text-slate-600">Customers</p>
-              </div>
-              <div className="p-4 bg-green-50 rounded-lg">
-                <p className="text-3xl font-bold text-green-600">${cumulativeMonths[11].mrr.toLocaleString()}</p>
-                <p className="text-slate-600">Monthly Revenue</p>
-              </div>
-            </div>
-          </Card>
-
           <Button
             size="lg"
             className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => onComplete({
-              selectedStrategies,
-              projectedCustomers: cumulativeMonths[11].customers,
-              projectedRevenue: cumulativeMonths[11].mrr
-            })}
+            onClick={() => onComplete({ selectedStrategies })}
           >
-            Continue to Day 21 <ChevronRight className="w-5 h-5" />
+            Complete Day 20 <ChevronRight className="w-5 h-5" />
           </Button>
         </>
       )}
