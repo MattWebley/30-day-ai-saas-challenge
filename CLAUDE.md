@@ -959,6 +959,38 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - All changes committed and pushed to GitHub
   - TypeScript check passing, database reseeded
 
+### 2026-01-13 (Session 5) - Days 19-21 Major Restructure & Strategy Picker
+- Tasks Completed:
+  - **Day 20 Enhancement**: Expanded customer acquisition strategy picker
+    - Increased from 18 to 50+ strategies
+    - New categories: Launch Platforms (BetaList, AppSumo), Social Media (TikTok, Instagram Reels), Video (YouTube Shorts, Loom), Written Content (Guest Posting, Quora, Medium, Newsletter), Communities (Facebook Groups, Discord, Slack, Forums), Outreach (LinkedIn, Warm Intros), Influencers (Micro-influencers, YouTube Sponsors), Paid Ads (LinkedIn, Twitter, Reddit, TikTok), Lead Gen (Free Tools, Lead Magnets, Freemium), Reviews (G2/Capterra), Events (Webinars, Virtual Summits), PR (Press, HARO)
+    - Added strong messaging: "You only need 1-2-3 to WORK"
+    - Changed from "must pick 3" to "pick 1-3" (any count works)
+  - **Days 19-21 Complete Restructure** (logical flow fix):
+    - **Day 19: The Sales Machine** (NEW) - conversion before traffic
+      - Sales process that works while you sleep
+      - No rejection, no selling, automated
+      - Free trial formula
+      - WARNING: AI sales pages don't convert well (0.5-1% vs 3-10%)
+    - **Day 20: The Launch Plan** - customer acquisition strategies (unchanged)
+    - **Day 21: The Money** - moved earnings calculator here + hard CTA
+      - Income goal slider, price point picker
+      - Customers needed calculation
+      - Four business pillars
+      - Hard CTA to book a call (mattwebley.com/workwithmatt)
+  - Created Day19TheSalesMachine.tsx
+  - Deleted Day19TheMoney.tsx (moved to Day 21)
+  - Updated Day21LaunchDay.tsx with earnings calculator
+  - Updated seed.ts, DayInstructions.tsx, VideoSlides.tsx, Dashboard.tsx
+- Fixes Applied:
+  - Fixed logical flow: sales process (how to convert) now comes BEFORE traffic strategies (where to get customers)
+- Notes:
+  - New flow makes more sense: build conversion system → then drive traffic → then see the money math
+  - 50+ strategies gives users comprehensive options
+  - "Only need 1-3 to work" messaging reduces overwhelm
+  - TypeScript check passing
+  - All changes committed and pushed to GitHub
+
 ---
 
 ## Project-Specific Rules
