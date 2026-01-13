@@ -589,18 +589,18 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "Day 20: The Launch Plan",
       points: [
-        "18 proven customer acquisition strategies",
-        "Each rated: effort, time, cost, impact, automation",
-        "Filter by what works for YOU",
+        "50+ proven customer acquisition strategies",
+        "The SECRET: You only need 1-2-3 to WORK",
+        "Every successful SaaS found their channel and went ALL IN",
       ],
     },
     {
-      title: "Pick Your 3 Strategies",
+      title: "Pick 1-3 Strategies (Not All!)",
       points: [
-        "Product Hunt, Reddit, LinkedIn, YouTube, Cold Email...",
-        "Paid ads, SEO, partnerships, community building",
-        "Mix free and paid. Mix quick wins and long-term plays.",
-        "No one strategy works for everyone",
+        "Launch platforms, social media, content, outreach, paid ads...",
+        "Each rated: effort, time, cost, impact, automation",
+        "Filter to find what fits YOUR situation",
+        "Most businesses are built on just ONE working channel",
       ],
     },
     {
@@ -609,7 +609,7 @@ const slideContent: Record<number, Slide[]> = {
         "Pick your price point ($9-$199/mo)",
         "Toggle low/mid/high success scenarios",
         "See 12-month cumulative customer growth",
-        "Watch your potential MRR add up",
+        "The math shows what's POSSIBLE when a channel works",
       ],
     },
   ],
