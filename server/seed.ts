@@ -453,13 +453,13 @@ You HAVE to accept this is an EVER-CHANGING space. Things change CONSTANTLY. Don
     },
 
     // ============================================
-    // BUILD & VERIFY (Days 9-11)
+    // PREPARE continued (Day 9)
     // ============================================
     {
       day: 9,
       title: "Master Claude Code",
       description: "Learn how to effectively use Claude Code to build, fix, and iterate on your app. This is your superpower.",
-      phase: "Build & Verify",
+      phase: "Prepare",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Claude Code Mastery",
@@ -492,6 +492,10 @@ Complete today and you'll unlock the CLAUDE CODE GUIDE in the menu - all 3 promp
       xpReward: 100,
       estimatedMinutes: 5,
     },
+
+    // ============================================
+    // BUILD & VERIFY (Days 10-11)
+    // ============================================
     {
       day: 10,
       title: "The Build Loop",
