@@ -161,7 +161,35 @@ const slideContent: Record<number, Slide[]> = {
   ],
   5: [
     {
-      title: "Day 5: AI Tech Stack",
+      title: "Day 5: Create Your Logo",
+      points: [
+        "Your logo is the FACE of your brand",
+        "It doesn't need to be perfect -it needs to EXIST",
+        "30 minutes max. Done beats perfect.",
+      ],
+    },
+    {
+      title: "Your Logo Options",
+      points: [
+        "WORDMARK: Just your name in a nice font -clean, professional",
+        "ICON + TEXT: Simple symbol next to your name",
+        "AI-GENERATED: Use Midjourney or Ideogram for concepts",
+        "Canva has FREE logo templates -use them!",
+      ],
+    },
+    {
+      title: "Your Task Today",
+      points: [
+        "Pick your logo style (wordmark is easiest)",
+        "Open Canva, Midjourney, or your tool of choice",
+        "Create and save as PNG",
+        "You can always refine later -just GET ONE",
+      ],
+    },
+  ],
+  6: [
+    {
+      title: "Day 6: AI Tech Stack",
       points: [
         "These tools are your SUPERPOWERS",
         "Total cost: ~$50/month -accept it as cost of doing business",
@@ -187,9 +215,9 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
   ],
-  6: [
+  7: [
     {
-      title: "Day 6: Create Your PRD",
+      title: "Day 7: Create Your PRD",
       points: [
         "PRD = Product Requirements Document",
         "Your BLUEPRINT that tells Replit what to build",
@@ -217,9 +245,9 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
   ],
-  7: [
+  8: [
     {
-      title: "Day 7: Claude Code Setup",
+      title: "Day 8: Claude Code + GitHub",
       points: [
         "AI agents are FASTER, CHEAPER, BETTER than dev teams",
         "What took weeks with humans = MINUTES with AI",
@@ -247,9 +275,9 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
   ],
-  8: [
+  9: [
     {
-      title: "Day 8: Master Claude Code",
+      title: "Day 9: Master Claude Code",
       points: [
         "Claude Code saves you THOUSANDS vs Replit AI alone",
         "Same power, fraction of the price",
@@ -275,9 +303,9 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
   ],
-  9: [
+  10: [
     {
-      title: "Day 9: The Build Loop",
+      title: "Day 10: The Build Loop",
       points: [
         "BUILD → TEST → FIX → REPEAT",
         "This is THE skill that separates shippers from dreamers",
@@ -303,9 +331,37 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
   ],
-  10: [
+  11: [
     {
-      title: "Day 10: Add The AI Brain",
+      title: "Day 11: Define Your Brand",
+      points: [
+        "Brand is more than a logo -it's how your app FEELS",
+        "Pick ONE color and use it EVERYWHERE",
+        "Consistency = professional",
+      ],
+    },
+    {
+      title: "Your Brand Identity",
+      points: [
+        "PRIMARY COLOR: The main accent color for buttons/links",
+        "FONT: One clean font (Inter, Poppins, or Roboto)",
+        "These two choices make 90% of the difference",
+        "Don't overthink -pick and COMMIT",
+      ],
+    },
+    {
+      title: "Your Task Today",
+      points: [
+        "Choose your primary color",
+        "Pick your font",
+        "Apply to your app with Claude Code",
+        "Your app now LOOKS like a real product",
+      ],
+    },
+  ],
+  12: [
+    {
+      title: "Day 12: Add The AI Brain",
       points: [
         "This is what makes AI SaaS SPECIAL",
         "Users EXPECT intelligence now -it's 2025",
@@ -331,9 +387,9 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
   ],
-  11: [
+  13: [
     {
-      title: "Day 11: Add Superpowers",
+      title: "Day 13: Add Superpowers",
       points: [
         "External APIs = capabilities you CAN'T build yourself",
         "Payments, data feeds, integrations",
@@ -359,9 +415,9 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
   ],
-  12: [
+  14: [
     {
-      title: "Day 12: Add Login",
+      title: "Day 14: Add Login",
       points: [
         "Authentication = 'Who are you?'",
         "How your app knows which user is which",
@@ -388,9 +444,9 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
   ],
-  13: [
+  15: [
     {
-      title: "Day 13: Email Setup",
+      title: "Day 15: Email Setup",
       points: [
         "Without email, NO way to reach users after they leave",
         "They sign up. They leave. They forget. Game over.",
@@ -416,124 +472,37 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
   ],
-  14: [
-    {
-      title: "Day 14: Heads Down",
-      points: [
-        "THIS IS THE PAUSE POINT",
-        "Build Mode isn't a one-day thing",
-        "Stay here until your app is READY",
-      ],
-    },
-    {
-      title: "The Rule",
-      points: [
-        "Some people spend one day here",
-        "Some spend two WEEKS here",
-        "BOTH ARE FINE",
-        "Use the PAUSE button. Come back tomorrow. Repeat.",
-      ],
-    },
-    {
-      title: "When To Move On",
-      points: [
-        "Core features working",
-        "Handles errors gracefully",
-        "Looks decent (not perfect, DECENT)",
-        "Something you'd show to a real person",
-        "When you hit that -move to testing",
-      ],
-    },
-  ],
-  15: [
-    {
-      title: "Day 15: Test Your USP",
-      points: [
-        "Your USP is your WEAPON",
-        "It's why someone picks YOU over 10 competitors",
-        "Today we make sure that weapon is SHARP",
-      ],
-    },
-    {
-      title: "The Question That Matters",
-      points: [
-        "Show your USP to a potential customer RIGHT NOW",
-        "Would they say 'Wow, I'd pay for that'?",
-        "If not a clear YES -we have work to do",
-        "No excuses ('once I add X...')",
-      ],
-    },
-    {
-      title: "Your Task Today",
-      points: [
-        "Open your app. Do the USP thing.",
-        "Ask yourself: Would I pay for this?",
-        "Compare to a competitor -is yours BETTER?",
-        "Make it UNDENIABLE",
-      ],
-    },
-  ],
   16: [
     {
-      title: "Day 16: Feature Testing",
+      title: "Day 16: Mobile Ready",
       points: [
-        "Today you become your app's WORST enemy",
-        "Click every button. Fill every form.",
-        "Try to BREAK things",
+        "More than HALF your users will be on their PHONE",
+        "If it looks broken on mobile -they're GONE",
+        "No second chances",
       ],
     },
     {
-      title: "Try To Break It",
+      title: "What You're Testing",
       points: [
-        "Enter NOTHING -submit empty forms",
-        "Enter GARBAGE -asdfasdf in every field",
-        "Enter EVERYTHING -paste a novel",
-        "Do things in the WRONG ORDER",
-        "What happens?",
+        "DOES IT LOAD? On your REAL phone",
+        "CAN YOU READ IT? Without pinching/zooming",
+        "CAN YOU TAP THE BUTTONS? Big enough for a thumb?",
+        "DOES THE MAIN THING WORK on mobile?",
       ],
     },
     {
       title: "Your Task Today",
       points: [
-        "Test like a USER, not a developer",
-        "Write down bugs -don't fix yet",
-        "Finish testing, THEN fix everything",
-        "Break it now so users don't break it later",
+        "Open your app on your ACTUAL phone",
+        "Test every main feature",
+        "Document issues, fix with Claude Code",
+        "Mobile-ready = launch-ready",
       ],
     },
   ],
   17: [
     {
-      title: "Day 17: User Onboarding",
-      points: [
-        "First impressions are EVERYTHING",
-        "You have 2 MINUTES before they decide",
-        "Get them to their first WIN as fast as possible",
-      ],
-    },
-    {
-      title: "The 2-Minute Rule",
-      points: [
-        "Within 2 minutes of signing up, a user should:",
-        "1. Understand what the app does",
-        "2. DO the main thing",
-        "3. See a result that makes them say 'oh, that's cool'",
-      ],
-    },
-    {
-      title: "What KILLS Onboarding",
-      points: [
-        "Long tutorials (no one watches)",
-        "Too many steps before value",
-        "Empty states with no guidance",
-        "Feature dumps ('Here's 20 things!')",
-        "Keep it SIMPLE",
-      ],
-    },
-  ],
-  18: [
-    {
-      title: "Day 18: Admin Dashboard",
+      title: "Day 17: Admin Dashboard",
       points: [
         "You need to SEE what's happening inside",
         "Not guess. Not assume. KNOW.",
@@ -560,59 +529,87 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
   ],
+  18: [
+    {
+      title: "Day 18: Build Your MVP",
+      points: [
+        "MVP = Minimum Viable Product",
+        "The SMALLEST version that delivers REAL value",
+        "THIS IS THE PAUSE POINT - stay until it's ready",
+      ],
+    },
+    {
+      title: "What Your MVP MUST Have",
+      points: [
+        "ONE core feature that works BRILLIANTLY",
+        "User accounts (signup, login, private data)",
+        "Basic reliability (no crashes)",
+        "Professional appearance (not a school project)",
+      ],
+    },
+    {
+      title: "What Your MVP Does NOT Need",
+      points: [
+        "Every feature you dreamed of",
+        "Perfect design or dark mode",
+        "Advanced analytics or integrations",
+        "The word MINIMUM is there for a reason",
+      ],
+    },
+  ],
   19: [
     {
-      title: "Day 19: Mobile Ready",
+      title: "Day 19: The Business Checklist",
       points: [
-        "More than HALF your users will be on their PHONE",
-        "If it looks broken on mobile -they're GONE",
-        "No second chances",
+        "Your MVP is built - congratulations",
+        "But a product isn't a business",
+        "Today: what ELSE do you need?",
       ],
     },
     {
-      title: "What You're Testing",
+      title: "The Checklist",
       points: [
-        "DOES IT LOAD? On your REAL phone",
-        "CAN YOU READ IT? Without pinching/zooming",
-        "CAN YOU TAP THE BUTTONS? Big enough for a thumb?",
-        "DOES THE MAIN THING WORK on mobile?",
+        "PRICING: Have you decided? Free trial? Freemium?",
+        "PAYMENTS: Can you actually take money?",
+        "LEGAL: Terms of Service, Privacy Policy",
+        "SUPPORT: How will users contact you?",
       ],
     },
     {
-      title: "The Reality Check",
+      title: "Your Task Today",
       points: [
-        "You're not playing around anymore",
-        "This is a REAL product on ANY device",
-        "Two more days. That's it.",
-        "Two days and you can put a price tag on this",
+        "Go through each category",
+        "Check what you HAVE vs what's MISSING",
+        "Prioritize what MUST be done before launch",
+        "You don't need perfect - you need AWARE",
       ],
     },
   ],
   20: [
     {
-      title: "Day 20: Brand & Beauty",
+      title: "Day 20: Your Go-To-Market",
       points: [
-        "Your app WORKS. But does it LOOK like it's worth paying for?",
-        "People judge in the first 3 SECONDS",
-        "Before they even USE it",
+        "You have a product. Now you need customers.",
+        "Today isn't about DOING the marketing",
+        "It's about PLANNING it",
       ],
     },
     {
-      title: "This Is Simpler Than You Think",
+      title: "The Questions",
       points: [
-        "PICK ONE COLOR -use it everywhere",
-        "TEXT LOGO IS FINE -your name in a clean font",
-        "MAKE IT CONSISTENT -same style everywhere",
-        "Consistency = professional",
+        "WHERE will you launch? (Pick ONE platform)",
+        "HOW will people find you?",
+        "WHAT'S your sales process? (Discovery → Payment)",
+        "HOW do you describe this in one sentence?",
       ],
     },
     {
-      title: "Look At What You've Built",
+      title: "Your Task Today",
       points: [
-        "This isn't a side project anymore",
-        "This is a branded, professional SaaS product",
-        "Built in 20 days",
-        "Tomorrow: you LAUNCH",
+        "Decide your launch platform",
+        "Write your launch announcement",
+        "Map discovery to payment",
+        "Tomorrow: we ship this thing",
       ],
     },
   ],
@@ -620,28 +617,27 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "Day 21: LAUNCH DAY",
       points: [
-        "21 days ago, you wondered if you could do this",
-        "Build a real SaaS. With AI. From scratch.",
-        "Look at where you are NOW.",
+        "21 days ago, you had an idea",
+        "Now you have a product",
+        "Time to share it with the world",
       ],
     },
     {
-      title: "Pre-Launch Checklist",
+      title: "The Launch",
       points: [
-        "Can someone sign up and log in? ✓",
-        "Does your main feature work? ✓",
-        "Does your USP feature work? ✓",
-        "Does it work on mobile? ✓",
-        "Does it look professional? ✓",
+        "Post your announcement",
+        "Share with your network",
+        "Submit to the showcase",
+        "Tell 5-10 people personally",
       ],
     },
     {
-      title: "YOU DID IT",
+      title: "The Road Ahead",
       points: [
-        "You built a SaaS in 21 days",
-        "Most people only DREAM about this",
-        "You ACTUALLY DID IT",
-        "Hit that launch button. You've earned it.",
+        "Launch is the BEGINNING, not the end",
+        "Getting customers, growing, running the business",
+        "You've proven you can BUILD",
+        "Now go get some customers",
       ],
     },
   ],

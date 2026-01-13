@@ -23,7 +23,9 @@ import { Day1IdeaGenerator } from "@/components/Day1IdeaGenerator";
 import { Day2IdeaValidator } from "@/components/Day2IdeaValidator";
 import { Day3CoreFeatures } from "@/components/Day3CoreFeatures";
 import { Day4Naming } from "@/components/Day4Naming";
+import { Day5Logo } from "@/components/Day5Logo";
 import { Day5TechStack } from "@/components/Day5TechStack";
+import { Day11Brand } from "@/components/Day11Brand";
 import { Day6SummaryPRD } from "@/components/Day6SummaryPRD";
 import { Day7ReplitBuild } from "@/components/Day7ReplitBuild";
 import { Day8ClaudeCode } from "@/components/Day8ClaudeCode";
@@ -32,10 +34,8 @@ import { Day10AIBrain } from "@/components/Day10AIBrain";
 import { Day11AddSuperpowers } from "@/components/Day11AddSuperpowers";
 import { Day12LetUsersIn } from "@/components/Day12LetUsersIn";
 import { Day13ReachYourUsers } from "@/components/Day13ReachYourUsers";
-import { Day17Onboarding } from "@/components/Day17Onboarding";
 import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
 import { Day19MobileReady } from "@/components/Day19MobileReady";
-import { Day20BrandBeauty } from "@/components/Day20BrandBeauty";
 import { Day21LaunchDay } from "@/components/Day21LaunchDay";
 import { Day17BuildItOut } from "@/components/Day17BuildItOut";
 import { Day18TestEverything } from "@/components/Day18TestEverything";
@@ -421,7 +421,40 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 5: Tech Stack Setup */}
+                {/* Day 5: Create Your Logo */}
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Create Your Logo</h2>
+                  </div>
+                  <Day5Logo
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || ""}
+                    onComplete={handleComplete}
+                  />
+                </div>
+              </>
+            ) : currentDay === 6 ? (
+              <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={6} />
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
+                {/* Day 6: AI Toolkit Setup */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
@@ -465,7 +498,7 @@ export default function Dashboard() {
                   </Card>
                 </div>
               </>
-            ) : currentDay === 6 ? (
+            ) : currentDay === 7 ? (
               <>
                 {/* Today's Lesson */}
                 {dayData.lesson && (
@@ -475,7 +508,7 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={6} />
+                      <VideoSlides day={7} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -486,7 +519,7 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 6: Summary + PRD */}
+                {/* Day 7: Summary + PRD */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
@@ -521,42 +554,6 @@ export default function Dashboard() {
                   </Card>
                 </div>
               </>
-            ) : currentDay === 7 ? (
-              <>
-                {/* Today's Lesson */}
-                {dayData.lesson && (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
-                      </div>
-                      <VideoSlides day={7} />
-                    </div>
-                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                      <div className="prose prose-slate max-w-none">
-                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
-                        ))}
-                      </div>
-                    </Card>
-                  </div>
-                )}
-                {/* Day 7: PRD into Replit */}
-                <div className="space-y-4 pt-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Start Building</h2>
-                  </div>
-                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    <Day7ReplitBuild
-                      dayId={currentDay}
-                      prd={previousDayProgress?.userInputs?.prd || previousDayProgress?.prd || ""}
-                      onComplete={handleComplete}
-                    />
-                  </Card>
-                </div>
-              </>
             ) : currentDay === 8 ? (
               <>
                 {/* Today's Lesson */}
@@ -578,16 +575,19 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 8: Master Claude Code */}
+                {/* Day 8: Claude Code + GitHub Setup */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Get Your First Win</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Start Building</h2>
                   </div>
-                  <Day8ClaudeCode
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
-                    onComplete={handleComplete}
-                  />
+                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    <Day7ReplitBuild
+                      dayId={currentDay}
+                      prd={(Array.isArray(progress) ? progress.find((p: any) => p.day === 7) : null)?.userInputs?.prd || ""}
+                      onComplete={handleComplete}
+                    />
+                  </Card>
                 </div>
               </>
             ) : currentDay === 9 ? (
@@ -611,13 +611,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 9: The Build Loop */}
+                {/* Day 9: Master Claude Code */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Practice The Loop</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Get Your First Win</h2>
                   </div>
-                  <Day9RealityCheck
+                  <Day8ClaudeCode
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
@@ -644,13 +644,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 10: Add AI Brain */}
+                {/* Day 10: The Build Loop */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Add AI Power</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Practice The Loop</h2>
                   </div>
-                  <Day10AIBrain
+                  <Day9RealityCheck
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
@@ -677,14 +677,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 11: Add Superpowers (APIs) */}
+                {/* Day 11: Define Your Brand */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Add Your Superpowers</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Define Your Brand</h2>
                   </div>
-                  <Day11AddSuperpowers
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                  <Day11Brand
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -710,13 +710,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 12: Let Users In (Auth) */}
+                {/* Day 12: Add The AI Brain */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Set Up Authentication</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Add Your AI Brain</h2>
                   </div>
-                  <Day12LetUsersIn
+                  <Day10AIBrain
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -742,14 +743,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 13: Reach Your Users (Email) */}
+                {/* Day 13: Add Superpowers (APIs) */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Set Up Email</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Add Your Superpowers</h2>
                   </div>
-                  <Day13ReachYourUsers
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                  <Day11AddSuperpowers
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -775,14 +776,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 14: Mobile Ready */}
+                {/* Day 14: Add Login (Auth) */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Test on Mobile</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Set Up Authentication</h2>
                   </div>
-                  <Day19MobileReady
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                  <Day12LetUsersIn
                     onComplete={handleComplete}
                   />
                 </div>
@@ -808,14 +808,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 15: User Onboarding */}
+                {/* Day 15: Email Setup */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Build Onboarding</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Set Up Email</h2>
                   </div>
-                  <Day17Onboarding
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                  <Day13ReachYourUsers
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -841,14 +841,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 16: Admin Dashboard */}
+                {/* Day 16: Mobile Ready */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Build Your Dashboard</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Test on Mobile</h2>
                   </div>
-                  <Day18AdminDashboard
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                  <Day19MobileReady
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -874,13 +874,16 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 17: Build It Out - THE PAUSE POINT */}
+                {/* Day 17: Admin Dashboard */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Build Mode</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Build Your Dashboard</h2>
                   </div>
-                  <Day17BuildItOut onComplete={handleComplete} />
+                  <Day18AdminDashboard
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 18 ? (
@@ -904,16 +907,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 18: Test Everything */}
+                {/* Day 18: Build It Out - THE PAUSE POINT */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Build Mode</h2>
                   </div>
-                  <Day18TestEverything
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
-                    onComplete={handleComplete}
-                  />
+                  <Day17BuildItOut onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 19 ? (
@@ -937,17 +937,40 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 19: Brand & Beauty */}
+                {/* Day 19: Test Everything */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Polish Your Brand</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
                   </div>
-                  <Day20BrandBeauty
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                  <Day18TestEverything
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
+              </>
+            ) : currentDay === 20 ? (
+              <>
+                {/* Today's Lesson */}
+                {dayData.lesson && (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={20} />
+                    </div>
+                    <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      <div className="prose prose-slate max-w-none">
+                        {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                        ))}
+                      </div>
+                    </Card>
+                  </div>
+                )}
+                {/* Day 20: Final Prep - generic template with micro-decision */}
               </>
             ) : currentDay === 21 ? (
               <>

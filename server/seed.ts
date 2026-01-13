@@ -284,9 +284,65 @@ The name you pick today will be on every invoice, every email, every conversatio
     },
     {
       day: 5,
-      title: "AI Tech Stack Setup",
-      description: "Sign up for Replit, Claude, ChatGPT, and OpenAI API - your AI-powered development toolkit.",
+      title: "Create Your Logo",
+      description: "Design a simple, memorable logo for your SaaS. You don't need to be a designer - AI tools make this easy.",
       phase: "Idea & Planning",
+      videoUrl: null,
+      aiTaskType: "creative",
+      aiTaskTitle: "Logo Creation",
+      aiTaskDescription: "Create a professional logo using AI tools or simple design principles.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "What style of logo fits your brand?",
+      microDecisionOptions: JSON.stringify(["Text-only (wordmark)", "Icon + text", "Abstract symbol", "Lettermark (initials)"]),
+      reflectionQuestion: "Does your logo feel like YOUR brand?",
+      tip: "A text-only logo in a clean font is better than a bad graphic. Don't overthink it - you can always refine later.",
+      lesson: `Your logo is the FACE of your product.
+
+It doesn't need to be perfect. It needs to be DONE.
+
+THE TRUTH ABOUT LOGOS:
+
+Most successful SaaS companies have SIMPLE logos. Stripe is just text. Notion is just text with a simple icon. You don't need a fancy designer.
+
+YOUR OPTIONS:
+
+1. TEXT-ONLY (Wordmark)
+Just your app name in a nice font. Clean, professional, EASY. This is what I recommend for most people starting out.
+
+2. ICON + TEXT
+A simple symbol next to your name. Good if you have a clear visual concept.
+
+3. AI-GENERATED
+Use tools like Midjourney, DALL-E, or Ideogram to generate logo concepts. Then refine in Canva.
+
+HOW TO MAKE A TEXT LOGO IN 5 MINUTES:
+
+1. Go to Canva (free)
+2. Search "logo" templates
+3. Pick one that's SIMPLE
+4. Replace the text with your app name
+5. Choose 1-2 colors max
+6. Download as PNG
+
+WHAT MAKES A GOOD LOGO:
+
+- Readable at small sizes
+- Works in black and white
+- Simple enough to remember
+- Matches your brand vibe
+
+Don't spend days on this. Spend 30 minutes, make something decent, move on. You can always update it later.`,
+      outcome: "A logo file ready to use in your app",
+      completionMessage: "You have a logo! Your app now has a face. Tomorrow: setting up your AI toolkit.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+    {
+      day: 6,
+      title: "Your AI Toolkit",
+      description: "Sign up for Replit, Claude, ChatGPT, and OpenAI API - your AI-powered development toolkit.",
+      phase: "Prepare",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Tool Setup Checklist",
@@ -313,7 +369,7 @@ They're good at different things (and that changes, often). You can play them of
       estimatedMinutes: 5,
     },
     {
-      day: 6,
+      day: 7,
       title: "Summary + PRD Into Replit",
       description: "Finalize your plan, generate a professional Product Requirements Document with AI, and paste it into Replit to start building.",
       phase: "Idea & Planning",
@@ -353,10 +409,10 @@ Check through it, change anything that's wrong, then PASTE IT INTO REPLIT and wa
       estimatedMinutes: 5,
     },
     {
-      day: 7,
+      day: 8,
       title: "Claude Code + GitHub Setup",
       description: "Connect Claude Code to Replit and GitHub, learn the daily workflow, and complete your first real build session.",
-      phase: "Idea & Planning",
+      phase: "Prepare",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Development Workflow Setup",
@@ -397,10 +453,10 @@ You HAVE to accept this is an EVER-CHANGING space. Things change CONSTANTLY. Don
     },
 
     // ============================================
-    // BUILD & VERIFY (Days 8-10)
+    // BUILD & VERIFY (Days 9-11)
     // ============================================
     {
-      day: 8,
+      day: 9,
       title: "Master Claude Code",
       description: "Learn how to effectively use Claude Code to build, fix, and iterate on your app. This is your superpower.",
       phase: "Build & Verify",
@@ -437,7 +493,7 @@ Complete today and you'll unlock the CLAUDE CODE GUIDE in the menu - all 3 promp
       estimatedMinutes: 5,
     },
     {
-      day: 9,
+      day: 10,
       title: "The Build Loop",
       description: "Learn the most important workflow in software: Build, Test, Fix, Repeat. This is how real builders ship.",
       phase: "Build & Verify",
@@ -479,15 +535,77 @@ TODAY'S MISSION:
 
 Find ONE bug in your app. Describe it clearly. Fix it with Claude Code. That's it. Simple? Yes. But this simple loop is what you'll do every single day of building. Master it now.`,
       outcome: "Found and fixed your first bug using the Build-Test-Fix loop",
-      completionMessage: "You just completed your first Build-Test-Fix loop! This is the skill that will carry you through everything. Finding bugs = progress. Tomorrow: more fixing and iterating.",
+      completionMessage: "You just completed your first Build-Test-Fix loop! This is the skill that will carry you through everything. Finding bugs = progress. Tomorrow: defining your brand.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
-      day: 10,
+      day: 11,
+      title: "Define Your Brand",
+      description: "Choose your colors, fonts, and visual style. This makes your app look professional and consistent.",
+      phase: "Build & Verify",
+      videoUrl: null,
+      aiTaskType: "creative",
+      aiTaskTitle: "Brand Identity",
+      aiTaskDescription: "Define your brand colors, typography, and visual style guide.",
+      suggestions: null,
+      template: null,
+      microDecisionQuestion: "What vibe should your brand have?",
+      microDecisionOptions: JSON.stringify(["Professional & trustworthy", "Fun & friendly", "Bold & energetic", "Minimal & clean"]),
+      reflectionQuestion: "Would your target customer feel at home with this brand?",
+      tip: "Pick ONE primary color and stick with it. Consistency beats creativity when you're starting out.",
+      lesson: `You've built your first features. Now let's make them LOOK like a real product.
+
+Brand = how your app FEELS.
+
+It's more than a logo. It's the colors, the fonts, the overall vibe. When someone lands on your app, they should instantly get a FEELING.
+
+THE SIMPLE BRAND FORMULA:
+
+1. ONE PRIMARY COLOR
+Pick a color that matches your vibe:
+- Blue = trustworthy, professional
+- Green = growth, money, health
+- Purple = creative, premium
+- Orange = friendly, energetic
+- Black = sophisticated, luxury
+
+2. ONE FONT (maybe two)
+Use Google Fonts. Pick something readable.
+- Inter, Open Sans, Lato = clean & modern
+- Poppins, Nunito = friendly & approachable
+- Playfair Display = elegant (headers only)
+
+3. CONSISTENT SPACING
+Same padding on all cards. Same button styles everywhere. CONSISTENCY is what makes things look professional.
+
+YOUR BRAND CHECKLIST:
+
+□ Primary color (hex code)
+□ Secondary color (usually gray or a lighter shade)
+□ Font for headings
+□ Font for body text
+□ Button style (rounded? square? color?)
+
+HOW TO APPLY IT:
+
+Tell Claude Code: "Use [COLOR] as the primary color throughout the app. All buttons should be [COLOR]. Use [FONT] for all text. Keep spacing consistent - 16px padding on cards, 8px gaps between elements."
+
+That's it. You now have a brand. It doesn't need to be fancy. It needs to be CONSISTENT.`,
+      outcome: "A defined color palette and typography applied to your app",
+      completionMessage: "Your app now has a consistent look and feel! This is what separates amateur projects from professional products. Tomorrow: adding the AI brain.",
+      xpReward: 100,
+      estimatedMinutes: 5,
+    },
+
+    // ============================================
+    // MAKE IT WORK (Days 12-17)
+    // ============================================
+    {
+      day: 12,
       title: "Add The AI Brain",
       description: "Integrate OpenAI API to make your app intelligent. This is what makes AI SaaS special.",
-      phase: "Build & Verify",
+      phase: "Make It Work",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "AI Integration",
@@ -533,12 +651,8 @@ OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overth
       xpReward: 100,
       estimatedMinutes: 5,
     },
-
-    // ============================================
-    // MAKE IT WORK (Days 11-14)
-    // ============================================
     {
-      day: 11,
+      day: 13,
       title: "Add Superpowers",
       description: "Connect external APIs to give your app capabilities beyond what you could build yourself - payments, data, integrations.",
       phase: "Make It Work",
@@ -602,7 +716,7 @@ If your app works without external APIs, skip this day. Move on. Don't add compl
       estimatedMinutes: 5,
     },
     {
-      day: 12,
+      day: 14,
       title: "Add Login",
       description: "Make sure users can sign up, log in, and see only their own data. Authentication is what makes your app multi-user.",
       phase: "Make It Work",
@@ -664,7 +778,7 @@ If each account is isolated, auth is working. Done.`,
       estimatedMinutes: 5,
     },
     {
-      day: 13,
+      day: 15,
       title: "Email Power",
       description: "Set up email so you can communicate with users - welcome emails, updates, and notifications.",
       phase: "Make It Work",
@@ -733,7 +847,7 @@ It's simple, reliable, and free to start. The API is clean. Claude Code knows ho
       estimatedMinutes: 5,
     },
     {
-      day: 14,
+      day: 16,
       title: "Mobile Ready",
       description: "Make your app work beautifully on phones and tablets. Most users will access on mobile.",
       phase: "Make It Work",
@@ -773,74 +887,16 @@ DO THIS NOW:
 
 Mobile optimization isn't about perfection. It's about: Can someone USE this on their phone? Yes or no.`,
       outcome: "App works on mobile devices - responsive and touch-friendly",
-      completionMessage: "Your app works on mobile now. You just unlocked the majority of potential users. Tomorrow: user onboarding.",
+      completionMessage: "Your app works on mobile now. You just unlocked the majority of potential users. Tomorrow: admin dashboard.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
 
     // ============================================
-    // TEST & REFINE (Days 15-18)
+    // TEST & REFINE (Days 17-19)
     // ============================================
     {
-      day: 15,
-      title: "User Onboarding",
-      description: "Create a smooth first-run experience. Help new users understand and love your app in the first 2 minutes.",
-      phase: "Test & Refine",
-      videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "Onboarding Flow",
-      aiTaskDescription: "Design and build an onboarding experience that helps users get value quickly.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "What should onboarding focus on?",
-      microDecisionOptions: JSON.stringify(["Quick tour of features", "Get them to first success", "Collect preferences", "Just let them explore"]),
-      reflectionQuestion: "What's the ONE thing a user must do to 'get' your app?",
-      tip: "The best onboarding gets users to their first 'aha moment' as fast as possible. What's the smallest action that shows them the value?",
-      lesson: `First impressions are EVERYTHING.
-
-When someone signs up, you have about 2 minutes before they decide whether your app is for them or not. Two minutes. That's it.
-
-THE ONLY GOAL OF ONBOARDING:
-
-Get them to their first WIN as fast as humanly possible. Not "show them features." Not "explain everything." Just help them DO something and feel successful.
-
-THE 2-MINUTE RULE:
-
-Within 2 minutes of signing up, a user should:
-1. Understand what the app does
-2. DO the main thing
-3. See a result that makes them think "oh, that's cool"
-
-If that takes more than 2 minutes? You'll lose most of them.
-
-THE SIMPLEST ONBOARDING THAT WORKS:
-
-1. They sign up
-2. Take them STRAIGHT to the main feature
-3. Pre-fill it with example data so they can try immediately
-4. One click to get a result
-5. "Wow, that was easy. I like this."
-
-Done.
-
-WHAT KILLS ONBOARDING:
-
-- Long tutorials (no one watches them)
-- Too many steps before they get value
-- Forcing email verification before they can try the app
-- Empty states with no guidance
-- Feature dumps ("Here's 20 things you can do!")
-
-THE QUESTION:
-
-What's the ONE thing a user needs to do to "get" your app? That's your onboarding. Everything else is distraction. Make them successful in 2 minutes or less.`,
-      outcome: "Smooth onboarding flow that gets users to their first success quickly",
-      completionMessage: "New users now have a clear path to success. That's the difference between an app people try once and an app people keep using. Tomorrow: seeing what's happening in your app.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-    {
-      day: 16,
+      day: 17,
       title: "Admin Dashboard",
       description: "Build a simple dashboard to see what's happening in your app. Users, activity, and key metrics.",
       phase: "Test & Refine",
@@ -890,303 +946,363 @@ DATA TELLS YOU WHAT TO FIX. Build the dashboard. Check it every day. Make decisi
       estimatedMinutes: 5,
     },
     {
-      day: 17,
-      title: "Build It Out",
-      description: "THE PAUSE POINT. You've learned 95% of what you need. Now BUILD. Stay here as long as you need - days or weeks.",
+      day: 18,
+      title: "Build Your MVP",
+      description: "THE PAUSE POINT. Build your Minimum Viable Product. Stay here as long as you need - days or weeks - until your MVP is ready.",
       phase: "Test & Refine",
       videoUrl: null,
       aiTaskType: "session",
-      aiTaskTitle: "Build Mode",
-      aiTaskDescription: "This is THE pause point. Build, fix, iterate. Stay here until your app is ready.",
+      aiTaskTitle: "Build Your MVP",
+      aiTaskDescription: "This is THE pause point. Build your MVP - the simplest version that delivers real value.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "What are you focusing on today?",
       microDecisionOptions: JSON.stringify(["Core features", "Bug fixes", "UI polish", "New functionality"]),
-      reflectionQuestion: "What's the ONE thing that would make your app significantly better?",
-      tip: "THIS IS THE PAUSE POINT. Use the PAUSE button. Stay on Day 17 for as long as you need. Days. Weeks. Build until you're ready.",
+      reflectionQuestion: "Does your app solve the ONE core problem you set out to solve?",
+      tip: "THIS IS THE PAUSE POINT. Your MVP isn't about having every feature - it's about having ONE thing that works brilliantly. Stay here until that's true.",
       lesson: `STOP. READ THIS CAREFULLY.
 
-This is THE PAUSE POINT.
+This is THE PAUSE POINT - and it's time to talk about your MVP.
 
-You've now learned 95% of everything you need to build a SaaS. AI integration. APIs. Auth. Email. Mobile. Onboarding. Admin dashboard. The tools are in your hands.
+WHAT IS AN MVP?
 
-Now it's time to actually BUILD.
+MVP stands for Minimum Viable Product. But most people get this WRONG.
 
-THE RULE: Stay on Day 17 until your app is READY.
+An MVP is NOT:
+- A broken app with missing features
+- A prototype that "kind of works"
+- An excuse to ship garbage
+- Half-built functionality
+
+An MVP IS:
+- The SMALLEST version of your product that delivers REAL VALUE
+- ONE core problem solved BRILLIANTLY
+- Something people would actually PAY for
+- Proof that your idea works
+
+THE MVP CHECKLIST:
+
+Your MVP must have:
+
+1. ONE CORE FEATURE that solves the main problem
+   - This is your USP. It MUST work flawlessly.
+   - If your app helps people write emails faster, that feature better be AMAZING.
+
+2. USER ACCOUNTS
+   - People can sign up and log in
+   - Their data is saved and private
+
+3. BASIC RELIABILITY
+   - Doesn't crash
+   - Handles errors gracefully
+   - Works on mobile
+
+4. PROFESSIONAL APPEARANCE
+   - Doesn't look like a school project
+   - Consistent styling
+   - Clear navigation
+
+WHAT YOUR MVP DOES NOT NEED:
+
+- Every feature you dreamed of
+- Perfect design
+- Advanced analytics
+- Multiple integrations
+- Social sharing
+- Dark mode
+- 47 settings options
+
+The word "minimum" is there for a reason. RESIST the urge to add more.
+
+THE RULE: Stay on Day 18 until your MVP is READY.
 
 Some people spend one day here. Some spend two weeks. Some spend a month. ALL OF THAT IS FINE.
 
-Use the PAUSE button in the sidebar. Come back tomorrow and keep building. And the next day. And the next.
-
-WHAT "READY" MEANS:
-
-Your app should:
-- Have all core features working
-- Handle errors gracefully (no crashes)
-- Work on mobile
-- Look decent (not perfect - decent)
-- Be something you'd show to a stranger
-
-If you're not there yet? KEEP BUILDING.
+Use the PAUSE button. Come back tomorrow and keep building. And the next day. And the next.
 
 WHAT TO DO EACH SESSION:
 
-1. Pick ONE thing to work on
-2. Build it or fix it
-3. Test it
-4. Repeat
+1. Ask: "Does my core feature work perfectly?"
+2. If NO - fix it
+3. If YES - ask: "What's the ONE thing blocking launch?"
+4. Fix that ONE thing
+5. Repeat
 
-Don't try to do everything. One thing at a time. Small wins stack up.
+THE MVP MINDSET:
 
-WHEN YOU GET STUCK:
+Your first users don't need perfection. They need a SOLUTION.
 
-- Describe the problem clearly to Claude Code
-- If it's a bug: "When I click X, Y happens instead of Z"
-- If it's a feature: "I want users to be able to do X"
-- If you're lost: Take a break. Come back tomorrow.
+If your app solves their problem - even with rough edges - they'll use it. They'll give you feedback. They'll help you build version 2.
 
-THE MINDSET:
-
-This isn't a race. This is where real builders spend their time. In the code. Making things work. Finding bugs and fixing them. Adding polish.
-
-Everyone wants to launch. But launching garbage doesn't help anyone. Build something you're proud of FIRST.
+But if you never ship? You get nothing.
 
 WHEN TO MOVE ON:
 
-When your app is something you'd be comfortable showing to real users. When it works. When it doesn't embarrass you.
+Your MVP is ready when:
+- Your core feature works reliably
+- A stranger could sign up and use it without help
+- You wouldn't be embarrassed to show it
+- It solves the ONE problem you set out to solve
 
-Then - and only then - move to Day 18.`,
-      outcome: "App is built out, tested, and ready for final polish and launch",
+Then - and only then - move to Day 19.`,
+      outcome: "MVP is built - core feature works, users can sign up, app is ready for real testing",
       completionMessage: "You've put in the work. Your app is taking shape. If you need more time, use PAUSE. When ready, it's time to TEST and POLISH.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
-      day: 18,
-      title: "Test Everything",
-      description: "Systematically test your USP and every feature. Find the bugs before your users do.",
-      phase: "Test & Refine",
-      videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "Full Test Suite",
-      aiTaskDescription: "Test your USP and all features. Click everything. Try to break it.",
-      suggestions: null,
-      template: null,
-      microDecisionQuestion: "How did testing go?",
-      microDecisionOptions: JSON.stringify(["Everything works!", "Found minor issues", "Found major issues", "Need more building time"]),
-      reflectionQuestion: "Would you feel confident letting a paying customer use this right now?",
-      tip: "Test like a user, not a developer. Click every button. Try to break things. Enter weird data. If it breaks for you, it'll break for customers.",
-      lesson: `Today you become your app's WORST enemy.
-
-Click every button. Fill every form. Try to BREAK things. Because if YOU can break it, your USERS definitely will.
-
-FIRST: TEST YOUR USP
-
-Your Unique Selling Point is your WEAPON. It's why people choose YOU.
-
-1. Open your app
-2. Do the USP thing
-3. Ask yourself: Would I pay for this?
-4. Compare to a competitor - is yours better?
-
-If your USP doesn't make you think "yeah, that's pretty cool" - go back to Day 17 and improve it.
-
-THEN: TEST EVERYTHING ELSE
-
-The testing mindset: Pretend you've never seen your app before. You're a confused user who just landed here.
-
-TRY TO BREAK IT:
-
-- Enter nothing. Submit empty forms.
-- Enter garbage. asdfasdfasdf everywhere.
-- Enter EVERYTHING. Paste a novel into a text box.
-- Do things in the wrong order.
-- Click the same button 10 times fast.
-- Use it on mobile.
-
-What happens? Does it crash? Does it give a helpful error? Does it just... do nothing?
-
-WHAT TO LOOK FOR:
-
-- Loading states - is there a spinner?
-- Success states - do you KNOW when it worked?
-- Error states - when it fails, do you know WHY?
-- Edge cases - emoji? Long names? Special characters?
-
-WHEN YOU FIND BUGS:
-
-Fix them NOW. You're about to launch. Every bug you find is a bug your users won't hit.
-
-THE GOAL:
-
-By end of today, you should be able to say: "I've clicked every button, tested every feature, and I'm confident this works."`,
-      outcome: "All features tested, bugs fixed, app is reliable and ready for launch",
-      completionMessage: "Your app has been battle-tested. You know it works. That confidence is worth everything. Tomorrow: making it beautiful.",
-      xpReward: 100,
-      estimatedMinutes: 5,
-    },
-
-    // ============================================
-    // POLISH & LAUNCH (Days 19-21)
-    // ============================================
-    {
       day: 19,
-      title: "Brand & Beauty",
-      description: "Polish the visuals. Logo, colors, typography. Make it look like a product people would pay for.",
-      phase: "Polish & Launch",
+      title: "The Business Checklist",
+      description: "Your MVP is built. Now let's make sure you have everything a real business needs.",
+      phase: "Launch",
       videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "Visual Polish",
-      aiTaskDescription: "Add final visual polish - logo, consistent branding, and professional touches.",
+      aiTaskType: "checklist",
+      aiTaskTitle: "Business Checklist",
+      aiTaskDescription: "Review what you have and what you still need to run a real business.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What needs the most visual work?",
-      microDecisionOptions: JSON.stringify(["Need a logo", "Colors are inconsistent", "Typography needs work", "Overall needs polish"]),
-      reflectionQuestion: "If someone landed on your app right now, would they think 'this looks professional'?",
-      tip: "You don't need a perfect logo. A clean text logo in a nice font is better than a bad graphic. Focus on consistency over creativity.",
-      lesson: `Let's talk about what REALLY matters here.
+      microDecisionQuestion: "What's your biggest gap right now?",
+      microDecisionOptions: JSON.stringify(["Pricing strategy", "Payment setup", "Legal stuff", "Support system"]),
+      reflectionQuestion: "What's the ONE thing you need to figure out before you can charge money?",
+      tip: "You don't need to DO all of this today. You need to KNOW what's missing so you can plan for it.",
+      lesson: `Your MVP is built. Congratulations.
 
-Your app WORKS. It does the thing. But does it look like something worth paying for?
+But a product isn't a business. Today we look at what else you need.
 
-Here's the truth: People judge your app in the first 3 seconds. Before they even USE it. They look at it and think "professional" or "amateur". And that judgment directly affects what they'll pay.
+THE BUSINESS CHECKLIST:
 
-THIS IS SIMPLER THAN YOU THINK:
+Go through this list. Check what you have. Note what you're missing.
 
-1. PICK ONE COLOR - Seriously. Just one main color. Blue, green, purple, whatever. Use it for buttons, links, and accents. Everything else is white/gray backgrounds and dark text. That's your brand. Done.
-2. TEXT LOGO IS FINE - You don't need a designer. Your app name in a clean font IS a logo. Canva takes 5 minutes. Don't overthink this.
-3. MAKE IT CONSISTENT - Same button style everywhere. Same card style everywhere. Same spacing everywhere. CONSISTENCY is what makes things look professional - not fancy graphics.
+PRICING:
+- Have you decided on a price?
+- Free trial? Freemium? Paid only?
+- Monthly? Annual? One-time?
+- What do competitors charge?
 
-THE QUICK FIX:
+You need to decide this. Not tomorrow. Before you launch.
 
-Tell Claude Code: "Make my app look consistent. Primary color is [pick one]. Same button style, same card style, same spacing on every page. Add a simple text logo in the header." That's it. 15 minutes max.
+PAYMENTS:
+- Can you actually take money?
+- Stripe account set up?
+- Payment flow tested?
+- What happens after someone pays?
 
-LOOK AT WHAT YOU'VE BUILT.
+If you can't take money, you don't have a business.
 
-Seriously. Open your app right now and look at it.
+LEGAL BASICS:
+- Terms of Service
+- Privacy Policy
+- Refund policy
 
-This isn't a side project anymore. This isn't a "maybe someday" thing. This is a branded, professional-looking SaaS product that you built. Two more days and you LAUNCH.`,
-      outcome: "App has consistent branding, logo, and professional visual design",
-      completionMessage: "Your app LOOKS like a real product now. Consistent, polished, credible. Almost there!",
+Yes, you need these. AI can generate them for you. They don't have to be perfect, but they have to exist.
+
+SUPPORT:
+- How will users contact you?
+- Email? Chat? Help docs?
+- Who responds when something breaks?
+
+Even if it's just your personal email - you need SOMETHING.
+
+THE HONEST TRUTH:
+
+Most people skip this stuff and regret it later.
+
+Someone wants to pay you? "Oh wait, I haven't set up Stripe yet."
+Someone has a question? "Uh, I don't have a support email."
+Someone asks about refunds? "I... haven't thought about that."
+
+Don't be that person.
+
+WHAT TO DO TODAY:
+
+1. Go through the checklist above
+2. For each item: Do you have it? Yes or No.
+3. For each No: Add it to your to-do list
+4. Prioritize: What MUST be done before launch?
+
+You don't need everything perfect. But you need to KNOW what's missing.`,
+      outcome: "Business checklist complete - you know what you have and what you still need",
+      completionMessage: "You've mapped out what your business needs. Some things are done, some need work. That clarity is valuable. Tomorrow: your go-to-market plan.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
+
+    // ============================================
+    // LAUNCH (Days 20-21)
+    // ============================================
     {
       day: 20,
-      title: "Final Prep",
-      description: "Last checks before launch. Make sure everything is ready.",
-      phase: "Polish & Launch",
+      title: "Your Go-To-Market",
+      description: "How will people find you? Try you? Pay you? Time to think about your launch strategy.",
+      phase: "Launch",
       videoUrl: null,
-      aiTaskType: "setup",
-      aiTaskTitle: "Pre-Launch",
-      aiTaskDescription: "Final preparations before launch day.",
+      aiTaskType: "planning",
+      aiTaskTitle: "Go-To-Market Plan",
+      aiTaskDescription: "Map out your launch strategy, sales process, and growth channels.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "How ready do you feel?",
-      microDecisionOptions: JSON.stringify(["Ready to launch!", "Almost there", "Need more time", "Not sure"]),
-      reflectionQuestion: "What's the ONE thing you'd regret not fixing before launch?",
-      tip: "If something is bugging you, fix it now. You'll feel better launching something you're proud of.",
-      lesson: `Tomorrow you launch.
+      microDecisionQuestion: "Where will you launch first?",
+      microDecisionOptions: JSON.stringify(["Product Hunt", "Twitter/X", "Reddit/Communities", "Direct outreach"]),
+      reflectionQuestion: "If you could only tell 10 people about your product, who would they be?",
+      tip: "You don't need a marketing degree. You need to answer three questions: Where are my customers? How do I reach them? Why should they care?",
+      lesson: `You have a product. Now you need customers.
 
-Take a breath. Look at what you've built.
+Today isn't about DOING the marketing. It's about PLANNING it.
 
-TODAY'S JOB: Final sweep.
+YOUR LAUNCH STRATEGY:
 
-Go through your app one more time. Not to rebuild it. Not to add features. Just to make sure everything is RIGHT.
+Where will you announce this thing?
 
-THE FINAL CHECKLIST:
+OPTIONS:
+- Product Hunt (good for tech audiences)
+- Twitter/X (good if you have followers)
+- Reddit (find subreddits where your customers hang out)
+- LinkedIn (good for B2B)
+- Indie Hackers, Hacker News (good for builder communities)
+- Direct outreach (email people who might care)
 
-1. Does signup/login work?
-2. Does your main feature work?
-3. Does your USP feature work?
-4. Does it work on mobile?
-5. Does it look professional?
-6. Are there any obvious bugs?
-7. Is there anything that would embarrass you?
+Pick ONE to start. You can't be everywhere.
 
-If you find something - fix it NOW.
+YOUR SALES PROCESS:
 
-IF EVERYTHING WORKS:
+How does someone go from "never heard of you" to "paying customer"?
 
-Great. You're ready. Get some rest. Tomorrow is launch day.
+Map it out:
+1. They DISCOVER you (how?)
+2. They VISIT your site (what do they see?)
+3. They TRY it (free trial? demo? freemium?)
+4. They DECIDE to pay (what convinces them?)
+5. They PAY (is that process smooth?)
 
-IF YOU'RE NOT READY:
+Where are the gaps? Where might people drop off?
 
-That's okay too. Go back to Day 17. Keep building. There's no shame in taking more time.
+GROWTH CHANNELS:
 
-But be honest with yourself: Are you "not ready" or are you just scared?
+Long-term, how will people find you?
 
-Fear is normal. Perfectionism is a trap. At some point, you have to ship.
+OPTIONS TO CONSIDER:
+- SEO (people searching for solutions)
+- Content (blog posts, videos, guides)
+- Social media (building an audience)
+- Partnerships (other tools, affiliates)
+- Paid ads (if you have budget)
+- Word of mouth (happy customers telling others)
 
-Done is better than perfect. You can always improve after launch.`,
-      outcome: "Final checks complete, ready for launch",
-      completionMessage: "Everything is ready. Tomorrow, you launch. Get some rest. You've earned it.",
+You don't need all of these. You need ONE that works.
+
+YOUR POSITIONING:
+
+How do you describe this in one sentence?
+
+"[Your app] helps [specific person] do [specific thing] so they can [specific outcome]."
+
+If you can't say it simply, customers won't understand it either.
+
+WHAT TO DO TODAY:
+
+1. Decide where you'll launch (pick ONE platform)
+2. Write your launch announcement (what will you say?)
+3. Map your sales process (discovery → payment)
+4. Write your one-sentence positioning
+
+You don't need perfect answers. You need a PLAN.`,
+      outcome: "Go-to-market plan mapped out - you know where you'll launch and how you'll get customers",
+      completionMessage: "You have a plan. Where to launch, how to describe it, how people will find and pay you. Tomorrow: we ship this thing.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 21,
       title: "Launch Day",
-      description: "GO LIVE. You're about to launch your AI SaaS.",
-      phase: "Polish & Launch",
+      description: "GO LIVE. Launch your product and learn what comes next.",
+      phase: "Launch",
       videoUrl: null,
-      aiTaskType: "setup",
+      aiTaskType: "launch",
       aiTaskTitle: "Launch",
-      aiTaskDescription: "Final launch checklist and GO LIVE.",
+      aiTaskDescription: "Launch your product and understand the road ahead.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "How do you feel about launching?",
       microDecisionOptions: JSON.stringify(["Excited and ready!", "Nervous but ready", "Want more polish first", "Terrified"]),
-      reflectionQuestion: "What will you do to celebrate after you launch?",
-      tip: "Done is better than perfect. You can always improve after launch. The goal today is to be LIVE, not to be flawless.",
+      reflectionQuestion: "What's the first thing you'll do after you launch?",
+      tip: "Launching isn't the end. It's the beginning. The real learning starts when real users touch your product.",
       lesson: `LAUNCH DAY.
 
-21 days ago, you probably wondered if you could actually do this. Build a real SaaS product. With AI. From scratch.
+21 days ago, you had an idea. Now you have a product.
 
-Look at where you are now.
+BEFORE YOU LAUNCH:
 
-THE PRE-LAUNCH REALITY CHECK:
+Quick sanity check:
+- Can someone sign up? YES/NO
+- Does your core feature work? YES/NO
+- Can you take payments (or will be able to soon)? YES/NO
 
-Before you hit that button, confirm these things work:
-1. Can someone sign up and log in? YES/NO
-2. Does your main feature work? YES/NO
-3. Does your USP feature work? YES/NO
-4. Does it work on mobile? YES/NO
-5. Does it look professional? YES/NO
+If yes to all three: You're ready. Launch it.
 
-If you said YES to all of these - you're ready to launch. If you said NO to any of them - fix it now. Don't launch broken.
+THE LAUNCH:
 
-WHAT THIS COSTS TO RUN:
+1. Post your announcement (wherever you decided yesterday)
+2. Share with your network
+3. Submit to the showcase (below)
+4. Tell 5-10 people personally
 
-Let's be HONEST about the numbers:
-- Replit: Free to start, $7-20/month for custom domain
-- OpenAI API: ~$20-50/month depending on usage
-- Email (Resend): Free for first 3,000 emails/month
-- Domain: $10-15/year
+That's it. You're live.
 
-Total: Under $50/month to start. That's less than most people spend on coffee.
+THE ROAD AHEAD:
 
-AFTER YOU CLICK LAUNCH:
+Here's what nobody tells you: Launch day is just the beginning.
 
-1. Test everything LIVE as a new user
-2. Share with 5-10 people you trust
-3. Watch your admin dashboard
-4. Fix what breaks (something always breaks)
+THINGS YOU'LL NEED TO FIGURE OUT:
 
-YOU BUILT A SAAS. NOW WHAT?
+Getting customers:
+- How to get your first 10 paying users
+- How to get testimonials and social proof
+- How to turn free users into paid users
 
-Here's the thing nobody tells you: Building a product is actually the EASY part. Turning that product into a BUSINESS? That's where most people get stuck.
+Growing:
+- Which marketing channel works for YOU
+- How to create content that attracts customers
+- When to add features vs focus on growth
 
-How do you get your first paying customers? How do you price it? How do you market it when you're not a marketer? How do you grow without burning out?
+Running the business:
+- How to handle support requests
+- How to prioritize feature requests
+- When to raise prices
+- How to not burn out
 
-These are the questions that separate products that make money from products that sit there collecting dust. I've helped dozens of SaaS founders navigate this exact transition. From "I have a product" to "I have a profitable business."
+Making it real:
+- When is this a side project vs a real business?
+- What metrics actually matter?
+- When do you double down?
+- When do you move on?
 
-If you want help with the next step - getting customers, pricing strategy, marketing that actually works, and building a sustainable business around what you've built - let's talk.
+I'M NOT TEACHING YOU ALL OF THAT TODAY.
+
+That's months of learning. Maybe years.
+
+But you should KNOW these questions exist. They're the difference between "I launched a product" and "I built a business."
+
+WHAT YOU'VE ACCOMPLISHED:
+
+In 21 days, you:
+- Found and validated an idea
+- Defined features and USP
+- Named and branded it
+- Set up your tech stack
+- Built an actual working MVP
+- Prepared to launch
+
+Most people spend YEARS thinking about this. You DID it.
+
+WHAT'S NEXT:
+
+If you want help with the business side - getting customers, pricing, marketing, growing - that's what I do.
 
 Book a call: www.mattwebley.com/workwithmatt
 
-But first: LAUNCH THIS THING. You've earned it.`,
-      outcome: "App is LIVE and accessible to the world. You launched!",
-      completionMessage: "YOU LAUNCHED! 21 days. From idea to live product. You did what most people only dream about. The journey is just beginning, but you've proven you can BUILD. Congratulations!",
+But first: LAUNCH. Share it with the world. You've earned this moment.`,
+      outcome: "LAUNCHED! Your product is live and you know what comes next.",
+      completionMessage: "YOU LAUNCHED! 21 days. From idea to live product. The journey is just beginning, but you've proven you can BUILD. Now go get some customers.",
       xpReward: 200,
       estimatedMinutes: 10,
     },

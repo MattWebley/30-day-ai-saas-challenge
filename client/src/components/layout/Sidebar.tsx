@@ -158,7 +158,6 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
     { day: 1, label: "Idea", icon: Lightbulb, percentage: (2 / totalDays) * 100 },
     { day: 4, label: "Plan", icon: Map, percentage: (4 / totalDays) * 100 },
     { day: 8, label: "Build", icon: Hammer, percentage: (8 / totalDays) * 100 },
-    { day: 14, label: "Polish", icon: Sparkles, percentage: (14 / totalDays) * 100 },
     { day: 21, label: "Launch", icon: Target, percentage: 100 },
   ];
 
@@ -421,8 +420,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
             { label: "Idea", minDay: 1, maxDay: 2 },
             { label: "Plan", minDay: 3, maxDay: 4 },
             { label: "Prepare", minDay: 5, maxDay: 8 },
-            { label: "Build", minDay: 9, maxDay: 14 },
-            { label: "Polish", minDay: 15, maxDay: 18 },
+            { label: "Build", minDay: 9, maxDay: 18 },
             { label: "Launch", minDay: 19, maxDay: 21 },
           ].map((section) => {
             const sectionDays = visibleDays.filter((d: any) => d.day >= section.minDay && d.day <= section.maxDay);

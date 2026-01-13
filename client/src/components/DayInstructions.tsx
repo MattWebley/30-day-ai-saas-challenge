@@ -41,112 +41,113 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Claim all social media handles"
   ],
   5: [
+    "Choose your logo style (wordmark, icon+text, or AI-generated)",
+    "Open Canva, Midjourney, or Ideogram",
+    "Create your logo (30 mins max)",
+    "Save as PNG file"
+  ],
+  6: [
     "Set up Replit account",
     "Set up Claude Pro account",
     "Set up ChatGPT Plus account",
     "Set up OpenAI API account",
     "Confirm all tools are ready"
   ],
-  6: [
+  7: [
     "Review your idea, features, and USP",
     "Generate your PRD with AI",
     "Copy PRD into Replit",
     "Start your first build session"
   ],
-  7: [
+  8: [
     "Connect Claude Code to Replit",
     "Set up GitHub repository",
     "Learn the daily workflow",
     "Complete your first build session"
   ],
-  8: [
+  9: [
     "Read the lesson on effective prompting",
     "Choose a quick win to build",
     "Build it with Claude Code",
     "Document what you built"
   ],
-  9: [
+  10: [
     "Learn the Build-Test-Fix workflow",
     "Open your app and find ONE bug",
     "Describe the bug clearly",
     "Fix it with Claude Code",
     "Verify the fix works"
   ],
-  10: [
+  11: [
+    "Pick your primary brand color",
+    "Choose your font",
+    "Copy the Claude Code prompt",
+    "Apply branding to your app",
+    "Verify it looks consistent"
+  ],
+  12: [
     "Create OpenAI account & add credits",
     "Get your API key (copy it immediately!)",
     "Add key to Replit Secrets",
     "Describe your AI feature",
     "Build and test it with Claude Code"
   ],
-  11: [
+  13: [
     "Ask Replit: 'Can you do X without an external API?'",
     "Identify which superpowers your app actually needs",
     "If payments: Set up Stripe",
     "If scraping: Set up Bright Data",
     "Test any APIs you connect"
   ],
-  12: [
+  14: [
     "Ask Replit: 'Does my app have user authentication?'",
     "If yes: Test login/logout flow",
     "If no: Add auth with one prompt",
     "Verify each user sees only their own data"
   ],
-  13: [
+  15: [
     "Sign up for Resend (free)",
     "Get your API key",
     "Add RESEND_API_KEY to Replit Secrets",
     "Set up your welcome email",
     "Test by signing up with a new account"
   ],
-  14: [
+  16: [
     "Open your app on your actual phone",
     "Test all main features on mobile",
     "Document any issues",
     "Fix with Claude Code"
   ],
-  15: [
-    "Define first user success moment",
-    "Build the onboarding path",
-    "Time the flow (under 2 mins)",
-    "Test as a new user"
-  ],
-  16: [
+  17: [
     "Decide what metrics to track",
     "Build your admin dashboard",
     "Add user and activity stats",
     "Check your numbers"
   ],
-  17: [
+  18: [
     "THIS IS THE PAUSE POINT",
-    "Review the build checklist",
-    "Pick ONE thing to work on",
-    "Build until your app is ready",
+    "Review the MVP checklist in the lesson",
+    "Ask: Does my core feature work perfectly?",
+    "Build until your MVP is ready",
     "Use PAUSE - stay here as long as you need"
   ],
-  18: [
-    "Test your USP end-to-end",
-    "Click every button, fill every form",
-    "Try to break things with weird inputs",
-    "Fix all bugs you find"
-  ],
   19: [
-    "Pick your primary brand color",
-    "Apply consistent styling",
-    "Add your logo to the header",
-    "Verify it looks professional"
+    "Review the business checklist in the lesson",
+    "Check: Pricing, Payments, Legal, Support",
+    "Note what you have vs what's missing",
+    "Prioritize what MUST be done before launch"
   ],
   20: [
-    "Final sweep through your app",
-    "Check the pre-launch list",
-    "Fix anything that bugs you",
-    "Get ready for tomorrow"
+    "Decide WHERE you'll launch (pick one platform)",
+    "Write your launch announcement",
+    "Map your sales process (discovery to payment)",
+    "Write your one-sentence positioning"
   ],
   21: [
-    "Confirm everything works",
-    "Click the LAUNCH button",
-    "Test as a new user",
-    "Celebrate!"
+    "Post your launch announcement",
+    "Share with your network",
+    "Submit to the showcase",
+    "Celebrate - you built a SaaS!"
   ],
 };
 
