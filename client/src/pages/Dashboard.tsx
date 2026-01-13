@@ -295,9 +295,12 @@ export default function Dashboard() {
               <>
                 {/* Step 1: Today's Lesson */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                    <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <VideoSlides day={2} />
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     {dayData.lesson ? (
@@ -330,9 +333,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={3} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -364,9 +370,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={4} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -397,9 +406,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={5} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -459,9 +471,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={6} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -512,9 +527,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={7} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -545,9 +563,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={8} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -575,9 +596,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={9} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -605,9 +629,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={10} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -635,9 +662,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={11} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -665,9 +695,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={12} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -694,9 +727,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={13} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -724,9 +760,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={14} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -753,9 +792,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={15} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -783,9 +825,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={16} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -810,9 +855,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={17} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -840,9 +888,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={18} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -870,9 +921,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={19} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -900,9 +954,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={20} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">
@@ -930,9 +987,12 @@ export default function Dashboard() {
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                        <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                      </div>
+                      <VideoSlides day={21} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       <div className="prose prose-slate max-w-none">

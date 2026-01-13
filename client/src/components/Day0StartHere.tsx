@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowRight, Check } from "lucide-react";
 import { ds } from "@/lib/design-system";
+import { VideoSlides } from "@/components/VideoSlides";
 
 interface Day0StartHereProps {
   onComplete: (data?: any) => void;
@@ -163,6 +164,9 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
     <div className="space-y-8">
       {/* Welcome Header */}
       <div className="text-center space-y-4">
+        <div className="flex justify-center">
+          <VideoSlides day={0} />
+        </div>
         <h1 className="text-3xl font-black text-slate-900">
           Welcome to the 21 Day AI SaaS Challenge
         </h1>
