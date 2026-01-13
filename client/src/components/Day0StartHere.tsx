@@ -67,9 +67,8 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
     { day: 0, label: "Start" },
     { day: 1, label: "Idea" },
     { day: 4, label: "Plan" },
-    { day: 8, label: "Build" },
-    { day: 14, label: "Polish" },
-    { day: 21, label: "Launch" }
+    { day: 10, label: "Build" },
+    { day: 19, label: "Launch" }
   ];
 
   const checkIfReady = (commitmentsSet: Set<number>, whysSet: Set<number>, customWhyText: string, income: number | null, customIncomeText: string, message: string) => {

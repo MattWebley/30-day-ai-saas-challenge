@@ -1079,59 +1079,45 @@ This isn't just about recognition - it's about proving to yourself (and others) 
       microDecisionOptions: JSON.stringify(["No rejection", "Works while I sleep", "No awkward sales calls", "Automated system"]),
       reflectionQuestion: "What would it mean to wake up to new customers without having done any selling?",
       tip: "A sales machine converts strangers to customers automatically. No rejection, no selling, works 24/7. But AI-generated sales pages usually don't convert well out of the box.",
-      lesson: `Before you drive traffic anywhere, you need THIS.
+      lesson: `Here's the BRUTAL truth about traffic: If you send 1000 people to a BAD sales page, you get NOTHING. Send 100 to a GOOD one? You get CUSTOMERS.
 
-THE SALES MACHINE:
+THE SALES MACHINE is how strangers become customers WITHOUT you lifting a finger:
 
-It's a system that takes someone who has never heard of you and turns them into a paying customer - WITHOUT you having to be there.
+Stranger → Lands on page → Tries for free → PAYS YOU
 
-Stranger → Visitor → Free Trial → Customer
+WHY THIS IS BEAUTIFUL:
 
-THE BEAUTIFUL PART:
+NO REJECTION - They read. They decide. If they leave, you never even knew they were there. No awkward "no thanks" conversations.
 
-NO REJECTION
-People find your page. They read it. They decide on their own.
-If they're not interested, they just leave. No awkward conversations.
+NO "SELLING" - You're not on calls. You're not convincing anyone. They convince THEMSELVES. You just make it easy.
 
-NO "SELLING"
-You're not convincing anyone. You're not doing calls.
-You present the offer. They decide. Done.
-
-WORKS 24/7
-Your sales page works while you're sleeping, eating, building, living.
-It doesn't get tired. It doesn't take days off.
+WORKS 24/7 - Your page sells while you SLEEP. While you EAT. While you're on holiday. It doesn't get tired.
 
 THE FREE TRIAL FORMULA:
 
-1. Show the problem they have (they need to feel seen)
-2. Show the solution your app provides
-3. Make the offer irresistible: "Try it free. No credit card."
-4. Remove all risk from their decision
+1. PAIN - Show them the problem (they need to feel SEEN)
+2. SOLUTION - Show them YOUR fix
+3. IRRESISTIBLE - "Try it free. No credit card."
+4. ZERO RISK - Nothing to lose by trying
 
-When done right, people convince THEMSELVES. You just make it easy.
+THE AI WARNING (READ THIS):
 
-THE WARNING ABOUT AI:
+You're thinking: "I'll just get ChatGPT to write my sales page."
 
-You might think: "I'll just ask ChatGPT to write my sales page."
+Here's what NOBODY tells you:
 
-Here's the truth nobody tells you:
+AI copy sounds "professional" but it's EMOTIONALLY FLAT. Generic benefits. Bullet points that look impressive but don't CONNECT.
 
-AI produces professional-looking copy that sounds "marketing-y" but doesn't CONNECT. Generic benefits. Bullet points that look impressive but are emotionally flat.
+AI sales pages convert at 0.5-1%.
+A REAL sales page? 3-10%. Sometimes MORE.
 
-What actually converts: Copy that makes them think "this person GETS me." Specific language YOUR customers use. Stories that build real trust.
+That's NOT a small difference. That's the difference between a HOBBY and a BUSINESS.
 
-AI-generated sales pages typically convert at 0.5-1%.
-A well-crafted sales page? 3-10%. Sometimes higher.
+What actually converts? Copy that makes them think "this person GETS me." The exact words YOUR customers use. Stories that build REAL trust.
 
-That's not a small difference. That's the difference between a hobby and a business.
+BOTTOM LINE:
 
-WHAT THIS MEANS:
-
-Getting your sales process right is a skill. You can learn it over time. Or you can work with someone who already knows it.
-
-Either way, don't expect to just prompt your way to great conversion rates.
-
-Tomorrow: Now that you understand the sales machine, we'll pick WHERE to send traffic.`,
+Sales is a SKILL. You learn it over time. Or you work with someone who already knows it. But don't expect to PROMPT your way to great conversion rates.`,
       outcome: "Understood the sales machine concept and AI limitations",
       completionMessage: "You understand how conversion works. No rejection, no selling, works while you sleep - when done right. Tomorrow: picking your customer acquisition strategies.",
       xpReward: 100,
@@ -1156,48 +1142,44 @@ Tomorrow: Now that you understand the sales machine, we'll pick WHERE to send tr
       microDecisionOptions: JSON.stringify(["Product Hunt", "Twitter/X", "Reddit", "LinkedIn", "Niche communities"]),
       reflectionQuestion: "What's the one action that would move the needle most in week one?",
       tip: "Most launches fail because people 'put it out there' and hope. That's not a strategy. That's a wish. You need a plan.",
-      lesson: `A product nobody knows about makes $0.
+      lesson: `A product NOBODY knows about makes $0. ZERO. NOTHING.
 
-Most launches fail because people just "put it out there" and hope someone notices. That's not a strategy. That's a wish.
+Most people "launch" by putting it out there and HOPING someone notices. That's not a strategy. That's a WISH.
 
-A REAL LAUNCH MEANS:
+HERE'S THE TRUTH:
 
-1. Picking ONE platform to focus on
-   Scattered effort = scattered results
+You DON'T need millions of visitors. You need the RIGHT people to find you. And you need a way to KEEP finding them.
 
-2. Setting a launch DATE
-   Not "soon" - an actual day on the calendar
+THE OVERWHELM TRAP:
 
-3. Having a week-by-week action plan
-   So you know exactly what to do each day
+There are 50+ ways to get customers. Product Hunt. TikTok. Cold email. SEO. Ads. Communities. YouTube. Newsletters. The list goes ON.
 
-THE 4-WEEK LAUNCH TIMELINE:
+If you try to do ALL of them? You'll do NONE of them well.
 
-WEEK 1 - Pre-Launch Prep
-- Finalize your landing page copy
-- Set up analytics
-- Prepare your announcement
-- Get early feedback from 10 people
+THE SECRET:
 
-WEEK 2 - Soft Launch
-- Share with your inner circle
-- Get 5-10 real users using it
-- Collect feedback, fix issues
-- Gather testimonials
+You only need 1-3 channels to WORK. That's it.
 
-WEEK 3 - Public Launch
-- Post on your chosen platform
-- Share across all channels
-- Engage with every response
-- Track signups and conversions
+Find ONE that fits your skills. Master it. THEN maybe add another.
 
-WEEK 4 - Post-Launch
-- Follow up with signups
-- Ask churned users why they left
-- Double down on what works
-- Plan your next push
+PICK BASED ON YOU:
 
-The plan isn't complicated. But having one AT ALL puts you ahead of 90% of launches.`,
+Love writing? → Newsletter, SEO, Twitter threads
+Love video? → YouTube, TikTok, Loom demos
+Love talking? → Podcasts, webinars, communities
+Hate all of it? → Paid ads (if you have budget)
+
+THE REAL LAUNCH FORMULA:
+
+1. PICK ONE PLATFORM - Scattered effort = scattered results
+2. SET A DATE - Not "soon." An ACTUAL day on the calendar.
+3. SHOW UP CONSISTENTLY - Post, engage, repeat. For WEEKS.
+
+Most people quit after one post gets no traction. That's not a failed launch. That's not even a REAL attempt.
+
+BOTTOM LINE:
+
+Don't try to be everywhere. Be SOMEWHERE consistently. That's how apps get customers.`,
       outcome: "Launch platform chosen, date set, and 4-week action plan created",
       completionMessage: "You have a launch plan. Platform selected, date set, weekly actions committed. Tomorrow: the big picture - turning this app into a business.",
       xpReward: 100,
@@ -1218,68 +1200,63 @@ The plan isn't complicated. But having one AT ALL puts you ahead of 90% of launc
       microDecisionOptions: JSON.stringify(["Figure it out myself", "Get expert guidance", "Take a break first", "Not sure yet"]),
       reflectionQuestion: "What would your life look like with your target number of paying customers?",
       tip: "You did something most people never will - you built something. The SaaS math is beautiful: every customer pays you again next month.",
-      lesson: `You did something most people never will.
+      lesson: `You just did something 99% of people NEVER do.
 
-You went from idea to working product in 21 days. You're now in the top 1% of people who actually BUILD things.
+You went from "I have an idea" to "I have a WORKING PRODUCT" in 21 days. That puts you in RARE company.
 
 THE SAAS MATH IS BEAUTIFUL:
 
-Unlike one-time sales, SaaS is RECURRING revenue.
+This isn't like selling a course or a product once. SaaS is RECURRING. Every customer pays you AGAIN next month. And the month after. And the month after THAT.
 
-Every customer you get pays you again next month. And the month after. And the month after that.
+100 customers × $29/month = $2,900/month = $34,800/year
 
-100 customers at $29/month = $2,900/month = $34,800/year
+That's not a side project. That's a SALARY.
 
-That's not a side project. That's a salary.
+LET'S DO THE MATH:
 
-WHAT COULD YOU DO WITH:
+$1,000/month → Car payment covered. Nice dinners. Real money.
+$2,500/month → Part-time income. VALIDATION.
+$5,000/month → Replace a job. Work from ANYWHERE.
+$10,000/month → Six figures. Life-changing.
 
-$1,000/month - Covers a car payment, nice dinner out every week
-$2,500/month - Part-time income, real validation
-$5,000/month - Replace a salary, work from anywhere
-$10,000/month - Six figures annually, life-changing money
+All possible with HUNDREDS of customers. Not millions. HUNDREDS.
 
-All of this is possible with HUNDREDS of customers, not millions.
-
-THE GAP BETWEEN APP AND BUSINESS:
+BUT HERE'S THE GAP:
 
 You have an APP if you:
 - Built something that works
-- Maybe have a few users
-- Wait for customers to find you
+- Maybe got a few users
+- Hope customers find you
 
 You have a BUSINESS if you:
-- Know exactly who your customer is
-- Have a repeatable way to reach them
-- Can turn strangers into paying customers
-- Keep them paying month after month
+- Know EXACTLY who your customer is
+- Have a REPEATABLE way to reach them
+- Can turn strangers into PAYING customers
+- Keep them paying MONTH after MONTH
 
-THE FOUR PILLARS YOU NEED:
+THE FOUR PILLARS:
 
-1. CUSTOMER ACQUISITION - How do you get customers?
-2. SALES & CONVERSION - How do you turn visitors into buyers?
-3. RETENTION & GROWTH - How do you keep them paying?
-4. OPERATIONS & SCALE - How do you not burn out?
+1. CUSTOMER ACQUISITION - How do you GET customers?
+2. SALES & CONVERSION - How do you turn visitors into BUYERS?
+3. RETENTION & GROWTH - How do you KEEP them paying?
+4. OPERATIONS & SCALE - How do you not BURN OUT?
 
 THE HARD TRUTH:
 
-This is months of learning. Maybe years.
+This is MONTHS of learning. Maybe years.
 
-Most people never figure it out - not because they can't, but because they get stuck, distracted, or overwhelmed.
+Most people never figure it out. Not because they CAN'T - because they get stuck. Distracted. Overwhelmed. They don't know what to focus on NEXT.
 
-The difference between apps that make money and apps that don't? The founder knew what to focus on.
+YOUR TWO PATHS:
 
-WHAT'S NEXT:
-
-You have two paths:
 1. Figure it out yourself (6-12 months of trial and error)
-2. Get expert guidance (accelerate to results in weeks)
+2. Get expert guidance (accelerate to results in WEEKS)
 
-Neither is wrong. But one is faster.
+Neither is wrong. But one is FASTER.
 
-If you want help with the business side - book a call: www.mattwebley.com/workwithmatt
+If you want help turning this app into a BUSINESS: www.mattwebley.com/workwithmatt
 
-Either way: congratulations. You BUILT something. Now make it count.`,
+Either way - CONGRATULATIONS. You BUILT something. Now make it COUNT.`,
       outcome: "Challenge complete! You understand what's needed to turn your app into a business.",
       completionMessage: "CONGRATULATIONS! You completed the 21 Day AI SaaS Challenge. From idea to product in 21 days. The journey is just beginning. Now go build that business.",
       xpReward: 200,

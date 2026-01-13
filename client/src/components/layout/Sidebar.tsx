@@ -157,7 +157,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
     { day: 0, label: "Start", icon: Rocket, percentage: 0 },
     { day: 1, label: "Idea", icon: Lightbulb, percentage: (2 / totalDays) * 100 },
     { day: 4, label: "Plan", icon: Map, percentage: (4 / totalDays) * 100 },
-    { day: 8, label: "Build", icon: Hammer, percentage: (8 / totalDays) * 100 },
+    { day: 10, label: "Build", icon: Hammer, percentage: (10 / totalDays) * 100 },
     { day: 21, label: "Launch", icon: Target, percentage: 100 },
   ];
 
@@ -419,8 +419,8 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
             { label: "Start", minDay: 0, maxDay: 0 },
             { label: "Idea", minDay: 1, maxDay: 2 },
             { label: "Plan", minDay: 3, maxDay: 4 },
-            { label: "Prepare", minDay: 5, maxDay: 8 },
-            { label: "Build", minDay: 9, maxDay: 18 },
+            { label: "Prepare", minDay: 5, maxDay: 9 },
+            { label: "Build", minDay: 10, maxDay: 18 },
             { label: "Launch", minDay: 19, maxDay: 21 },
           ].map((section) => {
             const sectionDays = visibleDays.filter((d: any) => d.day >= section.minDay && d.day <= section.maxDay);
