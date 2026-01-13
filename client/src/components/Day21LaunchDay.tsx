@@ -132,6 +132,14 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
             </div>
           </Card>
 
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="text-slate-600 text-sm">
+              <strong>Earnings Disclaimer:</strong> These numbers are hypothetical examples for educational purposes only.
+              No income is guaranteed. Most software products never generate significant revenue.
+              Your results depend entirely on your execution, market conditions, product quality, and many other factors.
+            </p>
+          </Card>
+
           <Button
             size="lg"
             className="w-full h-14 text-lg font-bold gap-2"

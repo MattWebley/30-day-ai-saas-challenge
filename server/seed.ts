@@ -1221,6 +1221,8 @@ $10,000/month → Six figures. Life-changing.
 
 All possible with HUNDREDS of customers. Not millions. HUNDREDS.
 
+(These are hypothetical examples. No income is guaranteed. Most software products never generate significant revenue. Your results depend on YOU.)
+
 BUT HERE'S THE GAP:
 
 You have an APP if you:

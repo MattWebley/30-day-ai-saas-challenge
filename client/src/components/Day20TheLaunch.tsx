@@ -1248,11 +1248,11 @@ export function Day20TheLaunch({ appName, onComplete }: Day20TheLaunchProps) {
             </div>
           </Card>
 
-          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-            <p className="text-amber-800 text-sm">
-              <strong>Note:</strong> These are illustrative projections based on typical results.
-              Your actual results will vary based on execution, market, and product-market fit.
-              But the math shows what's POSSIBLE.
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="text-slate-600 text-sm">
+              <strong>Earnings Disclaimer:</strong> These numbers are hypothetical examples for educational purposes only.
+              No income is guaranteed. Most software products never generate significant revenue.
+              Your results depend entirely on your execution, market conditions, product quality, and many other factors outside our control.
             </p>
           </Card>
 
