@@ -1132,7 +1132,17 @@ export function Day20TheLaunch({ appName, onComplete }: Day20TheLaunchProps) {
       {step === "projection" && (
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">Your Selected Strategies</h4>
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-lg text-slate-900">Your Selected Strategies</h4>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setStep("strategies")}
+                className="text-slate-600"
+              >
+                Change
+              </Button>
+            </div>
             <div className="space-y-2">
               {selectedStrategyData.map((s) => (
                 <div key={s.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
@@ -1295,7 +1305,17 @@ export function Day20TheLaunch({ appName, onComplete }: Day20TheLaunchProps) {
           </Card>
 
           <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">Your Focus {selectedStrategies.length === 1 ? "Strategy" : "Strategies"}</h4>
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-lg text-slate-900">Your Focus {selectedStrategies.length === 1 ? "Strategy" : "Strategies"}</h4>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setStep("strategies")}
+                className="text-slate-600"
+              >
+                Change
+              </Button>
+            </div>
             {selectedStrategyData.map((s, i) => (
               <div key={s.id} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg mb-2 last:mb-0">
                 <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
