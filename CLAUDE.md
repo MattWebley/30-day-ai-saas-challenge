@@ -74,11 +74,11 @@ Example card structure:
 A gamified 21 Day AI SaaS Challenge application that guides users from idea to launch-ready product through daily 5-minute micro-tasks. The app provides structured guidance, tracks progress, and uses AI to personalize the learning experience.
 
 ### Challenge Structure (21 Days)
-- **Idea & Planning (Days 0-7)**: Start Here, find idea, validate, features, name, tech stack, PRD, Claude Code setup
-- **Build & Verify (Days 8-10)**: Master Claude Code, The Build Loop, Add AI Brain
-- **Make It Work (Days 11-14)**: Add Superpowers (APIs), Add Login, Email Setup, Heads Down (PAUSE POINT)
-- **Test & Refine (Days 15-18)**: Test USP, feature testing, onboarding, admin dashboard
-- **Polish & Launch (Days 19-21)**: Mobile ready, brand polish, LAUNCH
+- **Idea & Planning (Days 0-4)**: Start Here, find idea, validate, features, name
+- **Logo (Day 5)**: Create your logo
+- **Prepare (Days 6-8)**: Tech stack, PRD, Claude Code setup
+- **Build (Days 9-18)**: Build loop, AI brain, brand, APIs, auth, email, mobile, admin, MVP (PAUSE at Day 18)
+- **Launch (Days 19-21)**: Business checklist, go-to-market, LAUNCH
 
 ## Tech Stack
 
@@ -932,6 +932,31 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - Day 17 is THE PAUSE POINT - users stay here until ready
   - Testing days combined into one comprehensive day
   - Day 20 left as placeholder (falls through to generic handler)
+  - TypeScript check passing, database reseeded
+
+### 2026-01-13 (Session 4) - Final Curriculum Restructure
+- Tasks Completed:
+  - **Day 5: Logo** - Created Day5Logo.tsx for logo creation day
+  - **Day 11: Brand** - Created Day11Brand.tsx for brand definition (color, font)
+  - **Day 18: Build Your MVP** - Renamed with comprehensive MVP definition lesson
+  - **Days 19-21 Complete Rewrite**:
+    - Day 19: "The Business Checklist" - pricing, payments, legal, support (WHAT not HOW)
+    - Day 20: "Your Go-To-Market" - launch strategy, sales process, positioning (planning not execution)
+    - Day 21: "Launch Day" + "The Road Ahead" - launch plus awareness of what comes next
+  - **Sidebar restructure**: Merged Test/Polish into Build section (days 9-18)
+  - Updated VideoSlides.tsx for all affected days
+  - Updated DayInstructions.tsx for Days 5, 11, 18-21
+  - Updated Dashboard.tsx routing for all affected days
+- Final Day Structure:
+  - Days 0-4: Idea & Planning (Start, Idea, Validate, Features, Name)
+  - Day 5: Logo
+  - Days 6-8: Prepare (Tech Stack, PRD, Claude Code)
+  - Days 9-18: Build (Build Loop, AI Brain, Brand, APIs, Auth, Email, Mobile, Admin, MVP)
+  - Days 19-21: Launch (Business Checklist, Go-To-Market, Launch Day)
+- Notes:
+  - Day 18 is THE PAUSE POINT - users can stay for days/weeks
+  - Days 19-21 focus on WHAT needs doing, not HOW to do it
+  - All changes committed and pushed to GitHub
   - TypeScript check passing, database reseeded
 
 ---
