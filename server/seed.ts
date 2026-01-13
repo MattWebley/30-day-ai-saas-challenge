@@ -1062,77 +1062,62 @@ This isn't just about recognition - it's about proving to yourself (and others) 
     },
     {
       day: 19,
-      title: "The Business Checklist",
-      description: "Your MVP is built. Now let's make sure you have everything a real business needs.",
+      title: "The Money",
+      description: "Let's talk about what your app could actually earn. It's time to do the math.",
       phase: "Launch",
       videoUrl: null,
-      aiTaskType: "checklist",
-      aiTaskTitle: "Business Checklist",
-      aiTaskDescription: "Review what you have and what you still need to run a real business.",
+      aiTaskType: "calculator",
+      aiTaskTitle: "Income Calculator",
+      aiTaskDescription: "Calculate your potential earnings and understand what it takes to hit your income goals.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's your biggest gap right now?",
-      microDecisionOptions: JSON.stringify(["Pricing strategy", "Payment setup", "Legal stuff", "Support system"]),
-      reflectionQuestion: "What's the ONE thing you need to figure out before you can charge money?",
-      tip: "You don't need to DO all of this today. You need to KNOW what's missing so you can plan for it.",
-      lesson: `Your MVP is built. Congratulations.
+      microDecisionQuestion: "What's your monthly income goal?",
+      microDecisionOptions: JSON.stringify(["$1,000/month", "$2,500/month", "$5,000/month", "$10,000/month"]),
+      reflectionQuestion: "How many customers would you need at $29/month to hit your goal?",
+      tip: "SaaS math is beautiful. Every customer pays you again next month. 100 customers at $29/month = $34,800/year. That's a salary.",
+      lesson: `You built something people could pay for. Let's talk about money.
 
-But a product isn't a business. Today we look at what else you need.
+THE SAAS MATH:
 
-THE BUSINESS CHECKLIST:
+Unlike one-time sales, SaaS is RECURRING revenue.
 
-Go through this list. Check what you have. Note what you're missing.
+Every customer you get pays you again next month. And the month after. And the month after that.
 
-PRICING:
-- Have you decided on a price?
-- Free trial? Freemium? Paid only?
-- Monthly? Annual? One-time?
-- What do competitors charge?
+100 customers at $29/month = $2,900/month = $34,800/year
 
-You need to decide this. Not tomorrow. Before you launch.
+That's not a side project. That's a salary.
 
-PAYMENTS:
-- Can you actually take money?
-- Stripe account set up?
-- Payment flow tested?
-- What happens after someone pays?
+THE BEAUTIFUL THING:
 
-If you can't take money, you don't have a business.
+You don't need millions of users. You don't need to go viral.
 
-LEGAL BASICS:
-- Terms of Service
-- Privacy Policy
-- Refund policy
+To make $5,000/month at $29/month, you need: 173 customers
 
-Yes, you need these. AI can generate them for you. They don't have to be perfect, but they have to exist.
+That's a small town Facebook group. A niche subreddit. A tiny fraction of LinkedIn.
 
-SUPPORT:
-- How will users contact you?
-- Email? Chat? Help docs?
-- Who responds when something breaks?
+173 people who have the problem you solve. That's it.
 
-Even if it's just your personal email - you need SOMETHING.
+WHAT COULD YOU DO WITH:
 
-THE HONEST TRUTH:
+$1,000/month - Covers a car payment, nice dinner out every week
+$2,500/month - Part-time income, real validation
+$5,000/month - Replace a salary, work from anywhere
+$10,000/month - Six figures annually, life-changing money
 
-Most people skip this stuff and regret it later.
+All of this is possible with HUNDREDS of customers, not millions.
 
-Someone wants to pay you? "Oh wait, I haven't set up Stripe yet."
-Someone has a question? "Uh, I don't have a support email."
-Someone asks about refunds? "I... haven't thought about that."
+THE GAP:
 
-Don't be that person.
+You have an APP. To make money, you need a BUSINESS.
 
-WHAT TO DO TODAY:
+The difference?
+- An app: You built something that works
+- A business: You know how to get customers and keep them paying
 
-1. Go through the checklist above
-2. For each item: Do you have it? Yes or No.
-3. For each No: Add it to your to-do list
-4. Prioritize: What MUST be done before launch?
-
-You don't need everything perfect. But you need to KNOW what's missing.`,
-      outcome: "Business checklist complete - you know what you have and what you still need",
-      completionMessage: "You've mapped out what your business needs. Some things are done, some need work. That clarity is valuable. Tomorrow: your go-to-market plan.",
+Today you'll figure out your target. What income goal makes this worth it?
+Tomorrow we'll build your launch plan. Day 21, we'll talk about the business.`,
+      outcome: "Income goal set with pricing strategy and customer target calculated",
+      completionMessage: "You've done the math. You know exactly how many customers you need and at what price point. The numbers are achievable. Tomorrow: your launch strategy.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -1142,177 +1127,141 @@ You don't need everything perfect. But you need to KNOW what's missing.`,
     // ============================================
     {
       day: 20,
-      title: "Your Go-To-Market",
-      description: "How will people find you? Try you? Pay you? Time to think about your launch strategy.",
+      title: "The Launch Plan",
+      description: "A product nobody knows about makes $0. Let's fix that with a real launch strategy.",
       phase: "Launch",
       videoUrl: null,
       aiTaskType: "planning",
-      aiTaskTitle: "Go-To-Market Plan",
-      aiTaskDescription: "Map out your launch strategy, sales process, and growth channels.",
+      aiTaskTitle: "Launch Strategy",
+      aiTaskDescription: "Build your launch timeline, pick your platform, and commit to weekly actions.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Where will you launch first?",
-      microDecisionOptions: JSON.stringify(["Product Hunt", "Twitter/X", "Reddit/Communities", "Direct outreach"]),
-      reflectionQuestion: "If you could only tell 10 people about your product, who would they be?",
-      tip: "You don't need a marketing degree. You need to answer three questions: Where are my customers? How do I reach them? Why should they care?",
-      lesson: `You have a product. Now you need customers.
+      microDecisionQuestion: "Where will you focus your launch?",
+      microDecisionOptions: JSON.stringify(["Product Hunt", "Twitter/X", "Reddit", "LinkedIn", "Niche communities"]),
+      reflectionQuestion: "What's the one action that would move the needle most in week one?",
+      tip: "Most launches fail because people 'put it out there' and hope. That's not a strategy. That's a wish. You need a plan.",
+      lesson: `A product nobody knows about makes $0.
 
-Today isn't about DOING the marketing. It's about PLANNING it.
+Most launches fail because people just "put it out there" and hope someone notices. That's not a strategy. That's a wish.
 
-YOUR LAUNCH STRATEGY:
+A REAL LAUNCH MEANS:
 
-Where will you announce this thing?
+1. Picking ONE platform to focus on
+   Scattered effort = scattered results
 
-OPTIONS:
-- Product Hunt (good for tech audiences)
-- Twitter/X (good if you have followers)
-- Reddit (find subreddits where your customers hang out)
-- LinkedIn (good for B2B)
-- Indie Hackers, Hacker News (good for builder communities)
-- Direct outreach (email people who might care)
+2. Setting a launch DATE
+   Not "soon" - an actual day on the calendar
 
-Pick ONE to start. You can't be everywhere.
+3. Having a week-by-week action plan
+   So you know exactly what to do each day
 
-YOUR SALES PROCESS:
+THE 4-WEEK LAUNCH TIMELINE:
 
-How does someone go from "never heard of you" to "paying customer"?
+WEEK 1 - Pre-Launch Prep
+- Finalize your landing page copy
+- Set up analytics
+- Prepare your announcement
+- Get early feedback from 10 people
 
-Map it out:
-1. They DISCOVER you (how?)
-2. They VISIT your site (what do they see?)
-3. They TRY it (free trial? demo? freemium?)
-4. They DECIDE to pay (what convinces them?)
-5. They PAY (is that process smooth?)
+WEEK 2 - Soft Launch
+- Share with your inner circle
+- Get 5-10 real users using it
+- Collect feedback, fix issues
+- Gather testimonials
 
-Where are the gaps? Where might people drop off?
+WEEK 3 - Public Launch
+- Post on your chosen platform
+- Share across all channels
+- Engage with every response
+- Track signups and conversions
 
-GROWTH CHANNELS:
+WEEK 4 - Post-Launch
+- Follow up with signups
+- Ask churned users why they left
+- Double down on what works
+- Plan your next push
 
-Long-term, how will people find you?
-
-OPTIONS TO CONSIDER:
-- SEO (people searching for solutions)
-- Content (blog posts, videos, guides)
-- Social media (building an audience)
-- Partnerships (other tools, affiliates)
-- Paid ads (if you have budget)
-- Word of mouth (happy customers telling others)
-
-You don't need all of these. You need ONE that works.
-
-YOUR POSITIONING:
-
-How do you describe this in one sentence?
-
-"[Your app] helps [specific person] do [specific thing] so they can [specific outcome]."
-
-If you can't say it simply, customers won't understand it either.
-
-WHAT TO DO TODAY:
-
-1. Decide where you'll launch (pick ONE platform)
-2. Write your launch announcement (what will you say?)
-3. Map your sales process (discovery → payment)
-4. Write your one-sentence positioning
-
-You don't need perfect answers. You need a PLAN.`,
-      outcome: "Go-to-market plan mapped out - you know where you'll launch and how you'll get customers",
-      completionMessage: "You have a plan. Where to launch, how to describe it, how people will find and pay you. Tomorrow: we ship this thing.",
+The plan isn't complicated. But having one AT ALL puts you ahead of 90% of launches.`,
+      outcome: "Launch platform chosen, date set, and 4-week action plan created",
+      completionMessage: "You have a launch plan. Platform selected, date set, weekly actions committed. Tomorrow: the big picture - turning this app into a business.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 21,
-      title: "Launch Day",
-      description: "GO LIVE. Launch your product and learn what comes next.",
+      title: "Build Your Business",
+      description: "You have an app. Now let's talk about turning it into a real business.",
       phase: "Launch",
       videoUrl: null,
-      aiTaskType: "launch",
-      aiTaskTitle: "Launch",
-      aiTaskDescription: "Launch your product and understand the road ahead.",
+      aiTaskType: "vision",
+      aiTaskTitle: "Business Vision",
+      aiTaskDescription: "See the big picture of what it takes to go from app to business.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "How do you feel about launching?",
-      microDecisionOptions: JSON.stringify(["Excited and ready!", "Nervous but ready", "Want more polish first", "Terrified"]),
-      reflectionQuestion: "What's the first thing you'll do after you launch?",
-      tip: "Launching isn't the end. It's the beginning. The real learning starts when real users touch your product.",
-      lesson: `LAUNCH DAY.
+      microDecisionQuestion: "What's your next step after this challenge?",
+      microDecisionOptions: JSON.stringify(["Figure it out myself", "Get expert guidance", "Take a break first", "Not sure yet"]),
+      reflectionQuestion: "What would your life look like with 200 paying customers?",
+      tip: "You did something most people never will - you built something. But an app isn't a business yet. The next phase is learning how to get and keep customers.",
+      lesson: `You did something most people never will.
 
-21 days ago, you had an idea. Now you have a product.
+You went from idea to working product in 21 days. You're now in the top 1% of people who actually BUILD things.
 
-BEFORE YOU LAUNCH:
+PICTURE THIS IN 12 MONTHS:
 
-Quick sanity check:
-- Can someone sign up? YES/NO
-- Does your core feature work? YES/NO
-- Can you take payments (or will be able to soon)? YES/NO
+Your app has 200+ paying customers.
+Your phone buzzes with Stripe notifications: $5,000+/month coming in.
+You wake up to emails from happy users.
+You work when you want. From where you want. On something YOU built.
 
-If yes to all three: You're ready. Launch it.
+That's not a fantasy. That's what happens when you turn an app into a business.
 
-THE LAUNCH:
+THE FOUR PILLARS OF A SAAS BUSINESS:
 
-1. Post your announcement (wherever you decided yesterday)
-2. Share with your network
-3. Submit to the showcase (below)
-4. Tell 5-10 people personally
+1. CUSTOMER ACQUISITION
+How do you consistently get new customers every month?
+- Which channels work for YOUR audience?
+- How much does each customer cost to acquire?
+- Can you make it repeatable?
 
-That's it. You're live.
+2. PRICING & MONETIZATION
+How do you maximize revenue?
+- What's your pricing strategy?
+- Annual vs monthly?
+- When do you raise prices?
 
-THE ROAD AHEAD:
+3. RETENTION & GROWTH
+How do you keep customers paying?
+- What makes them stay vs leave?
+- How do you reduce churn?
+- How do you get referrals?
 
-Here's what nobody tells you: Launch day is just the beginning.
+4. OPERATIONS & SCALE
+How do you run this without burning out?
+- Support at scale
+- When to hire help
+- Systems and automation
 
-THINGS YOU'LL NEED TO FIGURE OUT:
+THE HARD TRUTH:
 
-Getting customers:
-- How to get your first 10 paying users
-- How to get testimonials and social proof
-- How to turn free users into paid users
+This is months of learning. Maybe years.
 
-Growing:
-- Which marketing channel works for YOU
-- How to create content that attracts customers
-- When to add features vs focus on growth
+Most people never figure it out - not because they can't, but because they get stuck, distracted, or overwhelmed.
 
-Running the business:
-- How to handle support requests
-- How to prioritize feature requests
-- When to raise prices
-- How to not burn out
-
-Making it real:
-- When is this a side project vs a real business?
-- What metrics actually matter?
-- When do you double down?
-- When do you move on?
-
-I'M NOT TEACHING YOU ALL OF THAT TODAY.
-
-That's months of learning. Maybe years.
-
-But you should KNOW these questions exist. They're the difference between "I launched a product" and "I built a business."
-
-WHAT YOU'VE ACCOMPLISHED:
-
-In 21 days, you:
-- Found and validated an idea
-- Defined features and USP
-- Named and branded it
-- Set up your tech stack
-- Built an actual working MVP
-- Prepared to launch
-
-Most people spend YEARS thinking about this. You DID it.
+The difference between apps that make money and apps that don't? The founder knew what to focus on.
 
 WHAT'S NEXT:
 
-If you want help with the business side - getting customers, pricing, marketing, growing - that's what I do.
+You have two paths:
+1. Figure it out yourself (6-12 months of trial and error)
+2. Get expert guidance (accelerate to results in weeks)
 
-Book a call: www.mattwebley.com/workwithmatt
+Neither is wrong. But one is faster.
 
-But first: LAUNCH. Share it with the world. You've earned this moment.`,
-      outcome: "LAUNCHED! Your product is live and you know what comes next.",
-      completionMessage: "YOU LAUNCHED! 21 days. From idea to live product. The journey is just beginning, but you've proven you can BUILD. Now go get some customers.",
+If you want help with the business side - book a call: www.mattwebley.com/workwithmatt
+
+Either way: congratulations. You BUILT something. Now make it count.`,
+      outcome: "Challenge complete! You understand what's needed to turn your app into a business.",
+      completionMessage: "CONGRATULATIONS! You completed the 21 Day AI SaaS Challenge. From idea to product in 21 days. The journey is just beginning. Now go build that business.",
       xpReward: 200,
       estimatedMinutes: 10,
     },

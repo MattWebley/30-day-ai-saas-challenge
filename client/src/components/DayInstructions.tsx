@@ -132,22 +132,22 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Submit to the Showcase (screenshot + testimonial)"
   ],
   19: [
-    "Review the business checklist in the lesson",
-    "Check: Pricing, Payments, Legal, Support",
-    "Note what you have vs what's missing",
-    "Prioritize what MUST be done before launch"
+    "Set your monthly income goal",
+    "Pick your price point ($9-$199/month)",
+    "Calculate how many customers you need",
+    "Understand the gap between app and business"
   ],
   20: [
-    "Decide WHERE you'll launch (pick one platform)",
-    "Write your launch announcement",
-    "Map your sales process (discovery to payment)",
-    "Write your one-sentence positioning"
+    "Pick ONE platform for your launch",
+    "Set your launch date (2-4 weeks out)",
+    "Review the 4-week launch timeline",
+    "Commit to your #1 action for each week"
   ],
   21: [
-    "Post your launch announcement",
-    "Share with your network",
-    "Submit to the showcase",
-    "Celebrate - you built a SaaS!"
+    "See what turns an app into a business",
+    "Understand the four pillars of SaaS",
+    "Choose your path forward",
+    "Write your commitment statement"
   ],
 };
 

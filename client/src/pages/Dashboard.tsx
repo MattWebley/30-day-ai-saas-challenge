@@ -36,6 +36,8 @@ import { Day12LetUsersIn } from "@/components/Day12LetUsersIn";
 import { Day13ReachYourUsers } from "@/components/Day13ReachYourUsers";
 import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
 import { Day19MobileReady } from "@/components/Day19MobileReady";
+import { Day19TheMoney } from "@/components/Day19TheMoney";
+import { Day20TheLaunch } from "@/components/Day20TheLaunch";
 import { Day21LaunchDay } from "@/components/Day21LaunchDay";
 import { Day17BuildItOut } from "@/components/Day17BuildItOut";
 import { Day18BuildYourMVP } from "@/components/Day18BuildYourMVP";
@@ -941,14 +943,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 19: Test Everything */}
+                {/* Day 19: The Money - Earnings Calculator */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Test Everything</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Calculate Your Potential</h2>
                   </div>
-                  <Day18TestEverything
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                  <Day19TheMoney
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -974,7 +976,17 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 20: Final Prep - generic template with micro-decision */}
+                {/* Day 20: The Launch Plan */}
+                <div className="space-y-4 pt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
+                    <h2 className="font-bold text-xl text-slate-900">Build Your Launch Plan</h2>
+                  </div>
+                  <Day20TheLaunch
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
+                    onComplete={handleComplete}
+                  />
+                </div>
               </>
             ) : currentDay === 21 ? (
               <>
@@ -997,14 +1009,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 21: Launch Day! */}
+                {/* Day 21: Build Your Business */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Launch Your SaaS</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Your Next Chapter</h2>
                   </div>
                   <Day21LaunchDay
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
