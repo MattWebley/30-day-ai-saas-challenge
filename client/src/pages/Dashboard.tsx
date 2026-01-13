@@ -43,6 +43,7 @@ import { Day21LaunchDay } from "@/components/Day21LaunchDay";
 import { DayChat } from "@/components/DayChat";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
+import { VideoSlides } from "@/components/VideoSlides";
 import { toast } from "sonner";
 
 // Helper to detect subheadlines in lessons (short lines ending with ":" or all-caps patterns)
@@ -254,9 +255,12 @@ export default function Dashboard() {
               <>
                 {/* Step 1: Today's Lesson */}
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                    <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
+                    </div>
+                    <VideoSlides day={1} />
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     {dayData.lesson ? (

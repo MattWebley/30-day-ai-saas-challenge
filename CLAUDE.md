@@ -864,6 +864,24 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - All changes pushed to GitHub
   - Day 14 is now THE PAUSE POINT where users can stay for days/weeks
 
+### 2026-01-13 - Video Slides Feature (WIP)
+- Tasks Completed:
+  - Created VideoSlides.tsx component for admin video script slides
+    - Slide deck viewer with navigation (prev/next, dot indicators)
+    - Only visible in test mode (hidden from regular users)
+    - Follows design system: white bg, slate borders, proper typography
+    - Large modal (max-w-4xl) with readable text (text-lg body, text-2xl titles)
+  - Added VideoSlides button to Day 1 lesson header in Dashboard.tsx
+  - Created initial slide content for Day 0 and Day 1 (3 slides each)
+- Fixes Applied:
+  - Initial design used amber/gold colors - redesigned to match app design system
+  - Increased slide size after feedback (was too small)
+- Notes:
+  - **Feature is WIP** - only Day 0 and Day 1 have slides, need to add Days 2-21
+  - User approved the style, next session should add slides for all remaining days
+  - Slides contain brief overview points different from lesson text (for video scripts)
+  - TypeScript check passing
+
 ---
 
 ## Project-Specific Rules
