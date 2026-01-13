@@ -1044,9 +1044,19 @@ Your MVP is ready when:
 - You wouldn't be embarrassed to show it
 - It solves the ONE problem you set out to solve
 
-Then - and only then - move to Day 19.`,
-      outcome: "MVP is built - core feature works, users can sign up, app is ready for real testing",
-      completionMessage: "You've put in the work. Your app is taking shape. If you need more time, use PAUSE. When ready, it's time to TEST and POLISH.",
+Then - and only then - move to Day 19.
+
+CAPTURE YOUR PROGRESS:
+
+When your MVP is ready, it's time to capture what you've built:
+
+1. Submit your app to the Showcase
+2. Share your experience (this becomes your testimonial)
+3. Earn your MVP Builder badge
+
+This isn't just about recognition - it's about proving to yourself (and others) that you DID THE THING.`,
+      outcome: "MVP is built and submitted to the Showcase with screenshot and testimonial",
+      completionMessage: "You've built a working product AND shared it with the world. That takes guts. MVP Builder badge earned!",
       xpReward: 100,
       estimatedMinutes: 5,
     },

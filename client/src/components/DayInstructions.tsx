@@ -129,7 +129,7 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Review the MVP checklist in the lesson",
     "Ask: Does my core feature work perfectly?",
     "Build until your MVP is ready",
-    "Use PAUSE - stay here as long as you need"
+    "Submit to the Showcase (screenshot + testimonial)"
   ],
   19: [
     "Review the business checklist in the lesson",

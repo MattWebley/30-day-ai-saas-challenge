@@ -1,30 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { toast } from "sonner";
 import {
   ChevronRight,
   ExternalLink,
   ArrowUpRight,
-  Loader2
+  Rocket
 } from "lucide-react";
 
 interface Day21LaunchDayProps {
   appName: string;
   onComplete: (data: { appUrl: string; launchedAt: string; launchFeeling: string; nextSteps: string }) => void;
-}
-
-interface ShowcaseEntry {
-  id: number;
-  appName: string;
-  description: string;
-  screenshotUrl: string;
-  liveUrl: string | null;
-  status: string;
 }
 
 const PRE_LAUNCH_CHECKS = [
@@ -43,45 +31,6 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
   const [nextSteps, setNextSteps] = useState("");
   const [hasLaunched, setHasLaunched] = useState(false);
 
-  // Showcase submission
-  const [showcaseAppName, setShowcaseAppName] = useState(appName || "");
-  const [showcaseDescription, setShowcaseDescription] = useState("");
-  const [screenshotUrl, setScreenshotUrl] = useState("");
-  const [showcaseSubmitted, setShowcaseSubmitted] = useState(false);
-
-  // Check if user already submitted to showcase
-  const { data: existingShowcase } = useQuery<ShowcaseEntry | null>({
-    queryKey: ["/api/showcase/mine"],
-  });
-
-  useEffect(() => {
-    if (existingShowcase) {
-      setShowcaseSubmitted(true);
-      setShowcaseAppName(existingShowcase.appName || "");
-      setShowcaseDescription(existingShowcase.description || "");
-      setScreenshotUrl(existingShowcase.screenshotUrl || "");
-    }
-  }, [existingShowcase]);
-
-  const submitShowcase = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/showcase", {
-        appName: showcaseAppName,
-        description: showcaseDescription,
-        screenshotUrl,
-        liveUrl: appUrl,
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      setShowcaseSubmitted(true);
-      toast.success("Submitted to showcase! It will appear after approval.");
-    },
-    onError: (error: any) => {
-      toast.error(error.message || "Failed to submit to showcase");
-    },
-  });
-
   const toggleCheck = (id: string) => {
     const newChecks = new Set(checksComplete);
     if (newChecks.has(id)) {
@@ -94,8 +43,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
 
   const allCriticalDone = PRE_LAUNCH_CHECKS.filter(c => c.critical).every(c => checksComplete.has(c.id));
   const canLaunch = allCriticalDone && appUrl.length >= 10;
-  const canSubmitShowcase = showcaseAppName.length >= 2 && showcaseDescription.length >= 20 && screenshotUrl.length >= 10;
-  const canComplete = hasLaunched && showcaseSubmitted && launchFeeling.length >= 20 && nextSteps.length >= 20;
+  const canComplete = hasLaunched && launchFeeling.length >= 20 && nextSteps.length >= 20;
 
   const handleLaunch = () => {
     setHasLaunched(true);
@@ -114,7 +62,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
       {step === "check" && (
         <>
           <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <div className="text-sm text-slate-700">
+            <div className="text-slate-700">
               <p className="font-medium">Before You Launch</p>
               <p className="mt-1">
                 Make sure the critical items are done. Your app doesn't need to be perfect -
@@ -143,7 +91,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
                       onChange={() => toggleCheck(check.id)}
                       className="w-4 h-4"
                     />
-                    <span className="text-sm text-slate-700">{check.text}</span>
+                    <span className="text-slate-700">{check.text}</span>
                   </div>
                   {check.critical && (
                     <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">Required</span>
@@ -154,7 +102,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
 
             {!allCriticalDone && (
               <div className="mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                <p className="text-sm text-amber-800">
+                <p className="text-amber-800">
                   Complete all required items before launching. {checksComplete.size}/{PRE_LAUNCH_CHECKS.filter(c => c.critical).length} done.
                 </p>
               </div>
@@ -185,7 +133,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
 
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-4 text-slate-900">Your App URL</h4>
-            <p className="text-sm text-slate-600 mb-4">
+            <p className="text-slate-600 mb-4">
               Enter the URL where people can access your app:
             </p>
             <Input
@@ -199,7 +147,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
                 href={appUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-sm text-slate-700 hover:underline mt-2"
+                className="inline-flex items-center gap-1 text-slate-700 hover:underline mt-2"
               >
                 Open {appName || "your app"} <ExternalLink className="w-3 h-3" />
               </a>
@@ -219,6 +167,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
                   className="h-20 px-16 text-2xl font-bold gap-4"
                   onClick={handleLaunch}
                 >
+                  <Rocket className="w-8 h-8" />
                   LAUNCH {appName ? appName.toUpperCase() : "MY APP"}
                 </Button>
               </div>
@@ -234,7 +183,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
             <div className="text-center">
               <h4 className="font-bold text-3xl text-slate-900 mb-2">YOU DID IT!</h4>
               <p className="text-slate-700 text-lg">
-                {appName || "Your app"} is now LIVE. You built an AI SaaS product in 21 days.
+                {appName || "Your app"} is now LIVE. You built a SaaS product in 21 days.
               </p>
             </div>
           </Card>
@@ -249,95 +198,6 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
               <li>Polished the brand</li>
               <li>And most importantly: <strong>SHIPPED</strong></li>
             </ul>
-          </Card>
-
-          {/* Showcase Submission */}
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg mb-1 text-slate-900">Submit to the Showcase</h4>
-            <p className="text-sm text-slate-600 mb-4">Show off what you built to inspire others</p>
-
-            {showcaseSubmitted ? (
-              <div className="p-4 bg-slate-100 border border-slate-200 rounded-lg">
-                <span className="font-medium text-slate-900">Submitted to showcase!</span>
-                <p className="text-sm text-slate-600 mt-1">
-                  Your app will appear in the gallery once approved.
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    App Name
-                  </label>
-                  <Input
-                    placeholder="My Awesome SaaS"
-                    value={showcaseAppName}
-                    onChange={(e) => setShowcaseAppName(e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    One-Line Description
-                  </label>
-                  <Textarea
-                    placeholder="What does your app do? Who is it for? (Keep it punchy!)"
-                    value={showcaseDescription}
-                    onChange={(e) => setShowcaseDescription(e.target.value)}
-                    className="min-h-[80px]"
-                  />
-                  <p className="text-xs text-slate-400 mt-1">{showcaseDescription.length}/200 characters</p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Screenshot URL
-                  </label>
-                  <div className="flex-1">
-                    <Input
-                      placeholder="https://i.imgur.com/your-screenshot.png"
-                      value={screenshotUrl}
-                      onChange={(e) => setScreenshotUrl(e.target.value)}
-                    />
-                    <p className="text-xs text-slate-500 mt-1">
-                      Take a screenshot of your app's main screen. Upload to{" "}
-                      <a href="https://imgur.com" target="_blank" rel="noopener noreferrer" className="text-slate-700 hover:underline">
-                        imgur.com
-                      </a>{" "}
-                      or similar and paste the direct image URL.
-                    </p>
-                  </div>
-                </div>
-
-                {screenshotUrl && (
-                  <div className="border border-slate-200 rounded-lg overflow-hidden">
-                    <img
-                      src={screenshotUrl}
-                      alt="App preview"
-                      className="w-full h-48 object-cover object-top"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
-
-                <Button
-                  onClick={() => submitShowcase.mutate()}
-                  disabled={!canSubmitShowcase || submitShowcase.isPending}
-                  className="w-full gap-2"
-                >
-                  {submitShowcase.isPending ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Submitting...
-                    </>
-                  ) : (
-                    "Submit to Showcase"
-                  )}
-                </Button>
-              </div>
-            )}
           </Card>
 
           {/* Hard CTA - Work with Matt */}
@@ -368,7 +228,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
 
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">How Does It Feel?</h4>
-            <p className="text-sm text-slate-600 mb-4">
+            <p className="text-slate-600 mb-4">
               Take a moment to reflect. You just launched something real.
             </p>
             <Textarea
@@ -387,7 +247,7 @@ The best part was [what]..."
 
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">What's Next?</h4>
-            <p className="text-sm text-slate-600 mb-4">
+            <p className="text-slate-600 mb-4">
               You've launched. Now what? Write down your first 3 next steps:
             </p>
             <Textarea
@@ -404,8 +264,8 @@ My goal for the next week is..."
           </Card>
 
           <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <h4 className="font-bold text-sm mb-2 text-slate-900">Remember</h4>
-            <p className="text-sm text-slate-600">
+            <h4 className="font-bold mb-2 text-slate-900">Remember</h4>
+            <p className="text-slate-600">
               Launching is the beginning, not the end. Your first version won't be perfect -
               and that's okay. The people who succeed are the ones who ship, learn, and improve.
               You just proved you can ship. Now keep going.

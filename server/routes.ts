@@ -1516,7 +1516,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   app.post("/api/showcase", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { appName, description, screenshotUrl, liveUrl } = req.body;
+      const { appName, description, screenshotUrl, liveUrl, testimonial, videoUrl } = req.body;
 
       if (!appName || !description || !screenshotUrl) {
         return res.status(400).json({ message: "App name, description, and screenshot are required" });
@@ -1528,6 +1528,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         description,
         screenshotUrl,
         liveUrl: liveUrl || null,
+        testimonial: testimonial || null,
+        videoUrl: videoUrl || null,
       });
 
       res.json(entry);

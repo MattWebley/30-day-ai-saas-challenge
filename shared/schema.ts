@@ -328,6 +328,8 @@ export const showcase = pgTable("showcase", {
   description: text("description").notNull(),
   screenshotUrl: text("screenshot_url").notNull(),
   liveUrl: text("live_url"),
+  testimonial: text("testimonial"), // Their experience building with the challenge
+  videoUrl: text("video_url"), // Optional video testimonial URL
   status: varchar("status").default("pending"), // 'pending' | 'approved' | 'rejected'
   featured: boolean("featured").default(false),
   createdAt: timestamp("created_at").defaultNow(),
