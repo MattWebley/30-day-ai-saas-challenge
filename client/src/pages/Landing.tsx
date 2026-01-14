@@ -65,9 +65,9 @@ export default function Landing() {
               Then pay attention. Because what I'm about to tell you is going to blow your mind.
             </p>
 
-            <p className="font-semibold text-slate-900 text-xl">
-              The rules of building software have COMPLETELY changed.
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              The Old Way Was SLOW, EXPENSIVE, and FRUSTRATING
+            </h3>
 
             <p>
               Until recently, if you wanted to build software, you had THREE options:
@@ -87,9 +87,9 @@ export default function Landing() {
               I know because I've been there! I've hired developers who took my money and delivered GARBAGE. I've had partnerships fall apart because the "technical guy" lost interest. I've watched project after project stall because I was dependent on someone else to build it.
             </p>
 
-            <p className="font-semibold text-slate-900">
-              But recently, something changed. Something BIG.
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              Then AI Changed EVERYTHING
+            </h3>
 
             <p>
               AI tools like Replit Agent and Claude Code got good enough that they can now build REAL, WORKING software from plain English instructions.
@@ -113,8 +113,12 @@ export default function Landing() {
               That's not hype. That's not marketing rubbish. That's the ACTUAL reality of where we are RIGHT NOW.
             </p>
 
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              But Nobody's Showing Regular People HOW to Do It
+            </h3>
+
             <p>
-              The problem? Nobody's showing regular people HOW to do it properly.
+              That's the problem. The tools exist. The opportunity is REAL. But there's no roadmap for non-technical people to follow.
             </p>
           </div>
         </section>
@@ -163,36 +167,36 @@ export default function Landing() {
               </li>
             </ul>
 
-            <p>
-              And so another week goes by. Another month. Another YEAR.
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              And So Another Week Goes By. Another Month. Another YEAR.
+            </h3>
 
             <p>
-              Meanwhile, you watch other people - people who are NO smarter than you - launch products, get customers, and build businesses. And you wonder what secret THEY know that YOU don't.
+              Meanwhile, you watch other people (people who are NO smarter than you) launch products, get customers, and build businesses. And you wonder what secret THEY know that YOU don't.
             </p>
 
-            <p className="font-semibold text-slate-900 text-xl">
-              Here's the BRUTAL truth nobody wants to tell you:
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              It's NOT Your Ideas. It's NOT Your Skills. It's That You Don't Have a SYSTEM.
+            </h3>
 
             <p>
               The biggest thing holding you back isn't your technical skills. It isn't your ideas. It isn't even your time.
-            </p>
-
-            <p className="font-bold text-slate-900">
-              It's that you don't have a SYSTEM.
             </p>
 
             <p>
               You don't have someone telling you EXACTLY what to do, in EXACTLY what order, with EXACTLY what tools. You're trying to figure it all out yourself, and THAT'S why you're stuck.
             </p>
 
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              You Need a Step-by-Step Playbook From Someone Who's DONE It
+            </h3>
+
             <p>
               What you need isn't more motivation. It isn't more ideas. It isn't "inspiration."
             </p>
 
             <p>
-              What you need is someone who's already DONE it to hand you the exact step-by-step playbook and say: "Do THIS. Then THIS. Then THIS. Now you have a product."
+              What you need is someone to hand you the exact playbook and say: "Do THIS. Then THIS. Then THIS. Now you have a product."
             </p>
           </div>
         </section>
@@ -255,29 +259,29 @@ export default function Landing() {
               </p>
             </div>
 
-            <p>
-              Here's how it works:
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              One Clear Task Every Day. 21 Days. Done.
+            </h3>
 
             <p>
               Every day for 21 days, you log in and get ONE clear task to complete. Not a 4-hour video lecture. Not 47 pages to read. Just ONE specific action that moves you forward.
             </p>
 
             <p>
-              Some days take 5 minutes. Some days take longer. But every day is designed to be COMPLETABLE - no matter how busy you are.
+              Some days take 5 minutes. Some days take longer. But every day is designed to be COMPLETABLE, no matter how busy you are.
             </p>
+
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              Each Day Builds on the Last. By Day 21, You Have a Product.
+            </h3>
 
             <p>
               The tasks are sequenced PERFECTLY. Day 1 builds on nothing. Day 2 builds on Day 1. Day 3 builds on Day 2. By Day 21, all those small steps have added up to a COMPLETE product.
             </p>
 
-            <p>
-              And here's the KEY:
-            </p>
-
-            <p className="font-bold text-slate-900 text-xl">
-              You're NOT writing code. You're DIRECTING AI to write it for you.
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              You're NOT Coding. You're DIRECTING AI to Code For You.
+            </h3>
 
             <p>
               I give you the exact prompts to use. You paste them into the AI tools. The AI builds. You review and iterate. That's IT.
@@ -381,16 +385,26 @@ export default function Landing() {
                   <strong className="text-slate-900">I'm Matt Webley.</strong> I started selling online in the year 2000, launched my first company in 2002, and I've been building SaaS businesses for about a decade now.
                 </p>
                 <p>
-                  In my spare time - while working a day job, raising a family, living life - I've generated over <strong className="text-slate-900">$23 million in online revenue</strong>. And <strong className="text-slate-900">$12 million of that came from SaaS</strong>.
+                  In my spare time (while working a day job, raising a family, living life) I've generated over <strong className="text-slate-900">$23 million in online revenue</strong>. And <strong className="text-slate-900">$12 million of that came from SaaS</strong>.
                 </p>
+
+                <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-4">
+                  $12 Million From SaaS. Every Mistake Made. Every Lesson Learned.
+                </h3>
+
                 <p>
                   I'm not telling you this to brag. I'm telling you because I've seen EXACTLY what it takes to build software products that actually make money. I've made every mistake. I've learned every lesson. And now I've packaged it all into a system that works.
                 </p>
                 <p>
-                  The 21 Day AI SaaS Challenge is the distillation of EVERYTHING I've learned about what it ACTUALLY takes to go from idea to launched product - without the fluff, without the theory, without the stuff that doesn't matter.
+                  The 21 Day AI SaaS Challenge is the distillation of EVERYTHING I've learned about what it ACTUALLY takes to go from idea to launched product. No fluff. No theory. Just the stuff that matters.
                 </p>
-                <p className="font-semibold text-slate-900">
-                  I built this because I was TIRED of seeing smart, capable people stay stuck for YEARS when they could be launching in WEEKS.
+
+                <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-4">
+                  I Was TIRED of Watching Smart People Stay Stuck for YEARS
+                </h3>
+
+                <p>
+                  That's why I built this. Because smart, capable people shouldn't be stuck for years when they could be launching in WEEKS.
                 </p>
               </div>
             </div>
@@ -719,16 +733,20 @@ export default function Landing() {
               When you join, you get <strong className="text-slate-900">12 months of access</strong> to complete the challenge.
             </p>
 
-            <p>
-              Why not lifetime? Because AI moves FAST. The tools, the methods, the prompts - they're evolving constantly. What works today might be completely different in 2 years.
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              Why Not Lifetime? Because AI Moves FAST.
+            </h3>
 
             <p>
-              I want you using the CURRENT system, not something outdated. And honestly? If you can't find 21 days within an entire YEAR to build your product, this probably isn't for you.
+              The tools, the methods, the prompts are evolving constantly. What works today might be completely different in 2 years. I want you using the CURRENT system, not something outdated.
             </p>
 
-            <p className="font-semibold text-slate-900">
-              One year is MORE than enough time. Most people who take action finish in a few weeks. The ones who don't finish in a year were never going to finish anyway.
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              One Year Is MORE Than Enough Time
+            </h3>
+
+            <p>
+              Most people who take action finish in a few weeks. If you can't find 21 days within an entire YEAR to build your product, this probably isn't for you. The ones who don't finish in a year were never going to finish anyway.
             </p>
           </div>
         </section>
@@ -752,19 +770,23 @@ export default function Landing() {
             </p>
 
             <p>
-              If you go through the challenge every day, do the work, and DON'T have a working software product at the end of it - one of my vibe coding coaches will jump on a call with you, figure out what went wrong, and help you fix it.
+              If you go through the challenge every day, do the work, and DON'T have a working software product at the end of it, one of my vibe coding coaches will jump on a call with you, figure out what went wrong, and help you fix it.
             </p>
 
-            <p>
-              And if we STILL can't get you to a working product? I'll refund you in FULL. No questions. No hassle.
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              And If We STILL Can't Get You There? Full Refund. No Questions.
+            </h3>
 
             <p>
               Why am I confident making this offer? Because I KNOW that if you actually show up and follow the system, you WILL have a product at the end. That's not a guess. That's just how this works.
             </p>
 
-            <p className="font-semibold text-slate-900">
-              The ONLY way to fail is to not show up. And if you're the type who won't show up, please don't join. Save us both the time.
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              The ONLY Way to Fail Is to Not Show Up
+            </h3>
+
+            <p>
+              And if you're the type who won't show up, please don't join. Save us both the time.
             </p>
           </div>
         </section>
@@ -786,9 +808,9 @@ export default function Landing() {
               But I AM going to tell you something TRUE:
             </p>
 
-            <p className="font-semibold text-slate-900 text-xl">
-              "Later" is where dreams go to DIE.
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              "Later" Is Where Dreams Go to DIE
+            </h3>
 
             <p>
               How many times have you told yourself you'd start "next week"? "Next month"? "When things calm down"?
@@ -798,9 +820,9 @@ export default function Landing() {
               Things NEVER calm down. There's NEVER a perfect time. The only time you actually have control over is RIGHT NOW.
             </p>
 
-            <p>
-              Here's the math:
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              21 Days From Now: A Working Product, or Still Thinking About It?
+            </h3>
 
             <ul className="space-y-2 pl-6">
               <li>• 21 days from today, you could have a WORKING product</li>
@@ -808,11 +830,7 @@ export default function Landing() {
             </ul>
 
             <p>
-              The time is going to pass EITHER WAY.
-            </p>
-
-            <p>
-              The question is: what will you have to SHOW for it?
+              The time is going to pass EITHER WAY. The question is: what will you have to SHOW for it?
             </p>
 
             <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-6 mt-6">
@@ -885,21 +903,17 @@ export default function Landing() {
               Stay Stuck Forever, or Start Building Today
             </h2>
 
-            <p>
-              You've read this far. That tells me something about you.
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center">
+              You've Read This Far. That Tells Me Something About You.
+            </h3>
 
             <p>
-              It tells me you're SERIOUS. That you're not just daydreaming about building software - you actually want to DO it.
+              It tells me you're SERIOUS. That you're not just daydreaming about building software. You actually want to DO it.
             </p>
 
-            <p>
-              So here's the question:
-            </p>
-
-            <p className="font-bold text-slate-900 text-xl text-center">
-              What's it going to be?
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              So Here's the Question: What's It Going to Be?
+            </h3>
 
             <p>
               <strong>Option A:</strong> Close this page. Tell yourself you'll "think about it." Watch another month go by. Then another. Keep the ideas in your head where they've been sitting for YEARS. Stay exactly where you are.
@@ -909,11 +923,11 @@ export default function Landing() {
               <strong>Option B:</strong> Join the challenge. Show up daily for 21 days. Follow the system. And in three weeks, look at the ACTUAL, WORKING product you built with your own hands (okay, with AI's hands, but YOU directed them).
             </p>
 
-            <p>
-              One option keeps you STUCK. The other gets you MOVING.
-            </p>
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
+              One Option Keeps You STUCK. The Other Gets You MOVING.
+            </h3>
 
-            <p className="font-semibold text-slate-900">
+            <p>
               The choice is yours. But choose NOW, while you're thinking about it. Because "later" rarely comes.
             </p>
           </div>
