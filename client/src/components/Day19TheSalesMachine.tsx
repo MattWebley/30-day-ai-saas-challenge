@@ -283,6 +283,14 @@ Add a money-back guarantee statement.`;
       {/* Step 3: Power Prompts */}
       {step === "prompts" && (
         <>
+          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
+            <p className="text-slate-700">
+              <strong>Important:</strong> These AI prompts will get you 80% of the way there - a solid foundation you can build on.
+              You'll still need to tweak the copy, adjust the tone, and use your best judgment to make it feel authentically YOU.
+              That final 20% of human polish is what makes good copy GREAT.
+            </p>
+          </Card>
+
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Step 1: Generate Your Headline</h4>
             <p className="text-slate-600 mb-4">
@@ -466,6 +474,14 @@ Style it with:
                 <p className="text-slate-700">CTAs that tell visitors exactly what to do</p>
               </div>
             </div>
+          </Card>
+
+          <Card className="p-4 border-2 border-amber-200 bg-amber-50">
+            <p className="text-slate-700">
+              <strong>Remember:</strong> AI got you 80% there. Before you move on, read through your sales page out loud.
+              Tweak anything that doesn't sound like YOU. Add specific details only you know about your customers.
+              That human polish is what turns good copy into copy that converts.
+            </p>
           </Card>
 
           <Card className="p-6 border-2 border-slate-200 bg-slate-50">
