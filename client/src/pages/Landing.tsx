@@ -47,9 +47,9 @@ export default function Landing() {
             </h2>
 
             <div className="mt-10">
-              <img 
-                src="/attached_assets/Screenshot_2026-01-14_at_07.00.22_1768359643386.png" 
-                alt="21 Day AI SaaS Challenge Dashboard" 
+              <img
+                src="/Screenshot_2026-01-14_at_07.00.22_1768359643386.png"
+                alt="21 Day AI SaaS Challenge Dashboard"
                 className="w-full rounded-lg shadow-2xl border border-slate-200"
               />
             </div>
@@ -390,7 +390,7 @@ export default function Landing() {
               />
               <div className="space-y-4 text-lg text-slate-700">
                 <p>
-                  <strong className="text-slate-900">I'm Matt Webley.</strong> I started selling online in the year 2000, launched my first company in 2002, and I've been building SaaS businesses for about a decade now.
+                  <strong className="text-slate-900">I'm Matt Webley.</strong> I started selling online in the year 2000, launched my first company in 2002, and I've been building SaaS businesses since 2018.
                 </p>
                 <p>
                   In my spare time (while working a day job, raising a family, living life) I've generated over <strong className="text-slate-900">$23 million in online revenue</strong>. And <strong className="text-slate-900">$12 million of that came from SaaS</strong>.
