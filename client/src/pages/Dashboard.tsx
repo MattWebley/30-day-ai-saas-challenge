@@ -42,8 +42,7 @@ import { Day21LaunchDay } from "@/components/Day21LaunchDay";
 import { Day17BuildItOut } from "@/components/Day17BuildItOut";
 import { Day18BuildYourMVP } from "@/components/Day18BuildYourMVP";
 import { Day18TestEverything } from "@/components/Day18TestEverything";
-import { DayChat } from "@/components/DayChat";
-import { DayQA } from "@/components/DayQA";
+import { DayCommunity } from "@/components/DayCommunity";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
 import { VideoSlides } from "@/components/VideoSlides";
@@ -1119,13 +1118,10 @@ export default function Dashboard() {
               </>
             )}
 
-            {/* Discussion Section */}
+            {/* Community Section (Q&A + Discussion) */}
             <div className="pt-8 border-t border-slate-200 mt-8">
-              <DayChat day={currentDay} />
+              <DayCommunity day={currentDay} />
             </div>
-
-            {/* Q&A Section */}
-            <DayQA day={currentDay} />
 
         </div>
       </div>
