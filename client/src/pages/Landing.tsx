@@ -45,6 +45,14 @@ export default function Landing() {
             <h2 className="text-2xl md:text-3xl font-bold text-slate-700">
               ...Without Writing a Single Line of Code, Without Any Technical Experience, and Without Spending Months "Learning to Code"
             </h2>
+
+            <div className="mt-10">
+              <img 
+                src="/attached_assets/Screenshot_2026-01-14_at_07.00.22_1768359643386.png" 
+                alt="21 Day AI SaaS Challenge Dashboard" 
+                className="w-full rounded-lg shadow-2xl border border-slate-200"
+              />
+            </div>
           </motion.div>
         </section>
 
