@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -16,17 +16,13 @@ import {
   Calendar,
   MessageSquare,
   Star,
-  Rocket,
-  Filter,
-  Check,
-  Clock,
-  ChevronDown,
-  ChevronUp
+  Rocket
 } from "lucide-react";
 
 interface Day21LaunchDayProps {
   appName: string;
-  onComplete: (data: { monthlyGoal: number; pricePoint: number; customersNeeded: number; selectedStrategies: string[]; commitmentStatement: string }) => void;
+  selectedStrategies?: string[];
+  onComplete: (data: { monthlyGoal: number; pricePoint: number; customersNeeded: number; commitmentStatement: string }) => void;
 }
 
 const PRICE_TIERS = [
@@ -166,50 +162,16 @@ const STRATEGIES: Strategy[] = [
   { id: "haro", name: "HARO (Help a Reporter)", description: "Respond to journalist queries", category: "free", effort: 2, timeToResults: "medium", cost: "free", impactPotential: "medium", tips: "Respond quickly with genuine expertise." },
 ];
 
-const COST_LABELS = {
-  free: { label: "Free", color: "text-green-600", bg: "bg-green-100" },
-  low: { label: "$50-200/mo", color: "text-blue-600", bg: "bg-blue-100" },
-  medium: { label: "$200-1000/mo", color: "text-amber-600", bg: "bg-amber-100" },
-  high: { label: "$1000+/mo", color: "text-red-600", bg: "bg-red-100" },
-};
-
-const TIME_LABELS = {
-  quick: { label: "Days-Weeks", color: "text-green-600" },
-  medium: { label: "1-3 Months", color: "text-amber-600" },
-  slow: { label: "3-6+ Months", color: "text-red-600" },
-};
-
-export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
-  const [step, setStep] = useState<"intro" | "calculator" | "strategies" | "vision" | "cta" | "complete">("intro");
+export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }: Day21LaunchDayProps) {
+  const [step, setStep] = useState<"intro" | "calculator" | "vision" | "cta" | "complete">("intro");
   const [selectedPrice, setSelectedPrice] = useState(29);
   const [targetIncome, setTargetIncome] = useState(5000);
-  const [selectedStrategies, setSelectedStrategies] = useState<string[]>([]);
   const [commitmentStatement, setCommitmentStatement] = useState("");
-  const [showAllStrategies, setShowAllStrategies] = useState(false);
-  const [filters, setFilters] = useState({
-    cost: "all" as "all" | "free" | "low" | "medium" | "high",
-  });
 
   const customersNeeded = Math.ceil(targetIncome / selectedPrice);
   const yearlyIncome = targetIncome * 12;
 
-  const filteredStrategies = useMemo(() => {
-    return STRATEGIES.filter((s) => {
-      if (filters.cost !== "all" && s.cost !== filters.cost) return false;
-      return true;
-    });
-  }, [filters]);
-
-  const displayedStrategies = showAllStrategies ? filteredStrategies : filteredStrategies.slice(0, 12);
-
-  const toggleStrategy = (id: string) => {
-    if (selectedStrategies.includes(id)) {
-      setSelectedStrategies(selectedStrategies.filter((s) => s !== id));
-    } else if (selectedStrategies.length < 3) {
-      setSelectedStrategies([...selectedStrategies, id]);
-    }
-  };
-
+  // Get strategy data from Day 20 selection
   const selectedStrategyData = STRATEGIES.filter((s) => selectedStrategies.includes(s.id));
 
   return (
@@ -387,165 +349,34 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
           <Button
             size="lg"
             className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("strategies")}
+            onClick={() => setStep("vision")}
           >
-            How Do I Get Those Customers? <ChevronRight className="w-5 h-5" />
+            See The Bigger Picture <ChevronRight className="w-5 h-5" />
           </Button>
         </>
       )}
 
-      {/* Step 3: Customer Acquisition Strategies */}
-      {step === "strategies" && (
-        <>
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <div className="text-center">
-              <h4 className="font-bold text-xl text-slate-900 mb-2">
-                {STRATEGIES.length} Ways to Get Customers
-              </h4>
-              <p className="text-slate-600">
-                You only need <strong>1-2-3 to actually work</strong>. Pick the ones that fit YOU.
-              </p>
-            </div>
-          </Card>
-
-          {/* Filter */}
-          <Card className="p-4 border-2 border-slate-200 bg-white">
-            <div className="flex items-center gap-2 mb-3">
-              <Filter className="w-4 h-4 text-slate-500" />
-              <span className="font-medium text-slate-700">Filter by cost:</span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {(["all", "free", "low", "medium", "high"] as const).map((cost) => (
-                <button
-                  key={cost}
-                  onClick={() => setFilters({ cost })}
-                  className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
-                    filters.cost === cost
-                      ? "bg-primary text-white"
-                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  }`}
-                >
-                  {cost === "all" ? "All" : cost === "free" ? "Free Only" : COST_LABELS[cost].label}
-                </button>
-              ))}
-            </div>
-          </Card>
-
-          {/* Selection Status */}
-          <Card className={`p-4 border-2 ${selectedStrategies.length >= 1 ? "border-green-200 bg-green-50" : "border-slate-200 bg-slate-50"}`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="font-medium text-slate-900">
-                  {selectedStrategies.length}/3 strategies selected
-                </span>
-                {selectedStrategies.length === 0 && (
-                  <p className="text-sm text-slate-600">Pick 1-3 to focus on</p>
-                )}
-                {selectedStrategies.length >= 1 && (
-                  <p className="text-sm text-green-700 font-medium">
-                    {selectedStrategies.length === 1 ? "1 strategy can build a business!" :
-                     selectedStrategies.length === 2 ? "Solid foundation!" : "Max focus - perfect!"}
-                  </p>
-                )}
-              </div>
-              {selectedStrategies.length >= 1 && (
-                <Button onClick={() => setStep("vision")} className="gap-2">
-                  Continue <ChevronRight className="w-4 h-4" />
-                </Button>
-              )}
-            </div>
-          </Card>
-
-          {/* Strategy Cards */}
-          <div className="space-y-2">
-            {displayedStrategies.map((strategy) => {
-              const isSelected = selectedStrategies.includes(strategy.id);
-              const costInfo = COST_LABELS[strategy.cost];
-              const timeInfo = TIME_LABELS[strategy.timeToResults];
-
-              return (
-                <Card
-                  key={strategy.id}
-                  className={`p-3 border-2 cursor-pointer transition-all ${
-                    isSelected
-                      ? "border-primary bg-primary/5"
-                      : "border-slate-200 hover:border-slate-300"
-                  }`}
-                  onClick={() => toggleStrategy(strategy.id)}
-                >
-                  <div className="flex items-start gap-3">
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                      isSelected ? "border-primary bg-primary text-white" : "border-slate-300"
-                    }`}>
-                      {isSelected && <Check className="w-3 h-3" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <h4 className="font-bold text-slate-900 text-sm">{strategy.name}</h4>
-                          <p className="text-xs text-slate-600">{strategy.description}</p>
-                        </div>
-                        <span className={`text-xs px-2 py-0.5 rounded ${costInfo.bg} ${costInfo.color} flex-shrink-0`}>
-                          {costInfo.label}
-                        </span>
-                      </div>
-                      <div className="flex gap-3 mt-1 text-xs text-slate-500">
-                        <span className={timeInfo.color}>{timeInfo.label}</span>
-                        <span>Effort: {strategy.effort}/5</span>
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
-
-          {/* Show More/Less */}
-          {filteredStrategies.length > 12 && (
-            <Button
-              variant="outline"
-              className="w-full gap-2"
-              onClick={() => setShowAllStrategies(!showAllStrategies)}
-            >
-              {showAllStrategies ? (
-                <>Show Less <ChevronUp className="w-4 h-4" /></>
-              ) : (
-                <>Show All {filteredStrategies.length} Strategies <ChevronDown className="w-4 h-4" /></>
-              )}
-            </Button>
-          )}
-
-          {selectedStrategies.length >= 1 && (
-            <Button
-              size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={() => setStep("vision")}
-            >
-              Lock In My Focus <ChevronRight className="w-5 h-5" />
-            </Button>
-          )}
-        </>
-      )}
-
-      {/* Step 4: Vision */}
+      {/* Step 3: Vision */}
       {step === "vision" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">Your Growth Plan</h4>
-            <div className="space-y-2">
-              {selectedStrategyData.map((s, i) => (
-                <div key={s.id} className="flex items-start gap-3 p-3 bg-white rounded-lg">
-                  <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
-                    {i + 1}
+          {selectedStrategyData.length > 0 && (
+            <Card className="p-6 border-2 border-green-200 bg-green-50">
+              <h4 className="font-bold text-lg mb-4 text-slate-900">Your Growth Channels (from Day 20)</h4>
+              <div className="space-y-2">
+                {selectedStrategyData.map((s, i) => (
+                  <div key={s.id} className="flex items-start gap-3 p-3 bg-white rounded-lg">
+                    <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
+                      {i + 1}
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-900">{s.name}</p>
+                      <p className="text-sm text-slate-600">{s.tips}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-slate-900">{s.name}</p>
-                    <p className="text-sm text-slate-600">{s.tips}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
+                ))}
+              </div>
+            </Card>
+          )}
 
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="font-bold text-lg mb-4 text-slate-900">Picture This in 12 Months...</h4>
@@ -727,17 +558,19 @@ My first milestone is..."
             </div>
           </Card>
 
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">Your Growth Focus</h4>
-            {selectedStrategyData.map((s, i) => (
-              <div key={s.id} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg mb-2 last:mb-0">
-                <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
-                  {i + 1}
+          {selectedStrategyData.length > 0 && (
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <h4 className="font-bold text-lg mb-4 text-slate-900">Your Growth Focus</h4>
+              {selectedStrategyData.map((s, i) => (
+                <div key={s.id} className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg mb-2 last:mb-0">
+                  <div className="w-6 h-6 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
+                    {i + 1}
+                  </div>
+                  <p className="font-medium text-slate-900">{s.name}</p>
                 </div>
-                <p className="font-medium text-slate-900">{s.name}</p>
-              </div>
-            ))}
-          </Card>
+              ))}
+            </Card>
+          )}
 
           <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <h4 className="font-bold text-lg mb-3 text-slate-900">Your Commitment</h4>
@@ -769,7 +602,6 @@ My first milestone is..."
               monthlyGoal: targetIncome,
               pricePoint: selectedPrice,
               customersNeeded,
-              selectedStrategies,
               commitmentStatement
             })}
           >

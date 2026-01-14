@@ -37,7 +37,7 @@ import { Day13ReachYourUsers } from "@/components/Day13ReachYourUsers";
 import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
 import { Day19MobileReady } from "@/components/Day19MobileReady";
 import { Day19TheSalesMachine } from "@/components/Day19TheSalesMachine";
-import { Day20GoingLive } from "@/components/Day20GoingLive";
+import { Day20LaunchPlan } from "@/components/Day20LaunchPlan";
 import { Day21LaunchDay } from "@/components/Day21LaunchDay";
 import { Day17BuildItOut } from "@/components/Day17BuildItOut";
 import { Day18BuildYourMVP } from "@/components/Day18BuildYourMVP";
@@ -981,13 +981,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 20: Going Live */}
+                {/* Day 20: Launch Plan */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Pre-Launch Checklist</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Pick Your Launch Channels</h2>
                   </div>
-                  <Day20GoingLive
+                  <Day20LaunchPlan
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
                     onComplete={handleComplete}
                   />
@@ -1022,6 +1022,7 @@ export default function Dashboard() {
                   </div>
                   <Day21LaunchDay
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
+                    selectedStrategies={(Array.isArray(progress) ? progress.find((p: any) => p.day === 20) : null)?.userInputs?.selectedStrategies || []}
                     onComplete={handleComplete}
                   />
                 </div>
