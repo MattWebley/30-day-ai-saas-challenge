@@ -616,7 +616,7 @@ const slideContent: Record<number, Slide[]> = {
   ],
   21: [
     {
-      title: "Day 21: The Money",
+      title: "Day 21: Your $100K Roadmap",
       points: [
         "CONGRATULATIONS - you built something!",
         "SaaS = RECURRING revenue (customers pay every month)",

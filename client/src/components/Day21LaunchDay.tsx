@@ -216,7 +216,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
     <div className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
-        <h3 className="text-2xl font-extrabold text-slate-900">The Money</h3>
+        <h3 className="text-2xl font-extrabold text-slate-900">Your $100K Roadmap</h3>
         <p className="text-slate-600 mt-1">
           Let's see what {appName || "your app"} could actually earn - and how to get there.
         </p>

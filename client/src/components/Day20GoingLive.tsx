@@ -379,7 +379,7 @@ export function Day20GoingLive({ appName, onComplete }: Day20GoingLiveProps) {
           </Card>
 
           <Card className="p-6 border-2 border-slate-200 bg-slate-50">
-            <h4 className="font-bold text-lg mb-3 text-slate-900">Tomorrow: The Money</h4>
+            <h4 className="font-bold text-lg mb-3 text-slate-900">Tomorrow: Your $100K Roadmap</h4>
             <p className="text-slate-700">
               Day 21 is about the numbers. How much can you actually make?
               How many customers do you need? And what comes after the challenge.

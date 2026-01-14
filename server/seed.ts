@@ -1172,7 +1172,7 @@ Tomorrow is the big day. Let's make sure you're ready for it.`,
     },
     {
       day: 21,
-      title: "The Money",
+      title: "Your $100K Roadmap",
       description: "Let's see what your app could actually earn - and what it takes to get there.",
       phase: "Launch",
       videoUrl: null,
