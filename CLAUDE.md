@@ -183,7 +183,7 @@ Every day in Dashboard.tsx MUST follow this exact format:
 
 ## Current Status
 - Status: In Progress
-- Last Session: 2026-01-12
+- Last Session: 2026-01-14
 - Current Branch: main
 - GitHub Repo: MattWebley/30-day-ai-saas-challenge
 
@@ -1025,6 +1025,36 @@ Every day in Dashboard.tsx MUST follow this exact format:
   - All pending tasks from CLAUDE.md remain (testing, affiliate IDs, booking links)
   - TypeScript check passing
   - All changes committed and pushed to GitHub (5 commits this session)
+
+### 2026-01-14 - Day 19 Sales Page & Day 20 Simplification
+- Tasks Completed:
+  - **Day 19 Sales Page Enhancements**:
+    - Added "80% complete" expectation messaging before prompts
+    - Added reminder to tweak copy and add screenshots/videos after completion
+    - Personalized all prompts with challenge data (pain points, features, AI feature, brand color)
+    - Prompts now pull from Days 2, 3, 10, 11 for rich context
+  - **Day 20 Complete Redesign** (was overwhelming pre-launch checklist):
+    - Replaced 15-item technical checklist with simple "pick 1-3 marketing channels"
+    - Created Day20LaunchPlan.tsx with ~35 strategy options
+    - Strategies organized by category: Launch Platforms, Social, Content, Communities, Outreach, Paid
+    - Filter by cost (free, low, medium, high)
+    - No blockers - just pick and proceed
+  - **Day 21 Simplification**:
+    - Removed strategy picker (moved to Day 20)
+    - Now receives selectedStrategies as prop from Day 20
+    - Streamlined to: income calculator → vision → CTA → complete
+  - Updated seed.ts with new Day 20 content
+  - Updated DayInstructions.tsx for Days 20 and 21
+  - Updated VideoSlides.tsx for Day 20
+- Fixes Applied:
+  - Fixed Day 20 being a blocker right before finish line
+  - Removed duplicate strategy picker between Day 20 and 21
+- Notes:
+  - New flow: Day 19 (sales page) → Day 20 (pick channels) → Day 21 (finish)
+  - Day 20 no longer has any blocking requirements
+  - 21 commits ahead of origin (need to push)
+  - TypeScript check passing
+  - Database reseeded with all content updates
 
 ---
 
