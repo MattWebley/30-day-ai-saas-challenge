@@ -66,7 +66,7 @@ export default function Landing() {
             </h2>
 
             <p>
-              If you've ever dreamed of building your own software product... if you've watched others launch apps and thought "why not ME?"... if you've got ideas that have been sitting in your head for MONTHS or even YEARS...
+              If you've ever dreamed of building your own software product... if you've watched others launch apps and thought "why not ME?"... whether you've got a specific idea or you just KNOW you want to build SOMETHING...
             </p>
 
             <p>
@@ -145,7 +145,7 @@ export default function Landing() {
             </p>
 
             <p>
-              You've got ideas. GOOD ideas. Maybe you've even written some of them down. You KNOW there's a market out there for what you're thinking about.
+              Maybe you've got ideas - GOOD ideas you've been sitting on. Or maybe you just know you WANT to build something but haven't figured out WHAT yet. Either way, you KNOW there's opportunity out there.
             </p>
 
             <p>
@@ -159,7 +159,7 @@ export default function Landing() {
               </li>
               <li className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-1" />
-                <span>You can't decide WHICH idea to pursue. You've got 5 or 10 or 20 ideas, and analysis paralysis keeps you FROZEN. What if you pick the wrong one?</span>
+                <span>You're stuck on the IDEA. Either you've got too many and can't pick, or you can't think of the "right" one. Analysis paralysis keeps you FROZEN.</span>
               </li>
               <li className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-1" />
@@ -322,7 +322,7 @@ export default function Landing() {
                     <h3 className="text-xl font-bold text-slate-900">IDEA</h3>
                   </div>
                   <p className="text-slate-600">
-                    Find YOUR winning idea. Not just any idea - one that's validated, that you're excited about, and that people will actually PAY for. You'll leave with a name, domain, and logo.
+                    Don't have an idea? We'll generate 28 for you. Already have one? We'll validate it. Either way, you'll leave with a winning idea, a name, domain, and logo.
                   </p>
                 </div>
 
@@ -366,7 +366,7 @@ export default function Landing() {
                   Important: This challenge is about BUILDING, not MARKETING.
                 </p>
                 <p className="text-slate-600">
-                  You'll go from idea to validated concept to working software. We cover everything needed to build a REAL product: the tech setup, AI integration, user accounts, email, mobile support - the WHOLE thing. What we DON'T cover is marketing, customer acquisition, or business building. That's a different skill set for after you've built something worth selling.
+                  You'll go from "I want to build something" to working software. We help you find or validate an idea, then cover everything needed to build a REAL product: the tech setup, AI integration, user accounts, email, mobile support - the WHOLE thing. What we DON'T cover is marketing, customer acquisition, or business building. That's a different skill set for after you've built something worth selling.
                 </p>
               </div>
             </div>
@@ -404,7 +404,7 @@ export default function Landing() {
                   I'm not telling you this to brag. I'm telling you because I've seen EXACTLY what it takes to build software products that actually make money. I've made every mistake. I've learned every lesson. And now I've packaged it all into a system that works.
                 </p>
                 <p>
-                  The 21 Day AI SaaS Challenge is the distillation of EVERYTHING I've learned about what it ACTUALLY takes to go from idea to launched product. No fluff. No theory. Just the stuff that matters.
+                  The 21 Day AI SaaS Challenge is the distillation of EVERYTHING I've learned about what it ACTUALLY takes to go from zero to launched product. No fluff. No theory. Just the stuff that matters.
                 </p>
 
                 <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-4">
@@ -631,7 +631,7 @@ export default function Landing() {
                 <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
                 <div>
                   <span className="font-semibold text-slate-900">12 Months Access to Complete the Challenge</span>
-                  <p className="text-slate-600 mt-1">One year to go from idea to working product. AI tools move fast - you'll always use the CURRENT methods, not outdated ones.</p>
+                  <p className="text-slate-600 mt-1">One year to go from zero to working product. AI tools move fast - you'll always use the CURRENT methods, not outdated ones.</p>
                 </div>
               </div>
 
@@ -664,7 +664,7 @@ export default function Landing() {
                 <ul className="space-y-3">
                   <li className="flex items-start gap-3">
                     <span className="text-green-600 font-bold">✓</span>
-                    <span>You have ideas but haven't built anything YET</span>
+                    <span>You want to build something (with or without an idea already)</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <span className="text-green-600 font-bold">✓</span>
