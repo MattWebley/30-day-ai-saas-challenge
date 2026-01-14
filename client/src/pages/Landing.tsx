@@ -390,7 +390,7 @@ export default function Landing() {
               />
               <div className="space-y-4 text-lg text-slate-700">
                 <p>
-                  <strong className="text-slate-900">I'm Matt Webley.</strong> I started selling online in the year 2000, launched my first company in 2002, and I've been building SaaS businesses since 2018.
+                  <strong className="text-slate-900">I'm Matt Webley.</strong> I started selling online in the year 2000, launched my first company in 2002, and I've been building SaaS businesses for 8+ years.
                 </p>
                 <p>
                   In my spare time (while working a day job, raising a family, living life) I've generated over <strong className="text-slate-900">$23 million in online revenue</strong>. And <strong className="text-slate-900">$12 million of that came from SaaS</strong>.

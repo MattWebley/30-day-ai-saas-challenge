@@ -156,31 +156,141 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
             </Card>
           </div>
 
-          {/* BE SPECIFIC */}
+          {/* HOW TO WRITE GOOD PROMPTS */}
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <AlertTriangle className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-xl font-extrabold text-slate-900">Vague = Garbage</h2>
+              <h2 className="text-xl font-extrabold text-slate-900">How to Write Good Prompts</h2>
             </div>
 
-            <Card className="p-6 border-2 border-slate-200 bg-white">
+            <Card className="p-6 border-2 border-slate-200 bg-white mb-4">
+              <h3 className="text-lg font-bold text-slate-900 mb-3">The Golden Rule: Vague = Garbage</h3>
+              <p className="text-slate-700 mb-4">
+                The quality of Claude's output is directly tied to the quality of your input.
+                Vague prompts let Claude make decisions. Claude will make them POORLY.
+              </p>
               <div className="space-y-4">
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <p className="text-slate-700 font-medium mb-1">BAD:</p>
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-red-700 font-medium mb-1">BAD:</p>
                   <p className="text-slate-600 font-mono text-sm">"Build me an auth system"</p>
                 </div>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                  <p className="text-slate-700 font-medium mb-1">GOOD:</p>
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <p className="text-green-700 font-medium mb-1">GOOD:</p>
                   <p className="text-slate-600 font-mono text-sm">"Build email/password login using the existing User model. Store sessions in the database. Add middleware that protects all /api/protected routes."</p>
                 </div>
-                <p className="text-slate-700">
-                  See the difference? The specific prompt gives Claude a clear target.
-                  The vague one lets Claude make decisions it will make POORLY.
+              </div>
+            </Card>
+
+            <Card className="p-6 border-2 border-slate-200 bg-white mb-4">
+              <h3 className="text-lg font-bold text-slate-900 mb-3">The Prompt Formula</h3>
+              <p className="text-slate-700 mb-4">
+                Follow this structure for every request:
+              </p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <span className="font-bold text-primary">1.</span>
+                  <div>
+                    <span className="text-slate-900 font-medium">WHAT</span>
+                    <span className="text-slate-600"> - What do you want built?</span>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="font-bold text-primary">2.</span>
+                  <div>
+                    <span className="text-slate-900 font-medium">WHERE</span>
+                    <span className="text-slate-600"> - Where does it go? Which file/page/component?</span>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="font-bold text-primary">3.</span>
+                  <div>
+                    <span className="text-slate-900 font-medium">HOW</span>
+                    <span className="text-slate-600"> - Any specific requirements? Use existing code/patterns?</span>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="font-bold text-primary">4.</span>
+                  <div>
+                    <span className="text-slate-900 font-medium">CONSTRAINTS</span>
+                    <span className="text-slate-600"> - What should it NOT do? Keep it simple? No new files?</span>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-4">
+                <p className="text-slate-700 font-medium mb-2">Example using the formula:</p>
+                <p className="text-slate-600 font-mono text-sm">
+                  "Add a delete button [WHAT] to each item in the task list on Dashboard.tsx [WHERE].
+                  Use the existing deleteTask API endpoint [HOW].
+                  Keep it simple, just a red trash icon, no confirmation modal [CONSTRAINTS]."
                 </p>
-                <p className="text-slate-700 font-medium">
-                  Also: Tell Claude what NOT to do. "Keep it simple. Don't add extra files I didn't ask for. No abstractions."
+              </div>
+            </Card>
+
+            <Card className="p-6 border-2 border-slate-200 bg-white mb-4">
+              <h3 className="text-lg font-bold text-slate-900 mb-3">More Good vs Bad Examples</h3>
+              <div className="space-y-4">
+                <div>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-2">
+                    <p className="text-red-700 font-medium text-sm">BAD: "Make it look better"</p>
+                  </div>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p className="text-green-700 font-medium text-sm">GOOD: "Change the header background to slate-900, make the logo larger (w-12), and add more padding (py-6)"</p>
+                  </div>
+                </div>
+                <div>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-2">
+                    <p className="text-red-700 font-medium text-sm">BAD: "Add a form"</p>
+                  </div>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p className="text-green-700 font-medium text-sm">GOOD: "Add a contact form with name, email, and message fields. On submit, POST to /api/contact. Show a success toast. Clear the form after."</p>
+                  </div>
+                </div>
+                <div>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-2">
+                    <p className="text-red-700 font-medium text-sm">BAD: "Fix the bug"</p>
+                  </div>
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p className="text-green-700 font-medium text-sm">GOOD: "The save button does nothing when clicked. It should call saveData() and show a loading spinner while saving. Check the onClick handler in EditForm.tsx."</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <h3 className="text-lg font-bold text-slate-900 mb-3">Power Phrases That Get Better Results</h3>
+              <div className="space-y-2">
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-slate-700">"Keep it simple. Don't over-engineer this."</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-slate-700">"Use the existing pattern from [file]. Match that style."</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-slate-700">"Don't create new files unless absolutely necessary."</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-slate-700">"Before you code, tell me your plan."</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-slate-700">"Only change what I asked for. Don't refactor other code."</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <span className="text-slate-700">"If you're unsure about anything, ask me first."</span>
+                </div>
+              </div>
+              <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-4">
+                <p className="text-slate-700">
+                  <strong>Remember:</strong> You're the boss. Claude works for you.
+                  Tell it exactly what you want, how you want it, and what to avoid.
+                  The more specific you are, the better the results.
                 </p>
               </div>
             </Card>
