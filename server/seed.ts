@@ -1066,62 +1066,54 @@ This isn't just about recognition - it's about proving to yourself (and others) 
     },
     {
       day: 19,
-      title: "The Sales Machine",
-      description: "Before you get traffic, you need a system to convert it. Let's build your sales machine.",
+      title: "Build Your Sales Page",
+      description: "Create a high-converting sales page for your product using proven structures and power prompts.",
       phase: "Launch",
       videoUrl: null,
-      aiTaskType: "education",
-      aiTaskTitle: "Sales Process",
-      aiTaskDescription: "Understand how to convert strangers into customers while you sleep.",
+      aiTaskType: "build",
+      aiTaskTitle: "Sales Page",
+      aiTaskDescription: "Build a sales page that turns visitors into customers.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What matters most to you about selling?",
-      microDecisionOptions: JSON.stringify(["No rejection", "Works while I sleep", "No awkward sales calls", "Automated system"]),
-      reflectionQuestion: "What would it mean to wake up to new customers without having done any selling?",
-      tip: "A sales machine converts strangers to customers automatically. No rejection, no selling, works 24/7. But AI-generated sales pages usually don't convert well out of the box.",
-      lesson: `Here's the BRUTAL truth about traffic: If you send 1000 people to a BAD sales page, you get NOTHING. Send 100 to a GOOD one? You get CUSTOMERS.
+      microDecisionQuestion: "What's most important for your sales page?",
+      microDecisionOptions: JSON.stringify(["Clear value proposition", "Easy to understand", "Removes objections", "Makes signing up easy"]),
+      reflectionQuestion: "How will it feel when your sales page starts converting visitors into customers?",
+      tip: "The headline is the most important part. If they don't read the headline, they won't read anything else. Test multiple options.",
+      lesson: `Your product is BUILT. Now you need to SELL it.
 
-THE SALES MACHINE is how strangers become customers WITHOUT you lifting a finger:
+A great sales page is the difference between "nobody signs up" and "I woke up to new customers." Today, we're building yours.
 
-Stranger → Lands on page → Tries for free → PAYS YOU
+THE ANATOMY OF A HIGH-CONVERTING PAGE:
 
-WHY THIS IS BEAUTIFUL:
+1. HEADLINE - The promise. Grabs attention. Makes them want more.
+2. THE PROBLEM - Make them feel understood. "This person GETS me."
+3. THE SOLUTION - Your product as the answer. Paint the "after" picture.
+4. HOW IT WORKS - 3-4 simple steps. Remove overwhelm.
+5. FEATURES & BENEFITS - What they get. Each tied to an outcome.
+6. SOCIAL PROOF - Testimonials, logos, numbers.
+7. THE OFFER + PRICING - What it costs. Why it's worth it.
+8. GUARANTEE - Remove fear. Make it safe to say yes.
+9. FAQ - Answer objections before they ask.
+10. FINAL CTA - Tell them exactly what to do.
 
-NO REJECTION - They read. They decide. If they leave, you never even knew they were there. No awkward "no thanks" conversations.
+TODAY YOU'LL BUILD THIS:
 
-NO "SELLING" - You're not on calls. You're not convincing anyone. They convince THEMSELVES. You just make it easy.
+I'm giving you POWER PROMPTS that generate each section. You'll pick your favorite headline from 10 options, then build the full page.
 
-WORKS 24/7 - Your page sells while you SLEEP. While you EAT. While you're on holiday. It doesn't get tired.
+THE PROCESS:
 
-THE FREE TRIAL FORMULA:
+1. Generate 10 headline options → pick the best one
+2. Generate full sales page copy → using proven structure
+3. Generate pricing section → with tiers that make sense
+4. Build it in your app → with Claude Code
 
-1. PAIN - Show them the problem (they need to feel SEEN)
-2. SOLUTION - Show them YOUR fix
-3. IRRESISTIBLE - "Try it free. No credit card."
-4. ZERO RISK - Nothing to lose by trying
+By end of today, you'll have a REAL sales page ready for customers.
 
-THE AI WARNING (READ THIS):
-
-You're thinking: "I'll just get ChatGPT to write my sales page."
-
-Here's what NOBODY tells you:
-
-AI copy sounds "professional" but it's EMOTIONALLY FLAT. Generic benefits. Bullet points that look impressive but don't CONNECT.
-
-AI sales pages convert at 0.5-1%.
-A REAL sales page? 3-10%. Sometimes MORE.
-
-That's NOT a small difference. That's the difference between a HOBBY and a BUSINESS.
-
-What actually converts? Copy that makes them think "this person GETS me." The exact words YOUR customers use. Stories that build REAL trust.
-
-BOTTOM LINE:
-
-Sales is a SKILL. You learn it over time. Or you work with someone who already knows it. But don't expect to PROMPT your way to great conversion rates.`,
-      outcome: "Understood the sales machine concept and AI limitations",
-      completionMessage: "You understand how conversion works. No rejection, no selling, works while you sleep - when done right. Tomorrow: picking your customer acquisition strategies.",
+Let's go.`,
+      outcome: "Built a complete sales page with headline, copy, and pricing",
+      completionMessage: "Your sales page is LIVE. You have a headline, problem/solution copy, features, pricing, and CTAs. Tomorrow: where to send traffic.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 30,
     },
 
     // ============================================

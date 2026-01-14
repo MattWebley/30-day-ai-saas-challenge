@@ -48,8 +48,8 @@ export default function Landing() {
 
             <div className="mt-10">
               <img
-                src="/Screenshot_2026-01-14_at_07.00.22_1768359643386.png"
-                alt="21 Day AI SaaS Challenge Dashboard"
+                src="/dashboard-preview.png"
+                alt="Challenge dashboard showing daily progress tracker"
                 className="w-full rounded-lg shadow-2xl border border-slate-200"
               />
             </div>
@@ -426,18 +426,18 @@ export default function Landing() {
               Real People. Real Products. Built With This System.
             </h2>
 
-            <div className="space-y-8">
+            <div className="space-y-16">
               {/* Product 1 - AuditMyListing - James F */}
               <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
-                <img 
-                  src="/attached_assets/Screenshot_2026-01-14_at_07.45.19_1768362533901.png" 
-                  alt="AuditMyListing - Amazon & eBay listing optimizer" 
+                <img
+                  src="/auditmylisting-app.png"
+                  alt="AuditMyListing app interface"
                   className="w-full"
                 />
                 <div className="p-6 flex items-center gap-4">
-                  <img 
-                    src="/attached_assets/Screenshot_2026-01-14_at_08.10.25_1768363910528.png" 
-                    alt="James F" 
+                  <img
+                    src="/james-f.png"
+                    alt="James F." 
                     className="w-14 h-14 rounded-full object-cover"
                   />
                   <div>
@@ -449,15 +449,15 @@ export default function Landing() {
 
               {/* Product 2 - VerifyCreator - Jack G */}
               <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
-                <img 
-                  src="/attached_assets/Screenshot_2026-01-14_at_07.44.06_1768362527750.png" 
-                  alt="VerifyCreator - AI platform to detect fake influencers" 
+                <img
+                  src="/verifycreator-app.png"
+                  alt="VerifyCreator app interface"
                   className="w-full"
                 />
                 <div className="p-6 flex items-center gap-4">
-                  <img 
-                    src="/attached_assets/Screenshot_2026-01-14_at_08.10.38_1768363922728.png" 
-                    alt="Jack G" 
+                  <img
+                    src="/jack-g.png"
+                    alt="Jack G." 
                     className="w-14 h-14 rounded-full object-cover"
                   />
                   <div>
@@ -469,15 +469,15 @@ export default function Landing() {
 
               {/* Product 3 - MusoBuddy - Tim F */}
               <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
-                <img 
-                  src="/attached_assets/Screenshot_2026-01-14_at_07.44.33_1768362522809.png" 
-                  alt="MusoBuddy - Gig management for freelance musicians" 
+                <img
+                  src="/musobuddy-app.png"
+                  alt="MusoBuddy app interface"
                   className="w-full"
                 />
                 <div className="p-6 flex items-center gap-4">
-                  <img 
-                    src="/attached_assets/Screenshot_2026-01-14_at_08.11.12_1768363945078.png" 
-                    alt="Tim F" 
+                  <img
+                    src="/tim-f.png"
+                    alt="Tim F." 
                     className="w-14 h-14 rounded-full object-cover"
                   />
                   <div>
