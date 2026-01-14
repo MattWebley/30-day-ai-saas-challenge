@@ -419,6 +419,56 @@ export default function Landing() {
           </div>
         </section>
 
+        {/* TESTIMONIALS */}
+        <section className="py-12 border-t border-slate-100">
+          <div className="space-y-8">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 text-center">
+              Real People. Real Products. Built With This System.
+            </h2>
+
+            <div className="space-y-8">
+              {/* Product 1 - VerifyCreator */}
+              <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
+                <img 
+                  src="/attached_assets/Screenshot_2026-01-14_at_07.44.06_1768362527750.png" 
+                  alt="VerifyCreator - AI platform to detect fake influencers" 
+                  className="w-full"
+                />
+                <div className="p-6">
+                  <p className="font-bold text-slate-900 text-lg">VerifyCreator</p>
+                  <p className="text-slate-600">AI-powered influencer verification platform</p>
+                </div>
+              </div>
+
+              {/* Product 2 - AuditMyListing */}
+              <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
+                <img 
+                  src="/attached_assets/Screenshot_2026-01-14_at_07.45.19_1768362533901.png" 
+                  alt="AuditMyListing - Amazon & eBay listing optimizer" 
+                  className="w-full"
+                />
+                <div className="p-6">
+                  <p className="font-bold text-slate-900 text-lg">AuditMyListing</p>
+                  <p className="text-slate-600">Amazon & eBay listing optimization tool</p>
+                </div>
+              </div>
+
+              {/* Product 3 - MusoBuddy */}
+              <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
+                <img 
+                  src="/attached_assets/Screenshot_2026-01-14_at_07.44.33_1768362522809.png" 
+                  alt="MusoBuddy - Gig management for freelance musicians" 
+                  className="w-full"
+                />
+                <div className="p-6">
+                  <p className="font-bold text-slate-900 text-lg">MusoBuddy</p>
+                  <p className="text-slate-600">Gig management software for freelance musicians</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* The "This Actually Works" Section */}
         <section className="py-12 border-t border-slate-100">
           <div className="space-y-6 text-lg text-slate-700">
