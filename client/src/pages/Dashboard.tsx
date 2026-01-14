@@ -952,6 +952,10 @@ export default function Dashboard() {
                   <Day19TheSalesMachine
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                    painPoints={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.selectedPainPoints || []}
+                    features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.coreFeatures || []}
+                    aiFeature={(Array.isArray(progress) ? progress.find((p: any) => p.day === 10) : null)?.userInputs?.aiFeature || ""}
+                    brandColor={(Array.isArray(progress) ? progress.find((p: any) => p.day === 11) : null)?.userInputs?.primaryColor || ""}
                     onComplete={handleComplete}
                   />
                 </div>

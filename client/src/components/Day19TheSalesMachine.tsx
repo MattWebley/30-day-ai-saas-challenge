@@ -18,16 +18,42 @@ import { useToast } from "@/hooks/use-toast";
 interface Day19TheSalesMachineProps {
   appName: string;
   userIdea: string;
+  painPoints?: string[];
+  features?: string[];
+  aiFeature?: string;
+  brandColor?: string;
   onComplete: (data: { salesPageBuilt: boolean; headline: string }) => void;
 }
 
-export function Day19TheSalesMachine({ appName, userIdea, onComplete }: Day19TheSalesMachineProps) {
+export function Day19TheSalesMachine({
+  appName,
+  userIdea,
+  painPoints = [],
+  features = [],
+  aiFeature = "",
+  brandColor = "",
+  onComplete
+}: Day19TheSalesMachineProps) {
   const [step, setStep] = useState<"intro" | "structure" | "prompts" | "build" | "complete">("intro");
   const [headline, setHeadline] = useState("");
   const { toast } = useToast();
 
   const productName = appName || "your app";
   const productIdea = userIdea || "your SaaS product";
+
+  // Build rich context from challenge progress
+  const painPointsText = painPoints.length > 0
+    ? `\n\nPain points this product solves:\n${painPoints.map(p => `- ${p}`).join('\n')}`
+    : "";
+  const featuresText = features.length > 0
+    ? `\n\nKey features:\n${features.map(f => `- ${f}`).join('\n')}`
+    : "";
+  const aiFeatureText = aiFeature
+    ? `\n\nAI-powered capability: ${aiFeature}`
+    : "";
+  const brandContext = brandColor
+    ? `\n\nBrand primary color: ${brandColor}`
+    : "";
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -39,11 +65,11 @@ export function Day19TheSalesMachine({ appName, userIdea, onComplete }: Day19The
 
   const HEADLINE_PROMPT = `I need 10 powerful headline options for my SaaS product: ${productName}
 
-What it does: ${productIdea}
+What it does: ${productIdea}${painPointsText}${aiFeatureText}
 
 Give me headlines that:
 - Lead with the OUTCOME or TRANSFORMATION (not the product)
-- Create curiosity or address a specific pain point
+- Create curiosity or address a specific pain point from the list above
 - Are specific, not generic
 - Could work for a landing page hero section
 
@@ -52,7 +78,7 @@ Format: Just the headlines, numbered 1-10. No explanations.`;
   const SALES_PAGE_PROMPT = `Write a complete sales page for my SaaS product.
 
 Product: ${productName}
-What it does: ${productIdea}
+What it does: ${productIdea}${painPointsText}${featuresText}${aiFeatureText}
 
 Use this proven structure:
 
@@ -105,13 +131,14 @@ Use this proven structure:
 Write in a conversational, direct tone. Use short paragraphs. Make it scannable.`;
 
   const PRICING_PROMPT = `Write a pricing section for ${productName}.
+${featuresText}${aiFeatureText}
 
-Create 2-3 pricing tiers that make sense for a SaaS product.
+Create 2-3 pricing tiers that make sense for this SaaS product.
 
 For each tier include:
 - Tier name (Basic, Pro, etc.)
 - Price point (suggest realistic SaaS pricing)
-- What's included (5-7 features per tier)
+- What's included (distribute the features above across tiers, with AI features in higher tiers)
 - Who it's best for
 - CTA button text
 
