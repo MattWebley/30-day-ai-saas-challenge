@@ -1121,54 +1121,62 @@ Let's go.`,
     // ============================================
     {
       day: 20,
-      title: "Going Live",
-      description: "Everything you need to check BEFORE accepting your first payment.",
+      title: "Your Launch Plan",
+      description: "Pick 1-3 ways to get your app in front of customers.",
       phase: "Launch",
       videoUrl: null,
-      aiTaskType: "checklist",
-      aiTaskTitle: "Pre-Launch Checklist",
-      aiTaskDescription: "Make sure everything is in place before you start taking real money.",
+      aiTaskType: "strategy",
+      aiTaskTitle: "Launch Channels",
+      aiTaskDescription: "Choose where you'll find your first customers.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's the biggest gap you still need to fill?",
-      microDecisionOptions: JSON.stringify(["Legal pages", "Payment setup", "Domain/SSL", "Analytics", "Everything's ready"]),
-      reflectionQuestion: "Is there anything that would make you nervous about a real customer signing up RIGHT NOW?",
-      tip: "You can launch without being perfect. But you CAN'T launch without these basics. Missing them makes you look unprofessional - or worse, gets you in legal trouble.",
-      lesson: `You're ALMOST there. But there's one thing standing between you and your first REAL customer.
+      microDecisionQuestion: "What type of marketing feels most natural to you?",
+      microDecisionOptions: JSON.stringify(["Content creation", "Community building", "Direct outreach", "Paid ads", "Not sure yet"]),
+      reflectionQuestion: "Which 1-3 channels will you commit to for the next 90 days?",
+      tip: "Most people try to be everywhere and end up nowhere. Pick 1-3 channels that fit YOUR strengths and go DEEP. One channel done well beats five done poorly.",
+      lesson: `A product nobody knows about makes $0.
 
-THE BASICS.
+That's the brutal truth.
 
-I know, I know. Not sexy. But here's the truth:
+You've spent 19 days building something real. But if nobody knows it exists? It might as well not.
 
-Nothing kills trust faster than a broken checkout. Or a missing privacy policy. Or a site that looks sketchy because it's still on a .replit.app domain.
+THE OVERWHELM TRAP:
 
-HERE'S WHAT HAS TO HAPPEN:
+Most people try to do EVERYTHING:
 
-You need your custom domain connected. (You bought it on Day 4, remember?)
+Twitter AND TikTok AND YouTube AND SEO AND Facebook AND LinkedIn AND cold email AND...
 
-You need HTTPS working. That little padlock. Non-negotiable in 2024.
+Result? They do nothing well. They burn out. They quit.
 
-You need a favicon. That tiny icon in browser tabs. Without it? Amateur hour.
+THE SECRET:
 
-You need legal pages. Privacy policy. Terms of service. Not because they're fun to write - because they PROTECT you.
+You only need 1-3 channels to work.
 
-You need Stripe connected. Can't get paid without it.
+That's it. ONE channel, done consistently, can build a six-figure business.
 
-THE GOOD NEWS:
+Two channels? Even better.
 
-None of this is hard. Tedious? A little. But each item takes minutes, not hours.
+Three? That's plenty.
 
-Think of it like the final walkthrough before you hand over the keys. You wouldn't sell a house without checking the basics. Don't launch an app without them either.
+THE KEY IS FOCUS:
 
-THIS IS YOUR CHECKLIST DAY:
+Pick channels that fit YOU:
+- Love writing? SEO, Twitter, LinkedIn
+- Love video? YouTube, TikTok, Reels
+- Love talking to people? Cold outreach, communities, podcasts
+- Have money to spend? Paid ads, sponsorships
 
-Go through each item. Check the box. Move on. By tomorrow, you'll be ACTUALLY ready to accept money.
+Don't pick what's "hot." Pick what you'll actually DO.
 
-Tomorrow is the big day. Let's make sure you're ready for it.`,
-      outcome: "All pre-launch essentials checked and verified",
-      completionMessage: "Pre-launch checklist complete. You're ready for real customers. Tomorrow: the money math and your growth plan.",
+TODAY'S JOB:
+
+Look at all the options. Pick 1-3 that feel right. Lock them in.
+
+Tomorrow we'll do the math on what it takes to hit your income goals.`,
+      outcome: "1-3 launch channels selected and committed to",
+      completionMessage: "Launch plan locked in. Tomorrow: the money math and completing the challenge.",
       xpReward: 100,
-      estimatedMinutes: 15,
+      estimatedMinutes: 10,
     },
     {
       day: 21,

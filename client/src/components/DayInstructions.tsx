@@ -138,18 +138,18 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Understand why AI sales pages don't convert well"
   ],
   20: [
-    "Go through the pre-launch checklist",
-    "Check off essential items (domain, SSL, favicon)",
-    "Verify legal pages are in place (privacy, terms)",
-    "Confirm Stripe is connected and working",
-    "Test the full signup and payment flow"
+    "Read about the 'overwhelm trap' in marketing",
+    "Browse all the launch channel options",
+    "Filter by cost if you're bootstrapping",
+    "Pick 1-3 channels that fit YOUR strengths",
+    "Lock in your focus for the next 90 days"
   ],
   21: [
-    "Calculate your income potential",
-    "Set your monthly goal and price point",
-    "Pick 1-3 customer acquisition strategies",
-    "Understand what it takes to turn an app into a business",
-    "Write your commitment statement"
+    "See the SaaS math for your income goal",
+    "Pick your price point and see customers needed",
+    "Understand the four pillars of a SaaS business",
+    "Write your commitment statement",
+    "Complete the 21 Day Challenge!"
   ],
 };
 
