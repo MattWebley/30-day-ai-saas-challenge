@@ -113,7 +113,7 @@ export default function Landing() {
 
             <div className="bg-slate-900 text-white p-6 rounded-xl my-8">
               <p className="text-xl font-bold">
-                The barrier to building software has dropped from $50,000+ and 12 months... to less than $100 and 21 days.
+                The barrier to building software has dropped from $250,000+ and 2-3 YEARS... to less than $100 and 21 days. Even tiny tools used to cost $50K+. Now? Under $100.
               </p>
             </div>
 
@@ -167,7 +167,7 @@ export default function Landing() {
               </li>
               <li className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-1" />
-                <span>You looked into hiring developers, but the quotes made your eyes WATER. $15,000 for an MVP? $50,000 for something "proper"? That's just NOT realistic.</span>
+                <span>You looked into hiring developers, but the quotes made your eyes WATER. $50,000 for a tiny tool? $250,000+ for something "proper"? That's just NOT realistic.</span>
               </li>
               <li className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-1" />
@@ -427,42 +427,63 @@ export default function Landing() {
             </h2>
 
             <div className="space-y-8">
-              {/* Product 1 - VerifyCreator */}
-              <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
-                <img 
-                  src="/attached_assets/Screenshot_2026-01-14_at_07.44.06_1768362527750.png" 
-                  alt="VerifyCreator - AI platform to detect fake influencers" 
-                  className="w-full"
-                />
-                <div className="p-6">
-                  <p className="font-bold text-slate-900 text-lg">VerifyCreator</p>
-                  <p className="text-slate-600">AI-powered influencer verification platform</p>
-                </div>
-              </div>
-
-              {/* Product 2 - AuditMyListing */}
+              {/* Product 1 - AuditMyListing - James F */}
               <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
                 <img 
                   src="/attached_assets/Screenshot_2026-01-14_at_07.45.19_1768362533901.png" 
                   alt="AuditMyListing - Amazon & eBay listing optimizer" 
                   className="w-full"
                 />
-                <div className="p-6">
-                  <p className="font-bold text-slate-900 text-lg">AuditMyListing</p>
-                  <p className="text-slate-600">Amazon & eBay listing optimization tool</p>
+                <div className="p-6 flex items-center gap-4">
+                  <img 
+                    src="/attached_assets/Screenshot_2026-01-14_at_08.10.25_1768363910528.png" 
+                    alt="James F" 
+                    className="w-14 h-14 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-bold text-slate-900 text-lg">James F.</p>
+                    <p className="text-slate-600">Built AuditMyListing - Amazon & eBay listing optimization tool</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Product 3 - MusoBuddy */}
+              {/* Product 2 - VerifyCreator - Jack G */}
+              <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
+                <img 
+                  src="/attached_assets/Screenshot_2026-01-14_at_07.44.06_1768362527750.png" 
+                  alt="VerifyCreator - AI platform to detect fake influencers" 
+                  className="w-full"
+                />
+                <div className="p-6 flex items-center gap-4">
+                  <img 
+                    src="/attached_assets/Screenshot_2026-01-14_at_08.10.38_1768363922728.png" 
+                    alt="Jack G" 
+                    className="w-14 h-14 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-bold text-slate-900 text-lg">Jack G.</p>
+                    <p className="text-slate-600">Built VerifyCreator - AI-powered influencer verification platform</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Product 3 - MusoBuddy - Tim F */}
               <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
                 <img 
                   src="/attached_assets/Screenshot_2026-01-14_at_07.44.33_1768362522809.png" 
                   alt="MusoBuddy - Gig management for freelance musicians" 
                   className="w-full"
                 />
-                <div className="p-6">
-                  <p className="font-bold text-slate-900 text-lg">MusoBuddy</p>
-                  <p className="text-slate-600">Gig management software for freelance musicians</p>
+                <div className="p-6 flex items-center gap-4">
+                  <img 
+                    src="/attached_assets/Screenshot_2026-01-14_at_08.11.12_1768363945078.png" 
+                    alt="Tim F" 
+                    className="w-14 h-14 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-bold text-slate-900 text-lg">Tim F.</p>
+                    <p className="text-slate-600">Built MusoBuddy - Gig management software for freelance musicians</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -846,6 +867,10 @@ export default function Landing() {
             <p>
               And if you're the type who won't show up, please don't join. Save us both the time.
             </p>
+
+            <p className="font-bold text-slate-900 text-right pt-4">
+              - Matt Webley
+            </p>
           </div>
         </section>
 
@@ -988,6 +1013,13 @@ export default function Landing() {
             <p>
               The choice is yours. But choose NOW, while you're thinking about it. Because "later" rarely comes.
             </p>
+
+            <p className="font-bold text-slate-900 text-center pt-6 text-xl">
+              I'll see you inside.
+            </p>
+            <p className="font-bold text-slate-900 text-center">
+              - Matt Webley
+            </p>
           </div>
 
           <div className="pt-8 pb-12">
@@ -1015,11 +1047,15 @@ export default function Landing() {
           </p>
 
           <p>
-            <strong>P.P.S.</strong> - Remember: the barrier to building software USED to be $50,000+ and 12 months. Now it's £295 and 21 days. This window won't last forever. The people who move NOW will have a massive head start on everyone who waits.
+            <strong>P.P.S.</strong> - Remember: the barrier to building software USED to be $250,000+ and 2-3 years. Even tiny tools cost $50K+. Now it's £295 and 21 days. This window won't last forever. The people who move NOW will have a massive head start on everyone who waits.
           </p>
 
           <p>
             <strong>P.P.P.S.</strong> - If you complete all 21 days and don't feel like you got value, email me. We'll sort it out. I don't hide behind fine print. Your success is MY success.
+          </p>
+
+          <p className="font-bold text-slate-900 pt-4">
+            - Matt
           </p>
 
           <div className="pt-4">
