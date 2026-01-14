@@ -286,7 +286,7 @@ Add a money-back guarantee statement.`;
           <Card className="p-4 border-2 border-amber-200 bg-amber-50">
             <p className="text-slate-700">
               <strong>Important:</strong> These AI prompts will get you 80% of the way there - a solid foundation you can build on.
-              You'll still need to tweak the copy, adjust the tone, and use your best judgment to make it feel authentically YOU.
+              You'll still need to tweak the copy, adjust the tone, and add screenshots/videos of your product in action.
               That final 20% of human polish is what makes good copy GREAT.
             </p>
           </Card>
@@ -479,7 +479,7 @@ Style it with:
           <Card className="p-4 border-2 border-amber-200 bg-amber-50">
             <p className="text-slate-700">
               <strong>Remember:</strong> AI got you 80% there. Before you move on, read through your sales page out loud.
-              Tweak anything that doesn't sound like YOU. Add specific details only you know about your customers.
+              Tweak anything that doesn't sound like YOU. Add screenshots, a demo video, or GIFs showing your product in action.
               That human polish is what turns good copy into copy that converts.
             </p>
           </Card>
