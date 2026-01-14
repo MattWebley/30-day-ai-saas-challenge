@@ -37,9 +37,12 @@ import {
   showcase,
   type Showcase,
   type InsertShowcase,
+  dayQuestions,
+  type DayQuestion,
+  type InsertDayQuestion,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc } from "drizzle-orm";
+import { eq, and, desc, isNotNull } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -119,6 +122,17 @@ export interface IStorage {
   getPendingShowcase(): Promise<(Showcase & { user: User })[]>;
   updateShowcaseStatus(id: number, status: string): Promise<Showcase | undefined>;
   toggleShowcaseFeatured(id: number): Promise<Showcase | undefined>;
+
+  // Q&A operations
+  createQuestion(question: InsertDayQuestion): Promise<DayQuestion>;
+  getQuestionsByDay(day: number): Promise<(DayQuestion & { user: User })[]>;
+  getAnsweredQuestionsByDay(day: number): Promise<(DayQuestion & { user: User })[]>;
+  getPendingQuestions(): Promise<(DayQuestion & { user: User })[]>;
+  getQuestionByToken(token: string): Promise<DayQuestion | undefined>;
+  answerQuestion(id: number, answer: string): Promise<DayQuestion | undefined>;
+  setAiSuggestedAnswer(id: number, aiAnswer: string): Promise<DayQuestion | undefined>;
+  markQuestionHelpful(id: number): Promise<DayQuestion | undefined>;
+  hideQuestion(id: number): Promise<DayQuestion | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -686,6 +700,96 @@ export class DatabaseStorage implements IStorage {
       .update(showcase)
       .set({ featured: !entry.featured })
       .where(eq(showcase.id, id))
+      .returning();
+    return updated;
+  }
+
+  // Q&A operations
+  async createQuestion(question: InsertDayQuestion): Promise<DayQuestion> {
+    const [created] = await db.insert(dayQuestions).values(question).returning();
+    return created;
+  }
+
+  async getQuestionsByDay(day: number): Promise<(DayQuestion & { user: User })[]> {
+    const questions = await db
+      .select()
+      .from(dayQuestions)
+      .innerJoin(users, eq(dayQuestions.userId, users.id))
+      .where(eq(dayQuestions.day, day))
+      .orderBy(desc(dayQuestions.createdAt));
+    return questions.map(q => ({ ...q.day_questions, user: q.users }));
+  }
+
+  async getAnsweredQuestionsByDay(day: number): Promise<(DayQuestion & { user: User })[]> {
+    const questions = await db
+      .select()
+      .from(dayQuestions)
+      .innerJoin(users, eq(dayQuestions.userId, users.id))
+      .where(and(
+        eq(dayQuestions.day, day),
+        eq(dayQuestions.status, "answered")
+      ))
+      .orderBy(desc(dayQuestions.helpful), desc(dayQuestions.answeredAt));
+    return questions.map(q => ({ ...q.day_questions, user: q.users }));
+  }
+
+  async getPendingQuestions(): Promise<(DayQuestion & { user: User })[]> {
+    const questions = await db
+      .select()
+      .from(dayQuestions)
+      .innerJoin(users, eq(dayQuestions.userId, users.id))
+      .where(eq(dayQuestions.status, "pending"))
+      .orderBy(desc(dayQuestions.createdAt));
+    return questions.map(q => ({ ...q.day_questions, user: q.users }));
+  }
+
+  async getQuestionByToken(token: string): Promise<DayQuestion | undefined> {
+    const [question] = await db
+      .select()
+      .from(dayQuestions)
+      .where(eq(dayQuestions.answerToken, token));
+    return question;
+  }
+
+  async answerQuestion(id: number, answer: string): Promise<DayQuestion | undefined> {
+    const [updated] = await db
+      .update(dayQuestions)
+      .set({
+        answer,
+        status: "answered",
+        answeredAt: new Date()
+      })
+      .where(eq(dayQuestions.id, id))
+      .returning();
+    return updated;
+  }
+
+  async setAiSuggestedAnswer(id: number, aiAnswer: string): Promise<DayQuestion | undefined> {
+    const [updated] = await db
+      .update(dayQuestions)
+      .set({ aiSuggestedAnswer: aiAnswer })
+      .where(eq(dayQuestions.id, id))
+      .returning();
+    return updated;
+  }
+
+  async markQuestionHelpful(id: number): Promise<DayQuestion | undefined> {
+    const [question] = await db.select().from(dayQuestions).where(eq(dayQuestions.id, id));
+    if (!question) return undefined;
+
+    const [updated] = await db
+      .update(dayQuestions)
+      .set({ helpful: (question.helpful || 0) + 1 })
+      .where(eq(dayQuestions.id, id))
+      .returning();
+    return updated;
+  }
+
+  async hideQuestion(id: number): Promise<DayQuestion | undefined> {
+    const [updated] = await db
+      .update(dayQuestions)
+      .set({ status: "hidden" })
+      .where(eq(dayQuestions.id, id))
       .returning();
     return updated;
   }

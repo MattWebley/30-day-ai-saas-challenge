@@ -347,3 +347,38 @@ export const showcaseRelations = relations(showcase, ({ one }) => ({
 
 export type Showcase = typeof showcase.$inferSelect;
 export type InsertShowcase = typeof showcase.$inferInsert;
+
+// Q&A Questions - user submitted questions for each day
+export const dayQuestions = pgTable("day_questions", {
+  id: serial("id").primaryKey(),
+  day: integer("day").notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  question: text("question").notNull(),
+  answer: text("answer"), // Admin's answer (null if unanswered)
+  aiSuggestedAnswer: text("ai_suggested_answer"), // AI-generated suggestion for admin review
+  status: varchar("status").default("pending"), // 'pending' | 'answered' | 'hidden'
+  answerToken: varchar("answer_token").unique(), // Unique token for email answer link
+  helpful: integer("helpful").default(0), // Count of users who found this helpful
+  createdAt: timestamp("created_at").defaultNow(),
+  answeredAt: timestamp("answered_at"),
+}, (table) => [
+  index("day_questions_day_idx").on(table.day),
+  index("day_questions_status_idx").on(table.status),
+  index("day_questions_token_idx").on(table.answerToken),
+]);
+
+export const dayQuestionsRelations = relations(dayQuestions, ({ one }) => ({
+  user: one(users, {
+    fields: [dayQuestions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const insertDayQuestionSchema = createInsertSchema(dayQuestions).omit({
+  id: true,
+  createdAt: true,
+  answeredAt: true,
+});
+
+export type DayQuestion = typeof dayQuestions.$inferSelect;
+export type InsertDayQuestion = z.infer<typeof insertDayQuestionSchema>;

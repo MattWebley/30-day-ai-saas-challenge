@@ -15,6 +15,7 @@ import BuildLog from "@/pages/BuildLog";
 import ClaudeCodeGuide from "@/pages/ClaudeCodeGuide";
 import Settings from "@/pages/Settings";
 import Admin from "@/pages/Admin";
+import AdminAnswer from "@/pages/AdminAnswer";
 import Showcase from "@/pages/Showcase";
 import DesignPreview from "@/pages/DesignPreview";
 
@@ -48,6 +49,7 @@ function Router() {
       <Switch>
         {/* Public routes */}
         <Route path="/showcase" component={Showcase} />
+        <Route path="/admin/answer/:token" component={AdminAnswer} />
         {!isAuthenticated ? (
           <Route path="/" component={Landing} />
         ) : (

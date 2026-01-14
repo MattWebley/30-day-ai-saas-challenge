@@ -6,6 +6,7 @@ import { insertUserProgressSchema, insertDayContentSchema } from "@shared/schema
 import OpenAI from "openai";
 import dns from "dns";
 import { promisify } from "util";
+import crypto from "crypto";
 
 const dnsResolve = promisify(dns.resolve);
 
@@ -1595,6 +1596,185 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     } catch (error: any) {
       console.error("Error toggling featured:", error);
       res.status(500).json({ message: "Failed to toggle featured" });
+    }
+  });
+
+  // ============================================
+  // Q&A ROUTES
+  // ============================================
+
+  // Submit a question (sends email notification)
+  app.post("/api/questions", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { day, question } = req.body;
+
+      if (!day || !question) {
+        return res.status(400).json({ message: "Day and question are required" });
+      }
+
+      // Generate unique answer token
+      const answerToken = crypto.randomUUID();
+
+      // Create the question
+      const created = await storage.createQuestion({
+        day,
+        userId,
+        question,
+        answerToken,
+        status: "pending"
+      });
+
+      // Get user info for email
+      const user = await storage.getUser(userId);
+      const dayContent = await storage.getDayContent(day);
+
+      // Generate AI suggested answer
+      try {
+        const aiResponse = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: `You are Matt Webley's assistant for the 21 Day AI SaaS Challenge. Generate a helpful, concise answer to this student question about Day ${day}: "${dayContent?.title || 'Unknown'}". Keep answers practical and actionable. Use Matt's punchy, direct style with short sentences and ALL CAPS for emphasis occasionally.`
+            },
+            {
+              role: "user",
+              content: question
+            }
+          ],
+          max_tokens: 500
+        });
+
+        const aiAnswer = aiResponse.choices[0]?.message?.content || "";
+        if (aiAnswer) {
+          await storage.setAiSuggestedAnswer(created.id, aiAnswer);
+        }
+      } catch (aiError) {
+        console.error("Failed to generate AI answer:", aiError);
+        // Continue without AI answer
+      }
+
+      // Build answer URL
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+        : process.env.REPLIT_DEPLOYMENT_URL || "http://localhost:5000";
+      const answerUrl = `${baseUrl}/admin/answer/${answerToken}`;
+
+      // Log the email that would be sent (in production, integrate with Resend or similar)
+      console.log("=== NEW QUESTION NOTIFICATION ===");
+      console.log(`To: info@rapidwebsupport.com`);
+      console.log(`Subject: New Question on Day ${day}: ${dayContent?.title || 'Unknown'}`);
+      console.log(`From: ${user?.firstName || 'Unknown'} ${user?.lastName || ''} (${user?.email || 'No email'})`);
+      console.log(`Question: ${question}`);
+      console.log(`Answer Link: ${answerUrl}`);
+      console.log("=================================");
+
+      res.json({
+        success: true,
+        message: "Question submitted! Matt will be notified and may answer it soon.",
+        questionId: created.id
+      });
+    } catch (error: any) {
+      console.error("Error creating question:", error);
+      res.status(500).json({ message: "Failed to submit question" });
+    }
+  });
+
+  // Get answered questions for a day (public)
+  app.get("/api/questions/day/:day", async (req, res) => {
+    try {
+      const day = parseInt(req.params.day);
+      const questions = await storage.getAnsweredQuestionsByDay(day);
+      res.json(questions);
+    } catch (error: any) {
+      console.error("Error fetching questions:", error);
+      res.status(500).json({ message: "Failed to fetch questions" });
+    }
+  });
+
+  // Get pending questions (admin only)
+  app.get("/api/admin/questions/pending", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const questions = await storage.getPendingQuestions();
+      res.json(questions);
+    } catch (error: any) {
+      console.error("Error fetching pending questions:", error);
+      res.status(500).json({ message: "Failed to fetch pending questions" });
+    }
+  });
+
+  // Get question by answer token (for email link)
+  app.get("/api/questions/token/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+      const question = await storage.getQuestionByToken(token);
+      if (!question) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+      res.json(question);
+    } catch (error: any) {
+      console.error("Error fetching question by token:", error);
+      res.status(500).json({ message: "Failed to fetch question" });
+    }
+  });
+
+  // Answer a question (via token - no auth needed for email link)
+  app.post("/api/questions/token/:token/answer", async (req, res) => {
+    try {
+      const { token } = req.params;
+      const { answer } = req.body;
+
+      if (!answer) {
+        return res.status(400).json({ message: "Answer is required" });
+      }
+
+      const question = await storage.getQuestionByToken(token);
+      if (!question) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      const updated = await storage.answerQuestion(question.id, answer);
+      res.json({ success: true, question: updated });
+    } catch (error: any) {
+      console.error("Error answering question:", error);
+      res.status(500).json({ message: "Failed to answer question" });
+    }
+  });
+
+  // Mark question as helpful
+  app.post("/api/questions/:id/helpful", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updated = await storage.markQuestionHelpful(id);
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error marking helpful:", error);
+      res.status(500).json({ message: "Failed to mark helpful" });
+    }
+  });
+
+  // Hide a question (admin only)
+  app.post("/api/admin/questions/:id/hide", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const updated = await storage.hideQuestion(id);
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error hiding question:", error);
+      res.status(500).json({ message: "Failed to hide question" });
     }
   });
 
