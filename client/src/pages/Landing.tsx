@@ -1043,7 +1043,7 @@ export default function Landing() {
           </p>
 
           <p>
-            The 21 Day AI SaaS Challenge takes you from "I have an idea" to "I have a WORKING product" in 21 days. No coding required. AI does the heavy lifting. You just show up daily and follow the system.
+            The 21 Day AI SaaS Challenge takes you from "I want to build something" to "I have a WORKING product" in 21 days. No idea yet? Day 1 generates 28 personalized ideas for you. No coding required. AI does the heavy lifting. You just show up daily and follow the system.
           </p>
 
           <p>
