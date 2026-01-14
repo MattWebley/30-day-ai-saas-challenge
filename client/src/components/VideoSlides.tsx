@@ -587,29 +587,30 @@ const slideContent: Record<number, Slide[]> = {
   ],
   20: [
     {
-      title: "Day 20: The Launch Plan",
+      title: "Day 20: Going Live",
       points: [
-        "50+ proven customer acquisition strategies",
-        "The SECRET: You only need 1-2-3 to WORK",
-        "Every successful SaaS found their channel and went ALL IN",
+        "Everything you need BEFORE accepting real money",
+        "Not sexy, but ESSENTIAL for trust and legal protection",
+        "Each item takes minutes, not hours",
       ],
     },
     {
-      title: "Pick 1-3 Strategies (Not All!)",
+      title: "The Pre-Launch Checklist",
       points: [
-        "Launch platforms, social media, content, outreach, paid ads...",
-        "Each rated: effort, time, cost, impact, automation",
-        "Filter to find what fits YOUR situation",
-        "Most businesses are built on just ONE working channel",
+        "Custom domain connected (not .replit.app)",
+        "HTTPS working (the padlock icon)",
+        "Favicon in place (tiny icon in browser tabs)",
+        "Legal pages: Privacy policy & Terms of service",
+        "Stripe connected and tested",
       ],
     },
     {
-      title: "See Your Potential",
+      title: "Final Walkthrough",
       points: [
-        "Pick your price point ($9-$199/mo)",
-        "Toggle low/mid/high success scenarios",
-        "See 12-month cumulative customer growth",
-        "The math shows what's POSSIBLE when a channel works",
+        "Test the signup flow yourself",
+        "Make a test purchase (Stripe test mode)",
+        "Check mobile looks good",
+        "Tomorrow is launch day - be READY",
       ],
     },
   ],
@@ -623,12 +624,12 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
     {
-      title: "The Beautiful Math",
+      title: "The Math + Your Growth Plan",
       points: [
-        "$1K/mo = covers a car payment",
-        "$5K/mo = replace a salary",
-        "$10K/mo = six figures annually",
-        "You need HUNDREDS of customers, not millions",
+        "Calculate: income goal, price point, customers needed",
+        "Pick 1-3 customer acquisition strategies (50+ options)",
+        "You only need ONE channel to WORK",
+        "The secret: go ALL IN on what fits you",
       ],
     },
     {

@@ -138,17 +138,17 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Understand why AI sales pages don't convert well"
   ],
   20: [
-    "Browse 50+ customer acquisition strategies",
-    "Filter by cost, time, and effort",
-    "Pick 1-3 strategies (you only need 1-2 to work!)",
-    "Set your price point",
-    "See your 12-month revenue projection"
+    "Go through the pre-launch checklist",
+    "Check off essential items (domain, SSL, favicon)",
+    "Verify legal pages are in place (privacy, terms)",
+    "Confirm Stripe is connected and working",
+    "Test the full signup and payment flow"
   ],
   21: [
     "Calculate your income potential",
     "Set your monthly goal and price point",
-    "Understand the gap between app and business",
-    "Choose your path forward",
+    "Pick 1-3 customer acquisition strategies",
+    "Understand what it takes to turn an app into a business",
     "Write your commitment statement"
   ],
 };

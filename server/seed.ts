@@ -1121,61 +1121,54 @@ Let's go.`,
     // ============================================
     {
       day: 20,
-      title: "The Launch Plan",
-      description: "A product nobody knows about makes $0. Let's fix that with a real launch strategy.",
+      title: "Going Live",
+      description: "Everything you need to check BEFORE accepting your first payment.",
       phase: "Launch",
       videoUrl: null,
-      aiTaskType: "planning",
-      aiTaskTitle: "Launch Strategy",
-      aiTaskDescription: "Build your launch timeline, pick your platform, and commit to weekly actions.",
+      aiTaskType: "checklist",
+      aiTaskTitle: "Pre-Launch Checklist",
+      aiTaskDescription: "Make sure everything is in place before you start taking real money.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "Where will you focus your launch?",
-      microDecisionOptions: JSON.stringify(["Product Hunt", "Twitter/X", "Reddit", "LinkedIn", "Niche communities"]),
-      reflectionQuestion: "What's the one action that would move the needle most in week one?",
-      tip: "Most launches fail because people 'put it out there' and hope. That's not a strategy. That's a wish. You need a plan.",
-      lesson: `A product NOBODY knows about makes $0. ZERO. NOTHING.
+      microDecisionQuestion: "What's the biggest gap you still need to fill?",
+      microDecisionOptions: JSON.stringify(["Legal pages", "Payment setup", "Domain/SSL", "Analytics", "Everything's ready"]),
+      reflectionQuestion: "Is there anything that would make you nervous about a real customer signing up RIGHT NOW?",
+      tip: "You can launch without being perfect. But you CAN'T launch without these basics. Missing them makes you look unprofessional - or worse, gets you in legal trouble.",
+      lesson: `You're ALMOST there. But there's one thing standing between you and your first REAL customer.
 
-Most people "launch" by putting it out there and HOPING someone notices. That's not a strategy. That's a WISH.
+THE BASICS.
 
-HERE'S THE TRUTH:
+I know, I know. Not sexy. But here's the truth:
 
-You DON'T need millions of visitors. You need the RIGHT people to find you. And you need a way to KEEP finding them.
+Nothing kills trust faster than a broken checkout. Or a missing privacy policy. Or a site that looks sketchy because it's still on a .replit.app domain.
 
-THE OVERWHELM TRAP:
+HERE'S WHAT HAS TO HAPPEN:
 
-There are 50+ ways to get customers. Product Hunt. TikTok. Cold email. SEO. Ads. Communities. YouTube. Newsletters. The list goes ON.
+You need your custom domain connected. (You bought it on Day 4, remember?)
 
-If you try to do ALL of them? You'll do NONE of them well.
+You need HTTPS working. That little padlock. Non-negotiable in 2024.
 
-THE SECRET:
+You need a favicon. That tiny icon in browser tabs. Without it? Amateur hour.
 
-You only need 1-3 channels to WORK. That's it.
+You need legal pages. Privacy policy. Terms of service. Not because they're fun to write - because they PROTECT you.
 
-Find ONE that fits your skills. Master it. THEN maybe add another.
+You need Stripe connected. Can't get paid without it.
 
-PICK BASED ON YOU:
+THE GOOD NEWS:
 
-Love writing? → Newsletter, SEO, Twitter threads
-Love video? → YouTube, TikTok, Loom demos
-Love talking? → Podcasts, webinars, communities
-Hate all of it? → Paid ads (if you have budget)
+None of this is hard. Tedious? A little. But each item takes minutes, not hours.
 
-THE REAL LAUNCH FORMULA:
+Think of it like the final walkthrough before you hand over the keys. You wouldn't sell a house without checking the basics. Don't launch an app without them either.
 
-1. PICK ONE PLATFORM - Scattered effort = scattered results
-2. SET A DATE - Not "soon." An ACTUAL day on the calendar.
-3. SHOW UP CONSISTENTLY - Post, engage, repeat. For WEEKS.
+THIS IS YOUR CHECKLIST DAY:
 
-Most people quit after one post gets no traction. That's not a failed launch. That's not even a REAL attempt.
+Go through each item. Check the box. Move on. By tomorrow, you'll be ACTUALLY ready to accept money.
 
-BOTTOM LINE:
-
-Don't try to be everywhere. Be SOMEWHERE consistently. That's how apps get customers.`,
-      outcome: "Launch platform chosen, date set, and 4-week action plan created",
-      completionMessage: "You have a launch plan. Platform selected, date set, weekly actions committed. Tomorrow: the big picture - turning this app into a business.",
+Tomorrow is the big day. Let's make sure you're ready for it.`,
+      outcome: "All pre-launch essentials checked and verified",
+      completionMessage: "Pre-launch checklist complete. You're ready for real customers. Tomorrow: the money math and your growth plan.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 15,
     },
     {
       day: 21,
