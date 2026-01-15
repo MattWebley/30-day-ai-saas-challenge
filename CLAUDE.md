@@ -107,11 +107,12 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-14
+- **Last Session**: 2026-01-15
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
+- [ ] **Set up Stripe** - user briefed, needs to add API keys to Replit Secrets
 - [ ] Test AI Mentor chat bot (check browser console)
 - [ ] Test Showcase feature end-to-end
 - [ ] Test Day 0 → Day 1 → Day 2 flow
@@ -120,6 +121,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - [ ] Add coaching call booking links (Days 1-7, 19-21)
 - [ ] Enable "Book a Call" button in Day 2 (needs Calendly link)
 - [ ] Before launch: Set testMode to false in TestModeContext.tsx
+- [ ] Add VSL video (placeholder added, needs actual video/thumbnail)
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
@@ -171,3 +173,24 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - Day 20: Replaced 15-item checklist with simple "pick 1-3 channels" (~35 strategies)
 - Day 21: Streamlined to income calculator → vision → CTA → complete
 - Fixed Day 20 being a blocker before finish line
+
+### 2026-01-15 - Landing Page Overhaul & VSL Setup
+- **Tasks Completed:**
+  - Condensed CLAUDE.md from 1085 to 174 lines (84% reduction)
+  - Added VSL placeholder section with play button, duration badge, thumbnail support
+  - Moved VSL directly under headline (better conversion placement)
+  - Moved dashboard screenshot to "The Solution" section with caption
+  - Added "built this app with same system" proof point (dark callout box)
+  - Added pause button / flexible timing messaging
+  - Wrote 3 different VSL script options for user
+- **Fixes Applied:**
+  - Fixed "10+ years" → "8+ years" inconsistency in Landing.tsx
+  - Removed "battle pass" mentions from Landing page (2 spots)
+  - Updated AI tools cost from "$20" to "<$100 for whole challenge"
+  - Increased testimonial photos size (James, Jack, Tim: w-14 → w-20)
+  - Removed em dash from proof point copy
+- **Notes for Next Session:**
+  - Stripe setup ready to go - user needs to add API keys to Replit Secrets
+  - Keys needed: STRIPE_SECRET_KEY (sk_test_...) and STRIPE_PUBLISHABLE_KEY (pk_test_...)
+  - Pricing: £295 / $399 USD one-time payment, 12 months access
+  - VSL placeholder live - needs actual video/thumbnail when recorded
