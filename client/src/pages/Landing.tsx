@@ -606,7 +606,7 @@ export default function Landing() {
               <div className="flex items-start gap-4">
                 <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
                 <div>
-                  <span className="font-semibold text-slate-900">Progress Tracking with Badges, Streaks, and Battle Pass</span>
+                  <span className="font-semibold text-slate-900">Progress Tracking with Badges and Streaks</span>
                   <p className="text-slate-600 mt-1">Visual motivation that keeps you GOING. See your progress. Earn badges. Build your streak. Your brain will WANT to continue.</p>
                 </div>
               </div>
@@ -757,7 +757,7 @@ export default function Landing() {
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span>Progress tracking with badges, streaks, and battle pass <span className="text-slate-400">(Value: Priceless motivation)</span></span>
+                  <span>Progress tracking with badges and streaks <span className="text-slate-400">(Value: Priceless motivation)</span></span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
