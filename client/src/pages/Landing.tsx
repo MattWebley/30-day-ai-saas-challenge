@@ -437,8 +437,8 @@ export default function Landing() {
                 <div className="p-6 flex items-center gap-4">
                   <img
                     src="/james-f.png"
-                    alt="James F." 
-                    className="w-14 h-14 rounded-full object-cover"
+                    alt="James F."
+                    className="w-20 h-20 rounded-full object-cover"
                   />
                   <div>
                     <p className="font-bold text-slate-900 text-lg">James F.</p>
@@ -457,8 +457,8 @@ export default function Landing() {
                 <div className="p-6 flex items-center gap-4">
                   <img
                     src="/jack-g.png"
-                    alt="Jack G." 
-                    className="w-14 h-14 rounded-full object-cover"
+                    alt="Jack G."
+                    className="w-20 h-20 rounded-full object-cover"
                   />
                   <div>
                     <p className="font-bold text-slate-900 text-lg">Jack G.</p>
@@ -477,8 +477,8 @@ export default function Landing() {
                 <div className="p-6 flex items-center gap-4">
                   <img
                     src="/tim-f.png"
-                    alt="Tim F." 
-                    className="w-14 h-14 rounded-full object-cover"
+                    alt="Tim F."
+                    className="w-20 h-20 rounded-full object-cover"
                   />
                   <div>
                     <p className="font-bold text-slate-900 text-lg">Tim F.</p>
