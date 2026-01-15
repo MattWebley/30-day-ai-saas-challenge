@@ -951,7 +951,7 @@ export default function Landing() {
 
               <div className="space-y-2">
                 <p className="font-semibold text-slate-900">What AI tools do I need?</p>
-                <p className="text-slate-600">You'll use Replit (has a free tier), Claude, and ChatGPT. For AI features, you'll need a small amount of OpenAI credits - typically under $20 for the WHOLE challenge.</p>
+                <p className="text-slate-600">You'll use Replit, Claude Code, and ChatGPT. The entire challenge should cost less than $100 in AI tools.</p>
               </div>
 
               <div className="space-y-2">
