@@ -46,67 +46,55 @@ export default function Landing() {
               ...Without Writing a Single Line of Code, Without Any Technical Experience, and Without Spending Months "Learning to Code"
             </h2>
 
-            <div className="mt-10">
-              <img
-                src="/dashboard-preview.png"
-                alt="Challenge dashboard showing daily progress tracker"
-                className="w-full rounded-lg shadow-2xl border border-slate-200"
-              />
+            {/* VSL - VIDEO SALES LETTER */}
+            <div className="mt-10 space-y-4">
+              <p className="text-slate-600 font-medium">Watch the 3-minute overview</p>
+
+              {/* Video Placeholder - Replace with actual video embed */}
+              <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden cursor-pointer group">
+                {/* Placeholder thumbnail - replace src with actual thumbnail */}
+                <img
+                  src="/vsl-thumbnail.png"
+                  alt="Watch video overview"
+                  className="w-full h-full object-cover opacity-80 group-hover:opacity-70 transition-opacity"
+                  onError={(e) => {
+                    // Hide image if thumbnail doesn't exist yet
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+
+                {/* Play button overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                    <Play className="w-8 h-8 text-slate-900 ml-1" fill="currentColor" />
+                  </div>
+                </div>
+
+                {/* Duration badge */}
+                <div className="absolute bottom-4 right-4 bg-black/70 text-white text-sm px-2 py-1 rounded">
+                  3:24
+                </div>
+
+                {/* TODO: Replace this placeholder with actual video embed
+                     Example for YouTube:
+                     <iframe
+                       src="https://www.youtube.com/embed/VIDEO_ID"
+                       className="w-full h-full"
+                       allowFullScreen
+                     />
+
+                     Example for Vimeo:
+                     <iframe
+                       src="https://player.vimeo.com/video/VIDEO_ID"
+                       className="w-full h-full"
+                       allowFullScreen
+                     />
+                */}
+              </div>
+
+              <p className="text-sm text-slate-500">Or keep scrolling to read everything below</p>
             </div>
           </motion.div>
-        </section>
-
-        {/* ========================================== */}
-        {/* VSL - VIDEO SALES LETTER */}
-        {/* ========================================== */}
-        <section className="py-8">
-          <div className="text-center space-y-4">
-            <p className="text-slate-600 font-medium">Watch the 3-minute overview</p>
-
-            {/* Video Placeholder - Replace with actual video embed */}
-            <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden cursor-pointer group">
-              {/* Placeholder thumbnail - replace src with actual thumbnail */}
-              <img
-                src="/vsl-thumbnail.png"
-                alt="Watch video overview"
-                className="w-full h-full object-cover opacity-80 group-hover:opacity-70 transition-opacity"
-                onError={(e) => {
-                  // Hide image if thumbnail doesn't exist yet
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
-
-              {/* Play button overlay */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                  <Play className="w-8 h-8 text-slate-900 ml-1" fill="currentColor" />
-                </div>
-              </div>
-
-              {/* Duration badge */}
-              <div className="absolute bottom-4 right-4 bg-black/70 text-white text-sm px-2 py-1 rounded">
-                3:24
-              </div>
-
-              {/* TODO: Replace this placeholder with actual video embed
-                   Example for YouTube:
-                   <iframe
-                     src="https://www.youtube.com/embed/VIDEO_ID"
-                     className="w-full h-full"
-                     allowFullScreen
-                   />
-
-                   Example for Vimeo:
-                   <iframe
-                     src="https://player.vimeo.com/video/VIDEO_ID"
-                     className="w-full h-full"
-                     allowFullScreen
-                   />
-              */}
-            </div>
-
-            <p className="text-sm text-slate-500">Or keep scrolling to read everything below</p>
-          </div>
         </section>
 
         {/* ========================================== */}
@@ -318,6 +306,16 @@ export default function Landing() {
               <p className="text-lg mt-4 font-semibold text-slate-900">
                 It's a 21-day guided challenge where you complete ONE focused task every single day... and at the end, you have a REAL, WORKING software product.
               </p>
+            </div>
+
+            {/* Dashboard Preview */}
+            <div className="my-8">
+              <img
+                src="/dashboard-preview.png"
+                alt="Challenge dashboard showing daily progress tracker"
+                className="w-full rounded-lg shadow-2xl border border-slate-200"
+              />
+              <p className="text-center text-sm text-slate-500 mt-3">The challenge dashboard - your daily guide to building</p>
             </div>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
