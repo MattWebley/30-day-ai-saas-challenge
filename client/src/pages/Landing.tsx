@@ -352,7 +352,7 @@ export default function Landing() {
 
             <div className="bg-slate-900 text-white p-6 rounded-xl my-8">
               <p className="text-lg">
-                <strong>By the way</strong> — this challenge app you're looking at right now? I built it using the exact same system I'm teaching you. The prompts, the process, all of it. You're looking at the proof.
+                <strong>By the way:</strong> this challenge app you're looking at right now? I built it using the exact same system I'm teaching you. The prompts, the process, all of it. You're looking at the proof.
               </p>
             </div>
           </div>
