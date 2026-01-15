@@ -379,7 +379,7 @@ export default function Landing() {
         <section className="py-12 border-t border-slate-100">
           <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 text-center">
-              I've Spent 10+ Years Building Software So You Don't Have To
+              I've Spent 8+ Years Building Software So You Don't Have To
             </h2>
 
             <div className="flex flex-col md:flex-row gap-8 items-start">
