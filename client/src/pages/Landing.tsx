@@ -330,6 +330,12 @@ export default function Landing() {
               Some days take 5 minutes. Some days take longer. But every day is designed to be COMPLETABLE, no matter how busy you are.
             </p>
 
+            <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 my-6">
+              <p className="text-slate-700">
+                <strong className="text-slate-900">Life happens?</strong> No problem. There's a PAUSE button built right into the challenge. Take a week off. Take a month. Come back when you're ready. The 21 days is a framework, not a prison. Some people blast through it. Some people take 3 months. Both are fine. Your product, your pace.
+              </p>
+            </div>
+
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
               Each Day Builds on the Last. By Day 21, You Have a Product.
             </h3>
