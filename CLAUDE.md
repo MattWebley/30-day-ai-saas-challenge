@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-16
+- **Last Session**: 2026-01-16 (video integration)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -210,3 +210,24 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - **Notes for Next Session:**
   - All lessons reviewed and aligned with challenge structure
   - Stripe setup still pending (user needs to add API keys)
+
+### 2026-01-16 (Session 2) - Video Lesson Integration
+- **Tasks Completed:**
+  - Added Loom video embed support with modal player for all days (0-21)
+  - Day 0 has real Loom video: `420c8729c9d544c3a265ea8273fe797e`
+  - Days 1-21 have placeholder URLs (ready for real videos)
+  - Video thumbnails integrated into "Today's Lesson" card (uniform across all days)
+  - Loading bar animation while video loads
+  - Hover effect on play button
+  - Created `useStepWithScroll` hook for better multi-step UX (auto-scrolls on step change)
+  - Applied scroll hook to all 22 day components
+- **Fixes Applied:**
+  - Removed diagonal slide animation from dialogs (cleaner fade/zoom only)
+  - Header "Watch Lesson" button commented out (video now in lesson area)
+- **How to Add Videos:**
+  - Edit `lessonVideos` map in Dashboard.tsx (line ~78)
+  - Format: `1: "https://www.loom.com/embed/VIDEO_ID"`
+- **Notes for Next Session:**
+  - Record Loom videos for Days 1-21 and update URLs
+  - Consider alternative video hosting (Bunny Stream, Cloudflare Stream) for production
+  - Stripe setup still pending
