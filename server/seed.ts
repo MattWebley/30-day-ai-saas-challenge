@@ -372,7 +372,7 @@ They're good at different things (and that changes, often). You can play them of
       day: 7,
       title: "Summary + PRD Into Replit",
       description: "Finalize your plan, generate a professional Product Requirements Document with AI, and paste it into Replit to start building.",
-      phase: "Idea & Planning",
+      phase: "Prepare",
       videoUrl: null,
       aiTaskType: "template",
       aiTaskTitle: "PRD Generation",
@@ -622,7 +622,7 @@ That's it. You now have a brand. It doesn't need to be fancy. It needs to be CON
       tip: "The OpenAI API costs about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.",
       lesson: `Today your app gets a BRAIN.
 
-This is what makes AI SaaS different from regular SaaS. Your app doesn't just store data or display things - it THINKS. And here's the thing: Users EXPECT this now. It's 2025. An app without AI feels like a website from 2010.
+This is what makes AI SaaS different from regular SaaS. Your app doesn't just store data or display things - it THINKS. And here's the thing: Users EXPECT this now. An app without AI feels like a website from 2010.
 
 WHY THIS MATTERS:
 
@@ -649,7 +649,11 @@ Pick ONE thing. Get it working PERFECTLY. You can add more later.
 
 THE COST REALITY:
 
-OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD. This is the feature that makes your app worth paying for. Make it good.`,
+OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD. This is the feature that makes your app worth paying for. Make it good.
+
+OTHER OPTIONS:
+
+There are other AI APIs out there - Claude's API, Google's Gemini, and more. They're all solid. But OpenAI is a great starting point: it's general purpose, well-documented, and most tutorials use it. Once you're comfortable, you can explore alternatives. For now, just pick one and BUILD.`,
       outcome: "AI API integrated, first AI-powered feature working in your app",
       completionMessage: "Your app can THINK now. That's the core of AI SaaS - intelligence built in. Tomorrow: connecting other APIs you might need.",
       xpReward: 100,

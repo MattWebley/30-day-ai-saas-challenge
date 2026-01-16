@@ -327,23 +327,46 @@ export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }:
           </Card>
 
           <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg mb-4 text-slate-900">Put That In Perspective</h4>
-            <div className="space-y-3 text-slate-700">
-              <div className="flex items-start gap-3">
-                <Zap className="w-5 h-5 text-amber-500 mt-0.5" />
-                <p>
-                  <strong>{customersNeeded} people</strong> is a small town Facebook group.
-                  A niche subreddit. A tiny fraction of LinkedIn.
-                </p>
-              </div>
-              <div className="flex items-start gap-3">
-                <Zap className="w-5 h-5 text-amber-500 mt-0.5" />
-                <p>
-                  You don't need to go viral. You don't need millions of users.
-                  You need <strong>{customersNeeded} people</strong> who have the problem you solve.
-                </p>
-              </div>
-            </div>
+            <h4 className="font-bold text-lg mb-3 text-slate-900">So Many Ways To Get There</h4>
+            <p className="text-slate-700 leading-relaxed mb-4">
+              {customersNeeded <= 12 ? (
+                <>That's less than <strong>one new customer per week</strong>. You could find them from...</>
+              ) : customersNeeded <= 52 ? (
+                <>That's about <strong>{Math.ceil(customersNeeded / 52)} per week</strong>. You could find them from...</>
+              ) : (
+                <>That's about <strong>{Math.ceil(customersNeeded / 52)} per week</strong>. You could find them from...</>
+              )}
+            </p>
+            <ul className="text-slate-600 space-y-1 columns-2 text-sm">
+              <li>• AI blog posts on autopilot</li>
+              <li>• Cold email sequences</li>
+              <li>• AI-assisted LinkedIn posts</li>
+              <li>• Scheduled tweets</li>
+              <li>• SEO content that ranks</li>
+              <li>• AI chatbot qualifying leads</li>
+              <li>• Automated follow-up emails</li>
+              <li>• Simple Facebook ads</li>
+              <li>• Short-form video content</li>
+              <li>• Webinar funnels</li>
+              <li>• Lead magnets that convert</li>
+              <li>• Email campaigns</li>
+              <li>• Instagram DMs</li>
+              <li>• Helpful Reddit comments</li>
+              <li>• An affiliate program</li>
+              <li>• Referral program</li>
+              <li>• Guest posts</li>
+              <li>• Podcast appearances</li>
+              <li>• A ProductHunt launch</li>
+              <li>• YouTube shorts</li>
+              <li>• Zapier automations</li>
+              <li>• Happy customers spreading the word</li>
+            </ul>
+            <p className="text-slate-600 text-sm mt-3">
+              ...and that's just scratching the surface.
+            </p>
+            <p className="text-slate-700 font-medium mt-3">
+              You don't need all of these. You just need a few that work for you.
+            </p>
           </Card>
 
           <Button

@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-15
+- **Last Session**: 2026-01-16
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -194,3 +194,19 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Keys needed: STRIPE_SECRET_KEY (sk_test_...) and STRIPE_PUBLISHABLE_KEY (pk_test_...)
   - Pricing: £295 / $399 USD one-time payment, 12 months access
   - VSL placeholder live - needs actual video/thumbnail when recorded
+
+### 2026-01-16 - Day 21 & Seed Fixes
+- **Tasks Completed:**
+  - Rewrote Day 21 "So Many Ways To Get There" section (income calculator)
+  - Removed old "Put That In Perspective" copy (small town Facebook group analogy)
+  - Added 22-item bulleted list of customer acquisition strategies (two-column layout)
+  - Balanced automation messaging (~75% achievable, ~25% AI-powered)
+  - Added "...and that's just scratching the surface" abundance messaging
+  - Reviewed all 22 days of lessons for structure/content alignment
+- **Fixes Applied:**
+  - Day 7: Changed phase from "Idea & Planning" → "Prepare" (was misaligned)
+  - Day 12: Removed "It's 2025" reference (now evergreen)
+  - Day 12: Added "OTHER OPTIONS" section mentioning Claude API, Gemini as alternatives to OpenAI
+- **Notes for Next Session:**
+  - All lessons reviewed and aligned with challenge structure
+  - Stripe setup still pending (user needs to add API keys)
