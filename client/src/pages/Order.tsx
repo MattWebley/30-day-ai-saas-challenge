@@ -173,7 +173,7 @@ export default function Order() {
 
         {/* Footer Note */}
         <p className="text-center text-slate-500 text-sm mt-6">
-          Questions? Email matt@mattwebley.co.uk
+          Questions? Email matt@mattwebley.com
         </p>
       </main>
     </div>
