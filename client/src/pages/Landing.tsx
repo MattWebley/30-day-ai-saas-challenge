@@ -1087,13 +1087,12 @@ export default function Landing() {
 
           {/* CTA Section */}
           <div className="pt-8 pb-12 text-center space-y-4">
-            <a href="/order">
-              <button
-                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold text-xl py-5 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-              >
-                YES! I'm Ready To Start
-                <ArrowRight className="w-6 h-6 inline ml-2" />
-              </button>
+            <a
+              href="/order"
+              className="block w-full bg-green-500 hover:bg-green-600 text-white font-bold text-xl py-5 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+            >
+              YES! I'm Ready To Start
+              <ArrowRight className="w-6 h-6 inline ml-2" />
             </a>
             <p className="text-slate-500 text-sm">
               One-time payment · Instant access · 12 months
@@ -1127,13 +1126,12 @@ export default function Landing() {
 
           {/* Final CTA */}
           <div className="pt-6 space-y-4">
-            <a href="/order">
-              <button
-                className="w-full bg-green-500 hover:bg-green-600 text-white font-bold text-lg py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-              >
-                Get Instant Access
-                <ArrowRight className="w-5 h-5 inline ml-2" />
-              </button>
+            <a
+              href="/order"
+              className="block w-full bg-green-500 hover:bg-green-600 text-white font-bold text-lg py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+            >
+              Get Instant Access
+              <ArrowRight className="w-5 h-5 inline ml-2" />
             </a>
             <p className="text-center text-slate-500 text-sm">
               One-time payment · Instant access · 12 months
