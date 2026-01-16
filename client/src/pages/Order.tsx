@@ -151,7 +151,7 @@ export default function Order() {
               <div>
                 <p className="font-bold text-slate-900 text-sm">100% Satisfaction Guarantee</p>
                 <p className="text-sm text-slate-600">
-                  Complete all 21 days and don't feel like you got value? Email me. We'll sort it out.
+                  Complete all 21 days and don't feel like you got value? Email me for a full refund.
                 </p>
               </div>
             </div>
