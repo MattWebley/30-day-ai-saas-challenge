@@ -42,7 +42,7 @@ export default function Landing() {
               How Complete Beginners Are Using AI to Build Real, Working Software Products in 21 Days for Less Than $100...
             </h1>
 
-            <h2 className="text-2xl md:text-3xl font-bold text-slate-700">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
               ...Without Writing a Single Line of Code, Without Any Technical Experience, and Without Spending Months "Learning to Code"
             </h2>
 
