@@ -3,13 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Play, 
-  ArrowRight, 
-  CheckCircle2, 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Play,
+  ArrowRight,
+  CheckCircle2,
   Trophy,
   ChevronRight,
-  Lock
+  Lock,
+  X,
+  Loader2
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
@@ -65,6 +73,33 @@ const isSubheadline = (paragraph: string): boolean => {
   return false;
 };
 
+// Loom video URLs by day (embed format)
+// To remove a day's video, just delete or comment out the line
+const lessonVideos: Record<number, string> = {
+  0: "https://www.loom.com/embed/420c8729c9d544c3a265ea8273fe797e",
+  1: "https://www.loom.com/embed/PLACEHOLDER_DAY1", // TODO: Replace with real video
+  2: "https://www.loom.com/embed/PLACEHOLDER_DAY2", // TODO: Replace with real video
+  3: "https://www.loom.com/embed/PLACEHOLDER_DAY3", // TODO: Replace with real video
+  4: "https://www.loom.com/embed/PLACEHOLDER_DAY4", // TODO: Replace with real video
+  5: "https://www.loom.com/embed/PLACEHOLDER_DAY5", // TODO: Replace with real video
+  6: "https://www.loom.com/embed/PLACEHOLDER_DAY6", // TODO: Replace with real video
+  7: "https://www.loom.com/embed/PLACEHOLDER_DAY7", // TODO: Replace with real video
+  8: "https://www.loom.com/embed/PLACEHOLDER_DAY8", // TODO: Replace with real video
+  9: "https://www.loom.com/embed/PLACEHOLDER_DAY9", // TODO: Replace with real video
+  10: "https://www.loom.com/embed/PLACEHOLDER_DAY10", // TODO: Replace with real video
+  11: "https://www.loom.com/embed/PLACEHOLDER_DAY11", // TODO: Replace with real video
+  12: "https://www.loom.com/embed/PLACEHOLDER_DAY12", // TODO: Replace with real video
+  13: "https://www.loom.com/embed/PLACEHOLDER_DAY13", // TODO: Replace with real video
+  14: "https://www.loom.com/embed/PLACEHOLDER_DAY14", // TODO: Replace with real video
+  15: "https://www.loom.com/embed/PLACEHOLDER_DAY15", // TODO: Replace with real video
+  16: "https://www.loom.com/embed/PLACEHOLDER_DAY16", // TODO: Replace with real video
+  17: "https://www.loom.com/embed/PLACEHOLDER_DAY17", // TODO: Replace with real video
+  18: "https://www.loom.com/embed/PLACEHOLDER_DAY18", // TODO: Replace with real video
+  19: "https://www.loom.com/embed/PLACEHOLDER_DAY19", // TODO: Replace with real video
+  20: "https://www.loom.com/embed/PLACEHOLDER_DAY20", // TODO: Replace with real video
+  21: "https://www.loom.com/embed/PLACEHOLDER_DAY21", // TODO: Replace with real video
+};
+
 export default function Dashboard() {
   const [match, params] = useRoute("/dashboard/:day");
   const [location, setLocation] = useLocation();
@@ -72,6 +107,8 @@ export default function Dashboard() {
   const [microDecisionChoice, setMicroDecisionChoice] = useState<string>("");
   const [reflectionAnswer, setReflectionAnswer] = useState<string>("");
   const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(true);
 
   // Determine current day from URL or default to 0 (Start Here)
   const currentDay = params?.day ? parseInt(params.day) : 0;
@@ -220,10 +257,20 @@ export default function Dashboard() {
                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Est. Time</div>
                <div className="font-bold text-slate-900 text-lg">5 Min</div>
              </div>
-             <div className="h-10 w-px bg-slate-200 hidden md:block"></div>
-             <Button variant="outline" className="gap-2 border-2 border-slate-200 hover:border-primary hover:text-primary font-bold">
-               <Play className="w-4 h-4" /> Watch Lesson
-             </Button>
+             {/* COMMENTED OUT - Video button moved to lesson section
+             {lessonVideos[currentDay] && (
+               <>
+                 <div className="h-10 w-px bg-slate-200 hidden md:block"></div>
+                 <Button
+                   variant="outline"
+                   className="gap-2 border-2 border-slate-200 hover:border-primary hover:text-primary font-bold"
+                   onClick={() => setShowVideoModal(true)}
+                 >
+                   <Play className="w-4 h-4" /> Watch Lesson
+                 </Button>
+               </>
+             )}
+             */}
           </div>
         </div>
 
@@ -252,7 +299,32 @@ export default function Dashboard() {
 
             {/* Day 0: Start Here */}
             {currentDay === 0 ? (
-              <Day0StartHere onComplete={handleComplete} />
+              <>
+                {/* Video Lesson Section - Day 0 */}
+                {lessonVideos[0] && (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                      <h2 className="font-bold text-xl text-slate-900">Watch the Introduction</h2>
+                    </div>
+                    <div
+                      className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group"
+                      style={{ paddingBottom: '56.25%' }}
+                      onClick={() => setShowVideoModal(true)}
+                    >
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                          <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                        </div>
+                      </div>
+                      <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
+                        Click to play video
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <Day0StartHere onComplete={handleComplete} />
+              </>
             ) : currentDay === 1 ? (
               <>
                 {/* Step 1: Today's Lesson */}
@@ -265,6 +337,24 @@ export default function Dashboard() {
                     <VideoSlides day={1} />
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    {/* VIDEO SECTION - Day 1 (remove this block to revert) */}
+                    {lessonVideos[1] && (
+                      <div
+                        className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
+                        style={{ paddingBottom: '56.25%' }}
+                        onClick={() => setShowVideoModal(true)}
+                      >
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                            <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                          </div>
+                        </div>
+                        <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
+                          Click to play video
+                        </div>
+                      </div>
+                    )}
+                    {/* END VIDEO SECTION */}
                     {dayData.lesson ? (
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
@@ -305,6 +395,24 @@ export default function Dashboard() {
                     <VideoSlides day={2} />
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                    {/* VIDEO SECTION - Day 2 (remove this block to revert) */}
+                    {lessonVideos[2] && (
+                      <div
+                        className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
+                        style={{ paddingBottom: '56.25%' }}
+                        onClick={() => setShowVideoModal(true)}
+                      >
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                            <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                          </div>
+                        </div>
+                        <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
+                          Click to play video
+                        </div>
+                      </div>
+                    )}
+                    {/* END VIDEO SECTION */}
                     {dayData.lesson ? (
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
@@ -343,6 +451,24 @@ export default function Dashboard() {
                       <VideoSlides day={3} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 3 (remove this block to revert) */}
+                      {lessonVideos[3] && (
+                        <div
+                          className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
+                          style={{ paddingBottom: '56.25%' }}
+                          onClick={() => setShowVideoModal(true)}
+                        >
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
+                            Click to play video
+                          </div>
+                        </div>
+                      )}
+                      {/* END VIDEO SECTION */}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -380,6 +506,24 @@ export default function Dashboard() {
                       <VideoSlides day={4} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 4 (remove this block to revert) */}
+                      {lessonVideos[4] && (
+                        <div
+                          className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
+                          style={{ paddingBottom: '56.25%' }}
+                          onClick={() => setShowVideoModal(true)}
+                        >
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
+                            Click to play video
+                          </div>
+                        </div>
+                      )}
+                      {/* END VIDEO SECTION */}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -416,6 +560,24 @@ export default function Dashboard() {
                       <VideoSlides day={5} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 5 (remove this block to revert) */}
+                      {lessonVideos[5] && (
+                        <div
+                          className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
+                          style={{ paddingBottom: '56.25%' }}
+                          onClick={() => setShowVideoModal(true)}
+                        >
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
+                            Click to play video
+                          </div>
+                        </div>
+                      )}
+                      {/* END VIDEO SECTION */}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -449,6 +611,24 @@ export default function Dashboard() {
                       <VideoSlides day={6} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 6 (remove this block to revert) */}
+                      {lessonVideos[6] && (
+                        <div
+                          className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
+                          style={{ paddingBottom: '56.25%' }}
+                          onClick={() => setShowVideoModal(true)}
+                        >
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
+                            Click to play video
+                          </div>
+                        </div>
+                      )}
+                      {/* END VIDEO SECTION */}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -514,6 +694,17 @@ export default function Dashboard() {
                       <VideoSlides day={7} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 7 */}
+                      {lessonVideos[7] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -570,6 +761,17 @@ export default function Dashboard() {
                       <VideoSlides day={8} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 8 */}
+                      {lessonVideos[8] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -606,6 +808,17 @@ export default function Dashboard() {
                       <VideoSlides day={9} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 9 */}
+                      {lessonVideos[9] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -639,6 +852,17 @@ export default function Dashboard() {
                       <VideoSlides day={10} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 10 */}
+                      {lessonVideos[10] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -672,6 +896,17 @@ export default function Dashboard() {
                       <VideoSlides day={11} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 11 */}
+                      {lessonVideos[11] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -705,6 +940,17 @@ export default function Dashboard() {
                       <VideoSlides day={12} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 12 */}
+                      {lessonVideos[12] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -738,6 +984,17 @@ export default function Dashboard() {
                       <VideoSlides day={13} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 13 */}
+                      {lessonVideos[13] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -771,6 +1028,17 @@ export default function Dashboard() {
                       <VideoSlides day={14} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 14 */}
+                      {lessonVideos[14] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -803,6 +1071,17 @@ export default function Dashboard() {
                       <VideoSlides day={15} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 15 */}
+                      {lessonVideos[15] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -836,6 +1115,17 @@ export default function Dashboard() {
                       <VideoSlides day={16} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 16 */}
+                      {lessonVideos[16] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -869,6 +1159,17 @@ export default function Dashboard() {
                       <VideoSlides day={17} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 17 */}
+                      {lessonVideos[17] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -902,6 +1203,17 @@ export default function Dashboard() {
                       <VideoSlides day={18} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 18 */}
+                      {lessonVideos[18] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -935,6 +1247,17 @@ export default function Dashboard() {
                       <VideoSlides day={19} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 19 */}
+                      {lessonVideos[19] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -973,6 +1296,17 @@ export default function Dashboard() {
                       <VideoSlides day={20} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 20 */}
+                      {lessonVideos[20] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -1006,6 +1340,17 @@ export default function Dashboard() {
                       <VideoSlides day={21} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
+                      {/* VIDEO SECTION - Day 21 */}
+                      {lessonVideos[21] && (
+                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
+                              <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
+                            </div>
+                          </div>
+                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
+                        </div>
+                      )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -1139,6 +1484,57 @@ export default function Dashboard() {
         completionMessage={dayData.completionMessage}
         onContinue={handleContinueFromModal}
       />
+
+      {/* Video Lesson Modal */}
+      <Dialog
+        open={showVideoModal}
+        onOpenChange={(open) => {
+          setShowVideoModal(open);
+          if (open) setVideoLoading(true);
+        }}
+      >
+        <DialogContent className="sm:max-w-4xl p-0 overflow-hidden">
+          <DialogHeader className="p-4 pb-0">
+            <DialogTitle className="text-xl font-bold text-slate-900">
+              Day {currentDay}: {dayData.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="relative w-full bg-slate-900" style={{ paddingBottom: '56.25%' }}>
+            {videoLoading && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-64 space-y-2">
+                  <div className="text-white/80 text-sm font-medium text-center">Loading video...</div>
+                  <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-white rounded-full transition-all duration-300"
+                      style={{
+                        width: '90%',
+                        animation: 'loadingBar 2s ease-out forwards'
+                      }}
+                    />
+                  </div>
+                </div>
+                <style>{`
+                  @keyframes loadingBar {
+                    0% { width: 0%; }
+                    100% { width: 90%; }
+                  }
+                `}</style>
+              </div>
+            )}
+            {lessonVideos[currentDay] && (
+              <iframe
+                src={lessonVideos[currentDay]}
+                className={`absolute top-0 left-0 w-full h-full transition-opacity duration-300 ${videoLoading ? 'opacity-0' : 'opacity-100'}`}
+                frameBorder="0"
+                allowFullScreen
+                allow="autoplay; fullscreen; picture-in-picture"
+                onLoad={() => setVideoLoading(false)}
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }
