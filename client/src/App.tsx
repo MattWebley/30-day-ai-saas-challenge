@@ -9,6 +9,7 @@ import { TestModeProvider } from "@/contexts/TestModeContext";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/Landing";
+import CheckoutSuccess from "@/pages/CheckoutSuccess";
 import Dashboard from "@/pages/Dashboard";
 import Badges from "@/pages/Badges";
 import BuildLog from "@/pages/BuildLog";
@@ -49,6 +50,7 @@ function Router() {
       <Switch>
         {/* Public routes */}
         <Route path="/showcase" component={Showcase} />
+        <Route path="/checkout/success" component={CheckoutSuccess} />
         <Route path="/admin/answer/:token" component={AdminAnswer} />
         {!isAuthenticated ? (
           <Route path="/" component={Landing} />

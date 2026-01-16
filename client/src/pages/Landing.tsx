@@ -1,8 +1,30 @@
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, TrendingUp, Shield, Star, Play } from "lucide-react";
+import { useState } from "react";
 
 export default function Landing() {
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const handleCheckout = async (currency: 'usd' | 'gbp' = 'usd') => {
+    if (isCheckingOut) return;
+    setIsCheckingOut(true);
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currency })
+      });
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      setIsCheckingOut(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
       {/* Sticky Header */}
@@ -20,9 +42,9 @@ export default function Landing() {
             <a href="/api/login">
               <Button variant="ghost" size="sm">Login</Button>
             </a>
-            <a href="/api/login">
-              <Button size="sm">Join Now</Button>
-            </a>
+            <Button size="sm" onClick={() => handleCheckout('usd')} disabled={isCheckingOut}>
+              {isCheckingOut ? 'Loading...' : 'Join Now'}
+            </Button>
           </div>
         </div>
       </header>
@@ -1085,14 +1107,35 @@ export default function Landing() {
             </p>
           </div>
 
-          <div className="pt-8 pb-12">
-            <a href="/api/login">
-              <Button size="lg" className="w-full h-16 text-xl font-bold gap-3">
-                Yes, I'm Ready - Start Day 1 NOW <ChevronRight className="w-6 h-6" />
+          <div className="pt-8 pb-12 space-y-3">
+            <Button 
+              size="lg" 
+              className="w-full h-16 text-xl font-bold gap-3"
+              onClick={() => handleCheckout('usd')}
+              disabled={isCheckingOut}
+            >
+              {isCheckingOut ? 'Loading...' : <>Yes, I'm Ready - Start Day 1 NOW <ChevronRight className="w-6 h-6" /></>}
+            </Button>
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                className="flex-1 h-12"
+                onClick={() => handleCheckout('usd')}
+                disabled={isCheckingOut}
+              >
+                Pay $399 USD
               </Button>
-            </a>
+              <Button 
+                variant="outline" 
+                className="flex-1 h-12"
+                onClick={() => handleCheckout('gbp')}
+                disabled={isCheckingOut}
+              >
+                Pay £295 GBP
+              </Button>
+            </div>
             <p className="text-center text-slate-500 text-sm mt-4">
-              £295 / $399 USD - One payment, 12 months access
+              One payment, 12 months access
             </p>
           </div>
         </section>
@@ -1121,12 +1164,33 @@ export default function Landing() {
             - Matt
           </p>
 
-          <div className="pt-4">
-            <a href="/api/login">
-              <Button size="lg" className="w-full h-14 text-lg font-bold gap-2">
-                Start the Challenge <ArrowRight className="w-5 h-5" />
+          <div className="pt-4 space-y-3">
+            <Button 
+              size="lg" 
+              className="w-full h-14 text-lg font-bold gap-2"
+              onClick={() => handleCheckout('usd')}
+              disabled={isCheckingOut}
+            >
+              {isCheckingOut ? 'Loading...' : <>Start the Challenge <ArrowRight className="w-5 h-5" /></>}
+            </Button>
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => handleCheckout('usd')}
+                disabled={isCheckingOut}
+              >
+                $399 USD
               </Button>
-            </a>
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => handleCheckout('gbp')}
+                disabled={isCheckingOut}
+              >
+                £295 GBP
+              </Button>
+            </div>
           </div>
         </section>
 

@@ -7,6 +7,7 @@ import OpenAI from "openai";
 import dns from "dns";
 import { promisify } from "util";
 import crypto from "crypto";
+import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 
 const dnsResolve = promisify(dns.resolve);
 
@@ -1775,6 +1776,40 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     } catch (error: any) {
       console.error("Error hiding question:", error);
       res.status(500).json({ message: "Failed to hide question" });
+    }
+  });
+
+  // Stripe checkout - create checkout session for the 21 Day Challenge
+  app.post("/api/checkout", async (req, res) => {
+    try {
+      const { currency = 'usd' } = req.body;
+      const stripe = await getUncachableStripeClient();
+
+      // Price IDs from Stripe
+      const priceIds: Record<string, string> = {
+        usd: 'price_1SqGYdLcRVtxg5yV9eeLLOJK',
+        gbp: 'price_1SqGYdLcRVtxg5yVgbtDKL7S'
+      };
+
+      const priceId = priceIds[currency.toLowerCase()] || priceIds.usd;
+      const host = req.get('host');
+      const protocol = req.protocol;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price: priceId,
+          quantity: 1
+        }],
+        mode: 'payment',
+        success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${protocol}://${host}/`
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Error creating checkout session:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
     }
   });
 
