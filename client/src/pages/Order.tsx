@@ -160,7 +160,7 @@ export default function Order() {
                     YES! Add a 1:1 Coaching Call with Matt
                   </p>
                   <p className="text-sm text-slate-600 mt-1">
-                    Get a private 1-hour call to review your product, get personalized advice, and accelerate your progress.
+                    Get a private 1-hour call with me to work through your ideas, nail your pricing, or get help with whatever you're stuck on.
                     <span className="text-slate-400 line-through ml-1">{pricing[selectedCurrency].symbol}{pricing[selectedCurrency].bumpRegular}</span>
                     <span className="font-bold text-amber-600 ml-1">Just {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].bump}</span>
                   </p>
