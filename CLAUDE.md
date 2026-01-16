@@ -107,12 +107,12 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-16 (video integration)
+- **Last Session**: 2026-01-16 (Stripe checkout & order page)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
-- [ ] **Set up Stripe** - user briefed, needs to add API keys to Replit Secrets
+- [x] **Set up Stripe** - DONE: Keys added, checkout working
 - [ ] Test AI Mentor chat bot (check browser console)
 - [ ] Test Showcase feature end-to-end
 - [ ] Test Day 0 → Day 1 → Day 2 flow
@@ -122,6 +122,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - [ ] Enable "Book a Call" button in Day 2 (needs Calendly link)
 - [ ] Before launch: Set testMode to false in TestModeContext.tsx
 - [ ] Add VSL video (placeholder added, needs actual video/thumbnail)
+- [ ] Consider adding a cheaper bump offer ($27-67 range) for higher conversion
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
@@ -227,7 +228,32 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - **How to Add Videos:**
   - Edit `lessonVideos` map in Dashboard.tsx (line ~78)
   - Format: `1: "https://www.loom.com/embed/VIDEO_ID"`
+
+### 2026-01-16 (Session 3) - Stripe Checkout & Order Page
+- **Tasks Completed:**
+  - Created `/order` page with ClickFunnels-style checkout flow
+  - Currency toggle with flag emojis (🇺🇸 USD $399 / 🇬🇧 GBP £295)
+  - Order summary box with dynamic totals
+  - Guarantee section matching sales page promise
+  - Trust signals (SSL, Stripe badges)
+  - Updated all Landing.tsx CTAs to link to /order (removed direct Stripe calls)
+  - Cleaned up unused checkout state/functions from Landing.tsx
+  - Added 1:1 Coaching Call bump offer ($299 USD / £195 GBP)
+  - Bump shows strikethrough regular price ($1,200 / £995)
+  - Backend updated to handle bump in checkout session
+- **Fixes Applied:**
+  - Fixed CTA button hover effects (changed nested `<a><button>` to styled `<a>`)
+  - Darkened subheadline text color (slate-700 → slate-900)
+  - Fixed email address on order page (.co.uk → .com)
+  - Redesigned order page header (removed dark banner, added clean pill badge)
+  - Updated cancel_url to go back to /order instead of /
+- **Stripe Price IDs:**
+  - Main challenge USD: `price_1SqGYdLcRVtxg5yV9eeLLOJK`
+  - Main challenge GBP: `price_1SqGYdLcRVtxg5yVgbtDKL7S`
+  - Bump USD: `price_1SqHNdLcRVtxg5yVD8k1VxJg`
+  - Bump GBP: `price_1SqHNdLcRVtxg5yVVFNyNhGa`
 - **Notes for Next Session:**
-  - Record Loom videos for Days 1-21 and update URLs
-  - Consider alternative video hosting (Bunny Stream, Cloudflare Stream) for production
-  - Stripe setup still pending
+  - Test full checkout flow: Landing → Order → Stripe → Success
+  - Consider adding a cheaper bump offer ($27-67) for higher conversion rates
+  - Current bump at $299 is 75% of main price (best practice is 20-40%)
+  - Cheaper bump ideas: Prompt library, templates, checklists, community access
