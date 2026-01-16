@@ -19,6 +19,7 @@ import Admin from "@/pages/Admin";
 import AdminAnswer from "@/pages/AdminAnswer";
 import Showcase from "@/pages/Showcase";
 import DesignPreview from "@/pages/DesignPreview";
+import Order from "@/pages/Order";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -50,6 +51,7 @@ function Router() {
       <Switch>
         {/* Public routes */}
         <Route path="/showcase" component={Showcase} />
+        <Route path="/order" component={Order} />
         <Route path="/checkout/success" component={CheckoutSuccess} />
         <Route path="/admin/answer/:token" component={AdminAnswer} />
         {!isAuthenticated ? (
