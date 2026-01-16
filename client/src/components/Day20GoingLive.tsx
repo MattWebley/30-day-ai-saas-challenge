@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -170,7 +171,7 @@ const CATEGORY_INFO = {
 };
 
 export function Day20GoingLive({ appName, onComplete }: Day20GoingLiveProps) {
-  const [step, setStep] = useState<"intro" | "checklist" | "complete">("intro");
+  const [step, setStep, containerRef] = useStepWithScroll<"intro" | "checklist" | "complete">("intro");
   const [checklist, setChecklist] = useState<Record<string, boolean>>({});
 
   const toggleItem = (id: string) => {
@@ -183,7 +184,7 @@ export function Day20GoingLive({ appName, onComplete }: Day20GoingLiveProps) {
   const progress = Math.round((completedCount / CHECKLIST_ITEMS.length) * 100);
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <h3 className="text-2xl font-extrabold text-slate-900">Going Live</h3>

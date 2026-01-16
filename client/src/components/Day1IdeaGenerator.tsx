@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -38,7 +39,7 @@ interface Day1IdeaGeneratorProps {
 
 export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGeneratorProps) {
   const queryClient = useQueryClient();
-  const [step, setStep] = useState<'inputs' | 'generating' | 'ideas' | 'shortlist'>(
+  const [step, setStep, containerRef] = useStepWithScroll<'inputs' | 'generating' | 'ideas' | 'shortlist'>(
     existingProgress?.generatedIdeas ? 'ideas' : 'inputs'
   );
   
@@ -172,7 +173,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
 
   if (step === 'inputs') {
     return (
-      <div className={ds.section}>
+      <div ref={containerRef} className={ds.section}>
         <div className="text-center mb-8">
           <h2 className={`${ds.heading} mb-2`}>Let's Find Your Perfect SaaS Idea</h2>
           <p className={ds.muted}>Tell us about yourself and we'll generate 28 personalized ideas scored against Matt's criteria</p>
@@ -253,7 +254,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
 
   if (step === 'generating') {
     return (
-      <div className="flex flex-col items-center justify-center py-16 space-y-6">
+      <div ref={containerRef} className="flex flex-col items-center justify-center py-16 space-y-6">
         <Loader2 className="w-10 h-10 text-primary animate-spin" />
         <div className="text-center">
           <h3 className={`${ds.heading} mb-2`}>Generating Your Ideas...</h3>
@@ -267,7 +268,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
     const showConfirmation = step === 'shortlist';
 
     return (
-      <div className={ds.section}>
+      <div ref={containerRef} className={ds.section}>
         <div className="flex items-center justify-between">
           <div>
             <h2 className={ds.heading}>

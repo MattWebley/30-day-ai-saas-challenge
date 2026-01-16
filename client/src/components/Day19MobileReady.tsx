@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,7 +25,7 @@ const MOBILE_TESTS = [
 ];
 
 export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps) {
-  const [step, setStep] = useState<"test" | "fix" | "done">("test");
+  const [step, setStep, containerRef] = useStepWithScroll<"test" | "fix" | "done">("test");
   const [testResults, setTestResults] = useState<Map<string, boolean>>(new Map());
   const [mobileIssues, setMobileIssues] = useState("");
   const [mobileResult, setMobileResult] = useState("");
@@ -44,7 +45,7 @@ export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps)
   const canComplete = mobileResult.length >= 20;
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <h3 className="text-2xl font-extrabold text-slate-900">Test On Your Phone</h3>

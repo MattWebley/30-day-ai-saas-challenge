@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,7 +48,7 @@ const TESTIMONIAL_PROMPTS = [
 ];
 
 export function Day18BuildYourMVP({ appName, onComplete }: Day18BuildYourMVPProps) {
-  const [step, setStep] = useState<"checklist" | "showcase" | "complete">("checklist");
+  const [step, setStep, containerRef] = useStepWithScroll<"checklist" | "showcase" | "complete">("checklist");
   const [checksComplete, setChecksComplete] = useState<Set<string>>(new Set());
 
   // Showcase fields
@@ -111,7 +112,7 @@ export function Day18BuildYourMVP({ appName, onComplete }: Day18BuildYourMVPProp
   const canSubmitShowcase = showcaseAppName.length >= 2 && screenshotUrl.length >= 10 && testimonial.length >= 50 && appUrl.length >= 10;
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <h3 className="text-2xl font-extrabold text-slate-900">Build Your MVP</h3>

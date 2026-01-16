@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -41,7 +42,7 @@ interface Day2Props {
 
 export function Day2IdeaValidator({ onComplete }: Day2Props) {
   const queryClient = useQueryClient();
-  const [step, setStep] = useState<'shortlist' | 'validate' | 'pain' | 'done'>('shortlist');
+  const [step, setStep, containerRef] = useStepWithScroll<'shortlist' | 'validate' | 'pain' | 'done'>('shortlist');
   const [selectedIdeaIndex, setSelectedIdeaIndex] = useState<number | null>(null);
   const [validationInsights, setValidationInsights] = useState<Record<number, ValidationInsight>>({});
   const [loadingValidation, setLoadingValidation] = useState<number | null>(null);
@@ -222,7 +223,7 @@ Return ONLY a numbered list:
   // No shortlist - need Day 1
   if (!day1Progress?.shortlistedIdeas?.length) {
     return (
-      <div className={`${ds.cardWithPadding} text-center`}>
+      <div ref={containerRef} className={`${ds.cardWithPadding} text-center`}>
         <h3 className={`${ds.heading} mb-2`}>Complete Day 1 First</h3>
         <p className={ds.body}>
           Generate and shortlist 3-5 ideas in Day 1 before validating them here.
@@ -236,6 +237,7 @@ Return ONLY a numbered list:
     const idea = shortlistedIdeas[selectedIdeaIndex];
     return (
       <motion.div
+        ref={containerRef}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         className="text-center py-8"
@@ -299,6 +301,7 @@ Return ONLY a numbered list:
 
     return (
       <motion.div
+        ref={containerRef}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={ds.section}
@@ -386,7 +389,7 @@ Return ONLY a numbered list:
 
   // Main shortlist view
   return (
-    <div className={ds.section}>
+    <div ref={containerRef} className={ds.section}>
       <div className="text-center">
         <h2 className={`${ds.heading} mb-2`}>Your Shortlist from Day 1</h2>
         <p className={ds.muted}>

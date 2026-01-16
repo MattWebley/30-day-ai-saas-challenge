@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -59,7 +60,7 @@ const WRAPUP_PROMPT = `I'm ending my coding session. Please:
 const INSTALL_COMMAND = `npm install -g @anthropic-ai/claude-code && claude`;
 
 export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
-  const [step, setStep] = useState<"learn" | "choose" | "build" | "done">("learn");
+  const [step, setStep, containerRef] = useStepWithScroll<"learn" | "choose" | "build" | "done">("learn");
   const [selectedWin, setSelectedWin] = useState("");
   const [customWin, setCustomWin] = useState("");
   const [whatYouBuilt, setWhatYouBuilt] = useState("");
@@ -86,7 +87,7 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <h3 className="text-2xl font-extrabold text-slate-900">Master Claude Code</h3>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -68,7 +69,7 @@ const COMMON_ISSUES = [
 ];
 
 export function Day17BuildItOut({ onComplete }: Day17BuildItOutProps) {
-  const [step, setStep] = useState<"intro" | "checklist" | "focus" | "build" | "done">("intro");
+  const [step, setStep, containerRef] = useStepWithScroll<"intro" | "checklist" | "focus" | "build" | "done">("intro");
   const [focusArea, setFocusArea] = useState<string | null>(null);
   const [timerRunning, setTimerRunning] = useState(false);
   const [seconds, setSeconds] = useState(0);
@@ -106,7 +107,7 @@ export function Day17BuildItOut({ onComplete }: Day17BuildItOutProps) {
   const checklistProgress = Math.round((checkedItems.length / BUILD_CHECKLIST.length) * 100);
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Intro */}
       {step === "intro" && (
         <>

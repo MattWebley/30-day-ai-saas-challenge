@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,14 +28,14 @@ const LOGO_TOOLS = [
 ];
 
 export function Day5Logo({ appName, onComplete }: Day5LogoProps) {
-  const [step, setStep] = useState<"choose" | "create" | "confirm">("choose");
+  const [step, setStep, containerRef] = useStepWithScroll<"choose" | "create" | "confirm">("choose");
   const [logoType, setLogoType] = useState<string | null>(null);
   const [toolUsed, setToolUsed] = useState<string | null>(null);
   const [logoDescription, setLogoDescription] = useState("");
   const [hasCreated, setHasCreated] = useState(false);
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Step 1: Choose Logo Type */}
       {step === "choose" && (
         <>

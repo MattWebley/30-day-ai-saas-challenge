@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +15,7 @@ interface Day17OnboardingProps {
 }
 
 export function Day17Onboarding({ appName, onComplete }: Day17OnboardingProps) {
-  const [step, setStep] = useState<"define" | "build" | "test">("define");
+  const [step, setStep, containerRef] = useStepWithScroll<"define" | "build" | "test">("define");
   const [firstSuccess, setFirstSuccess] = useState("");
   const [onboardingTime, setOnboardingTime] = useState("");
   const [onboardingResult, setOnboardingResult] = useState("");
@@ -24,7 +25,7 @@ export function Day17Onboarding({ appName, onComplete }: Day17OnboardingProps) {
   const canComplete = onboardingTime !== "" && onboardingResult.length >= 20;
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <h3 className="text-2xl font-extrabold text-slate-900">User Onboarding</h3>

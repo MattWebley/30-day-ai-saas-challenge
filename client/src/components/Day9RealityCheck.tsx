@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +17,7 @@ interface Day9RealityCheckProps {
 }
 
 export function Day9RealityCheck({ userIdea, onComplete }: Day9RealityCheckProps) {
-  const [step, setStep] = useState<"intro" | "find" | "describe" | "fix" | "verify">("intro");
+  const [step, setStep, containerRef] = useStepWithScroll<"intro" | "find" | "describe" | "fix" | "verify">("intro");
   const [bugFound, setBugFound] = useState("");
   const [bugDescription, setBugDescription] = useState("");
   const [fixApplied, setFixApplied] = useState("");
@@ -43,7 +44,7 @@ Please help me:
 Start by asking me any clarifying questions if needed.`;
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Intro */}
       {step === "intro" && (
         <>

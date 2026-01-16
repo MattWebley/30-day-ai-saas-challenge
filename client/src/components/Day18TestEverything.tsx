@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +17,7 @@ interface Day18TestEverythingProps {
 }
 
 export function Day18TestEverything({ userIdea, onComplete }: Day18TestEverythingProps) {
-  const [step, setStep] = useState<"usp" | "features" | "fix" | "summary">("usp");
+  const [step, setStep, containerRef] = useStepWithScroll<"usp" | "features" | "fix" | "summary">("usp");
   const [uspDescription, setUspDescription] = useState("");
   const [uspWorks, setUspWorks] = useState<boolean | null>(null);
   const [bugsFound, setBugsFound] = useState("");
@@ -29,7 +30,7 @@ export function Day18TestEverything({ userIdea, onComplete }: Day18TestEverythin
   const canComplete = overallStatus.length >= 20;
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Step 1: USP Testing */}
       {step === "usp" && (
         <>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +24,7 @@ interface Day13ReachYourUsersProps {
 }
 
 export function Day13ReachYourUsers({ appName, onComplete }: Day13ReachYourUsersProps) {
-  const [step, setStep] = useState<"why" | "setup" | "draft" | "test" | "done">("why");
+  const [step, setStep, containerRef] = useStepWithScroll<"why" | "setup" | "draft" | "test" | "done">("why");
   const [resendSetup, setResendSetup] = useState(false);
   const [welcomeEmailDraft, setWelcomeEmailDraft] = useState("");
   const [testSent, setTestSent] = useState(false);
@@ -43,7 +44,7 @@ Use the RESEND_API_KEY from secrets.`;
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Step 1: Why Email Matters */}
       {step === "why" && (
         <>

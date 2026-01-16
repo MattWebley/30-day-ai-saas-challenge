@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,7 +56,7 @@ const SUPERPOWERS = [
 ];
 
 export function Day11AddSuperpowers({ userIdea, onComplete }: Day11AddSuperpowersProps) {
-  const [step, setStep] = useState<"check" | "choose" | "setup" | "done">("check");
+  const [step, setStep, containerRef] = useStepWithScroll<"check" | "choose" | "setup" | "done">("check");
   const [askedReplit, setAskedReplit] = useState(false);
   const [selectedSuperpower, setSelectedSuperpower] = useState<string | null>(null);
   const [setupNotes, setSetupNotes] = useState("");
@@ -69,7 +70,7 @@ export function Day11AddSuperpowers({ userIdea, onComplete }: Day11AddSuperpower
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Step 1: Check with Replit First */}
       {step === "check" && (
         <>

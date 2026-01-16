@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2 } from "lucide-react";
@@ -29,7 +30,7 @@ export function Day3CoreFeatures({
   userPainPoints,
   onComplete,
 }: Day3CoreFeaturesProps) {
-  const [step, setStep] = useState<"generate" | "select">("generate");
+  const [step, setStep, containerRef] = useStepWithScroll<"generate" | "select">("generate");
   const [coreFeatures, setCoreFeatures] = useState<Feature[]>([]);
   const [sharedFeatures, setSharedFeatures] = useState<Feature[]>([]);
   const [uspFeatures, setUspFeatures] = useState<Feature[]>([]);
@@ -86,7 +87,7 @@ export function Day3CoreFeatures({
 
   if (step === "generate") {
     return (
-      <div className="space-y-6">
+      <div ref={containerRef} className="space-y-6">
         <div className={ds.cardWithPadding}>
           <div className="space-y-4">
             <div>
@@ -141,7 +142,7 @@ export function Day3CoreFeatures({
 
   // Select step
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       <div className={ds.cardWithPadding}>
         <h3 className={ds.heading + " mb-4"}>
           Select Your Features

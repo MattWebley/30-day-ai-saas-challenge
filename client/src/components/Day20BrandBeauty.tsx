@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +24,7 @@ const COLOR_PRESETS = [
 ];
 
 export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps) {
-  const [step, setStep] = useState<"choose" | "apply" | "done">("choose");
+  const [step, setStep, containerRef] = useStepWithScroll<"choose" | "apply" | "done">("choose");
   const [primaryColor, setPrimaryColor] = useState("#3B82F6");
   const [brandApplied, setBrandApplied] = useState(false);
   const [brandResult, setBrandResult] = useState("");
@@ -32,7 +33,7 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
   const canComplete = brandResult.length >= 20;
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <h3 className="text-2xl font-extrabold text-slate-900">Polish Your Brand</h3>

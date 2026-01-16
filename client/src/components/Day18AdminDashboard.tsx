@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,7 +21,7 @@ const METRIC_OPTIONS = [
 ];
 
 export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboardProps) {
-  const [step, setStep] = useState<"choose" | "build" | "check">("choose");
+  const [step, setStep, containerRef] = useStepWithScroll<"choose" | "build" | "check">("choose");
   const [selectedMetrics, setSelectedMetrics] = useState<Set<string>>(new Set());
   const [dashboardBuilt, setDashboardBuilt] = useState(false);
   const [currentStats, setCurrentStats] = useState("");
@@ -39,7 +40,7 @@ export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboard
   const canComplete = currentStats.length >= 20;
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <h3 className="text-2xl font-extrabold text-slate-900">Build Your Admin Dashboard</h3>

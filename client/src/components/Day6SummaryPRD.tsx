@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Download, Edit3 } from "lucide-react";
@@ -22,7 +23,7 @@ export function Day6SummaryPRD({
   mvpFeatures,
   onComplete,
 }: Day6SummaryPRDProps) {
-  const [step, setStep] = useState<"generate" | "review" | "edit">("generate");
+  const [step, setStep, containerRef] = useStepWithScroll<"generate" | "review" | "edit">("generate");
   const [summary, setSummary] = useState("");
   const [prd, setPrd] = useState("");
   const [editedPrd, setEditedPrd] = useState("");
@@ -85,7 +86,7 @@ export function Day6SummaryPRD({
 
   if (step === "generate") {
     return (
-      <div className="space-y-6">
+      <div ref={containerRef} className="space-y-6">
         <div className={ds.cardWithPadding}>
           <h3 className={ds.heading + " mb-4"}>Your Journey So Far</h3>
 
@@ -163,7 +164,7 @@ export function Day6SummaryPRD({
 
   if (step === "edit") {
     return (
-      <div className="space-y-6">
+      <div ref={containerRef} className="space-y-6">
         <div className={ds.cardWithPadding}>
           <h3 className={ds.heading + " mb-4"}>Edit Your PRD</h3>
           <p className={ds.muted + " mb-4"}>
@@ -192,7 +193,7 @@ export function Day6SummaryPRD({
 
   // Review step
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       <div className={ds.cardWithPadding}>
         <h3 className={ds.heading + " mb-4"}>Executive Summary</h3>
         <div className="prose prose-slate max-w-none">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,7 +23,7 @@ interface Day12LetUsersInProps {
 }
 
 export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
-  const [step, setStep] = useState<"check" | "add" | "test" | "done">("check");
+  const [step, setStep, containerRef] = useStepWithScroll<"check" | "add" | "test" | "done">("check");
   const [hasAuth, setHasAuth] = useState<boolean | null>(null);
   const [copied, setCopied] = useState(false);
   const [testPassed, setTestPassed] = useState(false);
@@ -41,7 +42,7 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Step 1: Check if auth exists */}
       {step === "check" && (
         <>

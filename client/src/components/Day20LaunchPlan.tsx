@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,7 +96,7 @@ const CATEGORY_LABELS = {
 };
 
 export function Day20LaunchPlan({ appName, onComplete }: Day20LaunchPlanProps) {
-  const [step, setStep] = useState<"intro" | "pick" | "complete">("intro");
+  const [step, setStep, containerRef] = useStepWithScroll<"intro" | "pick" | "complete">("intro");
   const [selectedStrategies, setSelectedStrategies] = useState<string[]>([]);
   const [showAllStrategies, setShowAllStrategies] = useState(false);
   const [filters, setFilters] = useState({
@@ -122,7 +123,7 @@ export function Day20LaunchPlan({ appName, onComplete }: Day20LaunchPlanProps) {
   const selectedStrategyData = STRATEGIES.filter((s) => selectedStrategies.includes(s.id));
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <h3 className="text-2xl font-extrabold text-slate-900">Your Launch Plan</h3>

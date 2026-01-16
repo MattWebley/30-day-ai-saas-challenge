@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -163,7 +164,7 @@ const STRATEGIES: Strategy[] = [
 ];
 
 export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }: Day21LaunchDayProps) {
-  const [step, setStep] = useState<"intro" | "calculator" | "vision" | "cta" | "complete">("intro");
+  const [step, setStep, containerRef] = useStepWithScroll<"intro" | "calculator" | "vision" | "cta" | "complete">("intro");
   const [selectedPrice, setSelectedPrice] = useState(29);
   const [targetIncome, setTargetIncome] = useState(5000);
   const [commitmentStatement, setCommitmentStatement] = useState("");
@@ -175,7 +176,7 @@ export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }:
   const selectedStrategyData = STRATEGIES.filter((s) => selectedStrategies.includes(s.id));
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Header */}
       <Card className="p-6 border-2 border-slate-200 bg-white">
         <h3 className="text-2xl font-extrabold text-slate-900">Your $100K Roadmap</h3>

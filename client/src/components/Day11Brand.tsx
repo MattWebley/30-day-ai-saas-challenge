@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,7 +34,7 @@ const FONT_OPTIONS = [
 ];
 
 export function Day11Brand({ appName, onComplete }: Day11BrandProps) {
-  const [step, setStep] = useState<"color" | "font" | "apply" | "done">("color");
+  const [step, setStep, containerRef] = useStepWithScroll<"color" | "font" | "apply" | "done">("color");
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [customColor, setCustomColor] = useState("");
   const [selectedFont, setSelectedFont] = useState<string | null>(null);
@@ -53,7 +54,7 @@ export function Day11Brand({ appName, onComplete }: Day11BrandProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Step 1: Pick Color */}
       {step === "color" && (
         <>
