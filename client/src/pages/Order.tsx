@@ -149,9 +149,9 @@ export default function Order() {
             <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
               <Shield className="w-10 h-10 text-amber-600 flex-shrink-0" />
               <div>
-                <p className="font-bold text-slate-900 text-sm">100% Satisfaction Guarantee</p>
+                <p className="font-bold text-slate-900 text-sm">Do The Work, Get a Working Product - Or Your Money Back</p>
                 <p className="text-sm text-slate-600">
-                  Complete all 21 days and don't feel like you got value? Email me for a full refund.
+                  Complete the challenge and don't have a working product? We'll help you fix it. Still can't get you there? Full refund. No questions.
                 </p>
               </div>
             </div>
