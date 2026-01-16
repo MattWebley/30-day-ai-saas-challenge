@@ -44,14 +44,15 @@ export default function Order() {
       <main className="max-w-2xl mx-auto px-4 py-8">
         {/* Order Card */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-
-          {/* Header */}
-          <div className="bg-slate-900 text-white px-6 py-5 text-center">
-            <p className="text-slate-400 text-sm font-medium uppercase tracking-wide mb-1">Step 2 of 2</p>
-            <h1 className="text-2xl font-bold">Complete Your Order</h1>
-          </div>
-
           <div className="p-6 md:p-8 space-y-6">
+
+            {/* Header */}
+            <div className="text-center space-y-2">
+              <span className="inline-block px-3 py-1 bg-slate-100 text-slate-600 text-sm font-medium rounded-full">
+                Step 2 of 2
+              </span>
+              <h1 className="text-2xl font-bold text-slate-900">Complete Your Order</h1>
+            </div>
 
             {/* What You're Getting */}
             <div>
