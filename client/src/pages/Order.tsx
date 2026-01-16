@@ -7,8 +7,8 @@ export default function Order() {
   const [includeBump, setIncludeBump] = useState(false);
 
   const pricing = {
-    usd: { symbol: '$', amount: 399, code: 'USD', bump: 250 },
-    gbp: { symbol: '£', amount: 295, code: 'GBP', bump: 195 }
+    usd: { symbol: '$', amount: 399, code: 'USD', bump: 299, bumpRegular: 1200 },
+    gbp: { symbol: '£', amount: 295, code: 'GBP', bump: 199, bumpRegular: 995 }
   };
 
   const total = pricing[selectedCurrency].amount + (includeBump ? pricing[selectedCurrency].bump : 0);
@@ -161,7 +161,7 @@ export default function Order() {
                   </p>
                   <p className="text-sm text-slate-600 mt-1">
                     Get a private 1-hour call to review your product, get personalized advice, and accelerate your progress.
-                    <span className="text-slate-400 line-through ml-1">{pricing[selectedCurrency].symbol}1,200</span>
+                    <span className="text-slate-400 line-through ml-1">{pricing[selectedCurrency].symbol}{pricing[selectedCurrency].bumpRegular}</span>
                     <span className="font-bold text-amber-600 ml-1">Just {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].bump}</span>
                   </p>
                 </div>

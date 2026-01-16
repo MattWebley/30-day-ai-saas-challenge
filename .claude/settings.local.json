@@ -65,7 +65,8 @@
       "Bash(ls:*)",
       "Bash(git mv:*)",
       "Bash(echo:*)",
-      "Bash(npx drizzle-kit:*)"
+      "Bash(npx drizzle-kit:*)",
+      "Bash(env)"
     ]
   }
 }

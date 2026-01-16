@@ -1791,10 +1791,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         gbp: 'price_1SqGYdLcRVtxg5yVgbtDKL7S'
       };
 
-      // Price IDs for bump offer (1:1 Coaching Call)
+      // Price IDs for bump offer (1:1 Coaching Call - £199/$299 instead of £995/$1200)
       const bumpPriceIds: Record<string, string> = {
-        usd: 'price_BUMP_USD_PLACEHOLDER', // TODO: Replace with real Stripe price ID
-        gbp: 'price_BUMP_GBP_PLACEHOLDER'  // TODO: Replace with real Stripe price ID
+        usd: 'price_1SqHNdLcRVtxg5yVD8k1VxJg',
+        gbp: 'price_1SqHNdLcRVtxg5yVVFNyNhGa'
       };
 
       const priceId = priceIds[currency.toLowerCase()] || priceIds.usd;
@@ -1821,7 +1821,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         line_items: lineItems,
         mode: 'payment',
         success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${protocol}://${host}/order`
+        cancel_url: `${protocol}://${host}/`
       });
 
       res.json({ url: session.url });
