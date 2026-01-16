@@ -4,11 +4,14 @@ import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft } from "lucide-r
 export default function Order() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<'usd' | 'gbp'>('usd');
+  const [includeBump, setIncludeBump] = useState(false);
 
   const pricing = {
-    usd: { symbol: '$', amount: 399, code: 'USD' },
-    gbp: { symbol: '£', amount: 295, code: 'GBP' }
+    usd: { symbol: '$', amount: 399, code: 'USD', bump: 250 },
+    gbp: { symbol: '£', amount: 295, code: 'GBP', bump: 195 }
   };
+
+  const total = pricing[selectedCurrency].amount + (includeBump ? pricing[selectedCurrency].bump : 0);
 
   const handleCheckout = async () => {
     if (isCheckingOut) return;
@@ -17,7 +20,7 @@ export default function Order() {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currency: selectedCurrency })
+        body: JSON.stringify({ currency: selectedCurrency, includeBump })
       });
       const data = await response.json();
       if (data.url) {
@@ -115,15 +118,53 @@ export default function Order() {
                     {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].amount}
                   </span>
                 </div>
+                {includeBump && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-700">1:1 Coaching Call</span>
+                    <span className="font-bold text-slate-900">
+                      {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].bump}
+                    </span>
+                  </div>
+                )}
                 <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
                   <span className="font-bold text-slate-900">Total Today</span>
                   <span className="text-2xl font-extrabold text-slate-900">
-                    {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].amount} {pricing[selectedCurrency].code}
+                    {pricing[selectedCurrency].symbol}{total} {pricing[selectedCurrency].code}
                   </span>
                 </div>
                 <p className="text-sm text-slate-500 text-center">
                   One-time payment · 12 months access · No recurring fees
                 </p>
+              </div>
+            </div>
+
+            {/* Bump Offer */}
+            <div
+              onClick={() => setIncludeBump(!includeBump)}
+              className={`relative p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
+                includeBump
+                  ? 'border-amber-400 bg-amber-50'
+                  : 'border-amber-300 bg-amber-50/50 hover:bg-amber-50'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
+                  includeBump
+                    ? 'bg-amber-500 border-amber-500'
+                    : 'border-slate-300 bg-white'
+                }`}>
+                  {includeBump && <Check className="w-3 h-3 text-white" />}
+                </div>
+                <div className="flex-1">
+                  <p className="font-bold text-slate-900 text-sm">
+                    YES! Add a 1:1 Coaching Call with Matt
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    Get a private 1-hour call to review your product, get personalized advice, and accelerate your progress.
+                    <span className="text-slate-400 line-through ml-1">{pricing[selectedCurrency].symbol}1,200</span>
+                    <span className="font-bold text-amber-600 ml-1">Just {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].bump}</span>
+                  </p>
+                </div>
               </div>
             </div>
 

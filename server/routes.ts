@@ -1782,28 +1782,46 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Stripe checkout - create checkout session for the 21 Day Challenge
   app.post("/api/checkout", async (req, res) => {
     try {
-      const { currency = 'usd' } = req.body;
+      const { currency = 'usd', includeBump = false } = req.body;
       const stripe = await getUncachableStripeClient();
 
-      // Price IDs from Stripe
+      // Price IDs from Stripe - main challenge
       const priceIds: Record<string, string> = {
         usd: 'price_1SqGYdLcRVtxg5yV9eeLLOJK',
         gbp: 'price_1SqGYdLcRVtxg5yVgbtDKL7S'
+      };
+
+      // Price IDs for bump offer (1:1 Coaching Call)
+      const bumpPriceIds: Record<string, string> = {
+        usd: 'price_BUMP_USD_PLACEHOLDER', // TODO: Replace with real Stripe price ID
+        gbp: 'price_BUMP_GBP_PLACEHOLDER'  // TODO: Replace with real Stripe price ID
       };
 
       const priceId = priceIds[currency.toLowerCase()] || priceIds.usd;
       const host = req.get('host');
       const protocol = req.protocol;
 
+      // Build line items
+      const lineItems: Array<{ price: string; quantity: number }> = [{
+        price: priceId,
+        quantity: 1
+      }];
+
+      // Add bump offer if selected
+      if (includeBump) {
+        const bumpPriceId = bumpPriceIds[currency.toLowerCase()] || bumpPriceIds.usd;
+        lineItems.push({
+          price: bumpPriceId,
+          quantity: 1
+        });
+      }
+
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
-        line_items: [{
-          price: priceId,
-          quantity: 1
-        }],
+        line_items: lineItems,
         mode: 'payment',
         success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${protocol}://${host}/`
+        cancel_url: `${protocol}://${host}/order`
       });
 
       res.json({ url: session.url });
