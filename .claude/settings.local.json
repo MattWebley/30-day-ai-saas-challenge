@@ -69,7 +69,8 @@
       "Bash(env)",
       "WebFetch(domain:cdn.loom.com)",
       "WebFetch(domain:www.loom.com)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(killall:*)"
     ]
   }
 }
