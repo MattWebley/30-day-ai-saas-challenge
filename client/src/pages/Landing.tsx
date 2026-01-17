@@ -696,6 +696,14 @@ export default function Landing() {
               <div className="flex items-start gap-4">
                 <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
                 <div>
+                  <span className="font-semibold text-slate-900">Focus Mode with Binaural Beats</span>
+                  <p className="text-slate-600 mt-1">Built-in concentration audio with 5 modes: Focus, Deep Focus, Calm Focus, Creative Flow, and Relaxation. Put on headphones, pick a mode, and get in the zone.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                <div>
                   <span className="font-semibold text-slate-900">12 Months Access to Complete the Challenge</span>
                   <p className="text-slate-600 mt-1">One year to go from zero to working product. AI tools move fast - you'll always use the CURRENT methods, not outdated ones.</p>
                 </div>

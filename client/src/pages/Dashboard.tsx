@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { FocusButton } from "@/components/FocusButton";
 import {
   Dialog,
   DialogContent,
@@ -265,6 +266,8 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center gap-4 shrink-0">
+             <FocusButton />
+             <div className="h-10 w-px bg-slate-200 hidden md:block"></div>
              <div className="text-right hidden md:block">
                <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Est. Time</div>
                <div className="font-bold text-slate-900 text-lg">5 Min</div>

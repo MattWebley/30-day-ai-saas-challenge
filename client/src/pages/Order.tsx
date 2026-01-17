@@ -4,14 +4,17 @@ import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft } from "lucide-r
 export default function Order() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<'usd' | 'gbp'>('usd');
-  const [includeBump, setIncludeBump] = useState(false);
+  const [includePromptPack, setIncludePromptPack] = useState(false);
+  const [includeLaunchPack, setIncludeLaunchPack] = useState(false);
 
   const pricing = {
-    usd: { symbol: '$', amount: 399, code: 'USD', bump: 299, bumpRegular: 1200 },
-    gbp: { symbol: '£', amount: 295, code: 'GBP', bump: 199, bumpRegular: 995 }
+    usd: { symbol: '$', amount: 399, code: 'USD', promptPack: 49, launchPack: 97 },
+    gbp: { symbol: '£', amount: 295, code: 'GBP', promptPack: 39, launchPack: 75 }
   };
 
-  const total = pricing[selectedCurrency].amount + (includeBump ? pricing[selectedCurrency].bump : 0);
+  const total = pricing[selectedCurrency].amount
+    + (includePromptPack ? pricing[selectedCurrency].promptPack : 0)
+    + (includeLaunchPack ? pricing[selectedCurrency].launchPack : 0);
 
   const handleCheckout = async () => {
     if (isCheckingOut) return;
@@ -20,7 +23,7 @@ export default function Order() {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currency: selectedCurrency, includeBump })
+        body: JSON.stringify({ currency: selectedCurrency, includePromptPack, includeLaunchPack })
       });
       const data = await response.json();
       if (data.url) {
@@ -118,11 +121,19 @@ export default function Order() {
                     {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].amount}
                   </span>
                 </div>
-                {includeBump && (
+                {includePromptPack && (
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-700">1:1 Coaching Call</span>
+                    <span className="text-slate-700">AI Prompt Pack</span>
                     <span className="font-bold text-slate-900">
-                      {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].bump}
+                      {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].promptPack}
+                    </span>
+                  </div>
+                )}
+                {includeLaunchPack && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-700">Launch & Marketing Playbook</span>
+                    <span className="font-bold text-slate-900">
+                      {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].launchPack}
                     </span>
                   </div>
                 )}
@@ -138,31 +149,59 @@ export default function Order() {
               </div>
             </div>
 
-            {/* Bump Offer */}
+            {/* Bump Offer - Prompt Pack */}
             <div
-              onClick={() => setIncludeBump(!includeBump)}
+              onClick={() => setIncludePromptPack(!includePromptPack)}
               className={`relative p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
-                includeBump
+                includePromptPack
+                  ? 'border-violet-400 bg-violet-50'
+                  : 'border-violet-300 bg-violet-50/50 hover:bg-violet-50'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
+                  includePromptPack
+                    ? 'bg-violet-500 border-violet-500'
+                    : 'border-slate-300 bg-white'
+                }`}>
+                  {includePromptPack && <Check className="w-3 h-3 text-white" />}
+                </div>
+                <div className="flex-1">
+                  <p className="font-bold text-slate-900 text-sm">
+                    YES! Add the AI Prompt Pack (73 Advanced Prompts)
+                  </p>
+                  <p className="text-sm text-slate-600 mt-1">
+                    Get instant access to 73 battle-tested AI prompts for every stage of building your SaaS: ideation, development, marketing, sales, and more.
+                    <span className="font-bold text-violet-600 ml-1">Just {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].promptPack}</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Bump Offer - Launch Pack */}
+            <div
+              onClick={() => setIncludeLaunchPack(!includeLaunchPack)}
+              className={`relative p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
+                includeLaunchPack
                   ? 'border-amber-400 bg-amber-50'
                   : 'border-amber-300 bg-amber-50/50 hover:bg-amber-50'
               }`}
             >
               <div className="flex items-start gap-3">
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
-                  includeBump
+                  includeLaunchPack
                     ? 'bg-amber-500 border-amber-500'
                     : 'border-slate-300 bg-white'
                 }`}>
-                  {includeBump && <Check className="w-3 h-3 text-white" />}
+                  {includeLaunchPack && <Check className="w-3 h-3 text-white" />}
                 </div>
                 <div className="flex-1">
                   <p className="font-bold text-slate-900 text-sm">
-                    YES! Add a 1:1 Coaching Call with Matt
+                    YES! Add the Launch & Marketing Playbook (68 Strategies)
                   </p>
                   <p className="text-sm text-slate-600 mt-1">
-                    Get a private 1-hour call with me to work through your ideas, nail your pricing, or get help with whatever you're stuck on.
-                    <span className="text-slate-400 line-through ml-1">{pricing[selectedCurrency].symbol}{pricing[selectedCurrency].bumpRegular}</span>
-                    <span className="font-bold text-amber-600 ml-1">Just {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].bump}</span>
+                    The challenge gets you to a working product. This playbook shows you exactly how to launch it and get paying customers: launch tactics, marketing channels, sales strategies, and growth systems.
+                    <span className="font-bold text-amber-600 ml-1">Just {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].launchPack}</span>
                   </p>
                 </div>
               </div>
@@ -191,9 +230,9 @@ export default function Order() {
             <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
               <Shield className="w-10 h-10 text-amber-600 flex-shrink-0" />
               <div>
-                <p className="font-bold text-slate-900 text-sm">Do The Work, Get a Working Product - Or Your Money Back</p>
+                <p className="font-bold text-slate-900">100% Money-Back Guarantee</p>
                 <p className="text-sm text-slate-600">
-                  Complete the challenge and don't have a working product? We'll help you fix it. Still can't get you there? Full refund. No questions.
+                  Do the work, get a working product, or your money back. Complete the challenge and don't have a working product? We'll help you fix it. Still can't get you there? Full refund. No questions.
                 </p>
               </div>
             </div>

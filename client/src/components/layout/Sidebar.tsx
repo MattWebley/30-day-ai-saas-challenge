@@ -6,6 +6,7 @@ import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
 import { useTestMode } from "@/contexts/TestModeContext";
+import { useAuth } from "@/hooks/useAuth";
 import {
   CheckCircle2,
   Lock,
@@ -137,6 +138,9 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   const { progress: userProgress } = useUserProgress();
   const { stats } = useUserStats();
   const { testMode, setTestMode } = useTestMode();
+  const { user } = useAuth();
+  const hasPromptPack = (user as any)?.promptPackPurchased === true;
+  const hasLaunchPack = (user as any)?.launchPackPurchased === true;
 
   const challengeDays = Array.isArray(allDays) ? allDays : [];
   const completedDays = new Set(
@@ -362,6 +366,38 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
               )}>
                 <FileText className="w-4 h-4" />
                 My Progress
+              </span>
+            </Link>
+            <Link href="/prompt-pack" onClick={handleNavClick}>
+              <span className={cn(
+                "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                location === "/prompt-pack"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}>
+                <div className="flex items-center gap-3">
+                  <Zap className="w-4 h-4" />
+                  Prompt Pack
+                </div>
+                {!hasPromptPack && (
+                  <Lock className="w-3 h-3 text-muted-foreground" />
+                )}
+              </span>
+            </Link>
+            <Link href="/launch-pack" onClick={handleNavClick}>
+              <span className={cn(
+                "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                location === "/launch-pack"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}>
+                <div className="flex items-center gap-3">
+                  <Rocket className="w-4 h-4" />
+                  Launch Pack
+                </div>
+                {!hasLaunchPack && (
+                  <Lock className="w-3 h-3 text-muted-foreground" />
+                )}
               </span>
             </Link>
             {completedDays.has(8) ? (

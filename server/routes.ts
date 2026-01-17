@@ -1782,7 +1782,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Stripe checkout - create checkout session for the 21 Day Challenge
   app.post("/api/checkout", async (req, res) => {
     try {
-      const { currency = 'usd', includeBump = false } = req.body;
+      const { currency = 'usd', includePromptPack = false, includeLaunchPack = false } = req.body;
       const stripe = await getUncachableStripeClient();
 
       // Price IDs from Stripe - main challenge
@@ -1791,10 +1791,18 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         gbp: 'price_1SqGYdLcRVtxg5yVgbtDKL7S'
       };
 
-      // Price IDs for bump offer (1:1 Coaching Call - £199/$299 instead of £995/$1200)
-      const bumpPriceIds: Record<string, string> = {
-        usd: 'price_1SqHNdLcRVtxg5yVD8k1VxJg',
-        gbp: 'price_1SqHNdLcRVtxg5yVVFNyNhGa'
+      // Price IDs for Prompt Pack bump ($49 USD / £39 GBP)
+      // TODO: Create these products in Stripe and update with real price IDs
+      const promptPackPriceIds: Record<string, string> = {
+        usd: 'price_PROMPT_PACK_USD', // TODO: Replace with real Stripe price ID
+        gbp: 'price_PROMPT_PACK_GBP'  // TODO: Replace with real Stripe price ID
+      };
+
+      // Price IDs for Launch Pack bump ($97 USD / £75 GBP)
+      // TODO: Create these products in Stripe and update with real price IDs
+      const launchPackPriceIds: Record<string, string> = {
+        usd: 'price_LAUNCH_PACK_USD', // TODO: Replace with real Stripe price ID
+        gbp: 'price_LAUNCH_PACK_GBP'  // TODO: Replace with real Stripe price ID
       };
 
       const priceId = priceIds[currency.toLowerCase()] || priceIds.usd;
@@ -1807,11 +1815,20 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         quantity: 1
       }];
 
-      // Add bump offer if selected
-      if (includeBump) {
-        const bumpPriceId = bumpPriceIds[currency.toLowerCase()] || bumpPriceIds.usd;
+      // Add prompt pack bump offer if selected
+      if (includePromptPack) {
+        const promptPackPriceId = promptPackPriceIds[currency.toLowerCase()] || promptPackPriceIds.usd;
         lineItems.push({
-          price: bumpPriceId,
+          price: promptPackPriceId,
+          quantity: 1
+        });
+      }
+
+      // Add launch pack bump offer if selected
+      if (includeLaunchPack) {
+        const launchPackPriceId = launchPackPriceIds[currency.toLowerCase()] || launchPackPriceIds.usd;
+        lineItems.push({
+          price: launchPackPriceId,
           quantity: 1
         });
       }
@@ -1821,12 +1838,102 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         line_items: lineItems,
         mode: 'payment',
         success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${protocol}://${host}/`
+        cancel_url: `${protocol}://${host}/order`,
+        metadata: {
+          includePromptPack: includePromptPack ? 'true' : 'false',
+          includeLaunchPack: includeLaunchPack ? 'true' : 'false'
+        }
       });
 
       res.json({ url: session.url });
     } catch (error: any) {
       console.error("Error creating checkout session:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  // Stripe checkout - standalone Prompt Pack purchase (for users who already have the challenge)
+  app.post("/api/prompt-pack/checkout", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const stripe = await getUncachableStripeClient();
+      const host = req.get('host');
+      const protocol = req.protocol;
+
+      // Price IDs for Prompt Pack ($49 USD / £39 GBP)
+      // TODO: Create these products in Stripe and update with real price IDs
+      const promptPackPriceIds: Record<string, string> = {
+        usd: 'price_PROMPT_PACK_USD', // TODO: Replace with real Stripe price ID
+        gbp: 'price_PROMPT_PACK_GBP'  // TODO: Replace with real Stripe price ID
+      };
+
+      // Default to USD for standalone purchase
+      const priceId = promptPackPriceIds.usd;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price: priceId,
+          quantity: 1
+        }],
+        mode: 'payment',
+        success_url: `${protocol}://${host}/prompt-pack?success=true`,
+        cancel_url: `${protocol}://${host}/prompt-pack`,
+        metadata: {
+          userId: (req.user as any).id,
+          productType: 'prompt_pack'
+        }
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Error creating prompt pack checkout session:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  // Stripe checkout - standalone Launch Pack purchase (for users who already have the challenge)
+  app.post("/api/launch-pack/checkout", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const stripe = await getUncachableStripeClient();
+      const host = req.get('host');
+      const protocol = req.protocol;
+
+      // Price IDs for Launch Pack ($97 USD / £75 GBP)
+      // TODO: Create these products in Stripe and update with real price IDs
+      const launchPackPriceIds: Record<string, string> = {
+        usd: 'price_LAUNCH_PACK_USD', // TODO: Replace with real Stripe price ID
+        gbp: 'price_LAUNCH_PACK_GBP'  // TODO: Replace with real Stripe price ID
+      };
+
+      // Default to USD for standalone purchase
+      const priceId = launchPackPriceIds.usd;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price: priceId,
+          quantity: 1
+        }],
+        mode: 'payment',
+        success_url: `${protocol}://${host}/launch-pack?success=true`,
+        cancel_url: `${protocol}://${host}/launch-pack`,
+        metadata: {
+          userId: (req.user as any).id,
+          productType: 'launch_pack'
+        }
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Error creating launch pack checkout session:", error);
       res.status(500).json({ message: "Failed to create checkout session" });
     }
   });
