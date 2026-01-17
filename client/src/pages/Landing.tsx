@@ -1134,20 +1134,6 @@ export default function Landing() {
           <p className="font-bold text-slate-900 pt-4">
             - Matt
           </p>
-
-          {/* Final CTA */}
-          <div className="pt-6 space-y-4">
-            <a
-              href="/order"
-              className="block w-full bg-green-500 hover:bg-green-600 text-white font-bold text-lg py-4 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-            >
-              Get Instant Access
-              <ArrowRight className="w-5 h-5 inline ml-2" />
-            </a>
-            <p className="text-center text-slate-500 text-sm">
-              One-time payment · Instant access · 12 months
-            </p>
-          </div>
         </section>
 
       </main>
@@ -1164,7 +1150,7 @@ export default function Landing() {
             <span className="font-semibold">21 Day AI SaaS Challenge</span>
           </div>
           <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} Matt Webley. All rights reserved.
+            © {new Date().getFullYear()} Webley Global - FZCO, Dubai. All rights reserved.
           </p>
           <p className="text-sm text-slate-500">
             <a href="https://mattwebley.com" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900">

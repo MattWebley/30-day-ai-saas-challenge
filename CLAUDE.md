@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-17 (Video thumbnail styling)
+- **Last Session**: 2026-01-17 (Email confirmations & checkout flow)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -279,3 +279,35 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - **Notes for Next Session:**
   - Days 1-21 still need real Loom videos and thumbnails
   - Test video thumbnail display on Day 0 (should show your face/screen from the Loom recording)
+
+### 2026-01-17 (Session 2) - Email Confirmations & Checkout Flow Fixes
+- **Tasks Completed:**
+  - Implemented full checkout flow with login requirement
+  - Added purchase verification (marks `challengePurchased`, `promptPackPurchased`, `launchPackPurchased` in DB)
+  - One-click upsell for coaching (uses saved payment method from initial checkout)
+  - Currency-aware upsell page (reads currency from URL, shows correct pricing)
+  - Created Welcome page with confetti celebration after purchase
+  - Set up Resend email service via Replit connector
+  - Purchase confirmation emails (sent after successful checkout)
+  - Coaching confirmation emails (sent after successful upsell)
+  - Added test mode toggle button (top-right corner) for previewing upsell pages
+  - Added "Skip to Upsell" button on Order page (test mode only)
+- **Schema Changes:**
+  - Added to users table: `challengePurchased`, `promptPackPurchased`, `launchPackPurchased`, `coachingPurchased`, `stripeCustomerId`
+- **New Files:**
+  - `server/emailService.ts` - Resend email integration with HTML templates
+  - `client/src/pages/Welcome.tsx` - Post-purchase celebration page
+  - `client/src/pages/CoachingUpsell.tsx` - Coaching upsell page
+- **Fixes Applied:**
+  - Removed green CTA button from bottom of Landing page
+  - Changed footer company name to "Webley Global - FZCO, Dubai"
+  - CoachingUpsell redirects to /welcome instead of /dashboard
+  - CoachingUpsell checks if user already has coaching (redirects to dashboard)
+- **Email Setup:**
+  - Uses Replit's Resend connector (auto-configured)
+  - From email: `info@rapidwebsupport.com`
+  - Emails include: order summary, currency-correct pricing, next steps, CTA
+- **Notes for Next Session:**
+  - Test full flow: Order → Stripe → CheckoutSuccess → CoachingUpsell → Welcome
+  - Bump offer Stripe price IDs still need to be created (Sales Letter Pack, Launch Pack)
+  - Port 5000 conflicts may occur - use Replit Stop/Run to clear
