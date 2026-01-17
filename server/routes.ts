@@ -2,12 +2,15 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertUserProgressSchema, insertDayContentSchema } from "@shared/schema";
+import { insertUserProgressSchema, insertDayContentSchema, users, type User } from "@shared/schema";
 import OpenAI from "openai";
 import dns from "dns";
 import { promisify } from "util";
 import crypto from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail } from "./emailService";
 
 const dnsResolve = promisify(dns.resolve);
 
@@ -1837,11 +1840,17 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         payment_method_types: ['card'],
         line_items: lineItems,
         mode: 'payment',
-        success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}&currency=${currency}`,
         cancel_url: `${protocol}://${host}/order`,
+        // Create a customer and save their payment method for one-click upsells
+        customer_creation: 'always',
+        payment_intent_data: {
+          setup_future_usage: 'off_session',
+        },
         metadata: {
           includePromptPack: includePromptPack ? 'true' : 'false',
-          includeLaunchPack: includeLaunchPack ? 'true' : 'false'
+          includeLaunchPack: includeLaunchPack ? 'true' : 'false',
+          currency: currency
         }
       });
 
@@ -1935,6 +1944,257 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     } catch (error: any) {
       console.error("Error creating launch pack checkout session:", error);
       res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  // Stripe checkout - Coaching (4 x 1-hour sessions) - Traditional checkout flow
+  app.post("/api/checkout/coaching", async (req, res) => {
+    try {
+      const { currency = 'usd' } = req.body;
+      const stripe = await getUncachableStripeClient();
+      const host = req.get('host');
+      const protocol = req.protocol;
+
+      // Price IDs for Coaching by currency
+      // TODO: Create these products in Stripe and update with real price IDs
+      const coachingPriceIds: Record<string, string> = {
+        usd: 'price_COACHING_USD', // $1,195 - TODO: Replace with real Stripe price ID
+        gbp: 'price_COACHING_GBP'  // £995 - TODO: Replace with real Stripe price ID
+      };
+      const coachingPriceId = coachingPriceIds[currency.toLowerCase()] || coachingPriceIds.usd;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price: coachingPriceId,
+          quantity: 1
+        }],
+        mode: 'payment',
+        success_url: `${protocol}://${host}/coaching?success=true`,
+        cancel_url: `${protocol}://${host}/coaching/upsell?currency=${currency}`,
+        metadata: {
+          productType: 'coaching',
+          currency: currency
+        }
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Error creating coaching checkout session:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  // Process checkout success - verify purchase and grant access
+  app.post("/api/checkout/process-success", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const { sessionId } = req.body;
+      if (!sessionId) {
+        return res.status(400).json({ message: "Session ID required" });
+      }
+
+      const stripe = await getUncachableStripeClient();
+      const session = await stripe.checkout.sessions.retrieve(sessionId, {
+        expand: ['payment_intent']
+      });
+
+      // Verify payment was successful
+      if (session.payment_status !== 'paid') {
+        return res.status(400).json({ message: "Payment not completed" });
+      }
+
+      // Build update object based on what was purchased
+      const updateData: Record<string, any> = {
+        challengePurchased: true, // Main challenge is always purchased
+      };
+
+      // Check metadata for bump offers
+      if (session.metadata?.includePromptPack === 'true') {
+        updateData.promptPackPurchased = true;
+      }
+      if (session.metadata?.includeLaunchPack === 'true') {
+        updateData.launchPackPurchased = true;
+      }
+
+      // Save Stripe customer ID for one-click upsells
+      if (session.customer) {
+        const customerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
+        updateData.stripeCustomerId = customerId;
+      }
+
+      // Update user record with all purchases
+      await db.update(users)
+        .set(updateData)
+        .where(eq(users.id, (req.user as User).id));
+
+      // Send purchase confirmation email
+      const user = req.user as User;
+      const userEmail = (user as any).email;
+      const firstName = (user as any).firstName || 'there';
+      const currency = (session.metadata?.currency || 'usd').toLowerCase() as 'usd' | 'gbp';
+
+      // Calculate total from session amount
+      const total = session.amount_total ? session.amount_total / 100 : 399;
+
+      if (userEmail) {
+        sendPurchaseConfirmationEmail({
+          to: userEmail,
+          firstName,
+          includesPromptPack: updateData.promptPackPurchased || false,
+          includesLaunchPack: updateData.launchPackPurchased || false,
+          currency,
+          total
+        }).catch(err => console.error('Email send error:', err));
+      }
+
+      res.json({
+        success: true,
+        challengePurchased: true,
+        promptPackPurchased: updateData.promptPackPurchased || false,
+        launchPackPurchased: updateData.launchPackPurchased || false
+      });
+    } catch (error: any) {
+      console.error("Error processing checkout success:", error);
+      res.status(500).json({ message: "Failed to process checkout" });
+    }
+  });
+
+  // One-click upsell - Coaching purchase using saved payment method
+  app.post("/api/upsell/coaching", async (req, res) => {
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const user = req.user as User;
+      const stripeCustomerId = (user as any).stripeCustomerId;
+      const { currency = 'usd' } = req.body;
+
+      // Pricing based on currency (amount in smallest unit - cents/pence)
+      const coachingPricing: Record<string, { amount: number; currency: string }> = {
+        usd: { amount: 119500, currency: 'usd' }, // $1,195
+        gbp: { amount: 99500, currency: 'gbp' }   // £995
+      };
+      const priceConfig = coachingPricing[currency.toLowerCase()] || coachingPricing.usd;
+
+      if (!stripeCustomerId) {
+        return res.status(400).json({ message: "No saved payment method", requiresCheckout: true });
+      }
+
+      const stripe = await getUncachableStripeClient();
+
+      // Get the customer's default payment method
+      const customer = await stripe.customers.retrieve(stripeCustomerId) as any;
+      const paymentMethodId = customer.invoice_settings?.default_payment_method ||
+                              customer.default_source;
+
+      if (!paymentMethodId) {
+        // If no default, get the first payment method
+        const paymentMethods = await stripe.paymentMethods.list({
+          customer: stripeCustomerId,
+          type: 'card',
+          limit: 1
+        });
+
+        if (paymentMethods.data.length === 0) {
+          return res.status(400).json({ message: "No saved payment method", requiresCheckout: true });
+        }
+
+        // Use the first available payment method
+        const pm = paymentMethods.data[0];
+
+        // Create and confirm payment intent
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: priceConfig.amount,
+          currency: priceConfig.currency,
+          customer: stripeCustomerId,
+          payment_method: pm.id,
+          off_session: true,
+          confirm: true,
+          description: '1:1 Vibe Coding Coaching - 4 x 1-hour sessions',
+          metadata: {
+            userId: user.id,
+            productType: 'coaching'
+          }
+        });
+
+        if (paymentIntent.status === 'succeeded') {
+          // Mark coaching as purchased
+          await db.update(users)
+            .set({ coachingPurchased: true })
+            .where(eq(users.id, user.id));
+
+          // Send coaching confirmation email
+          const userEmail = (user as any).email;
+          const firstName = (user as any).firstName || 'there';
+          if (userEmail) {
+            sendCoachingConfirmationEmail({
+              to: userEmail,
+              firstName,
+              currency: currency.toLowerCase() as 'usd' | 'gbp',
+              amount: priceConfig.amount / 100
+            }).catch(err => console.error('Email send error:', err));
+          }
+
+          return res.json({ success: true, message: "Coaching purchased successfully!" });
+        } else {
+          return res.status(400).json({ message: "Payment failed", status: paymentIntent.status });
+        }
+      }
+
+      // Create and confirm payment intent with default payment method
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: priceConfig.amount,
+        currency: priceConfig.currency,
+        customer: stripeCustomerId,
+        payment_method: paymentMethodId as string,
+        off_session: true,
+        confirm: true,
+        description: '1:1 Vibe Coding Coaching - 4 x 1-hour sessions',
+        metadata: {
+          userId: user.id,
+          productType: 'coaching'
+        }
+      });
+
+      if (paymentIntent.status === 'succeeded') {
+        // Mark coaching as purchased
+        await db.update(users)
+          .set({ coachingPurchased: true })
+          .where(eq(users.id, user.id));
+
+        // Send coaching confirmation email
+        const userEmail = (user as any).email;
+        const firstName = (user as any).firstName || 'there';
+        if (userEmail) {
+          sendCoachingConfirmationEmail({
+            to: userEmail,
+            firstName,
+            currency: currency.toLowerCase() as 'usd' | 'gbp',
+            amount: priceConfig.amount / 100
+          }).catch(err => console.error('Email send error:', err));
+        }
+
+        return res.json({ success: true, message: "Coaching purchased successfully!" });
+      } else {
+        return res.status(400).json({ message: "Payment failed", status: paymentIntent.status });
+      }
+    } catch (error: any) {
+      console.error("Error processing one-click upsell:", error);
+
+      // Handle card declined or authentication required
+      if (error.code === 'authentication_required' || error.code === 'card_declined') {
+        return res.status(400).json({
+          message: "Card requires authentication or was declined",
+          requiresCheckout: true
+        });
+      }
+
+      res.status(500).json({ message: "Failed to process payment" });
     }
   });
 

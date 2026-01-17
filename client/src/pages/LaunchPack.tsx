@@ -5528,7 +5528,10 @@ export default function LaunchPack() {
 
           {/* Unlock CTA (if locked) */}
           {!hasAccess && (
-            <Card className="p-6 mb-8 border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-transparent">
+            <Card className="relative p-6 mb-8 border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-transparent">
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                LIMITED TIME
+              </div>
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-xl bg-amber-100 flex items-center justify-center">
@@ -5536,7 +5539,11 @@ export default function LaunchPack() {
                   </div>
                   <div>
                     <h3 className="font-bold text-slate-900 text-lg">Unlock All {totalStrategies} Strategies</h3>
-                    <p className="text-slate-600">One-time purchase, lifetime access</p>
+                    <p className="text-slate-600">
+                      <span className="text-slate-400 line-through">$291</span>
+                      <span className="ml-2 font-bold text-amber-600">$97</span>
+                      <span className="text-slate-500 ml-1 text-sm">(Limited time only)</span>
+                    </p>
                   </div>
                 </div>
                 <Button
@@ -5579,13 +5586,18 @@ export default function LaunchPack() {
               <p className="text-slate-600 mb-4">
                 Building is only half the battle. Get the playbook for what comes next.
               </p>
+              <p className="text-lg mb-4">
+                <span className="text-slate-400 line-through">$291</span>
+                <span className="ml-2 font-bold text-amber-600 text-2xl">$97</span>
+                <span className="text-slate-500 ml-2 text-sm">(Limited time only)</span>
+              </p>
               <Button
                 onClick={handlePurchase}
                 disabled={isCheckingOut}
                 size="lg"
                 className="bg-amber-500 hover:bg-amber-600 text-white font-bold"
               >
-                {isCheckingOut ? "Processing..." : "Unlock All Strategies - $97"}
+                {isCheckingOut ? "Processing..." : `Unlock All ${totalStrategies} Strategies`}
               </Button>
             </div>
           )}

@@ -24,7 +24,9 @@ import {
   Hammer,
   Sparkles,
   Zap,
-  BookOpen
+  BookOpen,
+  PenTool,
+  Video
 } from "lucide-react";
 
 interface SidebarProps {
@@ -368,16 +370,16 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 My Progress
               </span>
             </Link>
-            <Link href="/prompt-pack" onClick={handleNavClick}>
+            <Link href="/sales-letter-pack" onClick={handleNavClick}>
               <span className={cn(
                 "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                location === "/prompt-pack"
+                location === "/sales-letter-pack"
                   ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               )}>
                 <div className="flex items-center gap-3">
-                  <Zap className="w-4 h-4" />
-                  Prompt Pack
+                  <PenTool className="w-4 h-4" />
+                  Sales Letter Pack
                 </div>
                 {!hasPromptPack && (
                   <Lock className="w-3 h-3 text-muted-foreground" />
@@ -398,6 +400,17 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 {!hasLaunchPack && (
                   <Lock className="w-3 h-3 text-muted-foreground" />
                 )}
+              </span>
+            </Link>
+            <Link href="/coaching" onClick={handleNavClick}>
+              <span className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                location === "/coaching"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}>
+                <Video className="w-4 h-4" />
+                1:1 Coaching Calls
               </span>
             </Link>
             {completedDays.has(8) ? (

@@ -1,8 +1,12 @@
 import { useState } from "react";
-import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft } from "lucide-react";
+import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft, FastForward, LogIn } from "lucide-react";
+import { useTestMode } from "@/contexts/TestModeContext";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Order() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const { testMode } = useTestMode();
+  const { isAuthenticated, isLoading } = useAuth();
   const [selectedCurrency, setSelectedCurrency] = useState<'usd' | 'gbp'>('usd');
   const [includePromptPack, setIncludePromptPack] = useState(false);
   const [includeLaunchPack, setIncludeLaunchPack] = useState(false);
@@ -123,7 +127,7 @@ export default function Order() {
                 </div>
                 {includePromptPack && (
                   <div className="flex items-center justify-between">
-                    <span className="text-slate-700">AI Prompt Pack</span>
+                    <span className="text-slate-700">Sales Letter Pack</span>
                     <span className="font-bold text-slate-900">
                       {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].promptPack}
                     </span>
@@ -149,7 +153,7 @@ export default function Order() {
               </div>
             </div>
 
-            {/* Bump Offer - Prompt Pack */}
+            {/* Bump Offer - Sales Letter Pack */}
             <div
               onClick={() => setIncludePromptPack(!includePromptPack)}
               className={`relative p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
@@ -158,6 +162,9 @@ export default function Order() {
                   : 'border-violet-300 bg-violet-50/50 hover:bg-violet-50'
               }`}
             >
+              <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                LIMITED TIME
+              </div>
               <div className="flex items-start gap-3">
                 <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
                   includePromptPack
@@ -168,11 +175,15 @@ export default function Order() {
                 </div>
                 <div className="flex-1">
                   <p className="font-bold text-slate-900 text-sm">
-                    YES! Add the AI Prompt Pack (73 Advanced Prompts)
+                    YES! Add the SaaS Sales Letter Pack (20 Expert Prompts)
                   </p>
                   <p className="text-sm text-slate-600 mt-1">
-                    Get instant access to 73 battle-tested AI prompts for every stage of building your SaaS: ideation, development, marketing, sales, and more.
-                    <span className="font-bold text-violet-600 ml-1">Just {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].promptPack}</span>
+                    Write your entire SaaS sales page with these expert prompts: headlines, features, pricing sections, FAQs, testimonial frameworks, CTAs, guarantees, and even privacy policy templates. Everything you need to convert visitors into customers.
+                  </p>
+                  <p className="text-sm mt-2">
+                    <span className="text-slate-400 line-through">{pricing[selectedCurrency].symbol}{pricing[selectedCurrency].promptPack * 3}</span>
+                    <span className="font-bold text-violet-600 ml-2">Just {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].promptPack}</span>
+                    <span className="text-slate-500 ml-1 text-xs">(Limited time only)</span>
                   </p>
                 </div>
               </div>
@@ -207,24 +218,50 @@ export default function Order() {
               </div>
             </div>
 
-            {/* CTA Button */}
-            <button
-              onClick={handleCheckout}
-              disabled={isCheckingOut}
-              className="w-full bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white font-bold text-xl py-5 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-            >
-              {isCheckingOut ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Processing...
-                </span>
-              ) : (
-                <>
-                  Complete My Order
-                  <ArrowRight className="w-6 h-6 inline ml-2" />
-                </>
-              )}
-            </button>
+            {/* CTA Button - Show login if not authenticated */}
+            {!isAuthenticated && !isLoading ? (
+              <div className="space-y-3">
+                <a
+                  href="/api/login"
+                  className="w-full flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-xl py-5 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                >
+                  <LogIn className="w-6 h-6" />
+                  Sign In to Complete Order
+                </a>
+                <p className="text-center text-sm text-slate-500">
+                  Quick sign-in required to access your purchase
+                </p>
+              </div>
+            ) : (
+              <button
+                onClick={handleCheckout}
+                disabled={isCheckingOut || isLoading}
+                className="w-full bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white font-bold text-xl py-5 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+              >
+                {isCheckingOut ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Processing...
+                  </span>
+                ) : (
+                  <>
+                    Complete My Order
+                    <ArrowRight className="w-6 h-6 inline ml-2" />
+                  </>
+                )}
+              </button>
+            )}
+
+            {/* Test Mode: Skip to Upsell - REMOVE BEFORE LAUNCH */}
+            {testMode && (
+              <a
+                href="/coaching/upsell"
+                className="w-full flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-6 rounded-xl transition-all"
+              >
+                <FastForward className="w-5 h-5" />
+                Test Mode: Skip to Upsell
+              </a>
+            )}
 
             {/* Guarantee */}
             <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">

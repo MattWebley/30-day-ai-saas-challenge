@@ -1,35 +1,49 @@
-import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
 
 export default function CheckoutSuccess() {
+  const [, setLocation] = useLocation();
+  const [status, setStatus] = useState("Processing your order...");
+
+  useEffect(() => {
+    const processCheckout = async () => {
+      // Get URL params to check what was purchased
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get('session_id');
+      const currency = params.get('currency') || 'usd';
+
+      // If there's a session_id, this is coming from main challenge checkout
+      if (sessionId) {
+        try {
+          // Save the Stripe customer ID for one-click upsells
+          setStatus("Saving your payment details...");
+          await fetch('/api/checkout/process-success', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sessionId })
+          });
+        } catch (error) {
+          console.error('Error processing checkout:', error);
+          // Continue anyway - the upsell will just use traditional checkout
+        }
+
+        // Redirect to coaching upsell page with currency
+        setLocation(`/coaching/upsell?currency=${currency}`);
+      } else {
+        // Otherwise redirect to dashboard
+        setLocation('/dashboard');
+      }
+    };
+
+    processCheckout();
+  }, [setLocation]);
+
+  // Show loading while redirecting
   return (
     <div className="min-h-screen bg-white flex items-center justify-center p-6">
       <div className="max-w-md w-full text-center space-y-6">
-        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-          <Check className="w-10 h-10 text-green-600" />
-        </div>
-        
-        <h1 className="text-3xl font-black text-slate-900">
-          Welcome to the Challenge!
-        </h1>
-        
-        <p className="text-lg text-slate-600">
-          Your payment was successful. You now have full access to the 21 Day AI SaaS Challenge.
-        </p>
-        
-        <p className="text-slate-600">
-          Check your email for login details, or click below to get started right now.
-        </p>
-        
-        <a href="/api/login">
-          <Button size="lg" className="w-full h-14 text-lg font-bold">
-            Start Day 1 Now
-          </Button>
-        </a>
-        
-        <p className="text-sm text-slate-500">
-          Questions? Email matt@mattwebley.com
-        </p>
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p className="text-slate-500 font-medium">{status}</p>
       </div>
     </div>
   );

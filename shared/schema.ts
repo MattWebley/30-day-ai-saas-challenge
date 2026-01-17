@@ -33,8 +33,11 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   isAdmin: boolean("is_admin").default(false),
+  challengePurchased: boolean("challenge_purchased").default(false),
   promptPackPurchased: boolean("prompt_pack_purchased").default(false),
   launchPackPurchased: boolean("launch_pack_purchased").default(false),
+  coachingPurchased: boolean("coaching_purchased").default(false),
+  stripeCustomerId: varchar("stripe_customer_id"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

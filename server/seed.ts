@@ -484,7 +484,25 @@ ONE thing at a time. Don't ask for login, dashboard, AND settings. Ask for login
 
 Describe problems like you're talking to a human. "Fix the bug" = TERRIBLE. "When I click submit, nothing happens. It should show a success message." = GOOD.
 
-The difference between building in DAYS vs being stuck for WEEKS comes down to how you talk to the AI. Good prompts = fast results.
+PROMPT STACKING (POWER MOVE):
+
+Here's a technique that separates beginners from pros: PROMPT STACKING.
+
+Most people send a prompt and WAIT. Just sitting there. Watching. Then send the next one. This is SLOW.
+
+Instead: while Claude is working on your first task, you can ALREADY be writing your next prompt. Stack them up. Send multiple. Keep the momentum going.
+
+BUT HERE'S THE CATCH (read this carefully):
+
+If your prompts touch the SAME FILES, you can create conflicts. Claude is editing file A. You tell it to also edit file A. Now you've got a mess - changes fighting each other, weird bugs, wasted time.
+
+THE FIX:
+
+Stack prompts that work on DIFFERENT parts of your app. While Claude builds your login page, queue up the prompt for your settings page. While it's doing frontend, prepare your backend prompt.
+
+SAME file = wait. DIFFERENT files = stack away.
+
+This one technique can DOUBLE your building speed. Use it wisely.
 
 Complete today and you'll unlock the CLAUDE CODE GUIDE in the menu - all 3 prompts in one place for easy access.`,
       outcome: "Confident using Claude Code to build, fix, and improve your app with effective prompts",

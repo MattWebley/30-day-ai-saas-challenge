@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrandProvider } from "@/components/BrandProvider";
-import { TestModeProvider } from "@/contexts/TestModeContext";
+import { TestModeProvider, useTestMode } from "@/contexts/TestModeContext";
 import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/Landing";
@@ -20,8 +20,11 @@ import AdminAnswer from "@/pages/AdminAnswer";
 import Showcase from "@/pages/Showcase";
 import DesignPreview from "@/pages/DesignPreview";
 import Order from "@/pages/Order";
-import PromptPack from "@/pages/PromptPack";
+import SalesLetterPack from "@/pages/SalesLetterPack";
 import LaunchPack from "@/pages/LaunchPack";
+import Coaching from "@/pages/Coaching";
+import CoachingUpsell from "@/pages/CoachingUpsell";
+import Welcome from "@/pages/Welcome";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -56,8 +59,10 @@ function Router() {
         <Route path="/order" component={Order} />
         <Route path="/checkout/success" component={CheckoutSuccess} />
         <Route path="/admin/answer/:token" component={AdminAnswer} />
-        <Route path="/prompt-pack" component={PromptPack} />
+        <Route path="/sales-letter-pack" component={SalesLetterPack} />
         <Route path="/launch-pack" component={LaunchPack} />
+        <Route path="/coaching/upsell" component={CoachingUpsell} />
+        <Route path="/welcome" component={Welcome} />
         {!isAuthenticated ? (
           <Route path="/" component={Landing} />
         ) : (
@@ -71,11 +76,29 @@ function Router() {
             <Route path="/settings" component={Settings} />
             <Route path="/admin" component={Admin} />
             <Route path="/design-preview" component={DesignPreview} />
+            <Route path="/coaching" component={Coaching} />
           </>
         )}
         <Route component={NotFound} />
       </Switch>
     </>
+  );
+}
+
+// REMOVE THIS BEFORE LAUNCH - Floating test mode toggle button
+function TestModeToggle() {
+  const { testMode, setTestMode } = useTestMode();
+  return (
+    <button
+      onClick={() => setTestMode(!testMode)}
+      className={`fixed top-4 right-4 z-[9999] px-3 py-2 rounded-lg text-xs font-bold shadow-lg transition-all ${
+        testMode
+          ? 'bg-amber-500 text-white hover:bg-amber-600'
+          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+      }`}
+    >
+      Test Mode: {testMode ? 'ON' : 'OFF'}
+    </button>
   );
 }
 
@@ -87,6 +110,8 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <Router />
+            {/* REMOVE THIS BEFORE LAUNCH */}
+            <TestModeToggle />
           </TooltipProvider>
         </TestModeProvider>
       </BrandProvider>
