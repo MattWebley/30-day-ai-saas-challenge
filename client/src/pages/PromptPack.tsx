@@ -3467,8 +3467,8 @@ export default function PromptPack() {
   // Allow access if authenticated OR in test mode
   const canView = isAuthenticated || testMode;
 
-  // Check if user has purchased the prompt pack
-  const hasAccess = (user as any)?.promptPackPurchased === true;
+  // Check if user has purchased the prompt pack OR in test mode
+  const hasAccess = (user as any)?.promptPackPurchased === true || testMode;
 
   // If not authenticated and not in test mode, show login prompt
   if (!canView) {

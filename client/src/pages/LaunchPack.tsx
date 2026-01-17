@@ -5416,8 +5416,8 @@ export default function LaunchPack() {
   // Allow access if authenticated OR in test mode
   const canView = isAuthenticated || testMode;
 
-  // Check if user has purchased the launch pack
-  const hasAccess = (user as any)?.launchPackPurchased === true;
+  // Check if user has purchased the launch pack OR in test mode
+  const hasAccess = (user as any)?.launchPackPurchased === true || testMode;
 
   // If not authenticated and not in test mode, show login prompt
   if (!canView) {
