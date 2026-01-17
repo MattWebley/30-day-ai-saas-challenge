@@ -1,9 +1,45 @@
 import { Resend } from 'resend';
 
-// Initialize Resend with API key from environment
-const resend = new Resend(process.env.RESEND_API_KEY);
+let connectionSettings: any;
 
-const FROM_EMAIL = 'Matt from 21 Day Challenge <matt@updates.mattwebley.com>';
+async function getCredentials() {
+  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
+  const xReplitToken = process.env.REPL_IDENTITY 
+    ? 'repl ' + process.env.REPL_IDENTITY 
+    : process.env.WEB_REPL_RENEWAL 
+    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
+    : null;
+
+  if (!xReplitToken) {
+    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+  }
+
+  connectionSettings = await fetch(
+    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
+    {
+      headers: {
+        'Accept': 'application/json',
+        'X_REPLIT_TOKEN': xReplitToken
+      }
+    }
+  ).then(res => res.json()).then(data => data.items?.[0]);
+
+  if (!connectionSettings || (!connectionSettings.settings.api_key)) {
+    throw new Error('Resend not connected');
+  }
+  return {
+    apiKey: connectionSettings.settings.api_key, 
+    fromEmail: connectionSettings.settings.from_email
+  };
+}
+
+async function getResendClient() {
+  const { apiKey, fromEmail } = await getCredentials();
+  return {
+    client: new Resend(apiKey),
+    fromEmail
+  };
+}
 
 export interface EmailParams {
   to: string;
@@ -22,14 +58,8 @@ export interface CoachingEmailParams extends EmailParams {
   amount: number;
 }
 
-// Send welcome email after main challenge purchase
 export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams): Promise<void> {
   const { to, firstName, includesPromptPack, includesLaunchPack, currency, total } = params;
-
-  if (!process.env.RESEND_API_KEY) {
-    console.log('RESEND_API_KEY not set, skipping email');
-    return;
-  }
 
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
@@ -42,8 +72,9 @@ export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams)
     : '';
 
   try {
-    await resend.emails.send({
-      from: FROM_EMAIL,
+    const { client, fromEmail } = await getResendClient();
+    await client.emails.send({
+      from: fromEmail,
       to: [to],
       subject: `You're in! Welcome to the 21 Day AI SaaS Challenge`,
       html: `
@@ -111,20 +142,15 @@ export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams)
   }
 }
 
-// Send confirmation email after coaching upsell purchase
 export async function sendCoachingConfirmationEmail(params: CoachingEmailParams): Promise<void> {
   const { to, firstName, currency, amount } = params;
-
-  if (!process.env.RESEND_API_KEY) {
-    console.log('RESEND_API_KEY not set, skipping email');
-    return;
-  }
 
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
   try {
-    await resend.emails.send({
-      from: FROM_EMAIL,
+    const { client, fromEmail } = await getResendClient();
+    await client.emails.send({
+      from: fromEmail,
       to: [to],
       subject: `Coaching Sessions Confirmed - Let's Build Together!`,
       html: `
