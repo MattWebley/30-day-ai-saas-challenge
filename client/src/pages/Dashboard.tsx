@@ -100,6 +100,18 @@ const lessonVideos: Record<number, string> = {
   21: "https://www.loom.com/embed/PLACEHOLDER_DAY21", // TODO: Replace with real video
 };
 
+// Loom thumbnails - get from Loom share page (og:image meta tag)
+// To find: go to https://www.loom.com/share/VIDEO_ID, view page source, find og:image
+const lessonThumbnails: Record<number, string> = {
+  0: "https://cdn.loom.com/sessions/thumbnails/420c8729c9d544c3a265ea8273fe797e-49b24f08ffb05d98.jpg",
+  // Add thumbnails for other days as you record them
+};
+
+// Helper to get Loom thumbnail URL
+function getLoomThumbnail(day: number): string | null {
+  return lessonThumbnails[day] || null;
+}
+
 export default function Dashboard() {
   const [match, params] = useRoute("/dashboard/:day");
   const [location, setLocation] = useLocation();
@@ -308,17 +320,19 @@ export default function Dashboard() {
                       <h2 className="font-bold text-xl text-slate-900">Watch the Introduction</h2>
                     </div>
                     <div
-                      className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group"
-                      style={{ paddingBottom: '56.25%' }}
+                      className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group"
+                      style={{
+                        paddingBottom: '56.25%',
+                        ...(getLoomThumbnail(0) && { backgroundImage: `url(${getLoomThumbnail(0)})`, backgroundSize: 'cover', backgroundPosition: 'center' })
+                      }}
                       onClick={() => setShowVideoModal(true)}
                     >
+                      {/* GRADIENT OVERLAY - remove this div to revert */}
+                      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                           <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                         </div>
-                      </div>
-                      <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
-                        Click to play video
                       </div>
                     </div>
                   </div>
@@ -337,24 +351,25 @@ export default function Dashboard() {
                     <VideoSlides day={1} />
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    {/* VIDEO SECTION - Day 1 (remove this block to revert) */}
+                    {/* VIDEO SECTION - Day 1 */}
                     {lessonVideos[1] && (
                       <div
-                        className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
-                        style={{ paddingBottom: '56.25%' }}
+                        className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
+                        style={{
+                          paddingBottom: '56.25%',
+                          ...(getLoomThumbnail(1) && { backgroundImage: `url(${getLoomThumbnail(1)})`, backgroundSize: 'cover', backgroundPosition: 'center' })
+                        }}
                         onClick={() => setShowVideoModal(true)}
                       >
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+                          <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                             <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                           </div>
                         </div>
-                        <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
-                          Click to play video
-                        </div>
                       </div>
                     )}
-                    {/* END VIDEO SECTION */}
                     {dayData.lesson ? (
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
@@ -395,24 +410,25 @@ export default function Dashboard() {
                     <VideoSlides day={2} />
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    {/* VIDEO SECTION - Day 2 (remove this block to revert) */}
+                    {/* VIDEO SECTION - Day 2 */}
                     {lessonVideos[2] && (
                       <div
-                        className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
-                        style={{ paddingBottom: '56.25%' }}
+                        className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
+                        style={{
+                          paddingBottom: '56.25%',
+                          ...(getLoomThumbnail(2) && { backgroundImage: `url(${getLoomThumbnail(2)})`, backgroundSize: 'cover', backgroundPosition: 'center' })
+                        }}
                         onClick={() => setShowVideoModal(true)}
                       >
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+                          <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                             <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                           </div>
                         </div>
-                        <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
-                          Click to play video
-                        </div>
                       </div>
                     )}
-                    {/* END VIDEO SECTION */}
                     {dayData.lesson ? (
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
@@ -451,24 +467,25 @@ export default function Dashboard() {
                       <VideoSlides day={3} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                      {/* VIDEO SECTION - Day 3 (remove this block to revert) */}
+                      {/* VIDEO SECTION - Day 3 */}
                       {lessonVideos[3] && (
                         <div
-                          className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
-                          style={{ paddingBottom: '56.25%' }}
+                          className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
+                          style={{
+                            paddingBottom: '56.25%',
+                            ...(getLoomThumbnail(3) && { backgroundImage: `url(${getLoomThumbnail(3)})`, backgroundSize: 'cover', backgroundPosition: 'center' })
+                          }}
                           onClick={() => setShowVideoModal(true)}
                         >
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
-                            Click to play video
-                          </div>
                         </div>
                       )}
-                      {/* END VIDEO SECTION */}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -506,24 +523,25 @@ export default function Dashboard() {
                       <VideoSlides day={4} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                      {/* VIDEO SECTION - Day 4 (remove this block to revert) */}
+                      {/* VIDEO SECTION - Day 4 */}
                       {lessonVideos[4] && (
                         <div
-                          className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
-                          style={{ paddingBottom: '56.25%' }}
+                          className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
+                          style={{
+                            paddingBottom: '56.25%',
+                            ...(getLoomThumbnail(4) && { backgroundImage: `url(${getLoomThumbnail(4)})`, backgroundSize: 'cover', backgroundPosition: 'center' })
+                          }}
                           onClick={() => setShowVideoModal(true)}
                         >
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
-                            Click to play video
-                          </div>
                         </div>
                       )}
-                      {/* END VIDEO SECTION */}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -560,24 +578,25 @@ export default function Dashboard() {
                       <VideoSlides day={5} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                      {/* VIDEO SECTION - Day 5 (remove this block to revert) */}
+                      {/* VIDEO SECTION - Day 5 */}
                       {lessonVideos[5] && (
                         <div
-                          className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
-                          style={{ paddingBottom: '56.25%' }}
+                          className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
+                          style={{
+                            paddingBottom: '56.25%',
+                            ...(getLoomThumbnail(5) && { backgroundImage: `url(${getLoomThumbnail(5)})`, backgroundSize: 'cover', backgroundPosition: 'center' })
+                          }}
                           onClick={() => setShowVideoModal(true)}
                         >
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
-                            Click to play video
-                          </div>
                         </div>
                       )}
-                      {/* END VIDEO SECTION */}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -611,24 +630,25 @@ export default function Dashboard() {
                       <VideoSlides day={6} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                      {/* VIDEO SECTION - Day 6 (remove this block to revert) */}
+                      {/* VIDEO SECTION - Day 6 */}
                       {lessonVideos[6] && (
                         <div
-                          className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6"
-                          style={{ paddingBottom: '56.25%' }}
+                          className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
+                          style={{
+                            paddingBottom: '56.25%',
+                            ...(getLoomThumbnail(6) && { backgroundImage: `url(${getLoomThumbnail(6)})`, backgroundSize: 'cover', backgroundPosition: 'center' })
+                          }}
                           onClick={() => setShowVideoModal(true)}
                         >
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">
-                            Click to play video
-                          </div>
                         </div>
                       )}
-                      {/* END VIDEO SECTION */}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
@@ -696,13 +716,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 7 */}
                       {lessonVideos[7] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(7) && { backgroundImage: `url(${getLoomThumbnail(7)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -763,13 +784,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 8 */}
                       {lessonVideos[8] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(8) && { backgroundImage: `url(${getLoomThumbnail(8)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -810,13 +832,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 9 */}
                       {lessonVideos[9] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(9) && { backgroundImage: `url(${getLoomThumbnail(9)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -854,13 +877,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 10 */}
                       {lessonVideos[10] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(10) && { backgroundImage: `url(${getLoomThumbnail(10)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -898,13 +922,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 11 */}
                       {lessonVideos[11] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(11) && { backgroundImage: `url(${getLoomThumbnail(11)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -942,13 +967,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 12 */}
                       {lessonVideos[12] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(12) && { backgroundImage: `url(${getLoomThumbnail(12)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -986,13 +1012,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 13 */}
                       {lessonVideos[13] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(13) && { backgroundImage: `url(${getLoomThumbnail(13)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -1030,13 +1057,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 14 */}
                       {lessonVideos[14] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(14) && { backgroundImage: `url(${getLoomThumbnail(14)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -1073,13 +1101,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 15 */}
                       {lessonVideos[15] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(15) && { backgroundImage: `url(${getLoomThumbnail(15)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -1117,13 +1146,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 16 */}
                       {lessonVideos[16] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(16) && { backgroundImage: `url(${getLoomThumbnail(16)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -1161,13 +1191,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 17 */}
                       {lessonVideos[17] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(17) && { backgroundImage: `url(${getLoomThumbnail(17)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -1205,13 +1236,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 18 */}
                       {lessonVideos[18] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(18) && { backgroundImage: `url(${getLoomThumbnail(18)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -1249,13 +1281,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 19 */}
                       {lessonVideos[19] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(19) && { backgroundImage: `url(${getLoomThumbnail(19)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -1298,13 +1331,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 20 */}
                       {lessonVideos[20] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(20) && { backgroundImage: `url(${getLoomThumbnail(20)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">
@@ -1342,13 +1376,14 @@ export default function Dashboard() {
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 21 */}
                       {lessonVideos[21] && (
-                        <div className="relative rounded-lg overflow-hidden bg-slate-900 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%' }} onClick={() => setShowVideoModal(true)}>
+                        <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(21) && { backgroundImage: `url(${getLoomThumbnail(21)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
+                          {/* GRADIENT OVERLAY - remove this div to revert */}
+                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                               <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                             </div>
                           </div>
-                          <div className="absolute bottom-4 left-4 text-white/80 text-sm font-medium">Click to play video</div>
                         </div>
                       )}
                       <div className="prose prose-slate max-w-none">

@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-16 (Stripe checkout & order page)
+- **Last Session**: 2026-01-17 (Video thumbnail styling)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -257,3 +257,25 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Consider adding a cheaper bump offer ($27-67) for higher conversion rates
   - Current bump at $299 is 75% of main price (best practice is 20-40%)
   - Cheaper bump ideas: Prompt library, templates, checklists, community access
+
+### 2026-01-17 - Video Thumbnail Styling
+- **Tasks Completed:**
+  - Added Loom thumbnail support for video lessons (Days 0-21)
+  - Created `lessonThumbnails` map for explicit thumbnail URLs (Loom URLs have unpredictable hash suffixes)
+  - Added Day 0 thumbnail: `420c8729c9d544c3a265ea8273fe797e-49b24f08ffb05d98.jpg`
+  - Applied gradient overlay to all 23 video thumbnails (22 dashboard + 1 landing VSL)
+  - Gradient: `from-black/20 via-transparent to-black/60` (darkens top/bottom, clear middle)
+  - Changed fallback background from black (`bg-slate-900`) to light gray (`bg-slate-200`)
+  - Unified play button styling: `bg-white/90` with hover scale effect
+- **Fixes Applied:**
+  - Removed "Click to play video" text from all video thumbnails (redundant with play button)
+  - Landing page VSL now matches dashboard video thumbnail styling
+- **How to Add Thumbnails:**
+  - Go to `https://www.loom.com/share/VIDEO_ID`
+  - View page source, find `og:image` meta tag
+  - Add URL to `lessonThumbnails` map in Dashboard.tsx (~line 105)
+- **To Revert Gradient Overlay:**
+  - Search for `GRADIENT OVERLAY` comment and delete those div elements (23 total)
+- **Notes for Next Session:**
+  - Days 1-21 still need real Loom videos and thumbnails
+  - Test video thumbnail display on Day 0 (should show your face/screen from the Loom recording)

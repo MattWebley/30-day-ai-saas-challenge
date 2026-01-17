@@ -51,21 +51,24 @@ export default function Landing() {
               <p className="text-slate-600 font-medium">Watch the 3-minute overview</p>
 
               {/* Video Placeholder - Replace with actual video embed */}
-              <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden cursor-pointer group">
+              <div className="relative aspect-video bg-slate-200 rounded-xl overflow-hidden cursor-pointer group">
                 {/* Placeholder thumbnail - replace src with actual thumbnail */}
                 <img
                   src="/vsl-thumbnail.png"
                   alt="Watch video overview"
-                  className="w-full h-full object-cover opacity-80 group-hover:opacity-70 transition-opacity"
+                  className="w-full h-full object-cover"
                   onError={(e) => {
                     // Hide image if thumbnail doesn't exist yet
                     e.currentTarget.style.display = 'none';
                   }}
                 />
 
+                {/* GRADIENT OVERLAY - remove this div to revert */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+
                 {/* Play button overlay */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                  <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:bg-white group-hover:scale-110 transition-all duration-200">
                     <Play className="w-8 h-8 text-slate-900 ml-1" fill="currentColor" />
                   </div>
                 </div>
