@@ -155,12 +155,12 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
   const generatePublicMessage = () => {
     const whyText = selectedWhys.size > 0
       ? Array.from(selectedWhys).map(i => whyOptions[i].label.toLowerCase()).slice(0, 2).join(" and ")
-      : "build something real";
+      : null;
     return `I just committed to building a SaaS product from scratch in 21 days.
 
 No excuses. No "someday." Just focused action every single day.
 
-Why? Because I want ${whyText}.
+${whyText ? `Why? Because I want ${whyText}.` : "Why? Because it's time to stop talking and start building."}
 
 Day 1 starts now. Follow along if you want to see how this goes.
 
