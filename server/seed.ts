@@ -150,6 +150,8 @@ If you've been in KDP, print on demand, Amazon FBA, online courses, or ANY busin
 
 Why? Because getting someone to buy a "cute goldfish app" is HARD. Getting them to buy something that helps them MAKE MORE MONEY? That's an EASY sell! These people see tools as ESSENTIAL INVESTMENTS, not "nice to haves."
 
+PRO TIP: B2B (selling to businesses) is almost ALWAYS a better starting point than B2C (selling to consumers). Businesses EXPECT to pay for tools. They have BUDGETS. They make decisions FAST. Consumers? They'll spend 3 hours comparing apps to save $2.
+
 THE 4-POINT FILTER:
 
 1. PAIN INTENSITY - Is this a HATED, FREQUENT, DIFFICULT, SLOW or COSTLY task?
@@ -160,8 +162,8 @@ THE 4-POINT FILTER:
 Score each 1-5. If it doesn't hit 16+ out of 20, it's DEAD in the water.
 
 Think NICHE - DO NOT THINK BROAD! The NICHER the BETTER usually...`,
-      outcome: "A shortlist of 3-5 SaaS ideas scored against proven criteria, ready for validation",
-      completionMessage: "Most people never get past 'someday I'll start.' You just generated 28 ideas and picked your favorites. You're already ahead of 90% of people who talk about building a business. Tomorrow, we find out which one people will actually PAY for.",
+      outcome: "Your shortlist of SaaS ideas, ready for validation",
+      completionMessage: "Most people never get past 'someday I'll start.' You've got your ideas locked in and you're ready to move. You're already ahead of 90% of people who talk about building a business. Tomorrow, we find out which one people will actually PAY for.",
       xpReward: 100,
       estimatedMinutes: 5,
     },

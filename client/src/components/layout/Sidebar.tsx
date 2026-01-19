@@ -158,18 +158,30 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   const maxVisibleDay = testMode ? totalDays : Math.max(lastCompleted + 3, currentDay + 2, 3);
 
   // Milestone definitions for battle pass style progress
-  // Day number shows when each phase begins (displayed to user)
+  // Day number shows when each phase begins
+  // Phases: Start (0), Idea (1-2), Plan (3-4), Prepare (5-9), Build (10-18), Launch (19-21)
   const milestones = [
     { day: 0, label: "Start", icon: Rocket, percentage: 0 },
-    { day: 1, label: "Idea", icon: Lightbulb, percentage: (2 / totalDays) * 100 },
-    { day: 4, label: "Plan", icon: Map, percentage: (4 / totalDays) * 100 },
+    { day: 3, label: "Plan", icon: Map, percentage: (3 / totalDays) * 100 },
+    { day: 5, label: "Prepare", icon: Sparkles, percentage: (5 / totalDays) * 100 },
     { day: 10, label: "Build", icon: Hammer, percentage: (10 / totalDays) * 100 },
-    { day: 21, label: "Launch", icon: Target, percentage: 100 },
+    { day: 19, label: "Launch", icon: Target, percentage: (19 / totalDays) * 100 },
   ];
 
-  // Find current milestone
+  // Find current milestone (the next phase you're working towards)
   const currentMilestone = milestones.find(m => lastCompleted < m.day) || milestones[milestones.length - 1];
   const currentMilestoneIndex = milestones.findIndex(m => m === currentMilestone);
+
+  // Determine current phase based on what day you're working on
+  const getCurrentPhase = (day: number) => {
+    if (day === 0) return "Start";
+    if (day <= 2) return "Idea";
+    if (day <= 4) return "Plan";
+    if (day <= 9) return "Prepare";
+    if (day <= 18) return "Build";
+    return "Launch";
+  };
+  const currentPhase = getCurrentPhase(Math.max(lastCompleted + 1, currentDay));
   const visibleDays = challengeDays.filter((d: any) => d.day <= maxVisibleDay);
 
   const handleNavClick = () => {
@@ -214,8 +226,8 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
               </p>
             </div>
             <div className="text-right">
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Next</p>
-              <p className="text-sm font-bold text-primary">{currentMilestone.label}</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Phase</p>
+              <p className="text-sm font-bold text-primary">{currentPhase}</p>
             </div>
           </div>
 

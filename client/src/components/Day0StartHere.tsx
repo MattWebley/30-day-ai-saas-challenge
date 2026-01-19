@@ -196,14 +196,19 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
 
       {/* Success Rules */}
       <div className={ds.section}>
-        <div className="flex items-center justify-between">
-          <h2 className={ds.heading}>The Rules for Success</h2>
-          <span className={`${ds.muted} px-3 py-1 rounded-full bg-slate-50`}>
-            {commitments.size === successRules.length
-              ? "All accepted"
-              : `Tap each to accept (${commitments.size}/4)`
-            }
-          </span>
+        <div>
+          <div className="flex items-center justify-between">
+            <h2 className={ds.heading}>The Rules for Success</h2>
+            <span className={`${ds.muted} px-3 py-1 rounded-full bg-slate-50`}>
+              {commitments.size === successRules.length
+                ? "All accepted"
+                : `${commitments.size}/4 accepted`
+              }
+            </span>
+          </div>
+          <p className={ds.muted}>
+            These 4 rules separate finishers from quitters. Tap each one to commit.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

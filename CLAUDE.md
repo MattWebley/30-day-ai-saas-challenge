@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-17 (Email confirmations & checkout flow)
+- **Last Session**: 2026-01-19 (Day 0-1 improvements & sidebar fix)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -311,3 +311,24 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test full flow: Order → Stripe → CheckoutSuccess → CoachingUpsell → Welcome
   - Bump offer Stripe price IDs still need to be created (Sales Letter Pack, Launch Pack)
   - Port 5000 conflicts may occur - use Replit Stop/Run to clear
+
+### 2026-01-19 - Day 0-1 Improvements & Sidebar Fix
+- **Tasks Completed:**
+  - Day 1: Added "I Already Have Ideas" option - users can now enter their own ideas OR use AI generation
+  - Day 1: Removed 3-5 idea requirement - users can proceed with just 1 idea (encouraged to add more)
+  - Day 1: Updated completion message to work for both paths ("ideas locked in" vs "generated 28 ideas")
+  - Day 1: Added B2B vs B2C tip to lesson ("B2B is almost ALWAYS a better starting point")
+  - Day 0: Added explanatory text under "The Rules for Success" heading
+  - Sidebar: Fixed phase display - now shows current phase (Idea/Plan/Build/etc) instead of next milestone
+  - Sidebar: Updated milestone definitions to align with actual phase boundaries
+- **Fixes Applied:**
+  - Removed all "3-5 ideas" requirements from Day 1 (now 1+ ideas allowed)
+  - Fixed "Select Your Top 3-5 Ideas" → "Select Your Favorites"
+  - Updated outcome text in seed.ts to be path-agnostic
+  - Re-seeded database twice to apply lesson/message changes
+- **New Issues Discovered:**
+  - Day 2 header still shows "Idea & Planning" phase text (from dayData.phase in seed.ts) - may need updating
+- **IMPORTANT - Next Session:**
+  - **START TESTING FROM DAY 2** - Days 0-1 have been checked, continue from Day 2 onwards
+  - Check Day 2 phase label in seed.ts if "Idea & Planning" is wrong
+  - Continue testing Day 2 → Day 3 → etc. flow
