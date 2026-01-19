@@ -70,7 +70,8 @@
       "WebFetch(domain:cdn.loom.com)",
       "WebFetch(domain:www.loom.com)",
       "Bash(npm install:*)",
-      "Bash(killall:*)"
+      "Bash(killall:*)",
+      "Bash(for file in /home/runner/workspace/client/src/components/Day*.tsx)"
     ]
   }
 }

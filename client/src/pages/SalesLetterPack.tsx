@@ -232,7 +232,7 @@ Keep everything scannable. Someone should understand what you do in 5 seconds.`,
 Lead with the end result:
 - "[Outcome] in [Timeframe]"
 - "Finally, [outcome] without [pain]"
-- "Get [result] — automatically"
+- "Get [result] - automatically"
 
 **PROBLEM-AWARE (10)**
 Lead with their pain:
@@ -304,7 +304,7 @@ Start mid-story that mirrors their situation.
 
 **5. THE BOLD CLAIM OPENER**
 Start with a statement that raises eyebrows.
-"There's a better way to [task] — and it takes [short time]."
+"There's a better way to [task] - and it takes [short time]."
 
 **6. THE COMMON ENEMY OPENER**
 Unite against a shared frustration.
@@ -375,7 +375,7 @@ Example: "Generate reports automatically while you focus on what matters. Set it
 
 **4. THE BULLET VERSION**
 A scannable bullet point for feature lists.
-Example: "✓ Automated reporting — save 5+ hours/week"
+Example: "✓ Automated reporting - save 5+ hours/week"
 
 **5. COMPARISON TO ALTERNATIVE**
 How is this better than how they do it now?
@@ -398,9 +398,9 @@ Output all features in a format I can copy directly to my sales page.`,
 **GENERATE:**
 
 **OPTION 1: 3-STEP VERSION**
-Step 1: [ACTION VERB] — [OUTCOME]
-Step 2: [ACTION VERB] — [OUTCOME]
-Step 3: [ACTION VERB] — [OUTCOME]
+Step 1: [ACTION VERB] - [OUTCOME]
+Step 2: [ACTION VERB] - [OUTCOME]
+Step 3: [ACTION VERB] - [OUTCOME]
 
 Each step needs:
 - A clear action word (Connect, Set up, Launch, etc.)
@@ -997,15 +997,15 @@ Write 3 P.S. options:
 
 **P.S. Option 1: Summary**
 Restate the core offer and benefit.
-"P.S. — When you start your free trial today, you're getting..."
+"P.S. - When you start your free trial today, you're getting..."
 
 **P.S. Option 2: Guarantee**
 Remind them of the risk reversal.
-"P.S. — Remember, you're protected by our [X]-day guarantee..."
+"P.S. - Remember, you're protected by our [X]-day guarantee..."
 
 **P.S. Option 3: Urgency**
 If there's a real deadline or scarcity.
-"P.S. — This [offer/price] is only available until..."
+"P.S. - This [offer/price] is only available until..."
 
 **3. FOOTER CTA**
 A small, final prompt above the footer:
@@ -1015,7 +1015,7 @@ A small, final prompt above the footer:
 **4. EXIT INTENT COPY** (if using popup)
 - Headline: Stop them from leaving
 - Body: One last reason to stay/try
-- CTA: "Wait — try it free"
+- CTA: "Wait - try it free"
 
 Format ready to use.`,
         tags: ["closing", "ps"]
@@ -1447,7 +1447,7 @@ export default function SalesLetterPack() {
             <p className="text-lg text-slate-600 max-w-2xl mx-auto">
               {hasAccess
                 ? "Everything you need to write a high-converting sales page for your SaaS. Copy, customize, and launch."
-                : `Unlock ${totalPrompts} prompts to write every section of your SaaS sales page — from headline to legal pages.`}
+                : `Unlock ${totalPrompts} prompts to write every section of your SaaS sales page - from headline to legal pages.`}
             </p>
             {hasAccess && (
               <div className="mt-4 inline-block bg-slate-100 border border-slate-200 rounded-lg px-4 py-3 text-sm text-slate-700">

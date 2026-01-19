@@ -266,7 +266,7 @@ function DayDetails({ dayNum, progress }: { dayNum: number; progress: DayProgres
         )}
         {inputs.killerFeature && (
           <div>
-            <p className="font-medium text-slate-700">Killer feature:</p>
+            <p className="font-medium text-slate-700">Standout feature:</p>
             <p className="text-slate-600 ml-2 font-medium">{inputs.killerFeature}</p>
           </div>
         )}

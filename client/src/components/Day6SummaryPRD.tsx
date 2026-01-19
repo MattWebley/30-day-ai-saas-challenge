@@ -228,11 +228,11 @@ export function Day6SummaryPRD({
           <div>
             <p className={ds.label}>Your PRD is ready!</p>
             <p className={ds.muted + " mt-1"}>
-              You can edit or download it above, then continue to start building
+              You can edit or download it above, then continue to setup
             </p>
           </div>
           <Button size="lg" onClick={handleContinue}>
-            Continue to Build
+            PRD Complete - Continue
           </Button>
         </div>
       </div>

@@ -5,48 +5,41 @@ async function seed() {
   console.log("🌱 Seeding database...");
 
   // Seed badges - aligned with timeline milestones
-  // Start (Day 0) → Idea (Day 1) → Plan (Day 4) → Build (Day 8) → Polish (Day 14) → Launch (Day 21)
+  // Start (Day 0) → Idea (Days 1-2) → Plan (Days 3-4) → Prepare (Days 5-9) → Build (Days 10-18) → Launch (Days 19-21)
   console.log("Creating badges...");
   const badgeData = [
     // Phase completion badges
     {
       name: "Ideator",
-      description: "Completed Idea phase: Found your $100K+ idea",
+      description: "You've picked your winning idea",
       icon: "💡",
       triggerType: "day_completed",
       triggerValue: 2,
     },
     {
       name: "Strategist",
-      description: "Completed Plan phase: Features, naming & tech stack done",
+      description: "Your product is planned and named",
       icon: "🗺️",
       triggerType: "day_completed",
       triggerValue: 4,
     },
     {
       name: "Ready to Build",
-      description: "Completed Prepare phase: PRD done, first build complete",
+      description: "Tools set up, PRD ready, let's build",
       icon: "🎯",
       triggerType: "day_completed",
-      triggerValue: 8,
+      triggerValue: 9,
     },
     {
       name: "Builder",
-      description: "Completed Build phase: Core features working",
+      description: "Your MVP is complete",
       icon: "🏗️",
-      triggerType: "day_completed",
-      triggerValue: 14,
-    },
-    {
-      name: "Polisher",
-      description: "Completed Polish phase: Auth, email & admin done",
-      icon: "✨",
       triggerType: "day_completed",
       triggerValue: 18,
     },
     {
       name: "The Launcher",
-      description: "LAUNCHED! You completed the 21 Day Challenge!",
+      description: "You launched your SaaS!",
       icon: "🚀",
       triggerType: "day_completed",
       triggerValue: 21,
@@ -127,13 +120,13 @@ Ready? Let's go.`,
       estimatedMinutes: 3,
     },
     // ============================================
-    // IDEA & PLANNING (Days 1-7)
+    // IDEA (Days 1-2)
     // ============================================
     {
       day: 1,
       title: "Choosing Your $100K+ Idea",
       description: "Use AI to generate personalized SaaS ideas based on your knowledge, skills, and interests - then shortlist the best ones.",
-      phase: "Idea & Planning",
+      phase: "Idea",
       videoUrl: null,
       aiTaskType: "suggestion",
       aiTaskTitle: "AI Idea Generator",
@@ -171,7 +164,7 @@ Think NICHE - DO NOT THINK BROAD! The NICHER the BETTER usually...`,
       day: 2,
       title: "Will People Pay For This?",
       description: "Validate your idea by identifying real pain points, checking competitors, and creating your 'I help X with Y problem' statement.",
-      phase: "Idea & Planning",
+      phase: "Idea",
       videoUrl: null,
       aiTaskType: "suggestion",
       aiTaskTitle: "Idea Validation & Pain Point Analysis",
@@ -203,16 +196,19 @@ It NEVER lets me down!
 The "I Help" Statement:
 
 By end of today, you should be able to say: "I help [SPECIFIC PERSON] solve [PAINFUL PROBLEM] so they can [DESIRED OUTCOME]."`,
-      outcome: "One validated SaaS idea with 1-3 specific, painful problems it solves - and your 'I help X with Y' statement",
+      outcome: "One validated SaaS idea with specific pain points you'll solve - and your 'I help X with Y' statement",
       completionMessage: "The hardest decision is behind you. You picked ONE idea and identified the exact pains it solves. That's what separates builders from dreamers. Now we turn these pain points into features.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
+    // ============================================
+    // PLAN (Days 3-4)
+    // ============================================
     {
       day: 3,
       title: "Core Features & Your USP",
       description: "Clone competitor's essential features AND identify 1-2 unique features that will set you apart from everyone else.",
-      phase: "Idea & Planning",
+      phase: "Plan",
       videoUrl: null,
       aiTaskType: "suggestion",
       aiTaskTitle: "Feature Generation & USP Discovery",
@@ -222,7 +218,7 @@ By end of today, you should be able to say: "I help [SPECIFIC PERSON] solve [PAI
       microDecisionQuestion: "What's your USP focus?",
       microDecisionOptions: JSON.stringify(["Speed/Simplicity", "AI-Powered", "Better Integration", "Niche-Specific"]),
       reflectionQuestion: "What one unique feature will make customers choose you over competitors?",
-      tip: "Why create a 'clone' when you can have ALL their best features AND be 10-20% better with just ONE unique feature? That's a KILLER combination.",
+      tip: "Why create a 'clone' when you can have ALL their best features AND be 10-20% better with just ONE unique feature? That's a WINNING combination.",
       lesson: `The TRUTH is, if you just create something with the SAME feature set as a competitor then YOU can have a WILDLY successful business! BUT... Why create some "clone" when you can have ALL of their best features AND be 10-20% better by including ONE feature they don't have!
 
 STEP 1: List Essential Core Features
@@ -239,19 +235,19 @@ The WINNING FORMULA:
 
 CLONED CORE FEATURES + USP + LONGER FREE TRIAL + CHEAPER MONTHLY PRICE = WIN`,
       outcome: "A complete feature list: core features you MUST have, competitive must-haves, and 1-2 unique USP features",
-      completionMessage: "You know what beats a 'perfect' feature list? One that you can actually build. You just defined your core features, what competitors have, and what makes you DIFFERENT. Tomorrow: naming and MVP roadmap.",
+      completionMessage: "You know what beats a 'perfect' feature list? One that you can actually build. You just defined your core features, what competitors have, and what makes you DIFFERENT. Tomorrow: naming your product and claiming your territory.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 4,
       title: "Name It & Claim It",
-      description: "Choose a killer name, secure the .com domain (no exceptions!), and claim all your social handles before someone else does.",
-      phase: "Idea & Planning",
+      description: "Choose your product name, secure the .com domain, claim your social handles, and do a quick trademark check before you fall in love with it.",
+      phase: "Plan",
       videoUrl: null,
       aiTaskType: "suggestion",
       aiTaskTitle: "AI Name Generator",
-      aiTaskDescription: "AI generates brandable name ideas based on your idea, pain points, and features. Then you'll register your domain and claim social handles.",
+      aiTaskDescription: "AI generates brandable name ideas based on your idea, pain points, and features. Then you'll register your domain, claim social handles, and check for trademarks.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "What vibe do you want for your brand name?",
@@ -270,6 +266,14 @@ THE GOLDEN RULES:
 
 4. BE UNIQUE - "ProjectManager" is not a name - it's a description. "Asana" is a name. Made-up words that SOUND good are often better than descriptive names.
 
+NAMING APPROACHES (Pick One):
+
+1. INVENTED/BRANDABLE - Made-up words like Spotify, Trello, Asana. Unique, trademarkable, and .com is usually available. AI generates these for you.
+
+2. DESCRIPTIVE - Describes what it does like Mailchimp, Salesforce, QuickBooks. Clearer to customers but harder to get the .com.
+
+Either works. Invented names are easier to get domains for, descriptive names are easier for customers to understand. Pick what feels right and can get a .com for under $20.
+
 WHAT TO AVOID:
 
 ❌ HYPHENS OR NUMBERS - "task-hub-123.com" looks cheap and confusing. Just don't.
@@ -278,17 +282,45 @@ WHAT TO AVOID:
 
 ❌ GENERIC NAMES - "Analytics Platform" or "Marketing Tool" - you can't trademark these and they're forgettable.
 
-The name you pick today will be on every invoice, every email, every conversation. Make it count.`,
-      outcome: "Your product name chosen, .com domain registered, and all social handles claimed",
-      completionMessage: "You have a NAME. A real brand that's YOURS. Domain secured, socials claimed. Nobody can take these from you now. Tomorrow: setting up your AI-powered development toolkit.",
+CLAIM YOUR SOCIAL HANDLES:
+
+Once you have a name, grab it EVERYWHERE before someone else does:
+
+- Twitter/X - Your brand's voice
+- Instagram - Visual presence
+- YouTube - For video content
+- Facebook - Business page
+- LinkedIn - B2B credibility
+- TikTok - If your audience is there
+
+Why bother? Because in 6 months when you're ready to grow, you don't want to find out @YourBrandName is taken by a dormant account or a squatter wanting $500.
+
+Same rules as domains: if the exact handle isn't available, consider tweaking the name NOW rather than being "YourBrandName_Official" forever.
+
+CHECK FOR TRADEMARKS:
+
+Before you get too attached, do a quick trademark search. You DON'T need to register a trademark right now - that can come later when you're making money. But you DO want to make sure no one else has already trademarked your exact name in the software/SaaS space.
+
+Search the UK Intellectual Property Office and the US Patent and Trademark Office (USPTO). If you find an exact match in your industry, consider tweaking the name now rather than dealing with a cease-and-desist letter later.
+
+The name you pick today will be on every invoice, every email, every conversation. Make it count.
+
+IN THE EXERCISE BELOW:
+
+You'll get AI-generated name suggestions, then clickable links to check everything - domain availability on Namecheap, trademark searches for UK and US, and direct signup links for Twitter/X, Instagram, YouTube, and more. All in one place, no hunting around.`,
+      outcome: "Your product name chosen, .com domain registered, social handles claimed, and trademark search completed",
+      completionMessage: "You have a NAME. A real brand that's YOURS. Domain secured, socials claimed, trademarks checked. Nobody can take these from you now. Tomorrow: creating your logo.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
+    // ============================================
+    // PREPARE (Days 5-9)
+    // ============================================
     {
       day: 5,
       title: "Create Your Logo",
       description: "Design a simple, memorable logo for your SaaS. You don't need to be a designer - AI tools make this easy.",
-      phase: "Idea & Planning",
+      phase: "Prepare",
       videoUrl: null,
       aiTaskType: "creative",
       aiTaskTitle: "Logo Creation",
@@ -449,7 +481,7 @@ KEY NOTE:
 
 You HAVE to accept this is an EVER-CHANGING space. Things change CONSTANTLY. Don't FEAR this. EMBRACE it.`,
       outcome: "Claude Code connected to Replit and GitHub, first build session complete",
-      completionMessage: "Week 1 DONE. You have a validated idea, a clear plan, tools set up, and you've started building. While others are still 'thinking about it,' you're DOING it. Next week: we verify what got built.",
+      completionMessage: "Week 1 DONE. You have a validated idea, a clear plan, tools set up, and you've started building. While others are still 'thinking about it,' you're DOING it. Tomorrow: mastering how to talk to Claude Code.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -508,19 +540,19 @@ This one technique can DOUBLE your building speed. Use it wisely.
 
 Complete today and you'll unlock the CLAUDE CODE GUIDE in the menu - all 3 prompts in one place for easy access.`,
       outcome: "Confident using Claude Code to build, fix, and improve your app with effective prompts",
-      completionMessage: "You now know how to TALK to your AI. That's the skill that separates people who build fast from people who get frustrated. Tomorrow: we check what Replit actually built.",
+      completionMessage: "You now know how to TALK to your AI. That's the skill that separates people who build fast from people who get frustrated. Tomorrow: learning the Build-Test-Fix loop that every successful builder uses.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
 
     // ============================================
-    // BUILD & VERIFY (Days 10-11)
+    // BUILD (Days 10-18)
     // ============================================
     {
       day: 10,
       title: "The Build Loop",
       description: "Learn the most important workflow in software: Build, Test, Fix, Repeat. This is how real builders ship.",
-      phase: "Build & Verify",
+      phase: "Build",
       videoUrl: null,
       aiTaskType: "workflow",
       aiTaskTitle: "The Build Loop",
@@ -567,7 +599,7 @@ Find ONE bug in your app. Describe it clearly. Fix it with Claude Code. That's i
       day: 11,
       title: "Define Your Brand",
       description: "Choose your colors, fonts, and visual style. This makes your app look professional and consistent.",
-      phase: "Build & Verify",
+      phase: "Build",
       videoUrl: null,
       aiTaskType: "creative",
       aiTaskTitle: "Brand Identity",
@@ -622,14 +654,11 @@ That's it. You now have a brand. It doesn't need to be fancy. It needs to be CON
       estimatedMinutes: 5,
     },
 
-    // ============================================
-    // MAKE IT WORK (Days 12-17)
-    // ============================================
     {
       day: 12,
       title: "Add The AI Brain",
       description: "Integrate OpenAI API to make your app intelligent. This is what makes AI SaaS special.",
-      phase: "Make It Work",
+      phase: "Build",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "AI Integration",
@@ -683,7 +712,7 @@ There are other AI APIs out there - Claude's API, Google's Gemini, and more. The
       day: 13,
       title: "Add Superpowers",
       description: "Connect external APIs to give your app capabilities beyond what you could build yourself - payments, data, integrations.",
-      phase: "Make It Work",
+      phase: "Build",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "API Connections",
@@ -747,7 +776,7 @@ If your app works without external APIs, skip this day. Move on. Don't add compl
       day: 14,
       title: "Add Login",
       description: "Make sure users can sign up, log in, and see only their own data. Authentication is what makes your app multi-user.",
-      phase: "Make It Work",
+      phase: "Build",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "User Authentication",
@@ -809,7 +838,7 @@ If each account is isolated, auth is working. Done.`,
       day: 15,
       title: "Email Power",
       description: "Set up email so you can communicate with users - welcome emails, updates, and notifications.",
-      phase: "Make It Work",
+      phase: "Build",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Email Setup",
@@ -878,7 +907,7 @@ It's simple, reliable, and free to start. The API is clean. Claude Code knows ho
       day: 16,
       title: "Mobile Ready",
       description: "Make your app work beautifully on phones and tablets. Most users will access on mobile.",
-      phase: "Make It Work",
+      phase: "Build",
       videoUrl: null,
       aiTaskType: "generator",
       aiTaskTitle: "Mobile Optimization",
@@ -920,14 +949,11 @@ Mobile optimization isn't about perfection. It's about: Can someone USE this on 
       estimatedMinutes: 5,
     },
 
-    // ============================================
-    // TEST & REFINE (Days 17-19)
-    // ============================================
     {
       day: 17,
       title: "Admin Dashboard",
       description: "Build a simple dashboard to see what's happening in your app. Users, activity, and key metrics.",
-      phase: "Test & Refine",
+      phase: "Build",
       videoUrl: null,
       aiTaskType: "generator",
       aiTaskTitle: "Admin Panel",
@@ -969,7 +995,7 @@ With data, you KNOW:
 
 DATA TELLS YOU WHAT TO FIX. Build the dashboard. Check it every day. Make decisions based on what you see, not what you hope.`,
       outcome: "Admin dashboard showing users, activity, and key metrics",
-      completionMessage: "You can now SEE what's happening in your app. Data beats guessing. Tomorrow: THE BUILD PHASE.",
+      completionMessage: "You can now SEE what's happening in your app. Data beats guessing. Tomorrow: THE PAUSE POINT. Time to build until your MVP is ready.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -977,7 +1003,7 @@ DATA TELLS YOU WHAT TO FIX. Build the dashboard. Check it every day. Make decisi
       day: 18,
       title: "Build Your MVP",
       description: "THE PAUSE POINT. Build your Minimum Viable Product. Stay here as long as you need - days or weeks - until your MVP is ready.",
-      phase: "Test & Refine",
+      phase: "Build",
       videoUrl: null,
       aiTaskType: "session",
       aiTaskTitle: "Build Your MVP",
@@ -1084,7 +1110,7 @@ When your MVP is ready, it's time to capture what you've built:
 
 This isn't just about recognition - it's about proving to yourself (and others) that you DID THE THING.`,
       outcome: "MVP is built and submitted to the Showcase with screenshot and testimonial",
-      completionMessage: "You've built a working product AND shared it with the world. That takes guts. MVP Builder badge earned!",
+      completionMessage: "You've built a working product AND shared it with the world. That takes guts. MVP Builder badge earned! Tomorrow: creating a sales page that converts visitors into customers.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -1141,7 +1167,7 @@ Let's go.`,
     },
 
     // ============================================
-    // LAUNCH (Days 20-21)
+    // LAUNCH (Days 19-21)
     // ============================================
     {
       day: 20,

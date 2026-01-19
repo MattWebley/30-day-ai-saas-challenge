@@ -1,17 +1,29 @@
 import { useState } from "react";
-import { ArrowRight, Check, Video, Calendar, Clock, Users, Zap, Shield, ExternalLink } from "lucide-react";
+import { ArrowRight, Check, Video, Calendar, Clock, Users, Zap, Shield, ExternalLink, Star } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 
 export default function Coaching() {
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isProcessing, setIsProcessing] = useState<string | null>(null);
+  const [currency, setCurrency] = useState<"gbp" | "usd">("gbp");
 
-  const handlePurchase = async () => {
+  const prices = {
+    single: { gbp: 349, usd: 449 },
+    pack: { gbp: 995, usd: 1195 },
+    packOriginal: { gbp: 1396, usd: 1796 },
+    perHour: { gbp: 249, usd: 299 },
+    savings: { gbp: 401, usd: 601 }
+  };
+
+  const currencySymbol = currency === "gbp" ? "£" : "$";
+
+  const handlePurchase = async (type: "single" | "pack") => {
     if (isProcessing) return;
-    setIsProcessing(true);
+    setIsProcessing(type);
     try {
-      const response = await fetch('/api/checkout/coaching', {
+      const response = await fetch(`/api/checkout/coaching${type === "single" ? "-single" : ""}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currency })
       });
       const data = await response.json();
       if (data.url) {
@@ -19,13 +31,39 @@ export default function Coaching() {
       }
     } catch (error) {
       console.error('Checkout error:', error);
-      setIsProcessing(false);
+      setIsProcessing(null);
     }
   };
 
   return (
     <Layout currentDay={0}>
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+
+        {/* Currency Toggle */}
+        <div className="flex justify-center">
+          <div className="inline-flex items-center gap-1 p-1 bg-slate-100 rounded-lg">
+            <button
+              onClick={() => setCurrency("usd")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                currency === "usd"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <span>🇺🇸</span> USD
+            </button>
+            <button
+              onClick={() => setCurrency("gbp")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                currency === "gbp"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              <span>🇬🇧</span> GBP
+            </button>
+          </div>
+        </div>
 
         {/* Header */}
         <div className="text-center space-y-4">
@@ -34,11 +72,15 @@ export default function Coaching() {
             <span className="font-medium text-primary">1:1 Vibe Coding Coaching</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900">
-            Build Your SaaS With an Expert Coach
+            Build Your SaaS With a British Vibe Coding Coach
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Get 4 x 1-hour sessions with an experienced vibe coding coach who will help you build your product live, on screen, with you.
+            Work directly with an expert coach personally trained by Matt Webley. They'll build your product live, on screen, with you.
           </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+            <span className="text-sm font-medium text-amber-800">Trained & certified by Matt Webley himself</span>
+          </div>
         </div>
 
         {/* Main Content */}
@@ -107,29 +149,63 @@ export default function Coaching() {
 
           {/* Right Column - Pricing & CTA */}
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl border-2 border-primary p-6 space-y-6">
+            {/* Single Session Option */}
+            <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 space-y-4">
               <div className="text-center space-y-2">
-                <p className="text-slate-500 text-sm font-medium uppercase tracking-wide">Investment</p>
-                <div className="flex items-center justify-center gap-3">
-                  <span className="text-xl text-slate-400 line-through">£1,200</span>
-                  <span className="text-4xl font-extrabold text-slate-900">£995</span>
+                <p className="text-slate-500 text-sm font-medium uppercase tracking-wide">Single Session</p>
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-4xl font-extrabold text-slate-900">{currencySymbol}{prices.single[currency]}</span>
                 </div>
-                <p className="text-slate-600">4 hours of 1:1 coaching (£249/hour)</p>
+                <p className="text-slate-600">1 hour of focused 1:1 coaching</p>
               </div>
 
               <button
-                onClick={handlePurchase}
-                disabled={isProcessing}
+                onClick={() => handlePurchase("single")}
+                disabled={isProcessing !== null}
+                className="w-full bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200"
+              >
+                {isProcessing === "single" ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Processing...
+                  </span>
+                ) : (
+                  <>Book Single Session</>
+                )}
+              </button>
+
+              <p className="text-center text-xs text-slate-500">
+                Perfect for a quick unblock or specific question
+              </p>
+            </div>
+
+            {/* 4-Pack Option - Best Value */}
+            <div className="bg-white rounded-2xl border-2 border-primary p-6 space-y-4 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-white text-xs font-bold rounded-full uppercase tracking-wide">
+                Best Value - Save {currencySymbol}{prices.savings[currency]}
+              </div>
+              <div className="text-center space-y-2 pt-2">
+                <p className="text-slate-500 text-sm font-medium uppercase tracking-wide">4-Session Pack</p>
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-xl text-slate-400 line-through">{currencySymbol}{prices.packOriginal[currency].toLocaleString()}</span>
+                  <span className="text-4xl font-extrabold text-slate-900">{currencySymbol}{prices.pack[currency].toLocaleString()}</span>
+                </div>
+                <p className="text-slate-600">4 hours of 1:1 coaching <span className="text-green-600 font-medium">({currencySymbol}{prices.perHour[currency]}/hour)</span></p>
+              </div>
+
+              <button
+                onClick={() => handlePurchase("pack")}
+                disabled={isProcessing !== null}
                 className="w-full bg-primary hover:bg-primary/90 disabled:bg-primary/70 text-white font-bold text-lg py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
-                {isProcessing ? (
+                {isProcessing === "pack" ? (
                   <span className="flex items-center justify-center gap-2">
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Processing...
                   </span>
                 ) : (
                   <>
-                    Get Coaching Access
+                    Get 4-Session Pack
                     <ArrowRight className="w-5 h-5 inline ml-2" />
                   </>
                 )}
@@ -180,20 +256,20 @@ export default function Coaching() {
           <div className="grid md:grid-cols-2 gap-6">
             {[
               {
-                q: "Who are the coaches?",
-                a: "Our coaches are experienced developers who have built multiple SaaS products using AI-assisted development (vibe coding). They know the tools inside and out."
+                q: "Who is my coach?",
+                a: "Your coach is a British vibe coding expert personally trained and certified by Matt Webley. They've built multiple SaaS products using the exact methods taught in this challenge and know the tools inside and out."
               },
               {
                 q: "How do I book sessions?",
-                a: "After purchase, you'll get access to a calendar where you can book your 4 sessions at times that work for you. Sessions are typically available within a few days."
+                a: "After purchase, you'll get access to a calendar where you can book your session(s) at times that work for you. Sessions are typically available within a few days."
               },
               {
-                q: "What if I can't finish all 4 sessions?",
-                a: "Your sessions never expire. You can use them at your own pace over the course of your challenge and beyond."
+                q: "What's the difference between single and 4-pack?",
+                a: `Single sessions (${currencySymbol}${prices.single[currency]}) are perfect for a quick unblock or specific question. The 4-pack (${currencySymbol}${prices.pack[currency]}) saves you ${currencySymbol}${prices.savings[currency]} and gives you ongoing support throughout your build - most people find they want multiple sessions.`
               },
               {
                 q: "What will we work on?",
-                a: "Whatever you need! Your coach will help with setup, debugging, building features, understanding AI prompts, deployment - anything that's blocking you."
+                a: "Whatever you need! Your coach will help with setup, debugging, building features, understanding AI prompts, deployment - anything that's blocking you from launching."
               }
             ].map((faq, i) => (
               <div key={i} className="space-y-2">

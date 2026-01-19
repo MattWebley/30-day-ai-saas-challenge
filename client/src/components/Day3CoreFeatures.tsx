@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Loader2, Plus, X } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { ds } from "@/lib/design-system";
 
 interface Feature {
@@ -34,7 +36,10 @@ export function Day3CoreFeatures({
   const [coreFeatures, setCoreFeatures] = useState<Feature[]>([]);
   const [sharedFeatures, setSharedFeatures] = useState<Feature[]>([]);
   const [uspFeatures, setUspFeatures] = useState<Feature[]>([]);
+  const [customFeatures, setCustomFeatures] = useState<Feature[]>([]);
   const [selectedFeatures, setSelectedFeatures] = useState<Set<string>>(new Set());
+  const [newFeatureName, setNewFeatureName] = useState("");
+  const [newFeatureDesc, setNewFeatureDesc] = useState("");
 
   const generateFeatures = useMutation({
     mutationFn: async () => {
@@ -54,13 +59,8 @@ export function Day3CoreFeatures({
       setSharedFeatures(data.sharedFeatures || []);
       setUspFeatures(data.uspFeatures || []);
 
-      // Pre-select all features
-      const allFeatureNames = [
-        ...(data.coreFeatures || []),
-        ...(data.sharedFeatures || []),
-        ...(data.uspFeatures || []),
-      ].map((f: Feature) => f.name);
-      setSelectedFeatures(new Set(allFeatureNames));
+      // Don't pre-select - let user choose which features they want
+      setSelectedFeatures(new Set());
 
       setStep("select");
     },
@@ -76,11 +76,36 @@ export function Day3CoreFeatures({
     setSelectedFeatures(newSelected);
   };
 
+  const addCustomFeature = () => {
+    if (!newFeatureName.trim()) {
+      toast.error("Enter a feature name");
+      return;
+    }
+    const newFeature: Feature = {
+      name: newFeatureName.trim(),
+      description: newFeatureDesc.trim() || "Custom feature",
+      category: "usp",
+    };
+    setCustomFeatures([...customFeatures, newFeature]);
+    setSelectedFeatures(new Set([...Array.from(selectedFeatures), newFeature.name]));
+    setNewFeatureName("");
+    setNewFeatureDesc("");
+    toast.success("Feature added!");
+  };
+
+  const removeCustomFeature = (index: number) => {
+    const featureName = customFeatures[index].name;
+    setCustomFeatures(customFeatures.filter((_, i) => i !== index));
+    const newSelected = new Set(selectedFeatures);
+    newSelected.delete(featureName);
+    setSelectedFeatures(newSelected);
+  };
+
   const handleContinue = () => {
     onComplete({
       coreFeatures,
       sharedFeatures,
-      uspFeatures,
+      uspFeatures: [...uspFeatures, ...customFeatures],
       selectedFeatures: Array.from(selectedFeatures),
     });
   };
@@ -148,8 +173,8 @@ export function Day3CoreFeatures({
           Select Your Features
         </h3>
         <p className={ds.muted + " mb-6"}>
-          Review the features below and select which ones you want to include in your product.
-          All features are pre-selected, but you can uncheck any you don't want.
+          Review the features below and select the ones you want to include in your MVP.
+          Click to select - you don't need all of them, just the essentials.
         </p>
 
         {/* Core Features */}
@@ -244,6 +269,59 @@ export function Day3CoreFeatures({
             </div>
           </div>
         )}
+
+        {/* Custom Features */}
+        <div className="mb-6 pt-6 border-t border-slate-200">
+          <h4 className={ds.label + " mb-1"}>Add Your Own Features</h4>
+          <p className={ds.muted + " mb-3"}>
+            Have ideas the AI didn't suggest? Add them here.
+          </p>
+
+          {customFeatures.length > 0 && (
+            <div className="space-y-3 mb-4">
+              {customFeatures.map((feature, idx) => (
+                <div
+                  key={`custom-${idx}`}
+                  className={selectedFeatures.has(feature.name) ? ds.optionSelected : ds.optionDefault}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3" onClick={() => toggleFeature(feature.name)}>
+                      <Checkbox
+                        checked={selectedFeatures.has(feature.name)}
+                        onCheckedChange={() => toggleFeature(feature.name)}
+                        className="mt-1"
+                      />
+                      <div>
+                        <h5 className={ds.label}>{feature.name}</h5>
+                        <p className={ds.muted}>{feature.description}</p>
+                      </div>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => removeCustomFeature(idx)}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="space-y-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <Input
+              placeholder="Feature name (e.g., AI-powered suggestions)"
+              value={newFeatureName}
+              onChange={(e) => setNewFeatureName(e.target.value)}
+            />
+            <Input
+              placeholder="Brief description (optional)"
+              value={newFeatureDesc}
+              onChange={(e) => setNewFeatureDesc(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && addCustomFeature()}
+            />
+            <Button variant="outline" onClick={addCustomFeature} className="w-full gap-2">
+              <Plus className="w-4 h-4" /> Add Feature
+            </Button>
+          </div>
+        </div>
 
         <div className="flex items-center justify-between pt-4 border-t border-slate-200">
           <p className={ds.muted}>

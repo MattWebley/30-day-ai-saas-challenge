@@ -512,6 +512,7 @@ Format: { "ideas": [...] }`;
       const response = await openai.chat.completions.create({
         model: "gpt-4o",
         messages: [{ role: "user", content: prompt }],
+        temperature: 1.0,  // Maximum randomness for varied outputs
       });
 
       res.json({ response: response.choices[0].message.content });
@@ -1981,6 +1982,44 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       res.json({ url: session.url });
     } catch (error: any) {
       console.error("Error creating coaching checkout session:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  // Single coaching session checkout
+  app.post("/api/checkout/coaching-single", async (req, res) => {
+    try {
+      const { currency = 'gbp' } = req.body;
+      const stripe = await getUncachableStripeClient();
+      const host = req.get('host');
+      const protocol = req.protocol;
+
+      // Price IDs for Single Coaching Session by currency
+      // TODO: Create these products in Stripe and update with real price IDs
+      const singleCoachingPriceIds: Record<string, string> = {
+        usd: 'price_COACHING_SINGLE_USD', // $449 - TODO: Replace with real Stripe price ID
+        gbp: 'price_COACHING_SINGLE_GBP'  // £349 - TODO: Replace with real Stripe price ID
+      };
+      const priceId = singleCoachingPriceIds[currency.toLowerCase()] || singleCoachingPriceIds.gbp;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price: priceId,
+          quantity: 1
+        }],
+        mode: 'payment',
+        success_url: `${protocol}://${host}/coaching?success=true&type=single`,
+        cancel_url: `${protocol}://${host}/coaching`,
+        metadata: {
+          productType: 'coaching-single',
+          currency: currency
+        }
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Error creating single coaching checkout session:", error);
       res.status(500).json({ message: "Failed to create checkout session" });
     }
   });

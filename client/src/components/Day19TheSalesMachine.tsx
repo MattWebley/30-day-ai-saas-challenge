@@ -524,7 +524,7 @@ Style it with:
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={() => onComplete({ salesPageBuilt: true, headline: headline || "Generated headline" })}
           >
-            Continue to Day 20: Go-To-Market <ArrowRight className="w-5 h-5" />
+            Continue to Day 20: Your Launch Plan <ArrowRight className="w-5 h-5" />
           </Button>
         </>
       )}

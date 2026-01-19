@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-19 (Day 0-1 improvements & sidebar fix)
+- **Last Session**: 2026-01-19 (Day 4 overhaul & navigation fixes)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -326,9 +326,44 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Fixed "Select Your Top 3-5 Ideas" → "Select Your Favorites"
   - Updated outcome text in seed.ts to be path-agnostic
   - Re-seeded database twice to apply lesson/message changes
-- **New Issues Discovered:**
-  - Day 2 header still shows "Idea & Planning" phase text (from dayData.phase in seed.ts) - may need updating
-- **IMPORTANT - Next Session:**
-  - **START TESTING FROM DAY 2** - Days 0-1 have been checked, continue from Day 2 onwards
-  - Check Day 2 phase label in seed.ts if "Idea & Planning" is wrong
-  - Continue testing Day 2 → Day 3 → etc. flow
+
+### 2026-01-19 (Session 2) - Day 4 Overhaul & Navigation Fixes
+- **Tasks Completed:**
+  - Day 4: Completely rebuilt name generation with better prompt using user's idea, pain points, features
+  - Day 4: Added trademark check section with UK/US search links (shown BEFORE confirming name)
+  - Day 4: Added social handles preview in confirm step (all platforms: Twitter, Instagram, YouTube, Facebook, LinkedIn, TikTok)
+  - Day 4: Removed GitHub from social platforms (not needed for SaaS)
+  - Day 4: Removed Personal/Founder naming option (not relevant for SaaS)
+  - Day 4: Made registration checklist rows fully clickable (not just the circle)
+  - Day 4: Removed requirement to register anything before completing day
+  - Day 4: Simplified complete step to just be a tracking checklist (removed duplicate trademark section)
+  - Day 4: Added "can't get every handle" tip about using variations
+  - Day 4: Updated lesson to mention links are coming in exercise
+  - Day 2: Added "I help X solve Y" statement input
+  - Coaching page: Added single session option (£349/$449) with British coach branding
+  - Coaching page: Added USD/GBP currency toggle
+  - Sidebar: Fixed locked days - now properly prevents navigation with visual feedback
+  - Sidebar: Test mode now bypasses all day locking
+- **Fixes Applied:**
+  - Fixed .com.com bug (now strips existing .com before adding)
+  - Fixed name generation not changing (added temperature=1.0 to OpenAI, better prompt with timestamp)
+  - Removed all em dashes from codebase (replaced with regular dashes)
+  - Removed "killer" from all user-facing text (changed to "winning"/"standout")
+  - Updated DayInstructions for Days 2, 3, 4, 19 to match components
+  - Fixed Day 3 instructions (removed pitch/ICP that wasn't in component)
+  - Changed "Killer feature" → "Standout feature" in BuildLog
+- **Files Modified:**
+  - `client/src/components/Day4Naming.tsx` - Major overhaul
+  - `client/src/components/Day2IdeaValidator.tsx` - Added I help statement
+  - `client/src/components/DayInstructions.tsx` - Updated days 2,3,4,19
+  - `client/src/components/layout/Sidebar.tsx` - Fixed locking, test mode bypass
+  - `client/src/pages/Coaching.tsx` - Single session, currency toggle
+  - `client/src/pages/BuildLog.tsx` - Standout feature label
+  - `client/src/pages/SalesLetterPack.tsx` - Removed em dashes
+  - `server/routes.ts` - Added temperature=1.0 to AI endpoint, single coaching checkout
+  - `server/seed.ts` - Updated Day 4 lesson, naming approaches, removed GitHub/killer
+- **Notes for Next Session:**
+  - Test Day 4 name generation - should now give different names each time
+  - Test sidebar navigation with test mode on/off
+  - Continue testing from Day 5 onwards
+  - Server restart required for AI temperature change to take effect

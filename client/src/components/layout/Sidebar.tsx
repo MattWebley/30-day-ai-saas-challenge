@@ -158,14 +158,15 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   const maxVisibleDay = testMode ? totalDays : Math.max(lastCompleted + 3, currentDay + 2, 3);
 
   // Milestone definitions for battle pass style progress
-  // Day number shows when each phase begins
+  // Day number shows the LAST day of each phase (when you complete that phase)
   // Phases: Start (0), Idea (1-2), Plan (3-4), Prepare (5-9), Build (10-18), Launch (19-21)
   const milestones = [
     { day: 0, label: "Start", icon: Rocket, percentage: 0 },
-    { day: 3, label: "Plan", icon: Map, percentage: (3 / totalDays) * 100 },
-    { day: 5, label: "Prepare", icon: Sparkles, percentage: (5 / totalDays) * 100 },
-    { day: 10, label: "Build", icon: Hammer, percentage: (10 / totalDays) * 100 },
-    { day: 19, label: "Launch", icon: Target, percentage: (19 / totalDays) * 100 },
+    { day: 2, label: "Idea", icon: Lightbulb, percentage: (2 / totalDays) * 100 },
+    { day: 4, label: "Plan", icon: Map, percentage: (4 / totalDays) * 100 },
+    { day: 9, label: "Prepare", icon: Sparkles, percentage: (9 / totalDays) * 100 },
+    { day: 18, label: "Build", icon: Hammer, percentage: (18 / totalDays) * 100 },
+    { day: 21, label: "Launch", icon: Target, percentage: (21 / totalDays) * 100 },
   ];
 
   // Find current milestone (the next phase you're working towards)
@@ -299,7 +300,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
               <div className="flex items-center justify-between text-xs mb-1.5">
                 <span className="font-medium text-slate-600">
                   <Zap className="w-3 h-3 inline mr-1 text-amber-500" />
-                  {currentMilestone.day - lastCompleted} days to {currentMilestone.label}
+                  {currentMilestone.day - lastCompleted} {currentMilestone.day - lastCompleted === 1 ? 'day' : 'days'} to {currentMilestone.label}
                 </span>
                 <span className="font-bold text-slate-900">
                   {Math.round(((lastCompleted - (milestones[currentMilestoneIndex - 1]?.day || 0)) / (currentMilestone.day - (milestones[currentMilestoneIndex - 1]?.day || 0))) * 100)}%
@@ -496,23 +497,39 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                   {sectionDays.map((day: any) => {
                     const isCompleted = completedDays.has(day.day);
                     // Day 0 is never locked, Day 1+ requires Day 0 completion first
+                    // Test mode bypasses all locking
                     const hasCompletedDay0 = completedDays.has(0);
-                    const isLocked = day.day === 0
+                    const isLocked = testMode
                       ? false
-                      : (day.day > ((stats as any)?.lastCompletedDay || 0) + 1 && !isCompleted) || (!hasCompletedDay0 && day.day > 0);
+                      : day.day === 0
+                        ? false
+                        : (day.day > ((stats as any)?.lastCompletedDay || 0) + 1 && !isCompleted) || (!hasCompletedDay0 && day.day > 0);
                     const daysAhead = day.day - currentDay;
                     const fadeOpacity = daysAhead <= 0 || isCompleted ? 1 : daysAhead === 1 ? 0.7 : daysAhead === 2 ? 0.5 : daysAhead >= 3 ? 0.35 : 1;
 
                     return (
-                      <Link key={day.day} href={`/dashboard/${day.day}`} onClick={handleNavClick}>
+                      <Link
+                        key={day.day}
+                        href={isLocked ? "#" : `/dashboard/${day.day}`}
+                        onClick={(e) => {
+                          if (isLocked) {
+                            e.preventDefault();
+                            return;
+                          }
+                          handleNavClick();
+                        }}
+                      >
                         <span
                           className={cn(
-                            "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-none group mb-0.5 cursor-pointer",
+                            "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-none group mb-0.5",
+                            isLocked
+                              ? "cursor-not-allowed opacity-50"
+                              : "cursor-pointer",
                             currentDay === day.day
                               ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                              : "hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                              : !isLocked && "hover:bg-sidebar-accent hover:text-sidebar-foreground"
                           )}
-                          style={{ opacity: currentDay === day.day ? 1 : fadeOpacity }}
+                          style={{ opacity: isLocked ? 0.4 : currentDay === day.day ? 1 : fadeOpacity }}
                           data-testid={`nav-day-${day.day}`}
                         >
                           <div className="flex items-center gap-3">

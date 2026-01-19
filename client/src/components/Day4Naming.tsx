@@ -21,14 +21,6 @@ interface NameSuggestion {
   why: string;
 }
 
-interface DomainCheckResult {
-  domain: string;
-  available: boolean;
-  checking?: boolean;
-  price?: string;
-  registrar?: string;
-}
-
 interface Day4NamingProps {
   dayId: number;
   userIdea: string;
@@ -46,8 +38,8 @@ const SOCIAL_PLATFORMS = [
     id: "domain",
     label: "Domain (.com)",
     icon: "🌐",
-    signupUrl: "https://www.namecheap.com/?aff=YOUR_AFFILIATE_ID",
-    checkUrl: (name: string) => `https://www.namecheap.com/domains/registration/results/?domain=${name.toLowerCase().replace(/\s+/g, '')}.com&aff=YOUR_AFFILIATE_ID`,
+    signupUrl: "https://www.namecheap.com",
+    checkUrl: (name: string) => `https://www.namecheap.com/domains/registration/results/?domain=${name.toLowerCase().replace(/\s+/g, '')}.com`,
     description: "Register your .com domain (~$10/year)",
     priority: true
   },
@@ -70,6 +62,24 @@ const SOCIAL_PLATFORMS = [
     priority: true
   },
   {
+    id: "youtube",
+    label: "YouTube",
+    icon: "▶️",
+    signupUrl: "https://www.youtube.com/create_channel",
+    checkUrl: (name: string) => `https://www.youtube.com/@${name.toLowerCase().replace(/\s+/g, '')}`,
+    description: "Create channel & claim your @handle",
+    priority: true
+  },
+  {
+    id: "facebook",
+    label: "Facebook Page",
+    icon: "📘",
+    signupUrl: "https://www.facebook.com/pages/create",
+    checkUrl: (name: string) => `https://www.facebook.com/${name.toLowerCase().replace(/\s+/g, '')}`,
+    description: "Create business page",
+    priority: false
+  },
+  {
     id: "linkedin",
     label: "LinkedIn Page",
     icon: "💼",
@@ -87,22 +97,12 @@ const SOCIAL_PLATFORMS = [
     description: "If relevant to your audience",
     priority: false
   },
-  {
-    id: "github",
-    label: "GitHub",
-    icon: "💻",
-    signupUrl: "https://github.com/signup",
-    checkUrl: (name: string) => `https://github.com/${name.toLowerCase().replace(/\s+/g, '')}`,
-    description: "For open source or public code",
-    priority: false
-  },
 ];
 
 export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }: Day4NamingProps) {
   const queryClient = useQueryClient();
-  const [currentStep, setCurrentStep] = useState<"learn" | "generate" | "confirm" | "complete">("learn");
+  const [currentStep, setCurrentStep] = useState<"generate" | "confirm" | "complete">("generate");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [isChecking, setIsChecking] = useState(false);
   const [aiAttempts, setAiAttempts] = useState(0);
   const MAX_AI_ATTEMPTS = 3;
 
@@ -111,7 +111,6 @@ export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }
   const [customName, setCustomName] = useState("");
   const [finalName, setFinalName] = useState("");
   const [finalDomain, setFinalDomain] = useState("");
-  const [domainResults, setDomainResults] = useState<Record<string, DomainCheckResult>>({});
   const [registeredItems, setRegisteredItems] = useState<Set<string>>(new Set());
 
   const toggleRegistered = (itemId: string) => {
@@ -124,8 +123,6 @@ export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }
     setRegisteredItems(newRegistered);
   };
 
-  const allItemsRegistered = registeredItems.size >= 2; // At least domain + 1 social
-
   const saveProgress = useMutation({
     mutationFn: async (data: any) => {
       const res = await apiRequest("POST", "/api/progress/4", data);
@@ -136,154 +133,111 @@ export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }
     },
   });
 
-  const checkDomainAvailability = async (domain: string): Promise<boolean | null> => {
-    try {
-      // Add timeout to prevent hanging
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
-      const res = await fetch("/api/check-domain", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ domain: `${domain}.com` }),
-        credentials: "include",
-        signal: controller.signal,
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!res.ok) {
-        console.error("Domain check failed:", res.status);
-        return null;
-      }
-
-      const data = await res.json();
-      return data.available;
-    } catch (error: any) {
-      if (error.name === 'AbortError') {
-        console.log("Domain check timed out for:", domain);
-      } else {
-        console.error("Domain check failed:", error);
-      }
-      return null; // Unknown - assume might be available
-    }
+  // Extract keywords from user's idea and pain points for name generation
+  const extractKeywords = () => {
+    const text = `${userIdea} ${painPoints.join(' ')} ${features.join(' ')}`.toLowerCase();
+    const words = text.split(/\s+/).filter(w => w.length > 3 && w.length < 10);
+    return Array.from(new Set(words)).slice(0, 10);
   };
 
   const generateNames = async () => {
     if (aiAttempts >= MAX_AI_ATTEMPTS) return;
-    setAiAttempts(prev => prev + 1);
+    const attemptNumber = aiAttempts + 1;
+    setAiAttempts(attemptNumber);
     setIsGenerating(true);
-    setDomainResults({}); // Clear previous results
 
-    // Generate a random seed to ensure unique names each time
-    const randomSeed = Math.random().toString(36).substring(7);
+    const keywords = extractKeywords();
+    const painPointsList = painPoints.slice(0, 3).join(', ') || 'solving user problems';
+    const featuresList = features.slice(0, 3).join(', ') || 'core functionality';
 
     try {
-      const prompt = `You are a startup naming expert who specializes in finding AVAILABLE domain names. Generate 6 completely unique, invented product names.
+      const prompt = `You are a SaaS naming expert. Create 6 unique, brandable product names.
 
-PRODUCT: ${userIdea}
+THE PRODUCT:
+"${userIdea}"
 
-CRITICAL RULES - FOLLOW EXACTLY:
+KEY PROBLEMS IT SOLVES:
+${painPointsList}
 
-1. INVENT COMPLETELY NEW WORDS that don't exist yet. Examples of good invented names:
-   - Combine word fragments: "Klar" (clear) + "ify" = Klarify
-   - Mash syllables: "Vex" + "ara" = Vexara
-   - Add unique suffixes: -lio, -ara, -ovo, -ix, -sy, -zo
-   - Use uncommon letter combos: Q, X, Z, K combinations
+CORE FEATURES:
+${featuresList}
 
-2. NEVER suggest these (ALL TAKEN):
-   - Real English words (Notion, Slack, Zoom - taken)
-   - Common tech suffixes on words (Taskly, Flowly, Appify - taken)
-   - Obvious compound words (Mailchimp, Dropbox style - taken)
-   - Anything you've heard of before
+NAMING STRATEGIES (use a mix):
+1. INVENTED WORDS: Combine syllables to create new words (like Spotify = spot + identify, Trello = "trellis")
+2. PORTMANTEAU: Blend two relevant words (like Pinterest = pin + interest)
+3. MODIFIED SPELLING: Take a relevant word and modify it (like Lyft, Fiverr, Tumblr)
+4. ABSTRACT + SUFFIX: Use abstract roots with tech suffixes -io, -ly, -ify, -able (like Airtable, Loomly)
+5. ACTION WORDS: Verbs that describe the benefit (like Zoom, Slack, Notion)
+6. METAPHORS: Names that evoke the feeling/benefit (like Asana = yoga pose for calm workflow)
 
-3. MAKE THEM PRONOUNCEABLE but unique:
-   - 5-8 characters ideal
-   - Easy to say out loud
-   - Memorable sound
+REQUIREMENTS:
+- Each name MUST be 4-9 characters
+- Easy to spell and pronounce
+- .com domain should be potentially available (avoid common words)
+- Generate names that could work for: ${userIdea.slice(0, 50)}
 
-4. USE THIS RANDOMIZER TO BE UNIQUE: ${randomSeed}
+ATTEMPT ${attemptNumber} OF 3 - Be creative and different! Timestamp: ${Date.now()}
 
-GOOD EXAMPLES (the STYLE to follow, not these exact names):
-- Qorvo, Zuora, Klaviyo, Airtable, Webflow, Retool, Loom
-- Invented: Zyphra, Korlix, Venndo, Plexivo, Traxly, Quentis
-
-BAD EXAMPLES (too generic, definitely taken):
-- Flowly, Taskify, DataHub, AppBase, CloudSync, QuickTask
-
-For each name provide:
-- name: The invented product name
-- domain: The domain (lowercase, no spaces)
-- tagline: 5-7 word tagline
-- why: Why this name fits the product
-
-Return ONLY valid JSON:
-{
-  "names": [
-    {"name": "Invented Name", "domain": "inventedname", "tagline": "Short tagline here", "why": "Why it works..."}
-  ]
-}`;
+Return ONLY this JSON format:
+{"names":[{"name":"ProductName","domain":"productname","tagline":"5-7 word tagline","why":"Brief explanation of naming logic"}]}`;
 
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
       const data = await res.json();
-      const parsed = JSON.parse(data.response);
-      const names = parsed.names || [];
-      setNameSuggestions(names);
-      setSelectedIndex(null);
 
-      // Check domain availability for all suggestions (update as each completes)
+      // Try to parse the response
+      let parsed;
+      try {
+        // Handle potential markdown code blocks
+        let responseText = data.response || '';
+        responseText = responseText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        parsed = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error("JSON parse error:", parseError);
+        throw new Error("Failed to parse AI response");
+      }
+
+      const names = parsed.names || [];
       if (names.length > 0) {
-        names.forEach(async (suggestion: NameSuggestion) => {
-          const available = await checkDomainAvailability(suggestion.domain);
-          setDomainResults(prev => ({
-            ...prev,
-            [suggestion.domain]: {
-              domain: `${suggestion.domain}.com`,
-              available: available === null ? true : available, // Assume available if check fails
-              checking: false,
-            },
-          }));
-        });
+        setNameSuggestions(names);
+        setSelectedIndex(null);
+      } else {
+        throw new Error("No names returned");
       }
     } catch (error) {
       console.error("Error generating names:", error);
-      // Fallback with truly random names
-      const suffixes = ['ovo', 'ara', 'lix', 'zio', 'vex', 'qor'];
-      const prefixes = ['Kla', 'Vor', 'Zep', 'Qua', 'Nex', 'Pry'];
-      const fallbackNames = prefixes.map((pre, i) => ({
-        name: `${pre}${suffixes[i]}`,
-        domain: `${pre.toLowerCase()}${suffixes[i]}`,
-        tagline: "Your smart solution awaits",
-        why: "Unique invented name likely available"
-      }));
+
+      // Smart fallback using their actual product keywords
+      const baseWords = extractKeywords();
+      const prefixes = ['Nova', 'Flux', 'Sync', 'Apex', 'Vibe', 'Pulse'];
+      const suffixes = ['ly', 'io', 'fy', 'hub', 'app', 'base'];
+
+      const fallbackNames = prefixes.map((pre, i) => {
+        const keyword = baseWords[i] || '';
+        const suffix = suffixes[i];
+        const name = keyword ?
+          `${keyword.charAt(0).toUpperCase()}${keyword.slice(1, 4)}${suffix}` :
+          `${pre}${suffix}`;
+        return {
+          name: name,
+          domain: name.toLowerCase(),
+          tagline: `Smart ${userIdea.split(' ').slice(0, 3).join(' ')} solution`,
+          why: "Generated based on your product keywords"
+        };
+      });
+
       setNameSuggestions(fallbackNames);
-      toast.error("AI unavailable - showing generated names");
+      toast.error("AI had trouble - here are some alternatives based on your product");
     }
     setIsGenerating(false);
-  };
-
-  const checkDomain = async (domain: string) => {
-    // Simulate domain check (in production, use a real API)
-    setIsChecking(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Simulate - most short names are taken
-    const likelyAvailable = domain.length > 7 || domain.includes('ly') || domain.includes('ify');
-    setDomainResults(prev => ({
-      ...prev,
-      [domain]: {
-        domain: `${domain}.com`,
-        available: likelyAvailable,
-      }
-    }));
-    setIsChecking(false);
   };
 
   const selectName = (index: number) => {
     setSelectedIndex(index);
     const selected = nameSuggestions[index];
     setFinalName(selected.name);
-    setFinalDomain(`${selected.domain}.com`);
+    // Strip any existing .com before adding it
+    const cleanDomain = selected.domain.replace(/\.com$/i, '').toLowerCase();
+    setFinalDomain(`${cleanDomain}.com`);
   };
 
   const handleCustomName = () => {
@@ -314,121 +268,7 @@ Return ONLY valid JSON:
       )}
 
       <AnimatePresence mode="wait">
-        {/* Step 1: Learn the Rules */}
-        {currentStep === "learn" && (
-          <motion.div
-            key="learn"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            className="space-y-6"
-          >
-            {/* Hero */}
-            <div className={ds.cardWithPadding}>
-              <h3 className="text-2xl font-extrabold text-slate-900">Name It RIGHT</h3>
-              <p className={ds.body + " mt-1"}>
-                Your name is your first impression. Get this right.
-              </p>
-            </div>
-
-            {/* The Rules */}
-            <div className={ds.cardWithPadding}>
-              <h4 className={ds.heading + " mb-4"}>
-                The Golden Rules of SaaS Naming
-              </h4>
-              <div className="space-y-4">
-                <div className={ds.infoBoxHighlight}>
-                  <div className={ds.label}>Always get the .com</div>
-                  <div className={ds.muted}>
-                    Not .io, not .co, not .app. The .com. It's what people type automatically.
-                    If you can't get the .com, pick a different name.
-                  </div>
-                </div>
-
-                <div className={ds.infoBoxHighlight}>
-                  <div className={ds.label}>Keep it SHORT</div>
-                  <div className={ds.muted}>
-                    1-2 words. Under 10 characters. Easy to type, easy to remember, easy to say out loud.
-                  </div>
-                </div>
-
-                <div className={ds.infoBoxHighlight}>
-                  <div className={ds.label}>Make it SPEAKABLE</div>
-                  <div className={ds.muted}>
-                    Say it out loud. If you have to spell it for people, it's wrong.
-                    "It's Trello, T-R-E-L-L-O" is fine. "It's Xqyzt, X-Q-Y-Z-T" is not.
-                  </div>
-                </div>
-
-                <div className={ds.infoBoxHighlight}>
-                  <div className={ds.label}>Be UNIQUE</div>
-                  <div className={ds.muted}>
-                    "ProjectManager" is not a name. "Asana" is. Made-up words that sound good are
-                    often better than descriptive names.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* What to AVOID */}
-            <div className={ds.cardWithPadding}>
-              <h4 className={ds.heading + " mb-4"}>
-                What to AVOID
-              </h4>
-              <div className="space-y-3">
-                <div>
-                  <div className={ds.label}>No hyphens or numbers</div>
-                  <div className={ds.muted}>
-                    "task-hub-123.com" looks cheap and confusing. Don't do it.
-                  </div>
-                </div>
-                <div>
-                  <div className={ds.label}>Don't overpay for domains</div>
-                  <div className={ds.muted}>
-                    A .com should cost ~$10-15/year. If someone wants $500+ for a domain, pick a different name.
-                    Domain squatters are not worth it at this stage.
-                  </div>
-                </div>
-                <div>
-                  <div className={ds.label}>Don't be too generic</div>
-                  <div className={ds.muted}>
-                    "Analytics Platform" or "Marketing Tool" - these aren't names, they're descriptions.
-                    You can't trademark a generic term.
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Domain Pricing Education */}
-            <div className={ds.infoBoxHighlight}>
-              <h4 className={ds.heading + " mb-3"}>
-                What Domains SHOULD Cost
-              </h4>
-              <div className="space-y-2">
-                <p className={ds.muted}>
-                  <strong>Normal .com registration:</strong> $10-15/year
-                </p>
-                <p className={ds.muted}>
-                  <strong>If someone wants $100+:</strong> It's a "premium" domain owned by a squatter. Skip it.
-                </p>
-                <p className={ds.muted}>
-                  <strong>Rule of thumb:</strong> If you can't get the .com for under $20, pick a different name.
-                  Your energy is better spent building than negotiating with domain hoarders.
-                </p>
-              </div>
-            </div>
-
-            <Button
-              className="w-full"
-              size="lg"
-              onClick={() => setCurrentStep("generate")}
-            >
-              I Understand - Let's Name It <ChevronRight className="w-5 h-5 ml-2" />
-            </Button>
-          </motion.div>
-        )}
-
-        {/* Step 2: Generate Names */}
+        {/* Step 1: Generate Names */}
         {currentStep === "generate" && (
           <motion.div
             key="generate"
@@ -438,14 +278,40 @@ Return ONLY valid JSON:
             className="space-y-6"
           >
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Generate Name Ideas</h2>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Name Your Product</h2>
               <p className={ds.muted + " max-w-lg mx-auto"}>
-                AI will create names based on your idea, pain points, and features.
+                Choose a name that's memorable, easy to spell, and has an available .com domain.
+              </p>
+            </div>
+
+            {/* Naming Approaches Info */}
+            <div className={ds.cardWithPadding}>
+              <h3 className={ds.heading + " mb-3"}>Your Naming Options:</h3>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                  <span className="text-lg">🎯</span>
+                  <div>
+                    <p className={ds.label}>Invented/Brandable Name</p>
+                    <p className={ds.muted + " text-sm"}>Made-up words like Spotify, Trello, Asana. Unique and trademarkable. Easier to get the .com. AI generates these below.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                  <span className="text-lg">📝</span>
+                  <div>
+                    <p className={ds.label}>Descriptive Name</p>
+                    <p className={ds.muted + " text-sm"}>Describes what it does like Mailchimp, Salesforce, QuickBooks. Clearer to customers but harder to get .com.</p>
+                  </div>
+                </div>
+              </div>
+              <p className={ds.muted + " text-sm mt-4 text-center"}>
+                You can use AI suggestions below OR enter your own name idea at the bottom.
               </p>
             </div>
 
             {/* AI Generator */}
             <div className={ds.cardWithPadding}>
+              <h3 className={ds.heading + " mb-2"}>Option 1: Generate Brandable Names</h3>
+              <p className={ds.muted + " mb-4"}>AI creates unique, invented names that are likely to have .com available.</p>
               <div className="text-center mb-6">
                 <Button
                   size="lg"
@@ -465,31 +331,18 @@ Return ONLY valid JSON:
 
               {nameSuggestions.length > 0 && (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className={ds.heading}>Pick Your Favorite:</h3>
-                    <span className={ds.muted}>
-                      {Object.keys(domainResults).length > 0 ? "Availability checked" : "Checking availability..."}
-                    </span>
-                  </div>
+                  <h3 className={ds.heading}>Pick Your Favorite:</h3>
 
                   <div className="grid gap-3">
                     {nameSuggestions.map((suggestion, i) => {
-                      const domainCheck = domainResults[suggestion.domain];
-                      const isAvailable = domainCheck?.available;
-                      const isChecking = !domainCheck;
-
                       return (
                         <button
                           key={i}
                           onClick={() => selectName(i)}
                           className={`p-4 rounded-lg border-2 text-left transition-all ${
                             selectedIndex === i
-                              ? 'border-slate-400 bg-slate-50'
-                              : isAvailable
-                                ? 'border-green-200 hover:border-green-300 bg-green-50/50'
-                                : domainCheck && !isAvailable
-                                  ? 'border-red-200 hover:border-red-300 bg-red-50/30'
-                                  : 'border-slate-200 hover:border-slate-300 bg-white'
+                              ? 'border-primary bg-primary/5'
+                              : 'border-slate-200 hover:border-slate-300 bg-white'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3">
@@ -502,29 +355,18 @@ Return ONLY valid JSON:
                               </div>
                               <p className="text-sm text-slate-600 italic mb-2">"{suggestion.tagline}"</p>
                               <div className="flex items-center gap-2 mb-2">
+                                <span className="text-sm font-mono text-slate-700">
+                                  {suggestion.domain.replace(/\.com$/i, '')}.com
+                                </span>
                                 <a
-                                  href={`https://www.namecheap.com/domains/registration/results/?domain=${suggestion.domain}.com`}
+                                  href={`https://www.namecheap.com/domains/registration/results/?domain=${suggestion.domain.replace(/\.com$/i, '')}.com`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(e) => e.stopPropagation()}
-                                  className="text-sm font-mono text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                                  className="text-xs text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
                                 >
-                                  {suggestion.domain}.com
-                                  <ExternalLink className="w-3 h-3" />
+                                  Check availability <ExternalLink className="w-3 h-3" />
                                 </a>
-                                {isChecking ? (
-                                  <span className="flex items-center gap-1 text-xs text-slate-400">
-                                    <Loader2 className="w-3 h-3 animate-spin" /> Checking...
-                                  </span>
-                                ) : isAvailable ? (
-                                  <span className="flex items-center gap-1 text-xs font-medium text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
-                                    <Check className="w-3 h-3" /> Likely Available
-                                  </span>
-                                ) : (
-                                  <span className="text-xs font-medium text-red-600 bg-red-100 px-2 py-0.5 rounded-full">
-                                    Likely Taken
-                                  </span>
-                                )}
                               </div>
                               <p className="text-xs text-slate-500">{suggestion.why}</p>
                             </div>
@@ -532,13 +374,6 @@ Return ONLY valid JSON:
                         </button>
                       );
                     })}
-                  </div>
-
-                  {/* Tip about availability */}
-                  <div className={ds.infoBoxHighlight}>
-                    <p className={ds.muted}>
-                      <strong>Tip:</strong> "Likely Available" means no website exists yet. Always verify on Namecheap before purchasing - some domains may be registered but not in use.
-                    </p>
                   </div>
 
                   {selectedIndex !== null && (
@@ -553,38 +388,33 @@ Return ONLY valid JSON:
                 </div>
               )}
 
-              {/* Custom Name Option */}
-              <div className="mt-6 pt-6 border-t border-slate-200">
-                <p className={ds.label + " mb-3"}>Already have a name in mind?</p>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="Enter your product name..."
-                    value={customName}
-                    onChange={(e) => setCustomName(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleCustomName()}
-                    className="flex-1"
-                  />
-                  <Button
-                    onClick={handleCustomName}
-                    disabled={!customName.trim()}
-                  >
-                    Use This
-                  </Button>
-                </div>
+            </div>
+
+            {/* Custom Name Option */}
+            <div className={ds.cardWithPadding}>
+              <h3 className={ds.heading + " mb-2"}>Option 2: Enter Your Own Name</h3>
+              <p className={ds.muted + " mb-4"}>Have a name idea already? Descriptive, personal, or anything else - enter it here.</p>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter your product name..."
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCustomName()}
+                  className="flex-1"
+                />
+                <Button
+                  onClick={handleCustomName}
+                  disabled={!customName.trim()}
+                >
+                  Use This Name
+                </Button>
               </div>
             </div>
 
-            <Button
-              variant="outline"
-              onClick={() => setCurrentStep("learn")}
-              className="gap-2"
-            >
-              <ChevronLeft className="w-4 h-4" /> Back to Rules
-            </Button>
           </motion.div>
         )}
 
-        {/* Step 3: Confirm */}
+        {/* Step 2: Confirm */}
         {currentStep === "confirm" && (
           <motion.div
             key="confirm"
@@ -605,61 +435,30 @@ Return ONLY valid JSON:
                 <div className={ds.infoBoxHighlight + " text-center p-6"}>
                   <p className={ds.label + " uppercase mb-2"}>Your Product Name</p>
                   <h3 className="text-3xl font-extrabold text-slate-900">{finalName}</h3>
-                  <p className={ds.body + " text-lg font-mono mt-2"}>{finalDomain}</p>
+                  <div className="flex items-center justify-center gap-2 mt-2">
+                    <p className={ds.body + " text-lg font-mono"}>{finalDomain}</p>
+                    <a
+                      href={`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                    >
+                      Check availability <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
                 </div>
 
-                <Button
-                  variant="outline"
-                  className="w-full gap-2"
-                  onClick={() => checkDomain(finalDomain.replace('.com', ''))}
-                  disabled={isChecking}
-                >
-                  {isChecking ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Checking...</>
-                  ) : (
-                    <>Check Domain Availability</>
-                  )}
-                </Button>
-
-                {domainResults[finalDomain.replace('.com', '')] && (
-                  <div className="mt-4">
-                    {domainResults[finalDomain.replace('.com', '')].available ? (
-                      <div className={ds.infoBoxHighlight}>
-                        <div className="flex-1">
-                          <p className={ds.label + " mb-1"}>Likely Available!</p>
-                          <p className={ds.muted + " mb-3"}>
-                            {finalDomain} appears to be available. Register it now before someone else does!
-                          </p>
-                          <Button
-                            className="gap-2"
-                            onClick={() => window.open(`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}&aff=YOUR_AFFILIATE_ID`, '_blank')}
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            Register on Namecheap (~$10/year)
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className={ds.infoBoxHighlight}>
-                        <div>
-                          <p className={ds.label + " mb-1"}>This domain might be taken</p>
-                          <p className={ds.muted + " mb-2"}>
-                            Check Namecheap to confirm. If it's premium-priced ($100+), go back and pick a different name.
-                          </p>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="gap-2"
-                            onClick={() => window.open(`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}&aff=YOUR_AFFILIATE_ID`, '_blank')}
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                            Check on Namecheap
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                <div className="text-center">
+                  <a
+                    href={`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 font-medium"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Register on Namecheap (~$10/year)
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -669,6 +468,69 @@ Return ONLY valid JSON:
                 <strong>Remember:</strong> Only pay ~$10-15/year for a .com. If it's priced higher,
                 it's a "premium" domain. Pick a different name instead.
               </p>
+            </div>
+
+            {/* Trademark Check - Before Confirming */}
+            <div className={ds.cardWithPadding}>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-xl">⚖️</span>
+                <h4 className={ds.heading}>Check for Trademarks</h4>
+              </div>
+              <p className={ds.muted + " mb-3"}>
+                Make sure no one has trademarked "{finalName}" in software/SaaS before committing.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href={`https://www.gov.uk/search-for-trademark?q=${encodeURIComponent(finalName)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-white border-2 border-slate-200 rounded-lg hover:border-slate-300 text-sm font-medium"
+                >
+                  🇬🇧 UK Trademark Search <ExternalLink className="w-3 h-3" />
+                </a>
+                <a
+                  href={`https://tmsearch.uspto.gov/search/search-information`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-white border-2 border-slate-200 rounded-lg hover:border-slate-300 text-sm font-medium"
+                >
+                  🇺🇸 US Trademark Search <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* Social Handles Preview - Before Confirming */}
+            <div className={ds.cardWithPadding}>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-xl">📱</span>
+                <h4 className={ds.heading}>Social Handles to Claim</h4>
+              </div>
+              <p className={ds.muted + " mb-3"}>
+                After confirming, you'll need to register these. Check availability now:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {SOCIAL_PLATFORMS.map((platform) => (
+                  <a
+                    key={platform.id}
+                    href={platform.checkUrl(finalName)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-white border-2 border-slate-200 rounded-lg hover:border-slate-300 text-sm"
+                  >
+                    <span>{platform.icon}</span>
+                    <span className="font-medium">{platform.label}</span>
+                    <ExternalLink className="w-3 h-3 text-slate-400" />
+                  </a>
+                ))}
+              </div>
+              <p className="text-xs text-slate-500 mt-3">
+                Click each to check if @{finalName.toLowerCase().replace(/\s+/g, '')} is available
+              </p>
+              <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-sm text-slate-600">
+                  <strong>Can't get every handle?</strong> If the .com is available but one or two socials aren't, that's not the end of the world. You can use variations like "{finalName.replace(/\s+/g, '')}App" or "Get{finalName.replace(/\s+/g, '')}". Focus on getting the .com - that's what matters most.
+                </p>
+              </div>
             </div>
 
             <div className="flex gap-3">
@@ -691,7 +553,7 @@ Return ONLY valid JSON:
           </motion.div>
         )}
 
-        {/* Step 4: Complete */}
+        {/* Step 3: Complete */}
         {currentStep === "complete" && (
           <motion.div
             key="complete"
@@ -700,8 +562,8 @@ Return ONLY valid JSON:
             className="space-y-6"
           >
             <div className="text-center py-4">
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Your Product Has a Name!</h2>
-              <p className={ds.muted}>Welcome to the world, <strong>{finalName}</strong>.</p>
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Now Register Everything</h2>
+              <p className={ds.muted}>Tick off each item as you claim it for <strong>{finalName}</strong>.</p>
             </div>
 
             <div className="bg-white border-2 border-primary rounded-lg p-6">
@@ -714,115 +576,43 @@ Return ONLY valid JSON:
 
             {/* Registration Checklist */}
             <div className={ds.cardWithPadding}>
-              <div className="flex items-center justify-between mb-2">
-                <h4 className={ds.heading}>Claim Your Brand Everywhere</h4>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className={ds.heading}>Registration Checklist</h4>
                 <span className={ds.muted}>
                   {registeredItems.size}/{SOCIAL_PLATFORMS.length} done
                 </span>
               </div>
-              <p className={ds.muted + " mb-4"}>
-                Grab these NOW - even if you won't use them immediately. Someone WILL squat on them if you don't.
-              </p>
 
-              {/* Priority platforms */}
-              <div className="space-y-3 mb-4">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Essential (Do These First)</p>
-                {SOCIAL_PLATFORMS.filter(p => p.priority).map((platform) => {
+              {/* All platforms in one list */}
+              <div className="space-y-2">
+                {SOCIAL_PLATFORMS.map((platform) => {
                   const isRegistered = registeredItems.has(platform.id);
-                  const handle = finalName.toLowerCase().replace(/\s+/g, '');
 
                   return (
                     <div
                       key={platform.id}
-                      className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
+                      onClick={() => toggleRegistered(platform.id)}
+                      className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all cursor-pointer ${
                         isRegistered
                           ? "border-green-300 bg-green-50"
                           : "border-slate-200 hover:border-slate-300"
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => toggleRegistered(platform.id)}
+                        <div
                           className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
                             isRegistered
                               ? "border-green-500 bg-green-500"
-                              : "border-slate-300 hover:border-green-400"
+                              : "border-slate-300"
                           }`}
                         >
                           {isRegistered && <Check className="w-4 h-4 text-white" />}
-                        </button>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg">{platform.icon}</span>
-                            <span className={`font-semibold ${isRegistered ? "text-green-700 line-through" : "text-slate-900"}`}>
-                              {platform.label}
-                            </span>
-                          </div>
-                          <div className="text-xs text-slate-500">
-                            {platform.description}
-                          </div>
                         </div>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <a
-                          href={platform.checkUrl(finalName)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-slate-500 hover:underline"
-                        >
-                          Check
-                        </a>
-                        <a
-                          href={platform.signupUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium bg-slate-900 text-white rounded-md hover:bg-slate-800"
-                        >
-                          Sign Up <ExternalLink className="w-3 h-3" />
-                        </a>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Optional platforms */}
-              <div className="space-y-3">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wide">Optional (When You're Ready)</p>
-                {SOCIAL_PLATFORMS.filter(p => !p.priority).map((platform) => {
-                  const isRegistered = registeredItems.has(platform.id);
-
-                  return (
-                    <div
-                      key={platform.id}
-                      className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-                        isRegistered
-                          ? "border-green-300 bg-green-50"
-                          : "border-slate-100 hover:border-slate-200 bg-slate-50"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => toggleRegistered(platform.id)}
-                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                            isRegistered
-                              ? "border-green-500 bg-green-500"
-                              : "border-slate-300 hover:border-green-400"
-                          }`}
-                        >
-                          {isRegistered && <Check className="w-3 h-3 text-white" />}
-                        </button>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span>{platform.icon}</span>
-                            <span className={`font-medium text-sm ${isRegistered ? "text-green-700 line-through" : "text-slate-700"}`}>
-                              {platform.label}
-                            </span>
-                          </div>
-                          <div className="text-xs text-slate-400">
-                            {platform.description}
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg">{platform.icon}</span>
+                          <span className={`font-medium ${isRegistered ? "text-green-700 line-through" : "text-slate-900"}`}>
+                            {platform.label}
+                          </span>
                         </div>
                       </div>
 
@@ -830,7 +620,8 @@ Return ONLY valid JSON:
                         href={platform.signupUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-slate-600 border border-slate-300 rounded hover:bg-white"
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium bg-slate-900 text-white rounded-md hover:bg-slate-800"
                       >
                         Sign Up <ExternalLink className="w-3 h-3" />
                       </a>
@@ -860,13 +651,8 @@ Return ONLY valid JSON:
               size="lg"
               className="w-full h-14 text-lg font-bold gap-2"
               onClick={onComplete}
-              disabled={!registeredItems.has("domain")}
             >
-              {registeredItems.has("domain") ? (
-                <>Complete Day 4 <ChevronRight className="w-5 h-5" /></>
-              ) : (
-                <>Register your domain first to continue</>
-              )}
+              Complete Day 4 <ChevronRight className="w-5 h-5" />
             </Button>
           </motion.div>
         )}

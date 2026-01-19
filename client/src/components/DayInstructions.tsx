@@ -16,28 +16,31 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
   ],
   1: [
     "Fill in your background (knowledge, skills, interests)",
-    "Click 'Generate 28 SaaS Ideas'",
-    "Pick your top 3-5 favorite ideas",
+    "Or enter your own ideas if you already have some",
+    "Pick your favorite ideas (aim for 2-3 to compare)",
     "Click 'Confirm Selection'"
   ],
   2: [
     "Select one of your shortlisted ideas",
-    "AI identifies 7-10 prominent pain points (ranked by severity)",
-    "Pick up to 3 most compelling pain points",
-    "Use validation prompts to research the market",
+    "Research competitors (Google search queries provided)",
+    "Add 2-3 competitors you find",
+    "Pick up to 5 pain points you'll solve",
+    "Write your 'I help X solve Y' statement",
     "Lock in your final idea choice"
   ],
   3: [
-    "Define the bleeding neck problem",
-    "List core features from competitors",
-    "Add your unique USP features",
-    "Write your 10-second pitch",
-    "Define your ideal customer (ICP)"
+    "Generate your feature list with AI",
+    "Review core features (essential based on pain points)",
+    "Review shared features (what competitors all have)",
+    "Review USP features (what makes you unique)",
+    "Add any custom features you want",
+    "Select the features for your MVP"
   ],
   4: [
     "Generate AI name suggestions",
     "Pick your favorite name",
     "Register the .com domain",
+    "Check for existing trademarks (UK & US)",
     "Claim all social media handles"
   ],
   5: [
@@ -47,10 +50,10 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Save as PNG file"
   ],
   6: [
-    "Set up Replit account",
-    "Set up Claude Pro account",
-    "Set up ChatGPT Plus account",
-    "Set up OpenAI API account",
+    "Set up Claude Pro (required for Claude Code)",
+    "Set up Replit account (or your preferred IDE)",
+    "Set up OpenAI API account (for AI features)",
+    "Optional: ChatGPT Plus for brainstorming",
     "Confirm all tools are ready"
   ],
   7: [
@@ -132,10 +135,11 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Submit to the Showcase (screenshot + testimonial)"
   ],
   19: [
-    "Understand the sales machine concept",
-    "Learn how to convert without rejection or selling",
-    "See the free trial formula",
-    "Understand why AI sales pages don't convert well"
+    "Generate 10 headline options with AI",
+    "Pick your best headline",
+    "Generate full sales page copy",
+    "Generate pricing section",
+    "Build the page in your app with Claude Code"
   ],
   20: [
     "Read about the 'overwhelm trap' in marketing",
