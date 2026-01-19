@@ -44,6 +44,14 @@ async function seed() {
       triggerType: "day_completed",
       triggerValue: 21,
     },
+    // Build in Public badge
+    {
+      name: "Public Builder",
+      description: "Shared your commitment to build in public",
+      icon: "📣",
+      triggerType: "build_in_public",
+      triggerValue: 1,
+    },
     // Streak badges
     {
       name: "On Fire!",

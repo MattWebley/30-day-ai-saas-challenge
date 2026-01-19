@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Copy, ExternalLink, Award } from "lucide-react";
 import { ds } from "@/lib/design-system";
 import { VideoSlides } from "@/components/VideoSlides";
+import { toast } from "sonner";
 
 interface Day0StartHereProps {
   onComplete: (data?: any) => void;
@@ -21,6 +22,11 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
   const [shareToDiscussion, setShareToDiscussion] = useState(true);
   const [isReady, setIsReady] = useState(false);
   const [showChoice, setShowChoice] = useState(false);
+
+  // Build in Public state
+  const [buildInPublicExpanded, setBuildInPublicExpanded] = useState(false);
+  const [publicPostLink, setPublicPostLink] = useState("");
+  const [publicPostClaimed, setPublicPostClaimed] = useState(false);
 
   const minMessageLength = 20;
 
@@ -141,8 +147,36 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
       incomeGoal,
       accountabilityMessage: accountabilityMessage.trim(),
       shareToDiscussion,
+      buildInPublic: publicPostClaimed ? publicPostLink.trim() : null,
       timestamp: new Date().toISOString()
     };
+  };
+
+  const generatePublicMessage = () => {
+    const whyText = selectedWhys.size > 0
+      ? Array.from(selectedWhys).map(i => whyOptions[i].label.toLowerCase()).slice(0, 2).join(" and ")
+      : "build something real";
+    return `I just committed to building a SaaS product from scratch in 21 days.
+
+No excuses. No "someday." Just focused action every single day.
+
+Why? Because I want ${whyText}.
+
+Day 1 starts now. Follow along if you want to see how this goes.
+
+#BuildInPublic #SaaS #21DayChallenge`;
+  };
+
+  const copyPublicMessage = () => {
+    navigator.clipboard.writeText(generatePublicMessage());
+    toast.success("Copied to clipboard!");
+  };
+
+  const handleClaimBadge = () => {
+    if (publicPostLink.trim().length > 10) {
+      setPublicPostClaimed(true);
+      toast.success("Public Builder badge unlocked!");
+    }
   };
 
   const handleStartNow = () => {
@@ -387,6 +421,141 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Build in Public - Optional */}
+      <div className={ds.section}>
+        <div
+          className={`${ds.cardWithPadding} cursor-pointer transition-all ${
+            buildInPublicExpanded ? 'ring-2 ring-primary' : 'hover:border-slate-300'
+          }`}
+          onClick={() => !buildInPublicExpanded && setBuildInPublicExpanded(true)}
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+              <Award className="w-6 h-6 text-white" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className={ds.heading}>Build in Public</h3>
+                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                  +1 Badge
+                </span>
+                <span className="text-xs text-slate-400">Optional</span>
+              </div>
+              <p className={ds.muted}>
+                People who publicly commit to a goal are <strong>65% more likely to achieve it</strong>.
+                Share your commitment and unlock the Public Builder badge.
+              </p>
+            </div>
+          </div>
+
+          {buildInPublicExpanded && (
+            <div className="mt-6 pt-6 border-t border-slate-100 space-y-4" onClick={(e) => e.stopPropagation()}>
+              {/* The Psychology */}
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.body}>
+                  <strong>Why this works:</strong> When you tell people what you're doing, your brain treats it as a promise.
+                  Breaking a promise to yourself is easy. Breaking one you made publicly? That stings.
+                  Use that to your advantage.
+                </p>
+              </div>
+
+              {/* Pre-written message */}
+              <div>
+                <p className={`${ds.label} mb-2`}>Your message (feel free to edit):</p>
+                <div className="relative">
+                  <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4 text-sm text-slate-700 whitespace-pre-line">
+                    {generatePublicMessage()}
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute top-2 right-2 gap-1"
+                    onClick={copyPublicMessage}
+                  >
+                    <Copy className="w-3 h-3" /> Copy
+                  </Button>
+                </div>
+              </div>
+
+              {/* Where to share */}
+              <div>
+                <p className={`${ds.label} mb-2`}>Share it on:</p>
+                <div className="flex flex-wrap gap-2">
+                  <a
+                    href="https://twitter.com/intent/tweet"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-slate-800"
+                  >
+                    𝕏 Twitter/X <ExternalLink className="w-3 h-3" />
+                  </a>
+                  <a
+                    href="https://www.linkedin.com/feed/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+                  >
+                    LinkedIn <ExternalLink className="w-3 h-3" />
+                  </a>
+                  <a
+                    href="https://www.facebook.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-3 py-2 bg-blue-500 text-white text-sm font-medium rounded-lg hover:bg-blue-600"
+                  >
+                    Facebook <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              </div>
+
+              {/* Claim badge */}
+              {!publicPostClaimed ? (
+                <div className="bg-slate-50 rounded-lg p-4 space-y-3">
+                  <p className={ds.label}>Paste your post link to claim your badge:</p>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="https://twitter.com/you/status/..."
+                      value={publicPostLink}
+                      onChange={(e) => setPublicPostLink(e.target.value)}
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={handleClaimBadge}
+                      disabled={publicPostLink.trim().length < 10}
+                    >
+                      Claim Badge
+                    </Button>
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    We won't post anything on your behalf. This is just to verify and award your badge.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+                    <Check className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-green-800">Public Builder Badge Unlocked!</p>
+                    <p className="text-sm text-green-600">You're already ahead of 90% of people who never start.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Skip option */}
+              {!publicPostClaimed && (
+                <button
+                  onClick={() => setBuildInPublicExpanded(false)}
+                  className="text-sm text-slate-400 hover:text-slate-600 underline"
+                >
+                  Skip for now
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
