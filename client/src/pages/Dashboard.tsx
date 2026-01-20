@@ -18,11 +18,12 @@ import {
   ChevronRight,
   Lock,
   X,
-  Loader2
+  Loader2,
+  Zap
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { useRoute, useLocation } from "wouter";
+import { useRoute, useLocation, Link } from "wouter";
 import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress, useCompleteDay } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
@@ -74,31 +75,66 @@ const isSubheadline = (paragraph: string): boolean => {
   return false;
 };
 
+// Helper to parse markdown-style links [text](url) and render as <a> tags
+const parseLinks = (text: string): React.ReactNode => {
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = linkRegex.exec(text)) !== null) {
+    // Add text before the link
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    // Add the link
+    parts.push(
+      <a
+        key={match.index}
+        href={match[2]}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary hover:underline font-medium"
+      >
+        {match[1]}
+      </a>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+};
+
+// Branded video placeholder component
+const VideoPlaceholder = ({ day, title }: { day: number; title: string }) => (
+  <div className="relative rounded-xl overflow-hidden mb-6" style={{ paddingBottom: '56.25%' }}>
+    <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+        <div className="text-slate-400 text-xs font-medium uppercase tracking-widest mb-1">Video Lesson</div>
+        <div className="text-primary/80 text-sm font-medium uppercase tracking-widest mb-2">Day</div>
+        <div className="text-7xl md:text-8xl font-extrabold text-white mb-3">{day}</div>
+        <div className="text-xl md:text-2xl font-bold text-white">{title}</div>
+      </div>
+    </div>
+  </div>
+);
+
 // Loom video URLs by day (embed format)
 // To remove a day's video, just delete or comment out the line
+// Add real Loom video URLs here as you record them
+// Format: dayNumber: "https://www.loom.com/embed/VIDEO_ID"
 const lessonVideos: Record<number, string> = {
-  0: "https://www.loom.com/embed/420c8729c9d544c3a265ea8273fe797e",
-  1: "https://www.loom.com/embed/PLACEHOLDER_DAY1", // TODO: Replace with real video
-  2: "https://www.loom.com/embed/PLACEHOLDER_DAY2", // TODO: Replace with real video
-  3: "https://www.loom.com/embed/PLACEHOLDER_DAY3", // TODO: Replace with real video
-  4: "https://www.loom.com/embed/PLACEHOLDER_DAY4", // TODO: Replace with real video
-  5: "https://www.loom.com/embed/PLACEHOLDER_DAY5", // TODO: Replace with real video
-  6: "https://www.loom.com/embed/PLACEHOLDER_DAY6", // TODO: Replace with real video
-  7: "https://www.loom.com/embed/PLACEHOLDER_DAY7", // TODO: Replace with real video
-  8: "https://www.loom.com/embed/PLACEHOLDER_DAY8", // TODO: Replace with real video
-  9: "https://www.loom.com/embed/PLACEHOLDER_DAY9", // TODO: Replace with real video
-  10: "https://www.loom.com/embed/PLACEHOLDER_DAY10", // TODO: Replace with real video
-  11: "https://www.loom.com/embed/PLACEHOLDER_DAY11", // TODO: Replace with real video
-  12: "https://www.loom.com/embed/PLACEHOLDER_DAY12", // TODO: Replace with real video
-  13: "https://www.loom.com/embed/PLACEHOLDER_DAY13", // TODO: Replace with real video
-  14: "https://www.loom.com/embed/PLACEHOLDER_DAY14", // TODO: Replace with real video
-  15: "https://www.loom.com/embed/PLACEHOLDER_DAY15", // TODO: Replace with real video
-  16: "https://www.loom.com/embed/PLACEHOLDER_DAY16", // TODO: Replace with real video
-  17: "https://www.loom.com/embed/PLACEHOLDER_DAY17", // TODO: Replace with real video
-  18: "https://www.loom.com/embed/PLACEHOLDER_DAY18", // TODO: Replace with real video
-  19: "https://www.loom.com/embed/PLACEHOLDER_DAY19", // TODO: Replace with real video
-  20: "https://www.loom.com/embed/PLACEHOLDER_DAY20", // TODO: Replace with real video
-  21: "https://www.loom.com/embed/PLACEHOLDER_DAY21", // TODO: Replace with real video
+  // Add video URLs as you record them:
+  // 0: "https://www.loom.com/embed/YOUR_VIDEO_ID",
+  // 1: "https://www.loom.com/embed/YOUR_VIDEO_ID",
+  // etc.
 };
 
 // Loom thumbnails - get from Loom share page (og:image meta tag)
@@ -317,12 +353,12 @@ export default function Dashboard() {
             {currentDay === 0 ? (
               <>
                 {/* Video Lesson Section - Day 0 */}
-                {lessonVideos[0] && (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-                      <h2 className="font-bold text-xl text-slate-900">Watch the Introduction</h2>
-                    </div>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
+                    <h2 className="font-bold text-xl text-slate-900">Watch the Introduction</h2>
+                  </div>
+                  {lessonVideos[0] ? (
                     <div
                       className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group"
                       style={{
@@ -331,7 +367,6 @@ export default function Dashboard() {
                       }}
                       onClick={() => setShowVideoModal(true)}
                     >
-                      {/* GRADIENT OVERLAY - remove this div to revert */}
                       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -339,9 +374,23 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <VideoPlaceholder day={0} title="Start Here" />
+                  )}
+                </div>
                 <Day0StartHere onComplete={handleComplete} />
+                {!(stats as any)?.hasCoaching && (
+                  <Link href="/coaching">
+                    <Card className="p-4 border border-slate-200 bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
+                      <div className="flex items-center gap-3">
+                        <Zap className="w-5 h-5 text-amber-500" />
+                        <div>
+                          <p className="font-medium text-slate-700">Want to skip ahead? <span className="text-primary">Unlock all 21 days instantly</span></p>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+                )}
               </>
             ) : currentDay === 1 ? (
               <>
@@ -356,7 +405,7 @@ export default function Dashboard() {
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     {/* VIDEO SECTION - Day 1 */}
-                    {lessonVideos[1] && (
+                    {lessonVideos[1] ? (
                       <div
                         className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
                         style={{
@@ -365,14 +414,15 @@ export default function Dashboard() {
                         }}
                         onClick={() => setShowVideoModal(true)}
                       >
-                        {/* GRADIENT OVERLAY - remove this div to revert */}
-                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
-                          <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+                        <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                             <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                           </div>
                         </div>
                       </div>
+                    ) : (
+                      <VideoPlaceholder day={1} title={dayData.title} />
                     )}
                     {dayData.lesson ? (
                       <div className="prose prose-slate max-w-none">
@@ -395,12 +445,24 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Find Your Winning Idea</h2>
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    <Day1IdeaGenerator 
+                    <Day1IdeaGenerator
                       existingProgress={dayProgress}
                       onComplete={handleComplete}
                     />
                   </Card>
                 </div>
+                {!(stats as any)?.hasCoaching && (
+                  <Link href="/coaching">
+                    <Card className="p-4 border border-slate-200 bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
+                      <div className="flex items-center gap-3">
+                        <Zap className="w-5 h-5 text-amber-500" />
+                        <div>
+                          <p className="font-medium text-slate-700">Want to skip ahead? <span className="text-primary">Unlock all 21 days instantly</span></p>
+                        </div>
+                      </div>
+                    </Card>
+                  </Link>
+                )}
               </>
             ) : currentDay === 2 ? (
               <>
@@ -415,7 +477,7 @@ export default function Dashboard() {
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     {/* VIDEO SECTION - Day 2 */}
-                    {lessonVideos[2] && (
+                    {lessonVideos[2] ? (
                       <div
                         className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
                         style={{
@@ -424,14 +486,15 @@ export default function Dashboard() {
                         }}
                         onClick={() => setShowVideoModal(true)}
                       >
-                        {/* GRADIENT OVERLAY - remove this div to revert */}
-                          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
-                          <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
+                        <div className="absolute inset-0 flex items-center justify-center">
                           <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
                             <Play className="w-7 h-7 text-slate-900 ml-1" fill="currentColor" />
                           </div>
                         </div>
                       </div>
+                    ) : (
+                      <VideoPlaceholder day={2} title={dayData.title} />
                     )}
                     {dayData.lesson ? (
                       <div className="prose prose-slate max-w-none">
@@ -472,7 +535,7 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 3 */}
-                      {lessonVideos[3] && (
+                      {lessonVideos[3] ? (
                         <div
                           className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
                           style={{
@@ -481,7 +544,6 @@ export default function Dashboard() {
                           }}
                           onClick={() => setShowVideoModal(true)}
                         >
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -489,10 +551,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={3} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -528,7 +592,7 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 4 */}
-                      {lessonVideos[4] && (
+                      {lessonVideos[4] ? (
                         <div
                           className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
                           style={{
@@ -545,10 +609,29 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <div
+                          className="relative rounded-xl overflow-hidden mb-6"
+                          style={{ paddingBottom: '56.25%' }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950">
+                            {/* Decorative elements */}
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                            <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+
+                            {/* Content */}
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+                              <div className="text-slate-400 text-xs font-medium uppercase tracking-widest mb-1">Video Lesson</div>
+                              <div className="text-primary/80 text-sm font-medium uppercase tracking-widest mb-2">Day</div>
+                              <div className="text-7xl md:text-8xl font-extrabold text-white mb-3">4</div>
+                              <div className="text-xl md:text-2xl font-bold text-white">{dayData.title}</div>
+                            </div>
+                          </div>
+                        </div>
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -583,7 +666,7 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 5 */}
-                      {lessonVideos[5] && (
+                      {lessonVideos[5] ? (
                         <div
                           className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
                           style={{
@@ -592,7 +675,6 @@ export default function Dashboard() {
                           }}
                           onClick={() => setShowVideoModal(true)}
                         >
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -600,10 +682,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={5} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -616,7 +700,8 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Create Your Logo</h2>
                   </div>
                   <Day5Logo
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || ""}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || ""}
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -635,7 +720,7 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 6 */}
-                      {lessonVideos[6] && (
+                      {lessonVideos[6] ? (
                         <div
                           className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6"
                           style={{
@@ -644,7 +729,6 @@ export default function Dashboard() {
                           }}
                           onClick={() => setShowVideoModal(true)}
                         >
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -652,10 +736,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={6} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -719,9 +805,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 7 */}
-                      {lessonVideos[7] && (
+                      {lessonVideos[7] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(7) && { backgroundImage: `url(${getLoomThumbnail(7)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -729,10 +814,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={7} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -787,9 +874,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 8 */}
-                      {lessonVideos[8] && (
+                      {lessonVideos[8] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(8) && { backgroundImage: `url(${getLoomThumbnail(8)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -797,10 +883,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={8} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -835,9 +923,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 9 */}
-                      {lessonVideos[9] && (
+                      {lessonVideos[9] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(9) && { backgroundImage: `url(${getLoomThumbnail(9)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -845,10 +932,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={9} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -880,9 +969,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 10 */}
-                      {lessonVideos[10] && (
+                      {lessonVideos[10] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(10) && { backgroundImage: `url(${getLoomThumbnail(10)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -890,10 +978,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={10} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -925,9 +1015,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 11 */}
-                      {lessonVideos[11] && (
+                      {lessonVideos[11] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(11) && { backgroundImage: `url(${getLoomThumbnail(11)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -935,10 +1024,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={11} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -951,7 +1042,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Define Your Brand</h2>
                   </div>
                   <Day11Brand
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || ""}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || ""}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -970,9 +1061,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 12 */}
-                      {lessonVideos[12] && (
+                      {lessonVideos[12] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(12) && { backgroundImage: `url(${getLoomThumbnail(12)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -980,10 +1070,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={12} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -1015,9 +1107,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 13 */}
-                      {lessonVideos[13] && (
+                      {lessonVideos[13] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(13) && { backgroundImage: `url(${getLoomThumbnail(13)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -1025,10 +1116,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={13} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -1060,9 +1153,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 14 */}
-                      {lessonVideos[14] && (
+                      {lessonVideos[14] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(14) && { backgroundImage: `url(${getLoomThumbnail(14)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -1070,10 +1162,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={14} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -1104,9 +1198,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 15 */}
-                      {lessonVideos[15] && (
+                      {lessonVideos[15] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(15) && { backgroundImage: `url(${getLoomThumbnail(15)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -1114,10 +1207,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={15} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -1130,7 +1225,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Set Up Email</h2>
                   </div>
                   <Day13ReachYourUsers
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1149,9 +1244,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 16 */}
-                      {lessonVideos[16] && (
+                      {lessonVideos[16] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(16) && { backgroundImage: `url(${getLoomThumbnail(16)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -1159,10 +1253,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={16} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -1175,7 +1271,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Test on Mobile</h2>
                   </div>
                   <Day19MobileReady
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1194,9 +1290,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 17 */}
-                      {lessonVideos[17] && (
+                      {lessonVideos[17] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(17) && { backgroundImage: `url(${getLoomThumbnail(17)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -1204,10 +1299,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={17} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -1220,7 +1317,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Build Your Dashboard</h2>
                   </div>
                   <Day18AdminDashboard
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1239,9 +1336,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 18 */}
-                      {lessonVideos[18] && (
+                      {lessonVideos[18] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(18) && { backgroundImage: `url(${getLoomThumbnail(18)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -1249,10 +1345,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={18} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -1265,7 +1363,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Capture Your Progress</h2>
                   </div>
                   <Day18BuildYourMVP
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1284,9 +1382,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 19 */}
-                      {lessonVideos[19] && (
+                      {lessonVideos[19] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(19) && { backgroundImage: `url(${getLoomThumbnail(19)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -1294,10 +1391,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={19} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -1310,7 +1409,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Build Your Sales Machine</h2>
                   </div>
                   <Day19TheSalesMachine
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     painPoints={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.selectedPainPoints || []}
                     features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.coreFeatures || []}
@@ -1334,9 +1433,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 20 */}
-                      {lessonVideos[20] && (
+                      {lessonVideos[20] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(20) && { backgroundImage: `url(${getLoomThumbnail(20)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -1344,10 +1442,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={20} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -1360,7 +1460,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Pick Your Launch Channels</h2>
                   </div>
                   <Day20LaunchPlan
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1379,9 +1479,8 @@ export default function Dashboard() {
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 21 */}
-                      {lessonVideos[21] && (
+                      {lessonVideos[21] ? (
                         <div className="relative rounded-lg overflow-hidden bg-slate-200 cursor-pointer group mb-6" style={{ paddingBottom: '56.25%', ...(getLoomThumbnail(21) && { backgroundImage: `url(${getLoomThumbnail(21)})`, backgroundSize: 'cover', backgroundPosition: 'center' }) }} onClick={() => setShowVideoModal(true)}>
-                          {/* GRADIENT OVERLAY - remove this div to revert */}
                           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-16 h-16 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg">
@@ -1389,10 +1488,12 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
+                      ) : (
+                        <VideoPlaceholder day={21} title={dayData.title} />
                       )}
                       <div className="prose prose-slate max-w-none">
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
-                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{paragraph}</p>
+                          <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
                       </div>
                     </Card>
@@ -1405,7 +1506,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Your Next Chapter</h2>
                   </div>
                   <Day21LaunchDay
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedName || "Your App"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     selectedStrategies={(Array.isArray(progress) ? progress.find((p: any) => p.day === 20) : null)?.userInputs?.selectedStrategies || []}
                     onComplete={handleComplete}
                   />

@@ -394,6 +394,20 @@ export default function Admin() {
           </Card>
         </div>
 
+        {/* Admin Reminders */}
+        <Card className="p-4 border-2 border-amber-200 bg-amber-50">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-bold text-amber-900">Reminder: Affiliate Links</h3>
+              <p className="text-amber-800 text-sm mt-1">
+                Once you hit <strong>10 sales</strong>, add your Fiverr affiliate links to Day 5 (Logo).
+                Stop being lazy and go sign up at <a href="https://www.fiverr.com/partnerships/affiliates" target="_blank" rel="noopener noreferrer" className="underline font-medium">fiverr.com/partnerships/affiliates</a>
+              </p>
+            </div>
+          </div>
+        </Card>
+
         {/* Comment Approval Queue */}
         <div className="space-y-4">
           <div className="flex items-center gap-3">

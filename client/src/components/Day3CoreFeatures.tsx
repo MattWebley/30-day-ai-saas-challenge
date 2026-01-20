@@ -324,9 +324,17 @@ export function Day3CoreFeatures({
         </div>
 
         <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-          <p className={ds.muted}>
-            {selectedFeatures.size} feature{selectedFeatures.size !== 1 ? "s" : ""} selected
-          </p>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => setStep("generate")}
+            >
+              ← Back
+            </Button>
+            <p className={ds.muted}>
+              {selectedFeatures.size} feature{selectedFeatures.size !== 1 ? "s" : ""} selected
+            </p>
+          </div>
           <Button
             size="lg"
             onClick={handleContinue}

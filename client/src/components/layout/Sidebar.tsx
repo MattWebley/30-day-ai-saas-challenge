@@ -426,6 +426,14 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 1:1 Coaching Calls
               </span>
             </Link>
+            {!(stats as any)?.hasCoaching && (
+              <Link href="/coaching" onClick={handleNavClick}>
+                <span className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground">
+                  <Zap className="w-4 h-4" />
+                  Unlock All Days Instantly
+                </span>
+              </Link>
+            )}
             {completedDays.has(8) ? (
               <Link href="/claude-code" onClick={handleNavClick}>
                 <span className={cn(
@@ -497,9 +505,10 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                   {sectionDays.map((day: any) => {
                     const isCompleted = completedDays.has(day.day);
                     // Day 0 is never locked, Day 1+ requires Day 0 completion first
-                    // Test mode bypasses all locking
+                    // Test mode OR coaching purchase bypasses all locking
                     const hasCompletedDay0 = completedDays.has(0);
-                    const isLocked = testMode
+                    const hasCoaching = (stats as any)?.hasCoaching || false;
+                    const isLocked = (testMode || hasCoaching)
                       ? false
                       : day.day === 0
                         ? false

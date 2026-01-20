@@ -256,10 +256,13 @@ export function Day6SummaryPRD({
 
       <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between">
-          <div>
+          <Button variant="outline" onClick={() => setStep("generate")}>
+            ← Back
+          </Button>
+          <div className="text-right">
             <p className={ds.label}>Your PRD is ready!</p>
             <p className={ds.muted + " mt-1"}>
-              You can edit or download it above, then continue to setup
+              You can edit or download it above, then continue
             </p>
           </div>
           <Button size="lg" onClick={handleContinue}>

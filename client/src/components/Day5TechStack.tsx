@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Copy } from "lucide-react";
 import { ds } from "@/lib/design-system";
+import { toast } from "sonner";
 
 interface Tool {
   name: string;
@@ -20,14 +21,14 @@ interface Day5TechStackProps {
 const REQUIRED_TOOLS: Tool[] = [
   {
     name: "Replit",
-    description: "Your AI-powered development environment. Build your entire SaaS without installing anything locally.",
+    description: "Your development environment. Easy to use, runs in browser, has a built-in AI agent as fallback.",
     url: "https://replit.com/signup",
     required: true,
     icon: "💻",
   },
   {
-    name: "Claude Code",
-    description: "Your AI coding assistant. Writes code, fixes bugs, and helps you build faster.",
+    name: "Claude Pro",
+    description: "The powerhouse. Claude Code plugs into Replit - best coding model available, lower costs, incredible results.",
     url: "https://claude.ai",
     required: true,
     icon: "🤖",
@@ -44,7 +45,7 @@ const OPTIONAL_TOOLS: Tool[] = [
   },
   {
     name: "Abacus.AI",
-    description: "Advanced AI models for specialized tasks (optional).",
+    description: "Video generation, text-to-speech, image generation - all sorts of AI models to create assets.",
     url: "https://abacus.ai",
     required: false,
     icon: "🧮",
@@ -83,6 +84,9 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
             <p className={ds.body}>
               These tools will 10x your development speed
             </p>
+            <p className={ds.muted + " mt-2"}>
+              Today's goal: get these set up. Feel free to have a play around with them, but don't get distracted - we'll be using them properly very soon.
+            </p>
           </div>
         </div>
       </div>
@@ -95,8 +99,8 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
             MUST HAVE
           </span>
         </div>
-        <p className={ds.muted + " mb-4"}>
-          These are essential - you need both to build your SaaS
+        <p className={ds.body + " mb-4"}>
+          Click the checkbox when you've set up each tool.
         </p>
 
         <div className="space-y-4">
@@ -181,17 +185,134 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
         </div>
       </div>
 
+      {/* When You Get Stuck */}
+      <div className={ds.cardWithPadding}>
+        <h4 className={ds.label + " mb-2"}>When You Get Stuck (And You Will)</h4>
+        <p className={ds.body + " mb-4"}>
+          The FIRST place to go when something isn't working is Claude. You've got a $500/hr business advisor that's actually FREE because you're already paying for it. Don't spend hours Googling - just ask.
+        </p>
+
+        <div className="p-3 bg-green-50 border border-green-200 rounded-lg mb-4">
+          <p className="text-green-800 text-sm">
+            <strong>Coming soon:</strong> When Claude Code is plugged into Replit (next lessons), it has FULL CONTEXT of your app. You can just ask questions naturally - no need for detailed explanations.
+          </p>
+        </div>
+
+        <p className={ds.muted + " mb-4"}>
+          For now, here are starter prompts for different situations. You'll only need these templates at first - eventually prompting becomes second nature.
+        </p>
+
+        {/* Problem-Solving Prompt */}
+        <div className="p-4 bg-slate-900 rounded-lg mb-3">
+          <p className="text-slate-400 text-xs mb-2 font-medium">🔧 FIXING A PROBLEM:</p>
+          <p className="text-slate-100 font-mono text-sm leading-relaxed whitespace-pre-line">{`I'm trying to [WHAT YOU WANT TO HAPPEN].
+But instead [WHAT'S ACTUALLY HAPPENING].
+Error: [PASTE ERROR IF ANY]
+How do I fix this?`}</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 mb-4"
+          onClick={() => {
+            navigator.clipboard.writeText(`I'm trying to [WHAT YOU WANT TO HAPPEN].
+But instead [WHAT'S ACTUALLY HAPPENING].
+Error: [PASTE ERROR IF ANY]
+How do I fix this?`);
+            toast.success("Prompt copied!");
+          }}
+        >
+          <Copy className="w-4 h-4" /> Copy
+        </Button>
+
+        {/* Advice/Hive Mind Prompt */}
+        <div className="p-4 bg-slate-900 rounded-lg mb-3">
+          <p className="text-slate-400 text-xs mb-2 font-medium">🧠 NEED ADVICE / HIVE MIND:</p>
+          <p className="text-slate-100 font-mono text-sm leading-relaxed whitespace-pre-line">{`I'm building [YOUR APP].
+I need to decide: [YOUR QUESTION/DECISION]
+What are my options? What would you recommend and why?`}</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 mb-4"
+          onClick={() => {
+            navigator.clipboard.writeText(`I'm building [YOUR APP].
+I need to decide: [YOUR QUESTION/DECISION]
+What are my options? What would you recommend and why?`);
+            toast.success("Prompt copied!");
+          }}
+        >
+          <Copy className="w-4 h-4" /> Copy
+        </Button>
+
+        {/* How Do I Prompt */}
+        <div className="p-4 bg-slate-900 rounded-lg mb-3">
+          <p className="text-slate-400 text-xs mb-2 font-medium">🤔 HOW DO I...:</p>
+          <p className="text-slate-100 font-mono text-sm leading-relaxed whitespace-pre-line">{`How do I [THING YOU WANT TO DO] in [CONTEXT/TECH]?
+Give me a simple example I can follow.`}</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2 mb-4"
+          onClick={() => {
+            navigator.clipboard.writeText(`How do I [THING YOU WANT TO DO] in [CONTEXT/TECH]?
+Give me a simple example I can follow.`);
+            toast.success("Prompt copied!");
+          }}
+        >
+          <Copy className="w-4 h-4" /> Copy
+        </Button>
+
+        {/* Review My Approach Prompt */}
+        <div className="p-4 bg-slate-900 rounded-lg mb-3">
+          <p className="text-slate-400 text-xs mb-2 font-medium">👀 REVIEW MY APPROACH:</p>
+          <p className="text-slate-100 font-mono text-sm leading-relaxed whitespace-pre-line">{`I'm planning to [YOUR APPROACH].
+Is this a good idea? What am I missing?
+What problems might I run into?`}</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-2"
+          onClick={() => {
+            navigator.clipboard.writeText(`I'm planning to [YOUR APPROACH].
+Is this a good idea? What am I missing?
+What problems might I run into?`);
+            toast.success("Prompt copied!");
+          }}
+        >
+          <Copy className="w-4 h-4" /> Copy
+        </Button>
+
+        <p className={ds.muted + " mt-4"}>
+          These templates are training wheels. Soon you'll just talk to Claude like a colleague - but start here.
+        </p>
+      </div>
+
       {/* Continue Button */}
       <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between">
           <div>
-            <p className={ds.label}>
-              {completedTools.size} of {REQUIRED_TOOLS.length + OPTIONAL_TOOLS.length} tools set up
-            </p>
-            {!allRequiredComplete && (
-              <p className={ds.muted + " mt-1"}>
-                Complete both required tools to continue
-              </p>
+            {!allRequiredComplete ? (
+              <>
+                <p className={ds.label}>
+                  Check off Replit and Claude Pro above when you've set them up
+                </p>
+                <p className={ds.muted + " mt-1"}>
+                  {completedTools.has("Replit") ? "✓ Replit done" : "○ Replit needed"} · {completedTools.has("Claude Pro") ? "✓ Claude Pro done" : "○ Claude Pro needed"}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className={ds.label}>
+                  All set! You're ready to move on.
+                </p>
+                <p className={ds.muted + " mt-1"}>
+                  {completedTools.size} tools checked
+                </p>
+              </>
             )}
           </div>
           <Button
@@ -199,7 +320,7 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
             onClick={handleContinue}
             disabled={!allRequiredComplete}
           >
-            {allRequiredComplete ? "Continue" : "Complete Required Setup"}
+            {allRequiredComplete ? "Continue" : "Complete Setup First"}
           </Button>
         </div>
       </div>

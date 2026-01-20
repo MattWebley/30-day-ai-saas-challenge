@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-19 (Day 4 overhaul & navigation fixes)
+- **Last Session**: 2026-01-20 (Day 5 & 6 overhaul)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -367,3 +367,55 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test sidebar navigation with test mode on/off
   - Continue testing from Day 5 onwards
   - Server restart required for AI temperature change to take effect
+
+### 2026-01-20 - Day 5 Logo & Day 6 Tech Stack Overhaul
+- **Day 5 Logo - Complete Restructure:**
+  - Changed to AI-first approach (removed "choose logo type" step)
+  - Step 1: Pick brand vibe + colors → generates AI prompt
+  - Step 2: Create with AI tools or fallback options
+  - Removed specific AI tool recommendations (they change too fast)
+  - Added two clear options: "Use what you already have" OR "Try Abacus AI"
+  - Added collapsible fallback section with 6-step Canva text logo guide
+  - Added Fiverr outsourcing option ($5-20)
+  - Updated color picker with popular schemes (Classic Blue, Bold Red, Fresh Green, etc.)
+  - Added gradient options (Sunset, Ocean, Aurora - like Instagram/Stripe)
+  - Added "Other" option with custom color text input
+  - AI prompt now adapts for gradients vs flat colors
+  - Removed premature "Add to Replit" instructions (they don't have Replit yet)
+- **Day 6 Tech Stack - Simplified & Enhanced:**
+  - Essential tools: Replit + Claude Pro only (everything else optional)
+  - Clarified roles: Replit = dev environment with fallback AI, Claude Code = the powerhouse
+  - Added "Click the checkbox when you've set up each tool" instruction
+  - Added "$500/hr business advisor that's FREE" messaging
+  - Added 4 prompt templates for different situations:
+    - 🔧 Fixing a Problem
+    - 🧠 Need Advice / Hive Mind
+    - 🤔 How Do I...
+    - 👀 Review My Approach
+  - Added "Coming soon" note about Claude Code having full context
+  - Added "play around but don't get distracted" note
+  - Improved continue button section with clear status indicators
+  - Updated Abacus.AI description: video gen, text-to-speech, image gen, assets
+- **Dashboard - Lesson Link Support:**
+  - Added `parseLinks()` helper function to render markdown-style links
+  - Lessons can now include `[text](url)` links that open in new tabs
+  - Applied to all lesson paragraph rendering
+- **Seed.ts Updates:**
+  - Day 5 lesson: Added links to Abacus AI, Canva, Fiverr
+  - Day 5 lesson: Updated to match new AI-first approach
+  - Day 6 lesson: Simplified to "two tools only" message
+  - Day 6: Updated descriptions for clarity
+  - Removed all Notion references (using Google examples instead)
+- **Files Modified:**
+  - `client/src/components/Day5Logo.tsx` - Complete rewrite
+  - `client/src/components/Day5TechStack.tsx` - Major enhancements
+  - `client/src/components/DayInstructions.tsx` - Updated Day 5 & 6
+  - `client/src/components/VideoSlides.tsx` - Updated Day 5 & 6 slides
+  - `client/src/pages/Dashboard.tsx` - Added parseLinks() for lesson links
+  - `server/seed.ts` - Day 5 & 6 lesson content updates
+- **Notes for Next Session:**
+  - Test Day 5 logo flow end-to-end
+  - Test Day 6 tech stack checkboxes and continue flow
+  - Test prompt copy buttons work correctly
+  - Verify lesson links open in new tabs
+  - Continue testing Days 7+ onwards

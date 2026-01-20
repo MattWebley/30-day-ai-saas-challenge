@@ -44,17 +44,16 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Claim all social media handles"
   ],
   5: [
-    "Choose your logo style (wordmark, icon+text, or AI-generated)",
-    "Open Canva, Midjourney, or Ideogram",
-    "Create your logo (30 mins max)",
-    "Save as PNG file"
+    "Pick your brand vibe and colors",
+    "Generate your AI logo prompt",
+    "Use your existing AI tool, or try Abacus AI to test multiple models",
+    "Create and save your logo as PNG"
   ],
   6: [
-    "Set up Claude Pro (required for Claude Code)",
-    "Set up Replit account (or your preferred IDE)",
-    "Set up OpenAI API account (for AI features)",
-    "Optional: ChatGPT Plus for brainstorming",
-    "Confirm all tools are ready"
+    "Set up Claude Pro account (required)",
+    "Set up Replit account (required)",
+    "Optional: ChatGPT Plus, OpenAI API, etc.",
+    "Confirm both essential tools are ready"
   ],
   7: [
     "Review your idea, features, and USP",

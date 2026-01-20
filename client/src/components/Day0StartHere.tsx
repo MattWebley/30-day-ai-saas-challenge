@@ -428,25 +428,25 @@ Day 1 starts now. Follow along if you want to see how this goes.
       <div className={ds.section}>
         <div
           className={`${ds.cardWithPadding} cursor-pointer transition-all ${
-            buildInPublicExpanded ? 'ring-2 ring-primary' : 'hover:border-slate-300'
+            buildInPublicExpanded ? 'border-primary' : 'hover:border-slate-300'
           }`}
           onClick={() => !buildInPublicExpanded && setBuildInPublicExpanded(true)}
         >
+          <div className="flex items-center justify-between mb-3">
+            <h3 className={ds.heading}>Build in Public</h3>
+            <span className="text-xs text-slate-400 uppercase tracking-wide">Optional</span>
+          </div>
+
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-              <Award className="w-6 h-6 text-white" />
+            <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 text-2xl">
+              📣
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <h3 className={ds.heading}>Build in Public</h3>
-                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                  +1 Badge
-                </span>
-                <span className="text-xs text-slate-400">Optional</span>
-              </div>
-              <p className={ds.muted}>
-                People who publicly commit to a goal are <strong>65% more likely to achieve it</strong>.
-                Share your commitment and unlock the Public Builder badge.
+              <p className={ds.body}>
+                Share your commitment publicly and unlock the <strong>Public Builder</strong> badge.
+              </p>
+              <p className={`${ds.muted} mt-1 text-sm`}>
+                People who publicly commit are 65% more likely to follow through.
               </p>
             </div>
           </div>
@@ -534,13 +534,13 @@ Day 1 starts now. Follow along if you want to see how this goes.
                   </p>
                 </div>
               ) : (
-                <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-                    <Check className="w-5 h-5 text-white" />
+                <div className="bg-white border-2 border-slate-200 rounded-lg p-6 flex flex-col items-center text-center gap-3">
+                  <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center text-3xl shadow-inner">
+                    📣
                   </div>
                   <div>
-                    <p className="font-bold text-green-800">Public Builder Badge Unlocked!</p>
-                    <p className="text-sm text-green-600">You're already ahead of 90% of people who never start.</p>
+                    <p className="font-bold text-slate-900">Public Builder</p>
+                    <p className="text-sm text-slate-500 mt-1">Badge unlocked</p>
                   </div>
                 </div>
               )}

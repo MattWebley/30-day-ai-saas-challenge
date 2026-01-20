@@ -38,6 +38,7 @@ export const users = pgTable("users", {
   launchPackPurchased: boolean("launch_pack_purchased").default(false),
   coachingPurchased: boolean("coaching_purchased").default(false),
   stripeCustomerId: varchar("stripe_customer_id"),
+  purchaseCurrency: varchar("purchase_currency"), // 'usd' or 'gbp' - set on first purchase
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

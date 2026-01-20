@@ -161,6 +161,56 @@ export default function Badges() {
               })}
           </div>
         </div>
+
+        {/* Special Badges */}
+        {sortedBadges.filter(badge => badge.triggerType !== 'day_completed' && badge.triggerType !== 'streak').length > 0 && (
+          <div>
+            <h2 className="text-lg font-semibold text-slate-700 mb-4">Special Badges</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedBadges
+                .filter(badge => badge.triggerType !== 'day_completed' && badge.triggerType !== 'streak')
+                .map((badge, i) => {
+                  const isEarned = earnedBadgeIds.has(badge.id);
+
+                  return (
+                    <motion.div
+                      key={badge.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: i * 0.05 }}
+                    >
+                      <Card className={cn(
+                        "p-8 flex flex-col items-center text-center gap-4 transition-none hover:shadow-lg",
+                        isEarned
+                          ? "bg-white border-slate-200"
+                          : "bg-slate-50 border-slate-100 opacity-60 grayscale"
+                      )}>
+                        <div className={cn(
+                          "w-20 h-20 rounded-full flex items-center justify-center mb-2 text-4xl",
+                          isEarned
+                            ? "bg-blue-50 shadow-inner"
+                            : "bg-slate-200"
+                        )}>
+                          {badge.icon}
+                        </div>
+
+                        <div>
+                          <h3 className="font-bold text-lg mb-1">{badge.name}</h3>
+                          <p className="text-sm text-muted-foreground">{badge.description}</p>
+                        </div>
+
+                        {!isEarned && (
+                          <div className="text-xs font-medium text-slate-400 uppercase tracking-widest mt-2">
+                            Locked
+                          </div>
+                        )}
+                      </Card>
+                    </motion.div>
+                  );
+                })}
+            </div>
+          </div>
+        )}
       </div>
     </Layout>
   );

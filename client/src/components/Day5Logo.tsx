@@ -3,166 +3,416 @@ import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, ChevronLeft, ExternalLink, Upload, Palette, Type } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronDown, ChevronUp, ExternalLink, Copy, Sparkles, RefreshCw } from "lucide-react";
+import { toast } from "sonner";
 
 interface Day5LogoProps {
   appName: string;
+  userIdea?: string;
   onComplete: (data: {
     logoType: string;
     logoDescription: string;
     toolUsed: string;
+    brandVibe?: string;
   }) => void;
 }
 
-const LOGO_TYPES = [
-  { id: "wordmark", label: "Text-only (Wordmark)", icon: Type, description: "Just your app name in a nice font. Clean & professional." },
-  { id: "icon-text", label: "Icon + Text", icon: Palette, description: "A simple symbol next to your name." },
-  { id: "ai-generated", label: "AI-Generated", icon: Upload, description: "Use AI tools to generate logo concepts." },
+const BRAND_VIBES = [
+  { id: "minimal", label: "Minimal & Clean", keywords: "minimal, clean, simple, whitespace, modern" },
+  { id: "bold", label: "Bold & Strong", keywords: "bold, strong, powerful, impactful, confident" },
+  { id: "playful", label: "Playful & Fun", keywords: "playful, fun, friendly, approachable, colorful" },
+  { id: "professional", label: "Professional & Corporate", keywords: "professional, corporate, trustworthy, established, reliable" },
+  { id: "techy", label: "Tech & Modern", keywords: "tech, modern, futuristic, innovative, cutting-edge" },
+  { id: "elegant", label: "Elegant & Premium", keywords: "elegant, premium, luxury, sophisticated, refined" },
 ];
 
-const LOGO_TOOLS = [
-  { id: "canva", label: "Canva", url: "https://www.canva.com/logos/", description: "Free, easy templates" },
-  { id: "midjourney", label: "Midjourney", url: "https://www.midjourney.com/", description: "AI image generation" },
-  { id: "ideogram", label: "Ideogram", url: "https://ideogram.ai/", description: "AI with text support" },
-  { id: "logomaker", label: "Logo Maker", url: "https://www.namecheap.com/logo-maker/", description: "Namecheap's free tool" },
+const COLOR_PREFERENCES = [
+  // Single colors (like Spotify, Netflix, Facebook)
+  { id: "classic-blue", label: "Classic Blue", colors: ["#2563eb"], keywords: "blue, trustworthy, professional, like Facebook or LinkedIn", isGradient: false },
+  { id: "bold-red", label: "Bold Red", colors: ["#dc2626"], keywords: "red, powerful, exciting, like Netflix or YouTube", isGradient: false },
+  { id: "fresh-green", label: "Fresh Green", colors: ["#16a34a"], keywords: "green, growth, fresh, like Spotify or WhatsApp", isGradient: false },
+  { id: "modern-purple", label: "Modern Purple", colors: ["#7c3aed"], keywords: "purple, creative, modern, like Twitch or Figma", isGradient: false },
+  { id: "monochrome", label: "Black & White", colors: ["#000000", "#ffffff"], keywords: "monochrome, black and white, classic, timeless, like Apple or Nike", isGradient: false },
+  // Gradients (like Instagram, Stripe)
+  { id: "sunset-gradient", label: "Sunset Gradient", colors: ["#f97316", "#ec4899", "#8b5cf6"], keywords: "gradient from orange to pink to purple, like Instagram, vibrant, social", isGradient: true },
+  { id: "ocean-gradient", label: "Ocean Gradient", colors: ["#06b6d4", "#3b82f6", "#8b5cf6"], keywords: "gradient from cyan to blue to purple, like Stripe, professional, tech", isGradient: true },
+  { id: "aurora-gradient", label: "Aurora Gradient", colors: ["#10b981", "#06b6d4", "#6366f1"], keywords: "gradient from green to cyan to indigo, fresh, modern, innovative", isGradient: true },
+  // Custom option
+  { id: "other", label: "Other", colors: ["#94a3b8", "#cbd5e1", "#e2e8f0"], keywords: "", isGradient: false, isOther: true },
 ];
 
-export function Day5Logo({ appName, onComplete }: Day5LogoProps) {
-  const [step, setStep, containerRef] = useStepWithScroll<"choose" | "create" | "confirm">("choose");
-  const [logoType, setLogoType] = useState<string | null>(null);
+// No specific AI tools listed - they change too fast
+
+export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
+  const [step, setStep, containerRef] = useStepWithScroll<"customize" | "create" | "confirm">("customize");
+  const [brandVibe, setBrandVibe] = useState<string | null>(null);
+  const [colorPreference, setColorPreference] = useState<string | null>(null);
+  const [customColors, setCustomColors] = useState<string>("");
+  const [generatedPrompt, setGeneratedPrompt] = useState<string>("");
   const [toolUsed, setToolUsed] = useState<string | null>(null);
   const [logoDescription, setLogoDescription] = useState("");
   const [hasCreated, setHasCreated] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [showCanvaGuide, setShowCanvaGuide] = useState(false);
+
+  const displayName = appName || "YourApp";
+  const selectedColor = COLOR_PREFERENCES.find(c => c.id === colorPreference);
+  const isGradientSelected = selectedColor?.isGradient || false;
+
+  const generateAIPrompt = () => {
+    const vibe = BRAND_VIBES.find(v => v.id === brandVibe);
+    const vibeKeywords = vibe?.keywords || "modern, clean";
+    const color = COLOR_PREFERENCES.find(c => c.id === colorPreference);
+    const colorKeywords = colorPreference === "other" && customColors
+      ? customColors
+      : color?.keywords || "single or two colors";
+
+    const gradientNote = isGradientSelected
+      ? "Use a smooth gradient."
+      : "No gradients, no shadows, no 3D effects.";
+
+    const prompt = `Create a simple, memorable logo for "${displayName}"${userIdea ? `, a ${userIdea}` : ""}. Style: ${vibeKeywords}. Colors: ${colorKeywords}. The logo should work at small sizes (favicon). Vector style, flat design, white background. ${gradientNote} --v 6`;
+
+    setGeneratedPrompt(prompt);
+  };
+
+  const copyPrompt = () => {
+    navigator.clipboard.writeText(generatedPrompt);
+    setCopied(true);
+    toast.success("Prompt copied!");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const regeneratePrompt = () => {
+    generateAIPrompt();
+    toast.success("Prompt regenerated!");
+  };
 
   return (
     <div ref={containerRef} className="space-y-6">
-      {/* Step 1: Choose Logo Type */}
-      {step === "choose" && (
+      {/* Step 1: Brand Vibe & Colors - Generate AI Prompt */}
+      {step === "customize" && (
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="text-lg font-bold text-slate-900 mb-4">What type of logo do you want?</h4>
-            <p className="text-slate-700 mb-4">
-              Your logo is the face of <strong>{appName || "your app"}</strong>. Choose the style that fits your brand.
-            </p>
-            <div className="space-y-3">
-              {LOGO_TYPES.map((type) => {
-                const Icon = type.icon;
-                const isSelected = logoType === type.id;
+            <h4 className="text-lg font-bold text-slate-900 mb-2">What's your brand vibe?</h4>
+            <p className="text-slate-600 mb-4">Pick the style that fits your app.</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {BRAND_VIBES.map((vibe) => {
+                const isSelected = brandVibe === vibe.id;
                 return (
                   <button
-                    key={type.id}
-                    onClick={() => setLogoType(type.id)}
-                    className={`w-full flex items-center gap-4 p-4 rounded-lg border-2 text-left transition-colors ${
+                    key={vibe.id}
+                    onClick={() => setBrandVibe(vibe.id)}
+                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
                       isSelected
                         ? "border-primary bg-primary/5"
                         : "border-slate-200 hover:border-slate-300 bg-white"
                     }`}
                   >
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                      isSelected ? "bg-primary text-white" : "bg-slate-100 text-slate-600"
-                    }`}>
-                      <Icon className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-slate-900">{type.label}</p>
-                      <p className="text-slate-600">{type.description}</p>
-                    </div>
-                    {isSelected && <CheckCircle2 className="w-5 h-5 text-primary ml-auto" />}
+                    <p className={`font-medium ${isSelected ? "text-primary" : "text-slate-900"}`}>
+                      {vibe.label}
+                    </p>
                   </button>
                 );
               })}
             </div>
           </Card>
 
-          {logoType && (
+          {brandVibe && (
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <h4 className="text-lg font-bold text-slate-900 mb-2">What colors do you want?</h4>
+              <p className="text-slate-600 mb-4">Pick a color style for your logo.</p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {COLOR_PREFERENCES.map((color) => {
+                  const isSelected = colorPreference === color.id;
+                  return (
+                    <button
+                      key={color.id}
+                      onClick={() => setColorPreference(color.id)}
+                      className={`p-4 rounded-lg border-2 text-left transition-all ${
+                        isSelected
+                          ? "border-primary bg-primary/5 scale-[1.02]"
+                          : "border-slate-200 hover:border-slate-300 bg-white"
+                      }`}
+                    >
+                      <div className="flex gap-1 mb-2">
+                        {color.id === "other" ? (
+                          <div className="w-full h-8 rounded-md border-2 border-dashed border-slate-300 bg-slate-50 flex items-center justify-center text-slate-400 text-sm font-medium">
+                            Your choice
+                          </div>
+                        ) : color.isGradient ? (
+                          <div
+                            className="w-full h-8 rounded-md border border-slate-200"
+                            style={{ background: `linear-gradient(135deg, ${color.colors.join(', ')})` }}
+                          />
+                        ) : (
+                          color.colors.map((c, i) => (
+                            <div
+                              key={i}
+                              className="w-8 h-8 rounded-md border border-slate-200"
+                              style={{ backgroundColor: c }}
+                            />
+                          ))
+                        )}
+                      </div>
+                      <p className={`font-medium text-sm ${isSelected ? "text-primary" : "text-slate-900"}`}>
+                        {color.label}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Custom color input when "Other" is selected */}
+              {colorPreference === "other" && (
+                <div className="mt-4 pt-4 border-t border-slate-200">
+                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                    Describe your colors:
+                  </label>
+                  <Input
+                    placeholder="e.g., teal and coral, dark navy with gold accents, earthy browns and greens"
+                    value={customColors}
+                    onChange={(e) => setCustomColors(e.target.value)}
+                  />
+                </div>
+              )}
+            </Card>
+          )}
+
+          {brandVibe && colorPreference && (colorPreference !== "other" || customColors.length > 0) && (
+            <Card className="p-6 border-2 border-slate-200 bg-white">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h4 className="text-lg font-bold text-slate-900">Your AI Logo Prompt</h4>
+                  <p className="text-slate-600">Copy this into any AI image tool.</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={generatedPrompt ? regeneratePrompt : generateAIPrompt}
+                  className="gap-2"
+                >
+                  {generatedPrompt ? <RefreshCw className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
+                  {generatedPrompt ? "Regenerate" : "Generate"}
+                </Button>
+              </div>
+
+              {!generatedPrompt ? (
+                <div className="p-8 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 text-center">
+                  <Sparkles className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                  <p className="text-slate-600">Click "Generate" to create your logo prompt</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="p-4 bg-slate-900 rounded-lg">
+                    <p className="text-slate-100 font-mono text-sm leading-relaxed">
+                      {generatedPrompt}
+                    </p>
+                  </div>
+                  <Button
+                    onClick={copyPrompt}
+                    className={`w-full gap-2 transition-colors ${copied ? "bg-green-600 hover:bg-green-600 text-white border-green-600" : ""}`}
+                    variant="outline"
+                  >
+                    {copied ? (
+                      <><CheckCircle2 className="w-4 h-4" /> Copied!</>
+                    ) : (
+                      <><Copy className="w-4 h-4" /> Copy Prompt</>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </Card>
+          )}
+
+          {generatedPrompt && (
             <Button
               size="lg"
               className="w-full h-14 text-lg font-bold gap-2"
               onClick={() => setStep("create")}
             >
-              Create Your Logo
+              Next: Create Your Logo
             </Button>
           )}
         </>
       )}
 
-      {/* Step 2: Create Logo */}
+      {/* Step 2: Create Logo with AI Tools */}
       {step === "create" && (
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="text-lg font-bold text-slate-900 mb-4">Create Your Logo</h4>
+            <h4 className="text-lg font-bold text-slate-900 mb-2">Create Your Logo with AI</h4>
             <p className="text-slate-700 mb-4">
-              Pick a tool and create your logo. This shouldn't take more than 30 minutes.
+              AI image tools change ALL the time. What works great today might not tomorrow. Here's the approach:
             </p>
 
-            <div className="space-y-3 mb-6">
-              {LOGO_TOOLS.map((tool) => {
-                const isSelected = toolUsed === tool.id;
-                return (
-                  <div
-                    key={tool.id}
-                    className={`flex items-center justify-between p-4 rounded-lg border-2 ${
-                      isSelected ? "border-primary bg-primary/5" : "border-slate-200 bg-white"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="radio"
-                        checked={isSelected}
-                        onChange={() => setToolUsed(tool.id)}
-                        className="w-4 h-4 text-primary"
-                      />
-                      <div>
-                        <p className="font-medium text-slate-900">{tool.label}</p>
-                        <p className="text-slate-600">{tool.description}</p>
-                      </div>
-                    </div>
+            <div className="space-y-4">
+              {/* Option 1: Use what you have */}
+              <div
+                className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                  toolUsed === "existing-ai" ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300 bg-white"
+                }`}
+                onClick={() => setToolUsed("existing-ai")}
+              >
+                <div className="flex items-start gap-3">
+                  <input
+                    type="radio"
+                    checked={toolUsed === "existing-ai"}
+                    onChange={() => setToolUsed("existing-ai")}
+                    className="w-4 h-4 text-primary mt-1"
+                  />
+                  <div>
+                    <p className="font-bold text-slate-900">Option 1: Use What You Already Have</p>
+                    <p className="text-slate-700 mt-1">
+                      If you're already paying for an AI tool with image generation (ChatGPT Plus, Claude Pro, etc.) - use that. You already have it. Paste the prompt and generate some options.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Option 2: Abacus AI */}
+              <div
+                className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                  toolUsed === "abacus" ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300 bg-white"
+                }`}
+                onClick={() => setToolUsed("abacus")}
+              >
+                <div className="flex items-start gap-3">
+                  <input
+                    type="radio"
+                    checked={toolUsed === "abacus"}
+                    onChange={() => setToolUsed("abacus")}
+                    className="w-4 h-4 text-primary mt-1"
+                  />
+                  <div className="flex-1">
+                    <p className="font-bold text-slate-900">Option 2: Try Multiple AI Models</p>
+                    <p className="text-slate-700 mt-1">
+                      Use Abacus AI to test your prompt across different AI image generators without signing up to a bunch of separate services. Same prompt, multiple models, see what works best.
+                    </p>
                     <a
-                      href={tool.url}
+                      href="https://abacus.ai/"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-primary hover:underline"
+                      className="inline-flex items-center gap-1 text-primary hover:underline mt-2 font-medium"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      Open <ExternalLink className="w-4 h-4" />
+                      Open Abacus AI <ExternalLink className="w-4 h-4" />
                     </a>
                   </div>
-                );
-              })}
+                </div>
+              </div>
+            </div>
+
+            {/* Prompt reference */}
+            <div className="mt-4 p-4 bg-slate-900 rounded-lg">
+              <p className="text-slate-400 text-xs mb-2 font-medium">YOUR PROMPT:</p>
+              <p className="text-slate-100 font-mono text-sm leading-relaxed">
+                {generatedPrompt}
+              </p>
+              <Button
+                onClick={copyPrompt}
+                className={`w-full mt-3 gap-2 transition-colors ${copied ? "bg-green-600 hover:bg-green-600 text-white border-green-600" : ""}`}
+                variant="outline"
+              >
+                {copied ? <><CheckCircle2 className="w-4 h-4" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy Prompt</>}
+              </Button>
             </div>
           </Card>
 
-          {logoType === "wordmark" && (
-            <Card className="p-6 border-2 border-slate-200 bg-white">
-              <h4 className="text-lg font-bold text-slate-900 mb-3">Quick Wordmark Guide</h4>
-              <ol className="space-y-2 text-slate-700">
-                <li>1. Open Canva and search "logo" templates</li>
-                <li>2. Pick a simple, minimal template</li>
-                <li>3. Replace the text with "{appName || "your app name"}"</li>
-                <li>4. Choose 1-2 colors max</li>
-                <li>5. Download as PNG (transparent background if possible)</li>
-              </ol>
-            </Card>
-          )}
-
-          {logoType === "ai-generated" && (
-            <Card className="p-6 border-2 border-slate-200 bg-white">
-              <h4 className="text-lg font-bold text-slate-900 mb-3">AI Logo Prompt</h4>
-              <p className="text-slate-700 mb-3">Try this prompt in Midjourney or Ideogram:</p>
-              <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                <p className="text-slate-700 font-mono text-sm">
-                  "Minimal modern logo for {appName || "[your app name]"}, simple geometric design, flat vector style, single color, white background --v 6"
-                </p>
+          {/* Fallback Options */}
+          <Card className="p-4 border-2 border-slate-200 bg-white">
+            <button
+              onClick={() => setShowCanvaGuide(!showCanvaGuide)}
+              className="w-full flex items-center justify-between text-left"
+            >
+              <div>
+                <p className="font-medium text-slate-900">AI not working? Fallback options</p>
+                <p className="text-slate-600">DIY text logo or hire someone cheap</p>
               </div>
-            </Card>
-          )}
+              {showCanvaGuide ? (
+                <ChevronUp className="w-5 h-5 text-slate-400" />
+              ) : (
+                <ChevronDown className="w-5 h-5 text-slate-400" />
+              )}
+            </button>
 
+            {showCanvaGuide && (
+              <div className="mt-4 pt-4 border-t border-slate-200 space-y-6">
+                {/* Canva DIY */}
+                <div>
+                  <h5 className="font-bold text-slate-900 mb-3">Make a Text Logo in 5 Minutes (Free)</h5>
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">1</div>
+                      <p className="text-slate-700">Go to <a href="https://www.canva.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Canva</a> (free)</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">2</div>
+                      <p className="text-slate-700">Search "logo" templates</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">3</div>
+                      <p className="text-slate-700">Pick one that's SIMPLE (avoid busy designs)</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">4</div>
+                      <p className="text-slate-700">Replace the text with your app name: <strong>{displayName}</strong></p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">5</div>
+                      <p className="text-slate-700">Choose 1-2 colors max</p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">6</div>
+                      <p className="text-slate-700">Download as PNG</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 p-3 bg-slate-50 rounded-lg">
+                    <p className="text-sm text-slate-600">
+                      <strong>Pro tip:</strong> Text-only logos are totally fine. Stripe, Google, and FedEx all use text logos. Simple = memorable.
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    className="w-full mt-4 gap-2"
+                    onClick={() => {
+                      setToolUsed("canva-text");
+                      window.open("https://www.canva.com/logos/", "_blank");
+                    }}
+                  >
+                    Open Canva <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* Fiverr outsource */}
+                <div className="pt-4 border-t border-slate-200">
+                  <h5 className="font-bold text-slate-900 mb-2">Or Just Outsource It ($5-20)</h5>
+                  <p className="text-slate-700 mb-3">
+                    Not into design? Hire someone on Fiverr. Logos start at $5 and you can get something decent for under $20. Takes the pressure off.
+                  </p>
+                  <Button
+                    variant="outline"
+                    className="w-full gap-2"
+                    onClick={() => {
+                      setToolUsed("fiverr");
+                      window.open("https://www.fiverr.com/categories/graphics-design/creative-logo-design", "_blank");
+                    }}
+                  >
+                    Browse Fiverr Logo Designers <ExternalLink className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Card>
+
+          {/* Confirmation */}
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="text-lg font-bold text-slate-900 mb-3">I've created my logo</h4>
             <p className="text-slate-700 mb-4">
               Describe your logo briefly (helps you remember what you chose):
             </p>
             <Input
-              placeholder="e.g., Blue wordmark in Inter font, all lowercase"
+              placeholder={`e.g., Blue abstract icon with "${displayName}" text`}
               value={logoDescription}
               onChange={(e) => setLogoDescription(e.target.value)}
               className="mb-4"
@@ -185,12 +435,12 @@ export function Day5Logo({ appName, onComplete }: Day5LogoProps) {
             <Button
               variant="outline"
               size="lg"
-              onClick={() => setStep("choose")}
+              onClick={() => setStep("customize")}
               className="gap-2"
             >
               <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-            {toolUsed && hasCreated && logoDescription.length >= 5 && (
+            {(toolUsed || hasCreated) && hasCreated && logoDescription.length >= 5 && (
               <Button
                 size="lg"
                 className="flex-1 h-14 text-lg font-bold gap-2"
@@ -223,15 +473,21 @@ export function Day5Logo({ appName, onComplete }: Day5LogoProps) {
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="text-lg font-bold text-slate-900 mb-3">Your Logo</h4>
             <div className="space-y-2 text-slate-700">
-              <p><strong>Type:</strong> {LOGO_TYPES.find(t => t.id === logoType)?.label}</p>
-              <p><strong>Tool:</strong> {LOGO_TOOLS.find(t => t.id === toolUsed)?.label}</p>
+              <p><strong>Vibe:</strong> {BRAND_VIBES.find(v => v.id === brandVibe)?.label}</p>
+              <p><strong>Colors:</strong> {COLOR_PREFERENCES.find(c => c.id === colorPreference)?.label}</p>
+              <p><strong>Method:</strong> {
+                toolUsed === "canva-text" ? "Canva (Text Logo)" :
+                toolUsed === "fiverr" ? "Fiverr Designer" :
+                toolUsed === "existing-ai" ? "Existing AI Tool" :
+                toolUsed === "abacus" ? "Abacus AI" : "Other"
+              }</p>
               <p><strong>Description:</strong> {logoDescription}</p>
             </div>
           </Card>
 
           <Card className="p-4 border-2 border-slate-200 bg-slate-50">
             <p className="text-slate-600">
-              <strong>Tip:</strong> Save your logo in multiple sizes (favicon at 32x32, header at ~200px wide). You can always refine it later - the important thing is you have one now.
+              <strong>Tip:</strong> Save your logo in multiple sizes (favicon at 32x32, header at ~200px wide). You can always refine it later.
             </p>
           </Card>
 
@@ -248,9 +504,10 @@ export function Day5Logo({ appName, onComplete }: Day5LogoProps) {
               size="lg"
               className="flex-1 h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
               onClick={() => onComplete({
-                logoType: logoType || "",
+                logoType: toolUsed === "canva-text" ? "text-logo" : "ai-generated",
                 logoDescription,
-                toolUsed: toolUsed || "",
+                toolUsed: toolUsed || "other",
+                brandVibe: brandVibe || undefined,
               })}
             >
               Complete Day 5 <CheckCircle2 className="w-5 h-5" />

@@ -188,12 +188,16 @@ export async function registerRoutes(
     try {
       const userId = req.user.claims.sub;
       let stats = await storage.getUserStats(userId);
-      
+
       if (!stats) {
         stats = await storage.createUserStats({ userId });
       }
-      
-      res.json(stats);
+
+      // Include user's coaching purchase status for unlock-all feature
+      const user = await storage.getUser(userId);
+      const hasCoaching = user?.coachingPurchased || false;
+
+      res.json({ ...stats, hasCoaching });
     } catch (error) {
       console.error("Error fetching user stats:", error);
       res.status(500).json({ message: "Failed to fetch user stats" });
@@ -500,6 +504,36 @@ Format: { "ideas": [...] }`;
       }
     } catch (error: any) {
       console.error("Error saving Day 5 progress:", error);
+      res.status(500).json({ message: error.message || "Failed to save progress" });
+    }
+  });
+
+  // Generic progress save endpoint (used by Day4Naming and others)
+  app.post("/api/progress/:day(\\d+)", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const day = parseInt(req.params.day);
+      const data = req.body;
+
+      const existing = await storage.getUserProgressForDay(userId, day);
+
+      const progressData = {
+        userInputs: data,
+      };
+
+      if (existing) {
+        const updated = await storage.updateUserProgress(existing.id, progressData);
+        res.json(updated);
+      } else {
+        const created = await storage.createUserProgress({
+          userId,
+          day,
+          ...progressData,
+        });
+        res.json(created);
+      }
+    } catch (error: any) {
+      console.error(`Error saving Day ${req.params.day} progress:`, error);
       res.status(500).json({ message: error.message || "Failed to save progress" });
     }
   });
@@ -2024,6 +2058,82 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     }
   });
 
+  // Matt Webley single session checkout
+  app.post("/api/checkout/coaching-matt-single", async (req, res) => {
+    try {
+      const { currency = 'gbp' } = req.body;
+      const stripe = await getUncachableStripeClient();
+      const host = req.get('host');
+      const protocol = req.protocol;
+
+      // Price IDs for Matt Webley Single Session by currency
+      // TODO: Create these products in Stripe and update with real price IDs
+      const mattSinglePriceIds: Record<string, string> = {
+        usd: 'price_COACHING_MATT_SINGLE_USD', // $2,495 - TODO: Replace with real Stripe price ID
+        gbp: 'price_COACHING_MATT_SINGLE_GBP'  // £1,995 - TODO: Replace with real Stripe price ID
+      };
+      const priceId = mattSinglePriceIds[currency.toLowerCase()] || mattSinglePriceIds.gbp;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price: priceId,
+          quantity: 1
+        }],
+        mode: 'payment',
+        success_url: `${protocol}://${host}/coaching?success=true&type=matt-single`,
+        cancel_url: `${protocol}://${host}/coaching`,
+        metadata: {
+          productType: 'coaching-matt-single',
+          currency: currency
+        }
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Error creating Matt single session checkout:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  // Matt Webley premium coaching checkout (4-pack)
+  app.post("/api/checkout/coaching-matt", async (req, res) => {
+    try {
+      const { currency = 'gbp' } = req.body;
+      const stripe = await getUncachableStripeClient();
+      const host = req.get('host');
+      const protocol = req.protocol;
+
+      // Price IDs for Matt Webley Coaching by currency
+      // TODO: Create these products in Stripe and update with real price IDs
+      const mattCoachingPriceIds: Record<string, string> = {
+        usd: 'price_COACHING_MATT_USD', // $4,995 - TODO: Replace with real Stripe price ID
+        gbp: 'price_COACHING_MATT_GBP'  // £3,995 - TODO: Replace with real Stripe price ID
+      };
+      const priceId = mattCoachingPriceIds[currency.toLowerCase()] || mattCoachingPriceIds.gbp;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price: priceId,
+          quantity: 1
+        }],
+        mode: 'payment',
+        success_url: `${protocol}://${host}/coaching?success=true&type=matt`,
+        cancel_url: `${protocol}://${host}/coaching`,
+        metadata: {
+          productType: 'coaching-matt',
+          currency: currency
+        }
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Error creating Matt coaching checkout session:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
   // Process checkout success - verify purchase and grant access
   app.post("/api/checkout/process-success", async (req, res) => {
     if (!req.isAuthenticated() || !req.user) {
@@ -2063,6 +2173,11 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       if (session.customer) {
         const customerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
         updateData.stripeCustomerId = customerId;
+      }
+
+      // Save purchase currency for future default
+      if (session.metadata?.currency) {
+        updateData.purchaseCurrency = session.metadata.currency.toLowerCase();
       }
 
       // Update user record with all purchases

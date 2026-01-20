@@ -336,7 +336,7 @@ You'll get AI-generated name suggestions, then clickable links to check everythi
       suggestions: null,
       template: null,
       microDecisionQuestion: "What style of logo fits your brand?",
-      microDecisionOptions: JSON.stringify(["Text-only (wordmark)", "Icon + text", "Abstract symbol", "Lettermark (initials)"]),
+      microDecisionOptions: JSON.stringify(["Text-only logo", "Icon + text", "Abstract symbol", "Lettermark (initials)"]),
       reflectionQuestion: "Does your logo feel like YOUR brand?",
       tip: "A text-only logo in a clean font is better than a bad graphic. Don't overthink it - you can always refine later.",
       lesson: `Your logo is the FACE of your product.
@@ -345,27 +345,28 @@ It doesn't need to be perfect. It needs to be DONE.
 
 THE TRUTH ABOUT LOGOS:
 
-Most successful SaaS companies have SIMPLE logos. Stripe is just text. Notion is just text with a simple icon. You don't need a fancy designer.
+Most successful companies have SIMPLE logos. Google is just text. Netflix is just text. Stripe is just text. You don't need a fancy designer.
 
-YOUR OPTIONS:
+HOW WE'RE DOING THIS:
 
-1. TEXT-ONLY (Wordmark)
-Just your app name in a nice font. Clean, professional, EASY. This is what I recommend for most people starting out.
+AI image tools change ALL THE TIME. What works great today might not tomorrow. So here's the approach:
 
-2. ICON + TEXT
-A simple symbol next to your name. Good if you have a clear visual concept.
+OPTION 1: USE WHAT YOU ALREADY HAVE
+If you're already paying for an AI tool with image generation (ChatGPT Plus, Claude Pro, etc.) - use that. You already have it. We'll generate a prompt for you in the exercise below.
 
-3. AI-GENERATED
-Use tools like Midjourney, DALL-E, or Ideogram to generate logo concepts. Then refine in Canva.
+OPTION 2: TRY MULTIPLE AI MODELS
+Use [Abacus AI](https://abacus.ai/) to test your prompt across different AI image generators without signing up to a bunch of separate services. Same prompt, multiple models, see what works best.
 
-HOW TO MAKE A TEXT LOGO IN 5 MINUTES:
-
-1. Go to Canva (free)
+FALLBACK: DIY TEXT LOGO IN 5 MINUTES
+1. Go to [Canva](https://www.canva.com/) (free)
 2. Search "logo" templates
 3. Pick one that's SIMPLE
 4. Replace the text with your app name
 5. Choose 1-2 colors max
 6. Download as PNG
+
+OR JUST OUTSOURCE IT ($5-20)
+Not into design? Hire someone on [Fiverr](https://www.fiverr.com/categories/graphics-design/creative-logo-design). Logos start at $5 and you can get something decent for under $20. Totally valid - focus on what YOU'RE good at.
 
 WHAT MAKES A GOOD LOGO:
 
@@ -383,29 +384,40 @@ Don't spend days on this. Spend 30 minutes, make something decent, move on. You 
     {
       day: 6,
       title: "Your AI Toolkit",
-      description: "Sign up for Replit, Claude, ChatGPT, and OpenAI API - your AI-powered development toolkit.",
+      description: "Sign up for Replit and Claude Pro - the only two tools you NEED to build your SaaS.",
       phase: "Prepare",
       videoUrl: null,
       aiTaskType: "setup",
       aiTaskTitle: "Tool Setup Checklist",
-      aiTaskDescription: "Set up your accounts for Replit (AI agent builder), Claude (Pro), ChatGPT (Plus), and OpenAI API.",
+      aiTaskDescription: "Set up your accounts for Replit (development environment) and Claude Pro (AI coding powerhouse).",
       suggestions: null,
       template: null,
       microDecisionQuestion: "Have you used AI coding tools before?",
       microDecisionOptions: JSON.stringify(["Never", "A little", "Regularly", "I'm experienced"]),
       reflectionQuestion: "What's holding you back from building right now?",
-      tip: "Don't skimp on this. Get the PAID accounts on all of these. The prices are SO ridiculously low - just grab them and accept it as the cost of doing business.",
-      lesson: `Our AI Software Stack - The BASICS of what you'll need:
+      tip: "Get the PAID accounts. The prices are ridiculously low for what you get - just grab them and accept it as the cost of doing business.",
+      lesson: `Your AI Tech Stack - Keep it SIMPLE:
 
-1. ChatGPT Plus (~$20/month) - Your AI assistant for advice, opinions, and content
-2. Claude Pro (~$20/month) - Second opinion, different strengths, better for some tasks
-3. Replit - The main AI agent SAAS builder where your software lives
-4. OpenAI API - The brain of many projects, very cheap pay-as-you-go
+ESSENTIAL (you need both):
 
-WHY BOTH CLAUDE AND CHATGPT?
+1. REPLIT - Your development environment. Easy to use, runs in the browser, has a built-in AI agent as a fallback option.
 
-They're good at different things (and that changes, often). You can play them off against each other - get ONE to write something, pass it to the OTHER to critique.`,
-      outcome: "Replit, Claude, ChatGPT, and OpenAI API accounts set up and ready to build",
+2. CLAUDE PRO (~$20/month) - The REAL powerhouse. Claude Code plugs INTO Replit and becomes your primary AI coding assistant. Better quality code, lower costs than using Replit's agent alone.
+
+That's it. Two tools. Don't overcomplicate this.
+
+HOW THEY WORK TOGETHER:
+
+Replit gives you the environment and ease of use. Claude Code does the heavy lifting - it's the best coding model available and works REALLY well. You get the best of both worlds.
+
+OPTIONAL (nice to have, not required):
+
+- ChatGPT Plus - Good for brainstorming, second opinions, general purpose
+- Abacus AI - Video generation, text-to-speech, image generation, and all sorts of AI models to create assets
+- OpenAI API - If your app needs AI features (we'll cover this later)
+
+The goal is to START BUILDING, not to collect subscriptions.`,
+      outcome: "Replit and Claude Pro accounts set up and ready to build",
       completionMessage: "Your AI toolkit is ready. You now have superpowers that would've cost $300K+ and taken years just a few years ago. Tomorrow: we create your PRD and start building.",
       xpReward: 100,
       estimatedMinutes: 5,

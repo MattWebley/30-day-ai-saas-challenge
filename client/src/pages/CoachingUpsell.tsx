@@ -17,11 +17,20 @@ export default function CoachingUpsell() {
     }
   }, [user, testMode]);
 
-  // Get currency from URL params
-  const currency = useMemo(() => {
+  // Get currency from URL params, fall back to user's purchase currency
+  const currency: 'usd' | 'gbp' = useMemo(() => {
     const params = new URLSearchParams(window.location.search);
-    return (params.get('currency') || 'usd').toLowerCase() as 'usd' | 'gbp';
-  }, []);
+    const urlCurrency = params.get('currency')?.toLowerCase();
+    if (urlCurrency === 'usd' || urlCurrency === 'gbp') {
+      return urlCurrency;
+    }
+    // Fall back to user's stored purchase currency
+    const userCurrency = (user as any)?.purchaseCurrency?.toLowerCase();
+    if (userCurrency === 'usd' || userCurrency === 'gbp') {
+      return userCurrency;
+    }
+    return 'usd';
+  }, [user]);
 
   // Pricing based on currency
   const pricing = {
@@ -170,6 +179,19 @@ export default function CoachingUpsell() {
               </div>
             </div>
 
+            {/* Unlock All Days Bonus */}
+            <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-300 rounded-xl p-5">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-amber-400 flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg text-slate-900">Bonus: Unlock All 21 Days Instantly</p>
+                  <p className="text-slate-600">Skip the daily drip and work through the challenge at your own pace with your coach guiding you.</p>
+                </div>
+              </div>
+            </div>
+
             {/* Perfect For */}
             <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
               <h3 className="font-bold text-slate-900 mb-4">This is perfect if you...</h3>
@@ -199,7 +221,7 @@ export default function CoachingUpsell() {
                   <span className="text-2xl text-slate-400 line-through">{price.symbol}{price.originalAmount.toLocaleString()}</span>
                   <span className="text-5xl font-extrabold text-slate-900">{price.symbol}{price.amount.toLocaleString()}</span>
                 </div>
-                <p className="text-slate-500 mt-2">4 hours of 1:1 coaching ({price.symbol}{price.hourlyValue}/hour value)</p>
+                <p className="text-slate-500 mt-2">4 hours of dedicated 1:1 coaching</p>
               </div>
             </div>
 

@@ -333,6 +333,14 @@ Use GPT-3.5-turbo for speed and low cost. Make sure to handle errors gracefully.
       {/* Test and Document */}
       {phase === "test" && (
         <>
+          <Button
+            variant="outline"
+            onClick={() => setPhase("setup")}
+            className="mb-2"
+          >
+            ← Back to Setup
+          </Button>
+
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="font-bold text-lg text-slate-900 mb-2">Your App Has AI!</h4>
             <p className="text-slate-700">
