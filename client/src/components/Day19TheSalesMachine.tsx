@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   ChevronRight,
+  ChevronLeft,
   Copy,
   CheckCircle2,
   FileText,
@@ -298,13 +299,23 @@ Add a money-back guarantee statement.`;
             </div>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("prompts")}
-          >
-            Give Me the Power Prompts <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("intro")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("prompts")}
+            >
+              Give Me the Power Prompts <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -393,13 +404,23 @@ Add a money-back guarantee statement.`;
             </p>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("build")}
-          >
-            I've Got My Content - Let's Build It <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("structure")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("build")}
+            >
+              I've Got My Content - Let's Build It <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -451,13 +472,23 @@ Style it with:
             </div>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("complete")}
-          >
-            I've Built My Sales Page <CheckCircle2 className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("prompts")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("complete")}
+            >
+              I've Built My Sales Page <CheckCircle2 className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -519,13 +550,23 @@ Style it with:
             </p>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => onComplete({ salesPageBuilt: true, headline: headline || "Generated headline" })}
-          >
-            Continue to Day 20: Your Launch Plan <ArrowRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("build")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => onComplete({ salesPageBuilt: true, headline: headline || "Generated headline" })}
+            >
+              Continue to Day 20: Your Launch Plan <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
     </div>

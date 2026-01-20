@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Download, Edit3 } from "lucide-react";
+import { ChevronLeft, Loader2, Download, Edit3, RefreshCw, RotateCcw } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { ds } from "@/lib/design-system";
 
@@ -27,6 +27,7 @@ export function Day6SummaryPRD({
   const [summary, setSummary] = useState("");
   const [prd, setPrd] = useState("");
   const [editedPrd, setEditedPrd] = useState("");
+  const [originalPrd, setOriginalPrd] = useState(""); // Store original for revert
 
   const generatePRD = useMutation({
     mutationFn: async () => {
@@ -47,9 +48,19 @@ export function Day6SummaryPRD({
       setSummary(data.summary || "");
       setPrd(data.prd || "");
       setEditedPrd(data.prd || "");
+      setOriginalPrd(data.prd || ""); // Store for revert
       setStep("review");
     },
   });
+
+  const handleRegenerate = () => {
+    generatePRD.mutate();
+  };
+
+  const handleRevertToOriginal = () => {
+    setPrd(originalPrd);
+    setEditedPrd(originalPrd);
+  };
 
   const handleEdit = () => {
     setStep("edit");
@@ -179,11 +190,11 @@ export function Day6SummaryPRD({
           />
 
           <div className="flex gap-3 mt-4">
+            <Button variant="outline" onClick={handleCancelEdits} className="gap-2">
+              <ChevronLeft className="w-4 h-4" /> Cancel
+            </Button>
             <Button onClick={handleSaveEdits} className="flex-1">
               Save Changes
-            </Button>
-            <Button variant="outline" onClick={handleCancelEdits}>
-              Cancel
             </Button>
           </div>
         </div>
@@ -204,7 +215,27 @@ export function Day6SummaryPRD({
       <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between mb-4">
           <h3 className={ds.heading}>Product Requirements Document</h3>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap justify-end">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRegenerate}
+              disabled={generatePRD.isPending}
+              className="gap-2"
+            >
+              {generatePRD.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
+              Regenerate
+            </Button>
+            {prd !== originalPrd && originalPrd && (
+              <Button variant="outline" size="sm" onClick={handleRevertToOriginal} className="gap-2">
+                <RotateCcw className="w-4 h-4" />
+                Revert
+              </Button>
+            )}
             <Button variant="outline" size="sm" onClick={handleEdit} className="gap-2">
               <Edit3 className="w-4 h-4" />
               Edit

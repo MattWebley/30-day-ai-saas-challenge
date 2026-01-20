@@ -215,6 +215,7 @@ export default function Dashboard() {
 
       // Show completion modal for other days
       console.log('[Dashboard] Showing completion modal for day', currentDay);
+      toast.success("Day completed!");
       setShowCompletionModal(true);
     } catch (error) {
       console.error("[Dashboard] Failed to complete day:", error);

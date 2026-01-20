@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, ChevronRight, Lightbulb, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Lightbulb, Loader2, Pencil, Plus, Sparkles, Trash2, X } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "sonner";
@@ -56,6 +56,8 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   const [selectedIdeas, setSelectedIdeas] = useState<number[]>(existingProgress?.shortlistedIdeas || []);
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customIdea, setCustomIdea] = useState({ title: "", desc: "", targetCustomer: "" });
+  const [editingIdeaIndex, setEditingIdeaIndex] = useState<number | null>(null);
+  const [editingIdea, setEditingIdea] = useState({ title: "", desc: "", targetCustomer: "" });
 
   const generateIdeas = useMutation({
     mutationFn: async () => {
@@ -187,6 +189,49 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
       shortlistedIdeas: allSelected,
     });
     setStep('shortlist');
+  };
+
+  const startEditingIdea = (index: number) => {
+    const idea = ideas[index];
+    setEditingIdeaIndex(index);
+    setEditingIdea({
+      title: idea.title,
+      desc: idea.desc,
+      targetCustomer: idea.targetCustomer,
+    });
+  };
+
+  const saveEditedIdea = () => {
+    if (editingIdeaIndex === null) return;
+    if (!editingIdea.title.trim() || !editingIdea.desc.trim()) {
+      toast.error("Please fill in at least the title and description");
+      return;
+    }
+
+    const updatedIdeas = [...ideas];
+    updatedIdeas[editingIdeaIndex] = {
+      ...updatedIdeas[editingIdeaIndex],
+      title: editingIdea.title.trim(),
+      desc: editingIdea.desc.trim(),
+      targetCustomer: editingIdea.targetCustomer.trim() || "Your target market",
+    };
+
+    setIdeas(updatedIdeas);
+    setEditingIdeaIndex(null);
+    setEditingIdea({ title: "", desc: "", targetCustomer: "" });
+
+    saveProgress.mutate({
+      userInputs: inputs,
+      generatedIdeas: updatedIdeas,
+      shortlistedIdeas: selectedIdeas,
+    });
+
+    toast.success("Idea updated!");
+  };
+
+  const cancelEditing = () => {
+    setEditingIdeaIndex(null);
+    setEditingIdea({ title: "", desc: "", targetCustomer: "" });
   };
 
   const getScoreColor = (score: number) => {
@@ -591,43 +636,102 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: displayIndex * 0.05 }}
                 >
-                  <div
-                    className={isSelected ? ds.optionSelected : ds.optionDefault}
-                    onClick={() => !showConfirmation && toggleIdeaSelection(actualIndex)}
-                    data-testid={`idea-card-${actualIndex}`}
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <span className={ds.muted}>#{actualIndex + 1}</span>
-                          <h3 className={ds.label}>{idea.title}</h3>
-                          <span className={`px-3 py-1 ${scoreColors.badge} text-sm font-bold rounded-full`}>
-                            {idea.totalScore}/25
-                          </span>
-                        </div>
-                        <p className={`${ds.muted} mb-3`}>{idea.desc}</p>
-                        <p className={`${ds.muted} mb-3`}>
-                          <span className="font-medium">Target:</span> {idea.targetCustomer}
-                        </p>
-
-                        <div className="grid grid-cols-2 gap-x-6 gap-y-1">
-                          <ScoreBar label="Market Demand" score={idea.scores.marketDemand} />
-                          <ScoreBar label="Skill Match" score={idea.scores.skillMatch} />
-                          <ScoreBar label="Passion Fit" score={idea.scores.passionFit} />
-                          <ScoreBar label="Speed to MVP" score={idea.scores.speedToMvp} />
-                          <ScoreBar label="Monetization" score={idea.scores.monetization} />
-                        </div>
-
-                        <p className={`${ds.muted} mt-3 italic`}>"{idea.whyThisWorks}"</p>
+                  {/* Editing mode for this idea */}
+                  {showConfirmation && editingIdeaIndex === actualIndex ? (
+                    <div className={`${ds.cardWithPadding} border-primary`}>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className={ds.label}>Edit Idea</h3>
+                        <button
+                          onClick={cancelEditing}
+                          className="p-1 text-slate-400 hover:text-slate-600"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
                       </div>
-
-                      {!showConfirmation && (
-                        <div className={isSelected ? ds.checkSelected : ds.checkDefault}>
-                          {isSelected && <Check className="w-3 h-3 text-white" />}
+                      <div className="space-y-4">
+                        <div>
+                          <label className={`block ${ds.label} mb-1`}>Idea Name</label>
+                          <Input
+                            value={editingIdea.title}
+                            onChange={(e) => setEditingIdea(prev => ({ ...prev, title: e.target.value }))}
+                          />
                         </div>
-                      )}
+                        <div>
+                          <label className={`block ${ds.label} mb-1`}>Description</label>
+                          <Textarea
+                            value={editingIdea.desc}
+                            onChange={(e) => setEditingIdea(prev => ({ ...prev, desc: e.target.value }))}
+                            className="min-h-[80px]"
+                          />
+                        </div>
+                        <div>
+                          <label className={`block ${ds.label} mb-1`}>Target Customer</label>
+                          <Input
+                            value={editingIdea.targetCustomer}
+                            onChange={(e) => setEditingIdea(prev => ({ ...prev, targetCustomer: e.target.value }))}
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button onClick={saveEditedIdea} className="gap-2">
+                            <Check className="w-4 h-4" /> Save Changes
+                          </Button>
+                          <Button variant="outline" onClick={cancelEditing}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div
+                      className={isSelected ? ds.optionSelected : ds.optionDefault}
+                      onClick={() => !showConfirmation && toggleIdeaSelection(actualIndex)}
+                      data-testid={`idea-card-${actualIndex}`}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className={ds.muted}>#{actualIndex + 1}</span>
+                            <h3 className={ds.label}>{idea.title}</h3>
+                            <span className={`px-3 py-1 ${scoreColors.badge} text-sm font-bold rounded-full`}>
+                              {idea.totalScore}/25
+                            </span>
+                            {showConfirmation && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  startEditingIdea(actualIndex);
+                                }}
+                                className="p-1.5 text-slate-400 hover:text-primary hover:bg-slate-100 rounded transition-colors"
+                                title="Edit this idea"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                          <p className={`${ds.muted} mb-3`}>{idea.desc}</p>
+                          <p className={`${ds.muted} mb-3`}>
+                            <span className="font-medium">Target:</span> {idea.targetCustomer}
+                          </p>
+
+                          <div className="grid grid-cols-2 gap-x-6 gap-y-1">
+                            <ScoreBar label="Market Demand" score={idea.scores.marketDemand} />
+                            <ScoreBar label="Skill Match" score={idea.scores.skillMatch} />
+                            <ScoreBar label="Passion Fit" score={idea.scores.passionFit} />
+                            <ScoreBar label="Speed to MVP" score={idea.scores.speedToMvp} />
+                            <ScoreBar label="Monetization" score={idea.scores.monetization} />
+                          </div>
+
+                          <p className={`${ds.muted} mt-3 italic`}>"{idea.whyThisWorks}"</p>
+                        </div>
+
+                        {!showConfirmation && (
+                          <div className={isSelected ? ds.checkSelected : ds.checkDefault}>
+                            {isSelected && <Check className="w-3 h-3 text-white" />}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               );
             })}
@@ -653,17 +757,27 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
         )}
 
         {showConfirmation && (
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => {
-              console.log('[Day1] Complete Day 1 button clicked');
-              onComplete();
-            }}
-            data-testid="button-complete-day1"
-          >
-            Complete Day 1 <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep('ideas')}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Change Selection
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => {
+                console.log('[Day1] Complete Day 1 button clicked');
+                onComplete();
+              }}
+              data-testid="button-complete-day1"
+            >
+              Complete Day 1 <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         )}
       </div>
     );

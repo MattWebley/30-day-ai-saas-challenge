@@ -3,7 +3,7 @@ import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, Palette, Copy, Check } from "lucide-react";
+import { CheckCircle2, ChevronLeft, Palette, Copy, Check } from "lucide-react";
 
 interface Day11BrandProps {
   appName: string;
@@ -164,15 +164,25 @@ export function Day11Brand({ appName, onComplete }: Day11BrandProps) {
             </div>
           </Card>
 
-          {selectedFont && (
+          <div className="flex gap-3">
             <Button
+              variant="outline"
               size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={() => setStep("apply")}
+              onClick={() => setStep("color")}
+              className="gap-2"
             >
-              Apply to Your App
+              <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-          )}
+            {selectedFont && (
+              <Button
+                size="lg"
+                className="flex-1 h-14 text-lg font-bold gap-2"
+                onClick={() => setStep("apply")}
+              >
+                Apply to Your App
+              </Button>
+            )}
+          </div>
         </>
       )}
 
@@ -227,15 +237,25 @@ export function Day11Brand({ appName, onComplete }: Day11BrandProps) {
             </div>
           </Card>
 
-          {hasApplied && (
+          <div className="flex gap-3">
             <Button
+              variant="outline"
               size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={() => setStep("done")}
+              onClick={() => setStep("font")}
+              className="gap-2"
             >
-              Complete Branding
+              <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-          )}
+            {hasApplied && (
+              <Button
+                size="lg"
+                className="flex-1 h-14 text-lg font-bold gap-2"
+                onClick={() => setStep("done")}
+              >
+                Complete Branding
+              </Button>
+            )}
+          </div>
         </>
       )}
 
@@ -277,18 +297,28 @@ export function Day11Brand({ appName, onComplete }: Day11BrandProps) {
             </p>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
-            onClick={() => onComplete({
-              primaryColor: finalColor,
-              primaryColorName: currentColor?.name || "Custom",
-              fontChoice: currentFont?.name || "",
-              brandVibe: currentColor?.vibe || "Custom",
-            })}
-          >
-            Complete Day 11 <CheckCircle2 className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("apply")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
+              onClick={() => onComplete({
+                primaryColor: finalColor,
+                primaryColorName: currentColor?.name || "Custom",
+                fontChoice: currentFont?.name || "",
+                brandVibe: currentColor?.vibe || "Custom",
+              })}
+            >
+              Complete Day 11 <CheckCircle2 className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
     </div>

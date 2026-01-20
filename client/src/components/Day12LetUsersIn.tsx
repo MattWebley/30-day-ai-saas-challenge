@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  ChevronLeft,
   ChevronRight,
   Check,
   Shield,
@@ -146,13 +147,23 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
             </div>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("test")}
-          >
-            I've Added Auth <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("check")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("test")}
+            >
+              I've Added Auth <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -206,14 +217,24 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
             </div>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("done")}
-            disabled={!testPassed}
-          >
-            Auth is Working <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep(hasAuth ? "check" : "add")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("done")}
+              disabled={!testPassed}
+            >
+              Auth is Working <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -256,17 +277,27 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
             </div>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
-            onClick={() => onComplete({
-              hasAuth: true,
-              authAdded: hasAuth === false,
-              testPassed: true,
-            })}
-          >
-            Complete Day 12 <CheckCircle2 className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("test")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
+              onClick={() => onComplete({
+                hasAuth: true,
+                authAdded: hasAuth === false,
+                testPassed: true,
+              })}
+            >
+              Complete Day 12 <CheckCircle2 className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
     </div>

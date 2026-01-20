@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
+  ChevronLeft,
   ChevronRight,
   ArrowRight,
   Copy,
@@ -109,6 +110,23 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
 
       {step === "learn" && (
         <>
+          {/* Skip option for experienced users */}
+          <Card className="p-4 border-2 border-dashed border-slate-200 bg-slate-50">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-700 font-medium">Already know how to use Claude Code?</p>
+                <p className="text-slate-600">Skip the lesson and go straight to the exercise.</p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setStep("choose")}
+                className="gap-2 whitespace-nowrap"
+              >
+                Skip to Exercise <ArrowRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </Card>
+
           {/* THE BIG SECRET */}
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-start gap-3">
@@ -763,15 +781,25 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
             </div>
           </Card>
 
-          {currentWin && (
+          <div className="flex gap-3">
             <Button
+              variant="outline"
               size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={handleStartBuild}
+              onClick={() => setStep("learn")}
+              className="gap-2"
             >
-              Let's Build This <ArrowRight className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5" /> Review Lesson
             </Button>
-          )}
+            {currentWin && (
+              <Button
+                size="lg"
+                className="flex-1 h-14 text-lg font-bold gap-2"
+                onClick={handleStartBuild}
+              >
+                Let's Build This <ArrowRight className="w-5 h-5" />
+              </Button>
+            )}
+          </div>
         </>
       )}
 
@@ -829,13 +857,23 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
             </p>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={handleBuildComplete}
-          >
-            I Built It!
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("choose")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Change Task
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={handleBuildComplete}
+            >
+              I Built It!
+            </Button>
+          </div>
         </>
       )}
 
@@ -877,21 +915,33 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
             </div>
           </Card>
 
-          {whatYouBuilt.length >= 20 && (
+          <div className="flex gap-3">
             <Button
+              variant="outline"
               size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={() => onComplete({ firstBuild: currentWin, whatYouBuilt })}
+              onClick={() => setStep("build")}
+              className="gap-2"
             >
-              Save My Win & Continue <ChevronRight className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-          )}
-
-          {whatYouBuilt.length > 0 && whatYouBuilt.length < 20 && (
-            <p className="text-slate-600 text-center">
-              Add a bit more detail ({20 - whatYouBuilt.length} more characters)
-            </p>
-          )}
+            {whatYouBuilt.length >= 20 ? (
+              <Button
+                size="lg"
+                className="flex-1 h-14 text-lg font-bold gap-2"
+                onClick={() => onComplete({ firstBuild: currentWin, whatYouBuilt })}
+              >
+                Save My Win & Continue <ChevronRight className="w-5 h-5" />
+              </Button>
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <p className="text-slate-600">
+                  {whatYouBuilt.length > 0
+                    ? `Add a bit more detail (${20 - whatYouBuilt.length} more characters)`
+                    : "Describe what you built above"}
+                </p>
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>

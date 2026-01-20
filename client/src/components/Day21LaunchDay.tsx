@@ -6,6 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import {
   ChevronRight,
+  ChevronLeft,
   Trophy,
   Users,
   DollarSign,
@@ -370,13 +371,23 @@ export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }:
             </p>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("vision")}
-          >
-            See The Bigger Picture <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("intro")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("vision")}
+            >
+              See The Bigger Picture <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -446,13 +457,23 @@ export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }:
             </div>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("cta")}
-          >
-            What Do I Do Next? <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("calculator")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("cta")}
+            >
+              What Do I Do Next? <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -533,17 +554,26 @@ My first milestone is..."
             />
           </Card>
 
-          {commitmentStatement.length >= 50 ? (
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("vision")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
             <Button
               size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
+              className="flex-1 h-14 text-lg font-bold gap-2"
               onClick={() => setStep("complete")}
             >
-              Complete the 21 Day Challenge <Trophy className="w-5 h-5" />
+              {commitmentStatement.length >= 20 ? "Complete the 21 Day Challenge" : "Skip Commitment & Complete"} <Trophy className="w-5 h-5" />
             </Button>
-          ) : (
-            <p className="text-center text-slate-500">
-              Write your commitment (50+ characters) to complete
+          </div>
+          {commitmentStatement.length < 20 && (
+            <p className="text-center text-slate-500 text-sm">
+              Tip: Writing a commitment helps you stay accountable
             </p>
           )}
         </>
@@ -618,19 +648,28 @@ My first milestone is..."
             </a>
           </Card>
 
-          <Button
-            size="lg"
-            variant="outline"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => onComplete({
-              monthlyGoal: targetIncome,
-              pricePoint: selectedPrice,
-              customersNeeded,
-              commitmentStatement
-            })}
-          >
-            Finish & Return to Dashboard <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("cta")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => onComplete({
+                monthlyGoal: targetIncome,
+                pricePoint: selectedPrice,
+                customersNeeded,
+                commitmentStatement
+              })}
+            >
+              Finish & Return to Dashboard <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
     </div>

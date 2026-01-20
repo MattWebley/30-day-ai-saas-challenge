@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { Check, Loader2, ChevronRight, Plus, X, Search, ExternalLink, Copy } from "lucide-react";
+import { Check, ChevronLeft, Loader2, ChevronRight, Pencil, Plus, X, Search, ExternalLink, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { ds } from "@/lib/design-system";
@@ -334,7 +334,15 @@ Example format:
           <p className={`${ds.muted} mb-4`}>Target: {idea.targetCustomer}</p>
 
           <div className="pt-4 border-t border-slate-200">
-            <p className={`${ds.label} uppercase mb-2`}>Pain Points You're Solving:</p>
+            <div className="flex items-center justify-between mb-2">
+              <p className={`${ds.label} uppercase`}>Pain Points You're Solving:</p>
+              <button
+                onClick={() => setStep('pain')}
+                className="flex items-center gap-1 text-sm text-slate-500 hover:text-primary transition-colors"
+              >
+                <Pencil className="w-3 h-3" /> Edit
+              </button>
+            </div>
             <ul className="space-y-1">
               {selectedPainPoints.map((pain, i) => (
                 <li key={i} className={`${ds.muted} flex items-start gap-2`}>
@@ -368,38 +376,48 @@ Example format:
           </p>
         </div>
 
-        <Button
-          size="lg"
-          className="mt-8 h-14 px-10 text-lg font-bold gap-2"
-          onClick={() => {
-            if (!iHelpStatement.trim()) {
-              toast.error("Write your 'I help' statement first");
-              return;
-            }
-            onComplete({
-              chosenIdea: `${idea.title} - ${idea.desc}`,
-              chosenIdeaTitle: idea.title,
-              selectedPainPoints,
-              competitors,
-              validationInsights: validationInsights[selectedIdeaIndex] || {
-                demandScore: 7,
-                marketSize: "Not validated",
-                competitionLevel: "Not validated",
-                differentiationPotential: "Not validated",
-                revenueClarity: "Not validated",
-                timeToFirstCustomer: "Not validated",
-                moatPotential: "Not validated",
-                topRisk: "Unknown",
-                firstCustomersStrategy: "Not validated",
-                verdict: "Proceed",
-              },
-              iHelpStatement: iHelpStatement.trim(),
-            });
-          }}
-          disabled={!iHelpStatement.trim()}
-        >
-          Complete Day 2 <ChevronRight className="w-5 h-5" />
-        </Button>
+        <div className="flex gap-3 mt-8">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => setStep('pain')}
+            className="gap-2"
+          >
+            <ChevronLeft className="w-5 h-5" /> Back
+          </Button>
+          <Button
+            size="lg"
+            className="flex-1 h-14 text-lg font-bold gap-2"
+            onClick={() => {
+              if (!iHelpStatement.trim()) {
+                toast.error("Write your 'I help' statement first");
+                return;
+              }
+              onComplete({
+                chosenIdea: `${idea.title} - ${idea.desc}`,
+                chosenIdeaTitle: idea.title,
+                selectedPainPoints,
+                competitors,
+                validationInsights: validationInsights[selectedIdeaIndex] || {
+                  demandScore: 7,
+                  marketSize: "Not validated",
+                  competitionLevel: "Not validated",
+                  differentiationPotential: "Not validated",
+                  revenueClarity: "Not validated",
+                  timeToFirstCustomer: "Not validated",
+                  moatPotential: "Not validated",
+                  topRisk: "Unknown",
+                  firstCustomersStrategy: "Not validated",
+                  verdict: "Proceed",
+                },
+                iHelpStatement: iHelpStatement.trim(),
+              });
+            }}
+            disabled={!iHelpStatement.trim()}
+          >
+            Complete Day 2 <ChevronRight className="w-5 h-5" />
+          </Button>
+        </div>
       </motion.div>
     );
   }

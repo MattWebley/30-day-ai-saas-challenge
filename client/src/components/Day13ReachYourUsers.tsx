@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  ChevronLeft,
   ChevronRight,
   Check,
   Mail,
@@ -145,14 +146,24 @@ Use the RESEND_API_KEY from secrets.`;
             </div>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("draft")}
-            disabled={!resendSetup}
-          >
-            Continue <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("why")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("draft")}
+              disabled={!resendSetup}
+            >
+              Continue <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -194,14 +205,24 @@ Use the RESEND_API_KEY from secrets.`;
             />
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("test")}
-            disabled={welcomeEmailDraft.length < 20}
-          >
-            Continue <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("setup")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("test")}
+              disabled={welcomeEmailDraft.length < 20}
+            >
+              Continue <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -254,14 +275,24 @@ Use the RESEND_API_KEY from secrets.`;
             </div>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2"
-            onClick={() => setStep("done")}
-            disabled={!testSent}
-          >
-            Email is Working <ChevronRight className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("draft")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("done")}
+              disabled={!testSent}
+            >
+              Email is Working <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
@@ -296,17 +327,27 @@ Use the RESEND_API_KEY from secrets.`;
             </div>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
-            onClick={() => onComplete({
-              resendSetup: true,
-              welcomeEmailDraft,
-              testSent: true,
-            })}
-          >
-            Complete Day 13 <CheckCircle2 className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("test")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
+              onClick={() => onComplete({
+                resendSetup: true,
+                welcomeEmailDraft,
+                testSent: true,
+              })}
+            >
+              Complete Day 13 <CheckCircle2 className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
     </div>

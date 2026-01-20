@@ -3,7 +3,7 @@ import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, ExternalLink, Upload, Palette, Type } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ExternalLink, Upload, Palette, Type } from "lucide-react";
 
 interface Day5LogoProps {
   appName: string;
@@ -181,15 +181,25 @@ export function Day5Logo({ appName, onComplete }: Day5LogoProps) {
             </div>
           </Card>
 
-          {toolUsed && hasCreated && logoDescription.length >= 5 && (
+          <div className="flex gap-3">
             <Button
+              variant="outline"
               size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={() => setStep("confirm")}
+              onClick={() => setStep("choose")}
+              className="gap-2"
             >
-              Review & Complete
+              <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-          )}
+            {toolUsed && hasCreated && logoDescription.length >= 5 && (
+              <Button
+                size="lg"
+                className="flex-1 h-14 text-lg font-bold gap-2"
+                onClick={() => setStep("confirm")}
+              >
+                Review & Complete
+              </Button>
+            )}
+          </div>
         </>
       )}
 
@@ -225,17 +235,27 @@ export function Day5Logo({ appName, onComplete }: Day5LogoProps) {
             </p>
           </Card>
 
-          <Button
-            size="lg"
-            className="w-full h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
-            onClick={() => onComplete({
-              logoType: logoType || "",
-              logoDescription,
-              toolUsed: toolUsed || "",
-            })}
-          >
-            Complete Day 5 <CheckCircle2 className="w-5 h-5" />
-          </Button>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => setStep("create")}
+              className="gap-2"
+            >
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
+              onClick={() => onComplete({
+                logoType: logoType || "",
+                logoDescription,
+                toolUsed: toolUsed || "",
+              })}
+            >
+              Complete Day 5 <CheckCircle2 className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
     </div>

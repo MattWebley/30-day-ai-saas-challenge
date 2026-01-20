@@ -104,7 +104,7 @@ export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }
   const [currentStep, setCurrentStep] = useState<"generate" | "confirm" | "complete">("generate");
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiAttempts, setAiAttempts] = useState(0);
-  const MAX_AI_ATTEMPTS = 3;
+  const MAX_AI_ATTEMPTS = 5;
 
   const [nameSuggestions, setNameSuggestions] = useState<NameSuggestion[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -249,6 +249,7 @@ Return ONLY this JSON format:
   };
 
   const handleFinish = () => {
+    console.log('[Day4] handleFinish called, moving to complete step');
     saveProgress.mutate({
       finalName,
       finalDomain,
@@ -284,22 +285,32 @@ Return ONLY this JSON format:
               </p>
             </div>
 
+            {/* Don't Get Stuck Warning */}
+            <div className={ds.infoBoxHighlight}>
+              <p className={ds.label + " mb-2"}>Don't overthink this.</p>
+              <p className={ds.muted}>
+                Finding the "perfect" name can paralyze you for weeks. The truth is: your name matters far less than your product.
+                Pick something decent that has an available .com and MOVE ON. You can always rebrand later if your product takes off - many successful companies have.
+                Done is better than perfect.
+              </p>
+            </div>
+
             {/* Naming Approaches Info */}
             <div className={ds.cardWithPadding}>
               <h3 className={ds.heading + " mb-3"}>Your Naming Options:</h3>
               <div className="space-y-3">
-                <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                <div className={ds.infoBox + " flex items-start gap-3"}>
                   <span className="text-lg">🎯</span>
                   <div>
                     <p className={ds.label}>Invented/Brandable Name</p>
-                    <p className={ds.muted + " text-sm"}>Made-up words like Spotify, Trello, Asana. Unique and trademarkable. Easier to get the .com. AI generates these below.</p>
+                    <p className={ds.muted}>Made-up words like Spotify, Trello, Asana. Unique and trademarkable. Easier to get the .com. AI generates these below.</p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg">
+                <div className={ds.infoBox + " flex items-start gap-3"}>
                   <span className="text-lg">📝</span>
                   <div>
                     <p className={ds.label}>Descriptive Name</p>
-                    <p className={ds.muted + " text-sm"}>Describes what it does like Mailchimp, Salesforce, QuickBooks. Clearer to customers but harder to get .com.</p>
+                    <p className={ds.muted}>Describes what it does like Mailchimp, Salesforce, QuickBooks. Clearer to customers but harder to get .com.</p>
                   </div>
                 </div>
               </div>
@@ -339,11 +350,7 @@ Return ONLY this JSON format:
                         <button
                           key={i}
                           onClick={() => selectName(i)}
-                          className={`p-4 rounded-lg border-2 text-left transition-all ${
-                            selectedIndex === i
-                              ? 'border-primary bg-primary/5'
-                              : 'border-slate-200 hover:border-slate-300 bg-white'
-                          }`}
+                          className={selectedIndex === i ? ds.optionSelected : ds.optionDefault}
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="flex-1 min-w-0">
@@ -426,65 +433,35 @@ Return ONLY this JSON format:
             <div className="text-center">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Great Choice!</h2>
               <p className={ds.muted}>
-                Let's make sure you can get the domain.
+                Before you register anything, let's do some quick checks.
               </p>
             </div>
 
-            <div className={ds.cardWithPadding}>
-              <div className="space-y-4">
-                <div className={ds.infoBoxHighlight + " text-center p-6"}>
-                  <p className={ds.label + " uppercase mb-2"}>Your Product Name</p>
-                  <h3 className="text-3xl font-extrabold text-slate-900">{finalName}</h3>
-                  <div className="flex items-center justify-center gap-2 mt-2">
-                    <p className={ds.body + " text-lg font-mono"}>{finalDomain}</p>
-                    <a
-                      href={`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
-                    >
-                      Check availability <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                </div>
-
-                <div className="text-center">
-                  <a
-                    href={`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 font-medium"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    Register on Namecheap (~$10/year)
-                  </a>
-                </div>
+            {/* Name Display */}
+            <div className={ds.optionSelected + " p-6"}>
+              <div className="text-center">
+                <p className={ds.capsLabel + " mb-2"}>Your Product Name</p>
+                <h3 className="text-3xl font-extrabold text-slate-900">{finalName}</h3>
+                <p className={ds.body + " text-lg font-mono mt-2"}>{finalDomain}</p>
               </div>
             </div>
 
-            {/* Important Reminder */}
-            <div className={ds.infoBoxHighlight}>
-              <p className={ds.muted}>
-                <strong>Remember:</strong> Only pay ~$10-15/year for a .com. If it's priced higher,
-                it's a "premium" domain. Pick a different name instead.
-              </p>
-            </div>
-
-            {/* Trademark Check - Before Confirming */}
+            {/* Step 1: Trademark Check - FIRST */}
             <div className={ds.cardWithPadding}>
               <div className="flex items-center gap-3 mb-3">
-                <span className="text-xl">⚖️</span>
-                <h4 className={ds.heading}>Check for Trademarks</h4>
+                <div className={ds.stepCircle}>1</div>
+                <h4 className={ds.heading}>Check for Existing Trademarks</h4>
               </div>
               <p className={ds.muted + " mb-3"}>
-                Make sure no one has trademarked "{finalName}" in software/SaaS before committing.
+                We're NOT asking you to register a trademark - that's expensive and unnecessary right now.
+                We just want to make sure nobody ELSE has already trademarked "{finalName}" in software/SaaS so you don't get a cease-and-desist letter later.
               </p>
               <div className="flex flex-wrap gap-2">
                 <a
                   href={`https://www.gov.uk/search-for-trademark?q=${encodeURIComponent(finalName)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-2 bg-white border-2 border-slate-200 rounded-lg hover:border-slate-300 text-sm font-medium"
+                  className={ds.optionDefault + " inline-flex items-center gap-2 text-sm font-medium"}
                 >
                   🇬🇧 UK Trademark Search <ExternalLink className="w-3 h-3" />
                 </a>
@@ -492,30 +469,41 @@ Return ONLY this JSON format:
                   href={`https://tmsearch.uspto.gov/search/search-information`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-2 bg-white border-2 border-slate-200 rounded-lg hover:border-slate-300 text-sm font-medium"
+                  className={ds.optionDefault + " inline-flex items-center gap-2 text-sm font-medium"}
                 >
                   🇺🇸 US Trademark Search <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
+              <div className={ds.infoBoxHighlight + " mt-3"}>
+                <p className={ds.muted}>
+                  <strong>What you're looking for:</strong> Search for your name and see if anyone has registered it for software, apps, or SaaS.
+                  If there's an exact match in your category, pick a different name. If it's clear, you're good to go.
+                </p>
+              </div>
+              <div className={ds.infoBox + " mt-2"}>
+                <p className={ds.muted}>
+                  <strong>Found a conflict?</strong> Go back and pick a different name. It's much easier to change now than after you've registered everything.
+                </p>
+              </div>
             </div>
 
-            {/* Social Handles Preview - Before Confirming */}
+            {/* Step 2: Social Handles - SECOND */}
             <div className={ds.cardWithPadding}>
               <div className="flex items-center gap-3 mb-3">
-                <span className="text-xl">📱</span>
-                <h4 className={ds.heading}>Social Handles to Claim</h4>
+                <div className={ds.stepCircle}>2</div>
+                <h4 className={ds.heading}>Check Social Handle Availability</h4>
               </div>
               <p className={ds.muted + " mb-3"}>
-                After confirming, you'll need to register these. Check availability now:
+                Check if your handles are available. You'll register these on the next screen.
               </p>
               <div className="flex flex-wrap gap-2">
-                {SOCIAL_PLATFORMS.map((platform) => (
+                {SOCIAL_PLATFORMS.filter(p => p.id !== "domain").map((platform) => (
                   <a
                     key={platform.id}
                     href={platform.checkUrl(finalName)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-2 bg-white border-2 border-slate-200 rounded-lg hover:border-slate-300 text-sm"
+                    className={ds.optionDefault + " inline-flex items-center gap-2 text-sm"}
                   >
                     <span>{platform.icon}</span>
                     <span className="font-medium">{platform.label}</span>
@@ -523,12 +511,38 @@ Return ONLY this JSON format:
                   </a>
                 ))}
               </div>
-              <p className="text-xs text-slate-500 mt-3">
+              <p className={ds.muted + " text-sm mt-3"}>
                 Click each to check if @{finalName.toLowerCase().replace(/\s+/g, '')} is available
               </p>
-              <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="text-sm text-slate-600">
-                  <strong>Can't get every handle?</strong> If the .com is available but one or two socials aren't, that's not the end of the world. You can use variations like "{finalName.replace(/\s+/g, '')}App" or "Get{finalName.replace(/\s+/g, '')}". Focus on getting the .com - that's what matters most.
+              <div className={ds.infoBoxHighlight + " mt-3"}>
+                <p className={ds.muted}>
+                  <strong>Can't get every handle?</strong> That's okay. You can use variations like "{finalName.replace(/\s+/g, '')}App" or "Get{finalName.replace(/\s+/g, '')}". As long as you can get most of them, you're good.
+                </p>
+              </div>
+            </div>
+
+            {/* Step 3: Domain Check - THIRD */}
+            <div className={ds.cardWithPadding}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className={ds.stepCircle}>3</div>
+                <h4 className={ds.heading}>Check Domain Availability</h4>
+              </div>
+              <p className={ds.muted + " mb-3"}>
+                Finally, check that your .com is available. You'll register this on the next screen too.
+              </p>
+              <div className="text-center">
+                <a
+                  href={`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={ds.optionDefault + " inline-flex items-center gap-2 font-medium"}
+                >
+                  🌐 Check {finalDomain} <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+              <div className={ds.infoBoxHighlight + " mt-3"}>
+                <p className={ds.muted}>
+                  <strong>Pricing tip:</strong> Only pay ~$10-15/year for a .com. If it's priced higher, it's a "premium" domain - pick a different name instead.
                 </p>
               </div>
             </div>
@@ -547,7 +561,7 @@ Return ONLY this JSON format:
                 className="flex-1 gap-2 bg-green-600 hover:bg-green-700"
                 onClick={handleFinish}
               >
-                <Check className="w-5 h-5" /> Confirm & Continue
+                <Check className="w-5 h-5" /> All Clear - Continue to Registration
               </Button>
             </div>
           </motion.div>
@@ -563,54 +577,44 @@ Return ONLY this JSON format:
           >
             <div className="text-center py-4">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">Now Register Everything</h2>
-              <p className={ds.muted}>Tick off each item as you claim it for <strong>{finalName}</strong>.</p>
+              <p className={ds.muted}>Follow this order for <strong>{finalName}</strong> - social handles first, then domains.</p>
             </div>
 
-            <div className="bg-white border-2 border-primary rounded-lg p-6">
+            <div className={ds.optionSelected + " p-6"}>
               <div className="text-center">
-                <p className={ds.label + " uppercase mb-2"}>Your Product</p>
+                <p className={ds.capsLabel + " mb-2"}>Your Product</p>
                 <h3 className="text-4xl font-extrabold text-slate-900 mb-2">{finalName}</h3>
                 <p className={ds.body + " text-xl font-mono"}>{finalDomain}</p>
               </div>
             </div>
 
-            {/* Registration Checklist */}
+            {/* Step 1: Social Handles - FIRST */}
             <div className={ds.cardWithPadding}>
-              <div className="flex items-center justify-between mb-4">
-                <h4 className={ds.heading}>Registration Checklist</h4>
-                <span className={ds.muted}>
-                  {registeredItems.size}/{SOCIAL_PLATFORMS.length} done
-                </span>
+              <div className="flex items-center gap-3 mb-4">
+                <div className={ds.stepCircle}>1</div>
+                <h4 className={ds.heading}>Register Social Handles First</h4>
               </div>
+              <p className={ds.muted + " mb-4"}>
+                Claim your username on these platforms before someone else does.
+              </p>
 
-              {/* All platforms in one list */}
               <div className="space-y-2">
-                {SOCIAL_PLATFORMS.map((platform) => {
+                {SOCIAL_PLATFORMS.filter(p => p.id !== "domain").map((platform) => {
                   const isRegistered = registeredItems.has(platform.id);
 
                   return (
                     <div
                       key={platform.id}
                       onClick={() => toggleRegistered(platform.id)}
-                      className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all cursor-pointer ${
-                        isRegistered
-                          ? "border-green-300 bg-green-50"
-                          : "border-slate-200 hover:border-slate-300"
-                      }`}
+                      className={isRegistered ? ds.successBox + " flex items-center justify-between cursor-pointer" : ds.optionDefault + " flex items-center justify-between"}
                     >
                       <div className="flex items-center gap-3">
-                        <div
-                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                            isRegistered
-                              ? "border-green-500 bg-green-500"
-                              : "border-slate-300"
-                          }`}
-                        >
+                        <div className={isRegistered ? ds.stepCircleComplete : ds.checkDefault}>
                           {isRegistered && <Check className="w-4 h-4 text-white" />}
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-lg">{platform.icon}</span>
-                          <span className={`font-medium ${isRegistered ? "text-green-700 line-through" : "text-slate-900"}`}>
+                          <span className={isRegistered ? ds.successText + " font-medium line-through" : ds.label}>
                             {platform.label}
                           </span>
                         </div>
@@ -629,31 +633,148 @@ Return ONLY this JSON format:
                   );
                 })}
               </div>
+            </div>
 
-              {/* Progress indicator */}
-              <div className="mt-4 pt-4 border-t border-slate-200">
-                <div className="flex items-center justify-between text-sm mb-2">
-                  <span className="text-slate-600">Registration progress</span>
-                  <span className="font-medium text-slate-900">
-                    {Math.round((registeredItems.size / SOCIAL_PLATFORMS.length) * 100)}%
+            {/* Step 2: Primary Domain - SECOND */}
+            <div className={ds.cardWithPadding}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className={ds.stepCircle}>2</div>
+                <h4 className={ds.heading}>Register Your Primary Domain</h4>
+              </div>
+              <p className={ds.muted + " mb-4"}>
+                Get your main .com domain - this is your home base on the internet.
+              </p>
+
+              <div
+                onClick={() => toggleRegistered("domain")}
+                className={registeredItems.has("domain") ? ds.successBox + " flex items-center justify-between cursor-pointer" : ds.optionDefault + " flex items-center justify-between"}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={registeredItems.has("domain") ? ds.stepCircleComplete : ds.checkDefault}>
+                    {registeredItems.has("domain") && <Check className="w-4 h-4 text-white" />}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🌐</span>
+                    <span className={registeredItems.has("domain") ? ds.successText + " font-medium line-through" : ds.label}>
+                      {finalDomain}
+                    </span>
+                  </div>
+                </div>
+
+                <a
+                  href={`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium bg-slate-900 text-white rounded-md hover:bg-slate-800"
+                >
+                  Register <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* Step 3: Typo/Protection Domains - OPTIONAL */}
+            <div className={ds.cardWithPadding}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-7 h-7 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center text-sm font-bold border border-slate-200">3</div>
+                <div className="flex items-center gap-2">
+                  <h4 className={ds.heading}>Protect Your Brand (Optional)</h4>
+                  <span className={ds.capsLabel + " bg-slate-100 px-2 py-0.5 rounded"}>For serious builders</span>
+                </div>
+              </div>
+              <p className={ds.muted + " mb-4"}>
+                If you're committed to this product, consider registering common typos and variations to protect your brand. Don't go overboard - 3-5 extra domains is plenty.
+              </p>
+
+              <div className="space-y-3">
+                <div className={ds.infoBoxHighlight}>
+                  <p className={ds.label + " mb-2"}>Common variations to consider:</p>
+                  <ul className={ds.muted + " space-y-1"}>
+                    <li>• <strong>Typos:</strong> {finalName.toLowerCase().replace(/\s+/g, '').slice(0, -1) + finalName.slice(-1).repeat(2)}.com (double letter)</li>
+                    <li>• <strong>Plurals:</strong> {finalName.toLowerCase().replace(/\s+/g, '')}s.com</li>
+                    <li>• <strong>Hyphenated:</strong> {finalName.toLowerCase().replace(/\s+/g, '-')}.com (if multi-word)</li>
+                    <li>• <strong>Common misspellings:</strong> Think about how people might mishear or misspell it</li>
+                    <li>• <strong>Alternative TLDs:</strong> .co, .io, .app, .ai, or your country (.co.uk, .de, .com.au, etc.) - only if cheap</li>
+                  </ul>
+                </div>
+
+                <div className={ds.infoBox}>
+                  <p className={ds.muted}>
+                    <strong>Budget tip:</strong> Only buy these if they're ~$10-15 each. Don't spend hundreds on domain protection right now - but do grab the cheap obvious ones early, before someone else does.
+                  </p>
+                </div>
+
+                <div className={ds.infoBox}>
+                  <p className={ds.muted}>
+                    <strong>Reality check:</strong> If a typo seems MORE natural or obvious than your actual name, that's a red flag. If people are more likely to type the "wrong" version, maybe reconsider going back and picking a simpler name.
+                  </p>
+                </div>
+
+                <a
+                  href={`https://www.namecheap.com/domains/registration/results/?domain=${finalName.toLowerCase().replace(/\s+/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                >
+                  Search for variations on Namecheap <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+
+            {/* Progress indicator - Optional tracking */}
+            {registeredItems.size > 0 && (
+              <div className={ds.cardWithPadding}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className={ds.muted}>Your progress (optional)</span>
+                  <span className={ds.label}>
+                    {registeredItems.size}/{SOCIAL_PLATFORMS.length} done
                   </span>
                 </div>
                 <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-green-500 rounded-full transition-all duration-300"
+                    className="h-full bg-primary rounded-full transition-all duration-300"
                     style={{ width: `${(registeredItems.size / SOCIAL_PLATFORMS.length) * 100}%` }}
                   />
                 </div>
               </div>
+            )}
+
+            {/* Skip notice */}
+            <div className={ds.infoBoxHighlight}>
+              <p className={ds.muted}>
+                <strong>Short on time?</strong> You don't have to register everything right now.
+                The checklist above is just to help you track what you've done. You can complete this day
+                and come back to register things later - just don't wait too long or someone might grab your name!
+              </p>
             </div>
 
-            <Button
-              size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={onComplete}
-            >
-              Complete Day 4 <ChevronRight className="w-5 h-5" />
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setCurrentStep("confirm")}
+                className="gap-2"
+              >
+                <ChevronLeft className="w-5 h-5" /> Back
+              </Button>
+              <Button
+                size="lg"
+                className="flex-1 h-14 text-lg font-bold gap-2"
+                onClick={() => {
+                  console.log('[Day4] Complete button clicked, calling onComplete');
+                  toast.info("Completing Day 4...");
+                  try {
+                    onComplete();
+                    console.log('[Day4] onComplete called successfully');
+                  } catch (error) {
+                    console.error('[Day4] Error calling onComplete:', error);
+                    toast.error("Error completing day - check console");
+                  }
+                }}
+              >
+                {registeredItems.size === 0 ? "Skip Registration for Now" : "Complete Day 4"} <ChevronRight className="w-5 h-5" />
+              </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
