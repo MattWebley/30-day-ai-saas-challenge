@@ -760,36 +760,6 @@ export default function Dashboard() {
                     />
                   </Card>
                 </div>
-                {/* Your $500/hr Business Advisor */}
-                <div className="space-y-4 pt-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">3</div>
-                    <h2 className="font-bold text-xl text-slate-900">Your $500/hr Business Advisor</h2>
-                  </div>
-                  <Card className="p-6 border-2 border-slate-200 shadow-none bg-white">
-                    <div className="space-y-4">
-                      <p className="text-slate-700 font-medium">
-                        Here's what most people miss: These aren't just coding tools. You now have access to a business advisor that would cost $500/hour - available 24/7 for $20/month.
-                      </p>
-                      <div className="space-y-2">
-                        <p className="text-slate-900 font-bold">USE IT FOR EVERYTHING:</p>
-                        <ul className="space-y-1 text-slate-700">
-                          <li>• <span className="font-medium">Pricing:</span> "Should I charge $29 or $49/month?"</li>
-                          <li>• <span className="font-medium">Features:</span> "Which 3 features should I build first?"</li>
-                          <li>• <span className="font-medium">Copy:</span> "Write me 5 taglines for my SaaS"</li>
-                          <li>• <span className="font-medium">User perspective:</span> "Act as my target customer and critique this"</li>
-                          <li>• <span className="font-medium">Strategy:</span> "I'm stuck between two approaches, help me decide"</li>
-                        </ul>
-                      </div>
-                      <p className="text-slate-700">
-                        The founders who WIN treat AI as a <span className="font-bold">THINKING PARTNER</span>, not just a code generator.
-                      </p>
-                      <p className="text-slate-900 font-bold text-lg">
-                        From now on: STUCK? ASK. UNSURE? ASK. WANT VALIDATION? ASK.
-                      </p>
-                    </div>
-                  </Card>
-                </div>
               </>
             ) : currentDay === 7 ? (
               <>
@@ -837,26 +807,13 @@ export default function Dashboard() {
                       userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
                       painPoints={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.selectedPainPoints || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedPainPoints || []}
                       features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.selectedFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.selectedFeatures || []}
-                      mvpFeatures={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.selectedMvpFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.selectedMvpFeatures || []}
+                      mvpFeatures={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.selectedFeatures || []}
+                      appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || ""}
+                      iHelpStatement={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.iHelpStatement || ""}
+                      uspFeatures={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.uspFeatures?.map((f: any) => typeof f === 'string' ? f : f.name) || []}
+                      brandVibe={(Array.isArray(progress) ? progress.find((p: any) => p.day === 5) : null)?.userInputs?.brandVibe || ""}
                       onComplete={handleComplete}
                     />
-                  </Card>
-                </div>
-                {/* Replit Cost Warning */}
-                <div className="space-y-4 pt-4">
-                  <Card className="p-6 border-2 border-slate-200 shadow-none bg-white">
-                    <div className="space-y-2">
-                      <h3 className="font-bold text-slate-900">Heads Up About Replit Costs</h3>
-                      <p className="text-slate-700">
-                        Replit Agent is AMAZING but the fees add up FAST. You'll burn through credits quicker than you think.
-                      </p>
-                      <p className="text-slate-700 font-medium">
-                        DON'T PANIC. Tomorrow I'll show you how to drop your build costs to almost ZERO using Claude Code. Same power, fraction of the price.
-                      </p>
-                      <p className="text-slate-500 text-sm">
-                        For now, just get your PRD in and let Replit do its thing. We'll fix the money bleed tomorrow.
-                      </p>
-                    </div>
                   </Card>
                 </div>
               </>

@@ -1002,20 +1002,24 @@ Keep MVP scope tight - aim for 4-6 weeks total build time for MVP features. Only
   // Generate PRD for Day 6
   app.post("/api/ai/generate-prd", isAuthenticated, async (req: any, res) => {
     try {
-      const { idea, painPoints, features, mvpFeatures } = req.body;
+      const { idea, painPoints, features, mvpFeatures, appName, iHelpStatement, uspFeatures, brandVibe, customerAvatar, lookAndFeel } = req.body;
 
       // Generate summary
       const summaryPrompt = `You are a product strategist. Create a 3-4 sentence executive summary for this SaaS product.
 
+Product Name: ${appName || 'TBD'}
 Product Idea: ${idea}
+${iHelpStatement ? `Value Proposition: "${iHelpStatement}"` : ''}
+${customerAvatar ? `Target Customer: ${customerAvatar}` : ''}
 
 Pain Points: ${painPoints.join(', ')}
 MVP Features: ${mvpFeatures.join(', ')}
+${uspFeatures && uspFeatures.length > 0 ? `Standout Features (USP): ${uspFeatures.join(', ')}` : ''}
 
 Write a compelling executive summary that explains:
 1. What the product is
 2. What problem it solves
-3. Who it's for
+3. Who it's for (use the target customer description)
 4. The key value proposition
 
 Keep it concise, professional, and compelling. 3-4 sentences maximum.`;
@@ -1030,7 +1034,11 @@ Keep it concise, professional, and compelling. 3-4 sentences maximum.`;
       // Generate full PRD
       const prdPrompt = `Create a PRD for this product. No fluff, no filler, no generic advice. Be extremely specific to THIS product.
 
-PRODUCT: ${idea}
+PRODUCT NAME: ${appName || 'TBD'}
+PRODUCT IDEA: ${idea}
+${iHelpStatement ? `VALUE PROPOSITION: "${iHelpStatement}"` : ''}
+
+CUSTOMER AVATAR: ${customerAvatar || 'Not specified'}
 
 PAIN POINTS:
 ${painPoints.map((p: string, i: number) => `- ${p}`).join('\n')}
@@ -1041,18 +1049,27 @@ ${mvpFeatures.map((f: string, i: number) => `- ${f}`).join('\n')}
 ALL FEATURES:
 ${features.map((f: string, i: number) => `- ${f}`).join('\n')}
 
+${uspFeatures && uspFeatures.length > 0 ? `STANDOUT FEATURES (USP):
+${uspFeatures.map((f: string) => `- ${f}`).join('\n')}` : ''}
+
+${brandVibe ? `BRAND VIBE: ${brandVibe}` : ''}
+LOOK & FEEL: ${lookAndFeel || 'Modern and clean'}
+
 OUTPUT FORMAT:
 
-# ${idea} - PRD
+# ${appName || idea} - PRD
 
 ## What It Is
 [1-2 sentences. What does this specific product do?]
 
 ## Who It's For
-[Specific user type. Not "businesses" - be precise: "freelance designers who..." or "e-commerce store owners with..."]
+[Use the customer avatar provided. Be specific and detailed about who this person is and their situation.]
 
 ## Core Problem
 [The #1 pain point this solves. One sentence.]
+
+## Unique Value Proposition
+[What makes this different from competitors? Why would someone choose THIS product?]
 
 ## MVP Features
 
@@ -1071,6 +1088,10 @@ OUTPUT FORMAT:
 
 ## Third-Party Services
 [Only list if actually needed: Stripe, SendGrid, etc. with WHY]
+
+## UI/UX Direction
+[Based on the look & feel description: ${lookAndFeel || 'modern and clean'}]
+[2-3 sentences on the visual style and user experience approach]
 
 ## Launch Blockers
 [5-7 specific items that MUST work before launch. Not generic - specific to this product]

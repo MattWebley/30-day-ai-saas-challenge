@@ -237,7 +237,7 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "Your Task Today",
       points: [
-        "Use ChatGPT to generate your PRD",
+        "Use Claude to generate your PRD",
         "Review it -change anything wrong",
         "Paste it into Replit",
         "Watch it start building FOR you",

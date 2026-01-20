@@ -419,3 +419,34 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test prompt copy buttons work correctly
   - Verify lesson links open in new tabs
   - Continue testing Days 7+ onwards
+
+### 2026-01-20 (Session 2) - Day 6 & 7 PRD Overhaul
+- **Day 6 Tech Stack Consolidation:**
+  - Merged duplicate "$500/hr business advisor" sections into one
+  - Combined the business use cases list with the prompt templates section
+  - Removed separate Step 3 from Dashboard (now all in Day5TechStack component)
+- **Day 7 PRD - Major Overhaul:**
+  - Changed Day 7 tip from ChatGPT recommendation to Claude/PRD explanation
+  - Updated VideoSlides to recommend Claude instead of ChatGPT for PRD
+  - PRD now uses ALL data from previous days: name, idea, value prop, pain points, features, USP, brand vibe
+  - Added two required questions: Customer Avatar and Look & Feel
+  - Made "Everything We Know So Far" section editable (Edit button toggles input fields)
+  - Added big prominent download section with large icon
+  - Changed download from .md to .txt (PRD.txt) for better Replit compatibility
+  - Added "How to Use Your PRD" steps with Replit link
+  - Added cost warning about Replit (let it build, then STOP - switch to Claude Code)
+  - Button now says "I've Pasted My PRD Into Replit" to complete day
+  - Removed duplicate Replit cost warning from Dashboard
+- **Files Modified:**
+  - `client/src/components/Day5TechStack.tsx` - Consolidated $500/hr advisor section
+  - `client/src/components/Day6SummaryPRD.tsx` - Major rewrite with editable data, new questions, download flow
+  - `client/src/components/VideoSlides.tsx` - Changed ChatGPT to Claude for Day 7
+  - `client/src/pages/Dashboard.tsx` - Pass all data to PRD component, removed duplicate warning
+  - `server/routes.ts` - PRD generation now uses customerAvatar, lookAndFeel, all previous data
+  - `server/seed.ts` - Updated Day 7 tip and lesson content
+- **Notes for Next Session:**
+  - Test Day 7 PRD generation flow end-to-end
+  - Test editable "Everything We Know" section
+  - Verify PRD.txt download works
+  - Test Day 8+ flow (Claude Code setup)
+  - Database was re-seeded - may need to re-seed again if testing

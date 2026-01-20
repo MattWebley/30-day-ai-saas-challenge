@@ -185,11 +185,26 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
         </div>
       </div>
 
-      {/* When You Get Stuck */}
+      {/* Your Secret Weapon */}
       <div className={ds.cardWithPadding}>
-        <h4 className={ds.label + " mb-2"}>When You Get Stuck (And You Will)</h4>
+        <h4 className={ds.label + " mb-2"}>Your $500/hr Business Advisor</h4>
         <p className={ds.body + " mb-4"}>
-          The FIRST place to go when something isn't working is Claude. You've got a $500/hr business advisor that's actually FREE because you're already paying for it. Don't spend hours Googling - just ask.
+          Here's what most people miss: These aren't just coding tools. You now have access to a business advisor that would cost $500/hour - available 24/7 for $20/month. Don't spend hours Googling - just ask.
+        </p>
+
+        <div className="space-y-2 mb-4">
+          <p className="text-slate-900 font-bold">USE IT FOR EVERYTHING:</p>
+          <ul className="space-y-1 text-slate-700">
+            <li>• <span className="font-medium">Pricing:</span> "Should I charge $29 or $49/month?"</li>
+            <li>• <span className="font-medium">Features:</span> "Which 3 features should I build first?"</li>
+            <li>• <span className="font-medium">Copy:</span> "Write me 5 taglines for my SaaS"</li>
+            <li>• <span className="font-medium">Stuck:</span> "This isn't working - here's the error..."</li>
+            <li>• <span className="font-medium">Strategy:</span> "I'm stuck between two approaches, help me decide"</li>
+          </ul>
+        </div>
+
+        <p className={ds.body + " mb-4"}>
+          The founders who WIN treat AI as a <span className="font-bold">THINKING PARTNER</span>, not just a code generator.
         </p>
 
         <div className="p-3 bg-green-50 border border-green-200 rounded-lg mb-4">
@@ -199,7 +214,7 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
         </div>
 
         <p className={ds.muted + " mb-4"}>
-          For now, here are starter prompts for different situations. You'll only need these templates at first - eventually prompting becomes second nature.
+          Here are starter prompts for different situations. You'll only need these templates at first - eventually prompting becomes second nature.
         </p>
 
         {/* Problem-Solving Prompt */}

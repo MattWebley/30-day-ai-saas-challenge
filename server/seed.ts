@@ -436,7 +436,7 @@ The goal is to START BUILDING, not to collect subscriptions.`,
       microDecisionQuestion: "How detailed should your PRD be?",
       microDecisionOptions: JSON.stringify(["Brief overview", "Standard detail", "Very detailed", "Everything included"]),
       reflectionQuestion: "Looking at everything you've defined, what excites you most about building this?",
-      tip: "Use ChatGPT for the PRD - in my experience it does a better job 99% of the time. But still worth checking Claude's version too.",
+      tip: "We write the PRD with Claude, then paste it into Replit to build the initial app. After that, we switch to Claude Code for 99% of ongoing work - it's much better for iterating, adding features, and keeping costs down.",
       lesson: `WHAT IS A PRD?
 
 A PRD (Product Requirements Document) is your SAAS blueprint. A detailed written plan that outlines EXACTLY what you're going to build.
@@ -452,11 +452,11 @@ TO MAKE A DECENT PRD YOU NEED:
 - USP
 - LOOK AND FEEL (preferred colors, style - you CAN screenshot tools you like and feed them to Replit)
 
-THE PRD PROMPT:
+A BASIC PRD PROMPT LOOKS LIKE THIS:
 
 "I need a PRD for my SAAS I'm building in Replit. The SAAS NAME is [NAME], my CUSTOMER AVATAR is [AVATAR], The PROBLEM my SAAS solves is [PROBLEM], my FEATURE set is [FEATURES], my USP is [USP] and I want it to LOOK AND FEEL like [DESCRIPTION]."
 
-Check through it, change anything that's wrong, then PASTE IT INTO REPLIT and watch the MAGIC happen!`,
+But don't worry about filling that in - we'll generate a proper PRD for you in the exercise below using everything you've already defined!`,
       outcome: "A complete PRD pasted into Replit with your first build session started",
       completionMessage: "You have a PRD. A real Product Requirements Document that tells you exactly what to build. Most founders skip this and wonder why they're still coding 6 months later. You're different. Tomorrow: Claude Code setup.",
       xpReward: 100,
