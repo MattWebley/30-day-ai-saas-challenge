@@ -450,3 +450,24 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Verify PRD.txt download works
   - Test Day 8+ flow (Claude Code setup)
   - Database was re-seeded - may need to re-seed again if testing
+
+### 2026-01-20 (Session 3) - Day 8 & 9 Improvements
+- **Tasks Completed:**
+  - Added `***text***` bold/highlight parsing to Dashboard lesson renderer
+  - Highlighted text renders with bold, dark slate color, and amber background
+  - Highlighted "FIRST: Open the Claude Code Guide..." instruction in Day 8 lesson
+  - Fixed Day 9 to-do list to accurately match all 5 rules taught in the component
+  - Added "Start EVERY session with the prompts in the Claude Code Guide" to Day 9 to-do list
+- **Fixes Applied:**
+  - Removed inaccurate "Complete today and you'll unlock the CLAUDE CODE GUIDE" from Day 8 lesson (guide is already unlocked)
+  - Removed disconnected "DOUBLE your building speed" line from Day 8 lesson
+  - Day 9 instructions now correctly list all 5 rules: Be specific, Say reverse, Report errors, Break down tasks, Prompt stacking
+- **Files Modified:**
+  - `client/src/pages/Dashboard.tsx` - Enhanced parseLinks() to also handle `***bold***` markers
+  - `client/src/components/DayInstructions.tsx` - Fixed Day 9 to-do list (6 items now)
+  - `server/seed.ts` - Updated Day 8 lesson content
+- **Notes for Next Session:**
+  - Re-seed database to apply Day 8 lesson changes: `npx tsx server/seed.ts`
+  - Test Day 8 highlighted text displays correctly
+  - Test Day 9 to-do list shows all 6 items
+  - Continue testing Days 10+ onwards

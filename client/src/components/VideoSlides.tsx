@@ -246,31 +246,28 @@ const slideContent: Record<number, Slide[]> = {
   ],
   8: [
     {
-      title: "Day 8: Claude Code + GitHub",
+      title: "Day 8: Development Setup",
       points: [
-        "AI agents are FASTER, CHEAPER, BETTER than dev teams",
-        "What took weeks with humans = MINUTES with AI",
-        "This is an ever-changing space -EMBRACE it",
+        "Today: Set up your PROFESSIONAL dev environment",
+        "Three things you need",
+        "This is what REAL developers use",
       ],
     },
     {
-      title: "Your Daily Workflow",
+      title: "The Three Tools",
       points: [
-        "1. Start with a CLEAR goal",
-        "2. Tell the agent what you want",
-        "3. Review what it creates",
-        "4. Test it in the app",
-        "5. Iterate until it works",
+        "1. GITHUB - version control, never lose your work",
+        "2. CLAUDE CODE - same power, fraction of Replit AI cost",
+        "3. CLAUDE.md - your instruction file for Claude",
       ],
     },
     {
-      title: "Week 1 Complete!",
+      title: "Why This Matters",
       points: [
-        "You have a validated idea",
-        "You have a clear plan",
-        "You have your tools set up",
-        "You've started building",
-        "While others think about it, you're DOING it",
+        "Without GitHub: One mistake = lose everything",
+        "Without Claude Code: Burn through money",
+        "Without CLAUDE.md: Claude doesn't know your project",
+        "With all three? Professional setup. Let's go.",
       ],
     },
   ],
@@ -278,9 +275,9 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "Day 9: Master Claude Code",
       points: [
-        "Claude Code saves you THOUSANDS vs Replit AI alone",
-        "Same power, fraction of the price",
-        "The SECRET is how you TALK to it",
+        "The SECRET is how you TALK to Claude",
+        "Vague prompts = vague results",
+        "Today you learn the rules that make it click",
       ],
     },
     {
@@ -288,17 +285,17 @@ const slideContent: Record<number, Slide[]> = {
       points: [
         "BE SPECIFIC: 'Make it better' = useless",
         "ONE THING at a time: Login first, THEN dashboard",
-        "DESCRIBE problems like talking to a human",
+        "DESCRIBE problems: what happens vs what should happen",
         "Good prompts = fast results",
       ],
     },
     {
-      title: "Your Task Today",
+      title: "Power Move: Prompt Stacking",
       points: [
-        "Install Claude Code in Replit shell",
-        "Learn the 3 key prompts (Session START, Session END)",
-        "Complete today = unlock Claude Code Guide",
-        "This skill separates fast builders from stuck ones",
+        "Most people: prompt, wait, prompt, wait (SLOW)",
+        "Pros: stack up prompts while Claude works",
+        "THE CATCH: Only stack for DIFFERENT files",
+        "Same file = wait. Different files = stack away.",
       ],
     },
   ],

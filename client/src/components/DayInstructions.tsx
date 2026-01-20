@@ -62,16 +62,18 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Start your first build session"
   ],
   8: [
-    "Connect Claude Code to Replit",
-    "Set up GitHub repository",
-    "Learn the daily workflow",
-    "Complete your first build session"
+    "Connect GitHub to Replit (for version control)",
+    "Install Claude Code in the shell",
+    "Create your CLAUDE.md instruction file",
+    "Test the setup with the start prompt"
   ],
   9: [
-    "Read the lesson on effective prompting",
-    "Choose a quick win to build",
-    "Build it with Claude Code",
-    "Document what you built"
+    "Start EVERY session with the prompts in the Claude Code Guide",
+    "Learn Rule #1: Be specific - what, where, what should happen",
+    "Learn Rule #2: Say 'reverse' to undo any change",
+    "Learn Rule #3: Report errors - copy, paste, explain",
+    "Learn Rule #4: Break down big tasks - one at a time",
+    "Learn Rule #5: Prompt stacking - different files only"
   ],
   10: [
     "Learn the Build-Test-Fix workflow",

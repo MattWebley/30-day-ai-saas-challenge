@@ -37,8 +37,8 @@ import { Day5Logo } from "@/components/Day5Logo";
 import { Day5TechStack } from "@/components/Day5TechStack";
 import { Day11Brand } from "@/components/Day11Brand";
 import { Day6SummaryPRD } from "@/components/Day6SummaryPRD";
-import { Day7ReplitBuild } from "@/components/Day7ReplitBuild";
 import { Day8ClaudeCode } from "@/components/Day8ClaudeCode";
+import { Day9ClaudeCodeMastery } from "@/components/Day9ClaudeCodeMastery";
 import { Day9RealityCheck } from "@/components/Day9RealityCheck";
 import { Day10AIBrain } from "@/components/Day10AIBrain";
 import { Day11AddSuperpowers } from "@/components/Day11AddSuperpowers";
@@ -75,30 +75,44 @@ const isSubheadline = (paragraph: string): boolean => {
   return false;
 };
 
-// Helper to parse markdown-style links [text](url) and render as <a> tags
+// Helper to parse markdown-style links [text](url) and bold ***text*** and render as React elements
 const parseLinks = (text: string): React.ReactNode => {
-  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  // Combined regex for links and bold markers
+  const combinedRegex = /\[([^\]]+)\]\(([^)]+)\)|\*\*\*([^*]+)\*\*\*/g;
   const parts: React.ReactNode[] = [];
   let lastIndex = 0;
   let match;
 
-  while ((match = linkRegex.exec(text)) !== null) {
-    // Add text before the link
+  while ((match = combinedRegex.exec(text)) !== null) {
+    // Add text before the match
     if (match.index > lastIndex) {
       parts.push(text.slice(lastIndex, match.index));
     }
-    // Add the link
-    parts.push(
-      <a
-        key={match.index}
-        href={match[2]}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-primary hover:underline font-medium"
-      >
-        {match[1]}
-      </a>
-    );
+
+    if (match[1] && match[2]) {
+      // It's a link [text](url)
+      parts.push(
+        <a
+          key={match.index}
+          href={match[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline font-medium"
+        >
+          {match[1]}
+        </a>
+      );
+    } else if (match[3]) {
+      // It's bold text ***text***
+      parts.push(
+        <span
+          key={match.index}
+          className="font-bold text-slate-900 bg-amber-100 px-1.5 py-0.5 rounded"
+        >
+          {match[3]}
+        </span>
+      );
+    }
     lastIndex = match.index + match[0].length;
   }
 
@@ -851,19 +865,16 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 8: Claude Code + GitHub Setup */}
+                {/* Day 8: Development Environment Setup */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Start Building</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Set Up Your Tools</h2>
                   </div>
-                  <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    <Day7ReplitBuild
-                      dayId={currentDay}
-                      prd={(Array.isArray(progress) ? progress.find((p: any) => p.day === 7) : null)?.userInputs?.prd || ""}
-                      onComplete={handleComplete}
-                    />
-                  </Card>
+                  <Day8ClaudeCode
+                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                    onComplete={handleComplete}
+                  />
                 </div>
               </>
             ) : currentDay === 9 ? (
@@ -904,9 +915,9 @@ export default function Dashboard() {
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Get Your First Win</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Master the Prompts</h2>
                   </div>
-                  <Day8ClaudeCode
+                  <Day9ClaudeCodeMastery
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     onComplete={handleComplete}
                   />
@@ -914,6 +925,14 @@ export default function Dashboard() {
               </>
             ) : currentDay === 10 ? (
               <>
+                {/* Claude Code Reminder */}
+                <Link href="/claude-code">
+                  <div className="bg-slate-100 border border-slate-200 rounded-lg p-3 mb-4 cursor-pointer hover:bg-slate-200 transition-colors">
+                    <p className="text-sm text-slate-700">
+                      <strong>Reminder:</strong> Use the <span className="text-primary underline">Claude Code Guide</span> to start your session with the right prompts.
+                    </p>
+                  </div>
+                </Link>
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">

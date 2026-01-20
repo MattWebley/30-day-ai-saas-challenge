@@ -465,7 +465,7 @@ But don't worry about filling that in - we'll generate a proper PRD for you in t
     {
       day: 8,
       title: "Claude Code + GitHub Setup",
-      description: "Connect Claude Code to Replit and GitHub, learn the daily workflow, and complete your first real build session.",
+      description: "Connect GitHub for version control, install Claude Code, and create your CLAUDE.md instruction file.",
       phase: "Prepare",
       videoUrl: null,
       aiTaskType: "setup",
@@ -477,31 +477,43 @@ But don't worry about filling that in - we'll generate a proper PRD for you in t
       microDecisionOptions: JSON.stringify(["Authentication", "Main core feature", "Database setup", "Landing page"]),
       reflectionQuestion: "What will it feel like when you see your first feature working?",
       tip: "Get into the habit of using the entire app AS you build it. This prevents you breaking something and not knowing about it until later.",
-      lesson: `The AI Agent we are using is already FASTER, CHEAPER and BETTER than LARGE teams of SENIOR developers.
+      lesson: `Today we set up the tools. Three things:
 
-WITH HUMANS:
+1. GITHUB
 
-Simple features can take weeks or months. Debugging can take weeks. Everything is SLOW, CUMBERSOME & EXPENSIVE!
+You know Google Docs? How it saves EVERY version of your document? You can go back to yesterday. Last week. Last month.
 
-WITH AI:
+GitHub is Google Docs for code.
 
-You tell it what you want, and it BUILDS it. Often in minutes.
+Every time you save, it keeps a copy. Something breaks? Go back to when it worked. Laptop dies? Code is safe in the cloud.
 
-Is it perfect? No. But it will only get BETTER. If it can't do something you want today, GIVE IT A COUPLE OF WEEKS AND IT PROBABLY WILL!
+It's FREE. Takes 2 minutes. EVERY pro developer uses it.
 
-DAILY WORKFLOW:
+2. CLAUDE CODE
 
-1. Start your session with a clear goal
-2. Tell the agent what you want to build or fix
-3. Review what it creates
-4. Test it in the app
-5. Iterate until it works
+Replit has built-in AI. It's good. But it's EXPENSIVE. We're talking hundreds of dollars a month if you're building regularly.
 
-KEY NOTE:
+Claude Code does the SAME thing. Runs right inside Replit. But at a FRACTION of the cost.
 
-You HAVE to accept this is an EVER-CHANGING space. Things change CONSTANTLY. Don't FEAR this. EMBRACE it.`,
-      outcome: "Claude Code connected to Replit and GitHub, first build session complete",
-      completionMessage: "Week 1 DONE. You have a validated idea, a clear plan, tools set up, and you've started building. While others are still 'thinking about it,' you're DOING it. Tomorrow: mastering how to talk to Claude Code.",
+This one change will save you THOUSANDS over time.
+
+3. CLAUDE.md
+
+A text file that tells Claude about your project. Claude reads it at the start of every session.
+
+What goes in it? Your app name. What it does. What tech you're using. Some rules. A session log.
+
+It starts simple. It grows over time. When Claude keeps making the same mistake, you add a rule. When you finish a session, you update the log. It gets SMARTER as you use it.
+
+WHY THIS MATTERS:
+
+Without GitHub, one mistake could lose everything. Without Claude Code, you'll burn through money. Without CLAUDE.md, Claude doesn't know your project.
+
+With all three? You have a professional setup that REAL developers use.
+
+Let's get it done.`,
+      outcome: "GitHub connected, Claude Code installed, CLAUDE.md created",
+      completionMessage: "Your dev environment is SET UP. GitHub for backups, Claude Code for building, CLAUDE.md for context. You have a professional setup. Tomorrow: learning how to get the BEST results from Claude Code.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -524,41 +536,23 @@ You HAVE to accept this is an EVER-CHANGING space. Things change CONSTANTLY. Don
       microDecisionOptions: JSON.stringify(["Not sure what to ask", "Results aren't what I want", "Don't know how to fix errors", "Everything feels overwhelming"]),
       reflectionQuestion: "What feature would you build if you knew Claude Code would get it right first time?",
       tip: "Claude Code works best when you're SPECIFIC. 'Make the button blue' is better than 'improve the design'. 'Add a login form with email and password' is better than 'add authentication'.",
-      lesson: `WHY CLAUDE CODE?
+      lesson: `***FIRST: Open the Claude Code Guide in the sidebar. Use those prompts to start your session.***
 
-It'll save you THOUSANDS. You CAN just use Replit's built-in AI on its own. It's easier to get started. But here's the truth: it gets VERY expensive, VERY fast. We're talking hundreds of dollars a month if you're building regularly.
+Now let's learn how to TALK to Claude Code.
 
-Claude Code runs in Replit's shell. Same power. Fraction of the price.
+Most people get frustrated because they don't know the rules. They ask vague questions and get vague answers. They panic when something breaks. They send huge prompts and wonder why it's a mess.
 
-THE SECRET TO GETTING WHAT YOU WANT:
+Today you learn the 5 rules that make everything click:
 
-Be SPECIFIC. "Make it look better" = USELESS. "Add 16px padding around all cards" = USEFUL.
+1. BE SPECIFIC - vague prompts = vague results
+2. SAY "REVERSE" - to undo any change instantly
+3. REPORT ERRORS PROPERLY - copy, paste, explain
+4. BREAK IT DOWN - one task at a time
+5. STACK SMART - different files only
 
-ONE thing at a time. Don't ask for login, dashboard, AND settings. Ask for login. Wait. Then dashboard.
+These aren't complicated. But they make ALL the difference.
 
-Describe problems like you're talking to a human. "Fix the bug" = TERRIBLE. "When I click submit, nothing happens. It should show a success message." = GOOD.
-
-PROMPT STACKING (POWER MOVE):
-
-Here's a technique that separates beginners from pros: PROMPT STACKING.
-
-Most people send a prompt and WAIT. Just sitting there. Watching. Then send the next one. This is SLOW.
-
-Instead: while Claude is working on your first task, you can ALREADY be writing your next prompt. Stack them up. Send multiple. Keep the momentum going.
-
-BUT HERE'S THE CATCH (read this carefully):
-
-If your prompts touch the SAME FILES, you can create conflicts. Claude is editing file A. You tell it to also edit file A. Now you've got a mess - changes fighting each other, weird bugs, wasted time.
-
-THE FIX:
-
-Stack prompts that work on DIFFERENT parts of your app. While Claude builds your login page, queue up the prompt for your settings page. While it's doing frontend, prepare your backend prompt.
-
-SAME file = wait. DIFFERENT files = stack away.
-
-This one technique can DOUBLE your building speed. Use it wisely.
-
-Complete today and you'll unlock the CLAUDE CODE GUIDE in the menu - all 3 prompts in one place for easy access.`,
+Let's go through each one.`,
       outcome: "Confident using Claude Code to build, fix, and improve your app with effective prompts",
       completionMessage: "You now know how to TALK to your AI. That's the skill that separates people who build fast from people who get frustrated. Tomorrow: learning the Build-Test-Fix loop that every successful builder uses.",
       xpReward: 100,
