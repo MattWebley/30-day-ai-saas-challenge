@@ -535,20 +535,23 @@ Let's get it done.`,
       microDecisionQuestion: "What's your biggest challenge with AI coding tools?",
       microDecisionOptions: JSON.stringify(["Not sure what to ask", "Results aren't what I want", "Don't know how to fix errors", "Everything feels overwhelming"]),
       reflectionQuestion: "What feature would you build if you knew Claude Code would get it right first time?",
-      tip: "Claude Code works best when you're SPECIFIC. 'Make the button blue' is better than 'improve the design'. 'Add a login form with email and password' is better than 'add authentication'.",
-      lesson: `***FIRST: Open the Claude Code Guide in the sidebar. Use those prompts to start your session.***
+      tip: "Don't overthink it. Be creative, have fun, but commit often so you can always go back.",
+      lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 Now let's learn how to TALK to Claude Code.
 
 Most people get frustrated because they don't know the rules. They ask vague questions and get vague answers. They panic when something breaks. They send huge prompts and wonder why it's a mess.
 
-Today you learn the 5 rules that make everything click:
+Today you learn the 8 rules that make everything click:
 
 1. BE SPECIFIC - vague prompts = vague results
 2. SAY "REVERSE" - to undo any change instantly
-3. REPORT ERRORS PROPERLY - copy, paste, explain
+3. REPORT ERRORS/BUGS - copy, paste, explain what you expected
 4. BREAK IT DOWN - one task at a time
-5. STACK SMART - different files only
+5. COMMIT FIRST - save your progress before big changes
+6. ASK FOR OPTIONS - get advice, then you choose
+7. VIBE WITH IT - be creative, but watch scope creep
+8. ASK WHY - not seeing what you expect? Ask!
 
 These aren't complicated. But they make ALL the difference.
 
@@ -576,8 +579,10 @@ Let's go through each one.`,
       microDecisionQuestion: "What did you work on in your first loop?",
       microDecisionOptions: JSON.stringify(["Fixed something broken", "Improved how it looks", "Added a missing piece", "Made it clearer to use"]),
       reflectionQuestion: "How did it feel to complete your first Build-Test-Fix loop?",
-      tip: "Finding bugs isn't failure - it's PROGRESS. The faster you find and fix them, the faster you ship. Pros find bugs constantly - they just fix them faster.",
-      lesson: `This is THE skill that separates people who ship from people who don't.
+      tip: "Finding bugs isn't failure - it's PROGRESS. NO software is ever 100% bug-free. Our goal isn't perfection (that takes years and is impossible). We fix everything WE can find and what any BETA testers find, then ship it and fix issues FAST with AI when they crop up. Perfectionism = procrastination.",
+      lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
+
+This is THE skill that separates people who ship from people who don't.
 
 BUILD → TEST → FIX → REPEAT
 
@@ -596,8 +601,8 @@ Most people build for HOURS without testing. Then they find 47 bugs at once and 
 
 THE SECRET TO GOOD BUG REPORTS:
 
-Bad: "It's broken"
-Good: "When I click Save, the page refreshes but data isn't in the database"
+Bad: "The page is broken"
+Good: "When I click the Save button on the Settings page, I expect it to save and show a success message, but instead nothing happens. Fix it."
 
 The more specific you are, the faster AI can help you fix it.
 
@@ -623,45 +628,34 @@ Find ONE bug in your app. Describe it clearly. Fix it with Claude Code. That's i
       microDecisionQuestion: "What vibe should your brand have?",
       microDecisionOptions: JSON.stringify(["Professional & trustworthy", "Fun & friendly", "Bold & energetic", "Minimal & clean"]),
       reflectionQuestion: "Would your target customer feel at home with this brand?",
-      tip: "Pick ONE primary color and stick with it. Consistency beats creativity when you're starting out.",
-      lesson: `You've built your first features. Now let's make them LOOK like a real product.
+      tip: "Happy with what you've got? SKIP this day. Design changes can always happen later - features matter more right now.",
+      lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
+
+Look at your app right now. How does it LOOK?
+
+If you're happy with what Replit gave you - SKIP THIS DAY. Seriously. You can always come back to design later. Features matter more than fonts at this stage.
+
+But if it looks generic or doesn't match your vibe...
+
+TODAY: YOU'LL CLICK THROUGH OPTIONS AND SEE THE CHANGES IN REAL TIME.
 
 Brand = how your app FEELS.
 
-It's more than a logo. It's the colors, the fonts, the overall vibe. When someone lands on your app, they should instantly get a FEELING.
+It's more than colors. It's the fonts, the spacing, the overall vibe. When someone lands on your app, they should instantly get a FEELING.
 
-THE SIMPLE BRAND FORMULA:
+THE THREE CHOICES:
 
-1. ONE PRIMARY COLOR
-Pick a color that matches your vibe:
-- Blue = trustworthy, professional
-- Green = growth, money, health
-- Purple = creative, premium
-- Orange = friendly, energetic
-- Black = sophisticated, luxury
+1. FONT STYLE - Does your text feel modern? Friendly? Professional? You'll see examples and pick what fits.
 
-2. ONE FONT (maybe two)
-Use Google Fonts. Pick something readable.
-- Inter, Open Sans, Lato = clean & modern
-- Poppins, Nunito = friendly & approachable
-- Playfair Display = elegant (headers only)
+2. COLOR SCHEME - Blue for trust. Green for growth. Purple for creativity. You'll pick from real color palettes.
 
-3. CONSISTENT SPACING
-Same padding on all cards. Same button styles everywhere. CONSISTENCY is what makes things look professional.
+3. DESIGN VIBE - Minimal? Bold? Soft and friendly? Dark mode? You'll choose the overall style direction.
 
-YOUR BRAND CHECKLIST:
+Then you'll get ONE PROMPT that changes everything at once.
 
-□ Primary color (hex code)
-□ Secondary color (usually gray or a lighter shade)
-□ Font for headings
-□ Font for body text
-□ Button style (rounded? square? color?)
+HEADS UP: Design changes often need a few Build-Test-Fix loops. Claude will make changes, you'll test them, you'll say "the buttons are too big" or "that's not quite right", and it'll adjust. This is NORMAL. Don't expect perfection on the first try.
 
-HOW TO APPLY IT:
-
-Tell Claude Code: "Use [COLOR] as the primary color throughout the app. All buttons should be [COLOR]. Use [FONT] for all text. Keep spacing consistent - 16px padding on cards, 8px gaps between elements."
-
-That's it. You now have a brand. It doesn't need to be fancy. It needs to be CONSISTENT.`,
+Remember: CONSISTENCY beats creativity. A simple, consistent design looks more professional than a fancy inconsistent one.`,
       outcome: "A defined color palette and typography applied to your app",
       completionMessage: "Your app now has a consistent look and feel! This is what separates amateur projects from professional products. Tomorrow: adding the AI brain.",
       xpReward: 100,
@@ -683,7 +677,9 @@ That's it. You now have a brand. It doesn't need to be fancy. It needs to be CON
       microDecisionOptions: JSON.stringify(["Generate content", "Analyze/summarize data", "Answer questions", "Automate tasks"]),
       reflectionQuestion: "What manual task could AI do for your users that would make them say 'THIS IS AMAZING'?",
       tip: "The OpenAI API costs about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.",
-      lesson: `Today your app gets a BRAIN.
+      lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
+
+Today your app gets a BRAIN.
 
 This is what makes AI SaaS different from regular SaaS. Your app doesn't just store data or display things - it THINKS. And here's the thing: Users EXPECT this now. An app without AI feels like a website from 2010.
 
@@ -737,7 +733,9 @@ There are other AI APIs out there - Claude's API, Google's Gemini, and more. The
       microDecisionOptions: JSON.stringify(["Payments (Stripe)", "Data/Scraping", "Third-party integration", "None needed yet"]),
       reflectionQuestion: "What can your app do now that it couldn't do before?",
       tip: "Before adding ANY external API, ask Replit Agent first: 'Can you do [thing] without an external service?' Often Replit can handle it natively. Only add APIs when truly necessary.",
-      lesson: `Your app has an AI brain. Now let's give it SUPERPOWERS.
+      lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
+
+Your app has an AI brain. Now let's give it SUPERPOWERS.
 
 External APIs let your app do things that would be impossible to build yourself. Payments. Data feeds. Third-party integrations. These are the things that turn a toy into a real product.
 
@@ -801,7 +799,9 @@ If your app works without external APIs, skip this day. Move on. Don't add compl
       microDecisionOptions: JSON.stringify(["Yes, it works", "No, need to add it", "Not sure", "Don't need it"]),
       reflectionQuestion: "Can users sign up and see only their own data?",
       tip: "Replit probably already added auth when you first built your app. Check before adding it again. Ask Replit: 'Does my app have user authentication?'",
-      lesson: `Authentication = "Who are you?"
+      lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
+
+Authentication = "Who are you?"
 
 It's how your app knows which user is which, so everyone sees their OWN stuff, not everyone else's.
 
@@ -863,7 +863,9 @@ If each account is isolated, auth is working. Done.`,
       microDecisionOptions: JSON.stringify(["Welcome email", "Password reset", "Activity notifications", "Weekly digest"]),
       reflectionQuestion: "What will your welcome email say to make new users feel excited?",
       tip: "Start with ONE email - the welcome email. You can add more later. Resend is free for 3,000 emails/month which is plenty to start.",
-      lesson: `Without email, you have NO way to reach users after they leave your app.
+      lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
+
+Without email, you have NO way to reach users after they leave your app.
 
 They sign up. They leave. They forget about you. Game over.
 
@@ -932,7 +934,9 @@ It's simple, reliable, and free to start. The API is clean. Claude Code knows ho
       microDecisionOptions: JSON.stringify(["Looks great!", "Usable but not pretty", "Some things are broken", "Haven't checked yet"]),
       reflectionQuestion: "Can users complete the main task on their phone without frustration?",
       tip: "Test on a REAL phone, not just browser dev tools. The experience is different. Also try with one hand - can you reach all the buttons?",
-      lesson: `Here's a BRUTAL truth: More than HALF your users will access your app on their PHONE.
+      lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
+
+Here's a BRUTAL truth: More than HALF your users will access your app on their PHONE.
 
 Not their laptop. Not their desktop. Their PHONE.
 
@@ -978,7 +982,9 @@ Mobile optimization isn't about perfection. It's about: Can someone USE this on 
       microDecisionOptions: JSON.stringify(["User signups & activity", "Feature usage", "Errors & issues", "Revenue (when added)"]),
       reflectionQuestion: "What information would help you make better decisions about your app?",
       tip: "Your admin dashboard is for YOU, not users. Keep it simple - just the data you'll actually look at. You can add more later.",
-      lesson: `You need to see what's happening inside your app.
+      lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
+
+You need to see what's happening inside your app.
 
 Not guess. Not assume. KNOW.
 
@@ -1028,7 +1034,9 @@ DATA TELLS YOU WHAT TO FIX. Build the dashboard. Check it every day. Make decisi
       microDecisionOptions: JSON.stringify(["Core features", "Bug fixes", "UI polish", "New functionality"]),
       reflectionQuestion: "Does your app solve the ONE core problem you set out to solve?",
       tip: "THIS IS THE PAUSE POINT. Your MVP isn't about having every feature - it's about having ONE thing that works brilliantly. Stay here until that's true.",
-      lesson: `STOP. READ THIS CAREFULLY.
+      lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
+
+STOP. READ THIS CAREFULLY.
 
 This is THE PAUSE POINT - and it's time to talk about your MVP.
 

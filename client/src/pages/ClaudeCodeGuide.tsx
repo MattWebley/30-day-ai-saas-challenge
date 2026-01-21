@@ -2,7 +2,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Terminal, Copy, Sparkles, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
 
 const INSTALL_COMMAND = `npm install -g @anthropic-ai/claude-code && claude`;
 
@@ -40,12 +39,13 @@ export default function ClaudeCodeGuide() {
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-3xl mx-auto px-4 py-8">
         {/* Back Link */}
-        <Link href="/dashboard">
-          <a className="inline-flex items-center gap-2 text-slate-600 hover:text-primary mb-6">
-            <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
-          </a>
-        </Link>
+        <button
+          onClick={() => window.history.back()}
+          className="inline-flex items-center gap-2 text-slate-600 hover:text-primary mb-6 cursor-pointer"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </button>
 
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">

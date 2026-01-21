@@ -39,9 +39,9 @@ import { Day11Brand } from "@/components/Day11Brand";
 import { Day6SummaryPRD } from "@/components/Day6SummaryPRD";
 import { Day8ClaudeCode } from "@/components/Day8ClaudeCode";
 import { Day9ClaudeCodeMastery } from "@/components/Day9ClaudeCodeMastery";
-import { Day9RealityCheck } from "@/components/Day9RealityCheck";
+import { Day10BuildLoop } from "@/components/Day10BuildLoop";
 import { Day10AIBrain } from "@/components/Day10AIBrain";
-import { Day11AddSuperpowers } from "@/components/Day11AddSuperpowers";
+import { Day11BrandDesign } from "@/components/Day11BrandDesign";
 import { Day12LetUsersIn } from "@/components/Day12LetUsersIn";
 import { Day13ReachYourUsers } from "@/components/Day13ReachYourUsers";
 import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
@@ -75,6 +75,39 @@ const isSubheadline = (paragraph: string): boolean => {
   return false;
 };
 
+// Helper to parse links inside text (used for bold content)
+const parseLinksOnly = (text: string, keyPrefix: string): React.ReactNode => {
+  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = linkRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const isExternal = match[2].startsWith('http');
+    parts.push(
+      <a
+        key={`${keyPrefix}-${match.index}`}
+        href={match[2]}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        className="text-primary hover:underline"
+      >
+        {match[1]}
+      </a>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+};
+
 // Helper to parse markdown-style links [text](url) and bold ***text*** and render as React elements
 const parseLinks = (text: string): React.ReactNode => {
   // Combined regex for links and bold markers
@@ -91,25 +124,26 @@ const parseLinks = (text: string): React.ReactNode => {
 
     if (match[1] && match[2]) {
       // It's a link [text](url)
+      const isExternal = match[2].startsWith('http');
       parts.push(
         <a
           key={match.index}
           href={match[2]}
-          target="_blank"
-          rel="noopener noreferrer"
+          target={isExternal ? "_blank" : undefined}
+          rel={isExternal ? "noopener noreferrer" : undefined}
           className="text-primary hover:underline font-medium"
         >
           {match[1]}
         </a>
       );
     } else if (match[3]) {
-      // It's bold text ***text***
+      // It's bold text ***text*** - also parse links inside
       parts.push(
         <span
           key={match.index}
           className="font-bold text-slate-900 bg-amber-100 px-1.5 py-0.5 rounded"
         >
-          {match[3]}
+          {parseLinksOnly(match[3], `bold-${match.index}`)}
         </span>
       );
     }
@@ -925,14 +959,6 @@ export default function Dashboard() {
               </>
             ) : currentDay === 10 ? (
               <>
-                {/* Claude Code Reminder */}
-                <Link href="/claude-code">
-                  <div className="bg-slate-100 border border-slate-200 rounded-lg p-3 mb-4 cursor-pointer hover:bg-slate-200 transition-colors">
-                    <p className="text-sm text-slate-700">
-                      <strong>Reminder:</strong> Use the <span className="text-primary underline">Claude Code Guide</span> to start your session with the right prompts.
-                    </p>
-                  </div>
-                </Link>
                 {/* Today's Lesson */}
                 {dayData.lesson && (
                   <div className="space-y-4">
@@ -971,10 +997,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
                     <h2 className="font-bold text-xl text-slate-900">Practice The Loop</h2>
                   </div>
-                  <Day9RealityCheck
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
-                    onComplete={handleComplete}
-                  />
+                  <Day10BuildLoop onComplete={handleComplete} />
                 </div>
               </>
             ) : currentDay === 11 ? (
@@ -1103,14 +1126,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 13: Add Superpowers (APIs) */}
+                {/* Day 11: Brand Design */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Add Your Superpowers</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Design Your Brand</h2>
                   </div>
-                  <Day11AddSuperpowers
-                    userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                  <Day11BrandDesign
+                    projectName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "your app"}
                     onComplete={handleComplete}
                   />
                 </div>

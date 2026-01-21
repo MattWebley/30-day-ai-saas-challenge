@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-20 (Day 5 & 6 overhaul)
+- **Last Session**: 2026-01-21 (Day 9, 10, 11 overhaul)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -471,3 +471,52 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test Day 8 highlighted text displays correctly
   - Test Day 9 to-do list shows all 6 items
   - Continue testing Days 10+ onwards
+
+### 2026-01-21 - Day 9, 10, 11 Major Overhaul
+- **Day 9 Claude Code Mastery - Refined to 8 Practical Rules:**
+  - Removed "prompt stacking" rule (not actually useful)
+  - Added new rules: Commit before big changes, Ask for options, Vibe with it, Ask why
+  - Added clickable progress bars (click any rule to navigate to it)
+  - Added "Try It Now" exercise (change button color, then reverse it)
+  - Added Debug with Agent tip to Rule #3
+  - Changed auth example to dashboard example (more relatable)
+  - Updated quick reference to match all 8 rules
+- **Day 10 Build Loop - Complete Rebuild:**
+  - Created new `Day10BuildLoop.tsx` component
+  - Proper Build-Test-Fix loop flow: Setup → Choose → Describe → Build → Test → Fix → Test again
+  - Users can choose: Build something new OR Fix something broken
+  - Visual progress indicator showing current step (Build → Test → Fix)
+  - Iteration counter (x2, x3, etc.) when they loop back
+  - "Yes it works!" / "No, something's wrong" buttons in Test step
+  - "Do Another Loop" option on completion screen
+  - Normalizes multiple iterations ("The pros do this dozens of times")
+- **Day 11 Brand Design - Complete Rebuild:**
+  - Created new `Day11BrandDesign.tsx` component (replaces Day11AddSuperpowers)
+  - First asks: "Are you happy with current design?" with Skip option
+  - Interactive font picker with 5 styles (shows live preview text)
+  - Interactive color picker with 8 color schemes (visual swatches)
+  - Interactive design vibe picker with 6 options
+  - Generates comprehensive prompt for Claude Code
+  - Warning about needing multiple Build-Test-Fix iterations
+- **Fixes Applied:**
+  - Claude Code Guide back button now uses `window.history.back()` (not fixed /dashboard link)
+  - Added `cursor-pointer` to Claude Code Guide back button
+  - Added `parseLinksOnly` helper for links inside `***bold***` text
+  - Removed duplicate Claude Code Guide reminder from Day 10
+  - Updated Day 10 tip about bugs/perfectionism
+  - Updated Day 10 bug report example to be more specific
+- **Files Created:**
+  - `client/src/components/Day10BuildLoop.tsx` - New Build-Test-Fix loop component
+  - `client/src/components/Day11BrandDesign.tsx` - New interactive design picker
+- **Files Modified:**
+  - `client/src/components/Day9ClaudeCodeMastery.tsx` - 8 rules, clickable progress, exercise
+  - `client/src/components/DayInstructions.tsx` - Updated Days 9, 10, 11
+  - `client/src/pages/Dashboard.tsx` - Use new Day 10 & 11 components, parseLinksOnly helper
+  - `client/src/pages/ClaudeCodeGuide.tsx` - Back button uses browser history
+  - `server/seed.ts` - Updated lessons for Days 9, 10, 11
+- **Notes for Next Session:**
+  - Test Day 9 with all 8 rules and "Try It Now" exercise
+  - Test Day 10 Build-Test-Fix loop flow (both paths)
+  - Test Day 11 design picker (skip option and full flow)
+  - Database was re-seeded - lessons are up to date
+  - Continue testing Days 12+ onwards

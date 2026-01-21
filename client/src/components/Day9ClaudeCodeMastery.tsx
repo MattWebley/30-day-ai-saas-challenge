@@ -7,13 +7,16 @@ import {
   ArrowRight,
   Lightbulb,
   Target,
-  Zap,
   CheckCircle2,
   Copy,
   BookOpen,
   RotateCcw,
   AlertTriangle,
   Layers,
+  GitBranch,
+  HelpCircle,
+  Sparkles,
+  MessageCircleQuestion,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ds } from "@/lib/design-system";
@@ -40,24 +43,27 @@ const GOOD_VS_BAD_PROMPTS = [
 ];
 
 const BIG_TASK_EXAMPLE = {
-  bad: "Build a complete user authentication system with login, signup, password reset, and email verification",
+  bad: "Build a complete dashboard with stats, charts, recent activity, notifications, and user management",
   good: [
-    "Add a login page with email and password fields",
-    "Add a signup page that creates a new user",
-    "Add a 'forgot password' link that sends a reset email",
-    "Add email verification when users sign up",
+    "Add a dashboard page that shows total users and signups this week",
+    "Add a chart showing signups over the last 7 days",
+    "Add a list of the 10 most recent actions",
+    "Add a section showing any errors or issues",
   ],
 };
 
 export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMasteryProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
-    "specific" | "reverse" | "errors" | "breakdown" | "stacking" | "done"
+    "specific" | "reverse" | "errors" | "breakdown" | "commit" | "options" | "vibe" | "askwhy" | "done"
   >("specific");
   const [specificDone, setSpecificDone] = useState(false);
   const [reverseDone, setReverseDone] = useState(false);
   const [errorsDone, setErrorsDone] = useState(false);
   const [breakdownDone, setBreakdownDone] = useState(false);
-  const [stackingDone, setStackingDone] = useState(false);
+  const [commitDone, setCommitDone] = useState(false);
+  const [optionsDone, setOptionsDone] = useState(false);
+  const [vibeDone, setVibeDone] = useState(false);
+  const [askWhyDone, setAskWhyDone] = useState(false);
   const { toast } = useToast();
 
   const copyToClipboard = (text: string, label: string) => {
@@ -68,7 +74,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
     });
   };
 
-  const completedCount = [specificDone, reverseDone, errorsDone, breakdownDone, stackingDone].filter(Boolean).length;
+  const completedCount = [specificDone, reverseDone, errorsDone, breakdownDone, commitDone, optionsDone, vibeDone, askWhyDone].filter(Boolean).length;
 
   return (
     <div ref={containerRef} className="space-y-6">
@@ -91,19 +97,26 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
       <div className={ds.cardWithPadding}>
         <div className="flex items-center justify-between mb-4">
           <h3 className={ds.heading}>Mastery Progress</h3>
-          <span className={ds.muted}>{completedCount} of 5 complete</span>
+          <span className={ds.muted}>{completedCount} of 8 complete</span>
         </div>
         <div className="flex gap-1">
           {[
-            { done: specificDone, label: "Specific" },
-            { done: reverseDone, label: "Reverse" },
-            { done: errorsDone, label: "Errors" },
-            { done: breakdownDone, label: "Breakdown" },
-            { done: stackingDone, label: "Stacking" },
+            { done: specificDone, label: "Specific", step: "specific" as const },
+            { done: reverseDone, label: "Reverse", step: "reverse" as const },
+            { done: errorsDone, label: "Errors", step: "errors" as const },
+            { done: breakdownDone, label: "Breakdown", step: "breakdown" as const },
+            { done: commitDone, label: "Commit", step: "commit" as const },
+            { done: optionsDone, label: "Options", step: "options" as const },
+            { done: vibeDone, label: "Vibe", step: "vibe" as const },
+            { done: askWhyDone, label: "Ask Why", step: "askwhy" as const },
           ].map((item, i) => (
-            <div key={i} className="flex-1">
-              <div className={`h-2 rounded-full ${item.done ? "bg-green-500" : "bg-slate-200"}`} />
-              <p className={`text-xs mt-1 text-center ${item.done ? "text-green-600 font-medium" : "text-slate-500"}`}>
+            <div
+              key={i}
+              className="flex-1 cursor-pointer group"
+              onClick={() => setStep(item.step)}
+            >
+              <div className={`h-2 rounded-full transition-all ${item.done ? "bg-green-500 group-hover:bg-green-600" : "bg-slate-200 group-hover:bg-slate-300"}`} />
+              <p className={`text-xs mt-1 text-center transition-colors ${item.done ? "text-green-600 font-medium group-hover:text-green-700" : "text-slate-500 group-hover:text-slate-700"}`}>
                 {item.label}
               </p>
             </div>
@@ -283,6 +296,12 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 Claude can also see screenshots. If something looks wrong, take a screenshot and share it.
               </p>
 
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.body}>
+                  <strong>Last resort:</strong> If NOTHING else fixes it, click "Debug with Agent" in the Replit preview window. Replit will fix it in 99% of cases. (It costs agent fees, but usually not much.)
+                </p>
+              </div>
+
               <div
                 className={errorsDone ? ds.optionSelected : ds.optionDefault}
                 onClick={() => setErrorsDone(!errorsDone)}
@@ -338,8 +357,19 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 </div>
               </div>
 
-              <p className={ds.body}>
-                Wait for each one to finish before sending the next. Test it works. Then move on.
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.body + " font-medium mb-2"}>The workflow:</p>
+                <div className="space-y-1">
+                  <p className={ds.body}>1. Ask for ONE change</p>
+                  <p className={ds.body}>2. Test it - does it work?</p>
+                  <p className={ds.body}>3. <strong>YES?</strong> Move on to the next thing</p>
+                  <p className={ds.body}>4. <strong>NO?</strong> Tell Claude what's wrong, let it fix it</p>
+                  <p className={ds.body}>5. Repeat until it works, THEN move on</p>
+                </div>
+              </div>
+
+              <p className={ds.muted}>
+                This loop is how real builders work. One thing at a time. Test. Fix. Move on.
               </p>
 
               <div
@@ -358,54 +388,69 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
             <Button variant="outline" onClick={() => setStep("errors")} className="gap-2">
               <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-            <Button size="lg" onClick={() => setStep("stacking")} disabled={!breakdownDone} className="gap-2">
+            <Button size="lg" onClick={() => setStep("commit")} disabled={!breakdownDone} className="gap-2">
               Next <ArrowRight className="w-5 h-5" />
             </Button>
           </div>
         </>
       )}
 
-      {/* Step 5: Prompt Stacking */}
-      {step === "stacking" && (
+      {/* Step 5: Commit Before Big Changes */}
+      {step === "commit" && (
         <>
           <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white" />
+                <GitBranch className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className={ds.heading}>Rule #5: Prompt Stacking</h3>
-                <p className={ds.muted}>Speed hack for pros</p>
+                <h3 className={ds.heading}>Rule #5: Commit Before Big Changes</h3>
+                <p className={ds.muted}>Your safety net</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <p className={ds.body}>
-                Most people: send prompt, wait, watch, send next prompt. SLOW.
+                About to make a big change? Ask Claude to commit first.
               </p>
 
+              <div className="bg-slate-900 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-slate-400 text-sm">Say this</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyToClipboard("Commit what we have so far before we continue", "Prompt")}
+                    className="text-slate-300 hover:text-white gap-2"
+                  >
+                    <Copy className="w-4 h-4" /> Copy
+                  </Button>
+                </div>
+                <code className="text-green-400 font-mono text-sm">Commit what we have so far before we continue</code>
+              </div>
+
               <p className={ds.body}>
-                <strong>Pro move:</strong> While Claude works on one thing, queue up your next prompt.
+                This saves your progress. If something goes wrong, you can always go back.
               </p>
 
               <div className={ds.infoBoxHighlight}>
                 <p className={ds.body}>
-                  <strong>THE RULE:</strong> Only stack prompts that touch DIFFERENT files.
+                  <strong>When to commit:</strong>
                 </p>
-                <p className={ds.muted + " mt-2"}>
-                  Claude editing the header? Don't also ask it to change the header color. That's the same file = conflict.
-                </p>
-                <p className={ds.muted + " mt-2"}>
-                  Claude building the login page? You CAN ask it to set up the database schema. Different files = stack away.
-                </p>
+                <ul className="mt-2 space-y-1">
+                  <li className={ds.muted}>Before adding a new feature</li>
+                  <li className={ds.muted}>Before refactoring or restructuring code</li>
+                  <li className={ds.muted}>When something is working and you don't want to lose it</li>
+                  <li className={ds.muted}>At the end of a session</li>
+                </ul>
               </div>
 
               <div
-                className={stackingDone ? ds.optionSelected : ds.optionDefault}
-                onClick={() => setStackingDone(!stackingDone)}
+                className={commitDone ? ds.optionSelected : ds.optionDefault}
+                onClick={() => setCommitDone(!commitDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={stackingDone} onCheckedChange={() => setStackingDone(!stackingDone)} />
+                  <Checkbox checked={commitDone} onCheckedChange={() => setCommitDone(!commitDone)} />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -416,7 +461,210 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
             <Button variant="outline" onClick={() => setStep("breakdown")} className="gap-2">
               <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-            <Button size="lg" onClick={() => setStep("done")} disabled={!stackingDone} className="gap-2">
+            <Button size="lg" onClick={() => setStep("options")} disabled={!commitDone} className="gap-2">
+              Next <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Step 6: Ask for Options */}
+      {step === "options" && (
+        <>
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <HelpCircle className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className={ds.heading}>Rule #6: Ask for Options</h3>
+                <p className={ds.muted}>Don't guess - get advice</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <p className={ds.body}>
+                Not sure how to do something? Don't guess. Ask Claude for options.
+              </p>
+
+              <div className="bg-slate-900 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-slate-400 text-sm">Say this</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyToClipboard("Give me 3 options for how to approach this", "Prompt")}
+                    className="text-slate-300 hover:text-white gap-2"
+                  >
+                    <Copy className="w-4 h-4" /> Copy
+                  </Button>
+                </div>
+                <code className="text-green-400 font-mono text-sm">Give me 3 options for how to approach this</code>
+              </div>
+
+              <p className={ds.body}>
+                Claude will explain the pros and cons. Then YOU pick the one you want.
+              </p>
+
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.body}>
+                  <strong>Great for:</strong>
+                </p>
+                <ul className="mt-2 space-y-1">
+                  <li className={ds.muted}>"How should I structure this feature?"</li>
+                  <li className={ds.muted}>"What's the best way to handle this?"</li>
+                  <li className={ds.muted}>"I'm stuck - what are my options here?"</li>
+                </ul>
+              </div>
+
+              <div
+                className={optionsDone ? ds.optionSelected : ds.optionDefault}
+                onClick={() => setOptionsDone(!optionsDone)}
+              >
+                <div className="flex items-center gap-3">
+                  <Checkbox checked={optionsDone} onCheckedChange={() => setOptionsDone(!optionsDone)} />
+                  <span className={ds.body + " font-medium"}>Got it</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("commit")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button size="lg" onClick={() => setStep("vibe")} disabled={!optionsDone} className="gap-2">
+              Next <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Step 7: Vibe With It */}
+      {step === "vibe" && (
+        <>
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className={ds.heading}>Rule #7: Vibe With It</h3>
+                <p className={ds.muted}>Be creative, but watch scope creep</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <p className={ds.body}>
+                Don't be scared to be creative. Go with the flow. Have fun with it.
+              </p>
+
+              <p className={ds.body}>
+                See something cool you want to try? Go for it. Claude can help you explore ideas quickly.
+              </p>
+
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.body}>
+                  <strong>BUT...</strong> watch out for scope creep.
+                </p>
+                <p className={ds.muted + " mt-2"}>
+                  It's easy to keep adding "just one more thing" until you're building a monster. Before you know it, your simple app has 47 features and you're months away from shipping.
+                </p>
+              </div>
+
+              <p className={ds.body}>
+                <strong>The balance:</strong> Be creative within your MVP. Save the extras for version 2.
+              </p>
+
+              <div
+                className={vibeDone ? ds.optionSelected : ds.optionDefault}
+                onClick={() => setVibeDone(!vibeDone)}
+              >
+                <div className="flex items-center gap-3">
+                  <Checkbox checked={vibeDone} onCheckedChange={() => setVibeDone(!vibeDone)} />
+                  <span className={ds.body + " font-medium"}>Got it</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("options")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button size="lg" onClick={() => setStep("askwhy")} disabled={!vibeDone} className="gap-2">
+              Next <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Step 8: Ask Why */}
+      {step === "askwhy" && (
+        <>
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <MessageCircleQuestion className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className={ds.heading}>Rule #8: Ask Why</h3>
+                <p className={ds.muted}>Don't just stare at it - ask!</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <p className={ds.body}>
+                Not seeing what you expect in the preview? Don't just sit there confused.
+              </p>
+
+              <div className="bg-slate-900 rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-slate-400 text-sm">Say this</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => copyToClipboard("Why isn't this showing what I expected?", "Prompt")}
+                    className="text-slate-300 hover:text-white gap-2"
+                  >
+                    <Copy className="w-4 h-4" /> Copy
+                  </Button>
+                </div>
+                <code className="text-green-400 font-mono text-sm">Why isn't this showing what I expected?</code>
+              </div>
+
+              <p className={ds.body}>
+                Claude will investigate and explain what's happening. Often it'll spot the issue immediately.
+              </p>
+
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.body}>
+                  <strong>Also try:</strong>
+                </p>
+                <ul className="mt-2 space-y-1">
+                  <li className={ds.muted}>"Why is [X] happening instead of [Y]?"</li>
+                  <li className={ds.muted}>"The button isn't working - why?"</li>
+                  <li className={ds.muted}>"This looks different from what I asked for - what's going on?"</li>
+                </ul>
+              </div>
+
+              <div
+                className={askWhyDone ? ds.optionSelected : ds.optionDefault}
+                onClick={() => setAskWhyDone(!askWhyDone)}
+              >
+                <div className="flex items-center gap-3">
+                  <Checkbox checked={askWhyDone} onCheckedChange={() => setAskWhyDone(!askWhyDone)} />
+                  <span className={ds.body + " font-medium"}>Got it</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("vibe")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button size="lg" onClick={() => setStep("done")} disabled={!askWhyDone} className="gap-2">
               Finish <ArrowRight className="w-5 h-5" />
             </Button>
           </div>
@@ -443,9 +691,29 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
             <div className="space-y-2">
               <p className={ds.body}><strong>1. Be specific</strong> - what, where, what should happen</p>
               <p className={ds.body}><strong>2. Say "reverse"</strong> - to undo any change</p>
-              <p className={ds.body}><strong>3. Report errors</strong> - copy error, paste it, explain what you expected</p>
+              <p className={ds.body}><strong>3. Report errors/bugs</strong> - copy it, paste it, explain what you expected</p>
               <p className={ds.body}><strong>4. Break it down</strong> - one task at a time</p>
-              <p className={ds.body}><strong>5. Stack smart</strong> - different files only</p>
+              <p className={ds.body}><strong>5. Commit first</strong> - save your progress before big changes</p>
+              <p className={ds.body}><strong>6. Ask for options</strong> - get advice, then you choose</p>
+              <p className={ds.body}><strong>7. Vibe with it</strong> - be creative, but watch scope creep</p>
+              <p className={ds.body}><strong>8. Ask why</strong> - not seeing what you expect? Ask!</p>
+            </div>
+          </div>
+
+          <div className={ds.cardWithPadding}>
+            <h4 className={ds.label + " mb-3"}>🎯 Try It Now (30 seconds)</h4>
+            <div className="space-y-3">
+              <p className={ds.body}>
+                Before you finish, try this quick exercise to practice Rules 1 & 2:
+              </p>
+              <div className="space-y-2 pl-4 border-l-2 border-primary">
+                <p className={ds.body}><strong>1.</strong> Ask Claude to change a button color in your app</p>
+                <p className={ds.body}><strong>2.</strong> See the change in your preview</p>
+                <p className={ds.body}><strong>3.</strong> Say "reverse that" to undo it</p>
+              </div>
+              <p className={ds.muted}>
+                That's it! You just practiced giving a specific instruction AND using the undo command. You're ready.
+              </p>
             </div>
           </div>
 

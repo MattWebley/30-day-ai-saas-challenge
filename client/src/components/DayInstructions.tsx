@@ -71,9 +71,12 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Start EVERY session with the prompts in the Claude Code Guide",
     "Learn Rule #1: Be specific - what, where, what should happen",
     "Learn Rule #2: Say 'reverse' to undo any change",
-    "Learn Rule #3: Report errors - copy, paste, explain",
+    "Learn Rule #3: Report errors/bugs - copy, paste, explain",
     "Learn Rule #4: Break down big tasks - one at a time",
-    "Learn Rule #5: Prompt stacking - different files only"
+    "Learn Rule #5: Commit before big changes - your safety net",
+    "Learn Rule #6: Ask for options - get advice, then you choose",
+    "Learn Rule #7: Vibe with it - be creative, but watch scope creep",
+    "Learn Rule #8: Ask why - not seeing what you expect? Ask!"
   ],
   10: [
     "Learn the Build-Test-Fix workflow",
@@ -83,11 +86,11 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Verify the fix works"
   ],
   11: [
-    "Pick your primary brand color",
-    "Choose your font",
-    "Copy the Claude Code prompt",
-    "Apply branding to your app",
-    "Verify it looks consistent"
+    "Decide: Are you happy with your current design?",
+    "If yes, skip this day and move on",
+    "If no, pick your font style, colors, and design vibe",
+    "Copy the generated prompt into Claude Code",
+    "Use the Build-Test-Fix loop until it looks right"
   ],
   12: [
     "Create OpenAI account & add credits",
