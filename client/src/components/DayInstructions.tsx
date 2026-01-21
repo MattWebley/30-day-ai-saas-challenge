@@ -86,11 +86,10 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Verify the fix works"
   ],
   11: [
-    "Decide: Are you happy with your current design?",
-    "If yes, skip this day and move on",
-    "If no, pick your font style, colors, and design vibe",
+    "Pick a design style OR paste a URL for inspiration",
+    "Choose your accent color",
     "Copy the generated prompt into Claude Code",
-    "Use the Build-Test-Fix loop until it looks right"
+    "Iterate until it looks right ('softer shadows', 'more padding', etc.)"
   ],
   12: [
     "Create OpenAI account & add credits",

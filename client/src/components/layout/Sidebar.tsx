@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   CheckCircle2,
   Lock,
+  Unlock,
   Trophy,
   LayoutDashboard,
   Settings,
@@ -437,14 +438,16 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
             {completedDays.has(8) ? (
               <Link href="/claude-code" onClick={handleNavClick}>
                 <span className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                  "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
                   location === "/claude-code"
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
                     : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                 )}>
-                  <BookOpen className="w-4 h-4" />
-                  Claude Code Guide
-                  <span className="text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-semibold">KEY</span>
+                  <div className="flex items-center gap-3">
+                    <BookOpen className="w-4 h-4" />
+                    Claude Code Guide
+                  </div>
+                  <Unlock className="w-4 h-4 text-green-600" />
                 </span>
               </Link>
             ) : testMode ? (
@@ -453,7 +456,6 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                   <div className="flex items-center gap-3">
                     <BookOpen className="w-4 h-4" />
                     Claude Code Guide
-                    <span className="text-[10px] bg-amber-500/50 text-white px-1.5 py-0.5 rounded font-semibold">KEY</span>
                   </div>
                   <div className="flex items-center gap-1 text-xs">
                     <Lock className="w-3 h-3" />
@@ -466,7 +468,6 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 <div className="flex items-center gap-3">
                   <BookOpen className="w-4 h-4" />
                   Claude Code Guide
-                  <span className="text-[10px] bg-amber-500/50 text-white px-1.5 py-0.5 rounded font-semibold">KEY</span>
                 </div>
                 <div className="flex items-center gap-1 text-xs">
                   <Lock className="w-3 h-3" />

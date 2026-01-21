@@ -109,6 +109,10 @@ In the next 21 days, you're going to go from idea to launch-ready product. No fl
 
 This isn't a course you watch. It's a challenge you DO.
 
+WHY AN APP, NOT VIDEOS?
+
+The AI space moves FAST. Tools change. Best practices evolve. What works today might be outdated next month. By building this as an interactive app instead of pre-recorded videos, I can update the challenge in real-time whenever something major changes. You'll always have the most current strategies and tools - not advice from 6 months ago.
+
 THE RULES FOR SUCCESS:
 
 1. SHOW UP DAILY - Some days are quick, some take longer. What matters is you show up and do the work.
@@ -631,31 +635,33 @@ Find ONE bug in your app. Describe it clearly. Fix it with Claude Code. That's i
       tip: "Happy with what you've got? SKIP this day. Design changes can always happen later - features matter more right now.",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
-Look at your app right now. How does it LOOK?
+Look at your app right now. How does it FEEL?
 
-If you're happy with what Replit gave you - SKIP THIS DAY. Seriously. You can always come back to design later. Features matter more than fonts at this stage.
+If you're happy with Replit's default design - SKIP THIS DAY. Come back later. Features matter more than aesthetics at this stage.
 
-But if it looks generic or doesn't match your vibe...
+But if it looks generic...
 
-TODAY: YOU'LL CLICK THROUGH OPTIONS AND SEE THE CHANGES IN REAL TIME.
+TODAY: TRANSFORM YOUR APP'S ENTIRE LOOK WITH ONE PROMPT.
 
-Brand = how your app FEELS.
+TWO OPTIONS:
 
-It's more than colors. It's the fonts, the spacing, the overall vibe. When someone lands on your app, they should instantly get a FEELING.
+OPTION 1: Pick a famous design style that everyone knows:
+- SPOTIFY: Dark & energetic
+- NETFLIX: Cinematic & bold
+- AIRBNB: Warm & inviting
+- DUOLINGO: Fun & playful
+- APPLE: Premium & elegant
+- UBER: Clean & minimal
+- SLACK: Professional & friendly
+- CALM: Soft & peaceful
 
-THE THREE CHOICES:
+OPTION 2: Paste a URL of ANY website you love. We'll analyze its design and generate a prompt to recreate something similar. This is approximate inspiration, not an exact copy.
 
-1. FONT STYLE - Does your text feel modern? Friendly? Professional? You'll see examples and pick what fits.
+Either way, you pick your accent color, and you get ONE prompt that transforms EVERYTHING - spacing, shadows, animations, the whole vibe.
 
-2. COLOR SCHEME - Blue for trust. Green for growth. Purple for creativity. You'll pick from real color palettes.
+HEADS UP: Design changes need iteration. You'll say "softer shadows" or "more padding" or "that's too dark". This is normal. Designers iterate dozens of times.
 
-3. DESIGN VIBE - Minimal? Bold? Soft and friendly? Dark mode? You'll choose the overall style direction.
-
-Then you'll get ONE PROMPT that changes everything at once.
-
-HEADS UP: Design changes often need a few Build-Test-Fix loops. Claude will make changes, you'll test them, you'll say "the buttons are too big" or "that's not quite right", and it'll adjust. This is NORMAL. Don't expect perfection on the first try.
-
-Remember: CONSISTENCY beats creativity. A simple, consistent design looks more professional than a fancy inconsistent one.`,
+Remember: You're not stuck with anything. "Reverse that" brings it all back.`,
       outcome: "A defined color palette and typography applied to your app",
       completionMessage: "Your app now has a consistent look and feel! This is what separates amateur projects from professional products. Tomorrow: adding the AI brain.",
       xpReward: 100,

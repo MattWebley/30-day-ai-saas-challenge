@@ -228,6 +228,14 @@ Day 1 starts now. Follow along if you want to see how this goes.
         </div>
       </div>
 
+      {/* Why An App */}
+      <div className={ds.cardWithPadding}>
+        <h2 className={`${ds.heading} mb-2`}>Why An App, Not Videos?</h2>
+        <p className={ds.body}>
+          The AI space moves <strong>fast</strong>. Tools change. Best practices evolve. What works today might be outdated next month. By building this as an interactive app instead of pre-recorded videos, I can update the challenge in real-time whenever something major changes. You'll always have the most current strategies and tools - not advice from 6 months ago.
+        </p>
+      </div>
+
       {/* Success Rules */}
       <div className={ds.section}>
         <div>

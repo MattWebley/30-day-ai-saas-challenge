@@ -556,6 +556,77 @@ Format: { "ideas": [...] }`;
     }
   });
 
+  // Analyze website design from URL
+  app.post("/api/analyze-design", isAuthenticated, async (req: any, res) => {
+    try {
+      const { url } = req.body;
+
+      if (!url || typeof url !== 'string') {
+        return res.status(400).json({ message: "URL is required" });
+      }
+
+      // Validate URL format
+      let cleanUrl = url.trim();
+      if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+        cleanUrl = 'https://' + cleanUrl;
+      }
+
+      // Use thum.io for free screenshots (no API key needed)
+      // thum.io expects the URL directly appended, not encoded
+      const screenshotUrl = `https://image.thum.io/get/width/1200/crop/800/${cleanUrl}`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Analyze this website screenshot and describe its design style. I want to recreate a SIMILAR vibe (not exact copy) in my own app.
+
+Describe:
+1. COLOR PALETTE: What are the main colors? (give hex codes if you can guess them)
+2. OVERALL VIBE: Is it minimal, bold, playful, corporate, dark, light, etc?
+3. SPACING: Lots of whitespace or dense? Generous padding or compact?
+4. TYPOGRAPHY FEEL: Modern, classic, friendly, technical, elegant?
+5. SHADOWS & BORDERS: Soft shadows, hard shadows, none? Visible borders or borderless?
+6. CORNERS: Sharp, slightly rounded, very rounded?
+7. SPECIAL EFFECTS: Any gradients, glass effects, animations visible?
+
+Then write a prompt I can give to Claude Code to recreate this approximate style. Start the prompt with "Transform my app's design:" and include specific, actionable instructions.
+
+Be concise but specific. Focus on what makes this design FEEL the way it does.`
+              },
+              {
+                type: "image_url",
+                image_url: {
+                  url: screenshotUrl
+                }
+              }
+            ]
+          }
+        ],
+        max_tokens: 1000,
+      });
+
+      const analysis = response.choices[0].message.content || "";
+
+      // Extract the Claude Code prompt (everything after "Transform my app's design:")
+      const promptMatch = analysis.match(/Transform my app's design:[\s\S]*/i);
+      const generatedPrompt = promptMatch ? promptMatch[0] : analysis;
+
+      res.json({
+        analysis,
+        generatedPrompt,
+        screenshotUrl
+      });
+    } catch (error: any) {
+      console.error("Error analyzing design:", error);
+      res.status(500).json({ message: error.message || "Failed to analyze design. The website might be blocking screenshots." });
+    }
+  });
+
   // Domain availability check endpoint
   app.post("/api/check-domain", isAuthenticated, async (req: any, res) => {
     try {

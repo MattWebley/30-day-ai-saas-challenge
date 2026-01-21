@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-21 (Day 11 fonts & sidebar badge)
+- **Last Session**: 2026-01-21 (Day 11 design personalities & URL inspiration)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -539,3 +539,40 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Day11BrandDesign.tsx = alternate version (not currently wired up)
   - Continue testing Days 12+ onwards
   - 1 unpushed commit from earlier session still needs pushing
+
+### 2026-01-21 (Session 3) - Day 11 Complete Overhaul with Design Personalities & URL Inspiration
+- **Tasks Completed:**
+  - **Sidebar:** Replaced "KEY" badge with Lock/Unlock icons for Claude Code Guide (green unlock when Day 8 completed, lock icon when locked)
+  - **Day 11 Brand - Major Rebuild with Two Paths:**
+    - Path 1: Pick from 8 consumer-focused design personalities (Spotify, Netflix, Airbnb, Duolingo, Apple, Uber, Slack, Calm)
+    - Path 2: "Get Inspired by a URL" - paste any website, AI analyzes its design style
+    - Each personality has rich, evocative prompts describing the full design vibe (spacing, shadows, typography, animations)
+    - URL analysis uses free thum.io screenshot service + GPT-4o Vision
+    - Both paths end with accent color picker, then generates comprehensive Claude Code prompt
+  - **New API Endpoint:** `/api/analyze-design` - takes URL, grabs screenshot, uses GPT-4o Vision to analyze design style
+  - Day 0: Added "Why An App, Not Videos?" section explaining real-time updates benefit
+- **Design Personalities (consumer-focused, well-known brands):**
+  - Spotify (Dark & Energetic)
+  - Netflix (Cinematic & Bold)
+  - Airbnb (Warm & Inviting)
+  - Duolingo (Fun & Playful)
+  - Apple (Premium & Elegant)
+  - Uber (Clean & Minimal)
+  - Slack (Professional & Friendly)
+  - Calm (Soft & Peaceful)
+- **Fixes Applied:**
+  - Fixed URL encoding issue for thum.io (was double-encoding, now passes URL directly)
+  - Added error handling for non-JSON responses in URL analyzer
+  - Framed URL inspiration as "approximate" not "steal" - sets proper expectations
+- **Files Modified:**
+  - `client/src/components/Day11Brand.tsx` - Complete rebuild with personality picker + URL analyzer
+  - `client/src/components/layout/Sidebar.tsx` - Lock/Unlock icons instead of KEY badge
+  - `client/src/components/DayInstructions.tsx` - Updated Day 11 instructions
+  - `client/src/components/Day0StartHere.tsx` - Added "Why An App" section
+  - `server/routes.ts` - New `/api/analyze-design` endpoint with GPT-4o Vision
+  - `server/seed.ts` - Updated Day 11 lesson with new personalities list
+- **Notes for Next Session:**
+  - Re-seed database: `npx tsx server/seed.ts`
+  - Test URL analyzer with various websites (restart server first)
+  - Test all 8 design personality options
+  - Continue testing Days 12+ onwards
