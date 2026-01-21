@@ -66,6 +66,44 @@ const FONT_STYLES = [
     fontFamily: "monospace",
     description: "Technical, precise, dev tools",
   },
+  {
+    id: "humanist-balanced",
+    name: "Humanist & Balanced",
+    preview: "Lato / Open Sans",
+    fontFamily: "system-ui, sans-serif",
+    description: "Neutral, versatile, works everywhere",
+  },
+  {
+    id: "luxury-editorial",
+    name: "Luxury & Editorial",
+    preview: "Didot / Bodoni",
+    fontFamily: "'Times New Roman', serif",
+    fontWeight: "300",
+    description: "High-end, fashion, editorial feel",
+  },
+  {
+    id: "slab-bold",
+    name: "Slab & Statement",
+    preview: "Roboto Slab / Rockwell",
+    fontFamily: "Georgia, serif",
+    fontWeight: "700",
+    description: "Bold headlines, news, authority",
+  },
+  {
+    id: "playful-fun",
+    name: "Playful & Fun",
+    preview: "Fredoka / Baloo",
+    fontFamily: "system-ui, sans-serif",
+    description: "Kids, games, casual consumer apps",
+  },
+  {
+    id: "condensed-dense",
+    name: "Condensed & Dense",
+    preview: "Barlow / Oswald",
+    fontFamily: "system-ui, sans-serif",
+    letterSpacing: "-0.02em",
+    description: "Dashboards, data-heavy interfaces",
+  },
 ];
 
 const COLOR_SCHEMES = [
@@ -192,30 +230,30 @@ export function Day11BrandDesign({ projectName, onComplete }: Day11BrandDesignPr
   const generatePrompt = () => {
     if (!selectedFontData || !selectedColorData || !selectedVibeData) return "";
 
-    return `I want to completely redesign the look and feel of my app. Here's my new design direction:
+    return `I want to update the visual design of my app. Here's the direction:
+
+**Brand Feel:** ${selectedVibeData.name} - ${selectedVibeData.description}
+
+**Colors:**
+- Primary: ${selectedColorData.primary} (use for buttons, links, key actions)
+- Secondary: ${selectedColorData.secondary} (use for backgrounds, cards)
+- Accent: ${selectedColorData.accent} (use for hover states, highlights)
+- The vibe is "${selectedColorData.name}" - ${selectedColorData.description}
 
 **Typography:**
-- Style: ${selectedFontData.name}
+- Font style: ${selectedFontData.name} (${selectedFontData.preview})
 - Feel: ${selectedFontData.description}
-- Use a clean, ${selectedFont?.includes('serif') ? 'serif' : 'sans-serif'} font throughout
+- If the font isn't available, find a similar Google Font or system font that matches this style
 
-**Color Scheme:**
-- Primary color: ${selectedColorData.primary} (${selectedColorData.name})
-- Secondary/background: ${selectedColorData.secondary}
-- Accent color: ${selectedColorData.accent}
-- Feel: ${selectedColorData.description}
+**What to do:**
+1. First, check if there's a theme file, CSS variables, or design system file - update colors there first
+2. Update the primary button styles to use the primary color
+3. Update any accent colors, links, and interactive elements
+4. Keep the existing spacing and layout - just update colors and fonts
+5. Make sure hover/focus states work well with the new colors (slightly darker or lighter)
+6. Test that text remains readable (good contrast)
 
-**Overall Vibe:**
-- Style: ${selectedVibeData.name}
-- ${selectedVibeData.description}
-
-Please update the entire app to match this design direction. This includes:
-1. Update the color variables/theme
-2. Adjust typography styles
-3. Update component styling (buttons, cards, inputs, etc.)
-4. Make sure the design is consistent across all pages
-
-Start with the global styles/theme, then work through each component.`;
+Don't change the layout or functionality - just the visual styling. Work through it systematically, starting with global styles.`;
   };
 
   const copyPrompt = () => {
@@ -333,7 +371,8 @@ Start with the global styles/theme, then work through each component.`;
                         className="text-xl mb-1"
                         style={{
                           fontFamily: font.fontFamily,
-                          fontWeight: font.fontWeight || "600"
+                          fontWeight: font.fontWeight || "600",
+                          letterSpacing: font.letterSpacing,
                         }}
                       >
                         {font.name}
@@ -348,7 +387,8 @@ Start with the global styles/theme, then work through each component.`;
                     className="mt-3 p-3 bg-slate-50 rounded text-lg"
                     style={{
                       fontFamily: font.fontFamily,
-                      fontWeight: font.fontWeight || "normal"
+                      fontWeight: font.fontWeight || "normal",
+                      letterSpacing: font.letterSpacing,
                     }}
                   >
                     The quick brown fox jumps over the lazy dog

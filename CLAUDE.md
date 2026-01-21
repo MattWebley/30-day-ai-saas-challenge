@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-21 (Day 9, 10, 11 overhaul)
+- **Last Session**: 2026-01-21 (Day 11 fonts & sidebar badge)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -520,3 +520,22 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test Day 11 design picker (skip option and full flow)
   - Database was re-seeded - lessons are up to date
   - Continue testing Days 12+ onwards
+
+### 2026-01-21 (Session 2) - Day 11 Enhancements & Sidebar Badge
+- **Tasks Completed:**
+  - Sidebar: Added amber "KEY" badge next to Claude Code Guide (stands out from other menu items)
+  - Day 11 Brand: Expanded font options from 4 to 10 (added Lato, Open Sans, Montserrat, Playfair Display, Nunito, Source Sans Pro)
+  - Day 11 Brand: Rewrote Claude Code prompt to be more effective - explains what each color is FOR, gives Claude flexibility, references existing theme files
+  - Day 11 Brand: Added reassurance note about reverting changes ("Just tell Claude Code 'reverse that'")
+  - Day 11 BrandDesign: Also added 5 more fonts and improved prompt (backup component, not currently used)
+- **Fixes Applied:**
+  - Fixed editing wrong file initially - Day11Brand.tsx is the actual Day 11 component, not Day11BrandDesign.tsx
+- **Files Modified:**
+  - `client/src/components/layout/Sidebar.tsx` - KEY badge on Claude Code Guide
+  - `client/src/components/Day11Brand.tsx` - 10 fonts, better prompt, revert tip
+  - `client/src/components/Day11BrandDesign.tsx` - 10 fonts, better prompt (unused)
+- **Notes for Next Session:**
+  - Day11Brand.tsx = actual Day 11 component
+  - Day11BrandDesign.tsx = alternate version (not currently wired up)
+  - Continue testing Days 12+ onwards
+  - 1 unpushed commit from earlier session still needs pushing

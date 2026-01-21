@@ -444,6 +444,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 )}>
                   <BookOpen className="w-4 h-4" />
                   Claude Code Guide
+                  <span className="text-[10px] bg-amber-500 text-white px-1.5 py-0.5 rounded font-semibold">KEY</span>
                 </span>
               </Link>
             ) : testMode ? (
@@ -452,6 +453,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                   <div className="flex items-center gap-3">
                     <BookOpen className="w-4 h-4" />
                     Claude Code Guide
+                    <span className="text-[10px] bg-amber-500/50 text-white px-1.5 py-0.5 rounded font-semibold">KEY</span>
                   </div>
                   <div className="flex items-center gap-1 text-xs">
                     <Lock className="w-3 h-3" />
@@ -464,6 +466,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 <div className="flex items-center gap-3">
                   <BookOpen className="w-4 h-4" />
                   Claude Code Guide
+                  <span className="text-[10px] bg-amber-500/50 text-white px-1.5 py-0.5 rounded font-semibold">KEY</span>
                 </div>
                 <div className="flex items-center gap-1 text-xs">
                   <Lock className="w-3 h-3" />

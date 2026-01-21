@@ -31,6 +31,12 @@ const FONT_OPTIONS = [
   { id: "poppins", name: "Poppins", style: "Friendly & Approachable", sample: "font-sans" },
   { id: "roboto", name: "Roboto", style: "Neutral & Readable", sample: "font-sans" },
   { id: "space-grotesk", name: "Space Grotesk", style: "Tech & Contemporary", sample: "font-mono" },
+  { id: "lato", name: "Lato", style: "Humanist & Balanced", sample: "font-sans" },
+  { id: "open-sans", name: "Open Sans", style: "Neutral & Versatile", sample: "font-sans" },
+  { id: "montserrat", name: "Montserrat", style: "Bold & Geometric", sample: "font-sans" },
+  { id: "playfair", name: "Playfair Display", style: "Elegant & Editorial", sample: "font-serif" },
+  { id: "nunito", name: "Nunito", style: "Soft & Rounded", sample: "font-sans" },
+  { id: "source-sans", name: "Source Sans Pro", style: "Technical & Clear", sample: "font-sans" },
 ];
 
 export function Day11Brand({ appName, onComplete }: Day11BrandProps) {
@@ -45,7 +51,23 @@ export function Day11Brand({ appName, onComplete }: Day11BrandProps) {
   const currentFont = FONT_OPTIONS.find(f => f.id === selectedFont);
   const finalColor = customColor || currentColor?.hex || "#3B82F6";
 
-  const claudeCodePrompt = `Use ${finalColor} as the primary color throughout the app. All buttons should be ${finalColor}. Use ${currentFont?.name || "Inter"} font for all text. Keep spacing consistent - 16px padding on cards, 8px gaps between elements.`;
+  const claudeCodePrompt = `Update my app's visual design:
+
+**Primary Color:** ${finalColor}
+- Use for buttons, links, and key interactive elements
+- Create hover states that are slightly darker
+- Make sure text on colored buttons has good contrast
+
+**Font:** ${currentFont?.name || "Inter"}
+- Add from Google Fonts if not already installed
+- Use for all headings and body text
+
+**Steps:**
+1. First check for a theme file or CSS variables - update colors there
+2. Update button components to use the primary color
+3. Update links and accent colors
+4. Keep existing spacing and layout - just update colors and fonts
+5. Test that everything remains readable`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(claudeCodePrompt);
@@ -235,6 +257,9 @@ export function Day11Brand({ appName, onComplete }: Day11BrandProps) {
                 I've applied my brand colors and font to my app
               </label>
             </div>
+            <p className="text-slate-600 text-sm mt-3">
+              Don't like how it looks? Just tell Claude Code "reverse that" or "undo the last change" and it'll revert back instantly.
+            </p>
           </Card>
 
           <div className="flex gap-3">
