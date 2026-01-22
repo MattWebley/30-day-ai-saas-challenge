@@ -45,6 +45,8 @@ import { Day11BrandDesign } from "@/components/Day11BrandDesign";
 import { Day12LetUsersIn } from "@/components/Day12LetUsersIn";
 import { Day13ReachYourUsers } from "@/components/Day13ReachYourUsers";
 import { Day13ExternalAPIs } from "@/components/Day13ExternalAPIs";
+import { Day15Payments } from "@/components/Day15Payments";
+import { Day17AutonomousTesting } from "@/components/Day17AutonomousTesting";
 import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
 import { Day19MobileReady } from "@/components/Day19MobileReady";
 import { Day19TheSalesMachine } from "@/components/Day19TheSalesMachine";
@@ -1218,13 +1220,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 15: Email Setup */}
+                {/* Day 15: Payments Setup */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Set Up Email</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Add Payments</h2>
                   </div>
-                  <Day13ReachYourUsers
+                  <Day15Payments
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     onComplete={handleComplete}
                   />
@@ -1310,13 +1312,13 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 17: Admin Dashboard */}
+                {/* Day 17: Autonomous Testing */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Build Your Dashboard</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Test Your Core Feature</h2>
                   </div>
-                  <Day18AdminDashboard
+                  <Day17AutonomousTesting
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     onComplete={handleComplete}
                   />

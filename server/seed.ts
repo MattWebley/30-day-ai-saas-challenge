@@ -738,8 +738,8 @@ There are other AI APIs out there - Claude's API, Google's Gemini, and more. The
     },
     {
       day: 13,
-      title: "Add Superpowers",
-      description: "Connect external APIs to give your app capabilities beyond what you could build yourself - payments, data, integrations.",
+      title: "Email & APIs",
+      description: "Set up Resend for email and learn how external APIs give your app superpowers.",
       phase: "Build",
       videoUrl: null,
       aiTaskType: "setup",
@@ -785,8 +785,8 @@ Add ONE at a time. Get it working. Test it. Then consider the next one. Every ex
     },
     {
       day: 14,
-      title: "Add Login",
-      description: "Make sure users can sign up, log in, and see only their own data. Authentication is what makes your app multi-user.",
+      title: "Users & Admin",
+      description: "Add user authentication AND build your admin dashboard. Know who's using your app and what they're doing.",
       phase: "Build",
       videoUrl: null,
       aiTaskType: "setup",
@@ -800,121 +800,129 @@ Add ONE at a time. Get it working. Test it. Then consider the next one. Every ex
       tip: "Replit probably already added auth when you first built your app. Check before adding it again. Ask Replit: 'Does my app have user authentication?'",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
-Authentication = "Who are you?"
+Today you're doing TWO things: authentication (who are your users?) and admin dashboard (what are they doing?).
 
-It's how your app knows which user is which, so everyone sees their OWN stuff, not everyone else's.
+PART 1: AUTHENTICATION
 
-GOOD NEWS:
+Authentication = "Who are you?" It's how your app knows which user is which.
 
-Replit probably already has it. When you built your app, Replit Agent likely added authentication automatically. Before doing ANYTHING, check:
+GOOD NEWS - Replit probably already has it. When you built your app, Replit Agent likely added authentication automatically. Before doing ANYTHING, check:
 
 Ask Replit Agent: "Does my app have user authentication? Can users sign up, log in, and see only their own data?"
 
-If YES - you're DONE. Move to the next day. Seriously. Don't overcomplicate this.
+If YES - skip to Part 2. Don't overcomplicate this.
 
 If NO - add it with ONE prompt:
 
-"Add user authentication. I need:
-- Login/signup button in the header
-- Show the user's name when logged in
-- Logout button
-- Each user should only see their own data"
+"Add user authentication. I need: Login/signup button in the header, show the user's name when logged in, logout button, each user should only see their own data."
 
-That's it. Replit handles all the hard stuff - OAuth, sessions, tokens, security. You just describe what you want.
+ONE THING TO KNOW:
 
-WHAT AUTH GIVES YOU:
+Replit's auth might show Replit branding on the login screen. For now, stick with it - it's easy and it WORKS. Don't complicate things.
 
-1. USERS - People can create accounts
-2. PRIVACY - Each person sees only their stuff
-3. PERSISTENCE - Their data is saved and waiting when they come back
-4. MONETIZATION - You know who to charge (later)
+BUT if it becomes a problem later (like you want fully custom branding), you can switch to Supabase, Firebase, or other auth providers. It's a bit fiddly but doable. Cross that bridge IF you get there.
 
-WITHOUT AUTH:
+PART 2: ADMIN DASHBOARD
 
-Everyone sees the same data. There's no "your account." You can't have paying customers because you don't know who anyone is.
+Now you have users. But how many? Are they coming back? Are they actually USING the thing?
 
-THE TEST:
+Don't guess. KNOW.
 
-1. Sign up with a test email
-2. Add some data
-3. Log out
-4. Sign up with a DIFFERENT test email
-5. Can you see the first account's data? You shouldn't.
+THE 4 NUMBERS YOU NEED:
 
-If each account is isolated, auth is working. Done.`,
-      outcome: "Users can sign up, log in, and each user sees only their own data",
-      completionMessage: "Users can now log in and have their own accounts. Your app is no longer a single-player game. Tomorrow: reaching your users with email.",
+1. Total users - how many have ever signed up
+2. New this week - are people still finding you?
+3. Active this week - are they coming back?
+4. Total actions - are they doing the thing?
+
+That's it. Four numbers. Build a simple /admin page that shows you these.
+
+WANT MORE? Once you have the basics, you can add fun stuff like:
+- Revenue tracking (today/week/month)
+- Power users (who's using it the most?)
+- User streaks (who's coming back daily?)
+- Feature popularity (what do people use most?)
+- Conversion funnel (signup → action → return)
+- Where users are from (countries/timezones)
+
+Start simple. Add the fancy stuff when you're curious.
+
+WHY THIS MATTERS:
+
+Without data, you're flying blind. With data, you KNOW what to fix:
+- "50 signups but 5 came back" = onboarding problem
+- "Signing up but not using feature" = feature problem
+- "Usage growing every week" = keep doing what you're doing
+
+Data tells you what to fix. Check your dashboard every day.`,
+      outcome: "Users can log in AND you have an admin dashboard showing key metrics",
+      completionMessage: "Users can log in and you can SEE what's happening in your app. Data beats guessing. Tomorrow - taking payments with Stripe.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 15,
-      title: "Email Power",
-      description: "Set up email so you can communicate with users - welcome emails, updates, and notifications.",
+      title: "Take Payments",
+      description: "Add Stripe payments so your app can actually make money.",
       phase: "Build",
       videoUrl: null,
       aiTaskType: "setup",
-      aiTaskTitle: "Email Setup",
-      aiTaskDescription: "Connect Resend for transactional emails and set up your welcome email.",
+      aiTaskTitle: "Payments Setup",
+      aiTaskDescription: "Connect Stripe for payments and build your first checkout flow.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's your first email priority?",
-      microDecisionOptions: JSON.stringify(["Welcome email", "Password reset", "Activity notifications", "Weekly digest"]),
-      reflectionQuestion: "What will your welcome email say to make new users feel excited?",
-      tip: "Start with ONE email - the welcome email. You can add more later. Resend is free for 3,000 emails/month which is plenty to start.",
+      microDecisionQuestion: "What will you charge for?",
+      microDecisionOptions: JSON.stringify(["Monthly subscription", "One-time purchase", "Credits/tokens", "Premium features"]),
+      reflectionQuestion: "What's the first thing you want to charge money for in your app?",
+      tip: "Use TEST MODE while building. Stripe's test card is 4242 4242 4242 4242. You can switch to live mode when you're ready to launch.",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
-Without email, you have NO way to reach users after they leave your app.
+This is a BIG day.
 
-They sign up. They leave. They forget about you. Game over.
+Once you add payments, you don't have a "project" anymore. You have a BUSINESS.
 
-Email is your direct line back to them. It's how you:
-- Welcome new signups
-- Remind inactive users
-- Announce new features
-- Reset passwords
-- Send notifications
+Stripe is what everyone uses. It's free to set up, and you only pay when customers pay you (about 2.9% + 30p per transaction). That's it.
 
-TODAY'S GOAL: Get ONE email working - the welcome email.
+TODAY'S GOAL: Make a test payment and see it in your Stripe dashboard.
 
-THE SETUP (10 minutes):
+THE PSYCHOLOGY OF CHARGING
 
-1. SIGN UP FOR RESEND
-Go to resend.com and create an account. It's free for 3,000 emails/month.
+Here's the truth about pricing that most people get wrong...
 
-2. GET YOUR API KEY
-In the Resend dashboard, create an API key. Copy it immediately.
+Charging SOMETHING (even $5) is infinitely better than free. Why?
+- Free users don't value what they get
+- Free users complain the most
+- Free users rarely convert later
+- Paying users are invested and give real feedback
 
-3. ADD TO REPLIT SECRETS
-In your Replit project, go to Secrets (the lock icon). Add:
-Name: RESEND_API_KEY
-Value: [paste your key]
+The hardest part isn't building - it's believing your app is worth money. It is. If it solves a problem, it has value.
 
-4. TELL CLAUDE CODE TO ADD EMAIL
-"When a new user signs up, send them a welcome email using Resend. The email should:
-- Welcome them by name
-- Tell them what to do first
-- Include a link back to the app
-Use the RESEND_API_KEY from secrets."
+WHAT TO CHARGE FOR
 
-YOUR WELCOME EMAIL SHOULD:
+Pick ONE of these to start...
 
-- Be SHORT (3-4 sentences max)
-- Feel personal (use their name)
-- Give ONE clear action ("Click here to get started")
-- Set expectations ("Here's what you can do with [app name]")
+- Monthly subscription ($9-29/month for access)
+- One-time purchase ($29-99 for lifetime)
+- Credits ($10 for 100 AI generations)
+- Premium tier (free basic, paid premium)
 
-EXAMPLE:
+You can always change your pricing later. Most people charge TOO LITTLE at first. Start higher than feels comfortable.
 
-"Hey [Name]! Welcome to [App]. You're all set up and ready to go. Click here to [do the main thing]. If you have any questions, just reply to this email. - [Your name]"
+TEST MODE = SAFETY
 
-That's it. One email. Working. You can add more emails later (password reset, notifications, weekly updates). But start with this one.
+We're using Stripe's test mode today. That means...
+- No real money involved
+- Fake card numbers work
+- You can experiment freely
+- Switch to live when ready
 
-WHY RESEND?
+The test card number is 4242 4242 4242 4242 (any expiry, any CVC).
 
-It's simple, reliable, and free to start. The API is clean. Claude Code knows how to use it. Don't overthink email providers - Resend works.`,
-      outcome: "Resend connected, welcome email sending to new signups",
-      completionMessage: "You can now REACH your users. That's huge. Email is your lifeline to customers. Tomorrow: mobile optimization.",
+When you're ready to go live, you just swap your test keys for live keys.
+
+This is the day your app becomes a real business. Let's go.`,
+      outcome: "Stripe connected, checkout flow working in test mode",
+      completionMessage: "YOUR APP CAN MAKE MONEY. That's not a small thing. You've built something people can pay for. Tomorrow: mobile optimization.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
@@ -968,53 +976,51 @@ Mobile optimization isn't about perfection. It's about: Can someone USE this on 
 
     {
       day: 17,
-      title: "Admin Dashboard",
-      description: "Build a simple dashboard to see what's happening in your app. Users, activity, and key metrics.",
+      title: "Autonomous Testing",
+      description: "Let Claude Code write tests that prove your core feature works. Ship with confidence, not hope.",
       phase: "Build",
       videoUrl: null,
-      aiTaskType: "generator",
-      aiTaskTitle: "Admin Panel",
-      aiTaskDescription: "Create an admin dashboard to monitor users, activity, and app health.",
+      aiTaskType: "session",
+      aiTaskTitle: "Write Your First Test",
+      aiTaskDescription: "Have Claude Code write an automated test for your most important feature.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What do you most want to track?",
-      microDecisionOptions: JSON.stringify(["User signups & activity", "Feature usage", "Errors & issues", "Revenue (when added)"]),
-      reflectionQuestion: "What information would help you make better decisions about your app?",
-      tip: "Your admin dashboard is for YOU, not users. Keep it simple - just the data you'll actually look at. You can add more later.",
+      microDecisionQuestion: "What's your core feature?",
+      microDecisionOptions: JSON.stringify(["User creates something", "AI generates content", "Data processing", "User authentication"]),
+      reflectionQuestion: "How confident are you that your core feature works perfectly?",
+      tip: "A failing test is GOOD - it means you found a bug before your users did. Fix it, run again, repeat until green.",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
-You need to see what's happening inside your app.
+Here's a superpower most builders don't know about...
 
-Not guess. Not assume. KNOW.
-
-How many users do you have? How many signed up this week? Are people actually USING the thing or just signing up and leaving? Right now, you probably don't know. Let's fix that.
-
-THE SIMPLEST ADMIN DASHBOARD:
-
-You don't need fancy graphs. You need FOUR numbers:
-1. Total users (how many people have ever signed up)
-2. New users this week (are people still finding you?)
-3. Active users this week (are they coming back?)
-4. Total [main actions] (are they doing the thing?)
-
-That's it. Four numbers. You can add more later.
-
-THE SETUP:
-
-Tell Claude Code: "Create an admin page at /admin. Only I can access it. Show me: total users, new users this week, active users this week, and total [actions]. Also show the last 20 [actions] with user and timestamp." Done.
+Instead of manually clicking through your app to check if things work, you can have Claude Code write tests that do it AUTOMATICALLY. Every time. In seconds.
 
 WHY THIS MATTERS:
 
-Without data, you're flying blind. You THINK things are going well. You HOPE people like it.
+Tomorrow is THE PAUSE POINT. Before you ship your MVP, you want to KNOW your core feature works. Not hope. Not "I think so." KNOW.
 
-With data, you KNOW:
-- "Oh, 50 people signed up but only 5 came back" -> Onboarding problem
-- "People are signing up but not using the main feature" -> Feature problem
-- "Usage is growing every week" -> Keep doing what you're doing
+The test proves it.
 
-DATA TELLS YOU WHAT TO FIX. Build the dashboard. Check it every day. Make decisions based on what you see, not what you hope.`,
-      outcome: "Admin dashboard showing users, activity, and key metrics",
-      completionMessage: "You can now SEE what's happening in your app. Data beats guessing. Tomorrow: THE PAUSE POINT. Time to build until your MVP is ready.",
+THE PROCESS:
+
+1. Identify your ONE core feature (the thing your app absolutely MUST do)
+2. Tell Claude Code to write a test for it
+3. Run the test
+4. If it fails - GOOD! You found a bug before your users did
+5. Fix the bug
+6. Run again until it passes
+
+When that test goes green, you have PROOF your app works.
+
+THE LOOP:
+
+Write test -> Run test -> Fails? -> Fix code -> Run again -> Passes? -> Done!
+
+This is how the pros build. Not clicking around hoping things work. TESTING. AUTOMATICALLY.
+
+You'll write ONE test today. For your ONE most important feature. When it passes, you'll know your MVP actually works.`,
+      outcome: "Automated test for your core feature that passes",
+      completionMessage: "You have a test that PROVES your core feature works. Ship with confidence. Tomorrow - THE PAUSE POINT. Time to finish your MVP.",
       xpReward: 100,
       estimatedMinutes: 5,
     },

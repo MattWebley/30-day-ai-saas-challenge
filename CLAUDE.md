@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-22 (Day 12-13 overhaul & colon cleanup)
+- **Last Session**: 2026-01-22 (Day 14-17 restructure, autonomous testing, admin dashboard)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -610,3 +610,40 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test Day 13 Resend email flow end-to-end
   - Test Day 12 AI Brain with new styling
   - Continue testing Days 14+ onwards
+
+### 2026-01-22 (Session 2) - Day 14-17 Restructure & Autonomous Testing
+- **Tasks Completed:**
+  - **Day 15 Payments:** Created new `Day15Payments.tsx` component for Stripe setup (replaced duplicate email day)
+    - 6-step flow: intro → signup → keys → secrets → build → test → done
+    - Test card instructions (4242 4242 4242 4242)
+    - Updated DayInstructions, VideoSlides, and seed.ts lesson
+  - **Day 17 Autonomous Testing:** Replaced Admin Dashboard with new testing day
+    - Created `Day17AutonomousTesting.tsx` component
+    - Flow: intro → identify core feature → write test → run → fix (if failed) → done
+    - Claude Code prompts for writing tests, running tests, fixing bugs
+    - Updated DayInstructions, VideoSlides, and seed.ts lesson
+  - **Day 14 Users & Admin:** Combined authentication with admin dashboard
+    - Added new "admin" step after auth test passes
+    - Admin dashboard prompt with 4 key numbers (total users, new/active this week, total actions)
+    - Added "Want More?" section with 8 exciting optional metrics (revenue, power users, streaks, feature popularity, time to first action, conversion funnel, geography, device breakdown)
+    - Updated title from "Add Login" → "Users & Admin"
+    - Added note about Replit auth branding (may show Replit logo, alternatives available)
+  - **Menu titles updated:** Day 13 = "Email & APIs", Day 15 = "Take Payments", Day 17 = "Autonomous Testing"
+- **Fixes Applied:**
+  - Day 13/15 overlap resolved (both were about email - Day 15 now Stripe payments)
+  - Day 17 Admin Dashboard content moved to Day 14 (better fit after auth setup)
+- **Files Created:**
+  - `client/src/components/Day15Payments.tsx` - Stripe payments setup flow
+  - `client/src/components/Day17AutonomousTesting.tsx` - Autonomous testing flow
+- **Files Modified:**
+  - `client/src/components/Day12LetUsersIn.tsx` - Added admin dashboard step with exciting metrics
+  - `client/src/components/DayInstructions.tsx` - Updated Days 14, 15, 17
+  - `client/src/components/VideoSlides.tsx` - Updated Days 14, 15, 17
+  - `client/src/pages/Dashboard.tsx` - Uses new Day15Payments and Day17AutonomousTesting components
+  - `server/seed.ts` - Updated lessons, titles, outcomes for Days 14, 15, 17
+- **Notes for Next Session:**
+  - Database was re-seeded - all lesson changes applied
+  - Test Day 14 auth + admin dashboard flow
+  - Test Day 15 Stripe payments flow
+  - Test Day 17 autonomous testing flow
+  - Continue testing Days 18+ onwards

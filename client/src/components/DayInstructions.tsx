@@ -110,14 +110,17 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Ask Replit: 'Does my app have user authentication?'",
     "If yes: Test login/logout flow",
     "If no: Add auth with one prompt",
-    "Verify each user sees only their own data"
+    "Verify each user sees only their own data",
+    "Build your admin dashboard (4 key numbers)",
+    "Check your numbers - how many users? Are they active?"
   ],
   15: [
-    "Sign up for Resend (free)",
-    "Get your API key",
-    "Add RESEND_API_KEY to Replit Secrets",
-    "Set up your welcome email",
-    "Test by signing up with a new account"
+    "Create a Stripe account (free)",
+    "Get your test API keys (pk_test_ and sk_test_)",
+    "Add both keys to Replit Secrets",
+    "Build a checkout flow with Claude Code",
+    "Test with card 4242 4242 4242 4242",
+    "See the payment in your Stripe dashboard"
   ],
   16: [
     "Open your app on your actual phone",
@@ -126,10 +129,11 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Fix with Claude Code"
   ],
   17: [
-    "Decide what metrics to track",
-    "Build your admin dashboard",
-    "Add user and activity stats",
-    "Check your numbers"
+    "Identify your ONE core feature to test",
+    "Have Claude Code write an automated test",
+    "Run the test and see the results",
+    "Fix any bugs found (this is the point!)",
+    "Verify the test passes"
   ],
   18: [
     "THIS IS THE PAUSE POINT",
