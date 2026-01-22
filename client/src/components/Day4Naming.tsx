@@ -263,7 +263,7 @@ Return ONLY this JSON format:
       {/* Context Card */}
       {userIdea && (
         <div className={ds.infoBoxHighlight}>
-          <p className={ds.label + " uppercase tracking-wide mb-1"}>Naming Your Product:</p>
+          <p className={ds.label + " uppercase tracking-wide mb-1"}>Naming Your Product</p>
           <p className={ds.label}>{userIdea}</p>
         </div>
       )}
@@ -289,7 +289,7 @@ Return ONLY this JSON format:
             <div className={ds.infoBoxHighlight}>
               <p className={ds.label + " mb-2"}>Don't overthink this.</p>
               <p className={ds.muted}>
-                Finding the "perfect" name can paralyze you for weeks. The truth is: your name matters far less than your product.
+                Finding the "perfect" name can paralyze you for weeks. The truth is, your name matters far less than your product.
                 Pick something decent that has an available .com and MOVE ON. You can always rebrand later if your product takes off - many successful companies have.
                 Done is better than perfect.
               </p>
@@ -297,7 +297,7 @@ Return ONLY this JSON format:
 
             {/* Naming Approaches Info */}
             <div className={ds.cardWithPadding}>
-              <h3 className={ds.heading + " mb-3"}>Your Naming Options:</h3>
+              <h3 className={ds.heading + " mb-3"}>Your Naming Options</h3>
               <div className="space-y-3">
                 <div className={ds.infoBox + " flex items-start gap-3"}>
                   <span className="text-lg">🎯</span>
@@ -476,7 +476,7 @@ Return ONLY this JSON format:
               </div>
               <div className={ds.infoBoxHighlight + " mt-3"}>
                 <p className={ds.muted}>
-                  <strong>What you're looking for:</strong> Search for your name and see if anyone has registered it for software, apps, or SaaS.
+                  <strong>What you're looking for</strong> - Search for your name and see if anyone has registered it for software, apps, or SaaS.
                   If there's an exact match in your category, pick a different name. If it's clear, you're good to go.
                 </p>
               </div>

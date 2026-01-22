@@ -193,7 +193,7 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
         </p>
 
         <div className="space-y-2 mb-4">
-          <p className="text-slate-900 font-bold">USE IT FOR EVERYTHING:</p>
+          <p className="text-slate-900 font-bold">USE IT FOR EVERYTHING</p>
           <ul className="space-y-1 text-slate-700">
             <li>• <span className="font-medium">Pricing:</span> "Should I charge $29 or $49/month?"</li>
             <li>• <span className="font-medium">Features:</span> "Which 3 features should I build first?"</li>
@@ -219,7 +219,7 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
 
         {/* Problem-Solving Prompt */}
         <div className="p-4 bg-slate-900 rounded-lg mb-3">
-          <p className="text-slate-400 text-xs mb-2 font-medium">🔧 FIXING A PROBLEM:</p>
+          <p className="text-slate-400 text-xs mb-2 font-medium">🔧 FIXING A PROBLEM</p>
           <p className="text-slate-100 font-mono text-sm leading-relaxed whitespace-pre-line">{`I'm trying to [WHAT YOU WANT TO HAPPEN].
 But instead [WHAT'S ACTUALLY HAPPENING].
 Error: [PASTE ERROR IF ANY]
@@ -242,7 +242,7 @@ How do I fix this?`);
 
         {/* Advice/Hive Mind Prompt */}
         <div className="p-4 bg-slate-900 rounded-lg mb-3">
-          <p className="text-slate-400 text-xs mb-2 font-medium">🧠 NEED ADVICE / HIVE MIND:</p>
+          <p className="text-slate-400 text-xs mb-2 font-medium">🧠 NEED ADVICE / HIVE MIND</p>
           <p className="text-slate-100 font-mono text-sm leading-relaxed whitespace-pre-line">{`I'm building [YOUR APP].
 I need to decide: [YOUR QUESTION/DECISION]
 What are my options? What would you recommend and why?`}</p>
@@ -263,7 +263,7 @@ What are my options? What would you recommend and why?`);
 
         {/* How Do I Prompt */}
         <div className="p-4 bg-slate-900 rounded-lg mb-3">
-          <p className="text-slate-400 text-xs mb-2 font-medium">🤔 HOW DO I...:</p>
+          <p className="text-slate-400 text-xs mb-2 font-medium">🤔 HOW DO I...</p>
           <p className="text-slate-100 font-mono text-sm leading-relaxed whitespace-pre-line">{`How do I [THING YOU WANT TO DO] in [CONTEXT/TECH]?
 Give me a simple example I can follow.`}</p>
         </div>
@@ -282,7 +282,7 @@ Give me a simple example I can follow.`);
 
         {/* Review My Approach Prompt */}
         <div className="p-4 bg-slate-900 rounded-lg mb-3">
-          <p className="text-slate-400 text-xs mb-2 font-medium">👀 REVIEW MY APPROACH:</p>
+          <p className="text-slate-400 text-xs mb-2 font-medium">👀 REVIEW MY APPROACH</p>
           <p className="text-slate-100 font-mono text-sm leading-relaxed whitespace-pre-line">{`I'm planning to [YOUR APPROACH].
 Is this a good idea? What am I missing?
 What problems might I run into?`}</p>

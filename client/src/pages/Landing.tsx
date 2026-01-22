@@ -603,7 +603,7 @@ export default function Landing() {
                 <div>
                   <h4 className="font-bold text-slate-900 text-lg">AI Does the HEAVY Lifting</h4>
                   <p className="text-slate-600 mt-1">
-                    You're NOT learning to code. You're learning to DIRECT AI to code for you. I give you the exact prompts. You paste them. The AI builds. It's like having a developer who works for $0.002 per task!
+                    You're NOT learning to code. You're learning to DIRECT AI to code for you. I give you the exact prompts. You paste them. The AI builds. It's like having a developer on call 24/7 for pennies.
                   </p>
                 </div>
               </div>

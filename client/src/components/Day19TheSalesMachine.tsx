@@ -351,7 +351,7 @@ Add a money-back guarantee statement.`;
           <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Your Chosen Headline</h4>
             <p className="text-slate-600 mb-4">
-              After running the prompt above, paste your favorite headline here:
+              After running the prompt above, paste your favorite headline here
             </p>
             <Textarea
               placeholder="Paste your chosen headline here..."

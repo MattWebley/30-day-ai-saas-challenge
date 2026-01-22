@@ -95,7 +95,7 @@ export function Day11AddSuperpowers({ userIdea, onComplete }: Day11AddSuperpower
               Think about what your app needs. Does it need payments? External data? Integrations with other tools?
             </p>
             <p className="text-slate-700 mb-6">
-              For each thing you think you need, ask Replit: "Can you do this without an external API?"
+              For each thing you think you need, ask Replit "Can you do this without an external API?"
             </p>
 
             <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg mb-6">
@@ -194,7 +194,7 @@ export function Day11AddSuperpowers({ userIdea, onComplete }: Day11AddSuperpower
             {selectedSuperpower === "payments" && (
               <div className="space-y-4">
                 <div className="p-4 bg-slate-50 rounded-lg">
-                  <p className="font-bold text-slate-900 mb-2">Stripe Setup Steps:</p>
+                  <p className="font-bold text-slate-900 mb-2">Stripe Setup Steps</p>
                   <ol className="list-decimal list-inside space-y-2 text-slate-700">
                     <li>Sign up at stripe.com</li>
                     <li>Get your API keys (use test mode first!)</li>
@@ -208,7 +208,7 @@ export function Day11AddSuperpowers({ userIdea, onComplete }: Day11AddSuperpower
             {selectedSuperpower === "scraping" && (
               <div className="space-y-4">
                 <div className="p-4 bg-slate-50 rounded-lg">
-                  <p className="font-bold text-slate-900 mb-2">Web Scraping Notes:</p>
+                  <p className="font-bold text-slate-900 mb-2">Web Scraping Notes</p>
                   <ul className="list-disc list-inside space-y-2 text-slate-700">
                     <li>Only scrape public data</li>
                     <li>Respect rate limits</li>
@@ -222,7 +222,7 @@ export function Day11AddSuperpowers({ userIdea, onComplete }: Day11AddSuperpower
             {selectedSuperpower === "integration" && (
               <div className="space-y-4">
                 <div className="p-4 bg-slate-50 rounded-lg">
-                  <p className="font-bold text-slate-900 mb-2">Integration Setup:</p>
+                  <p className="font-bold text-slate-900 mb-2">Integration Setup</p>
                   <ol className="list-decimal list-inside space-y-2 text-slate-700">
                     <li>Google "[service name] API documentation"</li>
                     <li>Sign up for developer access</li>

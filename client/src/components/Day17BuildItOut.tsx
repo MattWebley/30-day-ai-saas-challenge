@@ -120,7 +120,7 @@ export function Day17BuildItOut({ onComplete }: Day17BuildItOutProps) {
                   You've learned 95% of everything you need. Now it's time to BUILD.
                 </p>
                 <p className="text-amber-700 mt-2">
-                  Stay here as long as you need - days, weeks, whatever it takes. Use the <strong>PAUSE button</strong> in the sidebar to come back tomorrow.
+                  Stay here as long as you need - days, weeks, whatever it takes. Use the PAUSE button in the sidebar to come back tomorrow.
                 </p>
               </div>
             </div>
@@ -224,7 +224,7 @@ export function Day17BuildItOut({ onComplete }: Day17BuildItOutProps) {
           {/* When to Move On */}
           <Card className="p-6 border-2 border-blue-200 bg-blue-50">
             <h4 className="font-bold text-blue-900 mb-3">When to Move On</h4>
-            <p className="text-blue-800 mb-3">Your app is ready when:</p>
+            <p className="text-blue-800 mb-3">Your app is ready when</p>
             <ul className="space-y-2 text-blue-700">
               <li>• Core features work without crashing</li>
               <li>• You'd show it to a stranger without apologizing</li>
@@ -375,13 +375,13 @@ export function Day17BuildItOut({ onComplete }: Day17BuildItOutProps) {
           <Card className="p-6 border-2 border-amber-200 bg-amber-50">
             <h4 className="font-bold text-amber-900 mb-2">Not Ready to Move On?</h4>
             <p className="text-amber-800">
-              Use the <strong>PAUSE button</strong> in the sidebar. Come back tomorrow for another session. Stay on Day 17 until your app is ready.
+              Use the PAUSE button in the sidebar. Come back tomorrow for another session. Stay on Day 17 until your app is ready.
             </p>
           </Card>
 
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="font-bold text-lg text-slate-900 mb-3">Ready to Move On?</h4>
-            <p className="text-slate-700 mb-3">Your app should:</p>
+            <p className="text-slate-700 mb-3">Your app should</p>
             <ul className="space-y-2 text-slate-600 mb-4">
               <li>• Have core features working</li>
               <li>• Handle basic errors gracefully</li>

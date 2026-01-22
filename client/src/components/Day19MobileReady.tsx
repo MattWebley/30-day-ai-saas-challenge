@@ -147,7 +147,7 @@ export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps)
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">What Needs Fixing?</h4>
             <p className="text-sm text-slate-600 mb-4">
-              Describe the mobile issues you found:
+              Describe the mobile issues you found
             </p>
             <Textarea
               placeholder="1. [Issue]: [What's wrong and where]
@@ -163,7 +163,7 @@ The most important one to fix is..."
 
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Tell Claude Code to Fix</h4>
-            <p className="text-sm text-slate-600 mb-4">Use this template:</p>
+            <p className="text-sm text-slate-600 mb-4">Use this template</p>
             <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm text-slate-700 font-mono">
               "Fix mobile responsiveness:<br /><br />
               1. On mobile, [describe problem]<br />
@@ -206,7 +206,7 @@ The most important one to fix is..."
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Mobile Test Summary</h4>
             <p className="text-sm text-slate-600 mb-4">
-              Document your mobile testing experience:
+              Document your mobile testing experience
             </p>
             <Textarea
               placeholder="I tested on [phone model].

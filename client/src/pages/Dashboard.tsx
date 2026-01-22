@@ -44,6 +44,7 @@ import { Day10AIBrain } from "@/components/Day10AIBrain";
 import { Day11BrandDesign } from "@/components/Day11BrandDesign";
 import { Day12LetUsersIn } from "@/components/Day12LetUsersIn";
 import { Day13ReachYourUsers } from "@/components/Day13ReachYourUsers";
+import { Day13ExternalAPIs } from "@/components/Day13ExternalAPIs";
 import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
 import { Day19MobileReady } from "@/components/Day19MobileReady";
 import { Day19TheSalesMachine } from "@/components/Day19TheSalesMachine";
@@ -1126,14 +1127,14 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 11: Brand Design */}
+                {/* Day 13: External APIs / Email Setup */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Design Your Brand</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Your First External API</h2>
                   </div>
-                  <Day11BrandDesign
-                    projectName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "your app"}
+                  <Day13ExternalAPIs
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "your app"}
                     onComplete={handleComplete}
                   />
                 </div>

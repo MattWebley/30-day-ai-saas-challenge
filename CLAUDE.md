@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-21 (Day 11 design personalities & URL inspiration)
+- **Last Session**: 2026-01-22 (Day 12-13 overhaul & colon cleanup)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -576,3 +576,37 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test URL analyzer with various websites (restart server first)
   - Test all 8 design personality options
   - Continue testing Days 12+ onwards
+
+### 2026-01-22 - Day 12-13 Overhaul & Colon Cleanup
+- **Tasks Completed:**
+  - **Day 12 (AI Brain):** Restyled to match Days 9-11 design pattern using `ds` design system and `useStepWithScroll` hook
+  - **Day 12:** Simplified test section to minimal checkbox ("My AI feature is working") with optional notes
+  - **Day 12:** Replaced specific API pricing ($0.002) with general "costs are tiny" messaging
+  - **Day 12:** Rewrote "WHY THIS MATTERS" section with practical AI use case list (content suggestions, summaries, chatbots, etc.)
+  - **Day 13 (External APIs):** Complete rebuild - now walks through Resend email setup as practical API example
+  - **Day 13:** Created new `Day13ExternalAPIs.tsx` component with 6-step flow
+  - **Day 13:** Sends actual test email to verify API setup works (user enters email, builds test button, confirms receipt)
+  - **Day 13:** Added troubleshooting help suggesting Claude Code/Replit for debugging
+  - **Colon Cleanup:** Removed colons from all conversational/instructional text across 25+ Day components
+- **Style Rule Applied:**
+  - User doesn't use colons in conversational text - prefer "..." or dashes instead
+  - Changed patterns like "Here's how:" → "Here's how" or "What you need:" → "What you need"
+- **Files Modified:**
+  - `client/src/components/Day10AIBrain.tsx` - Restyled with ds design system
+  - `client/src/components/Day13ExternalAPIs.tsx` - NEW: Resend email setup flow
+  - `client/src/components/DayInstructions.tsx` - Updated Day 13 instructions, removed colons
+  - `client/src/pages/Dashboard.tsx` - Uses new Day13ExternalAPIs component
+  - 25+ Day component files - Removed colons from instructional text
+  - `server/seed.ts` - Updated Day 12 & 13 lessons
+- **Files with Colon Cleanup:**
+  - Day0StartHere, Day2IdeaValidator, Day3CoreFeatures, Day4Naming, Day5Logo, Day5TechStack
+  - Day9ClaudeCodeMastery, Day9RealityCheck, Day10BuildLoop, Day10AIBrain
+  - Day11Brand, Day11AddSuperpowers, Day12LetUsersIn, Day13ReachYourUsers
+  - Day17BuildItOut, Day17Onboarding, Day18AdminDashboard, Day18BuildYourMVP
+  - Day18TestEverything, Day19MobileReady, Day19TheSalesMachine
+  - Day20BrandBeauty, Day21LaunchDay, DayInstructions
+- **Notes for Next Session:**
+  - Re-seed database: `npx tsx server/seed.ts`
+  - Test Day 13 Resend email flow end-to-end
+  - Test Day 12 AI Brain with new styling
+  - Continue testing Days 14+ onwards

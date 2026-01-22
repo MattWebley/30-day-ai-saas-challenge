@@ -682,17 +682,29 @@ Remember: You're not stuck with anything. "Reverse that" brings it all back.`,
       microDecisionQuestion: "What should AI do in your app?",
       microDecisionOptions: JSON.stringify(["Generate content", "Analyze/summarize data", "Answer questions", "Automate tasks"]),
       reflectionQuestion: "What manual task could AI do for your users that would make them say 'THIS IS AMAZING'?",
-      tip: "The OpenAI API costs about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD.",
+      tip: "Worried about AI costs? Here's the reality: most SaaS subscribers barely use the features they pay for. Whatever your worst-case cost estimate is, actual usage will be way lower.",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 Today your app gets a BRAIN.
 
 This is what makes AI SaaS different from regular SaaS. Your app doesn't just store data or display things - it THINKS. And here's the thing: Users EXPECT this now. An app without AI feels like a website from 2010.
 
-WHY THIS MATTERS:
+AI lets your app do things that used to be really hard to build. Now it's easy:
 
-1. It's your MOAT. Regular features can be copied in a weekend. Good AI features are HARD to replicate.
-2. It's the VALUE. Users aren't paying for your pretty buttons. They're paying for what the AI does for them.
+- Summarize long documents in seconds
+- Generate personalized content on demand
+- Answer questions about complex data
+- Analyze text and pull out key insights
+- Turn messy input into structured data
+- Categorize and tag things automatically
+- Write first drafts (emails, descriptions, posts)
+- Translate content to any language
+- Suggest next steps based on context
+- Score or evaluate submissions
+- Create personalized plans or recommendations
+- Detect patterns humans would miss
+- Generate reports automatically
+- Smart search that understands meaning, not just keywords
 
 THE SIMPLE VERSION:
 
@@ -704,7 +716,7 @@ That's it. The AI handles the rest.
 
 THE PROMPT:
 
-"Add an AI feature. When the user [does something], take their input, send it to OpenAI with this instruction: [what you want the AI to do], and show the result. Use the API key from secrets. Add a loading spinner."
+Just describe what you want naturally. For example: "When the user submits a journal entry, use AI to suggest 3 action items based on what they wrote."
 
 WHAT SHOULD YOUR AI DO?
 
@@ -714,7 +726,7 @@ Pick ONE thing. Get it working PERFECTLY. You can add more later.
 
 THE COST REALITY:
 
-OpenAI API is about $0.002 per request. That's 500 AI calls for $1. Don't overthink costs - just BUILD. This is the feature that makes your app worth paying for. Make it good.
+AI API costs are tiny. Different models have different prices, but we're talking fractions of a penny per request. You could run thousands of AI calls and barely notice it on your bill. Don't overthink costs - just build.
 
 OTHER OPTIONS:
 
@@ -738,53 +750,34 @@ There are other AI APIs out there - Claude's API, Google's Gemini, and more. The
       microDecisionQuestion: "What superpower does your app need?",
       microDecisionOptions: JSON.stringify(["Payments (Stripe)", "Data/Scraping", "Third-party integration", "None needed yet"]),
       reflectionQuestion: "What can your app do now that it couldn't do before?",
-      tip: "Before adding ANY external API, ask Replit Agent first: 'Can you do [thing] without an external service?' Often Replit can handle it natively. Only add APIs when truly necessary.",
+      tip: "Before adding ANY external API, ask Replit Agent first... 'Can you do [thing] without an external service?' Often Replit can handle it natively. Also... Replit sometimes offers easy one-click API integrations, but they're not always the most cost-effective option. Yes, use them to build your app, but be willing to swap them out when you start getting customers.",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
-Your app has an AI brain. Now let's give it SUPERPOWERS.
+External APIs let your app do things you couldn't easily build yourself. Here are the popular ones...
 
-External APIs let your app do things that would be impossible to build yourself. Payments. Data feeds. Third-party integrations. These are the things that turn a toy into a real product.
+POPULAR APIs:
 
-BUT FIRST - ASK REPLIT:
+- Charging money... Stripe, Paddle, LemonSqueezy
+- Sending SMS or calls... Twilio, MessageBird
+- Sending emails at scale... Resend, SendGrid, Postmark
+- File and image uploads... Cloudflare R2, Cloudinary
+- Location and maps... Google Maps
+- Web scraping... Bright Data, ScrapingBee
+- Connect to other apps... Zapier
 
-Before you add ANY external service, ask Replit Agent: "Can you help me [do the thing] without an external API?"
+DO YOU ACTUALLY NEED ONE?
 
-You'd be SURPRISED how much Replit can do natively. Database? Built in. Auth? Built in. File storage? Built in. Only reach for external APIs when Replit genuinely can't do what you need.
-
-COMMON SUPERPOWERS:
-
-1. PAYMENTS (Stripe)
-If you're charging money, you need Stripe. It's the standard.
-- Sign up at stripe.com
-- Get your API keys (test mode first!)
-- Add to Replit Secrets: STRIPE_SECRET_KEY
-- Tell Claude Code: "Add Stripe checkout for [your pricing]"
-
-2. WEB SCRAPING (Bright Data)
-Need data from other websites? That's web scraping. It's powerful but USE IT RESPONSIBLY.
-- Only scrape public data
-- Respect rate limits
-- Check the site's terms of service
-Bright Data is the go-to service for this.
-
-3. OTHER INTEGRATIONS
-Need to connect to Slack? Google Sheets? A specific industry tool? Most have APIs. Google "[service name] API" and look for their developer docs.
-
-THE RULE:
-
-Add ONE superpower at a time. Get it working. Test it. Then consider the next one.
-
-Don't go API-crazy. Every external dependency is something that can break. Keep it minimal until you KNOW you need it.
-
-WHAT IF YOU DON'T NEED ANY?
-
-That's fine! Many successful SaaS apps are just:
+Maybe not! Many successful apps are just...
 - A database (Replit has it)
 - User accounts (Replit has it)
 - AI features (you added yesterday)
 - Good UX (that's on you)
 
-If your app works without external APIs, skip this day. Move on. Don't add complexity for the sake of it.`,
+If your app works without external APIs, skip this day. Don't add stuff you don't need.
+
+THE RULE:
+
+Add ONE at a time. Get it working. Test it. Then consider the next one. Every external dependency is something that can break, could cost you unnecessarily, and adds extra setup and complexity.`,
       outcome: "External APIs connected (if needed), or confirmed app works without them",
       completionMessage: "Your app now has superpowers - or you've confirmed it doesn't need them. Both are wins. Tomorrow: making sure users can log in.",
       xpReward: 100,

@@ -331,11 +331,11 @@ Example format:
         <div className={`${ds.cardWithPadding} max-w-2xl mx-auto text-left`}>
           <h3 className={`${ds.heading} mb-2`}>{idea.title}</h3>
           <p className={`${ds.body} mb-3`}>{idea.desc}</p>
-          <p className={`${ds.muted} mb-4`}>Target: {idea.targetCustomer}</p>
+          <p className={`${ds.muted} mb-4`}>Target... {idea.targetCustomer}</p>
 
           <div className="pt-4 border-t border-slate-200">
             <div className="flex items-center justify-between mb-2">
-              <p className={`${ds.label} uppercase`}>Pain Points You're Solving:</p>
+              <p className={`${ds.label} uppercase`}>Pain Points You're Solving</p>
               <button
                 onClick={() => setStep('pain')}
                 className="flex items-center gap-1 text-sm text-slate-500 hover:text-primary transition-colors"
@@ -672,7 +672,7 @@ Example format:
                     <div>
                       <h3 className={ds.heading}>{idea.title}</h3>
                       <p className={`${ds.muted} mt-1`}>{idea.desc}</p>
-                      <p className={`${ds.muted} mt-2`}>Target: {idea.targetCustomer}</p>
+                      <p className={`${ds.muted} mt-2`}>Target... {idea.targetCustomer}</p>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold text-slate-900">{idea.totalScore}/25</div>

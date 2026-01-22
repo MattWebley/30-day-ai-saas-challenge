@@ -132,9 +132,9 @@ export function Day17Onboarding({ appName, onComplete }: Day17OnboardingProps) {
 
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Tell Claude Code</h4>
-            <p className="text-sm text-slate-600 mb-4">Describe what to build:</p>
+            <p className="text-sm text-slate-600 mb-4">Describe what to build</p>
             <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm text-slate-700 font-mono">
-              "Add onboarding for new users:<br /><br />
+              "Add onboarding for new users...<br /><br />
               1. When they first sign in, show a welcome<br />
               2. Take them to [main feature]<br />
               3. Pre-fill with [example data]<br />
@@ -170,7 +170,7 @@ export function Day17Onboarding({ appName, onComplete }: Day17OnboardingProps) {
             </p>
 
             <div className="flex items-center gap-4 mb-4">
-              <p className="text-sm font-medium text-slate-700">Time to first success:</p>
+              <p className="text-sm font-medium text-slate-700">Time to first success</p>
               <div className="flex items-center gap-2">
                 <Input
                   type="number"

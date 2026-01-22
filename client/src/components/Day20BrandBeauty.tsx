@@ -79,7 +79,7 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
 
             <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-lg">
               <div className="flex items-center gap-3">
-                <p className="text-sm font-medium text-slate-700">Or pick custom:</p>
+                <p className="text-sm font-medium text-slate-700">Or pick custom</p>
                 <input
                   type="color"
                   value={primaryColor}
@@ -195,7 +195,7 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
 
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Tell Claude Code</h4>
-            <p className="text-sm text-slate-600 mb-4">Describe what to apply:</p>
+            <p className="text-sm text-slate-600 mb-4">Describe what to apply</p>
             <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm text-slate-700 font-mono">
               "Update my app's branding:<br /><br />
               1. Set primary color to {primaryColor}<br />
@@ -240,7 +240,7 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-4 text-slate-900">Verify Your Brand</h4>
             <p className="text-sm text-slate-600 mb-4">
-              Look at your app now. Check these things:
+              Look at your app now. Check these things
             </p>
 
             <div className="flex gap-3 mb-4">
@@ -264,7 +264,7 @@ export function Day20BrandBeauty({ appName, onComplete }: Day20BrandBeautyProps)
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Brand Summary</h4>
             <p className="text-sm text-slate-600 mb-4">
-              Document your branding:
+              Document your branding
             </p>
             <Textarea
               placeholder="My app now has:

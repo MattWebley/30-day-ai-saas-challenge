@@ -86,7 +86,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
               <BookOpen className="w-5 h-5 text-white" />
             </div>
             <div>
-              <p className="font-bold text-slate-900">Before you start: Open the Claude Code Guide</p>
+              <p className="font-bold text-slate-900">Before you start - Open the Claude Code Guide</p>
               <p className={ds.muted}>Use the prompts there to set up Claude Code and start your session.</p>
             </div>
           </div>
@@ -704,7 +704,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
             <h4 className={ds.label + " mb-3"}>🎯 Try It Now (30 seconds)</h4>
             <div className="space-y-3">
               <p className={ds.body}>
-                Before you finish, try this quick exercise to practice Rules 1 & 2:
+                Before you finish, try this quick exercise to practice Rules 1 & 2
               </p>
               <div className="space-y-2 pl-4 border-l-2 border-primary">
                 <p className={ds.body}><strong>1.</strong> Ask Claude to change a button color in your app</p>

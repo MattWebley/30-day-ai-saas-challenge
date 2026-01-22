@@ -5518,7 +5518,7 @@ export default function LaunchPack() {
               <div>
                 <p className="font-medium text-blue-900">Why This Exists</p>
                 <p className="text-sm text-blue-700 mt-1">
-                  The 21 Day Challenge focuses on <strong>idea, planning, and building</strong> your product.
+                  The 21 Day Challenge focuses on idea, planning, and building your product.
                   But a great product without customers is worthless. This pack covers what comes next:
                   launch strategies, marketing channels, sales tactics, and growth systems.
                 </p>

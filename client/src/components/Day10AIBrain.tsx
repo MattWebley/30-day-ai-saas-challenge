@@ -1,9 +1,23 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
+import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ChevronRight, ExternalLink, Copy } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  ChevronLeft,
+  ArrowRight,
+  ExternalLink,
+  Copy,
+  Terminal,
+  Key,
+  Lock,
+  Sparkles,
+  CheckCircle2,
+  Brain,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ds } from "@/lib/design-system";
+import { Link } from "wouter";
 
 interface Day10AIBrainProps {
   userIdea: string;
@@ -11,11 +25,16 @@ interface Day10AIBrainProps {
 }
 
 export function Day10AIBrain({ userIdea, onComplete }: Day10AIBrainProps) {
-  const [setupStep, setSetupStep] = useState<1 | 2 | 3 | 4 | 5>(1);
-  const [phase, setPhase] = useState<"setup" | "test">("setup");
+  const [step, setStep, containerRef] = useStepWithScroll<
+    "account" | "apikey" | "secrets" | "describe" | "build" | "test"
+  >("account");
+
+  const [accountDone, setAccountDone] = useState(false);
+  const [apiKeyDone, setApiKeyDone] = useState(false);
+  const [secretsDone, setSecretsDone] = useState(false);
   const [aiFeature, setAiFeature] = useState("");
-  const [aiTestResult, setAiTestResult] = useState("");
-  const [aiWow, setAiWow] = useState("");
+  const [aiWorking, setAiWorking] = useState(false);
+  const [aiNotes, setAiNotes] = useState("");
   const { toast } = useToast();
 
   const copyToClipboard = (text: string, label: string) => {
@@ -26,363 +45,406 @@ export function Day10AIBrain({ userIdea, onComplete }: Day10AIBrainProps) {
     });
   };
 
-  const canComplete = aiTestResult.length >= 20 && aiWow.length >= 10;
-
-  // Check icon for completed steps
-  const StepIndicator = ({ stepNum, currentStep }: { stepNum: number; currentStep: number }) => {
-    if (stepNum < currentStep) {
-      return (
-        <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-          <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-          </svg>
-        </div>
-      );
-    }
-    return (
-      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${stepNum === currentStep ? 'bg-primary text-white' : 'bg-slate-100'}`}>
-        <span className={`font-bold ${stepNum === currentStep ? 'text-white' : 'text-slate-700'}`}>{stepNum}</span>
-      </div>
-    );
-  };
+  const completedSteps = [accountDone, apiKeyDone, secretsDone].filter(Boolean).length;
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <Card className="p-6 border-2 border-slate-200 bg-white">
-        <h3 className="text-2xl font-extrabold text-slate-900">Add The AI Brain</h3>
-        <p className="text-slate-600 mt-1">Give your app intelligence. This is what makes AI SaaS special.</p>
-        <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
-          <p className="text-sm text-slate-700">
-            <strong>This might take multiple sessions.</strong> That's OK! Complete each step at your own pace.
-          </p>
+    <div ref={containerRef} className="space-y-6">
+      {/* Claude Code Guide Reminder */}
+      <Link href="/claude-code">
+        <div className="bg-primary/10 border-2 border-primary rounded-lg p-4 cursor-pointer hover:bg-primary/15 transition-colors">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+              <Terminal className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="font-bold text-slate-900">Open the Claude Code Guide</p>
+              <p className={ds.muted}>Use the prompts there to start your session.</p>
+            </div>
+          </div>
         </div>
-      </Card>
+      </Link>
 
       {/* Progress indicator */}
-      {phase === "setup" && (
-        <div className="flex items-center justify-between px-4">
-          {[1, 2, 3, 4, 5].map((num) => (
-            <div key={num} className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
-                ${num < setupStep ? 'bg-green-500 text-white' : num === setupStep ? 'bg-primary text-white' : 'bg-slate-200 text-slate-500'}`}>
-                {num < setupStep ? '✓' : num}
-              </div>
-              {num < 5 && (
-                <div className={`w-8 h-1 ${num < setupStep ? 'bg-green-500' : 'bg-slate-200'}`} />
-              )}
+      <div className={ds.cardWithPadding}>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className={ds.heading}>Setup Progress</h3>
+          <span className={ds.muted}>{completedSteps} of 3 complete</span>
+        </div>
+        <div className="flex gap-1">
+          {[
+            { done: accountDone, label: "Account", step: "account" as const },
+            { done: apiKeyDone, label: "API Key", step: "apikey" as const },
+            { done: secretsDone, label: "Secrets", step: "secrets" as const },
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="flex-1 cursor-pointer group"
+              onClick={() => setStep(item.step)}
+            >
+              <div className={`h-2 rounded-full transition-all ${item.done ? "bg-green-500 group-hover:bg-green-600" : "bg-slate-200 group-hover:bg-slate-300"}`} />
+              <p className={`text-xs mt-1 text-center transition-colors ${item.done ? "text-green-600 font-medium group-hover:text-green-700" : "text-slate-500 group-hover:text-slate-700"}`}>
+                {item.label}
+              </p>
             </div>
           ))}
         </div>
+
+        <div className={ds.infoBoxHighlight + " mt-4"}>
+          <p className={ds.body}>
+            This might take multiple sessions. That's OK! Complete each step at your own pace.
+          </p>
+        </div>
+      </div>
+
+      {/* Step 1: Create OpenAI Account */}
+      {step === "account" && (
+        <>
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <Brain className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className={ds.heading}>Step 1: Create OpenAI Account & Add Credits</h3>
+                <p className={ds.muted}>Get access to the AI that powers your app</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <p className={ds.body}>
+                OpenAI (makers of ChatGPT) is the easiest AI to add to your app. Here's how to get access
+              </p>
+
+              <div className={ds.infoBoxHighlight}>
+                <ol className={ds.body + " space-y-2 list-decimal list-inside"}>
+                  <li>Go to <a href="https://platform.openai.com/signup" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">platform.openai.com/signup</a></li>
+                  <li>Create an account (use Google login for speed)</li>
+                  <li>Once logged in, click Settings (bottom left) then Billing</li>
+                  <li>Click Add payment method and add a card</li>
+                  <li>Add $5-10 credits to start (this will last you MONTHS)</li>
+                </ol>
+              </div>
+
+              <a
+                href="https://platform.openai.com/signup"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
+              >
+                Open OpenAI Platform <ExternalLink className="w-4 h-4" />
+              </a>
+
+              <div
+                className={accountDone ? ds.optionSelected : ds.optionDefault}
+                onClick={() => setAccountDone(!accountDone)}
+              >
+                <div className="flex items-center gap-3">
+                  <Checkbox checked={accountDone} onCheckedChange={() => setAccountDone(!accountDone)} />
+                  <span className={ds.body + " font-medium"}>I've created my account and added credits</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Button size="lg" onClick={() => setStep("apikey")} disabled={!accountDone} className="gap-2">
+              Next <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
       )}
 
-      {phase === "setup" && (
+      {/* Step 2: Get API Key */}
+      {step === "apikey" && (
         <>
-          {/* Step 1: Create OpenAI Account */}
-          {setupStep >= 1 && (
-            <Card className={`p-6 border-2 ${setupStep === 1 ? 'border-primary' : 'border-slate-200'}`}>
-              <div className="flex items-center gap-3 mb-4">
-                <StepIndicator stepNum={1} currentStep={setupStep} />
-                <h4 className="font-bold text-lg text-slate-900">Create OpenAI Account & Add Credits</h4>
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <Key className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className={ds.heading}>Step 2: Get Your API Key</h3>
+                <p className={ds.muted}>This is how your app talks to OpenAI</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className={ds.infoBoxHighlight}>
+                <ol className={ds.body + " space-y-2 list-decimal list-inside"}>
+                  <li>Go to <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">platform.openai.com/api-keys</a></li>
+                  <li>Click Create new secret key</li>
+                  <li>Give it a name like "My SaaS App"</li>
+                  <li>Click Create secret key</li>
+                  <li className="text-red-600 font-medium">COPY IT NOW - you won't see it again!</li>
+                </ol>
               </div>
 
-              {setupStep === 1 && (
-                <div className="space-y-4">
-                  <div className="bg-slate-50 p-4 rounded-lg">
-                    <p className="text-sm text-slate-700 mb-3">
-                      OpenAI (makers of ChatGPT) is the easiest AI to add to your app. Here's how to get access:
-                    </p>
-                    <ol className="text-sm text-slate-700 space-y-2 list-decimal list-inside">
-                      <li>Go to <a href="https://platform.openai.com/signup" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">platform.openai.com/signup</a></li>
-                      <li>Create an account (use Google login for speed)</li>
-                      <li>Once logged in, click <strong>Settings</strong> (bottom left) → <strong>Billing</strong></li>
-                      <li>Click <strong>Add payment method</strong> and add a card</li>
-                      <li>Add <strong>$5-10 credits</strong> to start (this will last you MONTHS)</li>
-                    </ol>
-                  </div>
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.body}>
+                  Your API key looks like <code className="bg-slate-200 px-1 rounded">sk-proj-xxxxxxxxxxxxx</code>
+                </p>
+                <p className={ds.muted + " mt-1"}>Keep it secret - anyone with this key can use your credits!</p>
+              </div>
 
-                  <a
-                    href="https://platform.openai.com/signup"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium text-sm"
-                  >
-                    Open OpenAI Platform <ExternalLink className="w-4 h-4" />
-                  </a>
+              <a
+                href="https://platform.openai.com/api-keys"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 font-medium"
+              >
+                Get API Key <ExternalLink className="w-4 h-4" />
+              </a>
 
-                  <Button
-                    className="w-full mt-4"
-                    onClick={() => setSetupStep(2)}
-                  >
-                    Done - Next Step <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
+              <div
+                className={apiKeyDone ? ds.optionSelected : ds.optionDefault}
+                onClick={() => setApiKeyDone(!apiKeyDone)}
+              >
+                <div className="flex items-center gap-3">
+                  <Checkbox checked={apiKeyDone} onCheckedChange={() => setApiKeyDone(!apiKeyDone)} />
+                  <span className={ds.body + " font-medium"}>I've copied my API key</span>
                 </div>
-              )}
-            </Card>
-          )}
-
-          {/* Step 2: Get API Key */}
-          {setupStep >= 2 && (
-            <Card className={`p-6 border-2 ${setupStep === 2 ? 'border-primary' : 'border-slate-200'}`}>
-              <div className="flex items-center gap-3 mb-4">
-                <StepIndicator stepNum={2} currentStep={setupStep} />
-                <h4 className="font-bold text-lg text-slate-900">Get Your API Key</h4>
               </div>
+            </div>
+          </div>
 
-              {setupStep === 2 && (
-                <div className="space-y-4">
-                  <div className="bg-slate-50 p-4 rounded-lg">
-                    <ol className="text-sm text-slate-700 space-y-2 list-decimal list-inside">
-                      <li>Go to <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">platform.openai.com/api-keys</a></li>
-                      <li>Click <strong>Create new secret key</strong></li>
-                      <li>Give it a name like "My SaaS App"</li>
-                      <li>Click <strong>Create secret key</strong></li>
-                      <li><strong className="text-red-600">COPY IT NOW</strong> - you won't see it again!</li>
-                    </ol>
-                  </div>
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("account")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button size="lg" onClick={() => setStep("secrets")} disabled={!apiKeyDone} className="gap-2">
+              Next <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
+      )}
 
-                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                    <p className="text-sm text-slate-700">
-                      Your API key looks like: <code className="bg-slate-200 px-1 rounded">sk-proj-xxxxxxxxxxxxx</code><br/>
-                      Keep it secret - anyone with this key can use your credits!
-                    </p>
-                  </div>
-
-                  <a
-                    href="https://platform.openai.com/api-keys"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 font-medium text-sm"
-                  >
-                    Get API Key <ExternalLink className="w-4 h-4" />
-                  </a>
-
-                  <Button
-                    className="w-full mt-4"
-                    onClick={() => setSetupStep(3)}
-                  >
-                    I've Copied My Key - Next <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
-              )}
-            </Card>
-          )}
-
-          {/* Step 3: Add to Replit Secrets */}
-          {setupStep >= 3 && (
-            <Card className={`p-6 border-2 ${setupStep === 3 ? 'border-primary' : 'border-slate-200'}`}>
-              <div className="flex items-center gap-3 mb-4">
-                <StepIndicator stepNum={3} currentStep={setupStep} />
-                <h4 className="font-bold text-lg text-slate-900">Add Key to Replit Secrets</h4>
+      {/* Step 3: Add to Replit Secrets */}
+      {step === "secrets" && (
+        <>
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <Lock className="w-5 h-5 text-white" />
               </div>
+              <div>
+                <h3 className={ds.heading}>Step 3: Add Key to Replit Secrets</h3>
+                <p className={ds.muted}>Keep your key safe and hidden</p>
+              </div>
+            </div>
 
-              {setupStep === 3 && (
-                <div className="space-y-4">
-                  {/* EASY WAY */}
-                  <div className="bg-green-50 p-4 rounded-lg border-2 border-green-200">
-                    <p className="font-bold text-green-800 mb-2">THE EASY WAY (Recommended)</p>
-                    <p className="text-sm text-green-800 mb-3">
-                      Just tell Replit Agent in plain English:
-                    </p>
-                    <div className="relative">
-                      <pre className="bg-white p-3 rounded-lg text-sm font-mono border border-green-200 whitespace-pre-wrap text-slate-800">
+            <div className="space-y-4">
+              {/* EASY WAY */}
+              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                <p className="font-bold text-green-800 mb-2">THE EASY WAY (Recommended)</p>
+                <p className={ds.body + " text-green-800 mb-3"}>
+                  Just tell Replit Agent in plain English:
+                </p>
+                <div className="relative">
+                  <pre className="bg-white p-3 rounded-lg text-sm font-mono border border-green-200 whitespace-pre-wrap text-slate-800">
 {`Add a secret called OPENAI_API_KEY with the value: [paste your key here]`}
-                      </pre>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => copyToClipboard("Add a secret called OPENAI_API_KEY with the value: ", "Replit Agent prompt")}
-                        className="absolute top-2 right-2 gap-2 bg-white"
-                      >
-                        <Copy className="w-4 h-4" />
-                        Copy
-                      </Button>
-                    </div>
-                    <p className="text-xs text-green-700 mt-2">
-                      Replit Agent will add it to your Secrets automatically. Done in 2 seconds!
-                    </p>
-                  </div>
-
-                  {/* MANUAL WAY */}
-                  <div className="bg-slate-50 p-4 rounded-lg">
-                    <p className="font-medium text-slate-700 mb-2">Manual way (if Agent doesn't work):</p>
-                    <ol className="text-sm text-slate-600 space-y-1 list-decimal list-inside">
-                      <li>Click <strong>Tools</strong> in the left sidebar</li>
-                      <li>Click <strong>Secrets</strong></li>
-                      <li>Click <strong>+ New Secret</strong></li>
-                      <li>Key: <code className="bg-slate-200 px-1 rounded">OPENAI_API_KEY</code></li>
-                      <li>Value: paste your API key</li>
-                      <li>Click <strong>Add Secret</strong></li>
-                    </ol>
-                  </div>
-
-                  <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                    <p className="text-sm text-slate-700">
-                      <strong>Why Secrets?</strong> Your API key stays hidden from your code.
-                      Anyone viewing your code can't steal it. Your app accesses it securely.
-                    </p>
-                  </div>
-
+                  </pre>
                   <Button
-                    className="w-full mt-4"
-                    onClick={() => setSetupStep(4)}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard("Add a secret called OPENAI_API_KEY with the value: ", "Replit Agent prompt")}
+                    className="absolute top-2 right-2 gap-2 bg-white"
                   >
-                    Secret Added - Next <ChevronRight className="w-4 h-4 ml-2" />
+                    <Copy className="w-4 h-4" />
+                    Copy
                   </Button>
                 </div>
-              )}
-            </Card>
-          )}
-
-          {/* Step 4: Describe Your AI Feature */}
-          {setupStep >= 4 && (
-            <Card className={`p-6 border-2 ${setupStep === 4 ? 'border-primary' : 'border-slate-200'}`}>
-              <div className="flex items-center gap-3 mb-4">
-                <StepIndicator stepNum={4} currentStep={setupStep} />
-                <h4 className="font-bold text-lg text-slate-900">Describe Your AI Feature</h4>
+                <p className="text-xs text-green-700 mt-2">
+                  Replit Agent will add it to your Secrets automatically. Done in 2 seconds!
+                </p>
               </div>
 
-              {setupStep === 4 && (
-                <div className="space-y-4">
-                  <p className="text-sm text-slate-600">
-                    What will AI do in your app? Describe ONE feature:
-                  </p>
-                  <Textarea
-                    placeholder="AI will [do what] when users [do what action].
+              {/* MANUAL WAY */}
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.label + " mb-2"}>Manual way (if Agent doesn't work):</p>
+                <ol className={ds.muted + " space-y-1 list-decimal list-inside text-sm"}>
+                  <li>Click Tools in the left sidebar</li>
+                  <li>Click Secrets</li>
+                  <li>Click + New Secret</li>
+                  <li>Key: <code className="bg-slate-200 px-1 rounded">OPENAI_API_KEY</code></li>
+                  <li>Value: paste your API key</li>
+                  <li>Click Add Secret</li>
+                </ol>
+              </div>
+
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.body}>
+                  Why Secrets? Your API key stays hidden from your code. Anyone viewing your code can't steal it.
+                </p>
+              </div>
+
+              <div
+                className={secretsDone ? ds.optionSelected : ds.optionDefault}
+                onClick={() => setSecretsDone(!secretsDone)}
+              >
+                <div className="flex items-center gap-3">
+                  <Checkbox checked={secretsDone} onCheckedChange={() => setSecretsDone(!secretsDone)} />
+                  <span className={ds.body + " font-medium"}>I've added my API key to Secrets</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("apikey")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button size="lg" onClick={() => setStep("describe")} disabled={!secretsDone} className="gap-2">
+              Next <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Step 4: Describe Your AI Feature */}
+      {step === "describe" && (
+        <>
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className={ds.heading}>Step 4: Describe Your AI Feature</h3>
+                <p className={ds.muted}>What will AI do in your app?</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <p className={ds.body}>
+                Describe ONE feature. What should happen when users interact with AI?
+              </p>
+
+              <Textarea
+                placeholder="AI will [do what] when users [do what action].
 
 Example: 'AI will generate 5 social media posts when users paste a blog URL'
 Example: 'AI will analyze uploaded data and give actionable insights'"
-                    value={aiFeature}
-                    onChange={(e) => setAiFeature(e.target.value)}
-                    className="min-h-[100px]"
-                  />
-                  {userIdea && (
-                    <p className="text-xs text-slate-500">Your app: {userIdea}</p>
-                  )}
+                value={aiFeature}
+                onChange={(e) => setAiFeature(e.target.value)}
+                className="min-h-[120px]"
+              />
 
-                  <Button
-                    className="w-full mt-4"
-                    onClick={() => setSetupStep(5)}
-                    disabled={aiFeature.length < 10}
-                  >
-                    {aiFeature.length < 10 ? 'Describe your feature first...' : 'Next Step'} <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
+              {userIdea && (
+                <p className={ds.muted}>Your app... {userIdea}</p>
               )}
-            </Card>
-          )}
+            </div>
+          </div>
 
-          {/* Step 5: Tell Claude Code */}
-          {setupStep >= 5 && (
-            <Card className={`p-6 border-2 ${setupStep === 5 ? 'border-primary' : 'border-slate-200'}`}>
-              <div className="flex items-center gap-3 mb-4">
-                <StepIndicator stepNum={5} currentStep={setupStep} />
-                <h4 className="font-bold text-lg text-slate-900">Tell Claude Code to Build It</h4>
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("secrets")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button size="lg" onClick={() => setStep("build")} disabled={aiFeature.length < 10} className="gap-2">
+              Next <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Step 5: Tell Claude Code */}
+      {step === "build" && (
+        <>
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <Terminal className="w-5 h-5 text-white" />
               </div>
+              <div>
+                <h3 className={ds.heading}>Step 5: Tell Claude Code to Build It</h3>
+                <p className={ds.muted}>Copy this prompt and let Claude do the work</p>
+              </div>
+            </div>
 
-              {setupStep === 5 && (
-                <div className="space-y-4">
-                  <p className="text-sm text-slate-600">
-                    Copy this prompt and paste it into Claude Code:
-                  </p>
+            <div className="space-y-4">
+              <p className={ds.body}>
+                Copy this prompt and paste it into Claude Code:
+              </p>
 
-                  <div className="relative">
-                    <pre className="bg-slate-100 p-4 rounded-lg text-sm font-mono border border-slate-200 whitespace-pre-wrap">
+              <div className="relative">
+                <pre className="bg-slate-100 p-4 rounded-lg text-sm font-mono border border-slate-200 whitespace-pre-wrap">
 {`Add an AI feature to my app:
 
 ${aiFeature || "[Describe your AI feature above first]"}
 
-Use the OpenAI API. The API key is already stored in Replit Secrets as OPENAI_API_KEY.
+Use the OpenAI API. The API key is already stored in Replit Secrets as OPENAI_API_KEY.`}
+                </pre>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => copyToClipboard(`Add an AI feature to my app:\n\n${aiFeature}\n\nUse the OpenAI API. The API key is already stored in Replit Secrets as OPENAI_API_KEY.`, "Claude Code prompt")}
+                  className="absolute top-2 right-2 gap-2"
+                  disabled={!aiFeature}
+                >
+                  <Copy className="w-4 h-4" />
+                  Copy
+                </Button>
+              </div>
 
-Use GPT-3.5-turbo for speed and low cost. Make sure to handle errors gracefully.`}
-                    </pre>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => copyToClipboard(`Add an AI feature to my app:\n\n${aiFeature}\n\nUse the OpenAI API. The API key is already stored in Replit Secrets as OPENAI_API_KEY.\n\nUse GPT-3.5-turbo for speed and low cost. Make sure to handle errors gracefully.`, "Claude Code prompt")}
-                      className="absolute top-2 right-2 gap-2"
-                      disabled={!aiFeature}
-                    >
-                      <Copy className="w-4 h-4" />
-                      Copy
-                    </Button>
-                  </div>
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.label}>Cost is tiny</p>
+                <p className={ds.muted + " mt-1"}>
+                  AI APIs cost fractions of a penny per request. And most users won't use it as much as you think - actual costs are usually way lower than worst-case estimates.
+                </p>
+              </div>
+            </div>
+          </div>
 
-                  <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-                    <p className="font-medium text-sm text-slate-900">Cost is low</p>
-                    <p className="mt-1 text-sm text-slate-700">
-                      GPT-3.5: ~$0.002 per 1K tokens (500 calls for $1)<br />
-                      GPT-4: ~$0.06 per 1K tokens (more capable but pricier)
-                    </p>
-                  </Card>
-
-                  <Button
-                    size="lg"
-                    className="w-full h-14 text-lg font-bold gap-2"
-                    onClick={() => setPhase("test")}
-                  >
-                    I Built It - Let's Test!
-                  </Button>
-                </div>
-              )}
-            </Card>
-          )}
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("describe")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button size="lg" onClick={() => setStep("test")} className="gap-2">
+              I Built It - Let's Test! <ArrowRight className="w-5 h-5" />
+            </Button>
+          </div>
         </>
       )}
 
-      {/* Test and Document */}
-      {phase === "test" && (
+      {/* Test and Complete */}
+      {step === "test" && (
         <>
-          <Button
-            variant="outline"
-            onClick={() => setPhase("setup")}
-            className="mb-2"
-          >
-            ← Back to Setup
-          </Button>
+          <div className={ds.cardWithPadding}>
+            <h3 className={ds.heading + " mb-4"}>Did it work?</h3>
 
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="font-bold text-lg text-slate-900 mb-2">Your App Has AI!</h4>
-            <p className="text-slate-700">
-              You've added intelligence to your product. This is what separates you from basic tools.
-            </p>
-          </Card>
+            <div
+              className={aiWorking ? ds.optionSelected : ds.optionDefault}
+              onClick={() => setAiWorking(!aiWorking)}
+            >
+              <div className="flex items-center gap-3">
+                <Checkbox checked={aiWorking} onCheckedChange={() => setAiWorking(!aiWorking)} />
+                <span className={ds.body + " font-medium"}>My AI feature is working</span>
+              </div>
+            </div>
 
-          <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">Test Result</h4>
-            <p className="text-sm text-slate-600 mb-4">
-              You tested the AI feature. What happened?
-            </p>
-            <Textarea
-              placeholder="I gave it [input] and it returned [output]. It took about [X seconds]. The result was [useful/not useful] because..."
-              value={aiTestResult}
-              onChange={(e) => setAiTestResult(e.target.value)}
-              className="min-h-[120px]"
-            />
-          </Card>
+            <div className="mt-4">
+              <p className={ds.muted + " mb-2"}>Notes (optional)...</p>
+              <Textarea
+                placeholder="Anything you want to remember about how it works..."
+                value={aiNotes}
+                onChange={(e) => setAiNotes(e.target.value)}
+                className="min-h-[80px]"
+              />
+            </div>
+          </div>
 
-          <Card className="p-6 border-2 border-slate-200">
-            <h4 className="font-bold text-lg mb-2 text-slate-900">The Wow Factor</h4>
-            <p className="text-sm text-slate-600 mb-4">
-              When you saw it work, what was your reaction?
-            </p>
-            <Textarea
-              placeholder="This is impressive because... / This needs improvement because..."
-              value={aiWow}
-              onChange={(e) => setAiWow(e.target.value)}
-              className="min-h-[80px]"
-            />
-          </Card>
-
-          {canComplete && (
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("build")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
             <Button
               size="lg"
-              className="w-full h-14 text-lg font-bold gap-2"
-              onClick={() => onComplete({ aiFeature, aiTestResult, aiWow })}
+              onClick={() => onComplete({ aiFeature, aiTestResult: aiNotes, aiWow: aiWorking ? "Working" : "Not working" })}
+              disabled={!aiWorking}
+              className="gap-2"
             >
-              Save AI Feature & Continue <ChevronRight className="w-5 h-5" />
+              Complete <ArrowRight className="w-5 h-5" />
             </Button>
-          )}
+          </div>
         </>
       )}
     </div>

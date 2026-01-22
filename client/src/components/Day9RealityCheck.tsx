@@ -51,7 +51,7 @@ Start by asking me any clarifying questions if needed.`;
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h3 className="text-2xl font-extrabold text-slate-900">The Build-Test-Fix Loop</h3>
             <p className="text-slate-600 mt-2">
-              This is the most important skill you'll learn. Every successful builder does this hundreds of times:
+              This is the most important skill you'll learn. Every successful builder does this hundreds of times
             </p>
           </Card>
 
@@ -89,7 +89,7 @@ Start by asking me any clarifying questions if needed.`;
 
           <Card className="p-4 border-2 border-blue-200 bg-blue-50">
             <p className="text-sm text-blue-800">
-              <strong>Today's goal:</strong> Find ONE bug in your app and fix it using Claude Code. You'll learn the exact process you'll repeat every time you build.
+              <strong>Today's goal</strong> - Find ONE bug in your app and fix it using Claude Code. You'll learn the exact process you'll repeat every time you build.
             </p>
           </Card>
 
@@ -118,7 +118,7 @@ Start by asking me any clarifying questions if needed.`;
             </div>
 
             <div className="space-y-3 mb-6">
-              <p className="text-sm font-medium text-slate-700">Quick bug-hunting checklist:</p>
+              <p className="text-sm font-medium text-slate-700">Quick bug-hunting checklist</p>
               <div className="grid gap-2">
                 {[
                   "Click every button - does each one do something?",
@@ -193,12 +193,12 @@ Start by asking me any clarifying questions if needed.`;
 
             <div className="space-y-4">
               <div className="p-4 bg-slate-50 rounded-lg">
-                <p className="text-xs font-bold text-slate-500 uppercase mb-2">Your bug:</p>
+                <p className="text-xs font-bold text-slate-500 uppercase mb-2">Your bug</p>
                 <p className="text-sm text-slate-700">{bugFound}</p>
               </div>
 
               <div className="space-y-3">
-                <label className="text-sm font-bold text-slate-900">Now describe EXACTLY what happens:</label>
+                <label className="text-sm font-bold text-slate-900">Now describe EXACTLY what happens</label>
                 <Textarea
                   placeholder="Be specific:
 - What steps cause the bug?
@@ -275,7 +275,7 @@ Start by asking me any clarifying questions if needed.`;
             </div>
 
             <div className="mt-6 space-y-3">
-              <p className="text-sm font-bold text-slate-700">After Claude Code fixes it, describe what changed:</p>
+              <p className="text-sm font-bold text-slate-700">After Claude Code fixes it, describe what changed</p>
               <Textarea
                 placeholder="What did Claude Code change to fix the issue? (This helps you learn for next time)"
                 value={fixApplied}

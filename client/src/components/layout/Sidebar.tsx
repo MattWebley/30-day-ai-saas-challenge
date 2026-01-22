@@ -85,7 +85,7 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
           <div className="flex items-start gap-2">
             <Target className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: '#40916C' }} />
             <div>
-              <p className="text-xs" style={{ color: '#52796F' }}>Building:</p>
+              <p className="text-xs" style={{ color: '#52796F' }}>Building...</p>
               <p className="text-sm font-semibold leading-tight" style={{ color: '#1B4332' }}>{journey.chosenIdea.title}</p>
             </div>
           </div>
@@ -94,7 +94,7 @@ function MyJourneySection({ userProgress }: { userProgress: any[] | undefined })
         <div className="flex items-start gap-2">
           <Lightbulb className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: '#40916C' }} />
           <div>
-            <p className="text-xs" style={{ color: '#52796F' }}>Shortlisted:</p>
+            <p className="text-xs" style={{ color: '#52796F' }}>Shortlisted...</p>
             <p className="text-sm font-medium" style={{ color: '#1B4332' }}>{journey.shortlistCount} ideas</p>
           </div>
         </div>

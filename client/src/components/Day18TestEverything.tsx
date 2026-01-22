@@ -49,7 +49,7 @@ export function Day18TestEverything({ userIdea, onComplete }: Day18TestEverythin
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="font-bold text-lg text-slate-900 mb-3">What's Your USP?</h4>
             <p className="text-slate-600 mb-4">
-              Describe the ONE thing that makes your app different from competitors:
+              Describe the ONE thing that makes your app different from competitors
             </p>
             <Textarea
               placeholder="My app is the only one that [does X] for [specific audience] because [unique reason]."
@@ -58,7 +58,7 @@ export function Day18TestEverything({ userIdea, onComplete }: Day18TestEverythin
               className="min-h-[100px] bg-white"
             />
             {userIdea && (
-              <p className="text-slate-500 text-sm mt-2">Your app: {userIdea}</p>
+              <p className="text-slate-500 text-sm mt-2">Your app... {userIdea}</p>
             )}
           </Card>
 
@@ -135,19 +135,19 @@ export function Day18TestEverything({ userIdea, onComplete }: Day18TestEverythin
             <h4 className="font-bold text-lg text-slate-900 mb-4">Testing Checklist</h4>
             <div className="space-y-3">
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="text-slate-700 font-medium">Try to break it:</p>
+                <p className="text-slate-700 font-medium">Try to break it</p>
                 <p className="text-slate-600 text-sm">Submit empty forms. Enter garbage. Paste a novel into text boxes.</p>
               </div>
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="text-slate-700 font-medium">Check error handling:</p>
+                <p className="text-slate-700 font-medium">Check error handling</p>
                 <p className="text-slate-600 text-sm">When things fail, do you know WHY? Are error messages helpful?</p>
               </div>
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="text-slate-700 font-medium">Check loading states:</p>
+                <p className="text-slate-700 font-medium">Check loading states</p>
                 <p className="text-slate-600 text-sm">Is there a spinner? Do you know when something worked?</p>
               </div>
               <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-                <p className="text-slate-700 font-medium">Test on mobile:</p>
+                <p className="text-slate-700 font-medium">Test on mobile</p>
                 <p className="text-slate-600 text-sm">Open on your actual phone. Does everything work?</p>
               </div>
             </div>

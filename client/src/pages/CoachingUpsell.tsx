@@ -126,7 +126,7 @@ export default function CoachingUpsell() {
                 <span className="text-primary">3x Faster</span>?
               </h1>
               <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                Get 4 x 1-hour sessions with an experienced vibe coding coach who will help you build your product <strong>live, on screen, with you</strong>.
+                Get 4 x 1-hour sessions with an experienced vibe coding coach who will help you build your product live, on screen, with you.
               </p>
             </div>
 

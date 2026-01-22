@@ -167,7 +167,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
               {colorPreference === "other" && (
                 <div className="mt-4 pt-4 border-t border-slate-200">
                   <label className="block text-sm font-medium text-slate-900 mb-2">
-                    Describe your colors:
+                    Describe your colors
                   </label>
                   <Input
                     placeholder="e.g., teal and coral, dark navy with gold accents, earthy browns and greens"
@@ -243,7 +243,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="text-lg font-bold text-slate-900 mb-2">Create Your Logo with AI</h4>
             <p className="text-slate-700 mb-4">
-              AI image tools change ALL the time. What works great today might not tomorrow. Here's the approach:
+              AI image tools change ALL the time. What works great today might not tomorrow. Here's the approach
             </p>
 
             <div className="space-y-4">
@@ -305,7 +305,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
 
             {/* Prompt reference */}
             <div className="mt-4 p-4 bg-slate-900 rounded-lg">
-              <p className="text-slate-400 text-xs mb-2 font-medium">YOUR PROMPT:</p>
+              <p className="text-slate-400 text-xs mb-2 font-medium">YOUR PROMPT</p>
               <p className="text-slate-100 font-mono text-sm leading-relaxed">
                 {generatedPrompt}
               </p>
@@ -356,7 +356,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">4</div>
-                      <p className="text-slate-700">Replace the text with your app name: <strong>{displayName}</strong></p>
+                      <p className="text-slate-700">Replace the text with your app name... <strong>{displayName}</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">5</div>
@@ -369,7 +369,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                   </div>
                   <div className="mt-4 p-3 bg-slate-50 rounded-lg">
                     <p className="text-sm text-slate-600">
-                      <strong>Pro tip:</strong> Text-only logos are totally fine. Stripe, Google, and FedEx all use text logos. Simple = memorable.
+                      <strong>Pro tip</strong> - Text-only logos are totally fine. Stripe, Google, and FedEx all use text logos. Simple = memorable.
                     </p>
                   </div>
                   <Button
@@ -409,7 +409,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="text-lg font-bold text-slate-900 mb-3">I've created my logo</h4>
             <p className="text-slate-700 mb-4">
-              Describe your logo briefly (helps you remember what you chose):
+              Describe your logo briefly (helps you remember what you chose)
             </p>
             <Input
               placeholder={`e.g., Blue abstract icon with "${displayName}" text`}

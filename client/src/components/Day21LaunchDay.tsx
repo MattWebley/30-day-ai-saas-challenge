@@ -197,7 +197,7 @@ export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }:
               </h4>
               <p className="text-slate-700 text-lg">
                 You went from idea to working product in 21 days.
-                You're now in the <strong>top 1%</strong> of people who actually BUILD things.
+                You're now in the top 1% of people who actually BUILD things.
               </p>
             </div>
           </Card>
@@ -206,11 +206,11 @@ export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }:
             <h4 className="font-bold text-lg mb-4 text-slate-900">The SaaS Math is Beautiful</h4>
             <div className="space-y-4 text-slate-700">
               <p>
-                Unlike one-time sales, SaaS is <strong>recurring revenue</strong>.
+                Unlike one-time sales, SaaS is recurring revenue.
                 Every customer you get pays you again next month. And the month after.
               </p>
               <p>
-                100 customers at $29/month = <strong>$2,900/month</strong> = <strong>$34,800/year</strong>
+                100 customers at $29/month = $2,900/month = $34,800/year
               </p>
               <p className="font-bold">
                 That's not a side project. That's a salary.
@@ -318,7 +318,7 @@ export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }:
           <Card className="p-8 border-2 border-green-200 bg-green-50">
             <div className="text-center">
               <Users className="w-10 h-10 text-green-600 mx-auto mb-4" />
-              <p className="text-slate-600 mb-2">To hit ${targetIncome.toLocaleString()}/month at ${selectedPrice}/month, you need:</p>
+              <p className="text-slate-600 mb-2">To hit ${targetIncome.toLocaleString()}/month at ${selectedPrice}/month, you need</p>
               <p className="text-5xl font-extrabold text-slate-900 mb-2">
                 {customersNeeded} customers
               </p>
@@ -332,11 +332,11 @@ export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }:
             <h4 className="font-bold text-lg mb-3 text-slate-900">So Many Ways To Get There</h4>
             <p className="text-slate-700 leading-relaxed mb-4">
               {customersNeeded <= 12 ? (
-                <>That's less than <strong>one new customer per week</strong>. You could find them from...</>
+                <>That's less than one new customer per week. You could find them from...</>
               ) : customersNeeded <= 52 ? (
-                <>That's about <strong>{Math.ceil(customersNeeded / 52)} per week</strong>. You could find them from...</>
+                <>That's about {Math.ceil(customersNeeded / 52)} per week. You could find them from...</>
               ) : (
-                <>That's about <strong>{Math.ceil(customersNeeded / 52)} per week</strong>. You could find them from...</>
+                <>That's about {Math.ceil(customersNeeded / 52)} per week. You could find them from...</>
               )}
             </p>
             <ul className="text-slate-600 space-y-1 columns-2 text-sm">
@@ -417,10 +417,10 @@ export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }:
             <h4 className="font-bold text-lg mb-4 text-slate-900">Picture This in 12 Months...</h4>
             <div className="space-y-4 text-slate-700">
               <p>
-                {appName || "Your app"} has <strong>{customersNeeded}+ paying customers</strong>.
+                {appName || "Your app"} has {customersNeeded}+ paying customers.
               </p>
               <p>
-                Your phone buzzes with Stripe notifications: <strong>${targetIncome.toLocaleString()}/month</strong> coming in automatically.
+                Your phone buzzes with Stripe notifications... ${targetIncome.toLocaleString()}/month coming in automatically.
               </p>
               <p>
                 You wake up to emails from happy users. Some asking for features.
@@ -540,7 +540,7 @@ export function Day21LaunchDay({ appName, selectedStrategies = [], onComplete }:
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="font-bold text-lg mb-3 text-slate-900">Your Commitment</h4>
             <p className="text-slate-600 mb-4">
-              Whether you work with me or go it alone - write down what you're committing to:
+              Whether you work with me or go it alone, write down what you're committing to
             </p>
             <Textarea
               placeholder="I commit to...

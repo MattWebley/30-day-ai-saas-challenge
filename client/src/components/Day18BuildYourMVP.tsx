@@ -177,7 +177,7 @@ export function Day18BuildYourMVP({ appName, onComplete }: Day18BuildYourMVPProp
               </div>
               <p className="text-slate-700 mb-4">
                 Time to capture your progress and join the showcase.
-                This is how you earn your <strong>MVP Builder badge</strong>.
+                This is how you earn your MVP Builder badge.
               </p>
               <Button
                 size="lg"
@@ -200,7 +200,7 @@ export function Day18BuildYourMVP({ appName, onComplete }: Day18BuildYourMVPProp
               <p className="font-bold text-slate-900">Earn Your Badge</p>
             </div>
             <p className="text-slate-700">
-              Submit your app to the showcase to get your <strong>MVP Builder badge</strong> and
+              Submit your app to the showcase to get your MVP Builder badge and
               inspire others taking the challenge.
             </p>
           </Card>
@@ -281,7 +281,7 @@ export function Day18BuildYourMVP({ appName, onComplete }: Day18BuildYourMVPProp
             </p>
 
             <div className="mb-3 p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <p className="text-slate-600 font-medium mb-2">Try starting with:</p>
+              <p className="text-slate-600 font-medium mb-2">Try starting with</p>
               <ul className="text-slate-600 space-y-1">
                 {TESTIMONIAL_PROMPTS.map((prompt, i) => (
                   <li key={i} className="cursor-pointer hover:text-slate-900" onClick={() => setTestimonial(prompt)}>

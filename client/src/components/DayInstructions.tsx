@@ -99,11 +99,12 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Build and test it with Claude Code"
   ],
   13: [
-    "Ask Replit: 'Can you do X without an external API?'",
-    "Identify which superpowers your app actually needs",
-    "If payments: Set up Stripe",
-    "If scraping: Set up Bright Data",
-    "Test any APIs you connect"
+    "Create a Resend account (free tier)",
+    "Get your API key",
+    "Add RESEND_API_KEY to Replit Secrets",
+    "Enter your email address for testing",
+    "Build a test email button with Claude Code",
+    "Receive the test email in your inbox"
   ],
   14: [
     "Ask Replit: 'Does my app have user authentication?'",
@@ -169,7 +170,7 @@ export function DayInstructions({ day, outcome }: DayInstructionsProps) {
 
   return (
     <Card className="p-4 border-2 border-slate-200 bg-slate-50 mb-6" data-testid="day-instructions">
-      <p className="font-bold text-sm text-slate-900 mb-3 uppercase tracking-wide">What To Do Today:</p>
+      <p className="font-bold text-sm text-slate-900 mb-3 uppercase tracking-wide">What To Do Today</p>
       <ol className="space-y-2 mb-4">
         {instructions.map((step, index) => (
           <li key={index} className="flex items-start gap-3 text-sm text-slate-700">
@@ -186,7 +187,7 @@ export function DayInstructions({ day, outcome }: DayInstructionsProps) {
           <div className="flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-bold text-xs text-slate-900 mb-1 uppercase tracking-wide">Today's Outcome:</p>
+              <p className="font-bold text-xs text-slate-900 mb-1 uppercase tracking-wide">Today's Outcome</p>
               <p className="text-sm text-slate-700 font-medium">{outcome}</p>
             </div>
           </div>

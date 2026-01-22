@@ -232,7 +232,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
       <div className={ds.cardWithPadding}>
         <h2 className={`${ds.heading} mb-2`}>Why An App, Not Videos?</h2>
         <p className={ds.body}>
-          The AI space moves <strong>fast</strong>. Tools change. Best practices evolve. What works today might be outdated next month. By building this as an interactive app instead of pre-recorded videos, I can update the challenge in real-time whenever something major changes. You'll always have the most current strategies and tools - not advice from 6 months ago.
+          The AI space moves fast. Tools change. Best practices evolve. What works today might be outdated next month. By building this as an interactive app instead of pre-recorded videos, I can update the challenge in real-time whenever something major changes. You'll always have the most current strategies and tools - not advice from 6 months ago.
         </p>
       </div>
 
@@ -451,7 +451,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
             </div>
             <div className="flex-1">
               <p className={ds.body}>
-                Share your commitment publicly and unlock the <strong>Public Builder</strong> badge.
+                Share your commitment publicly and unlock the Public Builder badge.
               </p>
               <p className={`${ds.muted} mt-1 text-sm`}>
                 People who publicly commit are 65% more likely to follow through.
@@ -472,7 +472,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
 
               {/* Pre-written message */}
               <div>
-                <p className={`${ds.label} mb-2`}>Your message (feel free to edit):</p>
+                <p className={`${ds.label} mb-2`}>Your message (feel free to edit)...</p>
                 <div className="relative">
                   <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4 text-sm text-slate-700 whitespace-pre-line">
                     {generatePublicMessage()}
@@ -490,7 +490,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
 
               {/* Where to share */}
               <div>
-                <p className={`${ds.label} mb-2`}>Share it on:</p>
+                <p className={`${ds.label} mb-2`}>Share it on...</p>
                 <div className="flex flex-wrap gap-2">
                   <a
                     href="https://twitter.com/intent/tweet"
@@ -522,7 +522,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
               {/* Claim badge */}
               {!publicPostClaimed ? (
                 <div className="bg-slate-50 rounded-lg p-4 space-y-3">
-                  <p className={ds.label}>Paste your post link to claim your badge:</p>
+                  <p className={ds.label}>Paste your post link...</p>
                   <div className="flex gap-2">
                     <Input
                       placeholder="https://twitter.com/you/status/..."

@@ -160,7 +160,7 @@ export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboard
 
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">Tell Claude Code</h4>
-            <p className="text-sm text-slate-600 mb-4">Describe what to build:</p>
+            <p className="text-sm text-slate-600 mb-4">Describe what to build</p>
             <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm text-slate-700 font-mono">
               "Create an admin dashboard at /admin:<br /><br />
               1. Only admin users can access<br />
@@ -218,7 +218,7 @@ export function Day18AdminDashboard({ appName, onComplete }: Day18AdminDashboard
           <Card className="p-6 border-2 border-slate-200">
             <h4 className="font-bold text-lg mb-2 text-slate-900">What Are Your Current Stats?</h4>
             <p className="text-sm text-slate-600 mb-4">
-              Record what you see on your dashboard right now:
+              Record what you see on your dashboard right now
             </p>
             <Textarea
               placeholder="My current stats:

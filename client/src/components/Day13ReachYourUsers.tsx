@@ -119,9 +119,9 @@ Use the RESEND_API_KEY from secrets.`;
                 <div className="flex items-start gap-2">
                   <Key className="w-5 h-5 text-amber-600 mt-0.5" />
                   <div>
-                    <p className="font-bold text-amber-900">Add to Replit Secrets:</p>
+                    <p className="font-bold text-amber-900">Add to Replit Secrets</p>
                     <p className="text-amber-800 text-sm mt-1">
-                      In your Replit project, go to Secrets (lock icon). Add:
+                      In your Replit project, go to Secrets (lock icon). Add
                     </p>
                     <code className="block mt-2 p-2 bg-amber-100 rounded text-sm text-amber-900">
                       Name: RESEND_API_KEY<br/>
@@ -255,7 +255,7 @@ Use the RESEND_API_KEY from secrets.`;
             </div>
 
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-6">
-              <p className="font-bold text-green-900 mb-2">Test it:</p>
+              <p className="font-bold text-green-900 mb-2">Test it</p>
               <p className="text-green-800 text-sm">
                 Sign up with a new account using a real email you can check. Did you receive the welcome email?
               </p>
@@ -316,7 +316,7 @@ Use the RESEND_API_KEY from secrets.`;
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <h4 className="font-bold text-lg text-slate-900 mb-3">Future Emails to Add (Later)</h4>
             <div className="space-y-2 text-slate-600">
-              <p>You can add more emails when you need them:</p>
+              <p>You can add more emails when you need them</p>
               <ul className="list-disc list-inside space-y-1 text-sm">
                 <li>Password reset</li>
                 <li>Activity notifications</li>

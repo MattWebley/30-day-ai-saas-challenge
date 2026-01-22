@@ -530,7 +530,7 @@ The app is called "${appName || 'my app'}". Make it look like it belongs in the 
             </div>
 
             <div className="flex items-center gap-4">
-              <p className="text-slate-700 font-medium">Or enter custom hex:</p>
+              <p className="text-slate-700 font-medium">Or enter custom hex</p>
               <Input
                 placeholder="#FF5733"
                 value={customColor}
@@ -606,7 +606,7 @@ The app is called "${appName || 'my app'}". Make it look like it belongs in the 
           <Card className="p-6 border-2 border-primary/30 bg-primary/5">
             <h4 className="text-lg font-bold text-slate-900 mb-3">Your Claude Code Prompt</h4>
             <p className="text-slate-700 mb-3">
-              This prompt tells Claude Code exactly how to transform your app. Copy it and paste it in:
+              This prompt tells Claude Code exactly how to transform your app. Copy it and paste it in
             </p>
             <div className="bg-white p-4 rounded-lg border border-slate-200 mb-4 max-h-64 overflow-y-auto">
               <pre className="text-slate-700 text-sm whitespace-pre-wrap font-mono">{claudeCodePrompt}</pre>

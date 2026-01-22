@@ -271,7 +271,7 @@ export function Day10BuildLoop({ onComplete }: Day10BuildLoopProps) {
 
             <div className="space-y-4">
               <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4">
-                <p className={ds.label + " mb-2"}>Your task:</p>
+                <p className={ds.label + " mb-2"}>Your task</p>
                 <p className={ds.body + " font-medium"}>{taskDescription}</p>
               </div>
 
@@ -280,9 +280,9 @@ export function Day10BuildLoop({ onComplete }: Day10BuildLoopProps) {
               </p>
 
               <div className={ds.infoBoxHighlight}>
-                <p className={ds.body + " font-medium mb-2"}>Good prompt structure:</p>
+                <p className={ds.body + " font-medium mb-2"}>Good prompt structure</p>
                 <p className={ds.muted}>
-                  "{loopType === "build" ? "I want to add" : "I have a bug:"} [what].
+                  "{loopType === "build" ? "I want to add" : "I have a bug..."} [what].
                   {loopType === "build" ? " It should [expected behavior]." : " When I [action], I expected [x] but got [y]."}
                   "
                 </p>
@@ -461,10 +461,10 @@ export function Day10BuildLoop({ onComplete }: Day10BuildLoopProps) {
           </div>
 
           <div className={ds.cardWithPadding}>
-            <h4 className={ds.label + " mb-2"}>What you accomplished:</h4>
+            <h4 className={ds.label + " mb-2"}>What you accomplished</h4>
             <p className={ds.body}>{whatTheyDid}</p>
             {iterations > 1 && (
-              <p className={ds.muted + " mt-2"}>Iterations: {iterations}</p>
+              <p className={ds.muted + " mt-2"}>Iterations... {iterations}</p>
             )}
           </div>
 

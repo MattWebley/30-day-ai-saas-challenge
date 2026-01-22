@@ -137,12 +137,12 @@ export function Day3CoreFeatures({
               Ready to Define Your Features?
             </h3>
             <p className={ds.muted}>
-              AI will analyze your idea and generate:
+              AI will analyze your idea and generate
             </p>
             <ul className="space-y-2">
-              <li className={ds.body}><strong>Core Features:</strong> Essential features based on your pain points</li>
-              <li className={ds.body}><strong>Shared Features:</strong> Must-haves your competitors all have</li>
-              <li className={ds.body}><strong>USP Features:</strong> Unique features that make you stand out</li>
+              <li className={ds.body}><strong>Core Features</strong> - Essential features based on your pain points</li>
+              <li className={ds.body}><strong>Shared Features</strong> - Must-haves your competitors all have</li>
+              <li className={ds.body}><strong>USP Features</strong> - Unique features that make you stand out</li>
             </ul>
 
             <Button

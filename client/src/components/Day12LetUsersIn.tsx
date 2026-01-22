@@ -181,7 +181,7 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
             </div>
 
             <div className="space-y-4 mb-6">
-              <p className="text-slate-700">Run this test to make sure auth is working correctly:</p>
+              <p className="text-slate-700">Run this test to make sure auth is working correctly</p>
 
               <ol className="list-decimal list-inside space-y-3 text-slate-700">
                 <li className="p-3 bg-slate-50 rounded-lg">Sign up with a test email (e.g., test1@example.com)</li>
@@ -198,7 +198,7 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
               </div>
               <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-red-800 text-sm">
-                  <strong>Fail:</strong> You can see the other account's data. Tell Claude Code: "Each user should only see their own data, not other users' data."
+                  <strong>Fail</strong> - You can see the other account's data. Tell Claude Code "Each user should only see their own data, not other users' data."
                 </p>
               </div>
             </div>
