@@ -975,7 +975,7 @@ That's it. If those five things work, you're ready to ship.
 
 YOUR TESTING OPTIONS:
 
-1. REPLIT AGENT - "Test my app's main features and report any bugs"
+1. REPLIT AUTONOMOUS AGENT - "Test my app's main features and report any bugs"
 2. CLAUDE FOR CHROME - Can see your screen and spot issues
 3. MANUAL - Click through the main flows yourself
 

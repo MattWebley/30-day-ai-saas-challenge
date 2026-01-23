@@ -144,9 +144,9 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
                     <span className="text-orange-600 font-bold text-sm">R</span>
                   </div>
                   <div>
-                    <p className={ds.label}>Replit's Built-in Testing</p>
+                    <p className={ds.label}>Replit Autonomous Agent</p>
                     <p className={ds.muted + " mt-1"}>
-                      Replit Agent can test your app for you. Just tell it "Test my entire app and report any bugs you find." It'll click through everything and tell you what's broken.
+                      Replit Autonomous Agent can test your app for you. Just tell it "Test my entire app and report any bugs you find." It'll click through everything and tell you what's broken.
                     </p>
                   </div>
                 </div>
