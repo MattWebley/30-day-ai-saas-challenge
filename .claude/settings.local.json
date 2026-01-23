@@ -72,7 +72,8 @@
       "Bash(npm install:*)",
       "Bash(killall:*)",
       "Bash(for file in /home/runner/workspace/client/src/components/Day*.tsx)",
-      "Bash(xxd:*)"
+      "Bash(xxd:*)",
+      "Bash(test:*)"
     ]
   }
 }

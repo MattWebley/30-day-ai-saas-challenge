@@ -3,15 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Terminal, Copy, Sparkles, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-const INSTALL_COMMAND = `npm install -g @anthropic-ai/claude-code && claude`;
+const INSTALL_COMMAND = `curl -fsSL https://claude.ai/install.sh | bash && source ~/.bashrc && claude`;
+const INSTALL_FALLBACK = `npm install -g @anthropic-ai/claude-code && claude`;
 
 const KICKOFF_PROMPT = `I'm starting a new coding session. Please:
 
-1. Read CLAUDE.md for project context, rules, and pending tasks.
-2. Run \`git pull\` to ensure we're up-to-date.
-3. Run \`git status\` and \`git log --oneline -5\` to see recent activity.
-4. Summarize where we left off and what's pending.
-5. Suggest the best next step.`;
+1. Check CLAUDE.md file size - if over 30k chars, trim by moving old session logs to CLAUDE_ARCHIVE.md
+2. Read CLAUDE.md for project context, rules, and pending tasks.
+3. Run \`git pull\` to ensure we're up-to-date.
+4. Run \`git status\` and \`git log --oneline -5\` to see recent activity.
+5. Summarize where we left off and what's pending.
+6. Suggest the best next step.`;
 
 const WRAPUP_PROMPT = `I'm ending my coding session. Please:
 
@@ -92,9 +94,23 @@ export default function ClaudeCodeGuide() {
                 Copy
               </Button>
             </div>
-            <pre className="p-6 text-slate-700 whitespace-pre-wrap bg-white font-mono">
+            <pre className="p-6 text-slate-700 whitespace-pre-wrap bg-white font-mono text-sm">
               {INSTALL_COMMAND}
             </pre>
+            <details className="px-6 pb-4 text-slate-500">
+              <summary className="cursor-pointer text-sm hover:text-slate-700">If that doesn't work, try this instead</summary>
+              <div className="mt-2 flex items-center justify-between bg-slate-100 rounded-lg p-3">
+                <code className="text-slate-700 font-mono text-sm">{INSTALL_FALLBACK}</code>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => copyToClipboard(INSTALL_FALLBACK, "Fallback command")}
+                  className="text-slate-500 hover:text-slate-700 gap-1"
+                >
+                  <Copy className="w-3 h-3" />
+                </Button>
+              </div>
+            </details>
           </Card>
 
           {/* Step 2: Session Start */}

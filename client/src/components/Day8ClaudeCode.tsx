@@ -19,7 +19,8 @@ interface Day8ClaudeCodeProps {
   onComplete: (data: { setupComplete: boolean }) => void;
 }
 
-const INSTALL_COMMAND = `npm install -g @anthropic-ai/claude-code && claude`;
+const INSTALL_COMMAND = `curl -fsSL https://claude.ai/install.sh | bash && source ~/.bashrc && claude`;
+const INSTALL_FALLBACK = `npm install -g @anthropic-ai/claude-code && claude`;
 
 const CLAUDE_MD_PROMPT = `Create a CLAUDE.md file for this project. Keep it simple - just the app name, what it does, and what we're currently working on.`;
 
@@ -180,10 +181,27 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                     <Copy className="w-4 h-4" /> Copy
                   </Button>
                 </div>
-                <code className="text-green-400 font-mono text-sm">{INSTALL_COMMAND}</code>
+                <code className="text-green-400 font-mono text-sm break-all">{INSTALL_COMMAND}</code>
               </div>
 
               <p className={ds.body}>Follow the prompts.</p>
+
+              <details className="text-slate-600">
+                <summary className="cursor-pointer text-sm hover:text-slate-700">If that doesn't work, try this instead</summary>
+                <div className="mt-2 bg-slate-100 rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <code className="text-slate-700 font-mono text-sm">{INSTALL_FALLBACK}</code>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyToClipboard(INSTALL_FALLBACK, "Fallback command")}
+                      className="text-slate-500 hover:text-slate-700 gap-1 ml-2"
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+              </details>
 
               <div className={ds.infoBoxHighlight}>
                 <p className={ds.body}>
