@@ -299,7 +299,7 @@ export async function registerRoutes(
 
         let shouldAward = false;
 
-        if (badge.triggerType === 'day_completed' && badge.triggerValue && completedDays.has(badge.triggerValue)) {
+        if (badge.triggerType === 'day_completed' && badge.triggerValue !== null && badge.triggerValue !== undefined && completedDays.has(badge.triggerValue)) {
           shouldAward = true;
         } else if (badge.triggerType === 'streak' && currentStreak >= (badge.triggerValue || 0)) {
           shouldAward = true;
