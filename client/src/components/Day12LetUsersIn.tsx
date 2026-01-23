@@ -3,6 +3,7 @@ import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,11 +14,20 @@ import {
   CheckCircle2,
   Copy,
   BarChart3,
-  Terminal
+  Terminal,
+  Sparkles,
+  TrendingUp,
+  Activity,
+  DollarSign,
+  Clock,
+  Target,
+  Zap,
+  Plus
 } from "lucide-react";
 import { toast } from "sonner";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import { ds } from "@/lib/design-system";
 
 interface Day12LetUsersInProps {
   onComplete: (data: {
@@ -29,18 +39,108 @@ interface Day12LetUsersInProps {
 }
 
 export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
-  const [step, setStep, containerRef] = useStepWithScroll<"check" | "add" | "test" | "admin" | "done">("check");
+  const [step, setStep, containerRef] = useStepWithScroll<"check" | "add" | "test" | "admin" | "admin-questions" | "admin-prompt" | "admin-learn" | "done">("check");
   const [hasAuth, setHasAuth] = useState<boolean | null>(null);
   const [copied, setCopied] = useState(false);
   const [testPassed, setTestPassed] = useState(false);
   const [adminBuilt, setAdminBuilt] = useState(false);
   const { toast: toastHook } = useToast();
 
+  // Admin dashboard questionnaire state
+  const [mainAction, setMainAction] = useState("");
+  const [secondaryActions, setSecondaryActions] = useState("");
+  const [businessModel, setBusinessModel] = useState<"free" | "paid" | "freemium" | "">("");
+  const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
+  const [selectedInsights, setSelectedInsights] = useState<string[]>([]);
+  const [wantsCharts, setWantsCharts] = useState(true);
+  const [wantsExport, setWantsExport] = useState(false);
+  const [wantsAlerts, setWantsAlerts] = useState(false);
+
   const authPrompt = `Add user authentication. I need:
 - Login/signup button in the header
 - Show the user's name when logged in
 - Logout button
 - Each user should only see their own data`;
+
+  // Generate the comprehensive admin prompt based on selections
+  const generateAdminPrompt = () => {
+    const sections: string[] = [];
+
+    // Header
+    sections.push(`Create a comprehensive admin dashboard at /admin that only I can access. Make it look professional with a clean grid layout.`);
+
+    // Core user metrics (always included)
+    sections.push(`\n## USER METRICS (top of dashboard, big numbers with cards)\n- Total users (all time)\n- New users this week (with % change from last week)\n- Active users this week (anyone who logged in)\n- Daily active users today`);
+
+    // Main action tracking
+    if (mainAction) {
+      sections.push(`\n## MAIN ACTION TRACKING\nThe primary thing users do is: "${mainAction}"\n- Total ${mainAction} (all time)\n- ${mainAction} this week (with % change)\n- ${mainAction} today\n- Average ${mainAction} per user\n- Show a feed of the last 50 ${mainAction} with username, timestamp, and any relevant details`);
+    }
+
+    // Secondary actions
+    if (secondaryActions) {
+      sections.push(`\n## SECONDARY ACTIONS\nAlso track these actions: ${secondaryActions}\n- Show totals for each\n- Show this week vs last week for each`);
+    }
+
+    // Business model specific
+    if (businessModel === "paid" || businessModel === "freemium") {
+      sections.push(`\n## REVENUE & PAYMENTS\n- Total revenue (all time)\n- Revenue this month\n- Revenue this week\n- Number of paying customers\n- Average revenue per user (ARPU)\n- Recent transactions (last 20)`);
+    }
+    if (businessModel === "freemium") {
+      sections.push(`- Free vs paid user breakdown\n- Conversion rate (free to paid)\n- List of free users who are most active (potential upsells)`);
+    }
+
+    // Selected metrics
+    if (selectedMetrics.includes("retention")) {
+      sections.push(`\n## RETENTION & ENGAGEMENT\n- Day 1 retention (% who come back next day)\n- Week 1 retention (% who come back within 7 days)\n- User streaks (who's coming back daily?)\n- "At risk" users (were active, now gone 7+ days)`);
+    }
+    if (selectedMetrics.includes("funnel")) {
+      sections.push(`\n## CONVERSION FUNNEL\n- Show the funnel: Signup → First action → Return visit → Power user\n- Show drop-off % at each stage\n- Identify where users are getting stuck`);
+    }
+    if (selectedMetrics.includes("speed")) {
+      sections.push(`\n## SPEED METRICS\n- Time to first action (how fast do new users do something?)\n- Average session length\n- Pages/actions per session`);
+    }
+    if (selectedMetrics.includes("features")) {
+      sections.push(`\n## FEATURE USAGE\n- Which features are used most?\n- Which features are never used?\n- Feature adoption rate (% of users who've tried each)`);
+    }
+
+    // Selected insights
+    if (selectedInsights.includes("power-users")) {
+      sections.push(`\n## POWER USERS\n- Top 10 most active users this week\n- Show their name, signup date, total actions, last active`);
+    }
+    if (selectedInsights.includes("geography")) {
+      sections.push(`\n## GEOGRAPHY\n- Users by country (top 10)\n- Users by timezone\n- Show a simple map or bar chart`);
+    }
+    if (selectedInsights.includes("devices")) {
+      sections.push(`\n## DEVICES & PLATFORMS\n- Mobile vs Desktop breakdown\n- Browser breakdown\n- Show as pie charts`);
+    }
+    if (selectedInsights.includes("errors")) {
+      sections.push(`\n## ERRORS & ISSUES\n- Recent errors (last 20)\n- Most common errors\n- Failed actions count`);
+    }
+    if (selectedInsights.includes("search")) {
+      sections.push(`\n## SEARCH & DISCOVERY\n- What are users searching for?\n- Top searches with no results (opportunity!)\n- Most viewed content/items`);
+    }
+
+    // Charts
+    if (wantsCharts) {
+      sections.push(`\n## CHARTS & VISUALIZATIONS\n- Line chart: Users over time (last 30 days)\n- Line chart: ${mainAction || "Actions"} over time (last 30 days)\n- Bar chart: Activity by day of week\n- Bar chart: Activity by hour of day`);
+    }
+
+    // Export
+    if (wantsExport) {
+      sections.push(`\n## DATA EXPORT\n- Add "Export to CSV" buttons for user list and activity data\n- Include all relevant columns`);
+    }
+
+    // Alerts
+    if (wantsAlerts) {
+      sections.push(`\n## ALERTS & NOTIFICATIONS\n- Show alerts at top if: no signups in 24 hours, sudden drop in activity, error spike\n- Color code: green = healthy, yellow = warning, red = problem`);
+    }
+
+    // Footer instructions
+    sections.push(`\n## TECHNICAL REQUIREMENTS\n- Only accessible to admin users (check user role or email)\n- Auto-refresh data every 60 seconds\n- Mobile-responsive design\n- Use existing database tables for queries\n- Cache expensive queries where appropriate`);
+
+    return sections.join("\n");
+  };
 
   const adminPrompt = `Create an admin page at /admin that only I can access. Show me:
 - Total users (how many have ever signed up)
@@ -260,8 +360,58 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
         </>
       )}
 
-      {/* Step 4: Admin Dashboard */}
+      {/* Step 4: Admin Dashboard Intro */}
       {step === "admin" && (
+        <>
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h4 className="font-bold text-lg text-slate-900">Now You Have Users... Track Them!</h4>
+                <p className="text-slate-600 text-sm">Let's build you a PROPER admin dashboard</p>
+              </div>
+            </div>
+
+            <p className={ds.body + " mb-4"}>
+              You have authentication. People can sign up. But how many? Are they coming back? Are they actually USING the thing?
+            </p>
+
+            <p className={ds.body + " mb-4"}>
+              Don't guess. <strong>KNOW.</strong> We're going to build you a dashboard that would make a Silicon Valley startup jealous.
+            </p>
+
+            <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg mb-6">
+              <p className="text-purple-900 font-bold mb-2">What You're About to Build</p>
+              <div className="grid grid-cols-2 gap-2 text-purple-800 text-sm">
+                <div className="flex items-center gap-2"><TrendingUp className="w-4 h-4" /> User growth tracking</div>
+                <div className="flex items-center gap-2"><Activity className="w-4 h-4" /> Real-time activity feeds</div>
+                <div className="flex items-center gap-2"><Target className="w-4 h-4" /> Conversion funnels</div>
+                <div className="flex items-center gap-2"><Zap className="w-4 h-4" /> Engagement metrics</div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className={ds.body + " text-amber-900"}>
+                <strong>This takes 5 minutes.</strong> Answer a few questions, get a prompt that builds something incredible.
+              </p>
+            </div>
+          </Card>
+
+          <div className="flex gap-3">
+            <Button variant="outline" size="lg" onClick={() => setStep("test")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button size="lg" className="flex-1 h-14 text-lg font-bold gap-2" onClick={() => setStep("admin-questions")}>
+              Let's Build It <Sparkles className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Step 4b: Admin Questions */}
+      {step === "admin-questions" && (
         <>
           {/* Claude Code Guide Reminder */}
           <Link href="/claude-code">
@@ -279,126 +429,357 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
           </Link>
 
           <Card className="p-6 border-2 border-slate-200 bg-white">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-purple-600" />
+            <h4 className="font-bold text-lg text-slate-900 mb-6">Tell Me About Your App</h4>
+
+            {/* Question 1: Main Action */}
+            <div className="mb-6">
+              <label className={ds.label + " mb-2 block"}>
+                What's the MAIN thing users do in your app? <span className="text-red-500">*</span>
+              </label>
+              <p className={ds.muted + " mb-2"}>
+                Examples... "create tasks", "generate reports", "save recipes", "log workouts", "write notes"
+              </p>
+              <input
+                type="text"
+                placeholder="e.g., create invoices"
+                value={mainAction}
+                onChange={(e) => setMainAction(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-primary focus:outline-none"
+              />
+            </div>
+
+            {/* Question 2: Secondary Actions */}
+            <div className="mb-6">
+              <label className={ds.label + " mb-2 block"}>
+                Any other actions you want to track?
+              </label>
+              <p className={ds.muted + " mb-2"}>
+                Optional - separate with commas
+              </p>
+              <input
+                type="text"
+                placeholder="e.g., send messages, upload files, invite team members"
+                value={secondaryActions}
+                onChange={(e) => setSecondaryActions(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-primary focus:outline-none"
+              />
+            </div>
+
+            {/* Question 3: Business Model */}
+            <div className="mb-6">
+              <label className={ds.label + " mb-3 block"}>
+                What's your business model?
+              </label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {[
+                  { value: "free", label: "Free", desc: "No payments yet" },
+                  { value: "paid", label: "Paid", desc: "Users pay to use it" },
+                  { value: "freemium", label: "Freemium", desc: "Free + paid tiers" },
+                ].map((option) => (
+                  <div
+                    key={option.value}
+                    onClick={() => setBusinessModel(option.value as "free" | "paid" | "freemium")}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                      businessModel === option.value
+                        ? "border-primary bg-primary/5"
+                        : "border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    <p className="font-medium text-slate-900">{option.label}</p>
+                    <p className={ds.muted + " text-sm"}>{option.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Question 4: Key Metrics */}
+            <div className="mb-6">
+              <label className={ds.label + " mb-2 block"}>
+                What metrics matter most to you?
+              </label>
+              <p className={ds.muted + " mb-3"}>
+                Select all that apply - we'll include user counts and activity by default
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  { id: "retention", label: "Retention & Engagement", desc: "Are users coming back? Streaks, at-risk users", icon: Activity },
+                  { id: "funnel", label: "Conversion Funnel", desc: "Where do users drop off? Signup → action → return", icon: Target },
+                  { id: "speed", label: "Speed Metrics", desc: "How fast do new users engage? Session length", icon: Clock },
+                  { id: "features", label: "Feature Usage", desc: "Which features are popular? Which are ignored?", icon: BarChart3 },
+                ].map((metric) => (
+                  <div
+                    key={metric.id}
+                    onClick={() => {
+                      setSelectedMetrics(prev =>
+                        prev.includes(metric.id)
+                          ? prev.filter(m => m !== metric.id)
+                          : [...prev, metric.id]
+                      );
+                    }}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                      selectedMetrics.includes(metric.id)
+                        ? "border-primary bg-primary/5"
+                        : "border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <metric.icon className={`w-5 h-5 mt-0.5 ${selectedMetrics.includes(metric.id) ? "text-primary" : "text-slate-400"}`} />
+                      <div>
+                        <p className="font-medium text-slate-900">{metric.label}</p>
+                        <p className={ds.muted + " text-sm"}>{metric.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Question 5: Insights */}
+            <div className="mb-6">
+              <label className={ds.label + " mb-2 block"}>
+                Extra insights you'd like?
+              </label>
+              <p className={ds.muted + " mb-3"}>
+                These are nice-to-haves - select any that sound useful
+              </p>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {[
+                  { id: "power-users", label: "Power Users" },
+                  { id: "geography", label: "User Locations" },
+                  { id: "devices", label: "Device/Browser" },
+                  { id: "errors", label: "Error Tracking" },
+                  { id: "search", label: "Search Analytics" },
+                ].map((insight) => (
+                  <div
+                    key={insight.id}
+                    onClick={() => {
+                      setSelectedInsights(prev =>
+                        prev.includes(insight.id)
+                          ? prev.filter(i => i !== insight.id)
+                          : [...prev, insight.id]
+                      );
+                    }}
+                    className={`p-3 rounded-lg border-2 cursor-pointer text-center transition-colors ${
+                      selectedInsights.includes(insight.id)
+                        ? "border-primary bg-primary/5"
+                        : "border-slate-200 hover:border-slate-300"
+                    }`}
+                  >
+                    <p className={`font-medium ${selectedInsights.includes(insight.id) ? "text-primary" : "text-slate-700"}`}>
+                      {insight.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Question 6: Features */}
+            <div className="mb-6">
+              <label className={ds.label + " mb-3 block"}>
+                Dashboard features
+              </label>
+              <div className="space-y-3">
+                <div
+                  onClick={() => setWantsCharts(!wantsCharts)}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                    wantsCharts ? "border-primary bg-primary/5" : "border-slate-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Checkbox checked={wantsCharts} onCheckedChange={() => setWantsCharts(!wantsCharts)} />
+                    <div>
+                      <span className="font-medium text-slate-900">Charts & Visualizations</span>
+                      <span className={ds.muted + " ml-2"}>Line charts for trends, bar charts for breakdowns</span>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  onClick={() => setWantsExport(!wantsExport)}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                    wantsExport ? "border-primary bg-primary/5" : "border-slate-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Checkbox checked={wantsExport} onCheckedChange={() => setWantsExport(!wantsExport)} />
+                    <div>
+                      <span className="font-medium text-slate-900">Export to CSV</span>
+                      <span className={ds.muted + " ml-2"}>Download user data and activity</span>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  onClick={() => setWantsAlerts(!wantsAlerts)}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                    wantsAlerts ? "border-primary bg-primary/5" : "border-slate-200"
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <Checkbox checked={wantsAlerts} onCheckedChange={() => setWantsAlerts(!wantsAlerts)} />
+                    <div>
+                      <span className="font-medium text-slate-900">Health Alerts</span>
+                      <span className={ds.muted + " ml-2"}>Warnings when metrics drop suddenly</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          <div className="flex gap-3">
+            <Button variant="outline" size="lg" onClick={() => setStep("admin")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("admin-prompt")}
+              disabled={!mainAction.trim()}
+            >
+              Generate My Dashboard Prompt <Sparkles className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Step 4c: Generated Prompt */}
+      {step === "admin-prompt" && (
+        <>
+          <Card className="p-6 border-2 border-green-200 bg-green-50">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-lg text-slate-900">Now You Have Users... Track Them!</h4>
-                <p className="text-slate-600 text-sm">Build a simple admin dashboard</p>
+                <h4 className="font-bold text-lg text-green-900">Your Custom Admin Dashboard Prompt</h4>
+                <p className="text-green-700 text-sm">Copy this to Claude Code - it's comprehensive!</p>
               </div>
             </div>
+          </Card>
 
-            <p className="text-slate-700 mb-4">
-              You have authentication. People can sign up. But how many? Are they coming back? Are they actually USING the thing?
-            </p>
-
-            <p className="text-slate-700 mb-4">
-              Don't guess. KNOW. Build a simple admin page that shows you the numbers.
-            </p>
-
-            <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg mb-6">
-              <p className="text-purple-900 font-bold mb-2">The 4 Numbers You Need</p>
-              <ol className="text-purple-800 space-y-1 list-decimal list-inside">
-                <li><strong>Total users</strong> - how many have ever signed up</li>
-                <li><strong>New this week</strong> - are people still finding you?</li>
-                <li><strong>Active this week</strong> - are they coming back?</li>
-                <li><strong>Total actions</strong> - are they doing the thing?</li>
-              </ol>
-            </div>
-
-            <div className="relative mb-6">
-              <div className="p-4 bg-slate-900 rounded-lg text-sm font-mono text-slate-100 whitespace-pre-wrap">
-                {adminPrompt}
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <div className="relative">
+              <div className="p-4 bg-slate-900 rounded-lg text-sm font-mono text-slate-100 whitespace-pre-wrap max-h-96 overflow-y-auto">
+                {generateAdminPrompt()}
               </div>
               <Button
                 size="sm"
                 variant="secondary"
                 className="absolute top-2 right-2 gap-1"
-                onClick={() => copyPrompt(adminPrompt, "Admin dashboard prompt")}
+                onClick={() => copyPrompt(generateAdminPrompt(), "Admin dashboard prompt")}
               >
                 <Copy className="w-3 h-3" />
-                Copy
+                Copy Prompt
               </Button>
             </div>
 
-            <div className="p-4 bg-slate-50 rounded-lg mb-6">
-              <p className="text-slate-700 text-sm">
-                <strong>Replace [main actions]</strong> with whatever people DO in your app - "tasks created", "recipes saved", "reports generated", etc.
+            <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <p className={ds.body + " text-amber-900"}>
+                <strong>This is a BIG prompt.</strong> Claude Code might take a few minutes. Let it cook - the result will be worth it.
               </p>
             </div>
+          </Card>
 
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg mb-6">
-              <p className="text-amber-900 font-bold mb-3">🚀 Want More? Add These Too</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-amber-800 text-sm">
-                <div className="flex items-start gap-2">
-                  <span>💰</span>
-                  <span><strong>Revenue today/week/month</strong> - if you have payments</span>
+          <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg border-2 border-slate-200">
+            <input
+              type="checkbox"
+              id="adminBuilt"
+              checked={adminBuilt}
+              onChange={(e) => setAdminBuilt(e.target.checked)}
+              className="w-5 h-5 rounded border-slate-300"
+            />
+            <label htmlFor="adminBuilt" className="text-slate-700 font-medium">
+              I've built my admin dashboard and it's working
+            </label>
+          </div>
+
+          <div className="flex gap-3">
+            <Button variant="outline" size="lg" onClick={() => setStep("admin-questions")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Edit Answers
+            </Button>
+            <Button
+              size="lg"
+              className="flex-1 h-14 text-lg font-bold gap-2"
+              onClick={() => setStep("admin-learn")}
+              disabled={!adminBuilt}
+            >
+              Dashboard Built <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Step 4d: Learn to Expand */}
+      {step === "admin-learn" && (
+        <>
+          <Card className="p-6 border-2 border-slate-200 bg-white">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Plus className="w-5 h-5 text-blue-600" />
+              </div>
+              <div>
+                <h4 className="font-bold text-lg text-slate-900">The Secret: Your Dashboard Never Stops Growing</h4>
+              </div>
+            </div>
+
+            <p className={ds.body + " mb-4"}>
+              Here's what the pros know... your admin dashboard is a <strong>living document</strong>. Every time you wonder "I wish I could see..." - you add it.
+            </p>
+
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-6">
+              <p className="text-blue-900 font-bold mb-3">The Pattern for Adding Anything</p>
+              <p className={ds.body + " text-blue-800 mb-3"}>
+                Just tell Claude Code what you want to see. It's that simple.
+              </p>
+              <div className="bg-white rounded-lg p-3 font-mono text-sm text-slate-800">
+                "Add a section to my admin dashboard that shows [what you want to see]"
+              </div>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <p className={ds.label}>Examples of things you might add later...</p>
+
+              <div className="grid gap-3">
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="font-mono text-sm text-slate-800">
+                    "Add a section showing which users signed up but never did anything - I want to email them"
+                  </p>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span>⭐</span>
-                  <span><strong>Power users</strong> - who's using it the most?</span>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="font-mono text-sm text-slate-800">
+                    "Add a chart showing my busiest hours so I know when to post on social"
+                  </p>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span>🔥</span>
-                  <span><strong>User streaks</strong> - who's coming back daily?</span>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="font-mono text-sm text-slate-800">
+                    "Show me users who were active last week but haven't logged in this week"
+                  </p>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span>📊</span>
-                  <span><strong>Feature popularity</strong> - what do people use most?</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span>⏱️</span>
-                  <span><strong>Time to first action</strong> - how fast do new users engage?</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span>🎯</span>
-                  <span><strong>Conversion funnel</strong> - signup → action → return</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span>🌍</span>
-                  <span><strong>Where are users from?</strong> - countries/timezones</span>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span>📱</span>
-                  <span><strong>Device breakdown</strong> - mobile vs desktop</span>
+                <div className="p-3 bg-slate-50 rounded-lg">
+                  <p className="font-mono text-sm text-slate-800">
+                    "Add a section showing average time between signup and first {mainAction || "action"}"
+                  </p>
                 </div>
               </div>
-              <p className="text-amber-700 text-sm mt-3 italic">
-                Start with the basics. Add the fun stuff later when you're curious.
-              </p>
             </div>
 
-            <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg">
-              <input
-                type="checkbox"
-                id="adminBuilt"
-                checked={adminBuilt}
-                onChange={(e) => setAdminBuilt(e.target.checked)}
-                className="w-5 h-5 rounded border-slate-300"
-              />
-              <label htmlFor="adminBuilt" className="text-slate-700 font-medium">
-                I've built my admin dashboard
-              </label>
+            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-green-900 font-bold mb-2">The Mindset Shift</p>
+              <p className={ds.body + " text-green-800"}>
+                Every time you catch yourself wondering about a number... that's a dashboard feature. "I wonder how many..." → add it. "I wish I knew..." → add it. Your dashboard becomes your superpower.
+              </p>
             </div>
           </Card>
 
           <div className="flex gap-3">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => setStep("test")}
-              className="gap-2"
-            >
+            <Button variant="outline" size="lg" onClick={() => setStep("admin-prompt")} className="gap-2">
               <ChevronLeft className="w-5 h-5" /> Back
             </Button>
             <Button
               size="lg"
               className="flex-1 h-14 text-lg font-bold gap-2"
               onClick={() => setStep("done")}
-              disabled={!adminBuilt}
             >
-              Dashboard Built <ChevronRight className="w-5 h-5" />
+              Got It - Let's Finish <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
         </>

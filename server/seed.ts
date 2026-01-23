@@ -800,7 +800,7 @@ Add ONE at a time. Get it working. Test it. Then consider the next one. Every ex
       tip: "Replit probably already added auth when you first built your app. Check before adding it again. Ask Replit: 'Does my app have user authentication?'",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
-Today you're doing TWO things: authentication (who are your users?) and admin dashboard (what are they doing?).
+Today you're doing TWO things: authentication (letting people sign up and log in) and admin dashboard (so you can see what's happening).
 
 PART 1: AUTHENTICATION
 
@@ -828,24 +828,11 @@ Now you have users. But how many? Are they coming back? Are they actually USING 
 
 Don't guess. KNOW.
 
-THE 4 NUMBERS YOU NEED:
+Here's the thing - AI makes it EASY to build a proper dashboard. Not a toy with 4 numbers. A REAL dashboard like the big companies have. User growth charts. Retention metrics. Conversion funnels. Activity feeds. The works.
 
-1. Total users - how many have ever signed up
-2. New this week - are people still finding you?
-3. Active this week - are they coming back?
-4. Total actions - are they doing the thing?
+So that's what we're doing. Answer a few questions about YOUR app, and we'll generate a prompt that builds you something incredible. Revenue tracking, power user lists, feature popularity, geographic breakdown - pick what matters to YOU.
 
-That's it. Four numbers. Build a simple /admin page that shows you these.
-
-WANT MORE? Once you have the basics, you can add fun stuff like:
-- Revenue tracking (today/week/month)
-- Power users (who's using it the most?)
-- User streaks (who's coming back daily?)
-- Feature popularity (what do people use most?)
-- Conversion funnel (signup → action → return)
-- Where users are from (countries/timezones)
-
-Start simple. Add the fancy stuff when you're curious.
+Why settle for "simple" when comprehensive takes the same amount of effort?
 
 WHY THIS MATTERS:
 
@@ -877,150 +864,134 @@ Data tells you what to fix. Check your dashboard every day.`,
       tip: "Use TEST MODE while building. Stripe's test card is 4242 4242 4242 4242. You can switch to live mode when you're ready to launch.",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
-This is a BIG day.
+Today you're adding the ability to take payments. The exercise below walks you through setting up Stripe step by step.
 
-Once you add payments, you don't have a "project" anymore. You have a BUSINESS.
+Before you start, decide on a pricing model:
 
-Stripe is what everyone uses. It's free to set up, and you only pay when customers pay you (about 2.9% + 30p per transaction). That's it.
+SUBSCRIPTION - They pay monthly/yearly. Examples: $19/month, $29/month, $99/year.
 
-TODAY'S GOAL: Make a test payment and see it in your Stripe dashboard.
+ONE-TIME - They pay once, use forever. Examples: $49, $99, $199.
 
-THE PSYCHOLOGY OF CHARGING
+USAGE-BASED - They pay for what they use. Examples: $10 for 100 credits.
 
-Here's the truth about pricing that most people get wrong...
+FREEMIUM - Free tier with limits, paid tier unlocks more.
 
-Charging SOMETHING (even $5) is infinitely better than free. Why?
-- Free users don't value what they get
-- Free users complain the most
-- Free users rarely convert later
-- Paying users are invested and give real feedback
+HOW TO PRICE IT
 
-The hardest part isn't building - it's believing your app is worth money. It is. If it solves a problem, it has value.
+Pricing is subjective. Here's what I recommend - I call it "friction-based pricing":
 
-WHAT TO CHARGE FOR
+Start LOWER than competitors - maybe half of what they charge. Then increase your price over time until you hit friction (people stop buying). When that happens, pull it back to where it was selling well. This eliminates the guessing game of "is it the price or my funnel that's the problem?" If people are buying at $29, try $39. Still buying? Try $49. When sales drop, go back to $39.
 
-Pick ONE of these to start...
+Your goal is NOT to be the cheapest. Ideally you want to be the MOST expensive eventually - that signals value. But you earn that position over time.
 
-- Monthly subscription ($9-29/month for access)
-- One-time purchase ($29-99 for lifetime)
-- Credits ($10 for 100 AI generations)
-- Premium tier (free basic, paid premium)
+The magic trick: grandfather your early users at the lower price. They stay on the cheap plan forever while new users pay more. This makes your early adopters feel special and VERY sticky - they'll never leave because they know they're getting a deal nobody else can get.
 
-You can always change your pricing later. Most people charge TOO LITTLE at first. Start higher than feels comfortable.
-
-TEST MODE = SAFETY
-
-We're using Stripe's test mode today. That means...
-- No real money involved
-- Fake card numbers work
-- You can experiment freely
-- Switch to live when ready
-
-The test card number is 4242 4242 4242 4242 (any expiry, any CVC).
-
-When you're ready to go live, you just swap your test keys for live keys.
-
-This is the day your app becomes a real business. Let's go.`,
+Quick math: A $29/month app with 100 paying users = $2,900/month. You don't need millions of users.`,
       outcome: "Stripe connected, checkout flow working in test mode",
-      completionMessage: "YOUR APP CAN MAKE MONEY. That's not a small thing. You've built something people can pay for. Tomorrow: mobile optimization.",
+      completionMessage: "Payment infrastructure done. Your app can now accept payments when you're ready to go live. Tomorrow: mobile optimization.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
     {
       day: 16,
-      title: "Mobile Ready",
-      description: "Make your app work beautifully on phones and tablets. Most users will access on mobile.",
+      title: "Mobile & Speed",
+      description: "Make your app fast and mobile-friendly. Slow loading and broken mobile layouts kill apps.",
       phase: "Build",
       videoUrl: null,
       aiTaskType: "generator",
-      aiTaskTitle: "Mobile Optimization",
-      aiTaskDescription: "Test and fix your app's mobile experience across different screen sizes.",
+      aiTaskTitle: "Mobile & Performance",
+      aiTaskDescription: "Test and fix your app's mobile experience and loading speed.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "How does your app look on mobile right now?",
-      microDecisionOptions: JSON.stringify(["Looks great!", "Usable but not pretty", "Some things are broken", "Haven't checked yet"]),
-      reflectionQuestion: "Can users complete the main task on their phone without frustration?",
-      tip: "Test on a REAL phone, not just browser dev tools. The experience is different. Also try with one hand - can you reach all the buttons?",
+      microDecisionQuestion: "How does your app perform on mobile right now?",
+      microDecisionOptions: JSON.stringify(["Fast and looks great", "Works but a bit slow", "Some things are broken", "Haven't tested yet"]),
+      reflectionQuestion: "Can users complete the main task on their phone without frustration or waiting?",
+      tip: "Test on a REAL phone with mobile data (not wifi). That's what your users will experience. If you're frustrated waiting, they will be too.",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
-Here's a BRUTAL truth: More than HALF your users will access your app on their PHONE.
+Today we fix TWO things that kill apps: broken mobile and slow loading.
 
-Not their laptop. Not their desktop. Their PHONE.
+BRUTAL TRUTH #1: More than HALF your users will access your app on their PHONE. Not their laptop. Their PHONE. If it's broken on mobile? They're GONE.
 
-And if your app looks broken on mobile? They're GONE. They don't come back. They don't give you a second chance. This isn't about being perfect. It's about being USABLE.
+BRUTAL TRUTH #2: 53% of mobile users abandon pages that take longer than 3 seconds to load. THREE SECONDS. Every extra second = lost customers.
 
-WHAT YOU'RE ACTUALLY TESTING:
+MOBILE TESTING - Start in Replit's preview (use the screen size toggle in top right), then test on your REAL phone. Browser simulators miss things real devices catch.
 
-1. DOES IT LOAD? Open your app on your actual phone (not browser dev tools - your REAL phone). Does it load? Fast? Good.
-2. CAN YOU READ IT? Without pinching and zooming? Text should be readable without squinting.
-3. CAN YOU TAP THE BUTTONS? Are they big enough for a thumb? If you're missing buttons with your finger, they're too small.
-4. DOES THE MAIN THING WORK? Whatever your app DOES - can you do it on mobile? This is the only question that actually matters.
+What to check:
+- Does text read without zooming?
+- Can you tap buttons with your thumb?
+- Does the main feature actually work?
+- Any weird horizontal scrolling?
 
-THE FAST FIX:
+SPEED TESTING - Open your app on your phone using mobile data (not wifi). Count the seconds. If you're waiting and getting frustrated, your users will be too.
 
-Open Claude Code and say: "Test my app at 375px width. Fix anything that's broken. Make buttons at least 44px tall. Make text readable. No horizontal scrolling." That's it. Don't overthink it.
+What to check:
+- Does first page load in under 3 seconds?
+- Do you see something useful immediately (not blank screen)?
+- Are there loading spinners when fetching data?
+- Does clicking around feel instant?
 
-DO THIS NOW:
+THE FIX: Open Claude Code and say "Optimize my app for mobile and speed. Fix any responsive issues at 375px width, add code splitting and lazy loading, compress images, and add loading states where data is fetched."
 
-1. Open your app on your phone
-2. Try the main feature
-3. Note what's broken or awkward
-4. Fix it with Claude Code
-
-Mobile optimization isn't about perfection. It's about: Can someone USE this on their phone? Yes or no.`,
-      outcome: "App works on mobile devices - responsive and touch-friendly",
-      completionMessage: "Your app works on mobile now. You just unlocked the majority of potential users. Tomorrow: admin dashboard.",
+Don't overthink it. The question is simple: Can someone use this on their phone without frustration? Yes or no.`,
+      outcome: "App is mobile-responsive and loads quickly",
+      completionMessage: "Your app is fast and mobile-friendly. That's a competitive advantage most indie devs ignore. Tomorrow: autonomous testing.",
       xpReward: 100,
       estimatedMinutes: 5,
     },
 
     {
       day: 17,
-      title: "Autonomous Testing",
-      description: "Let Claude Code write tests that prove your core feature works. Ship with confidence, not hope.",
+      title: "Test & Ship",
+      description: "Make sure the important stuff works. Then ship it - real users will find the rest.",
       phase: "Build",
       videoUrl: null,
       aiTaskType: "session",
-      aiTaskTitle: "Write Your First Test",
-      aiTaskDescription: "Have Claude Code write an automated test for your most important feature.",
+      aiTaskTitle: "Core Feature Testing",
+      aiTaskDescription: "Test your main features and happy path before shipping.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What's your core feature?",
-      microDecisionOptions: JSON.stringify(["User creates something", "AI generates content", "Data processing", "User authentication"]),
-      reflectionQuestion: "How confident are you that your core feature works perfectly?",
-      tip: "A failing test is GOOD - it means you found a bug before your users did. Fix it, run again, repeat until green.",
+      microDecisionQuestion: "Have you tested your core features?",
+      microDecisionOptions: JSON.stringify(["Yes, main stuff works", "Tested a bit", "Just a quick look", "Haven't tested yet"]),
+      reflectionQuestion: "Does your main feature work well enough for beta testers?",
+      tip: "You WILL ship with bugs. Every app does. The goal isn't perfection - it's making sure the core stuff works. Real users will find the edge cases you'd never think of. With AI you can fix bugs FAST, so don't worry.",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
-Here's a superpower most builders don't know about...
+Tomorrow is MVP day. Before you ship, make sure the IMPORTANT STUFF works.
 
-Instead of manually clicking through your app to check if things work, you can have Claude Code write tests that do it AUTOMATICALLY. Every time. In seconds.
+Here's a truth about building a business - you WILL ship with bugs. You can't find them all yourself. The only way to truly find every edge case is with REAL USERS using your app in ways you'd never think of.
 
-WHY THIS MATTERS:
+That's not a failure. That's how software works.
 
-Tomorrow is THE PAUSE POINT. Before you ship your MVP, you want to KNOW your core feature works. Not hope. Not "I think so." KNOW.
+WHAT TO ACTUALLY TEST:
 
-The test proves it.
+- Sign up / login - can new users get in?
+- Your main feature - does the core thing work?
+- Happy path - if someone does everything right, does it work?
+- Basic navigation - can you get around without getting lost?
+- Mobile - does it work on your phone?
 
-THE PROCESS:
+That's it. If those five things work, you're ready to ship.
 
-1. Identify your ONE core feature (the thing your app absolutely MUST do)
-2. Tell Claude Code to write a test for it
-3. Run the test
-4. If it fails - GOOD! You found a bug before your users did
-5. Fix the bug
-6. Run again until it passes
+YOUR TESTING OPTIONS:
 
-When that test goes green, you have PROOF your app works.
+1. REPLIT AGENT - "Test my app's main features and report any bugs"
+2. CLAUDE FOR CHROME - Can see your screen and spot issues
+3. MANUAL - Click through the main flows yourself
 
-THE LOOP:
+THE MINDSET SHIFT:
 
-Write test -> Run test -> Fails? -> Fix code -> Run again -> Passes? -> Done!
+Stop trying to find every bug. Start trying to find BLOCKING bugs - things that would stop a user from completing the main task. Fix those. Ship the rest.
 
-This is how the pros build. Not clicking around hoping things work. TESTING. AUTOMATICALLY.
+THE TRUTH ABOUT BUGS:
 
-You'll write ONE test today. For your ONE most important feature. When it passes, you'll know your MVP actually works.`,
-      outcome: "Automated test for your core feature that passes",
-      completionMessage: "You have a test that PROVES your core feature works. Ship with confidence. Tomorrow - THE PAUSE POINT. Time to finish your MVP.",
+There's no such thing as 100% bug-free software. Google ships bugs. Apple ships bugs. Microsoft ships bugs. Every. Single. Day. The difference? They fix them fast.
+
+That's your job too. Ship it, then be ready to fix what users find. Speed of fixing matters more than perfection at launch.
+
+Get it in front of real users. They'll tell you what's actually broken.`,
+      outcome: "Core features tested and working, ready for beta users",
+      completionMessage: "Your core features work. You're ready to ship. Tomorrow you'll get this in front of real users - that's when the real feedback starts.",
       xpReward: 100,
       estimatedMinutes: 5,
     },

@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-22 (Day 14-17 restructure, autonomous testing, admin dashboard)
+- **Last Session**: 2026-01-23 (Day 16-17 QA overhaul, sidebar cleanup)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -646,4 +646,38 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test Day 14 auth + admin dashboard flow
   - Test Day 15 Stripe payments flow
   - Test Day 17 autonomous testing flow
+  - Continue testing Days 18+ onwards
+
+### 2026-01-23 - Day 16-17 QA Overhaul & Sidebar Cleanup
+- **Tasks Completed:**
+  - **Day 16 (Mobile & Speed):** Added speed/performance testing alongside mobile testing
+    - Added PERFORMANCE_TESTS array with 5 speed-related tests (initial load, navigation, loading states, images, no freeze)
+    - Added new "performance" step to the flow after mobile tests
+    - Restyled to match design system (ds import, icon circles in headers, ChevronLeft/Right buttons, back navigation)
+    - Fixed "App loads on phone" fix prompt - now about broken apps, not slow loading
+    - Removed unnecessary "Mobile Test Summary" textarea section
+  - **Day 17 (Test & Ship):** Complete rewrite for practical QA testing approach
+    - Changed from automated test writing to manual QA testing
+    - Added 3 testing methods: Replit built-in autonomous testing, Claude for Chrome extension, Manual testing
+    - Simplified TEST_AREAS to 5 essential items (signup, main feature, happy path, navigation, mobile)
+    - Added realistic "ship with bugs" messaging - beta testers find edge cases, no software is 100% bug-free
+    - Added fix issues step with Claude Code prompt for batch bug fixing
+  - **Sidebar:** Removed MyJourneySection entirely (~160 lines)
+    - Was showing incomplete/confusing milestone data
+    - Cleaner sidebar without the hover popup
+- **Fixes Applied:**
+  - Day 16 design now matches Days 9-15 pattern (icon headers, back buttons, ds typography)
+  - Removed mobileResult state and textarea from Day 16
+  - Updated Day 17 tip: "With AI you can fix bugs FAST, so don't worry"
+  - VideoSlides updated for both Day 16 (Mobile & Speed) and Day 17 (realistic testing mindset)
+- **Files Modified:**
+  - `client/src/components/Day19MobileReady.tsx` - Day 16 speed testing + design system styling
+  - `client/src/components/Day17AutonomousTesting.tsx` - Complete rewrite for practical QA
+  - `client/src/components/layout/Sidebar.tsx` - Removed MyJourneySection
+  - `client/src/components/VideoSlides.tsx` - Updated Day 16 & 17 slides
+  - `server/seed.ts` - Updated Day 16 & 17 lessons and tips
+- **Notes for Next Session:**
+  - Database was re-seeded - lessons are up to date
+  - Test Day 16 mobile + speed testing flow
+  - Test Day 17 practical QA flow with all 3 testing methods
   - Continue testing Days 18+ onwards

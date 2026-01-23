@@ -478,6 +478,12 @@ Send from: onboarding@resend.dev`}
                   <p className={ds.muted + " mt-3 pt-3 border-t border-slate-200"}>
                     Still stuck? The most common issue is the API key not being copied correctly. Try deleting the secret and adding it again.
                   </p>
+                  <button
+                    onClick={() => onComplete({ emailFeature: "Skipped - will return later", apiSetup: false })}
+                    className="mt-4 text-slate-500 hover:text-slate-700 underline text-sm"
+                  >
+                    Skip for now - I'll come back to this later
+                  </button>
                 </div>
               )}
             </div>

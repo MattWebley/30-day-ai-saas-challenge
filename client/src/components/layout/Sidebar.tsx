@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
@@ -33,106 +33,6 @@ import {
 interface SidebarProps {
   currentDay: number;
   onClose?: () => void;
-}
-
-function MyJourneySection({ userProgress }: { userProgress: any[] | undefined }) {
-  const [isHovered, setIsHovered] = useState(false);
-  
-  const journey = useMemo(() => {
-    if (!Array.isArray(userProgress)) return null;
-    
-    const day1 = userProgress.find((p: any) => p.day === 1);
-    const day2 = userProgress.find((p: any) => p.day === 2);
-    
-    const shortlistedIdeas = day1?.generatedIdeas?.filter((_: any, i: number) => 
-      day1?.shortlistedIdeas?.includes(i)
-    ) || [];
-    
-    const chosenIdeaIndex = day2?.userInputs?.chosenIdea;
-    const chosenIdea = chosenIdeaIndex !== undefined && shortlistedIdeas[chosenIdeaIndex]
-      ? shortlistedIdeas[chosenIdeaIndex]
-      : null;
-    
-    const userInputs = day1?.userInputs;
-    
-    return {
-      hasShortlist: shortlistedIdeas.length > 0,
-      shortlistCount: shortlistedIdeas.length,
-      chosenIdea,
-      shortlistedIdeas,
-      userInputs,
-    };
-  }, [userProgress]);
-
-  if (!journey || (!journey.hasShortlist && !journey.chosenIdea)) {
-    return null;
-  }
-
-  return (
-    <div 
-      className="mt-4 p-3 rounded-md relative cursor-pointer transition-none"
-      style={{ backgroundColor: '#E8F4F0', border: '1px solid #B8D4CA' }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="flex items-center gap-2 mb-2">
-        <Rocket className="w-4 h-4" style={{ color: '#2D6A4F' }} />
-        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: '#2D6A4F' }}>My Journey</p>
-      </div>
-      
-      {journey.chosenIdea ? (
-        <div className="space-y-1">
-          <div className="flex items-start gap-2">
-            <Target className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: '#40916C' }} />
-            <div>
-              <p className="text-xs" style={{ color: '#52796F' }}>Building...</p>
-              <p className="text-sm font-semibold leading-tight" style={{ color: '#1B4332' }}>{journey.chosenIdea.title}</p>
-            </div>
-          </div>
-        </div>
-      ) : journey.hasShortlist ? (
-        <div className="flex items-start gap-2">
-          <Lightbulb className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: '#40916C' }} />
-          <div>
-            <p className="text-xs" style={{ color: '#52796F' }}>Shortlisted...</p>
-            <p className="text-sm font-medium" style={{ color: '#1B4332' }}>{journey.shortlistCount} ideas</p>
-          </div>
-        </div>
-      ) : null}
-
-      {isHovered && (
-        <div className="absolute left-full top-0 ml-2 w-64 p-4 bg-white rounded-md shadow-xl border border-slate-200 z-50">
-          <h4 className="font-bold text-sm text-black mb-3">Journey Notes</h4>
-          <div className="space-y-3 text-xs">
-            {journey.userInputs && (
-              <div className="p-2 bg-slate-50 rounded-md border border-slate-100">
-                <p className="font-semibold text-black mb-1">Day 1: About You</p>
-                <p className="text-slate-600">Skills: {journey.userInputs.skills || 'Not set'}</p>
-                <p className="text-slate-600">Interests: {journey.userInputs.interests || 'Not set'}</p>
-              </div>
-            )}
-            {journey.hasShortlist && (
-              <div className="p-2 bg-slate-50 rounded-md border border-slate-100">
-                <p className="font-semibold text-black mb-1">Day 1: Top 5 Ideas</p>
-                <ul className="text-slate-600 space-y-0.5">
-                  {journey.shortlistedIdeas.slice(0, 5).map((idea: any, i: number) => (
-                    <li key={i} className="truncate">• {idea.title}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {journey.chosenIdea && (
-              <div className="p-2 bg-slate-50 rounded-md border border-slate-100">
-                <p className="font-semibold text-black mb-1">Day 2: Final Choice</p>
-                <p className="text-black font-medium">{journey.chosenIdea.title}</p>
-                <p className="text-slate-500 text-[10px] mt-1">{journey.chosenIdea.desc}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
 }
 
 export function Sidebar({ currentDay, onClose }: SidebarProps) {
@@ -329,9 +229,6 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
             <p className="text-xs" style={{ color: '#A67C52' }}>Keep it going!</p>
           </div>
         </div>
-
-        {/* My Journey Section */}
-        <MyJourneySection userProgress={userProgress as any} />
 
         <button
           onClick={() => setTestMode(!testMode)}

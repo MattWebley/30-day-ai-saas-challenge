@@ -80,22 +80,18 @@ Create a checkout button that takes users to Stripe's hosted checkout page. Afte
               </div>
               <div>
                 <h3 className={ds.heading}>Add Payments to Your App</h3>
-                <p className={ds.muted}>The moment your app can make money</p>
+                <p className={ds.muted}>Set up Stripe so your app can take money</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <p className={ds.body}>
-                This is a BIG milestone. Once you add payments, you have a real business - not just a project.
-              </p>
-
-              <p className={ds.body}>
-                We'll use Stripe - it's what everyone uses. Free to set up, and you only pay when customers pay you (about 2.9% + 30p per transaction).
+                We'll use Stripe's test mode - no real money involved. You can test the full checkout flow with fake card numbers.
               </p>
 
               <div className={ds.infoBoxHighlight}>
                 <p className={ds.body}>
-                  <strong>Test mode</strong> - We'll use Stripe's test mode so no real money is involved. You can test the full checkout flow with fake card numbers.
+                  <strong>Test mode is instant.</strong> When you're ready to go live later, Stripe will need to verify your identity and bank details - that can take 1-3 days depending on your country.
                 </p>
               </div>
             </div>
@@ -128,7 +124,7 @@ Create a checkout button that takes users to Stripe's hosted checkout page. Afte
                 <ol className={ds.body + " space-y-2 list-decimal list-inside"}>
                   <li>Go to <a href="https://dashboard.stripe.com/register" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">dashboard.stripe.com/register</a></li>
                   <li>Create your account with email</li>
-                  <li>You don't need to verify your business yet - test mode works immediately</li>
+                  <li>You don't need to verify your identity yet - test mode works immediately</li>
                 </ol>
               </div>
 
@@ -136,9 +132,9 @@ Create a checkout button that takes users to Stripe's hosted checkout page. Afte
                 href="https://dashboard.stripe.com/register"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#635BFF] text-white rounded-lg hover:bg-[#5851EA] font-medium"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
               >
-                Create Stripe Account <ExternalLink className="w-4 h-4" />
+                Open Stripe <ExternalLink className="w-4 h-4" />
               </a>
 
               <div
@@ -179,21 +175,17 @@ Create a checkout button that takes users to Stripe's hosted checkout page. Afte
             </div>
 
             <div className="space-y-4">
-              <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
-                <p className="font-bold text-amber-800 mb-2">IMPORTANT: Use Test Mode</p>
-                <p className={ds.body + " text-amber-800"}>
-                  Make sure the toggle in the top-right says "Test mode" (it should be orange). Never use live keys during development.
-                </p>
-              </div>
-
               <div className={ds.infoBoxHighlight}>
+                <p className={ds.body + " mb-3"}>
+                  <strong>IMPORTANT:</strong> Make sure the toggle in the top-right says "Test mode" (it should be orange). Never use live keys during development.
+                </p>
                 <ol className={ds.body + " space-y-2 list-decimal list-inside"}>
                   <li>Go to <a href="https://dashboard.stripe.com/test/apikeys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline font-medium">dashboard.stripe.com/test/apikeys</a></li>
                   <li>You'll see two keys</li>
                   <li><strong>Publishable key</strong> starts with <code className="bg-slate-200 px-1 rounded">pk_test_</code></li>
                   <li><strong>Secret key</strong> starts with <code className="bg-slate-200 px-1 rounded">sk_test_</code></li>
                   <li>Click "Reveal test key" to see the secret key</li>
-                  <li>Copy both somewhere safe (notepad is fine)</li>
+                  <li className="text-red-600 font-medium">Copy both somewhere safe - you'll need them next</li>
                 </ol>
               </div>
 
@@ -201,7 +193,7 @@ Create a checkout button that takes users to Stripe's hosted checkout page. Afte
                 href="https://dashboard.stripe.com/test/apikeys"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 font-medium"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 font-medium"
               >
                 Get API Keys <ExternalLink className="w-4 h-4" />
               </a>
@@ -244,13 +236,10 @@ Create a checkout button that takes users to Stripe's hosted checkout page. Afte
             </div>
 
             <div className="space-y-4">
-              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                <p className="font-bold text-green-800 mb-2">THE EASY WAY</p>
-                <p className={ds.body + " text-green-800 mb-3"}>
-                  Tell Replit Agent...
-                </p>
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.label + " mb-2"}>Tell Replit Agent...</p>
                 <div className="relative">
-                  <pre className="bg-white p-3 rounded-lg text-sm font-mono border border-green-200 whitespace-pre-wrap text-slate-800">
+                  <pre className="bg-white p-3 rounded-lg text-sm font-mono border border-slate-200 whitespace-pre-wrap text-slate-800">
 {`Add these secrets:
 STRIPE_SECRET_KEY = [paste your sk_test_ key]
 STRIPE_PUBLISHABLE_KEY = [paste your pk_test_ key]`}
@@ -336,9 +325,9 @@ STRIPE_PUBLISHABLE_KEY = [paste your pk_test_ key]`}
               <div className={ds.infoBoxHighlight}>
                 <p className={ds.label}>Examples of what to charge for</p>
                 <ul className={ds.muted + " mt-2 space-y-1 list-disc list-inside"}>
-                  <li>Monthly subscription ($9/month for premium features)</li>
-                  <li>One-time purchase ($29 for lifetime access)</li>
-                  <li>Credits/tokens ($10 for 100 AI credits)</li>
+                  <li>Monthly subscription ($29/month for premium features)</li>
+                  <li>One-time purchase ($99 for lifetime access)</li>
+                  <li>Credits/tokens ($20 for 100 AI credits)</li>
                 </ul>
               </div>
 
@@ -380,10 +369,10 @@ STRIPE_PUBLISHABLE_KEY = [paste your pk_test_ key]`}
             </div>
 
             <div className="space-y-4">
-              <div className="bg-[#635BFF]/10 border-2 border-[#635BFF]/30 rounded-lg p-4">
-                <p className="font-bold text-[#635BFF] mb-2">Stripe Test Card</p>
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.label + " mb-2"}>Stripe Test Card</p>
                 <div className="flex items-center gap-3">
-                  <code className="bg-white px-3 py-2 rounded-lg text-lg font-mono border border-[#635BFF]/20">
+                  <code className="bg-white px-3 py-2 rounded-lg text-lg font-mono border border-slate-200">
                     4242 4242 4242 4242
                   </code>
                   <Button
@@ -426,7 +415,7 @@ STRIPE_PUBLISHABLE_KEY = [paste your pk_test_ key]`}
                   <ul className={ds.muted + " mt-2 space-y-2 list-disc list-inside"}>
                     <li>Check the Replit console for errors</li>
                     <li>
-                      <span className="font-medium text-slate-700">Ask Claude Code</span> "The Stripe checkout isn't working. Can you check if it's set up correctly and show me any errors?"
+                      <span className="font-medium text-slate-700">Ask Claude Code:</span> "The Stripe checkout isn't working. Can you check if it's set up correctly and show me any errors?"
                     </li>
                     <li>Make sure you used <code className="bg-slate-200 px-1 rounded">pk_test_</code> and <code className="bg-slate-200 px-1 rounded">sk_test_</code> keys (not live keys)</li>
                   </ul>
@@ -455,23 +444,20 @@ STRIPE_PUBLISHABLE_KEY = [paste your pk_test_ key]`}
                 <CheckCircle2 className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className={ds.heading}>Your App Can Take Payments!</h3>
-                <p className={ds.muted}>This is a huge milestone</p>
+                <h3 className={ds.heading}>Payment Infrastructure Done!</h3>
+                <p className={ds.muted}>Your checkout flow is working</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                <p className="font-bold text-green-800 mb-2">You just built a business</p>
-                <p className={ds.body + " text-green-800"}>
-                  Your app can now accept real payments. When you're ready to go live, just switch your Stripe keys from test to live mode.
-                </p>
-              </div>
+              <p className={ds.body}>
+                Your app can now accept payments. When you're ready to go live, just switch your test keys for live keys in Replit Secrets.
+              </p>
 
               <div className={ds.infoBoxHighlight}>
                 <p className={ds.label}>Before going live, remember to</p>
                 <ul className={ds.muted + " mt-2 space-y-1 list-disc list-inside"}>
-                  <li>Complete Stripe's verification (they'll ask for business details)</li>
+                  <li>Complete Stripe's verification (they'll ask for ID and bank details)</li>
                   <li>Replace test keys with live keys in Replit Secrets</li>
                   <li>Test one real payment with a small amount</li>
                 </ul>

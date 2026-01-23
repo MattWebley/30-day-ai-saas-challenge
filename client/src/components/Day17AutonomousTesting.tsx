@@ -5,14 +5,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   ChevronLeft,
-  ArrowRight,
+  ChevronRight,
   Copy,
   Terminal,
   CheckCircle2,
-  FlaskConical,
-  Play,
-  Bug,
+  MousePointer,
+  Chrome,
   Sparkles,
+  ListChecks,
+  Wrench,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { ds } from "@/lib/design-system";
@@ -20,19 +21,25 @@ import { Link } from "wouter";
 
 interface Day17AutonomousTestingProps {
   appName: string;
-  onComplete: (data: { testingSetup: boolean; coreFeatureTested: string }) => void;
+  onComplete: (data: { testingComplete: boolean; issuesFound: string }) => void;
 }
+
+const TEST_AREAS = [
+  { id: "signup", label: "Sign up / Login flow", description: "Can new users create an account and log in?" },
+  { id: "main-feature", label: "Main feature", description: "Does the core thing your app does actually work?" },
+  { id: "happy-path", label: "Happy path", description: "If a user does everything right, does it work?" },
+  { id: "navigation", label: "Basic navigation", description: "Can you get to the main pages without getting lost?" },
+  { id: "mobile", label: "Mobile check", description: "Does it work on your phone?" },
+];
 
 export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousTestingProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
-    "intro" | "identify" | "write" | "run" | "fix" | "done"
+    "intro" | "methods" | "test" | "fix" | "done"
   >("intro");
 
-  const [coreFeature, setCoreFeature] = useState("");
-  const [testWritten, setTestWritten] = useState(false);
-  const [testRan, setTestRan] = useState(false);
-  const [testPassed, setTestPassed] = useState<boolean | null>(null);
-  const [bugFixed, setBugFixed] = useState(false);
+  const [testedAreas, setTestedAreas] = useState<Set<string>>(new Set());
+  const [issuesFound, setIssuesFound] = useState("");
+  const [issuesFixed, setIssuesFixed] = useState(false);
   const { toast } = useToast();
 
   const copyToClipboard = (text: string, label: string) => {
@@ -43,25 +50,17 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
     });
   };
 
-  const writeTestPrompt = `Write an automated test for my app's core feature:
+  const toggleArea = (id: string) => {
+    const newSet = new Set(testedAreas);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setTestedAreas(newSet);
+  };
 
-${coreFeature || "[Describe your core feature above first]"}
-
-The test should:
-1. Set up any required test data
-2. Perform the main action a user would take
-3. Verify the expected result happened
-4. Clean up after itself
-
-Use whatever testing framework makes sense for my stack. Make the test simple and focused on the ONE most important thing.`;
-
-  const runTestPrompt = `Run the test you just wrote and show me the results. If it fails, explain what went wrong.`;
-
-  const fixTestPrompt = `The test failed. Here's what happened:
-
-[Paste the error or describe what went wrong]
-
-Fix the issue so the test passes. Don't just change the test to pass - fix the actual bug in the code.`;
+  const hasIssues = issuesFound.trim().length > 10;
 
   return (
     <div ref={containerRef} className="space-y-6">
@@ -86,78 +85,108 @@ Fix the issue so the test passes. Don't just change the test to pass - fix the a
           <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <FlaskConical className="w-5 h-5 text-white" />
+                <MousePointer className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className={ds.heading}>Autonomous Testing</h3>
-                <p className={ds.muted}>Let Claude Code test your app for you</p>
+                <h3 className={ds.heading}>Test Everything</h3>
+                <p className={ds.muted}>Click every button. Fill every form. Break things on purpose.</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <p className={ds.body}>
-                Here's a superpower most builders don't know about...
+                Tomorrow is MVP day. Before you ship, you want to make sure the <strong>important stuff</strong> works.
               </p>
 
               <p className={ds.body}>
-                Instead of manually clicking through your app to check if things work, you can have Claude Code write tests that do it automatically. Every time. In seconds.
+                Here's a truth about building a business - you WILL ship with bugs. You can't find them all. The only way to find every edge case is with REAL users using your app in ways you'd never think of.
               </p>
 
               <div className={ds.infoBoxHighlight}>
                 <p className={ds.body}>
-                  <strong>Why this matters</strong> - Before you ship your MVP tomorrow, you want to KNOW your core feature works. Not hope. Not "I think so." KNOW.
+                  <strong>The goal</strong> - Make sure your core features work. Fix the obvious stuff. Then ship it and let beta testers find the rest.
                 </p>
               </div>
 
-              <p className={ds.body}>
-                Today you'll write ONE test for your most important feature. When it passes, you'll have confidence your app actually works.
+              <p className={ds.muted}>
+                Perfect is the enemy of shipped. A working MVP with minor bugs beats a "perfect" app that never launches.
               </p>
             </div>
           </div>
 
           <div className="flex justify-end">
-            <Button size="lg" onClick={() => setStep("identify")} className="gap-2">
-              Let's Do It <ArrowRight className="w-5 h-5" />
+            <Button size="lg" onClick={() => setStep("methods")} className="gap-2">
+              Let's Do It <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
         </>
       )}
 
-      {/* Step 1: Identify core feature */}
-      {step === "identify" && (
+      {/* Methods */}
+      {step === "methods" && (
         <>
           <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className={ds.heading}>Step 1: What's Your Core Feature?</h3>
-                <p className={ds.muted}>The ONE thing your app absolutely must do</p>
+                <h3 className={ds.heading}>Your Testing Options</h3>
+                <p className={ds.muted}>Pick whichever works for you</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <p className={ds.body}>
-                Describe the main thing a user does in your app. Be specific about what happens.
-              </p>
-
-              <div className={ds.infoBoxHighlight}>
-                <p className={ds.label}>Examples</p>
-                <ul className={ds.muted + " mt-2 space-y-1 list-disc list-inside"}>
-                  <li>"User enters a topic, clicks generate, and gets 5 blog post ideas"</li>
-                  <li>"User uploads a CSV, the app parses it and shows a chart"</li>
-                  <li>"User creates a project, adds tasks, marks them complete"</li>
-                  <li>"User enters their food, the app calculates calories and saves it"</li>
-                </ul>
+              {/* Option 1: Replit */}
+              <div className="p-4 border-2 border-slate-200 rounded-lg bg-white">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-orange-600 font-bold text-sm">R</span>
+                  </div>
+                  <div>
+                    <p className={ds.label}>Replit's Built-in Testing</p>
+                    <p className={ds.muted + " mt-1"}>
+                      Replit Agent can test your app for you. Just tell it "Test my entire app and report any bugs you find." It'll click through everything and tell you what's broken.
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <Textarea
-                placeholder="When a user does [action], my app should [result]..."
-                value={coreFeature}
-                onChange={(e) => setCoreFeature(e.target.value)}
-                className="min-h-[100px]"
-              />
+              {/* Option 2: Claude for Chrome */}
+              <div className="p-4 border-2 border-slate-200 rounded-lg bg-white">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Chrome className="w-4 h-4 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className={ds.label}>Claude for Chrome Extension</p>
+                    <p className={ds.muted + " mt-1"}>
+                      Install the Claude browser extension. Open your app, then ask Claude to "look at this page and tell me if anything seems broken or could be improved." It can see your screen and spot issues.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Option 3: Manual */}
+              <div className="p-4 border-2 border-slate-200 rounded-lg bg-white">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <MousePointer className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className={ds.label}>Manual Testing (Always Do This Too)</p>
+                    <p className={ds.muted + " mt-1"}>
+                      Nothing beats actually using your app. Click every button. Fill every form. Try to break it. Pretend you're a confused user who does everything wrong.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className={ds.body + " text-amber-900"}>
+                  <strong>Best approach?</strong> Use all three. Let Replit or Claude find the obvious stuff, then manually test the important flows yourself.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -165,222 +194,160 @@ Fix the issue so the test passes. Don't just change the test to pass - fix the a
             <Button variant="outline" onClick={() => setStep("intro")} className="gap-2">
               <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-            <Button size="lg" onClick={() => setStep("write")} disabled={coreFeature.length < 20} className="gap-2">
-              Next <ArrowRight className="w-5 h-5" />
+            <Button size="lg" onClick={() => setStep("test")} className="gap-2">
+              Start Testing <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
         </>
       )}
 
-      {/* Step 2: Write the test */}
-      {step === "write" && (
+      {/* Test Checklist */}
+      {step === "test" && (
         <>
           <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <Terminal className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
+                <ListChecks className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className={ds.heading}>Step 2: Have Claude Write the Test</h3>
-                <p className={ds.muted}>Copy this prompt into Claude Code</p>
+                <h3 className={ds.heading}>Test Checklist</h3>
+                <p className={ds.muted}>Go through each area. Check it off when tested.</p>
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="relative">
-                <pre className="bg-slate-100 p-4 rounded-lg text-sm font-mono border border-slate-200 whitespace-pre-wrap">
-{writeTestPrompt}
-                </pre>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => copyToClipboard(writeTestPrompt.replace("[Describe your core feature above first]", coreFeature), "Claude Code prompt")}
-                  className="absolute top-2 right-2 gap-2"
+            <div className="space-y-3">
+              {TEST_AREAS.map((area) => (
+                <div
+                  key={area.id}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                    testedAreas.has(area.id)
+                      ? "border-green-500 bg-green-50"
+                      : "border-slate-200 hover:border-slate-300 bg-white"
+                  }`}
+                  onClick={() => toggleArea(area.id)}
                 >
-                  <Copy className="w-4 h-4" />
-                  Copy
-                </Button>
-              </div>
-
-              <div className={ds.infoBoxHighlight}>
-                <p className={ds.label}>What Claude will do</p>
-                <p className={ds.muted + " mt-1"}>
-                  Claude will create a test file and write code that automatically tests your feature. You don't need to understand the test code - just let Claude write it.
-                </p>
-              </div>
-
-              <div
-                className={testWritten ? ds.optionSelected : ds.optionDefault}
-                onClick={() => setTestWritten(!testWritten)}
-              >
-                <div className="flex items-center gap-3">
-                  <Checkbox checked={testWritten} onCheckedChange={() => setTestWritten(!testWritten)} />
-                  <span className={ds.body + " font-medium"}>Claude has written my test</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-between">
-            <Button variant="outline" onClick={() => setStep("identify")} className="gap-2">
-              <ChevronLeft className="w-5 h-5" /> Back
-            </Button>
-            <Button size="lg" onClick={() => setStep("run")} disabled={!testWritten} className="gap-2">
-              Next <ArrowRight className="w-5 h-5" />
-            </Button>
-          </div>
-        </>
-      )}
-
-      {/* Step 3: Run the test */}
-      {step === "run" && (
-        <>
-          <div className={ds.cardWithPadding}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-                <Play className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className={ds.heading}>Step 3: Run the Test</h3>
-                <p className={ds.muted}>See if your core feature actually works</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="relative">
-                <pre className="bg-slate-100 p-4 rounded-lg text-sm font-mono border border-slate-200 whitespace-pre-wrap">
-{runTestPrompt}
-                </pre>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => copyToClipboard(runTestPrompt, "Claude Code prompt")}
-                  className="absolute top-2 right-2 gap-2"
-                >
-                  <Copy className="w-4 h-4" />
-                  Copy
-                </Button>
-              </div>
-
-              <div
-                className={testRan ? ds.optionSelected : ds.optionDefault}
-                onClick={() => setTestRan(!testRan)}
-              >
-                <div className="flex items-center gap-3">
-                  <Checkbox checked={testRan} onCheckedChange={() => setTestRan(!testRan)} />
-                  <span className={ds.body + " font-medium"}>I've run the test</span>
-                </div>
-              </div>
-
-              {testRan && (
-                <div className="space-y-3 pt-4 border-t border-slate-200">
-                  <p className={ds.label}>Did it pass?</p>
-                  <div className="flex gap-3">
-                    <Button
-                      variant={testPassed === true ? "default" : "outline"}
-                      className="flex-1 gap-2"
-                      onClick={() => setTestPassed(true)}
-                    >
-                      <CheckCircle2 className="w-4 h-4" />
-                      Yes, it passed!
-                    </Button>
-                    <Button
-                      variant={testPassed === false ? "destructive" : "outline"}
-                      className="flex-1 gap-2"
-                      onClick={() => setTestPassed(false)}
-                    >
-                      <Bug className="w-4 h-4" />
-                      No, it failed
-                    </Button>
+                  <div className="flex items-start gap-3">
+                    <Checkbox
+                      checked={testedAreas.has(area.id)}
+                      onCheckedChange={() => toggleArea(area.id)}
+                      className="mt-0.5"
+                    />
+                    <div>
+                      <p className={ds.label}>{area.label}</p>
+                      <p className={ds.muted}>{area.description}</p>
+                    </div>
                   </div>
                 </div>
-              )}
+              ))}
             </div>
+
+            {testedAreas.size >= 5 && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-800 text-sm font-medium">
+                  {testedAreas.size}/{TEST_AREAS.length} areas tested
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div className={ds.cardWithPadding}>
+            <p className={ds.label + " mb-3"}>Issues Found</p>
+            <p className={ds.muted + " mb-3"}>
+              Write down everything that's broken, weird, or confusing. Be specific.
+            </p>
+            <Textarea
+              placeholder="- Button X doesn't do anything
+- Form Y shows error but doesn't say why
+- Page Z takes forever to load
+- On mobile, can't tap the menu
+- When I submit empty, it crashes..."
+              value={issuesFound}
+              onChange={(e) => setIssuesFound(e.target.value)}
+              className="min-h-[150px]"
+            />
           </div>
 
           <div className="flex justify-between">
-            <Button variant="outline" onClick={() => setStep("write")} className="gap-2">
+            <Button variant="outline" onClick={() => setStep("methods")} className="gap-2">
               <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-            {testPassed === true && (
-              <Button size="lg" onClick={() => setStep("done")} className="gap-2">
-                Next <ArrowRight className="w-5 h-5" />
-              </Button>
-            )}
-            {testPassed === false && (
-              <Button size="lg" onClick={() => setStep("fix")} className="gap-2">
-                Fix the Bug <ArrowRight className="w-5 h-5" />
-              </Button>
-            )}
+            <Button
+              size="lg"
+              onClick={() => setStep(hasIssues ? "fix" : "done")}
+              disabled={testedAreas.size < 5}
+              className="gap-2"
+            >
+              {hasIssues ? "Fix Issues" : "All Good!"} <ChevronRight className="w-5 h-5" />
+            </Button>
           </div>
         </>
       )}
 
-      {/* Step 4: Fix if failed */}
+      {/* Fix Issues */}
       {step === "fix" && (
         <>
           <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center">
-                <Bug className="w-5 h-5 text-white" />
+                <Wrench className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className={ds.heading}>Step 4: Fix the Bug</h3>
-                <p className={ds.muted}>This is exactly why we test</p>
+                <h3 className={ds.heading}>Fix What You Found</h3>
+                <p className={ds.muted}>Better to fix now than have users find these</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
-                <p className="font-bold text-amber-800 mb-2">Good news!</p>
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="font-bold text-amber-800 mb-2">This is normal</p>
                 <p className={ds.body + " text-amber-800"}>
-                  You found a bug BEFORE shipping. That's the whole point. Better you find it now than your users find it later.
+                  Every app has bugs before testing. You're doing exactly what professional developers do - find issues and fix them before shipping.
                 </p>
               </div>
 
+              <div className={ds.cardWithPadding + " bg-slate-50"}>
+                <p className={ds.label + " mb-2"}>Your issues to fix</p>
+                <p className={ds.body + " whitespace-pre-wrap"}>{issuesFound}</p>
+              </div>
+
               <div className="relative">
-                <pre className="bg-slate-100 p-4 rounded-lg text-sm font-mono border border-slate-200 whitespace-pre-wrap">
-{fixTestPrompt}
+                <p className={ds.label + " mb-2"}>Copy this to Claude Code</p>
+                <pre className="bg-slate-900 text-slate-100 p-4 rounded-lg text-sm font-mono whitespace-pre-wrap">
+{`Fix these issues I found while testing:
+
+${issuesFound}
+
+Go through each one and fix it. After fixing, tell me what you changed.`}
                 </pre>
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
-                  onClick={() => copyToClipboard(fixTestPrompt, "Claude Code prompt")}
-                  className="absolute top-2 right-2 gap-2"
+                  onClick={() => copyToClipboard(`Fix these issues I found while testing:\n\n${issuesFound}\n\nGo through each one and fix it. After fixing, tell me what you changed.`, "Fix prompt")}
+                  className="absolute top-8 right-2 gap-2"
                 >
                   <Copy className="w-4 h-4" />
                   Copy
                 </Button>
               </div>
 
-              <div className={ds.infoBoxHighlight}>
-                <p className={ds.label}>The loop</p>
-                <ol className={ds.muted + " mt-2 space-y-1 list-decimal list-inside"}>
-                  <li>Tell Claude what went wrong</li>
-                  <li>Claude fixes the code</li>
-                  <li>Run the test again</li>
-                  <li>Repeat until it passes</li>
-                </ol>
-              </div>
-
               <div
-                className={bugFixed ? ds.optionSelected : ds.optionDefault}
-                onClick={() => setBugFixed(!bugFixed)}
+                className={issuesFixed ? ds.optionSelected : ds.optionDefault}
+                onClick={() => setIssuesFixed(!issuesFixed)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={bugFixed} onCheckedChange={() => setBugFixed(!bugFixed)} />
-                  <span className={ds.body + " font-medium"}>I fixed the bug and the test passes now</span>
+                  <Checkbox checked={issuesFixed} onCheckedChange={() => setIssuesFixed(!issuesFixed)} />
+                  <span className={ds.body + " font-medium"}>I've fixed the issues (or noted them for later)</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div className="flex justify-between">
-            <Button variant="outline" onClick={() => setStep("run")} className="gap-2">
+            <Button variant="outline" onClick={() => setStep("test")} className="gap-2">
               <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-            <Button size="lg" onClick={() => setStep("done")} disabled={!bugFixed} className="gap-2">
-              Next <ArrowRight className="w-5 h-5" />
+            <Button size="lg" onClick={() => setStep("done")} disabled={!issuesFixed} className="gap-2">
+              Continue <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
         </>
@@ -389,46 +356,56 @@ Fix the issue so the test passes. Don't just change the test to pass - fix the a
       {/* Done */}
       {step === "done" && (
         <>
-          <div className={ds.cardWithPadding}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-green-600 flex items-center justify-center">
-                <CheckCircle2 className="w-5 h-5 text-white" />
+          <div className="p-6 border-2 border-green-200 bg-green-50 rounded-lg">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+                <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className={ds.heading}>Your Core Feature is Tested!</h3>
-                <p className={ds.muted}>You KNOW it works</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                <p className="font-bold text-green-800 mb-2">This is huge</p>
-                <p className={ds.body + " text-green-800"}>
-                  You now have a test that proves your core feature works. You can run it anytime to make sure you haven't broken anything.
+                <h4 className="font-bold text-xl text-green-900">Ready to Ship!</h4>
+                <p className="text-green-700">
+                  The important stuff works. That's what matters.
                 </p>
-              </div>
-
-              <div className={ds.infoBoxHighlight}>
-                <p className={ds.label}>Pro tip</p>
-                <p className={ds.muted + " mt-1"}>
-                  Before making big changes, run your tests. If they pass after your changes, you haven't broken anything. This is how the pros build with confidence.
-                </p>
-              </div>
-
-              <div className={ds.cardWithPadding + " bg-slate-50"}>
-                <p className={ds.label + " mb-2"}>What you tested</p>
-                <p className={ds.body}>{coreFeature}</p>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end">
+          <div className={ds.cardWithPadding}>
+            <div className="space-y-4">
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.body}>
+                  <strong>Here's the truth.</strong> Your app probably still has bugs. Every app does at launch. The difference is - your CORE features work. That's enough to ship.
+                </p>
+              </div>
+
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className={ds.label + " mb-2 text-blue-900"}>What happens next</p>
+                <p className={ds.body + " text-blue-800"}>
+                  Real users will find bugs you never thought of. That's not failure - that's how software works. Get a few beta testers, fix what they find, repeat. Your app gets better with every user.
+                </p>
+              </div>
+
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+                <p className={ds.body + " mb-2"}>
+                  <strong>There's no such thing as 100% bug-free software.</strong>
+                </p>
+                <p className={ds.muted}>
+                  Google, Apple, Microsoft - they all ship bugs. Every single day. The difference? They fix them fast. That's your job too. Ship it, then be ready to fix what users find.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("test")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
             <Button
               size="lg"
-              onClick={() => onComplete({ testingSetup: true, coreFeatureTested: coreFeature })}
-              className="gap-2"
+              onClick={() => onComplete({ testingComplete: true, issuesFound: issuesFound || "No issues found" })}
+              className="gap-2 bg-green-600 hover:bg-green-700"
             >
-              Complete Day <ArrowRight className="w-5 h-5" />
+              Complete Day <CheckCircle2 className="w-5 h-5" />
             </Button>
           </div>
         </>
