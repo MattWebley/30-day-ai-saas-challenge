@@ -97,8 +97,10 @@ export default function Badges() {
                       <div>
                         <h3 className="font-bold text-lg mb-1">{badge.name}</h3>
                         <p className="text-sm text-muted-foreground">{badge.description}</p>
-                        {badge.triggerValue && (
-                          <p className="text-xs text-slate-400 mt-2">Day {badge.triggerValue}</p>
+                        {badge.triggerValue !== null && badge.triggerValue !== undefined && (
+                          <p className="text-xs text-slate-400 mt-2">
+                            {badge.triggerValue === 0 ? "Start Here" : `Day ${badge.triggerValue}`}
+                          </p>
                         )}
                       </div>
 

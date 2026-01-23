@@ -10,6 +10,13 @@ async function seed() {
   const badgeData = [
     // Phase completion badges
     {
+      name: "All In",
+      description: "Made a commitment to yourself",
+      icon: "🤝",
+      triggerType: "day_completed",
+      triggerValue: 0,
+    },
+    {
       name: "Ideator",
       description: "You've picked your winning idea",
       icon: "💡",
