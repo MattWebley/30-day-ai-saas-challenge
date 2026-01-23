@@ -157,16 +157,22 @@ export async function registerRoutes(
         const updatedStats = await storage.getUserStats(userId);
         const totalXp = updatedStats?.totalXp || 0;
 
+        // Check if user shared build in public (from Day 0 completion data in request body)
+        const buildInPublicLink = req.body?.buildInPublic;
+        const hasBuildInPublic = buildInPublicLink && typeof buildInPublicLink === 'string' && buildInPublicLink.length > 10;
+
         for (const badge of allBadges) {
           if (earnedBadgeIds.has(badge.id)) continue;
 
           let shouldAward = false;
-          
+
           if (badge.triggerType === 'day_completed' && badge.triggerValue === day) {
             shouldAward = true;
           } else if (badge.triggerType === 'streak' && newStreak >= (badge.triggerValue || 0)) {
             shouldAward = true;
           } else if (badge.triggerType === 'xp' && totalXp >= (badge.triggerValue || 0)) {
+            shouldAward = true;
+          } else if (badge.triggerType === 'build_in_public' && hasBuildInPublic) {
             shouldAward = true;
           }
 
@@ -288,6 +294,12 @@ export async function registerRoutes(
       const userProgressList = await storage.getUserProgress(userId);
       const completedDays = new Set(userProgressList.filter(p => p.completed).map(p => p.day));
 
+      // Check if user has build in public link (from Day 0 progress)
+      const day0Progress = userProgressList.find(p => p.day === 0);
+      const day0Inputs = day0Progress?.userInputs as Record<string, unknown> | null;
+      const buildInPublicLink = day0Inputs?.buildInPublic;
+      const hasBuildInPublic = buildInPublicLink && typeof buildInPublicLink === 'string' && buildInPublicLink.length > 10;
+
       // Get user stats for streak
       const userStats = await storage.getUserStats(userId);
       const currentStreak = userStats?.currentStreak || 0;
@@ -304,6 +316,8 @@ export async function registerRoutes(
         } else if (badge.triggerType === 'streak' && currentStreak >= (badge.triggerValue || 0)) {
           shouldAward = true;
         } else if (badge.triggerType === 'xp' && totalXp >= (badge.triggerValue || 0)) {
+          shouldAward = true;
+        } else if (badge.triggerType === 'build_in_public' && hasBuildInPublic) {
           shouldAward = true;
         }
 
