@@ -2,16 +2,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trophy, ArrowRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
-// Badge data for days that award badges
-const DAY_BADGES: Record<number, { name: string; icon: string; description: string }> = {
-  0: { name: "All In", icon: "🤝", description: "Made a commitment to yourself" },
-  2: { name: "Ideator", icon: "💡", description: "You've picked your winning idea" },
-  4: { name: "Strategist", icon: "🗺️", description: "Your product is planned and named" },
-  9: { name: "Ready to Build", icon: "🎯", description: "Tools set up, PRD ready, let's build" },
-  18: { name: "Builder", icon: "🏗️", description: "Your MVP is complete" },
-  21: { name: "The Launcher", icon: "🚀", description: "You launched your SaaS!" },
-};
+interface Badge {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  triggerType: string;
+  triggerValue: number | null;
+}
 
 interface DayCompletionModalProps {
   isOpen: boolean;
@@ -28,9 +28,18 @@ export function DayCompletionModal({
   completionMessage,
   onContinue,
 }: DayCompletionModalProps) {
-  if (!isOpen) return null;
+  // Fetch all badges to check if this day awards one
+  const { data: allBadges } = useQuery<Badge[]>({
+    queryKey: ["/api/badges"],
+    enabled: isOpen, // Only fetch when modal is open
+  });
 
-  const earnedBadge = DAY_BADGES[day];
+  // Find badge earned for this day (triggerType === 'day_completed' && triggerValue === day)
+  const earnedBadge = allBadges?.find(
+    badge => badge.triggerType === 'day_completed' && badge.triggerValue === day
+  );
+
+  if (!isOpen) return null;
 
   return (
     <AnimatePresence>

@@ -78,15 +78,16 @@ export default function Badges() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.05 }}
+                    className="h-full"
                   >
                     <Card className={cn(
-                      "p-8 flex flex-col items-center text-center gap-4 transition-none hover:shadow-lg",
+                      "p-8 h-full flex flex-col items-center text-center transition-none hover:shadow-lg",
                       isEarned
                         ? "bg-white border-slate-200"
                         : "bg-slate-50 border-slate-100 opacity-60 grayscale"
                     )}>
                       <div className={cn(
-                        "w-20 h-20 rounded-full flex items-center justify-center mb-2 text-4xl",
+                        "w-20 h-20 rounded-full flex items-center justify-center mb-4 text-4xl shrink-0",
                         isEarned
                           ? "bg-blue-50 shadow-inner"
                           : "bg-slate-200"
@@ -94,21 +95,20 @@ export default function Badges() {
                         {badge.icon}
                       </div>
 
-                      <div>
+                      <div className="flex-1 flex flex-col">
                         <h3 className="font-bold text-lg mb-1">{badge.name}</h3>
-                        <p className="text-sm text-muted-foreground">{badge.description}</p>
-                        {badge.triggerValue !== null && badge.triggerValue !== undefined && (
-                          <p className="text-xs text-slate-400 mt-2">
-                            {badge.triggerValue === 0 ? "Start Here" : `Day ${badge.triggerValue}`}
-                          </p>
-                        )}
+                        <p className="text-sm text-muted-foreground flex-1">{badge.description}</p>
+                        <p className="text-xs text-slate-400 mt-2">
+                          {badge.triggerValue === 0 ? "Start Here" : `Day ${badge.triggerValue}`}
+                        </p>
                       </div>
 
-                      {!isEarned && (
-                        <div className="text-xs font-medium text-slate-400 uppercase tracking-widest mt-2">
-                          Locked
-                        </div>
-                      )}
+                      <div className={cn(
+                        "text-xs font-medium uppercase tracking-widest mt-4",
+                        isEarned ? "text-green-600" : "text-slate-400"
+                      )}>
+                        {isEarned ? "Earned" : "Locked"}
+                      </div>
                     </Card>
                   </motion.div>
                 );
@@ -131,15 +131,16 @@ export default function Badges() {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: i * 0.05 }}
+                    className="h-full"
                   >
                     <Card className={cn(
-                      "p-8 flex flex-col items-center text-center gap-4 transition-none hover:shadow-lg",
+                      "p-8 h-full flex flex-col items-center text-center transition-none hover:shadow-lg",
                       isEarned
                         ? "bg-white border-slate-200"
                         : "bg-slate-50 border-slate-100 opacity-60 grayscale"
                     )}>
                       <div className={cn(
-                        "w-20 h-20 rounded-full flex items-center justify-center mb-2 text-4xl",
+                        "w-20 h-20 rounded-full flex items-center justify-center mb-4 text-4xl shrink-0",
                         isEarned
                           ? "bg-amber-50 shadow-inner"
                           : "bg-slate-200"
@@ -147,16 +148,20 @@ export default function Badges() {
                         {badge.icon}
                       </div>
 
-                      <div>
+                      <div className="flex-1 flex flex-col">
                         <h3 className="font-bold text-lg mb-1">{badge.name}</h3>
-                        <p className="text-sm text-muted-foreground">{badge.description}</p>
+                        <p className="text-sm text-muted-foreground flex-1">{badge.description}</p>
+                        <p className="text-xs text-slate-400 mt-2">
+                          {badge.triggerValue} day streak
+                        </p>
                       </div>
 
-                      {!isEarned && (
-                        <div className="text-xs font-medium text-slate-400 uppercase tracking-widest mt-2">
-                          Locked
-                        </div>
-                      )}
+                      <div className={cn(
+                        "text-xs font-medium uppercase tracking-widest mt-4",
+                        isEarned ? "text-green-600" : "text-slate-400"
+                      )}>
+                        {isEarned ? "Earned" : "Locked"}
+                      </div>
                     </Card>
                   </motion.div>
                 );
@@ -180,32 +185,34 @@ export default function Badges() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: i * 0.05 }}
+                      className="h-full"
                     >
                       <Card className={cn(
-                        "p-8 flex flex-col items-center text-center gap-4 transition-none hover:shadow-lg",
+                        "p-8 h-full flex flex-col items-center text-center transition-none hover:shadow-lg",
                         isEarned
                           ? "bg-white border-slate-200"
                           : "bg-slate-50 border-slate-100 opacity-60 grayscale"
                       )}>
                         <div className={cn(
-                          "w-20 h-20 rounded-full flex items-center justify-center mb-2 text-4xl",
+                          "w-20 h-20 rounded-full flex items-center justify-center mb-4 text-4xl shrink-0",
                           isEarned
-                            ? "bg-blue-50 shadow-inner"
+                            ? "bg-purple-50 shadow-inner"
                             : "bg-slate-200"
                         )}>
                           {badge.icon}
                         </div>
 
-                        <div>
+                        <div className="flex-1 flex flex-col">
                           <h3 className="font-bold text-lg mb-1">{badge.name}</h3>
-                          <p className="text-sm text-muted-foreground">{badge.description}</p>
+                          <p className="text-sm text-muted-foreground flex-1">{badge.description}</p>
                         </div>
 
-                        {!isEarned && (
-                          <div className="text-xs font-medium text-slate-400 uppercase tracking-widest mt-2">
-                            Locked
-                          </div>
-                        )}
+                        <div className={cn(
+                          "text-xs font-medium uppercase tracking-widest mt-4",
+                          isEarned ? "text-green-600" : "text-slate-400"
+                        )}>
+                          {isEarned ? "Earned" : "Locked"}
+                        </div>
                       </Card>
                     </motion.div>
                   );
