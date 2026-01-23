@@ -508,9 +508,9 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "Day 17: Test & Ship",
       points: [
-        "Tomorrow is MVP day",
-        "Make sure the IMPORTANT stuff works",
-        "You can't find every bug - and that's okay",
+        "Day 18 has a PAUSE button for building your MVP",
+        "Take 1 day, 1 week, or 1 month - it takes what it takes",
+        "Make sure the IMPORTANT stuff works before you move on",
       ],
     },
     {
@@ -527,7 +527,7 @@ const slideContent: Record<number, Slide[]> = {
       points: [
         "Can users sign up / log in?",
         "Does your MAIN feature work?",
-        "Happy path - if they do it right, does it work?",
+        "Normal use - if they do it right, does it work?",
         "Can they navigate without getting lost?",
         "Does it work on mobile?",
       ],

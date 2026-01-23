@@ -227,6 +227,7 @@ export class DatabaseStorage implements IStorage {
     selectedSuggestion?: number;
     microDecisionChoice?: string;
     reflectionAnswer?: string;
+    userInputs?: Record<string, unknown>;
   }): Promise<UserProgress> {
     // Check if progress already exists
     const existing = await this.getUserProgressForDay(userId, day);

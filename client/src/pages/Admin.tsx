@@ -1036,6 +1036,7 @@ export default function Admin() {
                 <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Student</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">App URL</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Current Day</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Progress</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">XP Earned</th>
@@ -1059,13 +1060,27 @@ export default function Admin() {
                           </div>
                         </td>
                         <td className="px-6 py-4">
+                          {user.customDomain ? (
+                            <a
+                              href={`https://${user.customDomain}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline text-sm"
+                            >
+                              {user.customDomain}
+                            </a>
+                          ) : (
+                            <span className="text-slate-400 text-sm">-</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
                           <span className="font-semibold text-slate-900">Day {user.currentDay || 1}</span>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-2">
                             <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-primary rounded-full" 
+                              <div
+                                className="h-full bg-primary rounded-full"
                                 style={{ width: `${Math.round(((user.currentDay || 0) / 30) * 100)}%` }}
                               />
                             </div>
@@ -1100,7 +1115,7 @@ export default function Admin() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                      <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
                         No students enrolled yet
                       </td>
                     </tr>

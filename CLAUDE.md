@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-23 (Day 16-17 QA overhaul, sidebar cleanup)
+- **Last Session**: 2026-01-23 (Day 17 Test & Publish overhaul)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -275,3 +275,41 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test Day 16 mobile + speed testing flow
   - Test Day 17 practical QA flow with all 3 testing methods
   - Continue testing Days 18+ onwards
+
+### 2026-01-23 (Session 2) - Day 17 Test, Publish & Domain Flow
+- **Tasks Completed:**
+  - **Day 17 Complete Overhaul:** Now "Test & Publish" with full deployment flow
+    - Added "About tomorrow" info box explaining Day 18 pause button
+    - Simplified testing options (Replit Autonomous Agent, Claude for Chrome, Manual)
+    - Made testing option icons neutral slate instead of colored
+    - Removed "Issues Found" textarea - users just test and fix, no writing down
+    - Changed "happy path" to "normal use" (less jargon)
+    - Added **Publish Your App** step with Replit deployment checklist
+    - Added **Connect Your Domain** step (required, not optional)
+      - 4-step domain connection checklist
+      - Namecheap-specific instructions
+      - Claude Code prompt for help with any registrar
+      - **URL input field** to test domain with clickable link
+      - DNS propagation warning if not working
+    - **Custom domain saved to database** and displayed in Admin dashboard
+  - **Admin Dashboard:** Added "App URL" column showing user's custom domain as clickable link
+  - **Lesson Updates:** Updated Day 17 lesson with publishing and domain connection instructions
+  - **Design System Fixes:** Removed all colored backgrounds (amber, blue, green-50) from Day 17
+- **Fixes Applied:**
+  - Fixed duplicate messaging in Day 17 (lesson vs component)
+  - Changed "Here's a truth about building a business" → "Here's the truth about building a SaaS business"
+  - Made Replit deployment options generic ("Replit will guide you") instead of specific choices
+  - Storage.ts now accepts userInputs in completeDay function
+  - Routes.ts now saves componentData as userInputs for all days
+- **Files Modified:**
+  - `client/src/components/Day17AutonomousTesting.tsx` - Major rewrite with publish + domain steps
+  - `client/src/components/VideoSlides.tsx` - Updated Day 17 slides
+  - `client/src/pages/Admin.tsx` - Added App URL column
+  - `server/routes.ts` - Save componentData as userInputs, include customDomain in admin stats
+  - `server/seed.ts` - Updated Day 17 lesson with publishing/domain content
+  - `server/storage.ts` - Added userInputs parameter to completeDay
+- **Notes for Next Session:**
+  - Database was re-seeded - Day 17 lesson is up to date
+  - Test Day 17 full flow: test → publish → domain → done
+  - Test that customDomain saves correctly and shows in Admin
+  - Public Builder badge has minor issue: buildInPublic not persisted for retroactive awarding (low priority)

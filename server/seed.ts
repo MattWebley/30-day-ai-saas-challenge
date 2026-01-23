@@ -955,7 +955,7 @@ Don't overthink it. The question is simple: Can someone use this on their phone 
       videoUrl: null,
       aiTaskType: "session",
       aiTaskTitle: "Core Feature Testing",
-      aiTaskDescription: "Test your main features and happy path before shipping.",
+      aiTaskDescription: "Test your main features before shipping.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "Have you tested your core features?",
@@ -964,21 +964,9 @@ Don't overthink it. The question is simple: Can someone use this on their phone 
       tip: "You WILL ship with bugs. Every app does. The goal isn't perfection - it's making sure the core stuff works. Real users will find the edge cases you'd never think of. With AI you can fix bugs FAST, so don't worry.",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
-Tomorrow is MVP day. Before you ship, make sure the IMPORTANT STUFF works.
-
-Here's a truth about building a business - you WILL ship with bugs. You can't find them all yourself. The only way to truly find every edge case is with REAL USERS using your app in ways you'd never think of.
+Here's the truth about building a SaaS business - you WILL ship with bugs. You can't find them all yourself. The only way to truly find every edge case is with REAL USERS using your app in ways you'd never think of.
 
 That's not a failure. That's how software works.
-
-WHAT TO ACTUALLY TEST:
-
-- Sign up / login - can new users get in?
-- Your main feature - does the core thing work?
-- Happy path - if someone does everything right, does it work?
-- Basic navigation - can you get around without getting lost?
-- Mobile - does it work on your phone?
-
-That's it. If those five things work, you're ready to ship.
 
 YOUR TESTING OPTIONS:
 
@@ -996,9 +984,33 @@ There's no such thing as 100% bug-free software. Google ships bugs. Apple ships 
 
 That's your job too. Ship it, then be ready to fix what users find. Speed of fixing matters more than perfection at launch.
 
-Get it in front of real users. They'll tell you what's actually broken.`,
-      outcome: "Core features tested and working, ready for beta users",
-      completionMessage: "Your core features work. You're ready to ship. Tomorrow you'll get this in front of real users - that's when the real feedback starts.",
+PUBLISHING YOUR APP:
+
+Once you've tested the important stuff, it's time to publish. Replit makes this dead simple.
+
+1. Click the "Deploy" button in Replit (top right)
+2. Choose a deployment option - Replit will guide you through what fits your app
+3. Follow the prompts to set up billing if needed
+4. Your app gets a public URL like yourapp.replit.app
+
+That's it. Your app is now live on the internet. Real people can use it.
+
+CONNECT YOUR CUSTOM DOMAIN:
+
+Now connect the domain you registered earlier so your app lives at yourbrand.com instead of yourapp.replit.app.
+
+1. In Replit deployment settings, go to Custom Domains
+2. Add your domain name
+3. Replit will show you DNS records to add
+4. Go to your domain registrar (Namecheap, GoDaddy, etc.) and add those records
+5. Wait a few minutes for it to connect
+
+IF YOU USED NAMECHEAP:
+Go to Domain List → Manage → Advanced DNS. Add the records Replit gave you. Usually a CNAME record pointing to your Replit URL. Can take up to 48 hours but usually works in minutes.
+
+NEED HELP? Ask Claude Code - "Help me connect my domain [yourdomain.com] from [registrar] to my Replit deployment step by step."`,
+      outcome: "App tested, published, and live on the internet",
+      completionMessage: "Your app is LIVE. Real people can use it. Tomorrow you'll keep building until it's MVP-ready - take as long as you need.",
       xpReward: 100,
       estimatedMinutes: 5,
     },

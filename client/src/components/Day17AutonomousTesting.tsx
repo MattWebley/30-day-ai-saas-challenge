@@ -1,54 +1,61 @@
 import { useState } from "react";
 import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import {
   ChevronLeft,
   ChevronRight,
-  Copy,
   Terminal,
   CheckCircle2,
   MousePointer,
   Chrome,
   Sparkles,
   ListChecks,
-  Wrench,
+  Rocket,
+  Globe,
+  ExternalLink,
+  AlertCircle,
 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { ds } from "@/lib/design-system";
 import { Link } from "wouter";
 
 interface Day17AutonomousTestingProps {
   appName: string;
-  onComplete: (data: { testingComplete: boolean; issuesFound: string }) => void;
+  onComplete: (data: { testingComplete: boolean; published: boolean; customDomain: string }) => void;
 }
 
 const TEST_AREAS = [
   { id: "signup", label: "Sign up / Login flow", description: "Can new users create an account and log in?" },
   { id: "main-feature", label: "Main feature", description: "Does the core thing your app does actually work?" },
-  { id: "happy-path", label: "Happy path", description: "If a user does everything right, does it work?" },
+  { id: "normal-use", label: "Normal use", description: "If a user does everything right, does it work?" },
   { id: "navigation", label: "Basic navigation", description: "Can you get to the main pages without getting lost?" },
   { id: "mobile", label: "Mobile check", description: "Does it work on your phone?" },
 ];
 
+const PUBLISH_STEPS = [
+  { id: "deploy-click", label: "Click Deploy button", description: "Top right of Replit - click the Deploy button" },
+  { id: "choose-type", label: "Choose deployment option", description: "Pick the option that fits your app - Replit will guide you" },
+  { id: "billing", label: "Set up billing", description: "Follow the prompts to add payment if needed" },
+  { id: "live", label: "App is live!", description: "You now have a public URL like yourapp.replit.app" },
+];
+
+const DOMAIN_STEPS = [
+  { id: "replit-domain", label: "Add domain in Replit", description: "Deployment settings → Custom domains → Add your domain" },
+  { id: "copy-records", label: "Copy the DNS records", description: "Replit will show you the records to add (usually CNAME or A records)" },
+  { id: "registrar-dns", label: "Add records at your registrar", description: "Go to your domain registrar's DNS settings and add the records" },
+  { id: "verify", label: "Verify connection", description: "Wait a few minutes, then Replit will confirm it's connected" },
+];
+
 export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousTestingProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
-    "intro" | "methods" | "test" | "fix" | "done"
+    "intro" | "methods" | "test" | "publish" | "domain" | "done"
   >("intro");
 
   const [testedAreas, setTestedAreas] = useState<Set<string>>(new Set());
-  const [issuesFound, setIssuesFound] = useState("");
-  const [issuesFixed, setIssuesFixed] = useState(false);
-  const { toast } = useToast();
-
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: "Copied!",
-      description: `${label} copied to clipboard`,
-    });
-  };
+  const [publishSteps, setPublishSteps] = useState<Set<string>>(new Set());
+  const [domainSteps, setDomainSteps] = useState<Set<string>>(new Set());
+  const [customDomain, setCustomDomain] = useState("");
 
   const toggleArea = (id: string) => {
     const newSet = new Set(testedAreas);
@@ -60,7 +67,28 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
     setTestedAreas(newSet);
   };
 
-  const hasIssues = issuesFound.trim().length > 10;
+  const togglePublishStep = (id: string) => {
+    const newSet = new Set(publishSteps);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setPublishSteps(newSet);
+  };
+
+  const toggleDomainStep = (id: string) => {
+    const newSet = new Set(domainSteps);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    setDomainSteps(newSet);
+  };
+
+  const isPublished = publishSteps.has("live");
+  const isDomainConnected = domainSteps.has("verify");
 
   return (
     <div ref={containerRef} className="space-y-6">
@@ -94,22 +122,14 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
             </div>
 
             <div className="space-y-4">
-              <p className={ds.body}>
-                Tomorrow is MVP day. Before you ship, you want to make sure the <strong>important stuff</strong> works.
-              </p>
-
-              <p className={ds.body}>
-                Here's a truth about building a business - you WILL ship with bugs. You can't find them all. The only way to find every edge case is with REAL users using your app in ways you'd never think of.
-              </p>
-
               <div className={ds.infoBoxHighlight}>
                 <p className={ds.body}>
-                  <strong>The goal</strong> - Make sure your core features work. Fix the obvious stuff. Then ship it and let beta testers find the rest.
+                  <strong>About tomorrow</strong> - Day 18 has a pause button. You'll use it to keep building until your app is MVP-ready. Could take 1 day, 1 week, or 1 month... it takes what it takes. You get out what you put in. Show up and put in the time each and every day and you'll get there faster.
                 </p>
               </div>
 
-              <p className={ds.muted}>
-                Perfect is the enemy of shipped. A working MVP with minor bugs beats a "perfect" app that never launches.
+              <p className={ds.body}>
+                Before you hit that pause button, let's make sure the <strong>important stuff</strong> works. Your core feature. Sign up. The basics. We're not hunting for every bug - just the ones that would stop someone from using your app.
               </p>
             </div>
           </div>
@@ -127,7 +147,7 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
         <>
           <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-purple-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -138,25 +158,25 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
 
             <div className="space-y-4">
               {/* Option 1: Replit */}
-              <div className="p-4 border-2 border-slate-200 rounded-lg bg-white">
+              <div className="p-4 border border-slate-200 rounded-lg bg-white">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-orange-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-orange-600 font-bold text-sm">R</span>
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-slate-600 font-bold text-sm">R</span>
                   </div>
                   <div>
                     <p className={ds.label}>Replit Autonomous Agent</p>
                     <p className={ds.muted + " mt-1"}>
-                      Replit Autonomous Agent can test your app for you. Just tell it "Test my entire app and report any bugs you find." It'll click through everything and tell you what's broken.
+                      In Replit's AI settings, enable "Autonomous Agent" mode. It can test your app for you - clicking through everything and reporting what's broken.
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Option 2: Claude for Chrome */}
-              <div className="p-4 border-2 border-slate-200 rounded-lg bg-white">
+              <div className="p-4 border border-slate-200 rounded-lg bg-white">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Chrome className="w-4 h-4 text-blue-600" />
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Chrome className="w-4 h-4 text-slate-600" />
                   </div>
                   <div>
                     <p className={ds.label}>Claude for Chrome Extension</p>
@@ -168,10 +188,10 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
               </div>
 
               {/* Option 3: Manual */}
-              <div className="p-4 border-2 border-slate-200 rounded-lg bg-white">
+              <div className="p-4 border border-slate-200 rounded-lg bg-white">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <MousePointer className="w-4 h-4 text-green-600" />
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <MousePointer className="w-4 h-4 text-slate-600" />
                   </div>
                   <div>
                     <p className={ds.label}>Manual Testing (Always Do This Too)</p>
@@ -182,8 +202,8 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
                 </div>
               </div>
 
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <p className={ds.body + " text-amber-900"}>
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.body}>
                   <strong>Best approach?</strong> Use all three. Let Replit or Claude find the obvious stuff, then manually test the important flows yourself.
                 </p>
               </div>
@@ -206,12 +226,12 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
         <>
           <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <ListChecks className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className={ds.heading}>Test Checklist</h3>
-                <p className={ds.muted}>Go through each area. Check it off when tested.</p>
+                <p className={ds.muted}>Test each area. Fix any bugs you find. Check it off when done.</p>
               </div>
             </div>
 
@@ -221,7 +241,7 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
                   key={area.id}
                   className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
                     testedAreas.has(area.id)
-                      ? "border-green-500 bg-green-50"
+                      ? "border-green-500 bg-white"
                       : "border-slate-200 hover:border-slate-300 bg-white"
                   }`}
                   onClick={() => toggleArea(area.id)}
@@ -242,29 +262,12 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
             </div>
 
             {testedAreas.size >= 5 && (
-              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-800 text-sm font-medium">
-                  {testedAreas.size}/{TEST_AREAS.length} areas tested
+              <div className="mt-4 p-3 bg-white border border-green-300 rounded-lg">
+                <p className="text-green-600 font-medium">
+                  All areas tested - ready to publish!
                 </p>
               </div>
             )}
-          </div>
-
-          <div className={ds.cardWithPadding}>
-            <p className={ds.label + " mb-3"}>Issues Found</p>
-            <p className={ds.muted + " mb-3"}>
-              Write down everything that's broken, weird, or confusing. Be specific.
-            </p>
-            <Textarea
-              placeholder="- Button X doesn't do anything
-- Form Y shows error but doesn't say why
-- Page Z takes forever to load
-- On mobile, can't tap the menu
-- When I submit empty, it crashes..."
-              value={issuesFound}
-              onChange={(e) => setIssuesFound(e.target.value)}
-              className="min-h-[150px]"
-            />
           </div>
 
           <div className="flex justify-between">
@@ -273,72 +276,76 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
             </Button>
             <Button
               size="lg"
-              onClick={() => setStep(hasIssues ? "fix" : "done")}
+              onClick={() => setStep("publish")}
               disabled={testedAreas.size < 5}
               className="gap-2"
             >
-              {hasIssues ? "Fix Issues" : "All Good!"} <ChevronRight className="w-5 h-5" />
+              Publish Your App <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
         </>
       )}
 
-      {/* Fix Issues */}
-      {step === "fix" && (
+      {/* Publish */}
+      {step === "publish" && (
         <>
           <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center">
-                <Wrench className="w-5 h-5 text-white" />
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <Rocket className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h3 className={ds.heading}>Fix What You Found</h3>
-                <p className={ds.muted}>Better to fix now than have users find these</p>
+                <h3 className={ds.heading}>Publish Your App</h3>
+                <p className={ds.muted}>Make your app live on the internet</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <p className="font-bold text-amber-800 mb-2">This is normal</p>
-                <p className={ds.body + " text-amber-800"}>
-                  Every app has bugs before testing. You're doing exactly what professional developers do - find issues and fix them before shipping.
-                </p>
+              <p className={ds.body}>
+                Time to make your app available to real users. Replit makes this simple - just a few clicks and you'll have a public URL anyone can visit.
+              </p>
+
+              <div className="space-y-3">
+                {PUBLISH_STEPS.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                      publishSteps.has(item.id)
+                        ? "border-green-500 bg-white"
+                        : "border-slate-200 hover:border-slate-300 bg-white"
+                    }`}
+                    onClick={() => togglePublishStep(item.id)}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                        publishSteps.has(item.id) ? "bg-green-500 text-white" : "bg-slate-200 text-slate-600"
+                      }`}>
+                        {publishSteps.has(item.id) ? (
+                          <CheckCircle2 className="w-4 h-4" />
+                        ) : (
+                          <span className="text-sm font-medium">{index + 1}</span>
+                        )}
+                      </div>
+                      <div>
+                        <p className={ds.label}>{item.label}</p>
+                        <p className={ds.muted}>{item.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              <div className={ds.cardWithPadding + " bg-slate-50"}>
-                <p className={ds.label + " mb-2"}>Your issues to fix</p>
-                <p className={ds.body + " whitespace-pre-wrap"}>{issuesFound}</p>
-              </div>
-
-              <div className="relative">
-                <p className={ds.label + " mb-2"}>Copy this to Claude Code</p>
-                <pre className="bg-slate-900 text-slate-100 p-4 rounded-lg text-sm font-mono whitespace-pre-wrap">
-{`Fix these issues I found while testing:
-
-${issuesFound}
-
-Go through each one and fix it. After fixing, tell me what you changed.`}
-                </pre>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => copyToClipboard(`Fix these issues I found while testing:\n\n${issuesFound}\n\nGo through each one and fix it. After fixing, tell me what you changed.`, "Fix prompt")}
-                  className="absolute top-8 right-2 gap-2"
-                >
-                  <Copy className="w-4 h-4" />
-                  Copy
-                </Button>
-              </div>
-
-              <div
-                className={issuesFixed ? ds.optionSelected : ds.optionDefault}
-                onClick={() => setIssuesFixed(!issuesFixed)}
-              >
-                <div className="flex items-center gap-3">
-                  <Checkbox checked={issuesFixed} onCheckedChange={() => setIssuesFixed(!issuesFixed)} />
-                  <span className={ds.body + " font-medium"}>I've fixed the issues (or noted them for later)</span>
+              {isPublished && (
+                <div className="p-4 bg-white border-2 border-green-300 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <Globe className="w-5 h-5 text-green-600" />
+                    <div>
+                      <p className="text-green-600 font-medium">Your app is live!</p>
+                      <p className={ds.muted}>Now let's connect your custom domain.</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -346,7 +353,139 @@ Go through each one and fix it. After fixing, tell me what you changed.`}
             <Button variant="outline" onClick={() => setStep("test")} className="gap-2">
               <ChevronLeft className="w-5 h-5" /> Back
             </Button>
-            <Button size="lg" onClick={() => setStep("done")} disabled={!issuesFixed} className="gap-2">
+            <Button
+              size="lg"
+              onClick={() => setStep("domain")}
+              disabled={!isPublished}
+              className="gap-2"
+            >
+              Connect Domain <ChevronRight className="w-5 h-5" />
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* Custom Domain */}
+      {step === "domain" && (
+        <>
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                <Globe className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className={ds.heading}>Connect Your Domain</h3>
+                <p className={ds.muted}>Make your app available at yourapp.com</p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <p className={ds.body}>
+                Your app is live, but it's on a .replit.app URL. Let's connect the domain you registered earlier so people can find you at <strong>yourbrand.com</strong>.
+              </p>
+
+              <div className="space-y-3">
+                {DOMAIN_STEPS.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
+                      domainSteps.has(item.id)
+                        ? "border-green-500 bg-white"
+                        : "border-slate-200 hover:border-slate-300 bg-white"
+                    }`}
+                    onClick={() => toggleDomainStep(item.id)}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                        domainSteps.has(item.id) ? "bg-green-500 text-white" : "bg-slate-200 text-slate-600"
+                      }`}>
+                        {domainSteps.has(item.id) ? (
+                          <CheckCircle2 className="w-4 h-4" />
+                        ) : (
+                          <span className="text-sm font-medium">{index + 1}</span>
+                        )}
+                      </div>
+                      <div>
+                        <p className={ds.label}>{item.label}</p>
+                        <p className={ds.muted}>{item.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.label + " mb-2"}>If you used Namecheap</p>
+                <p className={ds.body}>
+                  Go to Domain List → Manage → Advanced DNS. Add the records Replit gave you. CNAME records usually point to your Replit deployment URL. Changes can take up to 48 hours but usually work within minutes.
+                </p>
+              </div>
+
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.label + " mb-2"}>Need help? Ask Claude Code</p>
+                <p className={ds.body}>
+                  "Help me connect my domain [yourdomain.com] from [Namecheap/GoDaddy/etc] to my Replit deployment. Walk me through it step by step."
+                </p>
+              </div>
+
+              {/* Test your domain */}
+              <div className={ds.cardWithPadding + " border-2"}>
+                <p className={ds.label + " mb-2"}>Test your domain</p>
+                <p className={ds.muted + " mb-3"}>Enter your domain to test if it's working</p>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="yourdomain.com"
+                    value={customDomain}
+                    onChange={(e) => setCustomDomain(e.target.value.replace(/^https?:\/\//, ''))}
+                    className="flex-1"
+                  />
+                  {customDomain && (
+                    <a
+                      href={`https://${customDomain}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium"
+                    >
+                      Test <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
+                </div>
+                {customDomain && (
+                  <div className="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-slate-500 mt-0.5 flex-shrink-0" />
+                      <p className={ds.muted + " text-sm"}>
+                        <strong>Not working?</strong> DNS changes can take up to 48 hours to propagate, though it's usually much faster. Try again in a few minutes. If it still doesn't work, double-check the DNS records match what Replit gave you.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {isDomainConnected && (
+                <div className="p-4 bg-white border-2 border-green-300 rounded-lg">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-green-600" />
+                    <div>
+                      <p className="text-green-600 font-medium">Domain connected!</p>
+                      <p className={ds.muted}>Your app is now live at your custom domain.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <Button variant="outline" onClick={() => setStep("publish")} className="gap-2">
+              <ChevronLeft className="w-5 h-5" /> Back
+            </Button>
+            <Button
+              size="lg"
+              onClick={() => setStep("done")}
+              disabled={!isDomainConnected}
+              className="gap-2"
+            >
               Continue <ChevronRight className="w-5 h-5" />
             </Button>
           </div>
@@ -356,15 +495,15 @@ Go through each one and fix it. After fixing, tell me what you changed.`}
       {/* Done */}
       {step === "done" && (
         <>
-          <div className="p-6 border-2 border-green-200 bg-green-50 rounded-lg">
+          <div className="p-6 border-2 border-green-300 bg-white rounded-lg">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-xl text-green-900">Ready to Ship!</h4>
-                <p className="text-green-700">
-                  The important stuff works. That's what matters.
+                <h4 className="font-bold text-xl text-slate-900">You're Live at Your Own Domain!</h4>
+                <p className="text-green-600">
+                  Your app is on the internet at your custom URL. This is real.
                 </p>
               </div>
             </div>
@@ -374,35 +513,26 @@ Go through each one and fix it. After fixing, tell me what you changed.`}
             <div className="space-y-4">
               <div className={ds.infoBoxHighlight}>
                 <p className={ds.body}>
-                  <strong>Here's the truth.</strong> Your app probably still has bugs. Every app does at launch. The difference is - your CORE features work. That's enough to ship.
+                  <strong>This is a big moment.</strong> You built something and put it out in the world with your own domain. Most people never get this far. Seriously - be proud of yourself.
                 </p>
               </div>
 
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className={ds.label + " mb-2 text-blue-900"}>What happens next</p>
-                <p className={ds.body + " text-blue-800"}>
-                  Real users will find bugs you never thought of. That's not failure - that's how software works. Get a few beta testers, fix what they find, repeat. Your app gets better with every user.
-                </p>
-              </div>
-
-              <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                <p className={ds.body + " mb-2"}>
-                  <strong>There's no such thing as 100% bug-free software.</strong>
-                </p>
-                <p className={ds.muted}>
-                  Google, Apple, Microsoft - they all ship bugs. Every single day. The difference? They fix them fast. That's your job too. Ship it, then be ready to fix what users find.
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.label + " mb-2"}>What happens next</p>
+                <p className={ds.body}>
+                  Tomorrow starts the MVP building phase. You'll keep working on your app until it's truly ready for paying customers. Take as long as you need.
                 </p>
               </div>
             </div>
           </div>
 
           <div className="flex justify-between">
-            <Button variant="outline" onClick={() => setStep("test")} className="gap-2">
+            <Button variant="outline" onClick={() => setStep("domain")} className="gap-2">
               <ChevronLeft className="w-5 h-5" /> Back
             </Button>
             <Button
               size="lg"
-              onClick={() => onComplete({ testingComplete: true, issuesFound: issuesFound || "No issues found" })}
+              onClick={() => onComplete({ testingComplete: true, published: true, customDomain: customDomain.trim() })}
               className="gap-2 bg-green-600 hover:bg-green-700"
             >
               Complete Day <CheckCircle2 className="w-5 h-5" />

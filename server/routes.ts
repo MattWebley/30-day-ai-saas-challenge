@@ -115,12 +115,16 @@ export async function registerRoutes(
     try {
       const userId = req.user.claims.sub;
       const day = parseInt(req.params.day);
-      const { selectedSuggestion, microDecisionChoice, reflectionAnswer } = req.body;
-      
+      const { selectedSuggestion, microDecisionChoice, reflectionAnswer, ...componentData } = req.body;
+
+      // Build userInputs from component data (customDomain, etc.)
+      const userInputs = Object.keys(componentData).length > 0 ? componentData : undefined;
+
       const progress = await storage.completeDay(userId, day, {
         selectedSuggestion,
         microDecisionChoice,
         reflectionAnswer,
+        userInputs,
       });
 
       // Update user stats
@@ -244,6 +248,11 @@ export async function registerRoutes(
       // User progress list
       const userProgress = allUsers.map((user: any) => {
         const stats = allStats.find((s: any) => s.userId === user.id);
+        // Get Day 17 progress to find custom domain
+        const day17Progress = allProgress.find((p: any) => p.userId === user.id && p.day === 17);
+        const day17Inputs = day17Progress?.userInputs as Record<string, unknown> | null;
+        const customDomain = day17Inputs?.customDomain as string | undefined;
+
         return {
           id: user.id,
           email: user.email,
@@ -253,6 +262,7 @@ export async function registerRoutes(
           totalXp: stats?.totalXp || 0,
           lastActive: stats?.lastActivityDate,
           isActive: stats?.lastActivityDate && new Date(stats.lastActivityDate) > sevenDaysAgo,
+          customDomain,
         };
       });
       
