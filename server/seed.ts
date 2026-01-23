@@ -970,9 +970,10 @@ That's not a failure. That's how software works.
 
 YOUR TESTING OPTIONS:
 
-1. REPLIT AUTONOMOUS AGENT - "Test my app's main features and report any bugs"
-2. CLAUDE FOR CHROME - Can see your screen and spot issues
-3. MANUAL - Click through the main flows yourself
+1. MANUAL - Click through the main flows yourself
+2. REPLIT AUTONOMOUS TESTING AGENT - "Test my app's main features and report any bugs"
+3. CLAUDE FOR CHROME - Can see your screen and spot issues
+4. BETA TESTERS - Ask friends or early supporters to try your app
 
 THE MINDSET SHIFT:
 
@@ -982,7 +983,7 @@ THE TRUTH ABOUT BUGS:
 
 There's no such thing as 100% bug-free software. Google ships bugs. Apple ships bugs. Microsoft ships bugs. Every. Single. Day. The difference? They fix them fast.
 
-That's your job too. Ship it, then be ready to fix what users find. Speed of fixing matters more than perfection at launch.
+That's your job too. Ship it, then be ready to fix what users find. Speed of fixing matters more than perfection at launch. And unless you have an audience or current customer base then it's unlikely it'll affect many users as building a SaaS business doesn't happen overnight.
 
 PUBLISHING YOUR APP:
 
@@ -1056,8 +1057,8 @@ THE MVP CHECKLIST:
 Your MVP must have:
 
 1. ONE CORE FEATURE that solves the main problem
-   - This is your USP. It MUST work flawlessly.
-   - If your app helps people write emails faster, that feature better be AMAZING.
+   - This is the foundation - what competitors already do. It MUST work flawlessly.
+   - Your USP (unique differentiator) comes on top of this, but the basics have to be solid first.
 
 2. USER ACCOUNTS
    - People can sign up and log in
@@ -1126,7 +1127,7 @@ When your MVP is ready, it's time to capture what you've built:
 3. Earn your MVP Builder badge
 
 This isn't just about recognition - it's about proving to yourself (and others) that you DID THE THING.`,
-      outcome: "MVP is built and submitted to the Showcase with screenshot and testimonial",
+      outcome: "MVP is built and submitted to the Showcase with screenshot",
       completionMessage: "You've built a working product AND shared it with the world. That takes guts. MVP Builder badge earned! Tomorrow: creating a sales page that converts visitors into customers.",
       xpReward: 100,
       estimatedMinutes: 5,

@@ -1710,15 +1710,15 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const userId = req.user.claims.sub;
       const { appName, description, screenshotUrl, liveUrl, testimonial, videoUrl } = req.body;
 
-      if (!appName || !description || !screenshotUrl) {
-        return res.status(400).json({ message: "App name, description, and screenshot are required" });
+      if (!appName || !description) {
+        return res.status(400).json({ message: "App name and description are required" });
       }
 
       const entry = await storage.createShowcaseEntry({
         userId,
         appName,
         description,
-        screenshotUrl,
+        screenshotUrl: screenshotUrl || null,
         liveUrl: liveUrl || null,
         testimonial: testimonial || null,
         videoUrl: videoUrl || null,

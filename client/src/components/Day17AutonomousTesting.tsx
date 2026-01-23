@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   MousePointer,
   Chrome,
+  Users,
   Sparkles,
   ListChecks,
   Rocket,
@@ -157,14 +158,29 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
             </div>
 
             <div className="space-y-4">
-              {/* Option 1: Replit */}
+              {/* Option 1: Manual */}
+              <div className="p-4 border border-slate-200 rounded-lg bg-white">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <MousePointer className="w-4 h-4 text-slate-600" />
+                  </div>
+                  <div>
+                    <p className={ds.label}>Manual Testing</p>
+                    <p className={ds.muted + " mt-1"}>
+                      Nothing beats actually using your app. Click every button. Fill every form. Try to break it. Pretend you're a confused user who does everything wrong.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Option 2: Replit */}
               <div className="p-4 border border-slate-200 rounded-lg bg-white">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                     <span className="text-slate-600 font-bold text-sm">R</span>
                   </div>
                   <div>
-                    <p className={ds.label}>Replit Autonomous Agent</p>
+                    <p className={ds.label}>Replit Autonomous Testing Agent</p>
                     <p className={ds.muted + " mt-1"}>
                       In Replit's AI settings, enable "Autonomous Agent" mode. It can test your app for you - clicking through everything and reporting what's broken.
                     </p>
@@ -172,7 +188,7 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
                 </div>
               </div>
 
-              {/* Option 2: Claude for Chrome */}
+              {/* Option 3: Claude for Chrome */}
               <div className="p-4 border border-slate-200 rounded-lg bg-white">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -187,16 +203,16 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
                 </div>
               </div>
 
-              {/* Option 3: Manual */}
+              {/* Option 4: Beta Testers */}
               <div className="p-4 border border-slate-200 rounded-lg bg-white">
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <MousePointer className="w-4 h-4 text-slate-600" />
+                    <Users className="w-4 h-4 text-slate-600" />
                   </div>
                   <div>
-                    <p className={ds.label}>Manual Testing (Always Do This Too)</p>
+                    <p className={ds.label}>Beta Testers</p>
                     <p className={ds.muted + " mt-1"}>
-                      Nothing beats actually using your app. Click every button. Fill every form. Try to break it. Pretend you're a confused user who does everything wrong.
+                      Ask friends, family, or early supporters to try your app. Real users find bugs you'd never think of. Give them access and ask what confused them or didn't work.
                     </p>
                   </div>
                 </div>
@@ -204,7 +220,7 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
 
               <div className={ds.infoBoxHighlight}>
                 <p className={ds.body}>
-                  <strong>Best approach?</strong> Use all three. Let Replit or Claude find the obvious stuff, then manually test the important flows yourself.
+                  <strong>Best approach?</strong> Use multiple methods. Test it yourself first, then let AI tools and real people find what you missed.
                 </p>
               </div>
             </div>

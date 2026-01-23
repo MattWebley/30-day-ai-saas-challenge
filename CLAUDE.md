@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-23 (Day 17 Test & Publish overhaul)
+- **Last Session**: 2026-01-23 (Day 17-18 Improvements & Pause Button)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -313,3 +313,46 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test Day 17 full flow: test → publish → domain → done
   - Test that customDomain saves correctly and shows in Admin
   - Public Builder badge has minor issue: buildInPublic not persisted for retroactive awarding (low priority)
+
+### 2026-01-23 (Session 3) - Day 17-18 Improvements & Pause Button
+- **Tasks Completed:**
+  - **Day 17 Testing Options:** Reordered and added beta testers
+    - New order: 1. Manual, 2. Replit Autonomous Testing Agent, 3. Claude for Chrome, 4. Beta Testers
+    - Updated both lesson (seed.ts) and component
+  - **Day 17 Lesson Updates:**
+    - Added "it's unlikely to affect many users" messaging for shipping with bugs
+    - Clarified that core feature is foundation (what competitors do), USP is the differentiator
+  - **Day 18 Complete Redesign:** Interactive pause button with motivational quotes
+    - **Pause Button:** Green "PAUSE CHALLENGE" → Red "CHALLENGE PAUSED" toggle
+    - Spinning clock icon when paused
+    - 12 rotating motivational quotes shown on click
+    - Press animation for satisfying click feel
+    - Checklist hides when paused (clean pause screen)
+    - Instructions change based on pause state
+  - **Day 18 Stripped Down:** Removed repetitive content
+    - Removed "What is an MVP?" card (already in lesson)
+    - Removed "THE PAUSE POINT" info box (simplified)
+    - Removed "Keep building" reminder (streamlined)
+    - Simplified checklist heading
+  - **Day 18 MVP Checklist:** Added USP item
+    - "My USP feature is built - the thing that makes me different"
+  - **Day 18 Showcase:** Removed screenshot URL requirement
+    - Removed screenshot field from form
+    - Made screenshotUrl optional in database schema
+    - Updated API validation
+  - **Day 18 Sales Page Mention:** Added note about upcoming sales page day
+- **Fixes Applied:**
+  - Screenshot URL now optional in showcase submission (was blocking submits)
+  - Database schema updated: `screenshotUrl` no longer `notNull()`
+  - API route updated to not require screenshotUrl
+- **Files Modified:**
+  - `client/src/components/Day17AutonomousTesting.tsx` - Reordered testing options, added beta testers
+  - `client/src/components/Day18BuildYourMVP.tsx` - Complete redesign with pause button
+  - `server/routes.ts` - Made screenshotUrl optional in showcase API
+  - `server/seed.ts` - Updated Day 17 lesson, Day 18 outcome
+  - `shared/schema.ts` - Made screenshotUrl nullable
+- **Notes for Next Session:**
+  - Database schema was pushed (`npm run db:push`)
+  - Test Day 18 pause button toggle functionality
+  - Test showcase submission without screenshot
+  - Continue testing Days 19-21

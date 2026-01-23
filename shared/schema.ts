@@ -332,7 +332,7 @@ export const showcase = pgTable("showcase", {
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   appName: varchar("app_name").notNull(),
   description: text("description").notNull(),
-  screenshotUrl: text("screenshot_url").notNull(),
+  screenshotUrl: text("screenshot_url"),
   liveUrl: text("live_url"),
   testimonial: text("testimonial"), // Their experience building with the challenge
   videoUrl: text("video_url"), // Optional video testimonial URL
