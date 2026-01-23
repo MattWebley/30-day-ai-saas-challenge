@@ -278,6 +278,42 @@ export async function registerRoutes(
   app.get("/api/badges/user", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+
+      // Sync badges - check for any missing badges based on current progress
+      const allBadges = await storage.getAllBadges();
+      const existingUserBadges = await storage.getUserBadges(userId);
+      const earnedBadgeIds = new Set(existingUserBadges.map(ub => ub.badgeId));
+
+      // Get user's completed days
+      const userProgressList = await storage.getUserProgress(userId);
+      const completedDays = new Set(userProgressList.filter(p => p.completed).map(p => p.day));
+
+      // Get user stats for streak
+      const userStats = await storage.getUserStats(userId);
+      const currentStreak = userStats?.currentStreak || 0;
+      const totalXp = userStats?.totalXp || 0;
+
+      // Award any missing badges
+      for (const badge of allBadges) {
+        if (earnedBadgeIds.has(badge.id)) continue;
+
+        let shouldAward = false;
+
+        if (badge.triggerType === 'day_completed' && badge.triggerValue && completedDays.has(badge.triggerValue)) {
+          shouldAward = true;
+        } else if (badge.triggerType === 'streak' && currentStreak >= (badge.triggerValue || 0)) {
+          shouldAward = true;
+        } else if (badge.triggerType === 'xp' && totalXp >= (badge.triggerValue || 0)) {
+          shouldAward = true;
+        }
+
+        if (shouldAward) {
+          await storage.awardBadge(userId, badge.id);
+          console.log(`Retroactively awarded badge ${badge.name} to user ${userId}`);
+        }
+      }
+
+      // Return updated badges list
       const userBadges = await storage.getUserBadges(userId);
       res.json(userBadges);
     } catch (error) {
