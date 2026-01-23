@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Terminal, Copy, Sparkles, ArrowLeft } from "lucide-react";
+import { Terminal, Copy, Sparkles, ArrowLeft, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const INSTALL_COMMAND = `curl -fsSL https://claude.ai/install.sh | bash && source ~/.bashrc && claude`;
@@ -161,6 +161,44 @@ export default function ClaudeCodeGuide() {
             </pre>
           </Card>
         </div>
+
+        {/* Troubleshooting */}
+        <Card className="p-6 border-2 border-slate-200 bg-white mt-8">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
+            <div>
+              <p className="text-slate-900 font-bold text-lg mb-3">
+                Troubleshooting
+              </p>
+              <div className="space-y-4 text-slate-700">
+                <div>
+                  <p className="font-medium">App not loading or behaving strangely?</p>
+                  <p className="text-slate-600 mt-1">
+                    Click the <strong>Stop</strong> button in Replit, wait a few seconds, then click <strong>Run</strong> again. This restarts everything fresh.
+                  </p>
+                </div>
+                <div>
+                  <p className="font-medium">Changes not showing up?</p>
+                  <p className="text-slate-600 mt-1">
+                    Hard refresh your browser: <strong>Cmd+Shift+R</strong> (Mac) or <strong>Ctrl+Shift+R</strong> (Windows). This clears cached files.
+                  </p>
+                </div>
+                <div>
+                  <p className="font-medium">Claude Code not responding?</p>
+                  <p className="text-slate-600 mt-1">
+                    Close the Shell tab and open a new one. Then run the install command again from Step 1 above.
+                  </p>
+                </div>
+                <div>
+                  <p className="font-medium">Still stuck?</p>
+                  <p className="text-slate-600 mt-1">
+                    Ask Claude Code: <em>"Something's broken, can you help me debug?"</em> - describe what's happening and it'll help you figure it out.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
 
         {/* Bottom Note */}
         <Card className="p-6 border-2 border-slate-200 bg-white mt-8">
