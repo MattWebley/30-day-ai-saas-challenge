@@ -59,6 +59,14 @@ async function seed() {
       triggerType: "build_in_public",
       triggerValue: 1,
     },
+    // Ambassador badge - for submitting a testimonial
+    {
+      name: "Ambassador",
+      description: "Shared your experience with a testimonial",
+      icon: "🌟",
+      triggerType: "testimonial_submitted",
+      triggerValue: 1,
+    },
     // Streak badges
     {
       name: "On Fire!",
@@ -1029,7 +1037,7 @@ NEED HELP? Ask Claude Code - "Help me connect my domain [yourdomain.com] from [r
       microDecisionQuestion: "What are you focusing on today?",
       microDecisionOptions: JSON.stringify(["Core features", "Bug fixes", "UI polish", "New functionality"]),
       reflectionQuestion: "Does your app solve the ONE core problem you set out to solve?",
-      tip: "THIS IS THE PAUSE POINT. Your MVP isn't about having every feature - it's about having ONE thing that works brilliantly. Stay here until that's true.",
+      tip: "THIS IS THE PAUSE POINT. Your MVP isn't about having every feature - it's about having ONE thing that works brilliantly. Stay here until that's true. Typically this looks like your competitor's core feature set PLUS your USP feature - then you're ready to go!",
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 STOP. READ THIS CAREFULLY.
@@ -1048,7 +1056,8 @@ An MVP is NOT:
 
 An MVP IS:
 - The SMALLEST version of your product that delivers REAL VALUE
-- ONE core problem solved BRILLIANTLY
+- Your competitors' core features - the baseline you need to compete
+- PLUS your USP - the thing that makes you DIFFERENT
 - Something people would actually PAY for
 - Proof that your idea works
 
@@ -1056,9 +1065,15 @@ THE MVP CHECKLIST:
 
 Your MVP must have:
 
-1. ONE CORE FEATURE that solves the main problem
-   - This is the foundation - what competitors already do. It MUST work flawlessly.
-   - Your USP (unique differentiator) comes on top of this, but the basics have to be solid first.
+1. COMPETITOR CORE FEATURES
+   - What do your competitors ALL have in common? You need those too.
+   - These are the basics your customers EXPECT. No excuses.
+   - Study 3-5 competitors. List their core features. Build those.
+
+2. YOUR USP FEATURE
+   - This is what makes you DIFFERENT from competitors.
+   - The unique angle, the special sauce, your differentiator.
+   - Without this, you're just a clone. WITH this, you have a business.
 
 2. USER ACCOUNTS
    - People can sign up and log in
@@ -1094,11 +1109,13 @@ Use the PAUSE button. Come back tomorrow and keep building. And the next day. An
 
 WHAT TO DO EACH SESSION:
 
-1. Ask: "Does my core feature work perfectly?"
-2. If NO - fix it
-3. If YES - ask: "What's the ONE thing blocking launch?"
-4. Fix that ONE thing
-5. Repeat
+1. Ask: "Do I have my competitors' core features built?"
+2. If NO - build them
+3. Ask: "Is my USP feature working?"
+4. If NO - build it
+5. Ask: "What's the ONE thing blocking launch?"
+6. Fix that ONE thing
+7. Repeat
 
 THE MVP MINDSET:
 
@@ -1110,23 +1127,15 @@ But if you never ship? You get nothing.
 
 WHEN TO MOVE ON:
 
-Your MVP is ready when:
-- Your core feature works reliably
-- A stranger could sign up and use it without help
-- You wouldn't be embarrassed to show it
-- It solves the ONE problem you set out to solve
+Your MVP is ready when a stranger could sign up, use it without help, and you wouldn't be embarrassed to show them.
 
-Then - and only then - move to Day 19.
+YOU'RE SO CLOSE.
 
-CAPTURE YOUR PROGRESS:
+Think about it - a few more hours of focused work and you could have something REAL. Something you can SELL. Something that could help hundreds, maybe THOUSANDS of people solve a problem they're struggling with right now.
 
-When your MVP is ready, it's time to capture what you've built:
+Most people never get this far. They talk about building something "someday." But you? You're HERE. You're DOING IT.
 
-1. Submit your app to the Showcase
-2. Share your experience (this becomes your testimonial)
-3. Earn your MVP Builder badge
-
-This isn't just about recognition - it's about proving to yourself (and others) that you DID THE THING.`,
+Now go build. Come back when it's ready.`,
       outcome: "MVP is built and submitted to the Showcase with screenshot",
       completionMessage: "You've built a working product AND shared it with the world. That takes guts. MVP Builder badge earned! Tomorrow: creating a sales page that converts visitors into customers.",
       xpReward: 100,
@@ -1147,37 +1156,41 @@ This isn't just about recognition - it's about proving to yourself (and others) 
       microDecisionOptions: JSON.stringify(["Clear value proposition", "Easy to understand", "Removes objections", "Makes signing up easy"]),
       reflectionQuestion: "How will it feel when your sales page starts converting visitors into customers?",
       tip: "The headline is the most important part. If they don't read the headline, they won't read anything else. Test multiple options.",
-      lesson: `Your product is BUILT. Now you need to SELL it.
+      lesson: `Time to SELL what you've built.
 
-A great sales page is the difference between "nobody signs up" and "I woke up to new customers." Today, we're building yours.
 
-THE ANATOMY OF A HIGH-CONVERTING PAGE:
+WHY SAAS IS EASIER TO SELL
 
-1. HEADLINE - The promise. Grabs attention. Makes them want more.
-2. THE PROBLEM - Make them feel understood. "This person GETS me."
-3. THE SOLUTION - Your product as the answer. Paint the "after" picture.
-4. HOW IT WORKS - 3-4 simple steps. Remove overwhelm.
-5. FEATURES & BENEFITS - What they get. Each tied to an outcome.
-6. SOCIAL PROOF - Testimonials, logos, numbers.
-7. THE OFFER + PRICING - What it costs. Why it's worth it.
-8. GUARANTEE - Remove fear. Make it safe to say yes.
-9. FAQ - Answer objections before they ask.
-10. FINAL CTA - Tell them exactly what to do.
+Selling SaaS is a LOT easier than selling most things.
 
-TODAY YOU'LL BUILD THIS:
+Why? You're offering a FREE TRIAL. Zero risk. They try before they buy.
 
-I'm giving you POWER PROMPTS that generate each section. You'll pick your favorite headline from 10 options, then build the full page.
+You're not saying "give me your money" - you're saying "try this for free." Much easier. Much lower resistance. The product sells itself if it's good.
 
-THE PROCESS:
 
-1. Generate 10 headline options → pick the best one
-2. Generate full sales page copy → using proven structure
-3. Generate pricing section → with tiers that make sense
-4. Build it in your app → with Claude Code
+BUILD IT ONCE, SELLS 24/7
 
-By end of today, you'll have a REAL sales page ready for customers.
+Here's the best part - you create this sales process ONCE.
 
-Let's go.`,
+One sales page. One signup flow. One free trial system.
+
+Then it works around the clock. Giving away free trials while you sleep. No sales calls. No chasing leads. Just people finding your page, trying your product, and paying if they love it.
+
+
+YOU'RE NOT "SELLING"
+
+Don't psych yourself out about "selling."
+
+You're just inviting people to try something that might help them. If it does, they'll pay. If it doesn't, no harm done.
+
+That's it. That's the whole game.
+
+
+WHAT WE'RE BUILDING TODAY
+
+A complete sales page using a proven 10-section structure. You'll use AI to generate the copy, then build it with Claude Code.
+
+The interactive section below walks you through the exact structure and gives you the prompts to generate everything.`,
       outcome: "Built a complete sales page with headline, copy, and pricing",
       completionMessage: "Your sales page is LIVE. You have a headline, problem/solution copy, features, pricing, and CTAs. Tomorrow: where to send traffic.",
       xpReward: 100,

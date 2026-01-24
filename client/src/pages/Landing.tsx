@@ -307,7 +307,10 @@ export default function Landing() {
                 This ISN'T a course. It ISN'T a bunch of videos you'll never watch. It ISN'T a community where you chat with other people who also aren't building anything.
               </p>
               <p className="text-lg mt-4 font-semibold text-slate-900">
-                It's a 21-day guided challenge where you complete ONE focused task every single day... and at the end, you have a REAL, WORKING software product.
+                It's an APP that guides you through 21 days of focused tasks... and at the end, you don't just have "knowledge" - you have a REAL, WORKING software product.
+              </p>
+              <p className="text-lg mt-4">
+                And here's what makes this different from everything else you've tried: <strong className="text-slate-900">you can't fail to finish.</strong> The app tracks your progress. It shows your streak. It won't let you lie to yourself about whether you're actually doing the work. You can't ignore it like a PDF sitting in your downloads folder.
               </p>
             </div>
 
@@ -361,7 +364,7 @@ export default function Landing() {
 
             <div className="bg-slate-900 text-white p-6 rounded-xl my-8">
               <p className="text-lg">
-                <strong>By the way:</strong> this challenge app you're looking at right now? I built it using the exact same system I'm teaching you. The prompts, the process, all of it. You're looking at the proof.
+                <strong>By the way:</strong> this challenge app you're looking at right now? I built it using the EXACT same system I'm teaching you. The prompts, the process, the tools - all of it. User accounts, payments, AI features, mobile optimization - everything you see here, I built with this system. You're not just reading about what's possible. You're USING the proof.
               </p>
             </div>
           </div>
@@ -426,6 +429,13 @@ export default function Landing() {
               <p className="font-semibold text-slate-900 text-center text-xl pt-4">
                 By Day 21, you'll have a REAL, WORKING software product ready for customers.
               </p>
+
+              <div className="bg-slate-900 text-white p-6 rounded-xl my-8">
+                <h4 className="font-bold text-xl mb-3">Think About What You'll HAVE:</h4>
+                <p className="text-slate-300">
+                  Not notes. Not "knowledge." Not another certificate to add to your LinkedIn. An actual PRODUCT. Something you can show people. Something you can SELL. Something that could help hundreds, maybe THOUSANDS of people solve a problem they're struggling with right now. That's the difference between learning and DOING.
+                </p>
+              </div>
 
               <div className="bg-slate-100 border-2 border-slate-200 rounded-xl p-6 mt-8">
                 <p className="font-bold text-slate-900 text-lg mb-2">
@@ -568,7 +578,11 @@ export default function Landing() {
             </p>
 
             <p>
-              Here's why THIS is different:
+              And if you're being honest with yourself, there's probably a voice in your head right now saying: <em>"What makes this any different? Why won't I just quit this one too?"</em>
+            </p>
+
+            <p>
+              Fair question. Here's the answer:
             </p>
 
             <div className="space-y-6 mt-6">
@@ -613,9 +627,9 @@ export default function Landing() {
                   <TrendingUp className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-lg">Gamified Progress Keeps You GOING</h4>
+                  <h4 className="font-bold text-slate-900 text-lg">An App That Holds You ACCOUNTABLE</h4>
                   <p className="text-slate-600 mt-1">
-                    Badges. Streaks. A visual progress tracker. Your lizard brain actually WANTS to continue. It's the same psychology that makes games addictive - but pointed at building something VALUABLE.
+                    Badges. Streaks. A visual progress tracker. You can't lie to yourself - the app shows exactly where you are. Day 5. Day 12. Day 18. It's the same psychology that makes games addictive - but pointed at building something VALUABLE. And unlike a course you can ignore, this STARES at you until you do the work.
                   </p>
                 </div>
               </div>
@@ -1045,7 +1059,7 @@ export default function Landing() {
 
               <div className="space-y-2">
                 <p className="font-semibold text-slate-900">Is this just another course I'll never finish?</p>
-                <p className="text-slate-600">This is SPECIFICALLY designed to NOT be that. Daily micro-tasks, gamified progress, and a clear 21-day structure create accountability that courses LACK. You're not watching videos. You're DOING things.</p>
+                <p className="text-slate-600">This is SPECIFICALLY designed to NOT be that. It's an APP, not a course. You can't download it and forget about it. It tracks your progress, shows your streak, and stares at you until you do the work. Courses give you knowledge. This gives you a RESULT - an actual working product you can sell. That's the difference.</p>
               </div>
             </div>
           </div>

@@ -97,7 +97,7 @@ export default function Coaching() {
             Build Your SaaS With 1:1 Expert Coaching
           </h1>
           <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-            Work directly with an expert coach personally trained by Matt Webley. They'll build your product live, on screen, with you.
+            Work directly with Matt or one of his personally trained coaches. We don't just tell you what to do - we build it WITH you, live on screen.
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 rounded-lg">
             <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
@@ -116,8 +116,8 @@ export default function Coaching() {
                 {[
                   {
                     icon: Video,
-                    title: "4 x 1-Hour Live Sessions",
-                    description: "Direct 1:1 video calls with your dedicated coach"
+                    title: "Live 1:1 Video Sessions",
+                    description: "We're on screen with you, building together in real time"
                   },
                   {
                     icon: Calendar,
@@ -126,13 +126,13 @@ export default function Coaching() {
                   },
                   {
                     icon: Users,
-                    title: "Screen Share Building",
-                    description: "Your coach builds alongside you, showing every step"
+                    title: "We Build WITH You",
+                    description: "Not just advice - we're hands-on, coding alongside you"
                   },
                   {
                     icon: Zap,
-                    title: "Unblock Any Issue",
-                    description: "Get unstuck immediately - no more wasted hours"
+                    title: "Instant Unblocking",
+                    description: "Stuck? We fix it together, right there on the call"
                   }
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
@@ -174,11 +174,11 @@ export default function Coaching() {
               <h3 className="font-bold text-slate-900 mb-4">Perfect for you if...</h3>
               <div className="space-y-3">
                 {[
-                  "You want an expert looking over your shoulder as you build",
-                  "You learn faster by watching someone do it live",
+                  "You don't want to build alone - you want someone WITH you",
+                  "You learn faster when someone's doing it alongside you",
                   "You don't want to waste hours stuck on technical issues",
-                  "You want to launch faster with expert guidance",
-                  "You prefer hands-on learning over watching videos alone"
+                  "You want to launch faster with hands-on help",
+                  "You'd rather build together than figure it out solo"
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -193,13 +193,19 @@ export default function Coaching() {
             {/* Coach Credibility */}
             <div className="bg-gradient-to-r from-primary/5 to-primary/10 rounded-xl p-5 border border-primary/20">
               <p className="text-slate-700 text-sm leading-relaxed">
-                <strong className="text-slate-900">Our coaches have built real products.</strong> They've shipped apps, integrated payments, set up auth systems, and solved the exact problems you'll face. They're not just watching tutorials - they've done it for real.
+                <strong className="text-slate-900">The challenge teaches you what to build. We help you actually build it.</strong> Our coaches have shipped real apps, integrated payments, set up auth systems, and solved the exact problems you'll face. They'll do it WITH you, not just tell you what to do.
               </p>
             </div>
           </div>
 
           {/* Right Column - Pricing & CTA */}
           <div className="space-y-6">
+            {/* Section Header - Expert Coaches */}
+            <div className="text-center pb-2">
+              <p className="text-lg font-bold text-slate-900">With Matt's Expert Coaches</p>
+              <p className="text-sm text-slate-500">Personally trained & certified by Matt</p>
+            </div>
+
             {/* Single Session Option */}
             <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 space-y-4">
               <div className="text-center space-y-2">
@@ -207,7 +213,7 @@ export default function Coaching() {
                 <div className="flex items-center justify-center gap-2">
                   <span className="text-4xl font-extrabold text-slate-900">{currencySymbol}{prices.single[currency]}</span>
                 </div>
-                <p className="text-slate-600">1 hour of focused 1:1 coaching</p>
+                <p className="text-slate-600">1 hour with an expert coach</p>
               </div>
 
               <button
@@ -244,7 +250,7 @@ export default function Coaching() {
                   <span className="text-xl text-slate-400 line-through">{currencySymbol}{prices.packOriginal[currency].toLocaleString()}</span>
                   <span className="text-4xl font-extrabold text-slate-900">{currencySymbol}{prices.pack[currency].toLocaleString()}</span>
                 </div>
-                <p className="text-slate-600">4 hours of dedicated 1:1 coaching</p>
+                <p className="text-slate-600">4 hours with an expert coach</p>
               </div>
 
               {/* Unlock All Days Bonus */}
@@ -446,7 +452,7 @@ export default function Coaching() {
             {[
               {
                 q: "Who is my coach?",
-                a: "Your coach is UK-based and personally trained and certified by Matt Webley. They've built multiple SaaS products using the exact vibe coding methods taught in this challenge and know the tools inside and out."
+                a: "You'll work with one of Matt's UK-based, personally trained coaches. They've built multiple SaaS products using the exact vibe coding methods taught in this challenge and know the tools inside and out."
               },
               {
                 q: "How do I book sessions?",
@@ -459,6 +465,14 @@ export default function Coaching() {
               {
                 q: "What will we work on?",
                 a: "Whatever you need! Your coach will help with setup, debugging, building features, understanding AI prompts, deployment - anything that's blocking you from launching."
+              },
+              {
+                q: "What's the difference between Matt and his coaches?",
+                a: "The coaches are brilliant for building - they'll help you code, debug, and ship your product. Matt focuses on the business side - pricing, positioning, go-to-market strategy, and making decisions that lead to revenue. If you want to build, choose a coach. If you want to build AND sell, choose Matt."
+              },
+              {
+                q: "Why would I work with Matt directly?",
+                a: "Matt has generated over $23 million online, with $12 million from SaaS alone. If you're serious about building something that makes money - not just a side project - Matt can help you avoid the mistakes that kill most SaaS businesses before they start."
               }
             ].map((faq, i) => (
               <div key={i} className="space-y-2">

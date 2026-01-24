@@ -42,7 +42,6 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   const { stats } = useUserStats();
   const { testMode, setTestMode } = useTestMode();
   const { user } = useAuth();
-  const hasPromptPack = (user as any)?.promptPackPurchased === true;
   const hasLaunchPack = (user as any)?.launchPackPurchased === true;
 
   const challengeDays = Array.isArray(allDays) ? allDays : [];
@@ -53,10 +52,13 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   );
 
   const totalDays = 21;
-  const progress = stats ? Math.round((((stats as any).lastCompletedDay || 0) / totalDays) * 100) : 0;
-  const lastCompleted = (stats as any)?.lastCompletedDay || 0;
+  const lastCompleted = (stats as any)?.lastCompletedDay ?? -1; // -1 means no days completed yet
+  const daysCompleted = lastCompleted + 1; // Day 0 completed = 1 day done
+  const progress = stats ? Math.round((daysCompleted / (totalDays + 1)) * 100) : 0; // +1 because Day 0-21 = 22 days
+  const daysToLaunch = totalDays - Math.max(0, lastCompleted); // Days remaining until Day 21 (capped at 21)
+  const daysSinceStart = (stats as any)?.daysSinceStart || 0;
 
-  const maxVisibleDay = testMode ? totalDays : Math.max(lastCompleted + 3, currentDay + 2, 3);
+  const maxVisibleDay = testMode ? totalDays : Math.max(lastCompleted + 3, currentDay + 2, daysSinceStart + 3, 3);
 
   // Milestone definitions for battle pass style progress
   // Day number shows the LAST day of each phase (when you complete that phase)
@@ -121,10 +123,16 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
           {/* Current Level Display */}
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Level</p>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Day</p>
               <p className="text-3xl font-black text-sidebar-foreground leading-none">
-                {lastCompleted}
+                {Math.min(lastCompleted + 1, 21)}
                 <span className="text-sm font-medium text-muted-foreground ml-1">/ 21</span>
+              </p>
+            </div>
+            <div className="text-center">
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">To Launch</p>
+              <p className="text-sm font-bold text-amber-600">
+                {daysToLaunch} {daysToLaunch === 1 ? "day" : "days"}
               </p>
             </div>
             <div className="text-right">
@@ -195,28 +203,6 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
             </div>
           </div>
 
-          {/* XP to next milestone */}
-          {currentMilestoneIndex >= 0 && lastCompleted < 21 && (
-            <div className="bg-slate-50 rounded-lg p-2.5 border border-slate-100">
-              <div className="flex items-center justify-between text-xs mb-1.5">
-                <span className="font-medium text-slate-600">
-                  <Zap className="w-3 h-3 inline mr-1 text-amber-500" />
-                  {currentMilestone.day - lastCompleted} {currentMilestone.day - lastCompleted === 1 ? 'day' : 'days'} to {currentMilestone.label}
-                </span>
-                <span className="font-bold text-slate-900">
-                  {Math.round(((lastCompleted - (milestones[currentMilestoneIndex - 1]?.day || 0)) / (currentMilestone.day - (milestones[currentMilestoneIndex - 1]?.day || 0))) * 100)}%
-                </span>
-              </div>
-              <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-amber-400 to-amber-500 rounded-full transition-all"
-                  style={{
-                    width: `${((lastCompleted - (milestones[currentMilestoneIndex - 1]?.day || 0)) / (currentMilestone.day - (milestones[currentMilestoneIndex - 1]?.day || 0))) * 100}%`
-                  }}
-                />
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Streak Display */}
@@ -281,22 +267,30 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 My Progress
               </span>
             </Link>
-            <Link href="/sales-letter-pack" onClick={handleNavClick}>
-              <span className={cn(
-                "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                location === "/sales-letter-pack"
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-              )}>
+            {lastCompleted >= 18 || testMode ? (
+              <Link href="/critique" onClick={handleNavClick}>
+                <span className={cn(
+                  "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                  location === "/critique"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                )}>
+                  <div className="flex items-center gap-3">
+                    <PenTool className="w-4 h-4" />
+                    Sales Letter Critique
+                  </div>
+                  <Unlock className="w-3 h-3 text-muted-foreground" />
+                </span>
+              </Link>
+            ) : (
+              <span className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground cursor-pointer">
                 <div className="flex items-center gap-3">
                   <PenTool className="w-4 h-4" />
-                  Sales Letter Pack
+                  Sales Letter Critique
                 </div>
-                {!hasPromptPack && (
-                  <Lock className="w-3 h-3 text-muted-foreground" />
-                )}
+                <Lock className="w-3 h-3 text-muted-foreground" />
               </span>
-            </Link>
+            )}
             <Link href="/launch-pack" onClick={handleNavClick}>
               <span className={cn(
                 "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
@@ -308,7 +302,9 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                   <Rocket className="w-4 h-4" />
                   Launch Pack
                 </div>
-                {!hasLaunchPack && (
+                {hasLaunchPack ? (
+                  <Unlock className="w-3 h-3 text-muted-foreground" />
+                ) : (
                   <Lock className="w-3 h-3 text-muted-foreground" />
                 )}
               </span>
@@ -332,7 +328,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 </span>
               </Link>
             )}
-            {completedDays.has(8) ? (
+            {completedDays.has(8) || testMode ? (
               <Link href="/claude-code" onClick={handleNavClick}>
                 <span className={cn(
                   "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
@@ -344,33 +340,17 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                     <BookOpen className="w-4 h-4" />
                     Claude Code Guide
                   </div>
-                  <Unlock className="w-4 h-4 text-green-600" />
-                </span>
-              </Link>
-            ) : testMode ? (
-              <Link href="/claude-code" onClick={handleNavClick}>
-                <span className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground/50 hover:bg-sidebar-accent/50 cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <BookOpen className="w-4 h-4" />
-                    Claude Code Guide
-                  </div>
-                  <div className="flex items-center gap-1 text-xs">
-                    <Lock className="w-3 h-3" />
-                    <span>Day 8</span>
-                  </div>
+                  <Unlock className="w-3 h-3 text-muted-foreground" />
                 </span>
               </Link>
             ) : (
-              <div className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground/50 cursor-not-allowed">
+              <span className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground cursor-pointer">
                 <div className="flex items-center gap-3">
                   <BookOpen className="w-4 h-4" />
                   Claude Code Guide
                 </div>
-                <div className="flex items-center gap-1 text-xs">
-                  <Lock className="w-3 h-3" />
-                  <span>Day 8</span>
-                </div>
-              </div>
+                <Lock className="w-3 h-3 text-muted-foreground" />
+              </span>
             )}
             <Link href="/admin" onClick={handleNavClick}>
               <span className={cn(
@@ -405,15 +385,23 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 <div className="space-y-0.5">
                   {sectionDays.map((day: any) => {
                     const isCompleted = completedDays.has(day.day);
-                    // Day 0 is never locked, Day 1+ requires Day 0 completion first
+                    // Day unlocking logic:
+                    // - Day 0: always unlocked
+                    // - Day 1: unlocked when Day 0 is completed (both available on signup)
+                    // - Day 2+: unlocked when previous day completed AND enough time has passed
                     // Test mode OR coaching purchase bypasses all locking
                     const hasCompletedDay0 = completedDays.has(0);
                     const hasCoaching = (stats as any)?.hasCoaching || false;
+                    const previousDayCompleted = day.day === 0 || completedDays.has(day.day - 1);
+                    const timeUnlocked = day.day <= daysSinceStart + 1; // Day 0 & 1 on signup, then one more each day
+
                     const isLocked = (testMode || hasCoaching)
                       ? false
                       : day.day === 0
                         ? false
-                        : (day.day > ((stats as any)?.lastCompletedDay || 0) + 1 && !isCompleted) || (!hasCompletedDay0 && day.day > 0);
+                        : day.day === 1
+                          ? !hasCompletedDay0 // Day 1 just needs Day 0 completed
+                          : !previousDayCompleted || !timeUnlocked; // Day 2+ needs both completion AND time
                     const daysAhead = day.day - currentDay;
                     const fadeOpacity = daysAhead <= 0 || isCompleted ? 1 : daysAhead === 1 ? 0.7 : daysAhead === 2 ? 0.5 : daysAhead >= 3 ? 0.35 : 1;
 

@@ -24,6 +24,7 @@ import SalesLetterPack from "@/pages/SalesLetterPack";
 import LaunchPack from "@/pages/LaunchPack";
 import Coaching from "@/pages/Coaching";
 import CoachingUpsell from "@/pages/CoachingUpsell";
+import Critique from "@/pages/Critique";
 import Welcome from "@/pages/Welcome";
 
 function ScrollToTop() {
@@ -77,6 +78,7 @@ function Router() {
             <Route path="/admin" component={Admin} />
             <Route path="/design-preview" component={DesignPreview} />
             <Route path="/coaching" component={Coaching} />
+            <Route path="/critique" component={Critique} />
           </>
         )}
         <Route component={NotFound} />

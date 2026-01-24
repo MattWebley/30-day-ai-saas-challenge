@@ -207,7 +207,11 @@ export async function registerRoutes(
       const user = await storage.getUser(userId);
       const hasCoaching = user?.coachingPurchased || false;
 
-      res.json({ ...stats, hasCoaching });
+      // Calculate days since user started
+      const userCreatedAt = user?.createdAt || new Date();
+      const daysSinceStart = Math.floor((Date.now() - new Date(userCreatedAt).getTime()) / (1000 * 60 * 60 * 24));
+
+      res.json({ ...stats, hasCoaching, daysSinceStart });
     } catch (error) {
       console.error("Error fetching user stats:", error);
       res.status(500).json({ message: "Failed to fetch user stats" });
@@ -1724,6 +1728,25 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         videoUrl: videoUrl || null,
       });
 
+      // Award Ambassador badge if testimonial is included
+      if (testimonial && testimonial.trim().length > 0) {
+        try {
+          const allBadges = await storage.getAllBadges();
+          const ambassadorBadge = allBadges.find(b => b.triggerType === 'testimonial_submitted');
+          if (ambassadorBadge) {
+            const userBadges = await storage.getUserBadges(userId);
+            const alreadyHas = userBadges.some(ub => ub.badgeId === ambassadorBadge.id);
+            if (!alreadyHas) {
+              await storage.awardBadge(userId, ambassadorBadge.id);
+              console.log(`Awarded Ambassador badge to user ${userId}`);
+            }
+          }
+        } catch (badgeError) {
+          console.error("Error awarding Ambassador badge:", badgeError);
+          // Don't fail the request if badge awarding fails
+        }
+      }
+
       res.json(entry);
     } catch (error: any) {
       console.error("Error creating showcase entry:", error);
@@ -1751,6 +1774,20 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     } catch (error: any) {
       console.error("Error fetching showcase:", error);
       res.status(500).json({ message: "Failed to fetch showcase" });
+    }
+  });
+
+  // Get showcase stats (public)
+  app.get("/api/showcase/stats", async (req, res) => {
+    try {
+      const entries = await storage.getApprovedShowcase();
+      res.json({
+        count: entries.length,
+        recent: entries.slice(0, 3).map(e => ({ appName: e.appName, liveUrl: e.liveUrl }))
+      });
+    } catch (error: any) {
+      console.error("Error fetching showcase stats:", error);
+      res.status(500).json({ message: "Failed to fetch showcase stats" });
     }
   });
 
@@ -2282,6 +2319,61 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       res.json({ url: session.url });
     } catch (error: any) {
       console.error("Error creating Matt coaching checkout session:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  // Sales Page Video Critique checkout
+  app.post("/api/checkout/critique", async (req, res) => {
+    try {
+      const { currency = 'gbp', includeHeadlines = false } = req.body;
+      const stripe = await getUncachableStripeClient();
+      const host = req.get('host');
+      const protocol = req.protocol;
+
+      // Price IDs for Video Critique by currency
+      // TODO: Create these products in Stripe and update with real price IDs
+      const critiquePriceIds: Record<string, string> = {
+        usd: 'price_CRITIQUE_USD', // $595 - TODO: Replace with real Stripe price ID
+        gbp: 'price_CRITIQUE_GBP'  // £495 - TODO: Replace with real Stripe price ID
+      };
+      const headlinesPriceIds: Record<string, string> = {
+        usd: 'price_CRITIQUE_HEADLINES_USD', // $97 - TODO: Replace with real Stripe price ID
+        gbp: 'price_CRITIQUE_HEADLINES_GBP'  // £95 - TODO: Replace with real Stripe price ID
+      };
+
+      const priceId = critiquePriceIds[currency.toLowerCase()] || critiquePriceIds.gbp;
+      const headlinesPriceId = headlinesPriceIds[currency.toLowerCase()] || headlinesPriceIds.gbp;
+
+      const lineItems: any[] = [{
+        price: priceId,
+        quantity: 1
+      }];
+
+      // Add headlines bump offer if selected
+      if (includeHeadlines) {
+        lineItems.push({
+          price: headlinesPriceId,
+          quantity: 1
+        });
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: lineItems,
+        mode: 'payment',
+        success_url: `${protocol}://${host}/coaching?success=true&type=critique`,
+        cancel_url: `${protocol}://${host}/coaching`,
+        metadata: {
+          productType: 'critique',
+          includeHeadlines: includeHeadlines ? 'true' : 'false',
+          currency: currency
+        }
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Error creating critique checkout session:", error);
       res.status(500).json({ message: "Failed to create checkout session" });
     }
   });

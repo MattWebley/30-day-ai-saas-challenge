@@ -1358,14 +1358,15 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 )}
-                {/* Day 18: Build Your MVP - Showcase Submission */}
+                {/* Day 18: Build Your MVP */}
                 <div className="space-y-4 pt-4">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h2 className="font-bold text-xl text-slate-900">Capture Your Progress</h2>
+                    <h2 className="font-bold text-xl text-slate-900">Build Your MVP</h2>
                   </div>
                   <Day18BuildYourMVP
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
+                    daysSinceStart={(stats as any)?.daysSinceStart || 0}
                     onComplete={handleComplete}
                   />
                 </div>

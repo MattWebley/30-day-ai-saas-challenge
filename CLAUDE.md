@@ -356,3 +356,57 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test Day 18 pause button toggle functionality
   - Test showcase submission without screenshot
   - Continue testing Days 19-21
+
+### 2026-01-24 - Day 19 Overhaul & Critique Page
+- **Tasks Completed:**
+  - **New Critique Page:** Created standalone `/critique` page for Sales Page Video Critique
+    - Moved from Coaching page to its own route
+    - Pricing: £495/$595 base + £95/$97 headlines bump (50% off messaging)
+    - Currency toggle (USD/GBP) based on user's purchase currency
+    - Locked state for users who haven't reached Day 19
+    - "Sales Page Training Already Included" notice for Day 19+ users
+  - **Sidebar Updates:**
+    - Changed "Sales Letter Pack" → "Sales Letter Critique"
+    - Added uniform Lock/Unlock icons across Sales Letter Critique, Claude Code Guide, and Launch Pack
+    - Links to `/critique` when unlocked (Day 19+)
+  - **Ambassador Badge:** New badge (🌟) for submitting testimonials
+    - Added to seed.ts with triggerType "testimonial_submitted"
+    - Routes.ts awards badge when showcase entry includes testimonial
+  - **Day 19 Lesson Improvements:**
+    - Added "WHY SAAS IS EASIER TO SELL" section (free trials, zero risk)
+    - Added "BUILD IT ONCE, SELLS 24/7" messaging
+    - Removed duplication between lesson and interactive component
+    - Better whitespace and subheads for readability
+  - **Day 19 Interactive Component:**
+    - Made critique pitch its own step in flow (intro → structure → prompts → build → critique → showcase → complete)
+    - Added 50% off pricing display with strikethrough (£990/£495)
+    - Added visual feedback for copy buttons (green checkmark, "Copied!" text)
+    - Removed ChatGPT mention - only Claude.ai now
+    - Removed "20+ years" mentions - focus on conversion rates instead
+    - Fixed showcase section to match design system (bg-primary instead of bg-green-500)
+    - Updated social platforms: Instagram, TikTok, YouTube, Facebook, and email lists
+    - Changed "10-100 paying customers" → "first few paying customers" (honesty fix)
+    - Added republish reminders in build and complete steps
+- **Fixes Applied:**
+  - Design system violations fixed (removed bg-green-500, bg-amber-500 for icon headers)
+  - Removed colored backgrounds (amber-50, etc.) - using ds.cardWithPadding
+  - Ambassador badge now properly seeded in database
+- **Files Created:**
+  - `client/src/pages/Critique.tsx` - Standalone critique page
+- **Files Modified:**
+  - `client/src/App.tsx` - Added /critique route
+  - `client/src/components/Day19TheSalesMachine.tsx` - Major updates (critique step, copy feedback, republish reminders)
+  - `client/src/components/Day18BuildYourMVP.tsx` - Minor updates
+  - `client/src/components/layout/Sidebar.tsx` - Sales Letter Critique link, uniform lock icons
+  - `client/src/pages/Coaching.tsx` - Removed critique content
+  - `client/src/pages/Dashboard.tsx` - Minor updates
+  - `client/src/pages/Landing.tsx` - Minor updates
+  - `client/src/pages/SalesLetterPack.tsx` - Simplified
+  - `server/routes.ts` - Ambassador badge awarding on testimonial submission
+  - `server/seed.ts` - Ambassador badge, Day 19 lesson updates
+- **Notes for Next Session:**
+  - Database was re-seeded - Ambassador badge is active
+  - Test Ambassador badge awarding (submit showcase with testimonial)
+  - Test /critique page flow and checkout
+  - Test Day 19 full flow with new critique step
+  - Confirm no badge needed after Day 19 (Builder at Day 18, Launcher at Day 21)
