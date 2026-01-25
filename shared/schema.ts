@@ -39,6 +39,9 @@ export const users = pgTable("users", {
   coachingPurchased: boolean("coaching_purchased").default(false),
   stripeCustomerId: varchar("stripe_customer_id"),
   purchaseCurrency: varchar("purchase_currency"), // 'usd' or 'gbp' - set on first purchase
+  // Referral system
+  referralCode: varchar("referral_code"), // User's unique referral code
+  referredBy: varchar("referred_by"), // Referral code of the user who referred them
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -246,6 +249,37 @@ export const insertUserSpamStatusSchema = createInsertSchema(userSpamStatus).omi
 export type UserSpamStatus = typeof userSpamStatus.$inferSelect;
 export type InsertUserSpamStatus = z.infer<typeof insertUserSpamStatusSchema>;
 
+// Referral tracking
+export const referrals = pgTable("referrals", {
+  id: serial("id").primaryKey(),
+  referrerId: varchar("referrer_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  referredUserId: varchar("referred_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  referredUserPurchased: boolean("referred_user_purchased").default(false), // True when referred user buys challenge
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("referrals_referrer_id_idx").on(table.referrerId),
+  index("referrals_referred_user_id_idx").on(table.referredUserId),
+]);
+
+export const referralsRelations = relations(referrals, ({ one }) => ({
+  referrer: one(users, {
+    fields: [referrals.referrerId],
+    references: [users.id],
+  }),
+  referredUser: one(users, {
+    fields: [referrals.referredUserId],
+    references: [users.id],
+  }),
+}));
+
+export const insertReferralSchema = createInsertSchema(referrals).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type Referral = typeof referrals.$inferSelect;
+export type InsertReferral = z.infer<typeof insertReferralSchema>;
+
 // Brand settings - global app theming
 export const brandSettings = pgTable("brand_settings", {
   id: serial("id").primaryKey(),
@@ -388,3 +422,28 @@ export const insertDayQuestionSchema = createInsertSchema(dayQuestions).omit({
 
 export type DayQuestion = typeof dayQuestions.$inferSelect;
 export type InsertDayQuestion = z.infer<typeof insertDayQuestionSchema>;
+
+// Challenge testimonials - feedback about the training/challenge
+export const testimonials = pgTable("testimonials", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  testimonial: text("testimonial"), // Written testimonial
+  videoUrl: text("video_url"), // Video testimonial link
+  appName: text("app_name"), // Optional - what they built
+  appUrl: text("app_url"), // Optional - link to their app
+  featured: boolean("featured").default(false), // Admin can feature testimonials
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("testimonials_user_id_idx").on(table.userId),
+  index("testimonials_featured_idx").on(table.featured),
+]);
+
+export const testimonialsRelations = relations(testimonials, ({ one }) => ({
+  user: one(users, {
+    fields: [testimonials.userId],
+    references: [users.id],
+  }),
+}));
+
+export type Testimonial = typeof testimonials.$inferSelect;
+export type InsertTestimonial = typeof testimonials.$inferInsert;

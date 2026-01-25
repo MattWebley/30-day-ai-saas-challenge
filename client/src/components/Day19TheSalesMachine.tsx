@@ -830,7 +830,7 @@ Style it with:
 
           <div className={ds.infoBoxHighlight}>
             <p className={ds.body + " text-center"}>
-              <strong>Tomorrow</strong> - Your launch plan. How to get {productName} in front of customers.
+              <strong>Tomorrow</strong> - Get found by Google & AI. SEO setup to bring free traffic to {productName}.
             </p>
           </div>
 

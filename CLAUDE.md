@@ -45,7 +45,7 @@ A gamified 21 Day AI SaaS Challenge guiding users from idea to launch-ready prod
 - **Day 5**: Logo
 - **Days 6-9**: Prepare (Tech Stack, PRD, Claude Code setup, Master Claude Code)
 - **Days 10-18**: Build (AI Brain, Brand, APIs, Auth, Email, Mobile, Admin, MVP)
-- **Days 19-21**: Launch (Sales Machine, Launch Plan, Launch Day)
+- **Days 19-21**: Launch (Sales Machine, SEO & AI Search, $100K Roadmap)
 
 ### Tech Stack
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, Radix UI, Wouter, TanStack Query
@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-23 (Day 17-18 Improvements & Pause Button)
+- **Last Session**: 2026-01-24 (Day 20 SEO Overhaul)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -410,3 +410,102 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test /critique page flow and checkout
   - Test Day 19 full flow with new critique step
   - Confirm no badge needed after Day 19 (Builder at Day 18, Launcher at Day 21)
+
+### 2026-01-24 (Session 2) - Day 20 Overhaul: Keyword-First SEO
+- **Tasks Completed:**
+  - **Day 20 Complete Rebuild:** Changed from "Launch Plan" to "Get Found by Google" with keyword-first approach
+    - Created new `Day20GetFound.tsx` component with 7-step flow:
+    - Step 1: Intro - What is SEO, why keywords matter
+    - Step 2: Generate Keywords - AI prompt for primary, secondary, and long-tail keywords
+    - Step 3: Pick Keywords - User selects primary keyword + up to 5 secondary keywords
+    - Step 4: Optimize - Comprehensive SEO prompt using their chosen keywords (title tags, meta, H1/H2, URLs, images, internal links, OG tags, favicon, sitemap)
+    - Step 5: Submit to Google - Search Console walkthrough with verification help
+    - Step 6: Directories - Essential (Google, Bing) + 8 bonus directories
+    - Step 7: Complete - Summary showing their keyword strategy + coaching pitch
+  - **Keyword Research Prompt:** Generates primary, secondary, long-tail, and competitor keywords with search intent and competition level
+  - **SEO Optimization Prompt:** 10-point comprehensive optimization based on user's chosen keywords
+  - **Lesson Updates:** Keyword-first messaging, explains why keywords matter before the technical stuff
+  - **VideoSlides Updates:** Keywords → Optimize → Submit flow
+  - **Coaching Pitch:** "SEO takes time. Want faster results? Our coaches can help."
+- **Why This Approach:**
+  - Keywords first = actionable and personalized
+  - Users understand WHY they're optimizing (for specific searches)
+  - Comprehensive SEO prompt covers everything in one shot
+  - Saves their keyword research and choices for reference
+- **Files Modified:**
+  - `client/src/components/Day20GetFound.tsx` - Complete keyword-first rebuild
+  - `client/src/components/DayInstructions.tsx` - Updated for keyword flow
+  - `client/src/components/VideoSlides.tsx` - Keywords → Optimize → Submit
+  - `server/seed.ts` - Keyword-focused lesson content
+- **Notes for Next Session:**
+  - Database was re-seeded
+  - Test full Day 20 flow: intro → generate keywords → pick keywords → optimize → submit → directories → complete
+  - Test keyword research prompt generates good results
+  - Test SEO optimization prompt includes user's chosen keywords
+  - Old Day20LaunchPlan.tsx still exists but unused (can delete)
+
+### 2026-01-24 (Session 3) - Day 21 Overhaul: Growth Strategies + Work With Matt CTA
+- **Tasks Completed:**
+  - **Day 21 Complete Rebuild:** Kept income calculator, added growth strategy education + call booking
+    - 8-step flow: intro → calculator → strategies-intro → passive → active → more → commitment → complete
+    - **Income Calculator:** Set income goal, pick price point, see customers needed (kept from old version)
+    - **Strategies Intro:** "You only need 1-2 methods that work" messaging
+    - **Passive Strategies (3):** AI-powered blog, comparison pages, affiliate program
+      - Each has: what it is, why it's powerful, result preview
+    - **Active Strategies (3):** Automated cold email, paid ads, influencer partnerships
+      - Plus "and there's more..." hint (LinkedIn automation, webinars, etc.)
+    - **77 Strategies Hook:** "That's just 6 of 77+ strategies" curiosity hook
+    - **Work With Matt CTA:** Dark card with benefits list, links to mattwebley.com/workwithmatt
+    - **Commitment:** Optional commitment statement
+  - **Strategy Cards:** Explain WHAT and WHY but not HOW (teases coaching value)
+  - **Design System:** Matches Days 19-20 style (ds helpers, icon circles, back buttons)
+- **Key Messaging:**
+  - "The challenge taught you to BUILD. These strategies are how you SELL."
+  - "These aren't questions you can answer with another course or YouTube video."
+  - "Access to the full playbook of 77+ strategies" (coaching benefit)
+- **Files Modified:**
+  - `client/src/components/Day21LaunchDay.tsx` - Complete rebuild with growth strategies
+  - `client/src/pages/Dashboard.tsx` - Removed unused selectedStrategies prop
+  - `client/src/components/DayInstructions.tsx` - Updated Day 21 instructions
+  - `client/src/components/VideoSlides.tsx` - Updated Day 21 slides
+  - `server/seed.ts` - New Day 21 lesson with strategy teasers
+- **Notes for Next Session:**
+  - Database was re-seeded - Days 20 & 21 are up to date
+  - Test Day 20 full flow (keyword-first SEO)
+  - Test Day 21 full flow (calculator → strategies → call booking)
+  - Both days lead to mattwebley.com/workwithmatt for coaching
+  - Old unused components can be deleted: Day20LaunchPlan.tsx, Day20BrandBeauty.tsx
+
+### 2026-01-24 (Session 4) - Day 20 Simplified SEO + AI Search
+- **Tasks Completed:**
+  - **Simplified Day 20 Flow:** Removed multi-step keyword picking (too clunky)
+    - Old flow: generate keywords → manually pick → optimize → submit
+    - New flow: intro → optimize (one prompt) → submit → directories → complete
+    - ONE comprehensive prompt does keyword research AND optimization together
+    - Claude Code figures out the best keywords AND applies them
+  - **AI Search Section:** Added info about getting found by AI assistants (ChatGPT, Perplexity, etc.)
+    - Emerging field of "LLM SEO" - being mentioned across web helps AI recommend you
+    - Included in directories step with practical tips
+  - **Day Name Change:** "Launch Plan" → "Get Found by Google" → "Get Found by Google & AI"
+  - **Duplicate Content Fix:** Trimmed Day 20 & 21 lessons to be short teasers
+    - Lessons no longer repeat what's in the interactive component
+    - "The interactive section below walks you through everything..."
+  - **Google Trust Timeline:** Added note that Google doesn't trust new sites
+    - Can take weeks or MONTHS for traffic to flow
+    - Added to lesson + DayInstructions
+  - **Day 21 Active Methods:** Reduced from 4 to 3 + hint at more
+- **Files Modified:**
+  - `client/src/components/Day20GetFound.tsx` - Simplified to 5-step flow with one comprehensive prompt
+  - `client/src/components/Day21LaunchDay.tsx` - Reduced active methods, added hints
+  - `client/src/components/DayInstructions.tsx` - Updated Day 20 instructions for new flow
+  - `client/src/pages/Dashboard.tsx` - Updated title to "Get Found by Google & AI"
+  - `server/seed.ts` - Trimmed lessons, added Google trust timeline, updated titles
+- **Additional Updates:**
+  - VideoSlides Day 20 updated to match new 5-step flow
+  - Day 20 lesson updated - removed reference to "finding keywords" step
+  - Added AI assistant mention to lesson
+- **Notes for Next Session:**
+  - Database was re-seeded - all changes applied
+  - Test Day 20 simplified SEO flow
+  - Test Day 21 growth strategies flow
+  - Old unused components to delete: Day20LaunchPlan.tsx, Day20BrandBeauty.tsx

@@ -11,6 +11,7 @@ import {
   chatUsage,
   chatbotSettings,
   chatMessages,
+  referrals,
   type User,
   type UpsertUser,
   type DayContent,
@@ -34,12 +35,17 @@ import {
   type InsertChatbotSettings,
   type ChatMessage,
   type InsertChatMessage,
+  type Referral,
+  type InsertReferral,
   showcase,
   type Showcase,
   type InsertShowcase,
   dayQuestions,
   type DayQuestion,
   type InsertDayQuestion,
+  testimonials,
+  type Testimonial,
+  type InsertTestimonial,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, isNotNull } from "drizzle-orm";
@@ -133,6 +139,21 @@ export interface IStorage {
   setAiSuggestedAnswer(id: number, aiAnswer: string): Promise<DayQuestion | undefined>;
   markQuestionHelpful(id: number): Promise<DayQuestion | undefined>;
   hideQuestion(id: number): Promise<DayQuestion | undefined>;
+
+  // Referral operations
+  getUserByReferralCode(code: string): Promise<User | undefined>;
+  setUserReferralCode(userId: string, code: string): Promise<User | undefined>;
+  setUserReferredBy(userId: string, referralCode: string): Promise<User | undefined>;
+  createReferral(referrerId: string, referredUserId: string): Promise<Referral>;
+  getReferralCount(userId: string): Promise<number>;
+  getReferrals(userId: string): Promise<Referral[]>;
+  markReferralPurchased(referredUserId: string): Promise<void>;
+
+  // Testimonial operations
+  createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial>;
+  getUserTestimonial(userId: string): Promise<Testimonial | undefined>;
+  getAllTestimonials(): Promise<(Testimonial & { user: User })[]>;
+  toggleTestimonialFeatured(id: number): Promise<Testimonial | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -791,6 +812,104 @@ export class DatabaseStorage implements IStorage {
       .update(dayQuestions)
       .set({ status: "hidden" })
       .where(eq(dayQuestions.id, id))
+      .returning();
+    return updated;
+  }
+
+  // Referral operations
+  async getUserByReferralCode(code: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.referralCode, code));
+    return user;
+  }
+
+  async setUserReferralCode(userId: string, code: string): Promise<User | undefined> {
+    const [updated] = await db
+      .update(users)
+      .set({ referralCode: code })
+      .where(eq(users.id, userId))
+      .returning();
+    return updated;
+  }
+
+  async setUserReferredBy(userId: string, referralCode: string): Promise<User | undefined> {
+    const [updated] = await db
+      .update(users)
+      .set({ referredBy: referralCode })
+      .where(eq(users.id, userId))
+      .returning();
+    return updated;
+  }
+
+  async createReferral(referrerId: string, referredUserId: string): Promise<Referral> {
+    const [referral] = await db
+      .insert(referrals)
+      .values({ referrerId, referredUserId })
+      .returning();
+    return referral;
+  }
+
+  async getReferralCount(userId: string): Promise<number> {
+    const userReferrals = await db
+      .select()
+      .from(referrals)
+      .where(eq(referrals.referrerId, userId));
+    return userReferrals.length;
+  }
+
+  async getReferrals(userId: string): Promise<Referral[]> {
+    return db
+      .select()
+      .from(referrals)
+      .where(eq(referrals.referrerId, userId))
+      .orderBy(desc(referrals.createdAt));
+  }
+
+  async markReferralPurchased(referredUserId: string): Promise<void> {
+    await db
+      .update(referrals)
+      .set({ referredUserPurchased: true })
+      .where(eq(referrals.referredUserId, referredUserId));
+  }
+
+  // Testimonial operations
+  async createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial> {
+    const [created] = await db.insert(testimonials).values(testimonial).returning();
+    return created;
+  }
+
+  async getUserTestimonial(userId: string): Promise<Testimonial | undefined> {
+    const [testimonial] = await db
+      .select()
+      .from(testimonials)
+      .where(eq(testimonials.userId, userId))
+      .limit(1);
+    return testimonial;
+  }
+
+  async getAllTestimonials(): Promise<(Testimonial & { user: User })[]> {
+    const entries = await db
+      .select()
+      .from(testimonials)
+      .orderBy(desc(testimonials.featured), desc(testimonials.createdAt));
+
+    const result: (Testimonial & { user: User })[] = [];
+    for (const entry of entries) {
+      const user = await this.getUser(entry.userId);
+      if (user) {
+        result.push({ ...entry, user });
+      }
+    }
+    return result;
+  }
+
+  async toggleTestimonialFeatured(id: number): Promise<Testimonial | undefined> {
+    const [existing] = await db.select().from(testimonials).where(eq(testimonials.id, id));
+    if (!existing) return undefined;
+
+    const [updated] = await db
+      .update(testimonials)
+      .set({ featured: !existing.featured })
+      .where(eq(testimonials.id, id))
       .returning();
     return updated;
   }

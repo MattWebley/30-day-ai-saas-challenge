@@ -24,11 +24,18 @@ import {
   Map,
   Hammer,
   Sparkles,
-  Zap,
   BookOpen,
   PenTool,
-  Video
+  Video,
+  Users,
+  MessageSquare
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SidebarProps {
   currentDay: number;
@@ -233,27 +240,17 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
       {/* Navigation */}
       <div className="px-4 py-4">
         <div className="space-y-8">
+          {/* Main Navigation */}
           <div className="space-y-1">
             <Link href="/dashboard" onClick={handleNavClick}>
               <span className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
                 location === "/dashboard" || location.startsWith("/dashboard/")
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground" 
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               )}>
                 <LayoutDashboard className="w-4 h-4" />
                 Current Task
-              </span>
-            </Link>
-            <Link href="/badges" onClick={handleNavClick}>
-              <span className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                location === "/badges"
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-              )}>
-                <Trophy className="w-4 h-4" />
-                Badge Collection
               </span>
             </Link>
             <Link href="/build-log" onClick={handleNavClick}>
@@ -267,64 +264,38 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 My Progress
               </span>
             </Link>
-            {lastCompleted >= 18 || testMode ? (
-              <Link href="/critique" onClick={handleNavClick}>
+            <Link href="/badges" onClick={handleNavClick}>
+              <span className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                location === "/badges"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}>
+                <Trophy className="w-4 h-4" />
+                Badge Collection
+              </span>
+            </Link>
+            <Link href="/referrals" onClick={handleNavClick}>
+              <span className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                location === "/referrals"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}>
+                <Users className="w-4 h-4" />
+                Refer Friends
+              </span>
+            </Link>
+            {(lastCompleted >= 18 || testMode) && (
+              <Link href="/testimonial" onClick={handleNavClick}>
                 <span className={cn(
-                  "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                  location === "/critique"
+                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                  location === "/testimonial"
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
                     : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                 )}>
-                  <div className="flex items-center gap-3">
-                    <PenTool className="w-4 h-4" />
-                    Sales Letter Critique
-                  </div>
-                  <Unlock className="w-3 h-3 text-muted-foreground" />
-                </span>
-              </Link>
-            ) : (
-              <span className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <PenTool className="w-4 h-4" />
-                  Sales Letter Critique
-                </div>
-                <Lock className="w-3 h-3 text-muted-foreground" />
-              </span>
-            )}
-            <Link href="/launch-pack" onClick={handleNavClick}>
-              <span className={cn(
-                "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                location === "/launch-pack"
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-              )}>
-                <div className="flex items-center gap-3">
-                  <Rocket className="w-4 h-4" />
-                  Launch Pack
-                </div>
-                {hasLaunchPack ? (
-                  <Unlock className="w-3 h-3 text-muted-foreground" />
-                ) : (
-                  <Lock className="w-3 h-3 text-muted-foreground" />
-                )}
-              </span>
-            </Link>
-            <Link href="/coaching" onClick={handleNavClick}>
-              <span className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                location === "/coaching"
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-              )}>
-                <Video className="w-4 h-4" />
-                1:1 Coaching Calls
-              </span>
-            </Link>
-            {!(stats as any)?.hasCoaching && (
-              <Link href="/coaching" onClick={handleNavClick}>
-                <span className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground">
-                  <Zap className="w-4 h-4" />
-                  Unlock All Days Instantly
+                  <MessageSquare className="w-4 h-4" />
+                  Give Testimonial
                 </span>
               </Link>
             )}
@@ -344,19 +315,126 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 </span>
               </Link>
             ) : (
-              <span className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground cursor-pointer">
-                <div className="flex items-center gap-3">
-                  <BookOpen className="w-4 h-4" />
-                  Claude Code Guide
-                </div>
-                <Lock className="w-3 h-3 text-muted-foreground" />
-              </span>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground cursor-not-allowed">
+                      <div className="flex items-center gap-3">
+                        <BookOpen className="w-4 h-4" />
+                        Claude Code Guide
+                      </div>
+                      <Lock className="w-3 h-3 text-muted-foreground" />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p className="font-medium">Unlocks on Day 9</p>
+                    <p className="text-slate-500">Your AI coding companion reference guide</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             )}
+          </div>
+
+          {/* Upgrades Section */}
+          <div className="space-y-1">
+            <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Upgrades
+            </h3>
+            <Link href="/coaching" onClick={handleNavClick}>
+              <span className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                location === "/coaching"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+              )}>
+                <Video className="w-4 h-4" />
+                1:1 Coaching Calls
+              </span>
+            </Link>
+            {lastCompleted >= 18 || testMode ? (
+              <Link href="/critique" onClick={handleNavClick}>
+                <span className={cn(
+                  "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                  location === "/critique"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                )}>
+                  <div className="flex items-center gap-3">
+                    <PenTool className="w-4 h-4" />
+                    Sales Letter Critique
+                  </div>
+                  <Unlock className="w-3 h-3 text-muted-foreground" />
+                </span>
+              </Link>
+            ) : (
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground cursor-not-allowed">
+                      <div className="flex items-center gap-3">
+                        <PenTool className="w-4 h-4" />
+                        Sales Letter Critique
+                      </div>
+                      <Lock className="w-3 h-3 text-muted-foreground" />
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p className="font-medium">Unlocks on Day 19</p>
+                    <p className="text-slate-500">Get expert feedback on your sales page</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+            {hasLaunchPack ? (
+              <Link href="/launch-pack" onClick={handleNavClick}>
+                <span className={cn(
+                  "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                  location === "/launch-pack"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                )}>
+                  <div className="flex items-center gap-3">
+                    <Rocket className="w-4 h-4" />
+                    Launch Pack
+                  </div>
+                  <Unlock className="w-3 h-3 text-muted-foreground" />
+                </span>
+              </Link>
+            ) : (
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link href="/launch-pack" onClick={handleNavClick}>
+                      <span className={cn(
+                        "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                        location === "/launch-pack"
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                          : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                      )}>
+                        <div className="flex items-center gap-3">
+                          <Rocket className="w-4 h-4" />
+                          Launch Pack
+                        </div>
+                        <Lock className="w-3 h-3 text-muted-foreground" />
+                      </span>
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <p className="font-medium">Premium Add-On</p>
+                    <p className="text-slate-500">Templates, checklists, and resources for launch</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
+
+          {/* Admin */}
+          <div className="space-y-1">
             <Link href="/admin" onClick={handleNavClick}>
               <span className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                location === "/admin" 
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground" 
+                location === "/admin"
+                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
                   : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
               )}>
                 <Shield className="w-4 h-4" />

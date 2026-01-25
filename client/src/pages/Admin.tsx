@@ -27,7 +27,9 @@ import {
   ChevronUp,
   Image,
   Star,
-  ExternalLink
+  ExternalLink,
+  Heart,
+  Video
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -106,6 +108,23 @@ interface ShowcaseEntry {
   screenshotUrl: string;
   liveUrl: string | null;
   status: string;
+  featured: boolean;
+  createdAt: string;
+  user: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+  };
+}
+
+interface TestimonialEntry {
+  id: number;
+  userId: string;
+  testimonial: string | null;
+  videoUrl: string | null;
+  appName: string | null;
+  appUrl: string | null;
   featured: boolean;
   createdAt: string;
   user: {
@@ -218,6 +237,27 @@ export default function Admin() {
 
   const { data: pendingShowcase = [] } = useQuery<ShowcaseEntry[]>({
     queryKey: ["/api/admin/showcase/pending"],
+  });
+
+  // Testimonials management
+  const [showTestimonialsSection, setShowTestimonialsSection] = useState(false);
+
+  const { data: testimonials = [] } = useQuery<TestimonialEntry[]>({
+    queryKey: ["/api/admin/testimonials"],
+  });
+
+  const toggleTestimonialFeatured = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("POST", `/api/admin/testimonials/${id}/feature`, {});
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/testimonials"] });
+      toast.success(data.featured ? "Testimonial featured!" : "Removed from featured");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to toggle featured");
+    },
   });
 
   const updateShowcaseStatus = useMutation({
@@ -604,6 +644,113 @@ export default function Admin() {
                   View public showcase page
                 </a>
               </div>
+            </div>
+          )}
+        </div>
+
+        {/* Testimonials */}
+        <div className="space-y-4">
+          <button
+            onClick={() => setShowTestimonialsSection(!showTestimonialsSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <h2 className="text-xl font-bold text-slate-900">Testimonials</h2>
+            {testimonials.length > 0 && (
+              <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+                {testimonials.length} received
+              </span>
+            )}
+            {showTestimonialsSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showTestimonialsSection && (
+            <div className="space-y-4">
+              {testimonials.length === 0 ? (
+                <Card className="p-8 border-2 border-slate-100 text-center">
+                  <Heart className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">No testimonials received yet</p>
+                </Card>
+              ) : (
+                <div className="grid gap-4">
+                  {testimonials.map((entry) => (
+                    <Card key={entry.id} className="p-4 border-2 border-slate-100">
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <p className="font-bold text-slate-900">
+                              {entry.user?.firstName || "Unknown"} {entry.user?.lastName || ""}
+                            </p>
+                            {entry.featured && (
+                              <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded">
+                                Featured
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-slate-500">{entry.user?.email}</p>
+                          <p className="text-xs text-slate-400 mt-1">
+                            {formatDistanceToNow(new Date(entry.createdAt), { addSuffix: true })}
+                          </p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className={`gap-1 ${
+                            entry.featured
+                              ? "border-amber-200 text-amber-700 bg-amber-50"
+                              : "border-slate-200 text-slate-600 hover:bg-slate-50"
+                          }`}
+                          onClick={() => toggleTestimonialFeatured.mutate(entry.id)}
+                          disabled={toggleTestimonialFeatured.isPending}
+                        >
+                          <Star className={`w-4 h-4 ${entry.featured ? "fill-amber-500" : ""}`} />
+                          {entry.featured ? "Featured" : "Feature"}
+                        </Button>
+                      </div>
+
+                      {entry.testimonial && (
+                        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-3">
+                          <p className="text-slate-700 whitespace-pre-wrap">{entry.testimonial}</p>
+                        </div>
+                      )}
+
+                      {entry.videoUrl && (
+                        <div className="flex items-center gap-2 text-sm mb-3">
+                          <Video className="w-4 h-4 text-amber-600" />
+                          <a
+                            href={entry.videoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary hover:underline"
+                          >
+                            View video testimonial
+                          </a>
+                        </div>
+                      )}
+
+                      {(entry.appName || entry.appUrl) && (
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <ExternalLink className="w-4 h-4" />
+                          {entry.appName && <span className="font-medium">{entry.appName}</span>}
+                          {entry.appUrl && (
+                            <a
+                              href={entry.appUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary hover:underline"
+                            >
+                              {entry.appUrl}
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -1040,6 +1187,7 @@ export default function Admin() {
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Current Day</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Progress</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">XP Earned</th>
+                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Referrals</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Active</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
                   </tr>
@@ -1091,6 +1239,15 @@ export default function Admin() {
                           <span className="font-medium text-slate-900">{user.totalXp || 0} XP</span>
                         </td>
                         <td className="px-6 py-4">
+                          {user.referralCount > 0 ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium">
+                              {user.referralCount}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 text-sm">0</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
                           <div className="flex items-center gap-1 text-sm text-slate-500">
                             <Clock className="w-3 h-3" />
                             {user.lastActive ? new Date(user.lastActive).toLocaleDateString() : "Never"}
@@ -1115,7 +1272,7 @@ export default function Admin() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
+                      <td colSpan={8} className="px-6 py-12 text-center text-slate-500">
                         No students enrolled yet
                       </td>
                     </tr>

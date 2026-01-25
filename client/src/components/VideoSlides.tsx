@@ -205,6 +205,15 @@ const slideContent: Record<number, Slide[]> = {
       ],
     },
     {
+      title: "Replit Basics (Watch Video)",
+      points: [
+        "How to RESTART your server when things get stuck",
+        "Setting up your BROWSER WINDOWS for efficient workflow",
+        "Understanding the Replit interface and tools",
+        "VIDEO WALKTHROUGH available below",
+      ],
+    },
+    {
       title: "Optional Tools (Nice to Have)",
       points: [
         "ChatGPT Plus -brainstorming, second opinions",
@@ -600,29 +609,29 @@ const slideContent: Record<number, Slide[]> = {
   ],
   20: [
     {
-      title: "Day 20: Your Launch Plan",
+      title: "Day 20: Get Found by Google & AI",
       points: [
-        "A product nobody knows about makes $0",
-        "The OVERWHELM TRAP: trying to be everywhere",
-        "You only need 1-3 channels to work",
+        "Get found by Google AND AI assistants",
+        "SEO = search engine optimization",
+        "AI assistants now recommend products too",
       ],
     },
     {
-      title: "Pick What Fits YOU",
+      title: "One Prompt Does It All",
       points: [
-        "Love writing? SEO, Twitter, LinkedIn",
-        "Love video? YouTube, TikTok, Reels",
-        "Love talking? Cold outreach, communities, podcasts",
-        "Have budget? Paid ads, sponsorships",
+        "Claude Code finds your keywords automatically",
+        "Title tags, meta descriptions, headings",
+        "Open Graph, favicon, sitemap - all covered",
+        "No manual keyword research needed",
       ],
     },
     {
-      title: "Lock In Your Focus",
+      title: "Submit & Wait",
       points: [
-        "Browse all the options",
-        "Pick 1-3 channels maximum",
-        "Commit to these for 90 days",
-        "Tomorrow: the money math",
+        "Submit to Google Search Console",
+        "Add to directories (helps AI find you too)",
+        "Google takes weeks/months to trust new sites",
+        "The sooner you do this, the better",
       ],
     },
   ],
@@ -631,25 +640,25 @@ const slideContent: Record<number, Slide[]> = {
       title: "Day 21: Your $100K Roadmap",
       points: [
         "CONGRATULATIONS - you built something!",
-        "SaaS = RECURRING revenue (customers pay every month)",
-        "100 customers at $29/mo = $34,800/year",
+        "SaaS = RECURRING revenue (customers pay monthly)",
+        "You only need 1-2 growth channels that WORK",
       ],
     },
     {
-      title: "The Math + Your Growth Plan",
+      title: "Growth Strategies Revealed",
       points: [
-        "Calculate: income goal, price point, customers needed",
-        "Pick 1-3 customer acquisition strategies (50+ options)",
-        "You only need ONE channel to WORK",
-        "The secret: go ALL IN on what fits you",
+        "PASSIVE: AI blog, comparison pages, affiliates",
+        "ACTIVE: cold email, paid ads, influencer partnerships",
+        "That's 6 of 77+ proven strategies",
+        "Which ones are right for YOUR app?",
       ],
     },
     {
       title: "What's Next?",
       points: [
-        "An APP = something that works",
-        "A BUSINESS = knowing how to get and keep customers",
-        "Two paths: figure it out (6-12 months) OR get guidance (weeks)",
+        "The challenge taught you to BUILD",
+        "Now you need to learn to SELL",
+        "Get help implementing the right strategies",
         "Book a call: mattwebley.com/workwithmatt",
       ],
     },

@@ -7,6 +7,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrandProvider } from "@/components/BrandProvider";
 import { TestModeProvider, useTestMode } from "@/contexts/TestModeContext";
 import { useAuth } from "@/hooks/useAuth";
+import { captureReferralCode, useReferralTracking } from "@/hooks/useReferral";
+
+// Capture referral code from URL immediately on load
+captureReferralCode();
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/Landing";
 import CheckoutSuccess from "@/pages/CheckoutSuccess";
@@ -25,7 +29,9 @@ import LaunchPack from "@/pages/LaunchPack";
 import Coaching from "@/pages/Coaching";
 import CoachingUpsell from "@/pages/CoachingUpsell";
 import Critique from "@/pages/Critique";
+import Testimonial from "@/pages/Testimonial";
 import Welcome from "@/pages/Welcome";
+import Referrals from "@/pages/Referrals";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -39,6 +45,9 @@ function ScrollToTop() {
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+
+  // Track referrals after authentication
+  useReferralTracking();
 
   if (isLoading) {
     return (
@@ -72,6 +81,7 @@ function Router() {
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/dashboard/:day" component={Dashboard} />
             <Route path="/badges" component={Badges} />
+            <Route path="/referrals" component={Referrals} />
             <Route path="/build-log" component={BuildLog} />
             <Route path="/claude-code" component={ClaudeCodeGuide} />
             <Route path="/settings" component={Settings} />
@@ -79,6 +89,7 @@ function Router() {
             <Route path="/design-preview" component={DesignPreview} />
             <Route path="/coaching" component={Coaching} />
             <Route path="/critique" component={Critique} />
+            <Route path="/testimonial" component={Testimonial} />
           </>
         )}
         <Route component={NotFound} />

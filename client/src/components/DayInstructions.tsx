@@ -150,18 +150,18 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
     "Build the page in your app with Claude Code"
   ],
   20: [
-    "Read about the 'overwhelm trap' in marketing",
-    "Browse all the launch channel options",
-    "Filter by cost if you're bootstrapping",
-    "Pick 1-3 channels that fit YOUR strengths",
-    "Lock in your focus for the next 90 days"
+    "Copy and run the SEO prompt in Claude Code",
+    "It does keyword research AND optimization in one go",
+    "Submit your site to Google Search Console",
+    "Submit to directories (helps AI assistants find you too)",
+    "Wait for Google to trust your site (can take weeks/months)"
   ],
   21: [
-    "See the SaaS math for your income goal",
-    "Pick your price point and see customers needed",
-    "Understand the four pillars of a SaaS business",
-    "Write your commitment statement",
-    "Complete the 21 Day Challenge!"
+    "Calculate your income goal and customers needed",
+    "Learn about passive growth methods (AI blog, comparison pages, affiliates)",
+    "Discover active growth methods (cold email, ads, influencers)",
+    "See how to get help implementing these strategies",
+    "Write your commitment and complete the challenge!"
   ],
 };
 

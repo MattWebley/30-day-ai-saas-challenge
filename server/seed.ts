@@ -45,6 +45,13 @@ async function seed() {
       triggerValue: 18,
     },
     {
+      name: "On the Map",
+      description: "Your app is discoverable by Google & AI",
+      icon: "📍",
+      triggerType: "day_completed",
+      triggerValue: 20,
+    },
+    {
       name: "The Launcher",
       description: "You launched your SaaS!",
       icon: "🚀",
@@ -83,11 +90,40 @@ async function seed() {
       triggerValue: 14,
     },
     {
-      name: "Elite",
-      description: "21-day streak - Perfect run through the challenge!",
-      icon: "💎",
+      name: "Marathon Runner",
+      description: "18-day streak - Made it to the pause point!",
+      icon: "🏃",
       triggerType: "streak",
-      triggerValue: 21,
+      triggerValue: 18,
+    },
+    // Referral badges
+    {
+      name: "Connector",
+      description: "Referred your first friend - unlocked Launch Checklist!",
+      icon: "🤝",
+      triggerType: "referral",
+      triggerValue: 1,
+    },
+    {
+      name: "Networker",
+      description: "Referred 3 friends - unlocked Marketing Prompts!",
+      icon: "📢",
+      triggerType: "referral",
+      triggerValue: 3,
+    },
+    {
+      name: "Influencer",
+      description: "Referred 5 friends - unlocked Custom Critique Video!",
+      icon: "🎬",
+      triggerType: "referral",
+      triggerValue: 5,
+    },
+    {
+      name: "Super Referrer",
+      description: "Referred 10 friends - unlocked Free Coaching Call!",
+      icon: "🏆",
+      triggerType: "referral",
+      triggerValue: 10,
     },
   ];
 
@@ -1202,141 +1238,59 @@ The interactive section below walks you through the exact structure and gives yo
     // ============================================
     {
       day: 20,
-      title: "Your Launch Plan",
-      description: "Pick 1-3 ways to get your app in front of customers.",
+      title: "Get Found by Google & AI",
+      description: "Get found by Google AND AI assistants like ChatGPT and Perplexity.",
       phase: "Launch",
       videoUrl: null,
-      aiTaskType: "strategy",
-      aiTaskTitle: "Launch Channels",
-      aiTaskDescription: "Choose where you'll find your first customers.",
+      aiTaskType: "build",
+      aiTaskTitle: "SEO Setup",
+      aiTaskDescription: "Add meta tags, Open Graph, favicon, and submit to search engines.",
       suggestions: null,
       template: null,
-      microDecisionQuestion: "What type of marketing feels most natural to you?",
-      microDecisionOptions: JSON.stringify(["Content creation", "Community building", "Direct outreach", "Paid ads", "Not sure yet"]),
-      reflectionQuestion: "Which 1-3 channels will you commit to for the next 90 days?",
-      tip: "Most people try to be everywhere and end up nowhere. Pick 1-3 channels that fit YOUR strengths and go DEEP. One channel done well beats five done poorly.",
-      lesson: `A product nobody knows about makes $0.
+      microDecisionQuestion: "How important is organic search traffic for your app?",
+      microDecisionOptions: JSON.stringify(["Very important", "Somewhat important", "Not sure yet", "I'll focus on other channels"]),
+      reflectionQuestion: "What would it mean if people started finding your app through Google?",
+      tip: "SEO takes time, but it compounds. And more people are asking AI for recommendations now - being mentioned across the web helps with both.",
+      lesson: `Right now, if someone Googles what your app does... they won't find you.
 
-That's the brutal truth.
+People search Google 8.5 BILLION times per day. If even a tiny fraction of those searches are for what your app does, that's free traffic. Every day. Forever.
 
-You've spent 19 days building something real. But if nobody knows it exists? It might as well not.
+Unlike paid ads (which stop the moment you stop paying), SEO compounds. A page you optimize today can bring visitors for YEARS.
 
-THE OVERWHELM TRAP:
+HERE'S THE CATCH - Google doesn't trust brand new sites. It can take weeks or even MONTHS before they start sending you real traffic. The sooner you set this up, the sooner that clock starts ticking.
 
-Most people try to do EVERYTHING:
+Oh, and more people are using AI assistants (ChatGPT, Perplexity, etc.) to discover new products. Being mentioned across the web helps you get recommended there too.
 
-Twitter AND TikTok AND YouTube AND SEO AND Facebook AND LinkedIn AND cold email AND...
-
-Result? They do nothing well. They burn out. They quit.
-
-THE SECRET:
-
-You only need 1-3 channels to work.
-
-That's it. ONE channel, done consistently, can build a six-figure business.
-
-Two channels? Even better.
-
-Three? That's plenty.
-
-THE KEY IS FOCUS:
-
-Pick channels that fit YOU:
-- Love writing? SEO, Twitter, LinkedIn
-- Love video? YouTube, TikTok, Reels
-- Love talking to people? Cold outreach, communities, podcasts
-- Have money to spend? Paid ads, sponsorships
-
-Don't pick what's "hot." Pick what you'll actually DO.
-
-TODAY'S JOB:
-
-Look at all the options. Pick 1-3 that feel right. Lock them in.
-
-Tomorrow we'll do the math on what it takes to hit your income goals.`,
-      outcome: "1-3 launch channels selected and committed to",
-      completionMessage: "Launch plan locked in. Tomorrow: the money math and completing the challenge.",
+Let's get you found.`,
+      outcome: "Keywords chosen, pages optimized, site submitted to Google",
+      completionMessage: "You're now discoverable! Tomorrow: the final day - your $100K roadmap.",
       xpReward: 100,
-      estimatedMinutes: 10,
+      estimatedMinutes: 20,
     },
     {
       day: 21,
       title: "Your $100K Roadmap",
-      description: "Let's see what your app could actually earn - and what it takes to get there.",
+      description: "See what your app could earn - and discover the strategies to get there.",
       phase: "Launch",
       videoUrl: null,
       aiTaskType: "calculator",
       aiTaskTitle: "Income Calculator",
-      aiTaskDescription: "Calculate your potential earnings and see the path to your income goals.",
+      aiTaskDescription: "Calculate your potential earnings and discover growth strategies.",
       suggestions: null,
       template: null,
       microDecisionQuestion: "What's your next step after this challenge?",
       microDecisionOptions: JSON.stringify(["Figure it out myself", "Get expert guidance", "Take a break first", "Not sure yet"]),
       reflectionQuestion: "What would your life look like with your target number of paying customers?",
-      tip: "You did something most people never will - you built something. The SaaS math is beautiful: every customer pays you again next month.",
+      tip: "You only need ONE or TWO growth strategies that work. Most successful founders focus on 1-2 channels and go ALL IN.",
       lesson: `You just did something 99% of people NEVER do.
 
-You went from "I have an idea" to "I have a WORKING PRODUCT" in 21 days. That puts you in RARE company.
+You went from "I have an idea" to "I have a WORKING PRODUCT" in just a few weeks. That puts you in RARE company.
 
-THE SAAS MATH IS BEAUTIFUL:
-
-This isn't like selling a course or a product once. SaaS is RECURRING. Every customer pays you AGAIN next month. And the month after. And the month after THAT.
-
-100 customers × $29/month = $2,900/month = $34,800/year
-
-That's not a side project. That's a SALARY.
-
-LET'S DO THE MATH:
-
-$1,000/month → Car payment covered. Nice dinners. Real money.
-$2,500/month → Part-time income. VALIDATION.
-$5,000/month → Replace a job. Work from ANYWHERE.
-$10,000/month → Six figures. Life-changing.
-
-All possible with HUNDREDS of customers. Not millions. HUNDREDS.
-
-(These are hypothetical examples. No income is guaranteed. Most software products never generate significant revenue. Your results depend on YOU.)
-
-BUT HERE'S THE GAP:
-
-You have an APP if you:
-- Built something that works
-- Maybe got a few users
-- Hope customers find you
-
-You have a BUSINESS if you:
-- Know EXACTLY who your customer is
-- Have a REPEATABLE way to reach them
-- Can turn strangers into PAYING customers
-- Keep them paying MONTH after MONTH
-
-THE FOUR PILLARS:
-
-1. CUSTOMER ACQUISITION - How do you GET customers?
-2. SALES & CONVERSION - How do you turn visitors into BUYERS?
-3. RETENTION & GROWTH - How do you KEEP them paying?
-4. OPERATIONS & SCALE - How do you not BURN OUT?
-
-THE HARD TRUTH:
-
-This is MONTHS of learning. Maybe years.
-
-Most people never figure it out. Not because they CAN'T - because they get stuck. Distracted. Overwhelmed. They don't know what to focus on NEXT.
-
-YOUR TWO PATHS:
-
-1. Figure it out yourself (6-12 months of trial and error)
-2. Get expert guidance (accelerate to results in WEEKS)
-
-Neither is wrong. But one is FASTER.
-
-If you want help turning this app into a BUSINESS: www.mattwebley.com/workwithmatt
-
-Either way - CONGRATULATIONS. You BUILT something. Now make it COUNT.`,
-      outcome: "Challenge complete! You understand what's needed to turn your app into a business.",
-      completionMessage: "CONGRATULATIONS! You completed the 21 Day AI SaaS Challenge. From idea to product in 21 days. The journey is just beginning. Now go build that business.",
+This challenge taught you to BUILD. Now let's talk about how to SELL.`,
+      outcome: "Challenge complete! Growth strategies revealed and income potential calculated.",
+      completionMessage: "CONGRATULATIONS! You completed the 21 Day AI SaaS Challenge. From idea to product to growth strategies. Now go build that business.",
       xpReward: 200,
-      estimatedMinutes: 10,
+      estimatedMinutes: 15,
     },
   ];
 

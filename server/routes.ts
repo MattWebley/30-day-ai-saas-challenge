@@ -10,7 +10,8 @@ import crypto from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail } from "./emailService";
+import { generateBadgeImage, generateReferralImage } from "./badge-image";
 
 const dnsResolve = promisify(dns.resolve);
 
@@ -249,13 +250,16 @@ export async function registerRoutes(
         }
       });
       
-      // User progress list
-      const userProgress = allUsers.map((user: any) => {
+      // User progress list with referral counts
+      const userProgress = await Promise.all(allUsers.map(async (user: any) => {
         const stats = allStats.find((s: any) => s.userId === user.id);
         // Get Day 17 progress to find custom domain
         const day17Progress = allProgress.find((p: any) => p.userId === user.id && p.day === 17);
         const day17Inputs = day17Progress?.userInputs as Record<string, unknown> | null;
         const customDomain = day17Inputs?.customDomain as string | undefined;
+
+        // Get referral count
+        const referralCount = await storage.getReferralCount(user.id);
 
         return {
           id: user.id,
@@ -267,8 +271,10 @@ export async function registerRoutes(
           lastActive: stats?.lastActivityDate,
           isActive: stats?.lastActivityDate && new Date(stats.lastActivityDate) > sevenDaysAgo,
           customDomain,
+          referralCount,
+          referralCode: user.referralCode,
         };
-      });
+      }));
       
       res.json({
         totalUsers: allUsers.length,
@@ -347,6 +353,365 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching user badges:", error);
       res.status(500).json({ message: "Failed to fetch user badges" });
+    }
+  });
+
+  // Badge image generation for social sharing
+  app.get("/api/badge-image/:slug", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const badges = await storage.getAllBadges();
+
+      // Find badge by slug (convert name to slug format)
+      const badge = badges.find(b =>
+        b.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') === slug
+      );
+
+      if (!badge) {
+        return res.status(404).json({ message: "Badge not found" });
+      }
+
+      const imageBuffer = await generateBadgeImage({
+        badgeName: badge.name,
+        badgeIcon: badge.icon,
+        badgeDescription: badge.description,
+      });
+
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=86400'); // Cache for 1 day
+      res.send(imageBuffer);
+    } catch (error) {
+      console.error("Error generating badge image:", error);
+      res.status(500).json({ message: "Failed to generate badge image" });
+    }
+  });
+
+  // Referral share image for social media
+  app.get("/api/referral-image", async (req, res) => {
+    try {
+      const imageBuffer = await generateReferralImage();
+      res.setHeader('Content-Type', 'image/png');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.send(imageBuffer);
+    } catch (error) {
+      console.error("Error generating referral image:", error);
+      res.status(500).json({ message: "Failed to generate referral image" });
+    }
+  });
+
+  // Referral landing page with OG tags (for when referral links are shared)
+  app.get("/api/share/referral", async (req, res) => {
+    try {
+      const host = req.get('host');
+      const protocol = req.protocol;
+      const baseUrl = `${protocol}://${host}`;
+      const imageUrl = `${baseUrl}/api/referral-image`;
+      const ref = req.query.ref || '';
+      const shareUrl = ref ? `${baseUrl}/?ref=${ref}` : baseUrl;
+
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Your Own AI SaaS in 21 Days</title>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="${shareUrl}">
+  <meta property="og:title" content="Build Your Own AI SaaS in 21 Days">
+  <meta property="og:description" content="No coding required. 100% AI-powered. Join the 21 Day Challenge and launch your own software business.">
+  <meta property="og:image" content="${imageUrl}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="${shareUrl}">
+  <meta name="twitter:title" content="Build Your Own AI SaaS in 21 Days">
+  <meta name="twitter:description" content="No coding required. 100% AI-powered. Join the 21 Day Challenge and launch your own software business.">
+  <meta name="twitter:image" content="${imageUrl}">
+
+  <meta http-equiv="refresh" content="0;url=${shareUrl}">
+</head>
+<body>
+  <p>Redirecting to the challenge...</p>
+</body>
+</html>`;
+
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+    } catch (error) {
+      console.error("Error serving referral share page:", error);
+      res.status(500).send("Error loading page");
+    }
+  });
+
+  // Badge share page with OG tags (under /api for dev server compatibility)
+  app.get("/api/share/badge/:slug", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const badges = await storage.getAllBadges();
+
+      const badge = badges.find(b =>
+        b.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') === slug
+      );
+
+      if (!badge) {
+        return res.status(404).send("Badge not found");
+      }
+
+      // Get the host for absolute URLs
+      const host = req.get('host');
+      const protocol = req.protocol;
+      const baseUrl = `${protocol}://${host}`;
+      const imageUrl = `${baseUrl}/api/badge-image/${slug}`;
+      const shareUrl = `${baseUrl}/api/share/badge/${slug}`;
+
+      // Return HTML with OG tags for social sharing
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${badge.name} - 21 Day AI SaaS Challenge Badge</title>
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="${shareUrl}">
+  <meta property="og:title" content="I earned the ${badge.name} badge!">
+  <meta property="og:description" content="${badge.description} - 21 Day AI SaaS Challenge by Matt Webley">
+  <meta property="og:image" content="${imageUrl}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="${shareUrl}">
+  <meta name="twitter:title" content="I earned the ${badge.name} badge!">
+  <meta name="twitter:description" content="${badge.description} - 21 Day AI SaaS Challenge by Matt Webley">
+  <meta name="twitter:image" content="${imageUrl}">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: white;
+    }
+    .badge-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 24px;
+      padding: 48px;
+      text-align: center;
+      max-width: 500px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .badge-icon {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 70px;
+      margin: 0 auto 24px;
+      box-shadow: 0 20px 60px rgba(59, 130, 246, 0.4);
+    }
+    .badge-earned {
+      font-size: 12px;
+      color: #22c55e;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 8px;
+    }
+    .badge-name {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .badge-desc {
+      font-size: 18px;
+      color: #94a3b8;
+      margin-bottom: 32px;
+    }
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      color: white;
+      padding: 16px 32px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .cta-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+    }
+    .branding {
+      margin-top: 32px;
+      font-size: 14px;
+      color: #64748b;
+    }
+    .branding a {
+      color: #94a3b8;
+      text-decoration: none;
+    }
+    .branding a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="badge-card">
+    <div class="badge-icon">${badge.icon}</div>
+    <div class="badge-earned">Badge Earned</div>
+    <h1 class="badge-name">${badge.name}</h1>
+    <p class="badge-desc">${badge.description}</p>
+    <a href="/" class="cta-button">Join the 21 Day Challenge</a>
+    <p class="branding">by <a href="https://mattwebley.com" target="_blank">Matt Webley</a></p>
+  </div>
+</body>
+</html>`;
+
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+    } catch (error) {
+      console.error("Error serving badge share page:", error);
+      res.status(500).send("Error loading badge");
+    }
+  });
+
+  // Referral system routes
+  // Generate a unique referral code for the user
+  function generateReferralCode(): string {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Avoiding confusing chars like 0/O, 1/I/L
+    let code = '';
+    for (let i = 0; i < 8; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  }
+
+  // Get user's referral info
+  app.get("/api/referral", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      let user = await storage.getUser(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Generate referral code if user doesn't have one
+      if (!user.referralCode) {
+        let code = generateReferralCode();
+        // Make sure it's unique
+        let existing = await storage.getUserByReferralCode(code);
+        while (existing) {
+          code = generateReferralCode();
+          existing = await storage.getUserByReferralCode(code);
+        }
+        user = await storage.setUserReferralCode(userId, code) || user;
+      }
+
+      // Get referral stats
+      const referralCount = await storage.getReferralCount(userId);
+      const referralsList = await storage.getReferrals(userId);
+
+      // Calculate rewards unlocked
+      const rewards = {
+        launchChecklist: referralCount >= 1,
+        marketingPrompts: referralCount >= 3,
+        critiqueVideo: referralCount >= 5,
+        coachingCall: referralCount >= 10,
+      };
+
+      res.json({
+        referralCode: user.referralCode,
+        referralLink: `https://challenge.mattwebley.com/?ref=${user.referralCode}`,
+        referralCount,
+        referrals: referralsList,
+        rewards,
+        nextReward: referralCount < 1 ? { at: 1, name: "Launch Checklist" }
+          : referralCount < 3 ? { at: 3, name: "Marketing Prompt Pack" }
+          : referralCount < 5 ? { at: 5, name: "Custom Critique Video" }
+          : referralCount < 10 ? { at: 10, name: "1-Hour Coaching Call" }
+          : null,
+      });
+    } catch (error) {
+      console.error("Error fetching referral info:", error);
+      res.status(500).json({ message: "Failed to fetch referral info" });
+    }
+  });
+
+  // Track a referral (called when a new user signs up with a referral code)
+  app.post("/api/referral/track", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { referralCode } = req.body;
+
+      if (!referralCode) {
+        return res.status(400).json({ message: "Referral code required" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Don't allow self-referral
+      if (user.referralCode === referralCode) {
+        return res.status(400).json({ message: "Cannot refer yourself" });
+      }
+
+      // Check if user was already referred
+      if (user.referredBy) {
+        return res.status(400).json({ message: "Already referred by someone" });
+      }
+
+      // Find the referrer
+      const referrer = await storage.getUserByReferralCode(referralCode);
+      if (!referrer) {
+        return res.status(404).json({ message: "Invalid referral code" });
+      }
+
+      // Mark user as referred
+      await storage.setUserReferredBy(userId, referralCode);
+
+      // Create referral record
+      await storage.createReferral(referrer.id, userId);
+
+      // Check if referrer earned new badges
+      const referralCount = await storage.getReferralCount(referrer.id);
+      const allBadges = await storage.getAllBadges();
+      const userBadges = await storage.getUserBadges(referrer.id);
+      const earnedBadgeIds = new Set(userBadges.map(ub => ub.badgeId));
+
+      for (const badge of allBadges) {
+        if (earnedBadgeIds.has(badge.id)) continue;
+
+        if (badge.triggerType === 'referral' && referralCount >= (badge.triggerValue || 0)) {
+          await storage.awardBadge(referrer.id, badge.id);
+          console.log(`Awarded referral badge ${badge.name} to user ${referrer.id}`);
+        }
+      }
+
+      res.json({ success: true, referrerId: referrer.id });
+    } catch (error) {
+      console.error("Error tracking referral:", error);
+      res.status(500).json({ message: "Failed to track referral" });
     }
   });
 
@@ -1754,6 +2119,75 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     }
   });
 
+  // Challenge testimonial (separate from app showcase)
+  app.post("/api/testimonial", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      const { testimonial, videoUrl, appName, appUrl } = req.body;
+
+      if (!testimonial && !videoUrl) {
+        return res.status(400).json({ message: "Please provide a written testimonial or video link" });
+      }
+
+      // Check if user already submitted a testimonial
+      const existing = await storage.getUserTestimonial(userId);
+      if (existing) {
+        // Already submitted - just return success without creating duplicate
+        return res.json({ success: true, message: "Thank you for your testimonial!" });
+      }
+
+      // Store the testimonial in the database
+      const created = await storage.createTestimonial({
+        userId,
+        testimonial: testimonial || null,
+        videoUrl: videoUrl || null,
+        appName: appName || null,
+        appUrl: appUrl || null,
+      });
+
+      console.log("=== NEW CHALLENGE TESTIMONIAL ===");
+      console.log("User:", user?.email || userId);
+      console.log("Testimonial ID:", created.id);
+      console.log("================================");
+
+      // Send email notification to Matt
+      const userName = user?.firstName
+        ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
+        : user?.email || 'Unknown User';
+
+      sendTestimonialNotificationEmail({
+        userEmail: user?.email || 'unknown',
+        userName,
+        testimonial: testimonial || null,
+        videoUrl: videoUrl || null,
+        appName: appName || null,
+        appUrl: appUrl || null,
+      }).catch(err => console.error('Testimonial email error:', err));
+
+      // Award Ambassador badge for testimonial
+      try {
+        const allBadges = await storage.getAllBadges();
+        const ambassadorBadge = allBadges.find(b => b.triggerType === 'testimonial_submitted');
+        if (ambassadorBadge) {
+          const userBadges = await storage.getUserBadges(userId);
+          const alreadyHas = userBadges.some(ub => ub.badgeId === ambassadorBadge.id);
+          if (!alreadyHas) {
+            await storage.awardBadge(userId, ambassadorBadge.id);
+            console.log(`Awarded Ambassador badge to user ${userId}`);
+          }
+        }
+      } catch (badgeError) {
+        console.error("Error awarding Ambassador badge:", badgeError);
+      }
+
+      res.json({ success: true, message: "Thank you for your testimonial!" });
+    } catch (error: any) {
+      console.error("Error submitting testimonial:", error);
+      res.status(500).json({ message: "Failed to submit testimonial" });
+    }
+  });
+
   // Get user's showcase entry
   app.get("/api/showcase/mine", isAuthenticated, async (req: any, res) => {
     try {
@@ -1823,6 +2257,36 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       res.json(updated);
     } catch (error: any) {
       console.error("Error toggling featured:", error);
+      res.status(500).json({ message: "Failed to toggle featured" });
+    }
+  });
+
+  // ============================================
+  // TESTIMONIAL ADMIN ROUTES
+  // ============================================
+
+  // Get all testimonials (admin)
+  app.get("/api/admin/testimonials", isAuthenticated, async (req: any, res) => {
+    try {
+      const testimonials = await storage.getAllTestimonials();
+      res.json(testimonials);
+    } catch (error: any) {
+      console.error("Error fetching testimonials:", error);
+      res.status(500).json({ message: "Failed to fetch testimonials" });
+    }
+  });
+
+  // Toggle testimonial featured status (admin)
+  app.post("/api/admin/testimonials/:id/feature", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updated = await storage.toggleTestimonialFeatured(id);
+      if (!updated) {
+        return res.status(404).json({ message: "Testimonial not found" });
+      }
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error toggling testimonial featured:", error);
       res.status(500).json({ message: "Failed to toggle featured" });
     }
   });

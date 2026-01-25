@@ -142,6 +142,81 @@ export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams)
   }
 }
 
+export interface TestimonialNotificationParams {
+  userEmail: string;
+  userName: string;
+  testimonial: string | null;
+  videoUrl: string | null;
+  appName: string | null;
+  appUrl: string | null;
+}
+
+export async function sendTestimonialNotificationEmail(params: TestimonialNotificationParams): Promise<void> {
+  const { userEmail, userName, testimonial, videoUrl, appName, appUrl } = params;
+
+  try {
+    const { client, fromEmail } = await getResendClient();
+    await client.emails.send({
+      from: fromEmail,
+      to: ['matt@mattwebley.com'],
+      subject: `New Challenge Testimonial from ${userName}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #334155; max-width: 600px; margin: 0 auto; padding: 20px;">
+
+  <div style="text-align: center; margin-bottom: 32px;">
+    <div style="width: 64px; height: 64px; background: #22c55e; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+      <span style="color: white; font-size: 32px;">💬</span>
+    </div>
+    <h1 style="color: #0f172a; margin: 0; font-size: 28px;">New Testimonial!</h1>
+  </div>
+
+  <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+    <p style="margin: 0 0 8px 0;"><strong>From:</strong> ${userName}</p>
+    <p style="margin: 0;"><strong>Email:</strong> ${userEmail}</p>
+  </div>
+
+  ${testimonial ? `
+  <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Written Testimonial</h2>
+    <p style="margin: 0; white-space: pre-wrap;">${testimonial}</p>
+  </div>
+  ` : ''}
+
+  ${videoUrl ? `
+  <div style="background: #fefce8; border: 2px solid #fef08a; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Video Testimonial</h2>
+    <a href="${videoUrl}" style="color: #2563eb; word-break: break-all;">${videoUrl}</a>
+  </div>
+  ` : ''}
+
+  ${appName || appUrl ? `
+  <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Their App</h2>
+    ${appName ? `<p style="margin: 0 0 8px 0;"><strong>Name:</strong> ${appName}</p>` : ''}
+    ${appUrl ? `<p style="margin: 0;"><strong>URL:</strong> <a href="${appUrl}" style="color: #2563eb;">${appUrl}</a></p>` : ''}
+  </div>
+  ` : ''}
+
+  <p style="color: #64748b; font-size: 14px; text-align: center;">
+    View all testimonials in the <a href="https://21daysaas.com/admin" style="color: #2563eb;">Admin Panel</a>
+  </p>
+
+</body>
+</html>
+      `,
+    });
+    console.log('Testimonial notification email sent to matt@mattwebley.com');
+  } catch (error) {
+    console.error('Failed to send testimonial notification email:', error);
+  }
+}
+
 export async function sendCoachingConfirmationEmail(params: CoachingEmailParams): Promise<void> {
   const { to, firstName, currency, amount } = params;
 
