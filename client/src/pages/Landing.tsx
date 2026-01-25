@@ -14,7 +14,7 @@ export default function Landing() {
               alt="Matt Webley"
               className="w-10 h-10 rounded-full"
             />
-            <span className="font-bold text-lg">21 Day AI SaaS Challenge</span>
+            <span className="font-bold text-xs sm:text-lg">21 Day AI SaaS Challenge</span>
           </div>
           <div className="flex gap-2 items-center">
             <a href="/api/login">
@@ -94,6 +94,12 @@ export default function Landing() {
                      />
                 */}
               </div>
+
+              <a href="/order" className="block">
+                <Button size="lg" className="w-full py-5 text-lg font-bold">
+                  Join Now →
+                </Button>
+              </a>
 
               <p className="text-sm text-slate-500">Or keep scrolling to read everything below</p>
             </div>

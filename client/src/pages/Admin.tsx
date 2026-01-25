@@ -1287,7 +1287,7 @@ export default function Admin() {
         <div className="space-y-4">
           <h2 className="text-xl font-bold text-slate-900">Day-by-Day Completion</h2>
           <Card className="p-6 border-2 border-slate-100">
-            <div className="grid grid-cols-6 sm:grid-cols-10 lg:grid-cols-15 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-15 gap-2">
               {Array.from({ length: 30 }, (_, i) => {
                 const dayNum = i + 1;
                 const completions = stats.dayCompletions?.[dayNum] || 0;
