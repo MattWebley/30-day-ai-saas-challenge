@@ -24,7 +24,35 @@ import {
   GitCompare,
   Percent,
   Lightbulb,
-  Rocket
+  Rocket,
+  MessageSquare,
+  PenTool,
+  Gift,
+  Youtube,
+  Twitter,
+  Bookmark,
+  Award,
+  Mic,
+  Video,
+  MailPlus,
+  Star,
+  HelpCircle,
+  ListChecks,
+  Newspaper,
+  Share2,
+  Globe,
+  Handshake,
+  Radio,
+  ThumbsUp,
+  Repeat,
+  Calendar,
+  Presentation,
+  RefreshCw,
+  Layers,
+  Clock,
+  HeartHandshake,
+  Store,
+  Crosshair
 } from "lucide-react";
 import { ds } from "@/lib/design-system";
 
@@ -49,54 +77,49 @@ const INCOME_MILESTONES = [
 ];
 
 const PASSIVE_STRATEGIES = [
-  {
-    icon: FileText,
-    title: "AI-Powered Blog",
-    tagline: "Content that writes itself",
-    what: "An automated system that generates SEO-optimized blog posts for your app, targeting keywords your customers are searching for.",
-    why: "While you sleep, your blog ranks in Google and brings in visitors who are actively looking for solutions like yours. One well-ranked article can bring hundreds of visitors per month for YEARS.",
-    result: "Imagine waking up to new signups from people who found your blog post at 3am."
-  },
-  {
-    icon: GitCompare,
-    title: "Comparison Pages",
-    tagline: "Steal your competitors' traffic",
-    what: "Pages that rank for '[Competitor] vs [Your App]' and '[Competitor] alternative' searches. People searching these terms are READY to switch.",
-    why: "These are the highest-intent keywords in SaaS. Someone searching 'Notion alternative' has already decided they need a solution - they're just choosing which one.",
-    result: "Your competitors spent years building their brand. You can capture their search traffic in weeks."
-  },
-  {
-    icon: Percent,
-    title: "Affiliate Program",
-    tagline: "An army of salespeople",
-    what: "Pay others a commission (typically 20-30%) for every paying customer they send you. Bloggers, YouTubers, and influencers promote your app to their audiences.",
-    why: "You only pay when you get paid. Zero upfront cost, 100% performance-based. Affiliates have audiences that trust them - that trust transfers to your product.",
-    result: "Hundreds of people actively promoting your app, and you only pay for results."
-  }
+  { icon: FileText, title: "AI-Powered Blog", tagline: "Content that writes itself" },
+  { icon: GitCompare, title: "Comparison Pages", tagline: "Steal your competitors' traffic" },
+  { icon: Percent, title: "Affiliate Program", tagline: "An army of salespeople" },
+  { icon: MessageSquare, title: "Reddit & Quora Answers", tagline: "Be helpful where buyers hang out" },
+  { icon: Rocket, title: "Product Hunt Launch", tagline: "Get featured to thousands of early adopters" },
+  { icon: PenTool, title: "Guest Post Outreach", tagline: "Get published on blogs your customers read" },
+  { icon: Gift, title: "Lead Magnets & Free Tools", tagline: "Give value, capture emails" },
+  { icon: Youtube, title: "Faceless YouTube Videos", tagline: "Rank in the world's second biggest search engine" },
+  { icon: Twitter, title: "Twitter/X Threads", tagline: "Go viral talking about problems you solve" },
+  { icon: Bookmark, title: "Directory Submissions", tagline: "Get listed everywhere your buyers look" },
+  { icon: Award, title: "Case Studies", tagline: "Turn happy customers into sales tools" },
+  { icon: Mic, title: "Podcast Guest Pitches", tagline: "Borrow other people's audiences" },
+  { icon: Video, title: "Webinar Content", tagline: "Educate and sell on autopilot" },
+  { icon: MailPlus, title: "Email Nurture Sequences", tagline: "Turn subscribers into buyers while you sleep" },
+  { icon: Star, title: "Social Proof Engine", tagline: "Automate testimonial collection and display" },
+  { icon: HelpCircle, title: "SEO Help Articles", tagline: "Rank for every question your customers ask" },
+  { icon: ListChecks, title: "Listicle Placements", tagline: "Get included in 'Best X Tools' articles" },
+  { icon: Newspaper, title: "Newsletter Sponsorships", tagline: "Pay to reach curated audiences" },
+  { icon: Share2, title: "Viral Referral Program", tagline: "Turn users into recruiters" },
+  { icon: Globe, title: "Localized Landing Pages", tagline: "Rank in every city and country" }
 ];
 
 const ACTIVE_STRATEGIES = [
-  {
-    icon: Mail,
-    title: "Automated Cold Email",
-    tagline: "Reach thousands while you sleep",
-    what: "AI-personalized emails sent automatically to your ideal customers. Modern tools can send hundreds of personalized emails per day without you lifting a finger.",
-    why: "Cold email is still one of the highest-ROI channels in B2B. With AI personalization, response rates are higher than ever. The cost per lead is pennies.",
-  },
-  {
-    icon: Megaphone,
-    title: "Paid Ads",
-    tagline: "Instant traffic, controlled spend",
-    what: "Google Ads for people actively searching. Meta Ads for targeting specific demographics. LinkedIn Ads for B2B job titles.",
-    why: "Ads let you test and validate faster than any organic method. Start with $10/day, find what works, then scale. Instant feedback loop.",
-  },
-  {
-    icon: UserPlus,
-    title: "Influencer Partnerships",
-    tagline: "Borrow their audience",
-    what: "Pay creators to mention, review, or demo your product. Micro-influencers (1K-50K followers) often have the best ROI.",
-    why: "People trust recommendations from creators they follow. One good partnership can bring more customers than months of your own content.",
-  }
+  { icon: Mail, title: "Automated Cold Email", tagline: "Reach thousands while you sleep" },
+  { icon: Megaphone, title: "Paid Ads", tagline: "Instant traffic, controlled spend" },
+  { icon: UserPlus, title: "Influencer Partnerships", tagline: "Borrow their audience" },
+  { icon: Linkedin, title: "LinkedIn Outreach", tagline: "Connect directly with decision makers" },
+  { icon: MessageSquare, title: "Cold DMs", tagline: "Slide into buyer inboxes on any platform" },
+  { icon: Users, title: "Community Infiltration", tagline: "Become the go-to expert in your niche" },
+  { icon: Handshake, title: "JV Partnerships", tagline: "Team up with complementary businesses" },
+  { icon: Radio, title: "HARO & Press Outreach", tagline: "Get quoted in major publications" },
+  { icon: ThumbsUp, title: "Review Site Outreach", tagline: "Get listed and reviewed on G2, Capterra" },
+  { icon: Repeat, title: "Retargeting Campaigns", tagline: "Follow visitors until they convert" },
+  { icon: Calendar, title: "Webinar Partnerships", tagline: "Co-host with people who have your audience" },
+  { icon: Trophy, title: "Contests & Giveaways", tagline: "Go viral with irresistible offers" },
+  { icon: Presentation, title: "Virtual Summit Speaking", tagline: "Present to thousands of ideal customers" },
+  { icon: RefreshCw, title: "Win-Back Campaigns", tagline: "Reactivate churned users automatically" },
+  { icon: TrendingUp, title: "Upsell Sequences", tagline: "Maximize revenue from existing customers" },
+  { icon: Layers, title: "Bundle Deals", tagline: "Partner with others for irresistible packages" },
+  { icon: Clock, title: "Flash Sales & Urgency", tagline: "Create FOMO that drives action" },
+  { icon: HeartHandshake, title: "Affiliate Recruitment", tagline: "Actively recruit your army of promoters" },
+  { icon: Store, title: "App Store Optimization", tagline: "Rank higher where people search for apps" },
+  { icon: Crosshair, title: "Lookalike Audiences", tagline: "Find more people just like your best customers" }
 ];
 
 export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
@@ -389,7 +412,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
           </Card>
 
           <Card className={ds.cardWithPadding}>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {PASSIVE_STRATEGIES.map((strategy, index) => (
                 <div key={index} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
                   <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 flex-shrink-0">
@@ -406,7 +429,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
 
           <Card className="p-4 border border-slate-200 bg-slate-50">
             <p className={ds.body}>
-              <strong>That's 3 of 30+ passive methods.</strong> Most can run on autopilot once set up - but they need to be executed perfectly with the right strategy to actually work.
+              <strong>That's 20 of 50+ passive methods.</strong> You don't need all of them - you just need 1 or 2 that work for YOUR product. The hard part is knowing which ones.
             </p>
           </Card>
 
@@ -444,7 +467,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
           </Card>
 
           <Card className={ds.cardWithPadding}>
-            <div className="space-y-4">
+            <div className="space-y-3">
               {ACTIVE_STRATEGIES.map((strategy, index) => (
                 <div key={index} className="flex items-center gap-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
                   <div className="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 flex-shrink-0">
@@ -461,7 +484,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
 
           <Card className="p-4 border border-slate-200 bg-slate-50">
             <p className={ds.body}>
-              <strong>That's 3 of 40+ active methods.</strong> AI can help you execute at scale - but without the right strategy, you'll waste months figuring out what actually works.
+              <strong>That's 20 of 50+ active methods.</strong> Most founders waste months trying random tactics. The ones who win pick 1-2 methods and master them.
             </p>
           </Card>
 
@@ -490,7 +513,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
                 <TrendingUp className="w-7 h-7 text-slate-600" />
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-2">
-                That's Just 6 of 77+ Strategies
+                100+ Growth Strategies Exist
               </h3>
             </div>
 
@@ -514,36 +537,43 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
               Not because they can't build. Not because their idea is bad.
               Because they don't have someone who's been there showing them what actually works.
             </p>
+            <p className={`${ds.body} mt-3`}>
+              Some people want to learn how to do it themselves. Others just want it done for them.
+              <strong> I can help with both.</strong>
+            </p>
           </Card>
 
           <Card className="p-6 border-2 border-slate-900 bg-slate-900 text-white">
             <div className="text-center mb-6">
-              <h4 className="text-2xl font-bold mb-3">Launch, Grow & Scale Your SaaS Using the Same Free Methods That Built My $12M+ Portfolio</h4>
+              <h4 className="text-2xl font-bold mb-3">Is Your SaaS Ready for Growth?</h4>
               <p className="text-slate-300">
-                25+ years in the trenches. $12M+ in SaaS alone. I've made every mistake so you don't have to - and I'll show you exactly how to launch, grow, and scale using mostly free, organic methods that actually work.
+                You've seen 40 strategies. Most can be automated with AI. But here's the thing...
               </p>
             </div>
 
+            <div className="space-y-3 mb-6">
+              <div className="p-4 bg-white/10 rounded-lg">
+                <p className="text-white font-medium mb-2">Not every SaaS is ready for marketing.</p>
+                <p className="text-slate-300 text-sm">
+                  If your product, positioning, or offer isn't right, throwing traffic at it is like pouring water into a leaky bucket. You'll waste time and money.
+                </p>
+              </div>
+
+              <div className="p-4 bg-white/10 rounded-lg">
+                <p className="text-white font-medium mb-2">A free Readiness Review tells you where you stand.</p>
+                <p className="text-slate-300 text-sm">
+                  I'll look at what you've built and tell you honestly - is it ready for traffic, or does it need work first? Plus I'll map out exactly what to focus on next.
+                </p>
+              </div>
+            </div>
+
             <div className="space-y-2 mb-6">
+              <p className="text-slate-400 text-sm font-medium">On the call, I'll tell you...</p>
               {[
-                "How to get your first 100 paying customers without spending a penny on ads",
-                "The free SEO strategy that brings in leads 24/7 while you sleep (no blogging required)",
-                "Why cold outreach still works - and the exact scripts that get 40%+ reply rates",
-                "The \"content multiplier\" method that turns 1 hour of work into a month of free marketing",
-                                "Why most founders waste money on ads way too early - and what to do instead",
-                "The community infiltration method that builds trust before you ever pitch",
-                "How to turn happy customers into a referral machine without awkward asks",
-                "The \"competitor audience\" hack that puts you in front of buyers who are READY to switch",
-                "Why email lists beat social media followers 10-to-1 for SaaS (and how to build yours fast)",
-                "The partnership strategy that got me in front of 50,000+ potential customers for $0",
-                "How to rank on Google for buying keywords without waiting 12 months",
-                "The free tool strategy that built a 10,000-person waitlist before launch",
-                "Why \"build in public\" fails for 90% of founders - and the free alternative that actually works",
-                                "How to take your sales page from 'good' to 'can't stop buying' with advanced conversion tweaks",
-                "The affiliate recruitment method that brings partners to YOU (instead of begging)",
-                "Why you don't need a big audience to make big money - and how to leverage other people's",
-                "The 5-email welcome sequence that turns free users into paying customers on autopilot",
-                "How to validate demand and get paid BEFORE you build - using free tools only"
+                "Whether your SaaS is ready for marketing (or what to fix first)",
+                "Which 2-3 strategies from the 40 are best for YOUR specific product",
+                "The single biggest thing holding you back from your first customers",
+                "What I'd do in your position if I was starting from scratch"
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -554,25 +584,18 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
               ))}
             </div>
 
-            <div className="p-4 bg-white/10 rounded-lg mb-6">
-              <p className="text-white text-center font-medium">
-                You've come this far. You've proven you can execute.<br/>
-                Now it's time to stop guessing and get expert guidance.
-              </p>
-            </div>
-
             <a
-              href="https://www.mattwebley.com/workwithmatt"
+              href="https://www.mattwebley.com/readiness"
               target="_blank"
               rel="noopener noreferrer"
               className="block"
             >
               <Button size="lg" className="w-full h-16 text-xl font-bold gap-2 bg-white text-slate-900 hover:bg-slate-100">
-                Book Your Call With Matt <ArrowUpRight className="w-6 h-6" />
+                Book Your Free Readiness Review <ArrowUpRight className="w-6 h-6" />
               </Button>
             </a>
             <p className="text-center text-slate-400 text-sm mt-3">
-              Serious founders only. Let's see if we're a fit.
+              Free call. Honest feedback. Find out exactly where you stand.
             </p>
           </Card>
 
@@ -667,19 +690,18 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
           </Card>
 
           <Card className={ds.cardWithPadding}>
-            <h4 className={`${ds.heading} mb-3`}>You've Proven You Can Build. Now Let's Sell.</h4>
+            <h4 className={`${ds.heading} mb-3`}>What's Next? Find Out If You're Ready.</h4>
             <p className={`${ds.body} mb-4`}>
-              99% of founders fail alone. After 25+ years and $23M+ in online sales ($12M+ in SaaS), I know exactly what separates the 1% who make it.
-              Book a call and let's see if I can help you get there.
+              You've built something real. Now the question is - is it ready for customers? Book a free Readiness Review and I'll tell you exactly where you stand and what to do next.
             </p>
             <a
-              href="https://www.mattwebley.com/workwithmatt"
+              href="https://www.mattwebley.com/readiness"
               target="_blank"
               rel="noopener noreferrer"
               className="block"
             >
               <Button size="lg" className="w-full gap-2">
-                Book Your Call With Matt <ArrowUpRight className="w-5 h-5" />
+                Book Your Free Readiness Review <ArrowUpRight className="w-5 h-5" />
               </Button>
             </a>
           </Card>
@@ -694,7 +716,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
               commitmentStatement
             })}
           >
-            Finish & Return to Dashboard <ChevronRight className="w-5 h-5" />
+            Complete the Challenge! <Trophy className="w-5 h-5" />
           </Button>
         </>
       )}

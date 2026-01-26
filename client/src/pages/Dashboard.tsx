@@ -300,6 +300,13 @@ export default function Dashboard() {
         return;
       }
 
+      // Special handling for Day 21 - redirect to congratulations page
+      if (currentDay === 21) {
+        toast.success("Congratulations! You completed the challenge!");
+        setLocation("/congratulations");
+        return;
+      }
+
       // Show completion modal for other days
       console.log('[Dashboard] Showing completion modal for day', currentDay);
       toast.success("Day completed!");

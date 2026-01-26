@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-24 (Day 20 SEO Overhaul)
+- **Last Session**: 2026-01-26 (Day 21 Growth Strategies Expansion + Congratulations Page)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -123,6 +123,10 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - [ ] Before launch: Set testMode to false in TestModeContext.tsx
 - [ ] Add VSL video (placeholder added, needs actual video/thumbnail)
 - [ ] Consider adding a cheaper bump offer ($27-67 range) for higher conversion
+
+### PRE-LAUNCH BLOCKERS (DO THESE BEFORE GOING LIVE)
+- [ ] **CRITICAL: Set up Systeme.io waitlist autoresponder** - Day 21 "Join the Waitlist" button links to `challenge.mattwebley.com/waitlist` which currently 404s
+- [ ] **CRITICAL: Set up mattwebley.com/readiness page** - Day 21 Readiness Review CTA links here
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
@@ -509,3 +513,44 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test Day 20 simplified SEO flow
   - Test Day 21 growth strategies flow
   - Old unused components to delete: Day20LaunchPlan.tsx, Day20BrandBeauty.tsx
+
+### 2026-01-26 - Day 21 Growth Strategies Expansion + Congratulations Page
+- **Tasks Completed:**
+  - **Day 21 Expanded to 40 Strategies:** 20 passive + 20 active growth methods
+    - All AI-executable methods (blog, comparison pages, cold email, etc.)
+    - Added automation tags initially, then removed (made it feel too easy/DIY)
+    - Updated messaging: "20 of 50+ passive methods", "20 of 50+ active methods", "100+ Growth Strategies Exist"
+    - Emphasizes "you only need 1-2 that work for YOUR product"
+  - **Readiness Review CTA:** Changed from mentorship pitch to lower-commitment call booking
+    - "Is Your SaaS Ready for Growth?" framing
+    - Free Readiness Review call (not 15 min - it's a full sales call)
+    - Links to mattwebley.com/readiness
+    - Hints at "done for you" option: "Some want to learn. Others want it done for them. I can help with both."
+  - **New Congratulations Page:** `/congratulations` route
+    - Dedicated page after Day 21 completion
+    - Video placeholder for Matt's congratulations message
+    - Stats card (21 days, 1 SaaS, Top 1%)
+    - "What You've Accomplished" checklist
+    - Readiness Review CTA
+    - Day 21 completion now redirects here instead of showing modal
+  - **New Favicon:** SVG favicon with "21" - white background, black text
+  - **Matt's Tip Updated:** Added "I can help you build AI systems that take care of most of this for you, growing your SaaS business on autopilot"
+- **Files Created:**
+  - `client/src/pages/Congratulations.tsx` - Post-challenge celebration page
+  - `client/public/favicon.svg` - New "21" favicon
+- **Files Modified:**
+  - `client/src/components/Day21LaunchDay.tsx` - 40 strategies, Readiness Review CTA, done-for-you hint
+  - `client/src/pages/Dashboard.tsx` - Day 21 redirects to /congratulations
+  - `client/src/App.tsx` - Added /congratulations route
+  - `client/index.html` - Added SVG favicon reference
+  - `server/seed.ts` - Updated Day 21 tip with AI marketing mention
+  - `CLAUDE.md` - Added pre-launch blockers section
+- **Pre-Launch Blockers Added:**
+  - Set up Systeme.io waitlist autoresponder (challenge.mattwebley.com/waitlist currently 404s)
+  - Set up mattwebley.com/readiness page for Readiness Review booking
+- **Notes for Next Session:**
+  - Database was re-seeded
+  - Test Day 21 full flow with all 40 strategies
+  - Test /congratulations page appearance
+  - Add actual video to Congratulations page when ready
+  - User considering AI marketing as a service offering (monthly subscription)

@@ -20,21 +20,42 @@ export default function Order() {
     + (includePromptPack ? pricing[selectedCurrency].promptPack : 0)
     + (includeLaunchPack ? pricing[selectedCurrency].launchPack : 0);
 
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
   const handleCheckout = async () => {
     if (isCheckingOut) return;
     setIsCheckingOut(true);
+    setCheckoutError(null);
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currency: selectedCurrency, includePromptPack, includeLaunchPack })
+        body: JSON.stringify({ currency: selectedCurrency, includePromptPack, includeLaunchPack }),
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Checkout failed');
+      }
+
       const data = await response.json();
       if (data.url) {
         window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL received');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Checkout error:', error);
+      if (error.name === 'AbortError') {
+        setCheckoutError('Request timed out. Please try again.');
+      } else {
+        setCheckoutError(error.message || 'Something went wrong. Please try again.');
+      }
       setIsCheckingOut(false);
     }
   };
@@ -218,8 +239,25 @@ export default function Order() {
               </div>
             </div>
 
+            {/* Error Message */}
+            {checkoutError && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+                {checkoutError}
+              </div>
+            )}
+
             {/* CTA Button - Show login if not authenticated */}
-            {!isAuthenticated && !isLoading ? (
+            {isLoading ? (
+              <button
+                disabled
+                className="w-full bg-green-400 text-white font-bold text-xl py-5 px-8 rounded-xl"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Loading...
+                </span>
+              </button>
+            ) : !isAuthenticated ? (
               <div className="space-y-3">
                 <a
                   href="/api/login"
@@ -235,7 +273,7 @@ export default function Order() {
             ) : (
               <button
                 onClick={handleCheckout}
-                disabled={isCheckingOut || isLoading}
+                disabled={isCheckingOut}
                 className="w-full bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white font-bold text-xl py-5 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
               >
                 {isCheckingOut ? (

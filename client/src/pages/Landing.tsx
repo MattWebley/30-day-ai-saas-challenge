@@ -21,7 +21,7 @@ export default function Landing() {
               <Button variant="ghost" size="sm">Login</Button>
             </a>
             <a href="/order">
-              <Button size="sm">Join Now</Button>
+              <Button size="sm">Start the Challenge</Button>
             </a>
           </div>
         </div>
@@ -97,11 +97,10 @@ export default function Landing() {
 
               <a href="/order" className="block">
                 <Button size="lg" className="w-full py-5 text-lg font-bold">
-                  Join Now →
+                  Start the Challenge <ArrowRight className="w-5 h-5 inline ml-1" />
                 </Button>
               </a>
 
-              <p className="text-sm text-slate-500">Or keep scrolling to read everything below</p>
             </div>
           </motion.div>
         </section>
@@ -112,7 +111,7 @@ export default function Landing() {
         <section className="py-12 border-t border-slate-100">
           <div className="space-y-6 text-lg text-slate-700 leading-relaxed">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 text-center">
-              AI Has Made Building Software 100x Cheaper and Easier
+              AI Has Made Building Software 100x Faster, Cheaper and Easier
             </h2>
 
             <p>
@@ -124,7 +123,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              The Old Way Was SLOW, EXPENSIVE, and FRUSTRATING
+              The Old Way Was Slow, Expensive, and Frustrating
             </h3>
 
             <p>
@@ -146,7 +145,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              Then AI Changed EVERYTHING
+              Then AI Changed Everything
             </h3>
 
             <p>
@@ -172,7 +171,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              But Nobody's Showing Regular People HOW to Do It
+              But Nobody's Showing Regular People How to Do It
             </h3>
 
             <p>
@@ -226,7 +225,7 @@ export default function Landing() {
             </ul>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              And So Another Week Goes By. Another Month. Another YEAR.
+              And So Another Week Goes By. Another Month. Another Year.
             </h3>
 
             <p>
@@ -234,7 +233,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              It's NOT Your Ideas. It's NOT Your Skills. It's That You Don't Have a SYSTEM.
+              It's Not Your Ideas. It's Not Your Skills. It's That You Don't Have a System.
             </h3>
 
             <p>
@@ -246,7 +245,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              You Need a Step-by-Step Playbook From Someone Who's DONE It
+              You Need a Step-by-Step Playbook From Someone Who's Done It
             </h3>
 
             <p>
@@ -357,7 +356,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              You're NOT Coding. You're DIRECTING AI to Code For You.
+              You're Not Coding. You're Directing AI to Code For You.
             </h3>
 
             <p>
@@ -394,7 +393,7 @@ export default function Landing() {
                 <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">1</div>
-                    <h3 className="text-xl font-bold text-slate-900">IDEA</h3>
+                    <h3 className="text-xl font-bold text-slate-900">Idea</h3>
                   </div>
                   <p className="text-slate-600">
                     Don't have an idea? We'll generate 28 for you. Already have one? We'll validate it. Either way, you'll leave with a winning idea, a name, domain, and logo.
@@ -404,7 +403,7 @@ export default function Landing() {
                 <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h3 className="text-xl font-bold text-slate-900">PREPARE</h3>
+                    <h3 className="text-xl font-bold text-slate-900">Prepare</h3>
                   </div>
                   <p className="text-slate-600">
                     Set up your AI toolkit and start building. You'll have your first working version running before you know it. No coding - just directing AI with plain English.
@@ -414,7 +413,7 @@ export default function Landing() {
                 <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">3</div>
-                    <h3 className="text-xl font-bold text-slate-900">BUILD</h3>
+                    <h3 className="text-xl font-bold text-slate-900">Build</h3>
                   </div>
                   <p className="text-slate-600">
                     Add all the features that make a REAL product: user accounts, AI features, email, mobile support, admin dashboard. Everything a professional SaaS needs.
@@ -424,7 +423,7 @@ export default function Landing() {
                 <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">4</div>
-                    <h3 className="text-xl font-bold text-slate-900">LAUNCH</h3>
+                    <h3 className="text-xl font-bold text-slate-900">Launch</h3>
                   </div>
                   <p className="text-slate-600">
                     Final polish, testing, and deployment. Make sure everything WORKS, looks professional, and is ready for your first users. Then hit that launch button.
@@ -437,7 +436,7 @@ export default function Landing() {
               </p>
 
               <div className="bg-slate-900 text-white p-6 rounded-xl my-8">
-                <h4 className="font-bold text-xl mb-3">Think About What You'll HAVE:</h4>
+                <h4 className="font-bold text-xl mb-3">Think About What You'll Have:</h4>
                 <p className="text-slate-300">
                   Not notes. Not "knowledge." Not another certificate to add to your LinkedIn. An actual PRODUCT. Something you can show people. Something you can SELL. Something that could help hundreds, maybe THOUSANDS of people solve a problem they're struggling with right now. That's the difference between learning and DOING.
                 </p>
@@ -490,7 +489,7 @@ export default function Landing() {
                 </p>
 
                 <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-4">
-                  I Was TIRED of Watching Smart People Stay Stuck for YEARS
+                  I Was Tired of Watching Smart People Stay Stuck for Years
                 </h3>
 
                 <p>
@@ -576,7 +575,7 @@ export default function Landing() {
         <section className="py-12 border-t border-slate-100">
           <div className="space-y-6 text-lg text-slate-700">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 text-center">
-              Daily Micro-Tasks + AI Tools + Perfect Sequence = A Product You Actually FINISH
+              Daily Micro-Tasks + AI Tools + Perfect Sequence = A Product You Actually Finish
             </h2>
 
             <p>
@@ -597,7 +596,7 @@ export default function Landing() {
                   <Clock className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-lg">Daily Micro-Tasks, NOT Marathon Sessions</h4>
+                  <h4 className="font-bold text-slate-900 text-lg">Daily Micro-Tasks, Not Marathon Sessions</h4>
                   <p className="text-slate-600 mt-1">
                     You don't need to find 4 hours. You don't need a "free weekend." You just need to show up daily and do ONE thing. Some days that's 5 minutes. The CONSISTENCY is what builds momentum.
                   </p>
@@ -609,7 +608,7 @@ export default function Landing() {
                   <Target className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-lg">Perfectly Sequenced - ZERO Guesswork</h4>
+                  <h4 className="font-bold text-slate-900 text-lg">Perfectly Sequenced - Zero Guesswork</h4>
                   <p className="text-slate-600 mt-1">
                     You NEVER have to wonder "what should I do next?" Every day builds on the last. The path is laid out. You just have to WALK it.
                   </p>
@@ -621,7 +620,7 @@ export default function Landing() {
                   <Zap className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-lg">AI Does the HEAVY Lifting</h4>
+                  <h4 className="font-bold text-slate-900 text-lg">AI Does the Heavy Lifting</h4>
                   <p className="text-slate-600 mt-1">
                     You're NOT learning to code. You're learning to DIRECT AI to code for you. I give you the exact prompts. You paste them. The AI builds. It's like having a developer on call 24/7 for pennies.
                   </p>
@@ -633,7 +632,7 @@ export default function Landing() {
                   <TrendingUp className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-lg">An App That Holds You ACCOUNTABLE</h4>
+                  <h4 className="font-bold text-slate-900 text-lg">An App That Holds You Accountable</h4>
                   <p className="text-slate-600 mt-1">
                     Badges. Streaks. A visual progress tracker. You can't lie to yourself - the app shows exactly where you are. Day 5. Day 12. Day 18. It's the same psychology that makes games addictive - but pointed at building something VALUABLE. And unlike a course you can ignore, this STARES at you until you do the work.
                   </p>
@@ -645,7 +644,7 @@ export default function Landing() {
                   <Shield className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-lg">Built-In "Pause Point" for REAL Building</h4>
+                  <h4 className="font-bold text-slate-900 text-lg">Built-In "Pause Point" for Real Building</h4>
                   <p className="text-slate-600 mt-1">
                     Day 18 is the MVP day. You can stay there as long as you need - days, weeks, whatever it takes. This isn't about SPEED. It's about actually FINISHING something real.
                   </p>
@@ -880,9 +879,9 @@ export default function Landing() {
                 </p>
               </div>
 
-              <a href="/api/login" className="block">
+              <a href="/order" className="block">
                 <Button size="lg" className="w-full h-16 text-xl font-bold gap-3 bg-white text-slate-900 hover:bg-slate-100">
-                  Start the Challenge NOW <ArrowRight className="w-6 h-6" />
+                  Start the Challenge <ArrowRight className="w-6 h-6" />
                 </Button>
               </a>
 
@@ -907,7 +906,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              Why Not Lifetime? Because AI Moves FAST.
+              Why Not Lifetime? Because AI Moves Fast.
             </h3>
 
             <p>
@@ -915,7 +914,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              One Year Is MORE Than Enough Time
+              One Year Is More Than Enough Time
             </h3>
 
             <p>
@@ -947,7 +946,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              And If We STILL Can't Get You There? Full Refund. No Questions.
+              And If We Still Can't Get You There? Full Refund. No Questions.
             </h3>
 
             <p>
@@ -955,7 +954,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              The ONLY Way to Fail Is to Not Show Up
+              The Only Way to Fail Is to Not Show Up
             </h3>
 
             <p>
@@ -986,7 +985,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              "Later" Is Where Dreams Go to DIE
+              "Later" Is Where Dreams Go to Die
             </h3>
 
             <p>
@@ -1101,7 +1100,7 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              One Option Keeps You STUCK. The Other Gets You MOVING.
+              One Option Keeps You Stuck. The Other Gets You Moving.
             </h3>
 
             <p>
@@ -1118,12 +1117,10 @@ export default function Landing() {
 
           {/* CTA Section */}
           <div className="pt-8 pb-12 text-center space-y-4">
-            <a
-              href="/order"
-              className="block w-full bg-green-500 hover:bg-green-600 text-white font-bold text-xl py-5 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-            >
-              YES! I'm Ready To Start
-              <ArrowRight className="w-6 h-6 inline ml-2" />
+            <a href="/order" className="block">
+              <Button size="lg" className="w-full py-5 text-xl font-bold">
+                Start the Challenge <ArrowRight className="w-6 h-6 inline ml-2" />
+              </Button>
             </a>
             <p className="text-slate-500 text-sm">
               One-time payment · Instant access · 12 months

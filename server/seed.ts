@@ -1281,7 +1281,7 @@ Let's get you found.`,
       microDecisionQuestion: "What's your next step after this challenge?",
       microDecisionOptions: JSON.stringify(["Figure it out myself", "Get expert guidance", "Take a break first", "Not sure yet"]),
       reflectionQuestion: "What would your life look like with your target number of paying customers?",
-      tip: "You only need ONE or TWO growth strategies that work. Most successful founders focus on 1-2 channels and go ALL IN.",
+      tip: "You only need ONE or TWO growth strategies that work. Most successful founders focus on 1-2 channels and go ALL IN. I can help you build AI systems that take care of most of this for you, growing your SaaS business on autopilot.",
       lesson: `You just did something 99% of people NEVER do.
 
 You went from "I have an idea" to "I have a WORKING PRODUCT" in just a few weeks. That puts you in RARE company.

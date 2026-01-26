@@ -32,6 +32,7 @@ import Critique from "@/pages/Critique";
 import Testimonial from "@/pages/Testimonial";
 import Welcome from "@/pages/Welcome";
 import Referrals from "@/pages/Referrals";
+import Congratulations from "@/pages/Congratulations";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -90,6 +91,7 @@ function Router() {
             <Route path="/coaching" component={Coaching} />
             <Route path="/critique" component={Critique} />
             <Route path="/testimonial" component={Testimonial} />
+            <Route path="/congratulations" component={Congratulations} />
           </>
         )}
         <Route component={NotFound} />
