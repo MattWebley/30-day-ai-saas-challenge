@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useTestMode } from "@/contexts/TestModeContext";
 import {
   Users,
   TrendingUp,
@@ -37,7 +38,9 @@ import {
   Pause,
   RotateCcw,
   Pencil,
-  Sparkles
+  Sparkles,
+  ToggleLeft,
+  ToggleRight
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -177,6 +180,7 @@ const FONT_OPTIONS = [
 
 export default function Admin() {
   const queryClient = useQueryClient();
+  const { testMode, setTestMode } = useTestMode();
 
   // Check if user is admin - use the same pattern as server routes
   const { data: currentUser } = useQuery({
@@ -607,13 +611,39 @@ export default function Admin() {
           </Card>
         </div>
 
+        {/* Test Mode Toggle */}
+        <Card className="p-4 border-2 border-slate-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {testMode ? (
+                <ToggleRight className="w-6 h-6 text-primary" />
+              ) : (
+                <ToggleLeft className="w-6 h-6 text-slate-400" />
+              )}
+              <div>
+                <h3 className="font-bold text-slate-900">Test Mode</h3>
+                <p className="text-slate-600 text-sm">
+                  {testMode ? "All days unlocked, bypass time restrictions" : "Normal day unlocking rules apply"}
+                </p>
+              </div>
+            </div>
+            <Button
+              variant={testMode ? "default" : "outline"}
+              onClick={() => setTestMode(!testMode)}
+              className="min-w-[80px]"
+            >
+              {testMode ? "ON" : "OFF"}
+            </Button>
+          </div>
+        </Card>
+
         {/* Admin Reminders */}
-        <Card className="p-4 border-2 border-amber-200 bg-amber-50">
+        <Card className="p-4 border-2 border-slate-200 bg-slate-50">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+            <AlertTriangle className="w-5 h-5 text-slate-600 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="font-bold text-amber-900">Reminder: Affiliate Links</h3>
-              <p className="text-amber-800 text-sm mt-1">
+              <h3 className="font-bold text-slate-900">Reminder: Affiliate Links</h3>
+              <p className="text-slate-700 text-sm mt-1">
                 Once you hit <strong>10 sales</strong>, add your Fiverr affiliate links to Day 5 (Logo).
                 Stop being lazy and go sign up at <a href="https://www.fiverr.com/partnerships/affiliates" target="_blank" rel="noopener noreferrer" className="underline font-medium">fiverr.com/partnerships/affiliates</a>
               </p>

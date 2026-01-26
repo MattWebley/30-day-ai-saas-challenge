@@ -98,23 +98,6 @@ function Router() {
   );
 }
 
-// REMOVE THIS BEFORE LAUNCH - Floating test mode toggle button
-function TestModeToggle() {
-  const { testMode, setTestMode } = useTestMode();
-  return (
-    <button
-      onClick={() => setTestMode(!testMode)}
-      className={`fixed top-4 right-4 z-[9999] px-3 py-2 rounded-lg text-xs font-bold shadow-lg transition-all ${
-        testMode
-          ? 'bg-amber-500 text-white hover:bg-amber-600'
-          : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-      }`}
-    >
-      Test Mode: {testMode ? 'ON' : 'OFF'}
-    </button>
-  );
-}
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -123,8 +106,6 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <Router />
-            {/* REMOVE THIS BEFORE LAUNCH */}
-            <TestModeToggle />
           </TooltipProvider>
         </TestModeProvider>
       </BrandProvider>
