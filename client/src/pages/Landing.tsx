@@ -46,7 +46,7 @@ export default function Landing() {
             <a href="/api/login">
               <Button variant="ghost" size="sm">Login</Button>
             </a>
-            <a href="/order">
+            <a href="/order" className="hidden sm:block">
               <Button size="sm">Start the Challenge</Button>
             </a>
           </div>
