@@ -25,7 +25,6 @@ import Showcase from "@/pages/Showcase";
 import DesignPreview from "@/pages/DesignPreview";
 import Order from "@/pages/Order";
 import SalesLetterPack from "@/pages/SalesLetterPack";
-import LaunchPack from "@/pages/LaunchPack";
 import Coaching from "@/pages/Coaching";
 import CoachingUpsell from "@/pages/CoachingUpsell";
 import Critique from "@/pages/Critique";
@@ -71,7 +70,6 @@ function Router() {
         <Route path="/checkout/success" component={CheckoutSuccess} />
         <Route path="/admin/answer/:token" component={AdminAnswer} />
         <Route path="/sales-letter-pack" component={SalesLetterPack} />
-        <Route path="/launch-pack" component={LaunchPack} />
         <Route path="/coaching/upsell" component={CoachingUpsell} />
         <Route path="/welcome" component={Welcome} />
         {!isAuthenticated ? (

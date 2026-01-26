@@ -38,14 +38,6 @@ export class WebhookHandlers {
               .where(eq(users.id, metadata.userId));
           }
 
-          // Handle standalone launch pack purchase
-          if (metadata.productType === 'launch_pack' && metadata.userId) {
-            console.log(`Launch pack purchased by user ${metadata.userId}`);
-            await db.update(users)
-              .set({ launchPackPurchased: true })
-              .where(eq(users.id, metadata.userId));
-          }
-
           // Handle prompt pack as part of main challenge purchase
           if (metadata.includePromptPack === 'true' && session.customer_email) {
             console.log(`Prompt pack included in challenge purchase for ${session.customer_email}`);
@@ -54,13 +46,6 @@ export class WebhookHandlers {
               .where(eq(users.email, session.customer_email));
           }
 
-          // Handle launch pack as part of main challenge purchase
-          if (metadata.includeLaunchPack === 'true' && session.customer_email) {
-            console.log(`Launch pack included in challenge purchase for ${session.customer_email}`);
-            await db.update(users)
-              .set({ launchPackPurchased: true })
-              .where(eq(users.email, session.customer_email));
-          }
         }
       }
     } catch (error) {

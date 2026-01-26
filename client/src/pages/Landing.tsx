@@ -1,22 +1,48 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, TrendingUp, Shield, Star, Play } from "lucide-react";
 
+const DEFAULT_HEADLINE = "How Complete Beginners Are Using AI to Build Real, Working Software Products in 21 Days for Less Than $100...";
+
 export default function Landing() {
+  const [headline, setHeadline] = useState(DEFAULT_HEADLINE);
+  const [viewTracked, setViewTracked] = useState(false);
+
+  useEffect(() => {
+    // Fetch active A/B test headline
+    fetch("/api/ab/active-headline", { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.hasTest && data.headline) {
+          setHeadline(data.headline);
+          // Track the view (only once)
+          if (!viewTracked && data.variantId) {
+            setViewTracked(true);
+            fetch("/api/ab/track-view", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ variantId: data.variantId }),
+            }).catch(() => {}); // Silently fail
+          }
+        }
+      })
+      .catch(() => {}); // Use default headline on error
+  }, [viewTracked]);
+
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
       {/* Sticky Header */}
       <header className="border-b border-slate-100 bg-white sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="21 Day AI SaaS Challenge"
-              className="h-12 sm:h-14 w-auto object-contain"
-              style={{ imageRendering: 'auto' }}
-            />
-          </div>
-          <div className="flex gap-2 items-center">
+        <div className="max-w-4xl mx-auto px-6 py-3 flex items-center justify-center relative">
+          <img
+            src="/logo.png?v=3"
+            alt="21 Day AI SaaS Challenge"
+            className="h-20 sm:h-24 w-auto object-contain"
+            style={{ imageRendering: 'auto' }}
+          />
+          <div className="absolute right-6 flex gap-2 items-center">
             <a href="/api/login">
               <Button variant="ghost" size="sm">Login</Button>
             </a>
@@ -32,14 +58,16 @@ export default function Landing() {
         {/* ========================================== */}
         {/* 1. BIG PROMISE HEADLINE */}
         {/* ========================================== */}
-        <section className="pt-16 pb-8">
+        <section className="pt-16 pb-8 relative">
+          {/* Subtle gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 to-transparent -z-10" />
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6 text-center"
           >
             <h1 className="text-4xl md:text-5xl font-black leading-tight">
-              How Complete Beginners Are Using AI to Build Real, Working Software Products in 21 Days for Less Than $100...
+              {headline}
             </h1>
 
             <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
@@ -96,7 +124,7 @@ export default function Landing() {
               </div>
 
               <a href="/order" className="block">
-                <Button size="lg" className="w-full py-5 text-lg font-bold">
+                <Button size="lg" className="w-full py-5 text-lg font-bold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all">
                   Start the Challenge <ArrowRight className="w-5 h-5 inline ml-1" />
                 </Button>
               </a>
@@ -160,7 +188,7 @@ export default function Landing() {
               And here's what most people don't understand yet:
             </p>
 
-            <div className="bg-slate-900 text-white p-6 rounded-xl my-8">
+            <div className="bg-slate-900 text-white p-6 rounded-xl my-8 shadow-xl shadow-slate-900/20">
               <p className="text-xl font-bold">
                 The barrier to building software has dropped from $250,000+ and 2-3 YEARS... to less than $100 and 21 days. Even tiny tools used to cost $50K+. Now? Under $100.
               </p>
@@ -1118,7 +1146,7 @@ export default function Landing() {
           {/* CTA Section */}
           <div className="pt-8 pb-12 text-center space-y-4">
             <a href="/order" className="block">
-              <Button size="lg" className="w-full py-5 text-xl font-bold">
+              <Button size="lg" className="w-full py-5 text-xl font-bold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all">
                 Start the Challenge <ArrowRight className="w-6 h-6 inline ml-2" />
               </Button>
             </a>

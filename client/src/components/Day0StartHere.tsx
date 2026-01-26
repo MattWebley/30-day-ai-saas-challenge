@@ -72,9 +72,10 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
   const milestones = [
     { day: 0, label: "Start" },
     { day: 1, label: "Idea" },
-    { day: 4, label: "Plan" },
+    { day: 6, label: "Prepare" },
     { day: 10, label: "Build" },
-    { day: 19, label: "Launch" }
+    { day: 19, label: "Launch" },
+    { day: 21, label: "Done!" }
   ];
 
   const checkIfReady = (commitmentsSet: Set<number>, whysSet: Set<number>, customWhyText: string, income: number | null, customIncomeText: string, message: string) => {

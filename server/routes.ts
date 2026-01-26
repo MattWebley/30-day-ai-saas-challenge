@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertUserProgressSchema, insertDayContentSchema, users, type User } from "@shared/schema";
+import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, type User } from "@shared/schema";
 import OpenAI from "openai";
 import dns from "dns";
 import { promisify } from "util";
@@ -2473,7 +2473,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Stripe checkout - create checkout session for the 21 Day Challenge
   app.post("/api/checkout", async (req, res) => {
     try {
-      const { currency = 'usd', includePromptPack = false, includeLaunchPack = false } = req.body;
+      const { currency = 'usd', includePromptPack = false } = req.body;
       const stripe = await getUncachableStripeClient();
 
       // Price IDs from Stripe - main challenge
@@ -2487,13 +2487,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const promptPackPriceIds: Record<string, string> = {
         usd: 'price_PROMPT_PACK_USD', // TODO: Replace with real Stripe price ID
         gbp: 'price_PROMPT_PACK_GBP'  // TODO: Replace with real Stripe price ID
-      };
-
-      // Price IDs for Launch Pack bump ($97 USD / £75 GBP)
-      // TODO: Create these products in Stripe and update with real price IDs
-      const launchPackPriceIds: Record<string, string> = {
-        usd: 'price_LAUNCH_PACK_USD', // TODO: Replace with real Stripe price ID
-        gbp: 'price_LAUNCH_PACK_GBP'  // TODO: Replace with real Stripe price ID
       };
 
       const priceId = priceIds[currency.toLowerCase()] || priceIds.usd;
@@ -2515,15 +2508,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         });
       }
 
-      // Add launch pack bump offer if selected
-      if (includeLaunchPack) {
-        const launchPackPriceId = launchPackPriceIds[currency.toLowerCase()] || launchPackPriceIds.usd;
-        lineItems.push({
-          price: launchPackPriceId,
-          quantity: 1
-        });
-      }
-
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: lineItems,
@@ -2537,7 +2521,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         },
         metadata: {
           includePromptPack: includePromptPack ? 'true' : 'false',
-          includeLaunchPack: includeLaunchPack ? 'true' : 'false',
           currency: currency
         }
       });
@@ -2588,49 +2571,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       res.json({ url: session.url });
     } catch (error: any) {
       console.error("Error creating prompt pack checkout session:", error);
-      res.status(500).json({ message: "Failed to create checkout session" });
-    }
-  });
-
-  // Stripe checkout - standalone Launch Pack purchase (for users who already have the challenge)
-  app.post("/api/launch-pack/checkout", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-
-    try {
-      const stripe = await getUncachableStripeClient();
-      const host = req.get('host');
-      const protocol = req.protocol;
-
-      // Price IDs for Launch Pack ($97 USD / £75 GBP)
-      // TODO: Create these products in Stripe and update with real price IDs
-      const launchPackPriceIds: Record<string, string> = {
-        usd: 'price_LAUNCH_PACK_USD', // TODO: Replace with real Stripe price ID
-        gbp: 'price_LAUNCH_PACK_GBP'  // TODO: Replace with real Stripe price ID
-      };
-
-      // Default to USD for standalone purchase
-      const priceId = launchPackPriceIds.usd;
-
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [{
-          price: priceId,
-          quantity: 1
-        }],
-        mode: 'payment',
-        success_url: `${protocol}://${host}/launch-pack?success=true`,
-        cancel_url: `${protocol}://${host}/launch-pack`,
-        metadata: {
-          userId: (req.user as any).id,
-          productType: 'launch_pack'
-        }
-      });
-
-      res.json({ url: session.url });
-    } catch (error: any) {
-      console.error("Error creating launch pack checkout session:", error);
       res.status(500).json({ message: "Failed to create checkout session" });
     }
   });
@@ -2873,9 +2813,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       if (session.metadata?.includePromptPack === 'true') {
         updateData.promptPackPurchased = true;
       }
-      if (session.metadata?.includeLaunchPack === 'true') {
-        updateData.launchPackPurchased = true;
-      }
 
       // Save Stripe customer ID for one-click upsells
       if (session.customer) {
@@ -2893,6 +2830,23 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         .set(updateData)
         .where(eq(users.id, (req.user as User).id));
 
+      // Track A/B test conversion if variant was assigned
+      const abVariantId = req.cookies?.ab_variant;
+      if (abVariantId) {
+        try {
+          const variantIdNum = parseInt(abVariantId);
+          const [variant] = await db.select().from(abVariants).where(eq(abVariants.id, variantIdNum));
+          if (variant) {
+            await db.update(abVariants)
+              .set({ conversions: (variant.conversions || 0) + 1 })
+              .where(eq(abVariants.id, variantIdNum));
+          }
+        } catch (abError) {
+          console.error('A/B conversion tracking error:', abError);
+          // Don't fail the purchase if A/B tracking fails
+        }
+      }
+
       // Send purchase confirmation email
       const user = req.user as User;
       const userEmail = (user as any).email;
@@ -2907,7 +2861,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           to: userEmail,
           firstName,
           includesPromptPack: updateData.promptPackPurchased || false,
-          includesLaunchPack: updateData.launchPackPurchased || false,
           currency,
           total
         }).catch(err => console.error('Email send error:', err));
@@ -2916,8 +2869,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       res.json({
         success: true,
         challengePurchased: true,
-        promptPackPurchased: updateData.promptPackPurchased || false,
-        launchPackPurchased: updateData.launchPackPurchased || false
+        promptPackPurchased: updateData.promptPackPurchased || false
       });
     } catch (error: any) {
       console.error("Error processing checkout success:", error);
@@ -3057,6 +3009,390 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       }
 
       res.status(500).json({ message: "Failed to process payment" });
+    }
+  });
+
+  // ==========================================
+  // A/B TESTING ROUTES
+  // ==========================================
+
+  // Public: Get active headline test and assign variant
+  app.get("/api/ab/active-headline", async (req, res) => {
+    try {
+      // Get active test
+      const activeTest = await db.select().from(abTests).where(eq(abTests.isActive, true)).limit(1);
+
+      if (activeTest.length === 0) {
+        return res.json({ hasTest: false });
+      }
+
+      const test = activeTest[0];
+
+      // Get all variants for this test
+      const variants = await db.select().from(abVariants).where(eq(abVariants.testId, test.id));
+
+      if (variants.length === 0) {
+        return res.json({ hasTest: false });
+      }
+
+      // Check if visitor already has a variant assigned (from cookie)
+      const existingVariantId = req.cookies?.ab_variant;
+      const existingVariant = existingVariantId
+        ? variants.find(v => v.id === parseInt(existingVariantId))
+        : null;
+
+      if (existingVariant) {
+        return res.json({
+          hasTest: true,
+          testId: test.id,
+          variantId: existingVariant.id,
+          headline: existingVariant.headline,
+          variantName: existingVariant.name
+        });
+      }
+
+      // Randomly assign a variant
+      const randomVariant = variants[Math.floor(Math.random() * variants.length)];
+
+      // Set cookie (30 day expiry)
+      res.cookie('ab_variant', randomVariant.id.toString(), {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax'
+      });
+
+      res.json({
+        hasTest: true,
+        testId: test.id,
+        variantId: randomVariant.id,
+        headline: randomVariant.headline,
+        variantName: randomVariant.name
+      });
+    } catch (error) {
+      console.error("Error fetching active headline test:", error);
+      res.status(500).json({ message: "Failed to fetch test" });
+    }
+  });
+
+  // Public: Track a view for a variant
+  app.post("/api/ab/track-view", async (req, res) => {
+    try {
+      const { variantId } = req.body;
+      if (!variantId) {
+        return res.status(400).json({ message: "Variant ID required" });
+      }
+
+      // Check if this visitor already viewed (using cookie)
+      const viewedKey = `ab_viewed_${variantId}`;
+      if (req.cookies?.[viewedKey]) {
+        return res.json({ success: true, alreadyTracked: true });
+      }
+
+      // Increment view count
+      const [variant] = await db.select().from(abVariants).where(eq(abVariants.id, variantId));
+      if (!variant) {
+        return res.status(404).json({ message: "Variant not found" });
+      }
+      await db.update(abVariants)
+        .set({ views: (variant.views || 0) + 1 })
+        .where(eq(abVariants.id, variantId));
+
+      // Set cookie to prevent duplicate view tracking
+      res.cookie(viewedKey, '1', {
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: 'lax'
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error tracking view:", error);
+      res.status(500).json({ message: "Failed to track view" });
+    }
+  });
+
+  // Admin: List all A/B tests with variants and stats
+  app.get("/api/admin/ab/tests", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const tests = await db.select().from(abTests).orderBy(abTests.createdAt);
+
+      // Get variants for each test
+      const testsWithVariants = await Promise.all(
+        tests.map(async (test) => {
+          const variants = await db.select().from(abVariants).where(eq(abVariants.testId, test.id));
+          const totalViews = variants.reduce((sum, v) => sum + (v.views || 0), 0);
+          const totalConversions = variants.reduce((sum, v) => sum + (v.conversions || 0), 0);
+          return {
+            ...test,
+            variants,
+            totalViews,
+            totalConversions,
+            overallConversionRate: totalViews > 0 ? ((totalConversions / totalViews) * 100).toFixed(2) : '0.00'
+          };
+        })
+      );
+
+      res.json(testsWithVariants);
+    } catch (error) {
+      console.error("Error fetching A/B tests:", error);
+      res.status(500).json({ message: "Failed to fetch tests" });
+    }
+  });
+
+  // Admin: Create a new A/B test
+  app.post("/api/admin/ab/tests", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { name, variants: variantData } = req.body;
+      if (!name || !variantData || !Array.isArray(variantData) || variantData.length < 2) {
+        return res.status(400).json({ message: "Name and at least 2 variants required" });
+      }
+
+      // Create the test
+      const [newTest] = await db.insert(abTests).values({ name }).returning();
+
+      // Create variants
+      const createdVariants = await Promise.all(
+        variantData.map(async (v: { name: string; headline: string }) => {
+          const [variant] = await db.insert(abVariants).values({
+            testId: newTest.id,
+            name: v.name,
+            headline: v.headline
+          }).returning();
+          return variant;
+        })
+      );
+
+      res.json({ ...newTest, variants: createdVariants });
+    } catch (error) {
+      console.error("Error creating A/B test:", error);
+      res.status(500).json({ message: "Failed to create test" });
+    }
+  });
+
+  // Admin: Update a test (toggle active, rename)
+  app.patch("/api/admin/ab/tests/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const testId = parseInt(req.params.id);
+      const { name, isActive } = req.body;
+
+      const updateData: Record<string, any> = { updatedAt: new Date() };
+      if (name !== undefined) updateData.name = name;
+      if (isActive !== undefined) {
+        // If activating this test, deactivate all others first
+        if (isActive) {
+          await db.update(abTests).set({ isActive: false });
+        }
+        updateData.isActive = isActive;
+      }
+
+      const [updated] = await db.update(abTests)
+        .set(updateData)
+        .where(eq(abTests.id, testId))
+        .returning();
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating A/B test:", error);
+      res.status(500).json({ message: "Failed to update test" });
+    }
+  });
+
+  // Admin: Delete a test
+  app.delete("/api/admin/ab/tests/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const testId = parseInt(req.params.id);
+      await db.delete(abTests).where(eq(abTests.id, testId));
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting A/B test:", error);
+      res.status(500).json({ message: "Failed to delete test" });
+    }
+  });
+
+  // Admin: Add variant to a test
+  app.post("/api/admin/ab/tests/:id/variants", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const testId = parseInt(req.params.id);
+      const { name, headline } = req.body;
+
+      if (!name || !headline) {
+        return res.status(400).json({ message: "Name and headline required" });
+      }
+
+      const [variant] = await db.insert(abVariants).values({
+        testId,
+        name,
+        headline
+      }).returning();
+
+      res.json(variant);
+    } catch (error) {
+      console.error("Error adding variant:", error);
+      res.status(500).json({ message: "Failed to add variant" });
+    }
+  });
+
+  // Admin: Update a variant
+  app.patch("/api/admin/ab/variants/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const variantId = parseInt(req.params.id);
+      const { name, headline } = req.body;
+
+      const updateData: Record<string, any> = {};
+      if (name !== undefined) updateData.name = name;
+      if (headline !== undefined) updateData.headline = headline;
+
+      const [updated] = await db.update(abVariants)
+        .set(updateData)
+        .where(eq(abVariants.id, variantId))
+        .returning();
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating variant:", error);
+      res.status(500).json({ message: "Failed to update variant" });
+    }
+  });
+
+  // Admin: Delete a variant
+  app.delete("/api/admin/ab/variants/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const variantId = parseInt(req.params.id);
+      await db.delete(abVariants).where(eq(abVariants.id, variantId));
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting variant:", error);
+      res.status(500).json({ message: "Failed to delete variant" });
+    }
+  });
+
+  // Admin: Reset stats for a test
+  app.post("/api/admin/ab/tests/:id/reset", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const testId = parseInt(req.params.id);
+      await db.update(abVariants)
+        .set({ views: 0, conversions: 0 })
+        .where(eq(abVariants.testId, testId));
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error resetting stats:", error);
+      res.status(500).json({ message: "Failed to reset stats" });
+    }
+  });
+
+  // Admin: Generate headline alternatives with AI
+  app.post("/api/admin/ab/generate-headlines", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { currentHeadline } = req.body;
+      if (!currentHeadline) {
+        return res.status(400).json({ message: "Current headline required" });
+      }
+
+      const prompt = `You are a world-class direct response copywriter with decades of experience writing high-converting sales headlines. You've studied the masters - Gary Halbert, David Ogilvy, Eugene Schwartz, and Claude Hopkins.
+
+Your task: Generate 5 alternative headlines for an A/B test. The current control headline is:
+
+"${currentHeadline}"
+
+This is for a product called "21 Day AI SaaS Challenge" - a course that teaches complete beginners how to build working software products using AI, without coding experience, in 21 days, for less than $100.
+
+Generate 5 distinctly different headline approaches. Consider:
+- Different emotional angles (fear, curiosity, aspiration, urgency)
+- Different structures (how-to, question, story, direct promise)
+- Different hooks (specificity, social proof, contrarian, news)
+
+Return ONLY a JSON array of 5 strings, nothing else. Each headline should be compelling, specific, and testable against the control.
+
+Example format:
+["Headline 1...", "Headline 2...", "Headline 3...", "Headline 4...", "Headline 5..."]`;
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.9,
+        max_tokens: 1000,
+      });
+
+      const content = response.choices[0]?.message?.content || "[]";
+
+      // Parse the JSON array from the response
+      let headlines: string[] = [];
+      try {
+        // Try to extract JSON array from the response
+        const jsonMatch = content.match(/\[[\s\S]*\]/);
+        if (jsonMatch) {
+          headlines = JSON.parse(jsonMatch[0]);
+        }
+      } catch (parseError) {
+        console.error("Failed to parse headlines:", parseError);
+        return res.status(500).json({ message: "Failed to parse generated headlines" });
+      }
+
+      if (!Array.isArray(headlines) || headlines.length === 0) {
+        return res.status(500).json({ message: "No headlines generated" });
+      }
+
+      res.json({ headlines: headlines.slice(0, 5) });
+    } catch (error) {
+      console.error("Error generating headlines:", error);
+      res.status(500).json({ message: "Failed to generate headlines" });
     }
   });
 

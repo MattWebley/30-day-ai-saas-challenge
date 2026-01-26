@@ -575,12 +575,12 @@ Don't change the layout or functionality - just the visual styling. Work through
           </div>
 
           {/* Warning */}
-          <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+          <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="w-5 h-5 text-slate-600 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="font-bold text-amber-900">Heads Up: This Takes Iteration</p>
-                <p className="text-amber-800 text-sm mt-1">
+                <p className="font-bold text-slate-900">Heads Up: This Takes Iteration</p>
+                <p className="text-slate-700 text-sm mt-1">
                   Design changes often need several Build-Test-Fix loops. Claude will make changes, you'll test them, and you'll tell it what to adjust. This is normal - don't expect perfection on the first try!
                 </p>
               </div>

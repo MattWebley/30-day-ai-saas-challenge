@@ -49,7 +49,6 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
   const { stats } = useUserStats();
   const { testMode, setTestMode } = useTestMode();
   const { user } = useAuth();
-  const hasLaunchPack = (user as any)?.launchPackPurchased === true;
 
   const challengeDays = Array.isArray(allDays) ? allDays : [];
   const completedDays = new Set(
@@ -106,9 +105,9 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
             <img
-              src="/logo.png"
+              src="/logo.png?v=3"
               alt="21 Day AI SaaS Challenge"
-              className="h-10 w-auto object-contain"
+              className="h-16 w-auto object-contain"
               style={{ imageRendering: 'auto' }}
             />
           </div>
@@ -383,63 +382,24 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 </Tooltip>
               </TooltipProvider>
             )}
-            {hasLaunchPack ? (
-              <Link href="/launch-pack" onClick={handleNavClick}>
+          </div>
+
+          {/* Admin - only visible to admins */}
+          {(user as any)?.isAdmin && (
+            <div className="space-y-1">
+              <Link href="/admin" onClick={handleNavClick}>
                 <span className={cn(
-                  "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                  location === "/launch-pack"
+                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                  location === "/admin"
                     ? "bg-sidebar-accent text-sidebar-accent-foreground"
                     : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                 )}>
-                  <div className="flex items-center gap-3">
-                    <Rocket className="w-4 h-4" />
-                    Launch Pack
-                  </div>
-                  <Unlock className="w-3 h-3 text-muted-foreground" />
+                  <Shield className="w-4 h-4" />
+                  Admin Panel
                 </span>
               </Link>
-            ) : (
-              <TooltipProvider delayDuration={300}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Link href="/launch-pack" onClick={handleNavClick}>
-                      <span className={cn(
-                        "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                        location === "/launch-pack"
-                          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                          : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-                      )}>
-                        <div className="flex items-center gap-3">
-                          <Rocket className="w-4 h-4" />
-                          Launch Pack
-                        </div>
-                        <Lock className="w-3 h-3 text-muted-foreground" />
-                      </span>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    <p className="font-medium">Premium Add-On</p>
-                    <p className="text-slate-500">Templates, checklists, and resources for launch</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
-          </div>
-
-          {/* Admin */}
-          <div className="space-y-1">
-            <Link href="/admin" onClick={handleNavClick}>
-              <span className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                location === "/admin"
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-              )}>
-                <Shield className="w-4 h-4" />
-                Admin Panel
-              </span>
-            </Link>
-          </div>
+            </div>
+          )}
 
           {/* Days grouped by milestone sections */}
           {[

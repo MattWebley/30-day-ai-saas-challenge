@@ -456,14 +456,14 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
       {/* Step 3: Confirm */}
       {step === "confirm" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
+          <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-xl text-green-900">Logo Created!</h4>
-                <p className="text-green-700">
+                <h4 className="font-bold text-xl text-green-600">Logo Created!</h4>
+                <p className="text-slate-700">
                   Your app now has a face.
                 </p>
               </div>

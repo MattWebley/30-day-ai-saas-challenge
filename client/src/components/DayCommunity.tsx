@@ -303,9 +303,9 @@ function DiscussionSection({ day, isAdmin }: { day: number; isAdmin: boolean }) 
         </form>
 
         {pendingMessage && (
-          <div className="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-amber-700">{pendingMessage}</p>
+          <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-lg flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-slate-500 mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-slate-700">{pendingMessage}</p>
           </div>
         )}
 

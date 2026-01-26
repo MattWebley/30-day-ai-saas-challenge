@@ -48,7 +48,6 @@ export interface EmailParams {
 
 export interface PurchaseEmailParams extends EmailParams {
   includesPromptPack?: boolean;
-  includesLaunchPack?: boolean;
   currency: 'usd' | 'gbp';
   total: number;
 }
@@ -59,13 +58,12 @@ export interface CoachingEmailParams extends EmailParams {
 }
 
 export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams): Promise<void> {
-  const { to, firstName, includesPromptPack, includesLaunchPack, currency, total } = params;
+  const { to, firstName, includesPromptPack, currency, total } = params;
 
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
   const addOns = [];
   if (includesPromptPack) addOns.push('Sales Letter Pack');
-  if (includesLaunchPack) addOns.push('Launch & Marketing Playbook');
 
   const addOnsList = addOns.length > 0
     ? `<p style="margin: 0 0 8px 0;"><strong>Add-ons:</strong> ${addOns.join(', ')}</p>`

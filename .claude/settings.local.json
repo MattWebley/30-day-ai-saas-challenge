@@ -74,7 +74,10 @@
       "Bash(for file in /home/runner/workspace/client/src/components/Day*.tsx)",
       "Bash(xxd:*)",
       "Bash(test:*)",
-      "Bash(printf:*)"
+      "Bash(printf:*)",
+      "Bash(for f in Day20GoingLive Day20BrandBeauty Day20LaunchPlan Day7ReplitBuild Day9RealityCheck Day11AddSuperpowers Day17Onboarding)",
+      "Bash(do grep -l \"export.*$f\" /home/runner/workspace/client/src/components/*.tsx)",
+      "Bash(done)"
     ]
   }
 }

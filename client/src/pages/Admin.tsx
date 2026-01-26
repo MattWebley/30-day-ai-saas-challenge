@@ -29,10 +29,19 @@ import {
   Star,
   ExternalLink,
   Heart,
-  Video
+  Video,
+  FlaskConical,
+  Plus,
+  Trash2,
+  Play,
+  Pause,
+  RotateCcw,
+  Pencil,
+  Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import { Textarea } from "@/components/ui/textarea";
 
 interface PendingComment {
   id: number;
@@ -135,6 +144,26 @@ interface TestimonialEntry {
   };
 }
 
+interface AbVariant {
+  id: number;
+  testId: number;
+  name: string;
+  headline: string;
+  views: number;
+  conversions: number;
+}
+
+interface AbTest {
+  id: number;
+  name: string;
+  isActive: boolean;
+  createdAt: string;
+  variants: AbVariant[];
+  totalViews: number;
+  totalConversions: number;
+  overallConversionRate: string;
+}
+
 const FONT_OPTIONS = [
   "Poppins",
   "Inter",
@@ -148,7 +177,34 @@ const FONT_OPTIONS = [
 
 export default function Admin() {
   const queryClient = useQueryClient();
-  
+
+  // Check if user is admin - use the same pattern as server routes
+  const { data: currentUser } = useQuery({
+    queryKey: ["/api/user"],
+    queryFn: async () => {
+      const res = await fetch("/api/user", { credentials: "include" });
+      if (!res.ok) return null;
+      return res.json();
+    },
+  });
+
+  // If user is not admin, show access denied
+  if (currentUser && !currentUser.isAdmin) {
+    return (
+      <Layout currentDay={1}>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Card className="p-8 text-center max-w-md">
+            <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle className="w-8 h-8 text-red-600" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
+            <p className="text-slate-600">You don't have permission to access the admin panel.</p>
+          </Card>
+        </div>
+      </Layout>
+    );
+  }
+
   const { data: brandSettings } = useQuery<BrandSettings>({
     queryKey: ["/api/brand-settings"],
   });
@@ -244,6 +300,123 @@ export default function Admin() {
 
   const { data: testimonials = [] } = useQuery<TestimonialEntry[]>({
     queryKey: ["/api/admin/testimonials"],
+  });
+
+  // A/B Testing state
+  const DEFAULT_HEADLINE = "How Complete Beginners Are Using AI to Build Real, Working Software Products in 21 Days for Less Than $100...";
+  const [showAbTestSection, setShowAbTestSection] = useState(true);
+  const [isCreatingTest, setIsCreatingTest] = useState(false);
+  const [newTestName, setNewTestName] = useState("");
+  const [newVariantA, setNewVariantA] = useState(DEFAULT_HEADLINE);
+  const [newVariantB, setNewVariantB] = useState("");
+  const [editingVariant, setEditingVariant] = useState<number | null>(null);
+  const [editingHeadline, setEditingHeadline] = useState("");
+  const [generatedHeadlines, setGeneratedHeadlines] = useState<string[]>([]);
+  const [isGeneratingHeadlines, setIsGeneratingHeadlines] = useState(false);
+
+  const { data: abTests = [] } = useQuery<AbTest[]>({
+    queryKey: ["/api/admin/ab/tests"],
+  });
+
+  const createAbTest = useMutation({
+    mutationFn: async (data: { name: string; variants: { name: string; headline: string }[] }) => {
+      const res = await apiRequest("POST", "/api/admin/ab/tests", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/ab/tests"] });
+      setIsCreatingTest(false);
+      setNewTestName("");
+      setNewVariantA(DEFAULT_HEADLINE);
+      setNewVariantB("");
+      setGeneratedHeadlines([]);
+      toast.success("A/B test created!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create test");
+    },
+  });
+
+  const generateHeadlines = async () => {
+    setIsGeneratingHeadlines(true);
+    try {
+      const res = await apiRequest("POST", "/api/admin/ab/generate-headlines", {
+        currentHeadline: newVariantA,
+      });
+      const data = await res.json();
+      console.log("Generate headlines response:", data);
+      if (data.headlines && Array.isArray(data.headlines) && data.headlines.length > 0) {
+        setGeneratedHeadlines(data.headlines);
+        toast.success("Generated 5 headline alternatives!");
+      } else if (data.message) {
+        toast.error(data.message);
+      } else {
+        toast.error("No headlines were generated. Please try again.");
+      }
+    } catch (error: any) {
+      console.error("Generate headlines error:", error);
+      toast.error(error.message || "Failed to generate headlines");
+    } finally {
+      setIsGeneratingHeadlines(false);
+    }
+  };
+
+  const toggleAbTest = useMutation({
+    mutationFn: async ({ id, isActive }: { id: number; isActive: boolean }) => {
+      const res = await apiRequest("PATCH", `/api/admin/ab/tests/${id}`, { isActive });
+      return res.json();
+    },
+    onSuccess: (_, { isActive }) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/ab/tests"] });
+      toast.success(isActive ? "Test activated!" : "Test paused");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to toggle test");
+    },
+  });
+
+  const deleteAbTest = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("DELETE", `/api/admin/ab/tests/${id}`, {});
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/ab/tests"] });
+      toast.success("Test deleted");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete test");
+    },
+  });
+
+  const resetAbTestStats = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("POST", `/api/admin/ab/tests/${id}/reset`, {});
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/ab/tests"] });
+      toast.success("Stats reset to zero");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to reset stats");
+    },
+  });
+
+  const updateVariant = useMutation({
+    mutationFn: async ({ id, headline }: { id: number; headline: string }) => {
+      const res = await apiRequest("PATCH", `/api/admin/ab/variants/${id}`, { headline });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/ab/tests"] });
+      setEditingVariant(null);
+      setEditingHeadline("");
+      toast.success("Headline updated!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to update headline");
+    },
   });
 
   const toggleTestimonialFeatured = useMutation({
@@ -447,6 +620,313 @@ export default function Admin() {
             </div>
           </div>
         </Card>
+
+        {/* A/B Testing Section */}
+        <div className="space-y-4">
+          <button
+            onClick={() => setShowAbTestSection(!showAbTestSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <FlaskConical className="w-6 h-6 text-purple-600" />
+            <h2 className="text-xl font-bold text-slate-900">A/B Headline Testing</h2>
+            {abTests.some(t => t.isActive) && (
+              <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+                Test Running
+              </span>
+            )}
+            {showAbTestSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showAbTestSection && (
+            <div className="space-y-4">
+              {/* Create New Test */}
+              {!isCreatingTest ? (
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCreatingTest(true)}
+                  className="w-full border-dashed"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create New Headline Test
+                </Button>
+              ) : (
+                <Card className="p-4 border-2 border-purple-200">
+                  <h3 className="font-bold text-slate-900 mb-4">New Headline Test</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <Label>Test Name</Label>
+                      <Input
+                        value={newTestName}
+                        onChange={(e) => setNewTestName(e.target.value)}
+                        placeholder="e.g., January 2026 Headline Test"
+                      />
+                    </div>
+                    <div>
+                      <Label>Variant A (Control)</Label>
+                      <Textarea
+                        value={newVariantA}
+                        onChange={(e) => setNewVariantA(e.target.value)}
+                        placeholder="Enter the first headline..."
+                        rows={3}
+                      />
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <Label>Variant B (Test)</Label>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={generateHeadlines}
+                          disabled={isGeneratingHeadlines}
+                        >
+                          {isGeneratingHeadlines ? (
+                            <>
+                              <span className="w-3 h-3 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin mr-2" />
+                              Generating...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-3 h-3 mr-2" />
+                              Generate with AI
+                            </>
+                          )}
+                        </Button>
+                      </div>
+
+                      {generatedHeadlines.length > 0 && (
+                        <div className="mb-3 space-y-2">
+                          <p className="text-xs text-slate-500 font-medium">Click to use:</p>
+                          {generatedHeadlines.map((headline, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => setNewVariantB(headline)}
+                              className={`w-full text-left p-2 text-sm rounded border transition-colors ${
+                                newVariantB === headline
+                                  ? 'border-primary bg-primary/5 text-slate-900'
+                                  : 'border-slate-200 hover:border-slate-300 text-slate-700'
+                              }`}
+                            >
+                              {headline}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      <Textarea
+                        value={newVariantB}
+                        onChange={(e) => setNewVariantB(e.target.value)}
+                        placeholder="Enter the alternative headline or generate with AI..."
+                        rows={3}
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => {
+                          if (!newTestName || !newVariantA || !newVariantB) {
+                            toast.error("Please fill in all fields");
+                            return;
+                          }
+                          createAbTest.mutate({
+                            name: newTestName,
+                            variants: [
+                              { name: "A", headline: newVariantA },
+                              { name: "B", headline: newVariantB },
+                            ],
+                          });
+                        }}
+                        disabled={createAbTest.isPending}
+                      >
+                        Create Test
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsCreatingTest(false);
+                          setNewTestName("");
+                          setNewVariantA(DEFAULT_HEADLINE);
+                          setNewVariantB("");
+                          setGeneratedHeadlines([]);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              {/* Existing Tests */}
+              {abTests.length === 0 && !isCreatingTest ? (
+                <Card className="p-8 border-2 border-slate-100 text-center">
+                  <FlaskConical className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">No headline tests yet</p>
+                  <p className="text-slate-400 text-sm mt-1">Create a test to compare different headlines on your sales page</p>
+                </Card>
+              ) : (
+                abTests.map((test) => (
+                  <Card key={test.id} className={`p-4 border-2 ${test.isActive ? 'border-green-300 bg-green-50/50' : 'border-slate-100'}`}>
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-bold text-slate-900">{test.name}</h3>
+                          {test.isActive && (
+                            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                              Live
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-slate-500">
+                          {test.totalViews} views · {test.totalConversions} conversions · {test.overallConversionRate}% overall
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant={test.isActive ? "outline" : "default"}
+                          onClick={() => toggleAbTest.mutate({ id: test.id, isActive: !test.isActive })}
+                          disabled={toggleAbTest.isPending}
+                        >
+                          {test.isActive ? (
+                            <>
+                              <Pause className="w-3 h-3 mr-1" /> Pause
+                            </>
+                          ) : (
+                            <>
+                              <Play className="w-3 h-3 mr-1" /> Start
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            if (confirm("Reset all stats to zero?")) {
+                              resetAbTestStats.mutate(test.id);
+                            }
+                          }}
+                        >
+                          <RotateCcw className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-red-600 hover:text-red-700"
+                          onClick={() => {
+                            if (confirm("Delete this test? This cannot be undone.")) {
+                              deleteAbTest.mutate(test.id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Variants */}
+                    <div className="space-y-3">
+                      {test.variants.map((variant) => {
+                        const conversionRate = variant.views > 0
+                          ? ((variant.conversions / variant.views) * 100).toFixed(2)
+                          : "0.00";
+                        const isWinning = test.variants.length > 1 &&
+                          variant.views > 10 &&
+                          parseFloat(conversionRate) === Math.max(...test.variants.map(v =>
+                            v.views > 10 ? (v.conversions / v.views) * 100 : 0
+                          ));
+
+                        return (
+                          <div
+                            key={variant.id}
+                            className={`p-3 rounded-lg border ${isWinning ? 'border-green-300 bg-green-50' : 'border-slate-200 bg-white'}`}
+                          >
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
+                                    variant.name === 'A' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                                  }`}>
+                                    {variant.name}
+                                  </span>
+                                  {isWinning && (
+                                    <span className="text-xs font-bold text-green-600 flex items-center gap-1">
+                                      <Trophy className="w-3 h-3" /> Leading
+                                    </span>
+                                  )}
+                                </div>
+                                {editingVariant === variant.id ? (
+                                  <div className="space-y-2">
+                                    <Textarea
+                                      value={editingHeadline}
+                                      onChange={(e) => setEditingHeadline(e.target.value)}
+                                      rows={3}
+                                    />
+                                    <div className="flex gap-2">
+                                      <Button
+                                        size="sm"
+                                        onClick={() => updateVariant.mutate({ id: variant.id, headline: editingHeadline })}
+                                        disabled={updateVariant.isPending}
+                                      >
+                                        Save
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => {
+                                          setEditingVariant(null);
+                                          setEditingHeadline("");
+                                        }}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <p className="text-sm text-slate-700">{variant.headline}</p>
+                                )}
+                              </div>
+                              {editingVariant !== variant.id && (
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setEditingVariant(variant.id);
+                                    setEditingHeadline(variant.headline);
+                                  }}
+                                >
+                                  <Pencil className="w-3 h-3" />
+                                </Button>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-4 mt-2 text-sm">
+                              <span className="text-slate-500">
+                                <Eye className="w-3 h-3 inline mr-1" />
+                                {variant.views} views
+                              </span>
+                              <span className="text-slate-500">
+                                <CheckCircle2 className="w-3 h-3 inline mr-1" />
+                                {variant.conversions} conversions
+                              </span>
+                              <span className={`font-bold ${isWinning ? 'text-green-600' : 'text-slate-700'}`}>
+                                {conversionRate}%
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </Card>
+                ))
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Comment Approval Queue */}
         <div className="space-y-4">

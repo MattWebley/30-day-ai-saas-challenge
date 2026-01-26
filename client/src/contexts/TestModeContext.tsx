@@ -6,12 +6,12 @@ interface TestModeContextType {
 }
 
 const TestModeContext = createContext<TestModeContextType>({
-  testMode: true, // Default ON until launch
+  testMode: false,
   setTestMode: () => {},
 });
 
 export function TestModeProvider({ children }: { children: ReactNode }) {
-  const [testMode, setTestMode] = useState(true); // Default ON until launch
+  const [testMode, setTestMode] = useState(false);
   
   return (
     <TestModeContext.Provider value={{ testMode, setTestMode }}>

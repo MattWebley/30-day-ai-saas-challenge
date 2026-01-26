@@ -219,7 +219,7 @@ export function Day13ExternalAPIs({ appName, onComplete }: Day13ExternalAPIsProp
                 href="https://resend.com/api-keys"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 font-medium"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium"
               >
                 Get API Key <ExternalLink className="w-4 h-4" />
               </a>
@@ -262,13 +262,13 @@ export function Day13ExternalAPIs({ appName, onComplete }: Day13ExternalAPIsProp
             </div>
 
             <div className="space-y-4">
-              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                <p className="font-bold text-green-800 mb-2">THE EASY WAY</p>
-                <p className={ds.body + " text-green-800 mb-3"}>
+              <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4">
+                <p className="font-bold text-slate-800 mb-2">THE EASY WAY</p>
+                <p className={ds.body + " text-slate-700 mb-3"}>
                   Tell Replit Agent...
                 </p>
                 <div className="relative">
-                  <pre className="bg-white p-3 rounded-lg text-sm font-mono border border-green-200 whitespace-pre-wrap text-slate-800">
+                  <pre className="bg-white p-3 rounded-lg text-sm font-mono border border-slate-200 whitespace-pre-wrap text-slate-800">
 {`Add a secret called RESEND_API_KEY with the value: [paste your key here]`}
                   </pre>
                   <Button
@@ -454,9 +454,9 @@ Send from: onboarding@resend.dev`}
               </div>
 
               {emailReceived && (
-                <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                  <p className="font-bold text-green-800 mb-2">Your API is working!</p>
-                  <p className={ds.body + " text-green-800"}>
+                <div className="bg-white border-2 border-slate-200 rounded-lg p-4">
+                  <p className="font-bold text-green-600 mb-2">Your API is working!</p>
+                  <p className={ds.body}>
                     You can now send emails from your app. Welcome emails, notifications, receipts... whatever you need.
                   </p>
                 </div>

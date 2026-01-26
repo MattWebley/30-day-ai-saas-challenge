@@ -9,16 +9,14 @@ export default function Order() {
   const { isAuthenticated, isLoading } = useAuth();
   const [selectedCurrency, setSelectedCurrency] = useState<'usd' | 'gbp'>('usd');
   const [includePromptPack, setIncludePromptPack] = useState(false);
-  const [includeLaunchPack, setIncludeLaunchPack] = useState(false);
 
   const pricing = {
-    usd: { symbol: '$', amount: 399, code: 'USD', promptPack: 49, launchPack: 97 },
-    gbp: { symbol: '£', amount: 295, code: 'GBP', promptPack: 39, launchPack: 75 }
+    usd: { symbol: '$', amount: 399, code: 'USD', promptPack: 49 },
+    gbp: { symbol: '£', amount: 295, code: 'GBP', promptPack: 39 }
   };
 
   const total = pricing[selectedCurrency].amount
-    + (includePromptPack ? pricing[selectedCurrency].promptPack : 0)
-    + (includeLaunchPack ? pricing[selectedCurrency].launchPack : 0);
+    + (includePromptPack ? pricing[selectedCurrency].promptPack : 0);
 
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
@@ -33,7 +31,7 @@ export default function Order() {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currency: selectedCurrency, includePromptPack, includeLaunchPack }),
+        body: JSON.stringify({ currency: selectedCurrency, includePromptPack }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
@@ -154,14 +152,6 @@ export default function Order() {
                     </span>
                   </div>
                 )}
-                {includeLaunchPack && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-700">Launch & Marketing Playbook</span>
-                    <span className="font-bold text-slate-900">
-                      {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].launchPack}
-                    </span>
-                  </div>
-                )}
                 <div className="border-t border-slate-200 pt-3 flex items-center justify-between">
                   <span className="font-bold text-slate-900">Total Today</span>
                   <span className="text-2xl font-extrabold text-slate-900">
@@ -210,34 +200,6 @@ export default function Order() {
               </div>
             </div>
 
-            {/* Bump Offer - Launch Pack */}
-            <div
-              onClick={() => setIncludeLaunchPack(!includeLaunchPack)}
-              className={`relative p-4 rounded-xl border-2 border-dashed cursor-pointer transition-all ${
-                includeLaunchPack
-                  ? 'border-amber-400 bg-amber-50'
-                  : 'border-amber-300 bg-amber-50/50 hover:bg-amber-50'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 transition-all ${
-                  includeLaunchPack
-                    ? 'bg-amber-500 border-amber-500'
-                    : 'border-slate-300 bg-white'
-                }`}>
-                  {includeLaunchPack && <Check className="w-3 h-3 text-white" />}
-                </div>
-                <div className="flex-1">
-                  <p className="font-bold text-slate-900 text-sm">
-                    YES! Add the Launch & Marketing Playbook (68 Strategies)
-                  </p>
-                  <p className="text-sm text-slate-600 mt-1">
-                    The challenge gets you to a working product. This playbook shows you exactly how to launch it and get paying customers: launch tactics, marketing channels, sales strategies, and growth systems.
-                    <span className="font-bold text-amber-600 ml-1">Just {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].launchPack}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
 
             {/* Error Message */}
             {checkoutError && (

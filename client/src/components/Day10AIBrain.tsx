@@ -190,7 +190,7 @@ export function Day10AIBrain({ userIdea, onComplete }: Day10AIBrainProps) {
                 href="https://platform.openai.com/api-keys"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 font-medium"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium"
               >
                 Get API Key <ExternalLink className="w-4 h-4" />
               </a>
@@ -234,9 +234,9 @@ export function Day10AIBrain({ userIdea, onComplete }: Day10AIBrainProps) {
 
             <div className="space-y-4">
               {/* EASY WAY */}
-              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                <p className="font-bold text-green-800 mb-2">THE EASY WAY (Recommended)</p>
-                <p className={ds.body + " text-green-800 mb-3"}>
+              <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4">
+                <p className="font-bold text-slate-800 mb-2">THE EASY WAY (Recommended)</p>
+                <p className={ds.body + " text-slate-700 mb-3"}>
                   Just tell Replit Agent in plain English:
                 </p>
                 <div className="relative">

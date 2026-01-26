@@ -183,8 +183,8 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
               Ask Replit Agent: "Does my app have user authentication? Can users sign up, log in, and see only their own data?"
             </p>
 
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-6">
-              <p className="text-blue-800 text-sm">
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg mb-6">
+              <p className="text-slate-700 text-sm">
                 <strong>Good news:</strong> Replit often adds auth automatically when you build. Check before adding it again!
               </p>
             </div>

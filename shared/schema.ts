@@ -447,3 +447,38 @@ export const testimonialsRelations = relations(testimonials, ({ one }) => ({
 
 export type Testimonial = typeof testimonials.$inferSelect;
 export type InsertTestimonial = typeof testimonials.$inferInsert;
+
+// A/B Testing - headline tests
+export const abTests = pgTable("ab_tests", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(), // e.g., "Homepage Headline Test"
+  isActive: boolean("is_active").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type AbTest = typeof abTests.$inferSelect;
+export type InsertAbTest = typeof abTests.$inferInsert;
+
+// A/B Test Variants
+export const abVariants = pgTable("ab_variants", {
+  id: serial("id").primaryKey(),
+  testId: integer("test_id").notNull().references(() => abTests.id, { onDelete: "cascade" }),
+  name: varchar("name").notNull(), // e.g., "A", "B", "Control"
+  headline: text("headline").notNull(),
+  views: integer("views").default(0), // Unique visitor count
+  conversions: integer("conversions").default(0), // Purchase count
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("ab_variants_test_id_idx").on(table.testId),
+]);
+
+export const abVariantsRelations = relations(abVariants, ({ one }) => ({
+  test: one(abTests, {
+    fields: [abVariants.testId],
+    references: [abTests.id],
+  }),
+}));
+
+export type AbVariant = typeof abVariants.$inferSelect;
+export type InsertAbVariant = typeof abVariants.$inferInsert;

@@ -115,15 +115,15 @@ Use the RESEND_API_KEY from secrets.`;
                 </ol>
               </div>
 
-              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <Key className="w-5 h-5 text-amber-600 mt-0.5" />
+                  <Key className="w-5 h-5 text-slate-600 mt-0.5" />
                   <div>
-                    <p className="font-bold text-amber-900">Add to Replit Secrets</p>
-                    <p className="text-amber-800 text-sm mt-1">
+                    <p className="font-bold text-slate-900">Add to Replit Secrets</p>
+                    <p className="text-slate-700 text-sm mt-1">
                       In your Replit project, go to Secrets (lock icon). Add
                     </p>
-                    <code className="block mt-2 p-2 bg-amber-100 rounded text-sm text-amber-900">
+                    <code className="block mt-2 p-2 bg-slate-100 rounded text-sm text-slate-900">
                       Name: RESEND_API_KEY<br/>
                       Value: [your API key]
                     </code>
@@ -191,8 +191,8 @@ Use the RESEND_API_KEY from secrets.`;
               </ul>
             </div>
 
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
-              <p className="text-blue-800 text-sm">
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg mb-4">
+              <p className="text-slate-700 text-sm">
                 <strong>Example:</strong> "Hey [Name]! Welcome to {appName || "[App]"}. You're all set up and ready to go. Click here to [do the main thing]. If you have any questions, just reply to this email."
               </p>
             </div>
