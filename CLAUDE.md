@@ -107,12 +107,14 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-26 (Day 21 Growth Strategies Expansion + Congratulations Page)
+- **Last Session**: 2026-01-26 (Cleanup, Admin Restriction, Design System Fixes)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
 - [x] **Set up Stripe** - DONE: Keys added, checkout working
+- [x] **Test Mode** - DONE: Defaults to false, toggle moved to Admin panel
+- [x] **Launch Pack** - REMOVED: Entire feature removed (sidebar, checkout, server routes)
 - [ ] Test AI Mentor chat bot (check browser console)
 - [ ] Test Showcase feature end-to-end
 - [ ] Test Day 0 → Day 1 → Day 2 flow
@@ -120,9 +122,8 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx
 - [ ] Add coaching call booking links (Days 1-7, 19-21)
 - [ ] Enable "Book a Call" button in Day 2 (needs Calendly link)
-- [ ] Before launch: Set testMode to false in TestModeContext.tsx
 - [ ] Add VSL video (placeholder added, needs actual video/thumbnail)
-- [ ] Consider adding a cheaper bump offer ($27-67 range) for higher conversion
+- [ ] Add real Stripe price IDs for: Prompt Pack, Coaching tiers, Critique
 
 ### PRE-LAUNCH BLOCKERS (DO THESE BEFORE GOING LIVE)
 - [ ] **CRITICAL: Set up Systeme.io waitlist autoresponder** - Day 21 "Join the Waitlist" button links to `challenge.mattwebley.com/waitlist` which currently 404s
@@ -368,3 +369,70 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test /congratulations page appearance
   - Add actual video to Congratulations page when ready
   - User considering AI marketing as a service offering (monthly subscription)
+
+### 2026-01-26 (Session 2) - Cleanup, Admin Restriction, Design System Fixes
+- **Tasks Completed:**
+  - **Day 0 Journey Fix:** Updated milestones to show full 21-day journey (was stopping at Day 19)
+    - Now shows: Start → Idea → Prepare → Build → Launch → Done!
+  - **AI Headline Generation Fix:** Added error handling and console logging for A/B test variant generation
+  - **Launch Pack Removed Entirely:**
+    - Removed from Sidebar (link and hasLaunchPack check)
+    - Removed bump offer from Order page
+    - Removed `/launch-pack` route from App.tsx
+    - Deleted `LaunchPack.tsx` page component
+    - Cleaned up server routes (`/api/launch-pack/checkout`, bump offer logic)
+    - Cleaned up webhookHandlers.ts (Launch Pack purchase handling)
+    - Cleaned up emailService.ts (Launch Pack parameter)
+  - **Orphaned Components Deleted:** (7 files)
+    - Day7ReplitBuild.tsx, Day9RealityCheck.tsx, Day11AddSuperpowers.tsx
+    - Day17Onboarding.tsx, Day20LaunchPlan.tsx, Day20BrandBeauty.tsx, Day20GoingLive.tsx
+  - **Test Mode:**
+    - Changed default from `true` to `false` in TestModeContext.tsx
+    - Removed floating toggle from App.tsx
+    - Added Test Mode toggle to Admin panel (only admins can access)
+  - **Admin Panel Restriction:**
+    - Sidebar: Admin link only shows for users with `isAdmin: true`
+    - Admin page: Added "Access Denied" screen for non-admin users
+  - **Mobile Fixes:**
+    - Logo cache busting updated to `?v=3` on all references
+    - Hidden "Start the Challenge" button in header on mobile (was clashing with logo)
+  - **Landing Page Design Improvements:**
+    - Added subtle gradient background to hero section
+    - Added shadow to dark callout box
+    - Added shadow/glow effect to CTA buttons
+  - **Design System Fixes (Partial):**
+    - Fixed colored backgrounds in: DayCommunity, Day10AIBrain, Day11BrandDesign, Day5Logo, Day13ExternalAPIs, Day13ReachYourUsers, Day12LetUsersIn (partial)
+    - Changed `bg-amber-50`, `bg-blue-50`, `bg-green-50` → `bg-slate-50`
+    - Changed amber/blue/green buttons → `bg-primary`
+- **Files Deleted:**
+  - `client/src/pages/LaunchPack.tsx`
+  - `client/src/components/Day7ReplitBuild.tsx`
+  - `client/src/components/Day9RealityCheck.tsx`
+  - `client/src/components/Day11AddSuperpowers.tsx`
+  - `client/src/components/Day17Onboarding.tsx`
+  - `client/src/components/Day20LaunchPlan.tsx`
+  - `client/src/components/Day20BrandBeauty.tsx`
+  - `client/src/components/Day20GoingLive.tsx`
+- **Files Modified:**
+  - `client/src/App.tsx` - Removed LaunchPack route, removed TestModeToggle
+  - `client/src/components/layout/Sidebar.tsx` - Removed Launch Pack, admin-only Admin link, logo cache bust
+  - `client/src/components/layout/Layout.tsx` - Logo cache bust
+  - `client/src/pages/Landing.tsx` - Logo cache bust, hidden mobile CTA, design improvements
+  - `client/src/pages/Order.tsx` - Removed Launch Pack bump offer
+  - `client/src/pages/Admin.tsx` - Added access control, Test Mode toggle
+  - `client/src/contexts/TestModeContext.tsx` - Default to false
+  - `client/src/components/Day0StartHere.tsx` - Fixed journey milestones
+  - `server/routes.ts` - Removed Launch Pack checkout and references
+  - `server/webhookHandlers.ts` - Removed Launch Pack handling
+  - `server/emailService.ts` - Removed Launch Pack parameter
+  - Multiple Day components - Design system fixes
+- **Remaining Design System Violations:**
+  - Day0StartHere.tsx, Day11Brand.tsx, Day12LetUsersIn.tsx (partial)
+  - Day17BuildItOut.tsx, Day18TestEverything.tsx, Day19MobileReady.tsx
+  - Day19TheSalesMachine.tsx, Day20GetFound.tsx, Day21LaunchDay.tsx
+  - FocusButton.tsx, DayCompletionModal.tsx
+- **Notes for Next Session:**
+  - Mobile logo: User may need to clear browser cache if still seeing old logo
+  - Continue design system fixes on remaining Day components
+  - Add real Stripe price IDs for add-on products
+  - Set up external pages (mattwebley.com/readiness, challenge.mattwebley.com/waitlist)
