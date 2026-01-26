@@ -413,3 +413,73 @@ This file contains archived session logs from CLAUDE.md to keep the main file un
   - Test URL analyzer with various websites (restart server first)
   - Test all 8 design personality options
   - Continue testing Days 12+ onwards
+
+---
+
+## Archived Sessions (Jan 22-23, 2026)
+
+### 2026-01-22 - Day 12-13 Overhaul & Colon Cleanup
+- **Tasks Completed:**
+  - **Day 12 (AI Brain):** Restyled to match Days 9-11 design pattern using `ds` design system and `useStepWithScroll` hook
+  - **Day 12:** Simplified test section to minimal checkbox ("My AI feature is working") with optional notes
+  - **Day 12:** Replaced specific API pricing ($0.002) with general "costs are tiny" messaging
+  - **Day 12:** Rewrote "WHY THIS MATTERS" section with practical AI use case list (content suggestions, summaries, chatbots, etc.)
+  - **Day 13 (External APIs):** Complete rebuild - now walks through Resend email setup as practical API example
+  - **Day 13:** Created new `Day13ExternalAPIs.tsx` component with 6-step flow
+  - **Day 13:** Sends actual test email to verify API setup works (user enters email, builds test button, confirms receipt)
+  - **Day 13:** Added troubleshooting help suggesting Claude Code/Replit for debugging
+  - **Colon Cleanup:** Removed colons from all conversational/instructional text across 25+ Day components
+- **Style Rule Applied:**
+  - User doesn't use colons in conversational text - prefer "..." or dashes instead
+  - Changed patterns like "Here's how:" → "Here's how" or "What you need:" → "What you need"
+- **Files Modified:**
+  - `client/src/components/Day10AIBrain.tsx` - Restyled with ds design system
+  - `client/src/components/Day13ExternalAPIs.tsx` - NEW: Resend email setup flow
+  - `client/src/components/DayInstructions.tsx` - Updated Day 13 instructions, removed colons
+  - `client/src/pages/Dashboard.tsx` - Uses new Day13ExternalAPIs component
+  - 25+ Day component files - Removed colons from instructional text
+  - `server/seed.ts` - Updated Day 12 & 13 lessons
+
+### 2026-01-22 (Session 2) - Day 14-17 Restructure & Autonomous Testing
+- **Tasks Completed:**
+  - **Day 15 Payments:** Created new `Day15Payments.tsx` component for Stripe setup (replaced duplicate email day)
+  - **Day 17 Autonomous Testing:** Replaced Admin Dashboard with new testing day
+  - **Day 14 Users & Admin:** Combined authentication with admin dashboard
+  - **Menu titles updated:** Day 13 = "Email & APIs", Day 15 = "Take Payments", Day 17 = "Autonomous Testing"
+- **Files Created:**
+  - `client/src/components/Day15Payments.tsx` - Stripe payments setup flow
+  - `client/src/components/Day17AutonomousTesting.tsx` - Autonomous testing flow
+
+### 2026-01-23 - Day 16-17 QA Overhaul & Sidebar Cleanup
+- **Tasks Completed:**
+  - **Day 16 (Mobile & Speed):** Added speed/performance testing alongside mobile testing
+  - **Day 17 (Test & Ship):** Complete rewrite for practical QA testing approach
+  - **Sidebar:** Removed MyJourneySection entirely (~160 lines)
+- **Files Modified:**
+  - `client/src/components/Day19MobileReady.tsx` - Day 16 speed testing + design system styling
+  - `client/src/components/Day17AutonomousTesting.tsx` - Complete rewrite for practical QA
+  - `client/src/components/layout/Sidebar.tsx` - Removed MyJourneySection
+
+### 2026-01-23 (Session 2) - Day 17 Test, Publish & Domain Flow
+- **Tasks Completed:**
+  - **Day 17 Complete Overhaul:** Now "Test & Publish" with full deployment flow
+  - Added **Publish Your App** step with Replit deployment checklist
+  - Added **Connect Your Domain** step (required, not optional)
+  - **Custom domain saved to database** and displayed in Admin dashboard
+- **Files Modified:**
+  - `client/src/components/Day17AutonomousTesting.tsx` - Major rewrite with publish + domain steps
+  - `client/src/pages/Admin.tsx` - Added App URL column
+  - `server/routes.ts` - Save componentData as userInputs, include customDomain in admin stats
+  - `server/storage.ts` - Added userInputs parameter to completeDay
+
+### 2026-01-23 (Session 3) - Day 17-18 Improvements & Pause Button
+- **Tasks Completed:**
+  - **Day 17 Testing Options:** Reordered and added beta testers
+  - **Day 18 Complete Redesign:** Interactive pause button with motivational quotes
+  - **Day 18 Stripped Down:** Removed repetitive content
+  - **Day 18 Showcase:** Removed screenshot URL requirement
+- **Files Modified:**
+  - `client/src/components/Day17AutonomousTesting.tsx` - Reordered testing options, added beta testers
+  - `client/src/components/Day18BuildYourMVP.tsx` - Complete redesign with pause button
+  - `server/routes.ts` - Made screenshotUrl optional in showcase API
+  - `shared/schema.ts` - Made screenshotUrl nullable
