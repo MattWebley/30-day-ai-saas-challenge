@@ -104,15 +104,13 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
       {/* Header */}
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <img 
-              src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png" 
-              alt="Matt Webley" 
-              className="w-10 h-10 rounded-full"
+          <div className="flex items-center">
+            <img
+              src="/logo.png"
+              alt="21 Day AI SaaS Challenge"
+              className="h-10 w-auto object-contain"
+              style={{ imageRendering: 'auto' }}
             />
-            <h1 className="font-bold text-sm tracking-tight text-sidebar-foreground leading-tight">
-              21 Day AI<br/>SaaS Challenge
-            </h1>
           </div>
           {onClose && (
             <button

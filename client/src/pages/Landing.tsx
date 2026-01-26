@@ -8,13 +8,13 @@ export default function Landing() {
       {/* Sticky Header */}
       <header className="border-b border-slate-100 bg-white sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <img
-              src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png"
-              alt="Matt Webley"
-              className="w-10 h-10 rounded-full"
+              src="/logo.png"
+              alt="21 Day AI SaaS Challenge"
+              className="h-12 sm:h-14 w-auto object-contain"
+              style={{ imageRendering: 'auto' }}
             />
-            <span className="font-bold text-xs sm:text-lg">21 Day AI SaaS Challenge</span>
           </div>
           <div className="flex gap-2 items-center">
             <a href="/api/login">

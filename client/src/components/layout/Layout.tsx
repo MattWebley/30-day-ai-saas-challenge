@@ -23,13 +23,13 @@ export function Layout({ children, currentDay = 1 }: LayoutProps) {
         >
           <Menu className="w-6 h-6" />
         </button>
-        <div className="flex items-center gap-2 ml-3 flex-1">
+        <div className="flex items-center ml-3 flex-1">
           <img
-            src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png"
-            alt="Matt Webley"
-            className="w-8 h-8 rounded-full"
+            src="/logo.png"
+            alt="21 Day AI SaaS Challenge"
+            className="h-8 w-auto object-contain"
+            style={{ imageRendering: 'auto' }}
           />
-          <span className="font-bold text-sm">21 Day AI SaaS Challenge</span>
         </div>
         <ReportProblem currentDay={currentDay} />
       </div>
