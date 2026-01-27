@@ -45,11 +45,17 @@ function ScrollToTop() {
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
+  const [location] = useLocation();
 
   // Track referrals after authentication
   useReferralTracking();
 
-  if (isLoading) {
+  // Public routes that don't need auth check
+  const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/sales-letter-pack', '/coaching/upsell', '/welcome'];
+  const isPublicRoute = publicPaths.some(path => location.startsWith(path)) || location === '/';
+
+  // Only show loading spinner for protected routes
+  if (isLoading && !isPublicRoute) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center space-y-4">
@@ -64,7 +70,7 @@ function Router() {
     <>
       <ScrollToTop />
       <Switch>
-        {/* Public routes */}
+        {/* Public routes - render immediately without auth check */}
         <Route path="/showcase" component={Showcase} />
         <Route path="/order" component={Order} />
         <Route path="/checkout/success" component={CheckoutSuccess} />

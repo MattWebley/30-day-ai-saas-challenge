@@ -331,6 +331,7 @@ export default function Landing() {
                 src="/dashboard-preview.png"
                 alt="Challenge dashboard showing daily progress tracker"
                 className="w-full rounded-lg shadow-2xl border border-slate-200"
+                loading="lazy"
               />
               <p className="text-center text-sm text-slate-500 mt-3">The challenge dashboard - your daily guide to building</p>
             </div>
@@ -509,6 +510,7 @@ export default function Landing() {
                 src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png"
                 alt="Matt Webley"
                 className="w-32 h-32 rounded-full"
+                loading="lazy"
               />
               <div className="space-y-4 text-lg text-slate-700">
                 <p>
@@ -555,12 +557,14 @@ export default function Landing() {
                   src="/auditmylisting-app.png"
                   alt="AuditMyListing app interface"
                   className="w-full"
+                  loading="lazy"
                 />
                 <div className="p-6 flex items-center gap-4">
                   <img
                     src="/james-f.png"
                     alt="James F."
                     className="w-20 h-20 rounded-full object-cover"
+                    loading="lazy"
                   />
                   <div>
                     <p className="font-bold text-slate-900 text-lg">James F.</p>
@@ -575,12 +579,14 @@ export default function Landing() {
                   src="/verifycreator-app.png"
                   alt="VerifyCreator app interface"
                   className="w-full"
+                  loading="lazy"
                 />
                 <div className="p-6 flex items-center gap-4">
                   <img
                     src="/jack-g.png"
                     alt="Jack G."
                     className="w-20 h-20 rounded-full object-cover"
+                    loading="lazy"
                   />
                   <div>
                     <p className="font-bold text-slate-900 text-lg">Jack G.</p>
@@ -595,12 +601,14 @@ export default function Landing() {
                   src="/musobuddy-app.png"
                   alt="MusoBuddy app interface"
                   className="w-full"
+                  loading="lazy"
                 />
                 <div className="p-6 flex items-center gap-4">
                   <img
                     src="/tim-f.png"
                     alt="Tim F."
                     className="w-20 h-20 rounded-full object-cover"
+                    loading="lazy"
                   />
                   <div>
                     <p className="font-bold text-slate-900 text-lg">Tim F.</p>
@@ -1228,12 +1236,7 @@ export default function Landing() {
 
               <div className="space-y-2">
                 <p className="font-semibold text-slate-900">Can I go FASTER than 21 days?</p>
-                <p className="text-slate-600">Yes! The days unlock as you complete them. If you want to do 2 or 3 days in one sitting, go for it. The 21-day structure is about consistency, not restriction.</p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="font-semibold text-slate-900">What if I get stuck?</p>
-                <p className="text-slate-600">The platform has a built-in AI mentor that understands the challenge and your context. Ask it ANYTHING. You can also report problems directly to me.</p>
+                <p className="text-slate-600">New days unlock one per day. This gives you time to actually implement what you learn instead of rushing through. Building a real product takes focus, not speed.</p>
               </div>
 
               <div className="space-y-2">
@@ -1337,6 +1340,7 @@ export default function Landing() {
               src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png"
               alt="Matt Webley"
               className="w-8 h-8 rounded-full"
+              loading="lazy"
             />
             <span className="font-semibold">21 Day AI SaaS Challenge</span>
           </div>
