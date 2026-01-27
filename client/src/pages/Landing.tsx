@@ -85,7 +85,7 @@ export default function Landing() {
 
             {/* VSL - VIDEO SALES LETTER */}
             <div className="mt-10 space-y-4">
-              <p className="text-slate-600 font-medium">Watch the 3-minute overview</p>
+              <p className="text-slate-600 font-medium">See how it works</p>
 
               {/* Vimeo Video Embed */}
               <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-xl">
