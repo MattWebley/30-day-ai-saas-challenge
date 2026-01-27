@@ -107,8 +107,8 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-27 (Landing Page Sales Copy Overhaul)
-- **Branch**: landing-dashboard-style (ready to merge to main)
+- **Last Session**: 2026-01-27 (VSL Video Added + Branch Merged)
+- **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
@@ -122,7 +122,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx
 - [ ] Add coaching call booking links (Days 1-7, 19-21)
 - [ ] Enable "Book a Call" button in Day 2 (needs Calendly link)
-- [ ] Add VSL video (placeholder added, needs actual video/thumbnail)
+- [x] **Add VSL video** - DONE: Vimeo embed added to landing page hero section
 - [ ] Add real Stripe price IDs for: Prompt Pack, Coaching tiers, Critique
 
 ### PRE-LAUNCH BLOCKERS (DO THESE BEFORE GOING LIVE)
@@ -509,3 +509,18 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - May want to add visual elements (number callouts, comparison tables, timeline) - drafts were created but reverted
   - Test landing page flow and order page checkout
   - Merge `landing-dashboard-style` to main when ready
+
+### 2026-01-27 (Session 3) - VSL Video Added + Branch Merged
+- **Tasks Completed:**
+  - **Merged landing-dashboard-style to main** - Sales copy overhaul now live
+  - **Added VSL Video:** Embedded Vimeo video in landing page hero section
+    - URL: `https://player.vimeo.com/video/1158816837?h=38a9da32e3`
+    - Clean embed (no title/byline/portrait)
+    - Changed "Watch the 3-minute overview" → "See how it works"
+  - **Cleanup:** Removed unused `Play` icon import
+- **Files Modified:**
+  - `client/src/pages/Landing.tsx` - Vimeo video embed, text update
+- **Notes for Next Session:**
+  - Landing page now has real VSL video
+  - Test video playback on mobile
+  - Continue with pending tasks (AI Mentor, Showcase testing, etc.)
