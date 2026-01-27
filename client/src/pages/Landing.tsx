@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, TrendingUp, Shield, Star, Play, Lightbulb, Rocket, Code, Users } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, TrendingUp, Shield, Star, Lightbulb, Rocket, Code, Users } from "lucide-react";
 import { ds } from "@/lib/design-system";
 
 const DEFAULT_HEADLINE = "How to Build Your Own Software Product in the Next 21 Days Without Writing a Single Line of Code...";
@@ -87,49 +87,14 @@ export default function Landing() {
             <div className="mt-10 space-y-4">
               <p className="text-slate-600 font-medium">Watch the 3-minute overview</p>
 
-              {/* Video Placeholder - Replace with actual video embed */}
-              <div className="relative aspect-video bg-slate-200 rounded-xl overflow-hidden cursor-pointer group">
-                {/* Placeholder thumbnail - replace src with actual thumbnail */}
-                <img
-                  src="/vsl-thumbnail.png"
-                  alt="Watch video overview"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    // Hide image if thumbnail doesn't exist yet
-                    e.currentTarget.style.display = 'none';
-                  }}
+              {/* Vimeo Video Embed */}
+              <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-xl">
+                <iframe
+                  src="https://player.vimeo.com/video/1158816837?h=38a9da32e3&title=0&byline=0&portrait=0"
+                  className="w-full h-full"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
                 />
-
-                {/* GRADIENT OVERLAY - remove this div to revert */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60" />
-
-                {/* Play button overlay */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:bg-white group-hover:scale-110 transition-all duration-200">
-                    <Play className="w-8 h-8 text-slate-900 ml-1" fill="currentColor" />
-                  </div>
-                </div>
-
-                {/* Duration badge */}
-                <div className="absolute bottom-4 right-4 bg-black/70 text-white text-sm px-2 py-1 rounded">
-                  3:24
-                </div>
-
-                {/* TODO: Replace this placeholder with actual video embed
-                     Example for YouTube:
-                     <iframe
-                       src="https://www.youtube.com/embed/VIDEO_ID"
-                       className="w-full h-full"
-                       allowFullScreen
-                     />
-
-                     Example for Vimeo:
-                     <iframe
-                       src="https://player.vimeo.com/video/VIDEO_ID"
-                       className="w-full h-full"
-                       allowFullScreen
-                     />
-                */}
               </div>
 
               <a href="/order" className="block">

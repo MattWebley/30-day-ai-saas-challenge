@@ -79,7 +79,9 @@
       "Bash(do grep -l \"export.*$f\" /home/runner/workspace/client/src/components/*.tsx)",
       "Bash(done)",
       "Bash(git tag:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(git -C /home/runner/workspace push origin main)",
+      "Bash(git -C /home/runner/workspace log --oneline -3)"
     ]
   }
 }
