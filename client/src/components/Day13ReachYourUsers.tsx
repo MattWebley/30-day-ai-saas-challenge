@@ -51,8 +51,8 @@ Use the RESEND_API_KEY from secrets.`;
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Mail className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Mail className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-lg text-slate-900">Why Email Matters</h4>
@@ -254,9 +254,9 @@ Use the RESEND_API_KEY from secrets.`;
               </Button>
             </div>
 
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg mb-6">
-              <p className="font-bold text-green-900 mb-2">Test it</p>
-              <p className="text-green-800 text-sm">
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg mb-6">
+              <p className="font-bold text-slate-900 mb-2">Test it</p>
+              <p className="text-slate-700 text-sm">
                 Sign up with a new account using a real email you can check. Did you receive the welcome email?
               </p>
             </div>
@@ -299,14 +299,14 @@ Use the RESEND_API_KEY from secrets.`;
       {/* Step 5: Done */}
       {step === "done" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-xl text-green-900">You Can Reach Your Users!</h4>
-                <p className="text-green-700">
+                <h4 className="font-bold text-xl text-slate-900">You Can Reach Your Users!</h4>
+                <p className="text-green-600">
                   Email is your lifeline to customers. Now you have it.
                 </p>
               </div>

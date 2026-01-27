@@ -140,10 +140,10 @@ export default function AdminAnswer() {
 
         {/* AI Suggested Answer */}
         {question.aiSuggestedAnswer && !isAnswered && (
-          <Card className="p-6 border-2 border-purple-100 bg-purple-50 mb-6">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50 mb-6">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-purple-600" />
+                <Sparkles className="w-5 h-5 text-primary" />
                 <h3 className="font-bold text-slate-900">AI Suggested Answer</h3>
               </div>
               <Button variant="outline" size="sm" onClick={copyAiAnswer} className="gap-1">
@@ -152,7 +152,7 @@ export default function AdminAnswer() {
               </Button>
             </div>
             <p className="text-slate-700 whitespace-pre-line">{question.aiSuggestedAnswer}</p>
-            <p className="text-xs text-purple-600 mt-3">
+            <p className="text-xs text-slate-600 mt-3">
               Review and edit as needed before publishing.
             </p>
           </Card>
@@ -160,10 +160,10 @@ export default function AdminAnswer() {
 
         {/* Answer Form / Display */}
         {isAnswered ? (
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <div className="flex items-center gap-2 mb-4">
               <Check className="w-5 h-5 text-green-600" />
-              <h3 className="font-bold text-slate-900">Answer Published</h3>
+              <h3 className="font-bold text-green-600">Answer Published</h3>
             </div>
             <p className="text-slate-700 whitespace-pre-line">{answer}</p>
           </Card>

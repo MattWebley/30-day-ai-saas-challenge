@@ -1037,7 +1037,7 @@ export default function Landing() {
               The time is going to pass EITHER WAY. The question is: what will you have to SHOW for it?
             </p>
 
-            <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-6 mt-6">
+            <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 mt-6">
               <p className="font-semibold text-slate-900">
                 Also worth noting: AI tools are evolving FAST. The methods that work today might change tomorrow. With your 12 months access, you'll be using the CURRENT system - not something that's become outdated. The earlier you start, the further AHEAD you'll be.
               </p>

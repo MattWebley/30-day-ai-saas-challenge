@@ -564,8 +564,8 @@ export default function Admin() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="p-6 border-2 border-slate-100">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-600" />
+              <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Users className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <p className="text-sm font-medium text-slate-500">Total Students</p>
@@ -576,8 +576,8 @@ export default function Admin() {
 
           <Card className="p-6 border-2 border-slate-100">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <TrendingUp className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <p className="text-sm font-medium text-slate-500">Active (7 days)</p>
@@ -588,8 +588,8 @@ export default function Admin() {
 
           <Card className="p-6 border-2 border-slate-100">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center">
-                <Trophy className="w-6 h-6 text-amber-600" />
+              <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Trophy className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <p className="text-sm font-medium text-slate-500">Completed 21 Days</p>
@@ -600,8 +600,8 @@ export default function Admin() {
 
           <Card className="p-6 border-2 border-slate-100">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <BarChart3 className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <p className="text-sm font-medium text-slate-500">Avg Progress</p>

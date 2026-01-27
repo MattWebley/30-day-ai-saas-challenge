@@ -293,8 +293,8 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
             className={`${ds.optionDefault} text-left hover:border-primary/50 transition-colors`}
           >
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-                <Lightbulb className="w-6 h-6 text-amber-600" />
+              <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                <Lightbulb className="w-6 h-6 text-primary" />
               </div>
               <div>
                 <h3 className={`${ds.label} mb-2`}>I Already Have Ideas</h3>

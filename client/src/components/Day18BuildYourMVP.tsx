@@ -162,7 +162,7 @@ export function Day18BuildYourMVP({ appName, daysSinceStart, onComplete }: Day18
         className="block"
       >
         <button
-          className="w-full h-16 px-6 flex items-center justify-center gap-3 text-white rounded-2xl shadow-inner font-bold cursor-pointer transition-all duration-150 text-lg bg-amber-500 hover:bg-amber-600 border-t-2 border-amber-600 hover:scale-[1.02] active:scale-95"
+          className="w-full h-16 px-6 flex items-center justify-center gap-3 text-white rounded-2xl shadow-inner font-bold cursor-pointer transition-all duration-150 text-lg bg-primary hover:bg-primary/90 border-t-2 border-primary/80 hover:scale-[1.02] active:scale-95"
         >
           <Video className="w-6 h-6" />
           STUCK? BOOK A COACHING CALL
