@@ -144,8 +144,8 @@ export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps)
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Smartphone className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Smartphone className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-lg text-slate-900">Step 1: Mobile Test</h4>
@@ -261,8 +261,8 @@ export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps)
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-lg text-slate-900">Step 2: Speed Test</h4>
@@ -270,9 +270,9 @@ export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps)
               </div>
             </div>
 
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className={ds.label + " text-amber-900 mb-2"}>Why this matters</p>
-              <p className={ds.body + " text-amber-800"}>
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+              <p className={ds.label + " mb-2"}>Why this matters</p>
+              <p className={ds.body}>
                 53% of mobile users leave a page that takes longer than 3 seconds to load.
                 Every second of delay = lost customers. Test on your phone, not your fast computer.
               </p>
@@ -402,8 +402,8 @@ export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps)
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
-                <Wrench className="w-5 h-5 text-red-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Wrench className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-lg text-slate-900">Step 3: Fix Issues</h4>
@@ -476,14 +476,14 @@ First load should be under 3 seconds.`}
       {/* Step 4: Done */}
       {step === "done" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-xl text-green-900">Mobile + Speed Tested!</h4>
-                <p className="text-green-700">
+                <h4 className="font-bold text-xl text-slate-900">Mobile + Speed Tested!</h4>
+                <p className="text-green-600">
                   Most builders skip this step and find out their app is broken after launch. Not you.
                 </p>
               </div>

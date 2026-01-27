@@ -447,7 +447,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
           </div>
 
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0 text-2xl">
+            <div className="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center flex-shrink-0 text-2xl">
               📣
             </div>
             <div className="flex-1">
@@ -544,7 +544,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
                 </div>
               ) : (
                 <div className="bg-white border-2 border-slate-200 rounded-lg p-6 flex flex-col items-center text-center gap-3">
-                  <div className="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center text-3xl shadow-inner">
+                  <div className="w-16 h-16 rounded-full bg-slate-50 flex items-center justify-center text-3xl shadow-inner">
                     📣
                   </div>
                   <div>

@@ -513,7 +513,7 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
             </div>
           </Card>
 
-          <Card className="p-4 border-2 border-amber-100 bg-amber-50">
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
             <h4 className="font-bold text-slate-900 mb-2">What About AI Search?</h4>
             <p className={`${ds.body} mb-3`}>
               More people are asking ChatGPT, Claude, and Perplexity for recommendations instead of Googling.
@@ -537,10 +537,10 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
       {/* Step 5: Complete */}
       {step === "complete" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
-                <Search className="w-8 h-8 text-green-600" />
+              <div className="w-16 h-16 rounded-full bg-green-600 flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-2xl font-extrabold text-slate-900 mb-2">You're Now Discoverable</h3>
               <p className={ds.body}>

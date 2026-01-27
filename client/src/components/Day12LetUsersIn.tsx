@@ -171,8 +171,8 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Shield className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-lg text-slate-900">Check: Does your app have authentication?</h4>
@@ -238,8 +238,8 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                <Lock className="w-5 h-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Lock className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-lg text-slate-900">Add Authentication</h4>
@@ -294,8 +294,8 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Users className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Users className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-lg text-slate-900">Test: Does each user see only their data?</h4>
@@ -365,8 +365,8 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-lg text-slate-900">Now You Have Users... Track Them!</h4>
@@ -382,9 +382,9 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
               Don't guess. <strong>KNOW.</strong> We're going to build you a dashboard that would make a Silicon Valley startup jealous.
             </p>
 
-            <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg mb-6">
-              <p className="text-purple-900 font-bold mb-2">What You're About to Build</p>
-              <div className="grid grid-cols-2 gap-2 text-purple-800 text-sm">
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg mb-6">
+              <p className="text-slate-900 font-bold mb-2">What You're About to Build</p>
+              <div className="grid grid-cols-2 gap-2 text-slate-700 text-sm">
                 <div className="flex items-center gap-2"><TrendingUp className="w-4 h-4" /> User growth tracking</div>
                 <div className="flex items-center gap-2"><Activity className="w-4 h-4" /> Real-time activity feeds</div>
                 <div className="flex items-center gap-2"><Target className="w-4 h-4" /> Conversion funnels</div>
@@ -392,9 +392,9 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
               </div>
             </div>
 
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className={ds.body + " text-amber-900"}>
-                <strong>This takes 5 minutes.</strong> Answer a few questions, get a prompt that builds something incredible.
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+              <p className={ds.body}>
+                <strong>This takes a few minutes.</strong> Answer a few questions, get a prompt that builds something incredible.
               </p>
             </div>
           </Card>
@@ -644,14 +644,14 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
       {/* Step 4c: Generated Prompt */}
       {step === "admin-prompt" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-green-600 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-lg text-green-900">Your Custom Admin Dashboard Prompt</h4>
-                <p className="text-green-700 text-sm">Copy this to Claude Code - it's comprehensive!</p>
+                <h4 className="font-bold text-lg text-slate-900">Your Custom Admin Dashboard Prompt</h4>
+                <p className="text-green-600 text-sm">Copy this to Claude Code - it's comprehensive!</p>
               </div>
             </div>
           </Card>
@@ -672,8 +672,8 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
               </Button>
             </div>
 
-            <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-              <p className={ds.body + " text-amber-900"}>
+            <div className="mt-4 p-4 bg-slate-50 border border-slate-200 rounded-lg">
+              <p className={ds.body}>
                 <strong>This is a BIG prompt.</strong> Claude Code might take a few minutes. Let it cook - the result will be worth it.
               </p>
             </div>
@@ -713,8 +713,8 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Plus className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Plus className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h4 className="font-bold text-lg text-slate-900">The Secret: Your Dashboard Never Stops Growing</h4>
@@ -725,9 +725,9 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
               Here's what the pros know... your admin dashboard is a <strong>living document</strong>. Every time you wonder "I wish I could see..." - you add it.
             </p>
 
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-6">
-              <p className="text-blue-900 font-bold mb-3">The Pattern for Adding Anything</p>
-              <p className={ds.body + " text-blue-800 mb-3"}>
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg mb-6">
+              <p className="text-slate-900 font-bold mb-3">The Pattern for Adding Anything</p>
+              <p className={ds.body + " mb-3"}>
                 Just tell Claude Code what you want to see. It's that simple.
               </p>
               <div className="bg-white rounded-lg p-3 font-mono text-sm text-slate-800">
@@ -762,9 +762,9 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
               </div>
             </div>
 
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-green-900 font-bold mb-2">The Mindset Shift</p>
-              <p className={ds.body + " text-green-800"}>
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-lg">
+              <p className="text-slate-900 font-bold mb-2">The Mindset Shift</p>
+              <p className={ds.body}>
                 Every time you catch yourself wondering about a number... that's a dashboard feature. "I wonder how many..." → add it. "I wish I knew..." → add it. Your dashboard becomes your superpower.
               </p>
             </div>
@@ -788,14 +788,14 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
       {/* Step 5: Done */}
       {step === "done" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-xl text-green-900">Auth + Admin Dashboard Done!</h4>
-                <p className="text-green-700">
+                <h4 className="font-bold text-xl text-slate-900">Auth + Admin Dashboard Done!</h4>
+                <p className="text-green-600">
                   Users can log in AND you can see what's happening inside your app.
                 </p>
               </div>

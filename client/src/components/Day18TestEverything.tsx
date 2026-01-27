@@ -36,8 +36,8 @@ export function Day18TestEverything({ userIdea, onComplete }: Day18TestEverythin
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Target className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Target className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-slate-900">Test Your USP</h3>
@@ -97,8 +97,8 @@ export function Day18TestEverything({ userIdea, onComplete }: Day18TestEverythin
           </Card>
 
           {uspWorks === false && (
-            <Card className="p-4 border-2 border-amber-200 bg-amber-50">
-              <p className="text-amber-800">
+            <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+              <p className="text-slate-700">
                 <strong>That's valuable information!</strong> Consider going back to Day 17 to improve your USP before continuing. A weak USP makes everything harder.
               </p>
             </Card>
@@ -121,8 +121,8 @@ export function Day18TestEverything({ userIdea, onComplete }: Day18TestEverythin
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Zap className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-slate-900">Test Everything Else</h3>
@@ -187,8 +187,8 @@ export function Day18TestEverything({ userIdea, onComplete }: Day18TestEverythin
         <>
           <Card className="p-6 border-2 border-slate-200 bg-white">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                <Bug className="w-5 h-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center">
+                <Bug className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-slate-900">Fix What's Broken</h3>
@@ -243,14 +243,14 @@ Still need to fix later:
       {/* Step 4: Summary */}
       {step === "summary" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-xl text-green-900">Testing Complete!</h4>
-                <p className="text-green-700">
+                <h4 className="font-bold text-xl text-slate-900">Testing Complete!</h4>
+                <p className="text-green-600">
                   You just did what most founders skip entirely.
                 </p>
               </div>
@@ -286,8 +286,8 @@ Still need to fix later:
             />
           </Card>
 
-          <Card className="p-4 border-2 border-blue-200 bg-blue-50">
-            <p className="text-blue-800">
+          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
+            <p className="text-slate-700">
               <strong>You now know exactly what works.</strong> That's more than most founders know when they launch. Tomorrow: making it look beautiful.
             </p>
           </Card>

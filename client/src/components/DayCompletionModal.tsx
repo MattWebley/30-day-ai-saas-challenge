@@ -84,8 +84,8 @@ export function DayCompletionModal({
                   transition={{ delay: 0.4, type: "spring", stiffness: 200 }}
                   className="relative"
                 >
-                  <div className="inline-flex flex-col items-center gap-2 px-8 py-5 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200 shadow-lg">
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full uppercase tracking-wide">
+                  <div className="inline-flex flex-col items-center gap-2 px-8 py-5 bg-slate-50 rounded-2xl border-2 border-slate-200 shadow-lg">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-primary text-white text-xs font-bold rounded-full uppercase tracking-wide">
                       Badge Earned!
                     </div>
                     <span className="text-5xl mt-2">{earnedBadge.icon}</span>
@@ -111,7 +111,7 @@ export function DayCompletionModal({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: earnedBadge ? 0.6 : 0.5 }}
-                  className="p-6 bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl border-2 border-slate-200"
+                  className="p-6 bg-slate-50 rounded-xl border-2 border-slate-200"
                 >
                   <p className="text-slate-700 font-medium leading-relaxed">
                     {completionMessage}

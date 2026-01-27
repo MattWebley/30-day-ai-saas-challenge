@@ -28,10 +28,10 @@ interface Day17BuildItOutProps {
 }
 
 const FOCUS_OPTIONS = [
-  { id: "feature", label: "Core Features", icon: Zap, color: "bg-blue-100 text-blue-600" },
-  { id: "bugs", label: "Bug Fixes", icon: Bug, color: "bg-amber-100 text-amber-600" },
-  { id: "polish", label: "UI Polish", icon: Paintbrush, color: "bg-purple-100 text-purple-600" },
-  { id: "whatever", label: "New Functionality", icon: Sparkles, color: "bg-green-100 text-green-600" },
+  { id: "feature", label: "Core Features", icon: Zap, color: "bg-slate-50 border border-slate-200 text-slate-700" },
+  { id: "bugs", label: "Bug Fixes", icon: Bug, color: "bg-slate-50 border border-slate-200 text-slate-700" },
+  { id: "polish", label: "UI Polish", icon: Paintbrush, color: "bg-slate-50 border border-slate-200 text-slate-700" },
+  { id: "whatever", label: "New Functionality", icon: Sparkles, color: "bg-slate-50 border border-slate-200 text-slate-700" },
 ];
 
 const BUILD_CHECKLIST = [
@@ -111,15 +111,15 @@ export function Day17BuildItOut({ onComplete }: Day17BuildItOutProps) {
       {/* Intro */}
       {step === "intro" && (
         <>
-          <Card className="p-6 border-2 border-amber-200 bg-amber-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <div className="flex items-start gap-3">
-              <AlertCircle className="w-6 h-6 text-amber-600 mt-0.5" />
+              <AlertCircle className="w-6 h-6 text-primary mt-0.5" />
               <div>
-                <h4 className="font-bold text-amber-900 text-lg">THIS IS THE PAUSE POINT</h4>
-                <p className="text-amber-800 mt-1">
+                <h4 className="font-bold text-slate-900 text-lg">THIS IS THE PAUSE POINT</h4>
+                <p className="text-slate-700 mt-1">
                   You've learned 95% of everything you need. Now it's time to BUILD.
                 </p>
-                <p className="text-amber-700 mt-2">
+                <p className="text-slate-600 mt-2">
                   Stay here as long as you need - days, weeks, whatever it takes. Use the PAUSE button in the sidebar to come back tomorrow.
                 </p>
               </div>
@@ -222,16 +222,16 @@ export function Day17BuildItOut({ onComplete }: Day17BuildItOutProps) {
           </Card>
 
           {/* When to Move On */}
-          <Card className="p-6 border-2 border-blue-200 bg-blue-50">
-            <h4 className="font-bold text-blue-900 mb-3">When to Move On</h4>
-            <p className="text-blue-800 mb-3">Your app is ready when</p>
-            <ul className="space-y-2 text-blue-700">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-slate-900 mb-3">When to Move On</h4>
+            <p className="text-slate-700 mb-3">Your app is ready when</p>
+            <ul className="space-y-2 text-slate-700">
               <li>• Core features work without crashing</li>
               <li>• You'd show it to a stranger without apologizing</li>
               <li>• It does what you said it would do</li>
               <li>• It looks decent (not perfect - decent)</li>
             </ul>
-            <p className="text-blue-800 mt-3 font-medium">
+            <p className="text-slate-700 mt-3 font-medium">
               If you're not there yet, that's fine. Keep building.
             </p>
           </Card>
@@ -353,14 +353,14 @@ export function Day17BuildItOut({ onComplete }: Day17BuildItOutProps) {
       {/* Done */}
       {step === "done" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-xl text-green-900">Build Session Complete!</h4>
-                <p className="text-green-700">
+                <h4 className="font-bold text-xl text-slate-900">Build Session Complete!</h4>
+                <p className="text-green-600">
                   {sessionMinutes} minute{sessionMinutes !== 1 ? "s" : ""} of focused building.
                 </p>
               </div>
@@ -372,9 +372,9 @@ export function Day17BuildItOut({ onComplete }: Day17BuildItOutProps) {
             <p className="text-slate-700 whitespace-pre-wrap">{accomplishments}</p>
           </Card>
 
-          <Card className="p-6 border-2 border-amber-200 bg-amber-50">
-            <h4 className="font-bold text-amber-900 mb-2">Not Ready to Move On?</h4>
-            <p className="text-amber-800">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-slate-900 mb-2">Not Ready to Move On?</h4>
+            <p className="text-slate-700">
               Use the PAUSE button in the sidebar. Come back tomorrow for another session. Stay on Day 17 until your app is ready.
             </p>
           </Card>

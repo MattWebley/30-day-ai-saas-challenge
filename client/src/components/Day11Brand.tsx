@@ -621,9 +621,9 @@ The app is called "${appName || 'my app'}". Make it look like it belongs in the 
             </Button>
           </Card>
 
-          <Card className="p-6 border-2 border-amber-200 bg-amber-50">
-            <h4 className="font-bold text-amber-900 mb-2">Expect Multiple Iterations</h4>
-            <p className="text-amber-800">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
+            <h4 className="font-bold text-slate-900 mb-2">Expect Multiple Iterations</h4>
+            <p className="text-slate-700">
               Design changes often need tweaking. After Claude Code applies this, you might say things like "make the shadows softer" or "increase the padding" or "that's too dark". That's normal - designers iterate dozens of times.
             </p>
           </Card>
@@ -672,14 +672,14 @@ The app is called "${appName || 'my app'}". Make it look like it belongs in the 
       {/* Step 4: Done */}
       {step === "done" && (
         <>
-          <Card className="p-6 border-2 border-green-200 bg-green-50">
+          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-xl text-green-900">Design Transformed!</h4>
-                <p className="text-green-700">
+                <h4 className="font-bold text-xl text-slate-900">Design Transformed!</h4>
+                <p className="text-green-600">
                   Your app now has a fresh new look.
                 </p>
               </div>

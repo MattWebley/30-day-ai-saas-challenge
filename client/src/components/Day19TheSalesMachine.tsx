@@ -694,12 +694,12 @@ Style it with:
           {/* Option 2: Video Testimonial */}
           <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-lg bg-amber-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <Video className="w-5 h-5 text-white" />
               </div>
               <div className="flex items-center gap-2">
                 <h3 className={ds.heading}>Option 2 - Video Testimonial</h3>
-                <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded font-medium">Maximum Exposure</span>
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded font-medium">Maximum Exposure</span>
               </div>
             </div>
             <p className={ds.body + " mb-4"}>
