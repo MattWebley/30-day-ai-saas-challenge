@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft, FastForward, LogIn } from "lucide-react";
+import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft, FastForward } from "lucide-react";
 import { useTestMode } from "@/contexts/TestModeContext";
-import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export default function Order() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const { testMode } = useTestMode();
-  const { isAuthenticated, isLoading } = useAuth();
   const [selectedCurrency, setSelectedCurrency] = useState<'usd' | 'gbp'>('usd');
 
   const pricing = {
@@ -163,43 +161,24 @@ export default function Order() {
             )}
 
             {/* CTA Button */}
-            {isLoading ? (
-              <Button disabled size="lg" className="w-full h-14 text-lg font-bold">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                Loading...
-              </Button>
-            ) : !isAuthenticated ? (
-              <div className="space-y-3">
-                <a href="/api/login" className="block">
-                  <Button size="lg" className="w-full h-14 text-lg font-bold">
-                    <LogIn className="w-5 h-5 mr-2" />
-                    Sign In to Complete Order
-                  </Button>
-                </a>
-                <p className="text-center text-sm text-slate-500">
-                  Quick sign-in required to access your purchase
-                </p>
-              </div>
-            ) : (
-              <Button
-                onClick={handleCheckout}
-                disabled={isCheckingOut}
-                size="lg"
-                className="w-full h-14 text-lg font-bold"
-              >
-                {isCheckingOut ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    Complete My Order
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </>
-                )}
-              </Button>
-            )}
+            <Button
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+              size="lg"
+              className="w-full h-14 text-lg font-bold"
+            >
+              {isCheckingOut ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  Complete My Order
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </>
+              )}
+            </Button>
 
             {/* Test Mode Skip */}
             {testMode && (
