@@ -482,3 +482,27 @@ export const abVariantsRelations = relations(abVariants, ({ one }) => ({
 
 export type AbVariant = typeof abVariants.$inferSelect;
 export type InsertAbVariant = typeof abVariants.$inferInsert;
+
+// Critique requests table - tracks sales page critique submissions
+export const critiqueRequests = pgTable("critique_requests", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  salesPageUrl: text("sales_page_url").notNull(),
+  productDescription: text("product_description"),
+  targetAudience: text("target_audience"),
+  specificQuestions: text("specific_questions"),
+  status: varchar("status").default("pending"), // 'pending', 'in_progress', 'completed'
+  videoUrl: text("video_url"), // URL to the completed critique video
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const critiqueRequestsRelations = relations(critiqueRequests, ({ one }) => ({
+  user: one(users, {
+    fields: [critiqueRequests.userId],
+    references: [users.id],
+  }),
+}));
+
+export type CritiqueRequest = typeof critiqueRequests.$inferSelect;
+export type InsertCritiqueRequest = typeof critiqueRequests.$inferInsert;

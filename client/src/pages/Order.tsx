@@ -39,7 +39,8 @@ export default function Order() {
 
       const data = await response.json();
       if (data.url) {
-        window.location.href = data.url;
+        window.open(data.url, '_blank');
+        setIsCheckingOut(false);
       } else {
         throw new Error('No checkout URL received');
       }
@@ -174,7 +175,7 @@ export default function Order() {
                 </>
               ) : (
                 <>
-                  Complete My Order
+                  Continue to Payment
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </>
               )}

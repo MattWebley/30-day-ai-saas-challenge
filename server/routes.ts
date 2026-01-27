@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, type User } from "@shared/schema";
+import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, type User } from "@shared/schema";
 import OpenAI from "openai";
 import dns from "dns";
 import { promisify } from "util";
@@ -10,7 +10,7 @@ import crypto from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail } from "./emailService";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
 
 const dnsResolve = promisify(dns.resolve);
@@ -2766,8 +2766,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         payment_method_types: ['card'],
         line_items: lineItems,
         mode: 'payment',
-        success_url: `${protocol}://${host}/coaching?success=true&type=critique`,
-        cancel_url: `${protocol}://${host}/coaching`,
+        success_url: `${protocol}://${host}/critique/success`,
+        cancel_url: `${protocol}://${host}/critique`,
         metadata: {
           productType: 'critique',
           includeHeadlines: includeHeadlines ? 'true' : 'false',
@@ -3393,6 +3393,129 @@ Example format:
     } catch (error) {
       console.error("Error generating headlines:", error);
       res.status(500).json({ message: "Failed to generate headlines" });
+    }
+  });
+
+  // Critique submission - save details for Matt to review
+  app.post("/api/critique/submit", isAuthenticated, async (req: any, res) => {
+    console.log("[CRITIQUE] Endpoint hit, user:", req.user?.claims?.sub);
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const { salesPageUrl, productDescription, targetAudience, specificQuestions } = req.body;
+
+      if (!salesPageUrl) {
+        return res.status(400).json({ message: "Sales page URL is required" });
+      }
+
+      const userName = user.firstName || user.email || 'Unknown';
+
+      // Save to database
+      await db.insert(critiqueRequests).values({
+        userId,
+        salesPageUrl,
+        productDescription: productDescription || null,
+        targetAudience: targetAudience || null,
+        specificQuestions: specificQuestions || null,
+        status: 'pending'
+      });
+
+      console.log("Critique submission saved:", {
+        userId,
+        email: user.email,
+        name: userName,
+        salesPageUrl
+      });
+
+      // Send email notification to Matt
+      try {
+        await sendCritiqueNotificationEmail({
+          userEmail: user.email || 'unknown@email.com',
+          userName,
+          salesPageUrl,
+          productDescription: productDescription || null,
+          targetAudience: targetAudience || null,
+          specificQuestions: specificQuestions || null
+        });
+      } catch (emailError) {
+        console.error("Failed to send critique notification email:", emailError);
+        // Don't fail the request if email fails
+      }
+
+      res.json({ success: true, message: "Critique request submitted" });
+    } catch (error) {
+      console.error("Error submitting critique request:", error);
+      res.status(500).json({ message: "Failed to submit critique request" });
+    }
+  });
+
+  // Admin: Get all critique requests
+  app.get("/api/admin/critiques", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const requests = await db
+        .select({
+          id: critiqueRequests.id,
+          userId: critiqueRequests.userId,
+          salesPageUrl: critiqueRequests.salesPageUrl,
+          productDescription: critiqueRequests.productDescription,
+          targetAudience: critiqueRequests.targetAudience,
+          specificQuestions: critiqueRequests.specificQuestions,
+          status: critiqueRequests.status,
+          videoUrl: critiqueRequests.videoUrl,
+          completedAt: critiqueRequests.completedAt,
+          createdAt: critiqueRequests.createdAt,
+          userEmail: users.email,
+          userFirstName: users.firstName
+        })
+        .from(critiqueRequests)
+        .leftJoin(users, eq(critiqueRequests.userId, users.id))
+        .orderBy(critiqueRequests.createdAt);
+
+      res.json(requests);
+    } catch (error) {
+      console.error("Error fetching critique requests:", error);
+      res.status(500).json({ message: "Failed to fetch critique requests" });
+    }
+  });
+
+  // Admin: Update critique status
+  app.patch("/api/admin/critiques/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const critiqueId = parseInt(req.params.id);
+      const { status, videoUrl } = req.body;
+
+      const updateData: any = { status };
+      if (videoUrl) updateData.videoUrl = videoUrl;
+      if (status === 'completed') updateData.completedAt = new Date();
+
+      await db
+        .update(critiqueRequests)
+        .set(updateData)
+        .where(eq(critiqueRequests.id, critiqueId));
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error updating critique request:", error);
+      res.status(500).json({ message: "Failed to update critique request" });
     }
   });
 

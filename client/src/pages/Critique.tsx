@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { ArrowRight, Check, Video, Shield, Lock } from "lucide-react";
+import { ArrowRight, Check, Shield, Lock } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserStats } from "@/hooks/useStats";
 
 export default function Critique() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currency, setCurrency] = useState<"gbp" | "usd">("gbp");
-  const [includeHeadlines, setIncludeHeadlines] = useState(false);
+  const [conversionBoost, setConversionBoost] = useState(1); // percentage points increase
   const { user } = useAuth();
   const { stats } = useUserStats();
 
@@ -26,8 +28,7 @@ export default function Critique() {
   }, [user]);
 
   const prices = {
-    critique: { gbp: 495, usd: 595 },
-    critiqueHeadlines: { gbp: 95, usd: 97 }
+    critique: { gbp: 495, usd: 595 }
   };
 
   const currencySymbol = currency === "gbp" ? "£" : "$";
@@ -39,11 +40,12 @@ export default function Critique() {
       const response = await fetch("/api/checkout/critique", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ currency, includeHeadlines })
+        body: JSON.stringify({ currency })
       });
       const data = await response.json();
       if (data.url) {
-        window.location.href = data.url;
+        window.open(data.url, '_blank');
+        setIsProcessing(false);
       }
     } catch (error) {
       console.error('Checkout error:', error);
@@ -53,270 +55,243 @@ export default function Critique() {
 
   return (
     <Layout currentDay={0}>
-      <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-
-        {/* Currency Toggle */}
-        <div className="flex justify-center">
-          <div className="inline-flex items-center gap-1 p-1 bg-slate-100 rounded-lg">
-            <button
-              onClick={() => setCurrency("usd")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                currency === "usd"
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <span>🇺🇸</span> USD
-            </button>
-            <button
-              onClick={() => setCurrency("gbp")}
-              className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                currency === "gbp"
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              <span>🇬🇧</span> GBP
-            </button>
-          </div>
-        </div>
+      <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
 
         {hasReachedLaunchPhase ? (
           <>
-            {/* Training Included Notice */}
-            <div className="bg-green-50 border-2 border-green-200 rounded-xl p-5">
-              <div className="flex items-start gap-4">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                  <Check className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="font-bold text-green-900">Sales Page Training Already Included</p>
-                  <p className="text-green-800 text-sm mt-1">
-                    The full sales page training, structure, and prompts are included FREE in Day 19 of your challenge. This critique is an <strong>optional upgrade</strong> - get personal feedback on YOUR sales page from someone who's generated $23M+ in sales.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Header */}
+            {/* Hero Section */}
             <div className="text-center space-y-4">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-100 rounded-full">
-                <Video className="w-5 h-5 text-amber-600" />
-                <span className="font-medium text-amber-700">Optional Upgrade</span>
+              <img
+                src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png"
+                alt="Matt Webley"
+                className="w-24 h-24 rounded-full object-cover mx-auto"
+                loading="lazy"
+              />
+
+              <div className="space-y-3">
+                <h1 className="text-3xl font-extrabold text-slate-900">
+                  Get Your Sales Page Reviewed
+                </h1>
+                <p className="text-lg text-slate-700">
+                  You've built the page. Now let me tear it apart BEFORE you start sending traffic. I'll screen-record myself going through YOUR sales page and tell you EXACTLY what to fix. No fluff. No "nice work!" Just what needs to change so your first visitors actually buy.
+                </p>
               </div>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900">
-                Get Your Sales Page Reviewed by an 8-Figure Copywriter
-              </h1>
-              <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-                You've got the training. Now get personal feedback. I'll record a video walking through YOUR sales page, showing you exactly what to change to convert more visitors into customers.
+
+              <p className="text-slate-600">
+                <span className="font-bold text-slate-900">$23M+ in sales.</span> I know what converts and what doesn't.
               </p>
             </div>
 
-            {/* Main Content */}
-            <div className="grid md:grid-cols-2 gap-8">
+            {/* Divider */}
+            <div className="border-t border-slate-200" />
 
-              {/* Left Column - What You Get */}
-              <div className="space-y-6">
-                <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-                  <h2 className="text-xl font-bold text-slate-900">What You Get:</h2>
-                  <div className="space-y-4">
-                    {[
-                      {
-                        title: "Up to 15 Minutes of Video Feedback",
-                        description: "I'll screen-record my honest thoughts as I go through your page"
-                      },
-                      {
-                        title: "Headline Analysis",
-                        description: "Is your headline grabbing attention? I'll tell you exactly what's working and what's not"
-                      },
-                      {
-                        title: "Copy & Structure Review",
-                        description: "Where are people dropping off? What's confusing? What needs to change?"
-                      },
-                      {
-                        title: "Actionable Suggestions",
-                        description: "Not vague advice - specific changes you can implement immediately"
-                      }
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
-                          <Check className="w-5 h-5 text-amber-600" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-slate-900">{item.title}</p>
-                          <p className="text-sm text-slate-600">{item.description}</p>
-                        </div>
-                      </div>
-                    ))}
+            {/* What You Get */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold text-slate-900">Here's what happens:</h2>
+              <div className="space-y-3">
+                {[
+                  "I record my screen. I go through your page. You watch over my shoulder.",
+                  "I tell you if your headline makes me want to keep reading or bounce.",
+                  "I show you where I'd lose interest, what's confusing, and what's missing.",
+                  "You get a list of EXACTLY what to fix. Then you fix it. Then you launch."
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-slate-700">{item}</span>
                   </div>
-                </div>
-
-                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                  <h3 className="font-bold text-slate-900 mb-4">Perfect for you if...</h3>
-                  <div className="space-y-3">
-                    {[
-                      "You've built your sales page but aren't sure if it converts",
-                      "You want honest feedback from someone who knows what converts",
-                      "You'd rather get it right now than guess and lose sales",
-                      "You want specific, actionable changes - not vague advice"
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <Check className="w-3 h-3 text-green-600" />
-                        </div>
-                        <span className="text-slate-700">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* About Matt */}
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-5 border border-amber-200">
-                  <div className="flex items-start gap-4">
-                    <img
-                      src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png"
-                      alt="Matt Webley"
-                      className="w-16 h-16 rounded-full object-cover flex-shrink-0"
-                    />
-                    <div>
-                      <p className="font-bold text-slate-900">Matt Webley</p>
-                      <p className="text-slate-700 text-sm leading-relaxed">
-                        I specialize in boosting conversion rates. $23 million+ generated online, $12 million from SaaS alone. I'm not going to sugarcoat it - I'll tell you exactly what needs to change.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
+            </div>
 
-              {/* Right Column - Pricing & CTA */}
-              <div className="space-y-6">
-                <div className="bg-white rounded-2xl border-2 border-amber-300 p-6 space-y-4">
-                  <div className="text-center space-y-2">
-                    <p className="text-slate-500 text-sm font-medium uppercase tracking-wide">Video Critique</p>
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-4xl font-extrabold text-slate-900">{currencySymbol}{prices.critique[currency]}</span>
+            {/* How It Works */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold text-slate-900">How it works:</h2>
+              <div className="space-y-3">
+                {[
+                  "Complete your purchase",
+                  "Submit your sales page URL via the form you'll receive",
+                  "I'll record a video reviewing your page",
+                  "You'll get the video within 5 business days"
+                ].map((step, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="w-6 h-6 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center flex-shrink-0 text-sm font-medium">
+                      {i + 1}
                     </div>
-                    <p className="text-slate-600">Up to 15 minutes of detailed feedback</p>
+                    <span className="text-slate-700">{step}</span>
                   </div>
+                ))}
+              </div>
+            </div>
 
-                  {/* Bump Offer */}
-                  <label className="flex items-start gap-3 p-4 bg-amber-50 border-2 border-amber-200 rounded-lg cursor-pointer hover:border-amber-400 transition-colors">
-                    <input
-                      type="checkbox"
-                      checked={includeHeadlines}
-                      onChange={(e) => setIncludeHeadlines(e.target.checked)}
-                      className="w-5 h-5 mt-0.5 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
-                    />
-                    <div>
-                      <p className="font-bold text-slate-900 text-sm">
-                        ADD: 5 Headlines Written By Me
-                        <span className="ml-2 text-amber-600">+{currencySymbol}{prices.critiqueHeadlines[currency]}</span>
-                      </p>
-                      <p className="text-xs text-slate-600 mt-1">
-                        I'll write 5 headline variations for you to test - based on what I see converts best
-                      </p>
-                    </div>
-                  </label>
+            {/* Conversion Calculator */}
+            {(() => {
+              const baseConversion = 2; // 2% baseline
+              const monthlyVisitors = 500;
+              const monthlyPrice = currency === "gbp" ? 29 : 39; // SaaS monthly subscription
+              const avgCustomerLifetime = 8; // months
 
-                  <div className="text-center py-2">
-                    <p className="text-slate-900 font-bold text-lg">
-                      Total: {currencySymbol}{includeHeadlines
-                        ? prices.critique[currency] + prices.critiqueHeadlines[currency]
-                        : prices.critique[currency]
-                      }
+              const extraCustomersPerMonth = Math.round(monthlyVisitors * (conversionBoost / 100));
+
+              // After 12 months of acquiring extra customers who each pay monthly
+              // Month 1: extraCustomers * monthlyPrice
+              // Month 2: (extraCustomers * 2) * monthlyPrice (first batch still paying + new batch)
+              // This compounds! But we'll simplify with LTV
+              const extraCustomersYear1 = extraCustomersPerMonth * 12;
+              const ltvPerCustomer = monthlyPrice * avgCustomerLifetime;
+              const extraRevenueYear1 = extraCustomersYear1 * ltvPerCustomer;
+
+              return (
+                <Card className="p-6 border-2 border-slate-200 bg-slate-50 space-y-5">
+                  <div className="space-y-2">
+                    <h2 className="text-lg font-bold text-slate-900">SaaS compounds. Small changes = big money.</h2>
+                    <p className="text-slate-600">
+                      Every extra subscriber pays you EVERY month. A tiny conversion bump snowballs fast.
                     </p>
                   </div>
 
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-700 font-medium">Conversion rate improvement:</span>
+                      <span className="text-xl font-bold text-primary">+{conversionBoost}%</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="3"
+                      step="0.5"
+                      value={conversionBoost}
+                      onChange={(e) => setConversionBoost(parseFloat(e.target.value))}
+                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                    />
+                    <div className="flex justify-between text-xs text-slate-400">
+                      <span>+0.5%</span>
+                      <span>+3%</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-lg p-4 border border-slate-200 space-y-4">
+                    <p className="text-sm text-slate-500 text-center">
+                      {monthlyVisitors} visitors/month • {currencySymbol}{monthlyPrice}/month subscription • {avgCustomerLifetime} month avg. lifetime
+                    </p>
+
+                    <div className="text-center space-y-1">
+                      <p className="text-slate-600">
+                        +{conversionBoost}% conversion = <span className="font-bold text-slate-900">{extraCustomersPerMonth} extra subscribers/month</span>
+                      </p>
+                      <p className="text-slate-600">
+                        Each one worth <span className="font-bold text-slate-900">{currencySymbol}{ltvPerCustomer}</span> over their lifetime
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 text-center">
+                      <p className="text-2xl font-black text-primary">
+                        {currencySymbol}{extraRevenueYear1.toLocaleString()}
+                      </p>
+                      <p className="text-slate-600">
+                        extra revenue in year one
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="text-slate-700 text-center font-medium">
+                    I've seen single headline changes double conversion rates. What do you think an 8-figure copywriter might spot on YOUR page?
+                  </p>
+
+                  <p className="text-xs text-slate-400 text-center">
+                    *Illustrative example only. Your results will vary.
+                  </p>
+                </Card>
+              );
+            })()}
+
+            {/* Price & CTA */}
+            <Card className="p-6 border-2 border-slate-200 space-y-4">
+              <div className="text-center space-y-2">
+                <span className="text-4xl font-black text-slate-900">{currencySymbol}{prices.critique[currency]}</span>
+                <p className="text-slate-500">One-time payment</p>
+              </div>
+
+              {/* Currency Toggle */}
+              <div className="flex justify-center">
+                <div className="inline-flex items-center gap-1 p-1 bg-slate-100 rounded-lg">
                   <button
-                    onClick={handlePurchase}
-                    disabled={isProcessing}
-                    className="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-amber-300 text-white font-bold text-lg py-4 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                    onClick={() => setCurrency("usd")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                      currency === "usd"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-500 hover:text-slate-900"
+                    }`}
                   >
-                    {isProcessing ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                        Processing...
-                      </span>
-                    ) : (
-                      <>
-                        Get My Video Critique
-                        <ArrowRight className="w-5 h-5 inline ml-2" />
-                      </>
-                    )}
+                    USD
                   </button>
-
-                  <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
-                    <Shield className="w-4 h-4" />
-                    <span>Delivered within 5 business days</span>
-                  </div>
-                </div>
-
-                {/* How It Works */}
-                <div className="bg-white rounded-2xl border border-slate-200 p-6 space-y-4">
-                  <h3 className="font-bold text-slate-900">How It Works:</h3>
-                  <ol className="space-y-4">
-                    {[
-                      "Complete your purchase",
-                      "You'll receive a form to submit your sales page URL",
-                      "I'll record a screen share video reviewing your page",
-                      "You'll get the video within 5 business days"
-                    ].map((step, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center flex-shrink-0 text-sm font-bold">
-                          {i + 1}
-                        </div>
-                        <span className="text-slate-700">{step}</span>
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-
-                {/* What I'll Cover */}
-                <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-                  <h3 className="font-bold text-slate-900 mb-4">What I'll Cover:</h3>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    {[
-                      "Headline strength",
-                      "Opening hook",
-                      "Benefit clarity",
-                      "Social proof",
-                      "Call to action",
-                      "Price presentation",
-                      "Objection handling",
-                      "Overall flow"
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <Check className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                        <span className="text-slate-700">{item}</span>
-                      </div>
-                    ))}
-                  </div>
+                  <button
+                    onClick={() => setCurrency("gbp")}
+                    className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                      currency === "gbp"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-500 hover:text-slate-900"
+                    }`}
+                  >
+                    GBP
+                  </button>
                 </div>
               </div>
-            </div>
+
+              <Button
+                onClick={handlePurchase}
+                disabled={isProcessing}
+                size="lg"
+                className="w-full h-14 text-lg font-bold"
+              >
+                {isProcessing ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Processing...
+                  </span>
+                ) : (
+                  <>
+                    Get My Video Critique
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </>
+                )}
+              </Button>
+
+              <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
+                <Shield className="w-4 h-4" />
+                <span>Delivered within 5 business days</span>
+              </div>
+
+              {/* Test Button - Remove before launch */}
+              {(user as any)?.isAdmin && (
+                <button
+                  onClick={() => window.location.href = '/critique/success'}
+                  className="w-full text-xs text-slate-400 hover:text-slate-600 underline"
+                >
+                  [Admin] Skip to success page (test)
+                </button>
+              )}
+            </Card>
           </>
         ) : (
           /* Locked State */
-          <div className="max-w-xl mx-auto">
-            <div className="bg-slate-100 rounded-2xl p-12 border-2 border-slate-200 text-center">
-              <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center mx-auto mb-6">
-                <Lock className="w-10 h-10 text-slate-400" />
-              </div>
-              <h1 className="text-2xl font-bold text-slate-500 mb-3">
-                Sales Page Video Critique
-              </h1>
-              <p className="text-slate-400 text-lg mb-6">
-                This option unlocks when you reach the Launch phase (Day 19).
-              </p>
-              <p className="text-slate-500">
-                Build your sales page first, then get expert feedback from an 8-figure copywriter.
-              </p>
+          <Card className="p-12 border-2 border-slate-200 bg-slate-50 text-center">
+            <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center mx-auto mb-6">
+              <Lock className="w-10 h-10 text-slate-400" />
             </div>
-          </div>
+            <h1 className="text-2xl font-bold text-slate-500 mb-3">
+              Sales Page Video Critique
+            </h1>
+            <p className="text-slate-400 text-lg mb-6">
+              This unlocks when you reach Day 19.
+            </p>
+            <p className="text-slate-500">
+              Build your sales page first, then get expert feedback.
+            </p>
+          </Card>
         )}
 
         {/* Questions */}
-        <p className="text-center text-slate-500 text-sm">
+        <p className="text-center text-slate-400 text-sm">
           Questions? Email matt@mattwebley.com
         </p>
 

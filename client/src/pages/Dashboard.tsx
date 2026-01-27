@@ -21,45 +21,54 @@ import {
   Loader2,
   Zap
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useRoute, useLocation, Link } from "wouter";
 import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress, useCompleteDay } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
 import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
-import { Day0StartHere } from "@/components/Day0StartHere";
-import { Day1IdeaGenerator } from "@/components/Day1IdeaGenerator";
-import { Day2IdeaValidator } from "@/components/Day2IdeaValidator";
-import { Day3CoreFeatures } from "@/components/Day3CoreFeatures";
-import { Day4Naming } from "@/components/Day4Naming";
-import { Day5Logo } from "@/components/Day5Logo";
-import { Day5TechStack } from "@/components/Day5TechStack";
-import { Day11Brand } from "@/components/Day11Brand";
-import { Day6SummaryPRD } from "@/components/Day6SummaryPRD";
-import { Day8ClaudeCode } from "@/components/Day8ClaudeCode";
-import { Day9ClaudeCodeMastery } from "@/components/Day9ClaudeCodeMastery";
-import { Day10BuildLoop } from "@/components/Day10BuildLoop";
-import { Day10AIBrain } from "@/components/Day10AIBrain";
-import { Day11BrandDesign } from "@/components/Day11BrandDesign";
-import { Day12LetUsersIn } from "@/components/Day12LetUsersIn";
-import { Day13ReachYourUsers } from "@/components/Day13ReachYourUsers";
-import { Day13ExternalAPIs } from "@/components/Day13ExternalAPIs";
-import { Day15Payments } from "@/components/Day15Payments";
-import { Day17AutonomousTesting } from "@/components/Day17AutonomousTesting";
-import { Day18AdminDashboard } from "@/components/Day18AdminDashboard";
-import { Day19MobileReady } from "@/components/Day19MobileReady";
-import { Day19TheSalesMachine } from "@/components/Day19TheSalesMachine";
-import { Day20GetFound } from "@/components/Day20GetFound";
-import { Day21LaunchDay } from "@/components/Day21LaunchDay";
-import { Day17BuildItOut } from "@/components/Day17BuildItOut";
-import { Day18BuildYourMVP } from "@/components/Day18BuildYourMVP";
-import { Day18TestEverything } from "@/components/Day18TestEverything";
 import { DayCommunity } from "@/components/DayCommunity";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
 import { VideoSlides } from "@/components/VideoSlides";
 import { toast } from "sonner";
+
+// Lazy load Day components - only loads the component for the current day
+const Day0StartHere = lazy(() => import("@/components/Day0StartHere").then(m => ({ default: m.Day0StartHere })));
+const Day1IdeaGenerator = lazy(() => import("@/components/Day1IdeaGenerator").then(m => ({ default: m.Day1IdeaGenerator })));
+const Day2IdeaValidator = lazy(() => import("@/components/Day2IdeaValidator").then(m => ({ default: m.Day2IdeaValidator })));
+const Day3CoreFeatures = lazy(() => import("@/components/Day3CoreFeatures").then(m => ({ default: m.Day3CoreFeatures })));
+const Day4Naming = lazy(() => import("@/components/Day4Naming").then(m => ({ default: m.Day4Naming })));
+const Day5Logo = lazy(() => import("@/components/Day5Logo").then(m => ({ default: m.Day5Logo })));
+const Day5TechStack = lazy(() => import("@/components/Day5TechStack").then(m => ({ default: m.Day5TechStack })));
+const Day6SummaryPRD = lazy(() => import("@/components/Day6SummaryPRD").then(m => ({ default: m.Day6SummaryPRD })));
+const Day8ClaudeCode = lazy(() => import("@/components/Day8ClaudeCode").then(m => ({ default: m.Day8ClaudeCode })));
+const Day9ClaudeCodeMastery = lazy(() => import("@/components/Day9ClaudeCodeMastery").then(m => ({ default: m.Day9ClaudeCodeMastery })));
+const Day10BuildLoop = lazy(() => import("@/components/Day10BuildLoop").then(m => ({ default: m.Day10BuildLoop })));
+const Day10AIBrain = lazy(() => import("@/components/Day10AIBrain").then(m => ({ default: m.Day10AIBrain })));
+const Day11Brand = lazy(() => import("@/components/Day11Brand").then(m => ({ default: m.Day11Brand })));
+const Day11BrandDesign = lazy(() => import("@/components/Day11BrandDesign").then(m => ({ default: m.Day11BrandDesign })));
+const Day12LetUsersIn = lazy(() => import("@/components/Day12LetUsersIn").then(m => ({ default: m.Day12LetUsersIn })));
+const Day13ReachYourUsers = lazy(() => import("@/components/Day13ReachYourUsers").then(m => ({ default: m.Day13ReachYourUsers })));
+const Day13ExternalAPIs = lazy(() => import("@/components/Day13ExternalAPIs").then(m => ({ default: m.Day13ExternalAPIs })));
+const Day15Payments = lazy(() => import("@/components/Day15Payments").then(m => ({ default: m.Day15Payments })));
+const Day17AutonomousTesting = lazy(() => import("@/components/Day17AutonomousTesting").then(m => ({ default: m.Day17AutonomousTesting })));
+const Day17BuildItOut = lazy(() => import("@/components/Day17BuildItOut").then(m => ({ default: m.Day17BuildItOut })));
+const Day18AdminDashboard = lazy(() => import("@/components/Day18AdminDashboard").then(m => ({ default: m.Day18AdminDashboard })));
+const Day18BuildYourMVP = lazy(() => import("@/components/Day18BuildYourMVP").then(m => ({ default: m.Day18BuildYourMVP })));
+const Day18TestEverything = lazy(() => import("@/components/Day18TestEverything").then(m => ({ default: m.Day18TestEverything })));
+const Day19MobileReady = lazy(() => import("@/components/Day19MobileReady").then(m => ({ default: m.Day19MobileReady })));
+const Day19TheSalesMachine = lazy(() => import("@/components/Day19TheSalesMachine").then(m => ({ default: m.Day19TheSalesMachine })));
+const Day20GetFound = lazy(() => import("@/components/Day20GetFound").then(m => ({ default: m.Day20GetFound })));
+const Day21LaunchDay = lazy(() => import("@/components/Day21LaunchDay").then(m => ({ default: m.Day21LaunchDay })));
+
+// Loading fallback for lazy components
+const DayComponentLoader = () => (
+  <div className="flex items-center justify-center py-12">
+    <Loader2 className="w-8 h-8 animate-spin text-primary" />
+  </div>
+);
 
 // Helper to detect subheadlines in lessons (short lines ending with ":" or all-caps patterns)
 const isSubheadline = (paragraph: string): boolean => {
@@ -406,7 +415,7 @@ export default function Dashboard() {
 
         {/* Main Task Area */}
         <div className="space-y-8">
-
+          <Suspense fallback={<DayComponentLoader />}>
             {/* Day 0: Start Here */}
             {currentDay === 0 ? (
               <>
@@ -1616,6 +1625,8 @@ export default function Dashboard() {
             </div>
               </>
             )}
+
+          </Suspense>
 
             {/* Community Section (Q&A + Discussion) */}
             <div className="pt-8 border-t border-slate-200 mt-8">

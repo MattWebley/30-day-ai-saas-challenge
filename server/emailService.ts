@@ -215,6 +215,87 @@ export async function sendTestimonialNotificationEmail(params: TestimonialNotifi
   }
 }
 
+export interface CritiqueNotificationParams {
+  userEmail: string;
+  userName: string;
+  salesPageUrl: string;
+  productDescription: string | null;
+  targetAudience: string | null;
+  specificQuestions: string | null;
+}
+
+export async function sendCritiqueNotificationEmail(params: CritiqueNotificationParams): Promise<void> {
+  const { userEmail, userName, salesPageUrl, productDescription, targetAudience, specificQuestions } = params;
+
+  try {
+    const { client, fromEmail } = await getResendClient();
+    await client.emails.send({
+      from: fromEmail,
+      to: ['matt@mattwebley.com'],
+      subject: `New Critique Request from ${userName}`,
+      html: `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #334155; max-width: 600px; margin: 0 auto; padding: 20px;">
+
+  <div style="text-align: center; margin-bottom: 32px;">
+    <div style="width: 64px; height: 64px; background: #f59e0b; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
+      <span style="color: white; font-size: 32px;">🎬</span>
+    </div>
+    <h1 style="color: #0f172a; margin: 0; font-size: 28px;">New Critique Request!</h1>
+  </div>
+
+  <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+    <p style="margin: 0 0 8px 0;"><strong>From:</strong> ${userName}</p>
+    <p style="margin: 0;"><strong>Email:</strong> ${userEmail}</p>
+  </div>
+
+  <div style="background: #fff7ed; border: 2px solid #fed7aa; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Sales Page URL</h2>
+    <a href="${salesPageUrl}" style="color: #2563eb; word-break: break-all;">${salesPageUrl}</a>
+  </div>
+
+  ${productDescription ? `
+  <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Product Description</h2>
+    <p style="margin: 0;">${productDescription}</p>
+  </div>
+  ` : ''}
+
+  ${targetAudience ? `
+  <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Target Audience</h2>
+    <p style="margin: 0;">${targetAudience}</p>
+  </div>
+  ` : ''}
+
+  ${specificQuestions ? `
+  <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Specific Questions</h2>
+    <p style="margin: 0; white-space: pre-wrap;">${specificQuestions}</p>
+  </div>
+  ` : ''}
+
+  <p style="color: #64748b; font-size: 14px; text-align: center;">
+    Submitted: ${new Date().toLocaleString()}<br/>
+    View all requests in the <a href="https://21daysaas.com/admin" style="color: #2563eb;">Admin Panel</a>
+  </p>
+
+</body>
+</html>
+      `,
+    });
+    console.log('Critique notification email sent to matt@mattwebley.com');
+  } catch (error) {
+    console.error('Failed to send critique notification email:', error);
+    throw error;
+  }
+}
+
 export async function sendCoachingConfirmationEmail(params: CoachingEmailParams): Promise<void> {
   const { to, firstName, currency, amount } = params;
 

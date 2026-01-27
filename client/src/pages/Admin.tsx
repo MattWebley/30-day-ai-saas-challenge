@@ -147,6 +147,21 @@ interface TestimonialEntry {
   };
 }
 
+interface CritiqueRequest {
+  id: number;
+  userId: string;
+  salesPageUrl: string;
+  productDescription: string | null;
+  targetAudience: string | null;
+  specificQuestions: string | null;
+  status: string;
+  videoUrl: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  userEmail: string | null;
+  userFirstName: string | null;
+}
+
 interface AbVariant {
   id: number;
   testId: number;
@@ -304,6 +319,29 @@ export default function Admin() {
 
   const { data: testimonials = [] } = useQuery<TestimonialEntry[]>({
     queryKey: ["/api/admin/testimonials"],
+  });
+
+  // Critique requests management
+  const [showCritiqueSection, setShowCritiqueSection] = useState(true);
+
+  const { data: critiqueRequests = [] } = useQuery<CritiqueRequest[]>({
+    queryKey: ["/api/admin/critiques"],
+  });
+
+  const pendingCritiques = critiqueRequests.filter(c => c.status === 'pending');
+
+  const updateCritiqueStatus = useMutation({
+    mutationFn: async ({ id, status, videoUrl }: { id: number; status: string; videoUrl?: string }) => {
+      const res = await apiRequest("PATCH", `/api/admin/critiques/${id}`, { status, videoUrl });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/critiques"] });
+      toast.success("Critique status updated");
+    },
+    onError: () => {
+      toast.error("Failed to update critique");
+    }
   });
 
   // A/B Testing state
@@ -1030,6 +1068,106 @@ export default function Admin() {
                 </div>
               ))}
             </Card>
+          )}
+        </div>
+
+        {/* Critique Requests */}
+        <div className="space-y-4">
+          <button
+            onClick={() => setShowCritiqueSection(!showCritiqueSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <h2 className="text-xl font-bold text-slate-900">Video Critiques</h2>
+            {pendingCritiques.length > 0 && (
+              <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">
+                {pendingCritiques.length} to do
+              </span>
+            )}
+            {showCritiqueSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showCritiqueSection && (
+            <div className="space-y-4">
+              {critiqueRequests.length === 0 ? (
+                <Card className="p-8 border-2 border-slate-100 text-center">
+                  <Video className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">No critique requests yet</p>
+                </Card>
+              ) : (
+                <div className="space-y-3">
+                  {critiqueRequests.map((critique) => (
+                    <Card key={critique.id} className={`p-4 border-2 ${critique.status === 'pending' ? 'border-red-200 bg-red-50' : critique.status === 'completed' ? 'border-green-200 bg-green-50' : 'border-slate-200'}`}>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+                              critique.status === 'pending' ? 'bg-red-100 text-red-700' :
+                              critique.status === 'in_progress' ? 'bg-amber-100 text-amber-700' :
+                              'bg-green-100 text-green-700'
+                            }`}>
+                              {critique.status === 'pending' ? 'TO DO' : critique.status === 'in_progress' ? 'IN PROGRESS' : 'DONE'}
+                            </span>
+                            <span className="text-sm text-slate-500">
+                              {formatDistanceToNow(new Date(critique.createdAt), { addSuffix: true })}
+                            </span>
+                          </div>
+                          <p className="font-medium text-slate-900">{critique.userFirstName || critique.userEmail}</p>
+                          <a href={critique.salesPageUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm flex items-center gap-1">
+                            {critique.salesPageUrl}
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                          {critique.productDescription && (
+                            <p className="text-sm text-slate-600 mt-2"><strong>Product:</strong> {critique.productDescription}</p>
+                          )}
+                          {critique.targetAudience && (
+                            <p className="text-sm text-slate-600"><strong>Audience:</strong> {critique.targetAudience}</p>
+                          )}
+                          {critique.specificQuestions && (
+                            <p className="text-sm text-slate-600"><strong>Questions:</strong> {critique.specificQuestions}</p>
+                          )}
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          {critique.status === 'pending' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => updateCritiqueStatus.mutate({ id: critique.id, status: 'in_progress' })}
+                            >
+                              Start
+                            </Button>
+                          )}
+                          {critique.status === 'in_progress' && (
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                const videoUrl = prompt("Enter the video URL:");
+                                if (videoUrl) {
+                                  updateCritiqueStatus.mutate({ id: critique.id, status: 'completed', videoUrl });
+                                }
+                              }}
+                            >
+                              Mark Done
+                            </Button>
+                          )}
+                          {critique.status === 'completed' && critique.videoUrl && (
+                            <a href={critique.videoUrl} target="_blank" rel="noopener noreferrer">
+                              <Button size="sm" variant="outline">
+                                <Video className="w-4 h-4 mr-1" />
+                                View
+                              </Button>
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
         </div>
 
