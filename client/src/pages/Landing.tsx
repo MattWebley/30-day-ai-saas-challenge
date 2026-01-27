@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, TrendingUp, Shield, Star, Play, Lightbulb, Rocket, Code, Users } from "lucide-react";
 import { ds } from "@/lib/design-system";
 
-const DEFAULT_HEADLINE = "How Complete Beginners Are Using AI to Build Real, Working Software Products in 21 Days for Less Than $100...";
+const DEFAULT_HEADLINE = "How to Build Your Own Software Product in 21 Days Without Writing a Single Line of Code (Even If You Don't Have an Idea Yet)...";
 
 export default function Landing() {
   const [headline, setHeadline] = useState(DEFAULT_HEADLINE);
@@ -38,12 +38,15 @@ export default function Landing() {
       {/* Sticky Header */}
       <header className="border-b border-slate-100 bg-white sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-6 py-3 flex items-center justify-center relative">
-          <img
-            src="/logo.png?v=3"
-            alt="21 Day AI SaaS Challenge"
-            className="h-20 sm:h-24 w-auto object-contain"
-            style={{ imageRendering: 'auto' }}
-          />
+          <div className="flex flex-col items-center">
+            <img
+              src="/logo.png?v=3"
+              alt="21 Day AI SaaS Challenge"
+              className="h-20 sm:h-24 w-auto object-contain"
+              style={{ imageRendering: 'auto' }}
+            />
+            <span className="text-xs text-slate-500 mt-1">by Matt Webley</span>
+          </div>
           <div className="absolute right-6 flex gap-2 items-center">
             <a href="/api/login">
               <Button variant="ghost" size="sm">Login</Button>
@@ -73,7 +76,7 @@ export default function Landing() {
             </h1>
 
             <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
-              ...Without Writing a Single Line of Code, Without Any Technical Experience, and Without Spending Months "Learning to Code"
+              No Tech Skills. No Developers. Under $100. Just AI and Daily Micro-Tasks.
             </h2>
 
             {/* VSL - VIDEO SALES LETTER */}
@@ -334,8 +337,12 @@ export default function Landing() {
         <section className="py-12 border-t border-slate-100">
           <div className="space-y-6 text-lg text-slate-700 leading-relaxed">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 text-center">
-              The 21 Day AI SaaS Challenge: One Task Per Day, A Real Product at the End
+              The "Daily Build" Method
             </h2>
+
+            <p className="text-center text-xl text-slate-600">
+              The simple system that turns complete beginners into software builders in 21 days
+            </p>
 
             <div className="my-8 bg-slate-50 border-2 border-slate-200 rounded-xl p-8">
               <p className="text-lg">
@@ -345,7 +352,7 @@ export default function Landing() {
                 It's an APP that guides you through 21 days of focused tasks... and at the end, you don't just have "knowledge" - you have a REAL, WORKING software product.
               </p>
               <p className="text-lg mt-4">
-                And here's what makes this different from everything else you've tried: <strong className="text-slate-900">you can't fail to finish.</strong> The app tracks your progress. It shows your streak. It won't let you lie to yourself about whether you're actually doing the work. You can't ignore it like a PDF sitting in your downloads folder.
+                The Daily Build Method works because it removes the two things that kill most people's dreams: <strong className="text-slate-900">overwhelm</strong> and <strong className="text-slate-900">decision fatigue</strong>. You never have to figure out what to do next. You never have to spend hours on a single step. One task. One day. Repeat for 21 days. Done.
               </p>
             </div>
 
@@ -402,6 +409,12 @@ export default function Landing() {
                 <strong className="text-slate-900">By the way:</strong> this challenge app you're looking at right now? I built it using the EXACT same system I'm teaching you. The prompts, the process, the tools - all of it. User accounts, payments, AI features, mobile optimization - everything you see here, I built with this system. You're not just reading about what's possible. You're USING the proof.
               </p>
             </div>
+
+            <a href="/order" className="block">
+              <Button size="lg" className="w-full py-4 text-lg font-bold">
+                Start the 21 Day Challenge <ArrowRight className="w-5 h-5 inline ml-1" />
+              </Button>
+            </a>
           </div>
         </section>
 
@@ -500,6 +513,12 @@ export default function Landing() {
                   You'll go from "I want to build something" to working software. We help you find or validate an idea, then cover everything needed to build a REAL product: the tech setup, AI integration, user accounts, email, mobile support - the WHOLE thing. What we DON'T cover is marketing, customer acquisition, or business building. That's a different skill set for after you've built something worth selling.
                 </p>
               </div>
+
+              <a href="/order" className="block mt-8">
+                <Button size="lg" className="w-full py-4 text-lg font-bold">
+                  I'm Ready to Build <ArrowRight className="w-5 h-5 inline ml-1" />
+                </Button>
+              </a>
             </div>
           </div>
         </section>
@@ -510,7 +529,7 @@ export default function Landing() {
         <section className="py-12 border-t border-slate-100">
           <div className="space-y-8">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 text-center">
-              I've Spent 8+ Years Building Software So You Don't Have To
+              I Know What Works. I Know What Doesn't. Let Me Show You.
             </h2>
 
             <div className="flex flex-col md:flex-row gap-8 items-start">
@@ -617,6 +636,15 @@ export default function Landing() {
                   </div>
                 </div>
               </Card>
+            </div>
+
+            <div className="text-center pt-8 space-y-4">
+              <p className="text-slate-600 font-medium">Join hundreds of builders who started exactly where you are now</p>
+              <a href="/order" className="block">
+                <Button size="lg" className="py-4 px-8 text-lg font-bold">
+                  Start Building Today <ArrowRight className="w-5 h-5 inline ml-1" />
+                </Button>
+              </a>
             </div>
           </div>
         </section>
@@ -781,8 +809,8 @@ export default function Landing() {
               <div className="flex items-start gap-4">
                 <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
                 <div>
-                  <span className="font-semibold text-slate-900">12 Months Access to Complete the Challenge</span>
-                  <p className="text-slate-600 mt-1">One year to go from zero to working product. AI tools move fast - you'll always use the CURRENT methods, not outdated ones.</p>
+                  <span className="font-semibold text-slate-900">6 Months Access to Complete the Challenge</span>
+                  <p className="text-slate-600 mt-1">Six months to go from zero to working product. AI tools move fast - you'll always use the CURRENT methods, not outdated ones.</p>
                 </div>
               </div>
 
@@ -881,13 +909,133 @@ export default function Landing() {
         </section>
 
         {/* ========================================== */}
+        {/* OBJECTIONS */}
+        {/* ========================================== */}
+        <section className="py-12 border-t border-slate-100">
+          <div className="space-y-8 text-lg text-slate-700 leading-relaxed">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 text-center">
+              But Maybe You're Thinking...
+            </h2>
+
+            <div className="space-y-8">
+              <div className="space-y-3">
+                <p className="text-xl font-bold text-slate-900 italic">
+                  "I'm not technical. I can't code."
+                </p>
+                <p>
+                  Good. You're not supposed to code. You're supposed to DIRECT. The AI writes the code. You just tell it what you want in plain English. The people finishing this challenge? Teachers. Nurses. Retirees. Complete technophobes. If they can do it, so can you.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xl font-bold text-slate-900 italic">
+                  "I don't even have an idea."
+                </p>
+                <p>
+                  Neither did most people on Day 0. That's why Day 1 exists. The AI generates 28 ideas tailored to YOUR skills and interests, scores them, and ranks them. Your only job is to pick one.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xl font-bold text-slate-900 italic">
+                  "I wouldn't know where to start."
+                </p>
+                <p>
+                  That's the whole point of a challenge. Day 1. Then Day 2. Then Day 3. Every single step is mapped out. No guesswork. No "what should I do next?" The app tells you exactly what to do, every day, for 21 days.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xl font-bold text-slate-900 italic">
+                  "I've never built a business before."
+                </p>
+                <p>
+                  You're not building a business. You're building a PRODUCT. One thing. The business comes later, and Day 21 shows you exactly how to get your first customers. But first, you need something to sell.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xl font-bold text-slate-900 italic">
+                  "I don't have the money for developers or expensive tools."
+                </p>
+                <p>
+                  Total cost: under $100. Not per month. Total. Replit Agent and Claude are the only tools you need. No $50K developers. No $10K agencies. Just you and AI.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xl font-bold text-slate-900 italic">
+                  "I don't have time."
+                </p>
+                <p>
+                  15-30 minutes a day. Some days are 5 minutes. This isn't a bootcamp. It's daily micro-tasks designed for people with jobs, kids, and lives.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xl font-bold text-slate-900 italic">
+                  "What if I get stuck?"
+                </p>
+                <p>
+                  There's an AI Mentor built into the challenge. Stuck? Ask it. Confused? Ask it. Plus, the prompts I give you do 90% of the heavy lifting. You're mostly copying, pasting, and tweaking.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <p className="text-xl font-bold text-slate-900 italic">
+                  "I've tried things like this before and failed."
+                </p>
+                <p>
+                  Courses? Bootcamps? YouTube tutorials? This isn't that. Those fail because they're PASSIVE. You watch, you learn, you forget, you never do anything. This is ACTIVE. One task per day. The app tracks you. It stares at you until you take action. You can't hide from it.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ========================================== */}
+        {/* FUTURE PACING */}
+        {/* ========================================== */}
+        <section className="py-12 border-t border-slate-100">
+          <div className="space-y-6 text-lg text-slate-700 leading-relaxed">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 text-center">
+              Picture This: 21 Days From Now...
+            </h2>
+
+            <p>
+              You open your laptop and there it is. YOUR software. YOUR product. Running, live, on the internet.
+            </p>
+
+            <p>
+              Users can sign up. They can log in. They can actually USE the thing you built. It has your name on it. It has your logo. It solves a real problem for real people.
+            </p>
+
+            <p>
+              You didn't hire a developer. You didn't spend months in a coding bootcamp. You didn't drain your savings on an agency. You just followed the Daily Build Method, one task at a time, for 21 days.
+            </p>
+
+            <p>
+              And now? You have something most people only dream about: <strong className="text-slate-900">a working software product that YOU created.</strong>
+            </p>
+
+            <p>
+              That's not a fantasy. That's what happens when you show up daily, follow the system, and let AI handle the technical parts.
+            </p>
+
+            <p className="text-xl font-bold text-slate-900 text-center pt-4">
+              21 days. That's all that stands between you and that moment.
+            </p>
+          </div>
+        </section>
+
+        {/* ========================================== */}
         {/* 6. THE OFFER STACK */}
         {/* ========================================== */}
         <section className="py-12 border-t border-slate-100">
           <div className="bg-white border-2 border-slate-200 rounded-2xl p-8 md:p-12 space-y-8">
             <div className="space-y-4 text-center">
               <h2 className="text-3xl md:text-4xl font-black text-slate-900">
-                Get Instant Access for Just £295 (One Payment, 12 Months Access)
+                Get Instant Access for Just £295 (One Payment, 6 Months Access)
               </h2>
             </div>
 
@@ -920,9 +1068,25 @@ export default function Landing() {
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="text-slate-700">12 months access to complete the challenge <span className="text-slate-400">(Value: Plenty of time)</span></span>
+                  <span className="text-slate-700">6 months access to complete the challenge <span className="text-slate-400">(Value: Plenty of time)</span></span>
                 </li>
               </ul>
+            </div>
+
+            {/* FALSE CLOSE */}
+            <div className="border-t border-slate-200 pt-8 space-y-4 text-lg text-slate-700">
+              <p>
+                If this challenge ONLY helped you finally build that software idea that's been stuck in your head for months (or years)... would it be worth it?
+              </p>
+              <p>
+                If it ONLY gave you a system you could use to build your NEXT product, and the one after that... would it be worth it?
+              </p>
+              <p>
+                If it ONLY saved you from spending £50,000+ on developers who might not even deliver what you wanted... would it be worth it?
+              </p>
+              <p className="font-bold text-slate-900">
+                You're getting ALL of that. And here's what it costs:
+              </p>
             </div>
 
             <div className="border-t border-slate-200 pt-8 space-y-6">
@@ -933,7 +1097,24 @@ export default function Landing() {
                   <span className="text-slate-500 text-lg">/ $399 USD</span>
                 </div>
                 <p className="text-slate-500 mt-2">
-                  One payment. 12 months access. No subscriptions.
+                  One payment. 6 months access. No subscriptions.
+                </p>
+              </div>
+
+              {/* PRICE ANCHORING */}
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center space-y-2">
+                <p className="text-slate-700">
+                  That's less than <strong className="text-slate-900">£14 per day</strong> over the 21 days.
+                </p>
+                <p className="text-slate-600">
+                  Less than a single hour with a freelance developer. Less than one month of most "SaaS courses." Less than a fancy dinner out.
+                </p>
+              </div>
+
+              {/* REASON WHY */}
+              <div className="text-center text-slate-600">
+                <p>
+                  <strong className="text-slate-900">Why so affordable?</strong> Because I'm not looking for tire-kickers who need convincing. I want builders who are ready to DO THE WORK. The price filters for action-takers. If £295 feels like too much to invest in building your own software product, this probably isn't for you anyway.
                 </p>
               </div>
 
@@ -951,16 +1132,16 @@ export default function Landing() {
         </section>
 
         {/* ========================================== */}
-        {/* 1 YEAR ACCESS */}
+        {/* 6 MONTHS ACCESS */}
         {/* ========================================== */}
         <section className="py-12 border-t border-slate-100">
           <div className="space-y-6 text-lg text-slate-700">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 text-center">
-              You Have 1 Year to Complete the Challenge
+              You Have 6 Months to Complete the Challenge
             </h2>
 
             <p>
-              When you join, you get <strong className="text-slate-900">12 months of access</strong> to complete the challenge.
+              When you join, you get <strong className="text-slate-900">6 months of access</strong> to complete the challenge.
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
@@ -972,11 +1153,11 @@ export default function Landing() {
             </p>
 
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              One Year Is More Than Enough Time
+              6 Months Is More Than Enough Time
             </h3>
 
             <p>
-              Most people who take action finish in a few weeks. If you can't find 21 days within an entire YEAR to build your product, this probably isn't for you. The ones who don't finish in a year were never going to finish anyway.
+              Most people who take action finish in a few weeks. If you can't find 21 days within 6 months to build your product, this probably isn't for you. The ones who don't finish were never going to finish anyway.
             </p>
           </div>
         </section>
@@ -1069,7 +1250,7 @@ export default function Landing() {
 
             <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 mt-6">
               <p className="font-semibold text-slate-900">
-                Also worth noting: AI tools are evolving FAST. The methods that work today might change tomorrow. With your 12 months access, you'll be using the CURRENT system - not something that's become outdated. The earlier you start, the further AHEAD you'll be.
+                Also worth noting: AI tools are evolving FAST. The methods that work today might change tomorrow. With your 6 months access, you'll be using the CURRENT system - not something that's become outdated. The earlier you start, the further AHEAD you'll be.
               </p>
             </div>
           </div>
@@ -1181,7 +1362,7 @@ export default function Landing() {
               </Button>
             </a>
             <p className="text-slate-500 text-sm">
-              One-time payment · Instant access · 12 months
+              One-time payment · Instant access · 6 months
             </p>
           </div>
         </section>
