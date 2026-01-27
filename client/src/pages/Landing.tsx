@@ -408,9 +408,12 @@ export default function Landing() {
               If you can TYPE, you can do this.
             </p>
 
-            <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 my-8">
-              <p className="text-lg text-slate-700">
-                <strong className="text-slate-900">By the way:</strong> this challenge app you're looking at right now? I built it using the EXACT same system I'm teaching you. The prompts, the process, the tools - all of it. User accounts, payments, AI features, mobile optimization - everything you see here, I built with this system. You're not just reading about what's possible. You're USING the proof.
+            <div className="bg-slate-900 text-white rounded-xl p-8 my-8">
+              <p className="text-xl md:text-2xl font-bold leading-relaxed">
+                By the way: this challenge app you're looking at right now? I built it using the EXACT same system I'm teaching you.
+              </p>
+              <p className="text-slate-300 mt-4">
+                User accounts, payments, AI features, mobile optimization - everything you see here, I built with this system. You're not just reading about what's possible. You're USING the proof.
               </p>
             </div>
 
