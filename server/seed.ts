@@ -221,7 +221,7 @@ Think NICHE - DO NOT THINK BROAD! The NICHER the BETTER usually...`,
       outcome: "Your shortlist of SaaS ideas, ready for validation",
       completionMessage: "Most people never get past 'someday I'll start.' You've got your ideas locked in and you're ready to move. You're already ahead of 90% of people who talk about building a business. Tomorrow, we find out which one people will actually PAY for.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 8,
     },
     {
       day: 2,
@@ -374,7 +374,7 @@ You'll get AI-generated name suggestions, then clickable links to check everythi
       outcome: "Your product name chosen, .com domain registered, social handles claimed, and trademark search completed",
       completionMessage: "You have a NAME. A real brand that's YOURS. Domain secured, socials claimed, trademarks checked. Nobody can take these from you now. Tomorrow: creating your logo.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 15,
     },
     // ============================================
     // PREPARE (Days 5-9)
@@ -434,7 +434,7 @@ Don't spend days on this. Spend 30 minutes, make something decent, move on. You 
       outcome: "A logo file ready to use in your app",
       completionMessage: "You have a logo! Your app now has a face. Tomorrow: setting up your AI toolkit.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 15,
     },
     {
       day: 6,
@@ -475,7 +475,7 @@ The goal is to START BUILDING, not to collect subscriptions.`,
       outcome: "Replit and Claude Pro accounts set up and ready to build",
       completionMessage: "Your AI toolkit is ready. You now have superpowers that would've cost $300K+ and taken years just a few years ago. Tomorrow: we create your PRD and start building.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 10,
     },
     {
       day: 7,
@@ -515,7 +515,7 @@ But don't worry about filling that in - we'll generate a proper PRD for you in t
       outcome: "A complete PRD pasted into Replit with your first build session started",
       completionMessage: "You have a PRD. A real Product Requirements Document that tells you exactly what to build. Most founders skip this and wonder why they're still coding 6 months later. You're different. Tomorrow: Claude Code setup.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 8,
     },
     {
       day: 8,
@@ -570,7 +570,7 @@ Let's get it done.`,
       outcome: "GitHub connected, Claude Code installed, CLAUDE.md created",
       completionMessage: "Your dev environment is SET UP. GitHub for backups, Claude Code for building, CLAUDE.md for context. You have a professional setup. Tomorrow: learning how to get the BEST results from Claude Code.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 15,
     },
 
     // ============================================
@@ -667,7 +667,7 @@ Find ONE bug in your app. Describe it clearly. Fix it with Claude Code. That's i
       outcome: "Found and fixed your first bug using the Build-Test-Fix loop",
       completionMessage: "You just completed your first Build-Test-Fix loop! This is the skill that will carry you through everything. Finding bugs = progress. Tomorrow: defining your brand.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 8,
     },
     {
       day: 11,
@@ -716,7 +716,7 @@ Remember: You're not stuck with anything. "Reverse that" brings it all back.`,
       outcome: "A defined color palette and typography applied to your app",
       completionMessage: "Your app now has a consistent look and feel! This is what separates amateur projects from professional products. Tomorrow: adding the AI brain.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 8,
     },
 
     {
@@ -785,7 +785,7 @@ There are other AI APIs out there - Claude's API, Google's Gemini, and more. The
       outcome: "AI API integrated, first AI-powered feature working in your app",
       completionMessage: "Your app can THINK now. That's the core of AI SaaS - intelligence built in. Tomorrow: connecting other APIs you might need.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 15,
     },
     {
       day: 13,
@@ -832,7 +832,7 @@ Add ONE at a time. Get it working. Test it. Then consider the next one. Every ex
       outcome: "External APIs connected (if needed), or confirmed app works without them",
       completionMessage: "Your app now has superpowers - or you've confirmed it doesn't need them. Both are wins. Tomorrow: making sure users can log in.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 12,
     },
     {
       day: 14,
@@ -896,7 +896,7 @@ Data tells you what to fix. Check your dashboard every day.`,
       outcome: "Users can log in AND you have an admin dashboard showing key metrics",
       completionMessage: "Users can log in and you can SEE what's happening in your app. Data beats guessing. Tomorrow - taking payments with Stripe.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 15,
     },
     {
       day: 15,
@@ -941,7 +941,7 @@ Quick math: A $29/month app with 100 paying users = $2,900/month. You don't need
       outcome: "Stripe connected, checkout flow working in test mode",
       completionMessage: "Payment infrastructure done. Your app can now accept payments when you're ready to go live. Tomorrow: mobile optimization.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 15,
     },
     {
       day: 16,
@@ -988,7 +988,7 @@ Don't overthink it. The question is simple: Can someone use this on their phone 
       outcome: "App is mobile-responsive and loads quickly",
       completionMessage: "Your app is fast and mobile-friendly. That's a competitive advantage most indie devs ignore. Tomorrow: autonomous testing.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 8,
     },
 
     {
@@ -1057,7 +1057,7 @@ NEED HELP? Ask Claude Code - "Help me connect my domain [yourdomain.com] from [r
       outcome: "App tested, published, and live on the internet",
       completionMessage: "Your app is LIVE. Real people can use it. Tomorrow you'll keep building until it's MVP-ready - take as long as you need.",
       xpReward: 100,
-      estimatedMinutes: 5,
+      estimatedMinutes: 20,
     },
     {
       day: 18,
