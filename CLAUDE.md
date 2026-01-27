@@ -107,8 +107,8 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-27 (Complete Design System Fixes)
-- **Branch**: main
+- **Last Session**: 2026-01-27 (Landing Page Sales Copy Overhaul)
+- **Branch**: landing-dashboard-style (ready to merge to main)
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
@@ -471,3 +471,41 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Design system violations now fully resolved
   - Test visually to confirm consistent appearance
   - Continue with pending tasks (AI Mentor, Showcase testing, etc.)
+
+### 2026-01-27 (Session 2) - Landing Page Sales Copy Overhaul
+- **Tasks Completed:**
+  - **Complete Landing Page Copy Rewrite** using proven sales psychology techniques:
+    - New headline: "How to Build Your Own Software Product in the Next 21 Days Without Writing a Single Line of Code..."
+    - Whisper line: "(...even if you don't have an idea yet!)" - small italic text under headline
+    - New subheadline: "No Tech Skills. No $50K Developers. Just AI and Daily Micro-Tasks."
+    - Removed "Under $100" from subheadline to avoid confusion with challenge price
+  - **Added Psychological Sales Techniques** (Russell Brunson / high-converting challenge style):
+    - "The Daily Build Method" - named unique mechanism in Solution section
+    - Future Pacing section: "Picture This: 21 Days From Now..."
+    - False Close before price: "If this ONLY helped you..." (3 variations)
+    - Price Anchoring: "That's less than £14 per day"
+    - Reason Why: "Why so affordable? Because I'm not looking for tire-kickers..."
+    - Multiple CTAs throughout page (after Solution, Journey, Proof sections)
+    - Social proof line: "Join hundreds of builders who started exactly where you are now"
+  - **Objections Section** - 8 conversational objection handlers:
+    - Not technical, no idea, don't know where to start, never built a business, no money, no time, get stuck, tried before
+  - **"by Matt Webley"** added under logo in header
+  - **Proof callout made prominent** - dark background callout: "This challenge app? I built it using the EXACT same system"
+  - **Access period changed** from 12 months to 6 months throughout
+  - **Order Page Redesigned** to match landing page style:
+    - Cleaner design with Card component
+    - Updated copy: "You're One Step Away"
+    - "Do the Work Guarantee" with punchier copy
+    - Removed bump offer (Sales Letter Pack)
+    - 6 months access (was 12)
+- **Headline Variations Created** (for future A/B testing):
+  - Ogilvy, Schwartz, Halbert, Hopkins, Caples, Kennedy, Sugarman, Bencivenga, Schwab, Collier styles
+- **Files Modified:**
+  - `client/src/pages/Landing.tsx` - Major copy overhaul
+  - `client/src/pages/Order.tsx` - Complete redesign
+- **Branch:** `landing-dashboard-style` (not yet merged to main)
+- **Notes for Next Session:**
+  - Consider A/B testing headline variations
+  - May want to add visual elements (number callouts, comparison tables, timeline) - drafts were created but reverted
+  - Test landing page flow and order page checkout
+  - Merge `landing-dashboard-style` to main when ready
