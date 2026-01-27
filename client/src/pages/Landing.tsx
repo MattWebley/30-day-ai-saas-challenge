@@ -756,77 +756,40 @@ export default function Landing() {
               21 Days of Tasks, AI Prompts, an AI Coach, and Everything You Need
             </h2>
 
-            <div className="space-y-6 text-lg text-slate-700">
-              <div className="flex items-start gap-4">
-                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <span className="font-semibold text-slate-900">21 Guided Daily Tasks with EXACT Instructions</span>
-                  <p className="text-slate-600 mt-1">Not vague concepts. Not "figure it out yourself." Each day tells you EXACTLY what to do, what to click, what to type. ZERO guesswork.</p>
-                </div>
+            <div className="space-y-4 text-lg text-slate-700">
+              <div className="flex items-center gap-4">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
+                <span className="font-semibold text-slate-900">From zero idea to a complete SaaS in 21 days (pause anytime if you need more)</span>
               </div>
 
-              <div className="flex items-start gap-4">
-                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <span className="font-semibold text-slate-900">AI-Powered Idea Generation (28 Ideas Scored For You)</span>
-                  <p className="text-slate-600 mt-1">Tell the system about yourself and it generates 28 SaaS ideas tailored to YOUR skills and interests, each one scored against proven criteria. No more analysis paralysis!</p>
-                </div>
+              <div className="flex items-center gap-4">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
+                <span className="font-semibold text-slate-900">28 unique SaaS ideas scored for YOUR skills (not generic lists)</span>
               </div>
 
-              <div className="flex items-start gap-4">
-                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <span className="font-semibold text-slate-900">Copy-Paste Prompts for Replit Agent and Claude Code</span>
-                  <p className="text-slate-600 mt-1">I give you the EXACT prompts that work. You paste them. The AI builds. No prompt engineering skills needed.</p>
-                </div>
+              <div className="flex items-center gap-4">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
+                <span className="font-semibold text-slate-900">Bite-sized daily micro-tasks (not 4-hour marathons)</span>
               </div>
 
-              <div className="flex items-start gap-4">
-                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <span className="font-semibold text-slate-900">Progress Tracking with Badges and Streaks</span>
-                  <p className="text-slate-600 mt-1">Visual motivation that keeps you GOING. See your progress. Earn badges. Build your streak. Your brain will WANT to continue.</p>
-                </div>
+              <div className="flex items-center gap-4">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
+                <span className="font-semibold text-slate-900">Copy-paste prompts - the AI does the heavy lifting</span>
               </div>
 
-              <div className="flex items-start gap-4">
-                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <span className="font-semibold text-slate-900">AI Mentor Chat (Ask Questions ANYTIME)</span>
-                  <p className="text-slate-600 mt-1">Stuck? Confused? The AI mentor understands the challenge and your context. Ask it ANYTHING and get instant help.</p>
-                </div>
+              <div className="flex items-center gap-4">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
+                <span className="font-semibold text-slate-900">AI Mentor when you get stuck</span>
               </div>
 
-              <div className="flex items-start gap-4">
-                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <span className="font-semibold text-slate-900">Build Log to Document Your Journey</span>
-                  <p className="text-slate-600 mt-1">Every decision you make is saved. Every milestone is recorded. Look back and see how FAR you've come.</p>
-                </div>
+              <div className="flex items-center gap-4">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
+                <span className="font-semibold text-slate-900">Badges, streaks, and progress tracking</span>
               </div>
 
-              <div className="flex items-start gap-4">
-                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <span className="font-semibold text-slate-900">Focus Mode with Binaural Beats</span>
-                  <p className="text-slate-600 mt-1">Built-in concentration audio with 5 modes: Focus, Deep Focus, Calm Focus, Creative Flow, and Relaxation. Put on headphones, pick a mode, and get in the zone.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <span className="font-semibold text-slate-900">6 Months Access to Complete the Challenge</span>
-                  <p className="text-slate-600 mt-1">Six months to go from zero to working product. AI tools move fast - you'll always use the CURRENT methods, not outdated ones.</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                <div>
-                  <span className="font-semibold text-slate-900">Claude Code Guide (Unlocks After Day 9)</span>
-                  <p className="text-slate-600 mt-1">A dedicated reference page with ALL the prompts you need for efficient building. Bookmark it and use it FOREVER.</p>
-                </div>
+              <div className="flex items-center gap-4">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
+                <span className="font-semibold text-slate-900">6 months to finish at your pace</span>
               </div>
             </div>
           </div>

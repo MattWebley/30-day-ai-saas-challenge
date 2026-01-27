@@ -225,15 +225,42 @@ export default function Order() {
               </div>
             </div>
 
-            {/* Trust Signals */}
-            <div className="flex items-center justify-center gap-6 text-slate-400 pt-2">
-              <div className="flex items-center gap-1.5">
-                <Lock className="w-4 h-4" />
-                <span className="text-sm">Secure Checkout</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <CreditCard className="w-4 h-4" />
-                <span className="text-sm">Powered by Stripe</span>
+            {/* Trust Badges */}
+            <div className="border-t border-slate-100 pt-6">
+              <div className="flex items-center justify-center gap-8">
+                {/* SSL Badge - Shield Shape */}
+                <div className="flex flex-col items-center gap-2">
+                  <div className="relative">
+                    <Shield className="w-14 h-16 text-slate-300 fill-slate-100" />
+                    <Lock className="w-6 h-6 text-slate-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-slate-700 font-bold">SSL Secure</div>
+                    <div className="text-[10px] text-slate-400">256-bit Encryption</div>
+                  </div>
+                </div>
+                {/* Stripe Badge - Shield Shape */}
+                <div className="flex flex-col items-center gap-2">
+                  <div className="relative">
+                    <Shield className="w-14 h-16 text-slate-300 fill-slate-100" />
+                    <CreditCard className="w-6 h-6 text-slate-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-slate-700 font-bold">Secure Payments</div>
+                    <div className="text-[10px] text-slate-400">Powered by Stripe</div>
+                  </div>
+                </div>
+                {/* Money Back Badge - Shield Shape */}
+                <div className="flex flex-col items-center gap-2">
+                  <div className="relative">
+                    <Shield className="w-14 h-16 text-slate-300 fill-slate-100" />
+                    <Check className="w-6 h-6 text-slate-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-slate-700 font-bold">Money Back</div>
+                    <div className="text-[10px] text-slate-400">Guarantee</div>
+                  </div>
+                </div>
               </div>
             </div>
 
