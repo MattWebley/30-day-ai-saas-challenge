@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const FROM_EMAIL = 'Challenge <noreply@challenge.mattwebley.com>';
+const FROM_EMAIL = 'Matt Webley <matt@challenge.mattwebley.com>';
 
 function getResendClient() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -19,7 +19,6 @@ export interface EmailParams {
 }
 
 export interface PurchaseEmailParams extends EmailParams {
-  includesPromptPack?: boolean;
   currency: 'usd' | 'gbp';
   total: number;
 }
@@ -30,16 +29,8 @@ export interface CoachingEmailParams extends EmailParams {
 }
 
 export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams): Promise<void> {
-  const { to, firstName, includesPromptPack, currency, total } = params;
-
+  const { to, firstName, currency, total } = params;
   const currencySymbol = currency === 'gbp' ? '£' : '$';
-
-  const addOns = [];
-  if (includesPromptPack) addOns.push('Sales Letter Pack');
-
-  const addOnsList = addOns.length > 0
-    ? `<p style="margin: 0 0 8px 0;"><strong>Add-ons:</strong> ${addOns.join(', ')}</p>`
-    : '';
 
   try {
     const { client, fromEmail } = getResendClient();
@@ -47,64 +38,31 @@ export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams)
       from: fromEmail,
       to: [to],
       subject: `You're in! Welcome to the 21 Day AI SaaS Challenge`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #334155; max-width: 600px; margin: 0 auto; padding: 20px;">
+      text: `You're In, ${firstName}!
 
-  <div style="text-align: center; margin-bottom: 32px;">
-    <div style="width: 64px; height: 64px; background: #22c55e; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-      <span style="color: white; font-size: 32px;">✓</span>
-    </div>
-    <h1 style="color: #0f172a; margin: 0; font-size: 28px;">You're In, ${firstName}!</h1>
-  </div>
+Welcome to the 21 Day AI SaaS Challenge. Your journey from idea to launch-ready product starts now.
 
-  <p style="font-size: 18px; margin-bottom: 24px;">
-    Welcome to the 21 Day AI SaaS Challenge. Your journey from idea to launch-ready product starts now.
-  </p>
+ORDER CONFIRMED
+---------------
+21 Day AI SaaS Challenge
+Total: ${currencySymbol}${total}
 
-  <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Order Confirmed</h2>
-    <p style="margin: 0 0 8px 0;"><strong>21 Day AI SaaS Challenge</strong></p>
-    ${addOnsList}
-    <p style="margin: 16px 0 0 0; padding-top: 12px; border-top: 1px solid #e2e8f0;">
-      <strong>Total:</strong> ${currencySymbol}${total}
-    </p>
-  </div>
+WHAT'S NEXT
+-----------
+1. Start Day 0 today - it only takes 5 minutes
+2. Complete one day at a time - go at your own pace
+3. In 21 days, you'll have a working product
 
-  <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">What's Next?</h2>
-    <ol style="margin: 0; padding-left: 20px;">
-      <li style="margin-bottom: 8px;"><strong>Start Day 0 today</strong> - it only takes 5 minutes</li>
-      <li style="margin-bottom: 8px;"><strong>Complete one day at a time</strong> - go at your own pace</li>
-      <li style="margin-bottom: 0;"><strong>In 21 days</strong>, you'll have a working product</li>
-    </ol>
-  </div>
+Start now: https://21daysaas.com/dashboard
 
-  <div style="text-align: center; margin-bottom: 24px;">
-    <a href="https://21daysaas.com/dashboard" style="display: inline-block; background: #22c55e; color: white; font-weight: bold; font-size: 18px; padding: 14px 32px; border-radius: 12px; text-decoration: none;">
-      Start Day 0 Now →
-    </a>
-  </div>
+Questions? Just reply to this email.
 
-  <p style="color: #64748b; font-size: 14px; text-align: center;">
-    Questions? Just reply to this email or reach me at matt@mattwebley.com
-  </p>
+- Matt
 
-  <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;" />
-
-  <p style="color: #94a3b8; font-size: 12px; text-align: center;">
-    21 Day AI SaaS Challenge<br/>
-    You're receiving this because you purchased the challenge.
-  </p>
-
-</body>
-</html>
-      `,
+--
+21 Day AI SaaS Challenge
+You're receiving this because you purchased the challenge.
+`,
     });
     console.log('Purchase confirmation email sent to:', to);
   } catch (error) {
@@ -119,69 +77,60 @@ export interface TestimonialNotificationParams {
   videoUrl: string | null;
   appName: string | null;
   appUrl: string | null;
+  sendTo?: string;
 }
 
 export async function sendTestimonialNotificationEmail(params: TestimonialNotificationParams): Promise<void> {
-  const { userEmail, userName, testimonial, videoUrl, appName, appUrl } = params;
+  const { userEmail, userName, testimonial, videoUrl, appName, appUrl, sendTo } = params;
+  const recipient = sendTo || 'matt@mattwebley.com';
+
+  let body = `New Testimonial!
+
+FROM
+----
+Name: ${userName}
+Email: ${userEmail}
+`;
+
+  if (testimonial) {
+    body += `
+WRITTEN TESTIMONIAL
+-------------------
+${testimonial}
+`;
+  }
+
+  if (videoUrl) {
+    body += `
+VIDEO TESTIMONIAL
+-----------------
+${videoUrl}
+`;
+  }
+
+  if (appName || appUrl) {
+    body += `
+THEIR APP
+---------
+${appName ? `Name: ${appName}` : ''}
+${appUrl ? `URL: ${appUrl}` : ''}
+`;
+  }
+
+  body += `
+--
+View all testimonials: https://21daysaas.com/admin
+`;
 
   try {
     const { client, fromEmail } = getResendClient();
     await client.emails.send({
       from: fromEmail,
-      to: ['matt@mattwebley.com'],
+      to: [recipient],
       subject: `New Challenge Testimonial from ${userName}`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #334155; max-width: 600px; margin: 0 auto; padding: 20px;">
-
-  <div style="text-align: center; margin-bottom: 32px;">
-    <div style="width: 64px; height: 64px; background: #22c55e; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-      <span style="color: white; font-size: 32px;">💬</span>
-    </div>
-    <h1 style="color: #0f172a; margin: 0; font-size: 28px;">New Testimonial!</h1>
-  </div>
-
-  <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <p style="margin: 0 0 8px 0;"><strong>From:</strong> ${userName}</p>
-    <p style="margin: 0;"><strong>Email:</strong> ${userEmail}</p>
-  </div>
-
-  ${testimonial ? `
-  <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Written Testimonial</h2>
-    <p style="margin: 0; white-space: pre-wrap;">${testimonial}</p>
-  </div>
-  ` : ''}
-
-  ${videoUrl ? `
-  <div style="background: #fefce8; border: 2px solid #fef08a; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Video Testimonial</h2>
-    <a href="${videoUrl}" style="color: #2563eb; word-break: break-all;">${videoUrl}</a>
-  </div>
-  ` : ''}
-
-  ${appName || appUrl ? `
-  <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Their App</h2>
-    ${appName ? `<p style="margin: 0 0 8px 0;"><strong>Name:</strong> ${appName}</p>` : ''}
-    ${appUrl ? `<p style="margin: 0;"><strong>URL:</strong> <a href="${appUrl}" style="color: #2563eb;">${appUrl}</a></p>` : ''}
-  </div>
-  ` : ''}
-
-  <p style="color: #64748b; font-size: 14px; text-align: center;">
-    View all testimonials in the <a href="https://21daysaas.com/admin" style="color: #2563eb;">Admin Panel</a>
-  </p>
-
-</body>
-</html>
-      `,
+      text: body,
     });
-    console.log('Testimonial notification email sent to matt@mattwebley.com');
+    console.log('Testimonial notification email sent to', recipient);
   } catch (error) {
     console.error('Failed to send testimonial notification email:', error);
   }
@@ -189,88 +138,125 @@ export async function sendTestimonialNotificationEmail(params: TestimonialNotifi
 
 export interface CritiqueNotificationParams {
   userEmail: string;
+  preferredEmail: string;
   userName: string;
   salesPageUrl: string;
   productDescription: string | null;
   targetAudience: string | null;
   specificQuestions: string | null;
+  sendTo?: string;
 }
 
 export async function sendCritiqueNotificationEmail(params: CritiqueNotificationParams): Promise<void> {
-  const { userEmail, userName, salesPageUrl, productDescription, targetAudience, specificQuestions } = params;
+  const { userEmail, preferredEmail, userName, salesPageUrl, productDescription, targetAudience, specificQuestions, sendTo } = params;
+  const recipient = sendTo || 'matt@mattwebley.com';
+
+  let body = `New Critique Request!
+
+FROM
+----
+Name: ${userName}
+Send Video To: ${preferredEmail}
+Backup Email: ${userEmail}${preferredEmail !== userEmail ? ' (account email)' : ''}
+
+SALES PAGE URL
+--------------
+${salesPageUrl}
+`;
+
+  if (productDescription) {
+    body += `
+PRODUCT DESCRIPTION
+-------------------
+${productDescription}
+`;
+  }
+
+  if (targetAudience) {
+    body += `
+TARGET AUDIENCE
+---------------
+${targetAudience}
+`;
+  }
+
+  if (specificQuestions) {
+    body += `
+SPECIFIC QUESTIONS
+------------------
+${specificQuestions}
+`;
+  }
+
+  body += `
+--
+Submitted: ${new Date().toLocaleString()}
+View all requests: https://21daysaas.com/admin
+`;
 
   try {
     const { client, fromEmail } = getResendClient();
     await client.emails.send({
       from: fromEmail,
-      to: ['matt@mattwebley.com'],
+      to: [recipient],
       subject: `New Critique Request from ${userName}`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #334155; max-width: 600px; margin: 0 auto; padding: 20px;">
-
-  <div style="text-align: center; margin-bottom: 32px;">
-    <div style="width: 64px; height: 64px; background: #f59e0b; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-      <span style="color: white; font-size: 32px;">🎬</span>
-    </div>
-    <h1 style="color: #0f172a; margin: 0; font-size: 28px;">New Critique Request!</h1>
-  </div>
-
-  <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <p style="margin: 0 0 8px 0;"><strong>From:</strong> ${userName}</p>
-    <p style="margin: 0;"><strong>Email:</strong> ${userEmail}</p>
-  </div>
-
-  <div style="background: #fff7ed; border: 2px solid #fed7aa; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Sales Page URL</h2>
-    <a href="${salesPageUrl}" style="color: #2563eb; word-break: break-all;">${salesPageUrl}</a>
-  </div>
-
-  ${productDescription ? `
-  <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Product Description</h2>
-    <p style="margin: 0;">${productDescription}</p>
-  </div>
-  ` : ''}
-
-  ${targetAudience ? `
-  <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Target Audience</h2>
-    <p style="margin: 0;">${targetAudience}</p>
-  </div>
-  ` : ''}
-
-  ${specificQuestions ? `
-  <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Specific Questions</h2>
-    <p style="margin: 0; white-space: pre-wrap;">${specificQuestions}</p>
-  </div>
-  ` : ''}
-
-  <p style="color: #64748b; font-size: 14px; text-align: center;">
-    Submitted: ${new Date().toLocaleString()}<br/>
-    View all requests in the <a href="https://21daysaas.com/admin" style="color: #2563eb;">Admin Panel</a>
-  </p>
-
-</body>
-</html>
-      `,
+      text: body,
     });
-    console.log('Critique notification email sent to matt@mattwebley.com');
+    console.log('Critique notification email sent to', recipient);
   } catch (error) {
     console.error('Failed to send critique notification email:', error);
     throw error;
   }
 }
 
+export interface CritiqueCompletedParams {
+  to: string;
+  firstName: string;
+  videoUrl: string;
+}
+
+export async function sendCritiqueCompletedEmail(params: CritiqueCompletedParams): Promise<void> {
+  const { to, firstName, videoUrl } = params;
+
+  try {
+    const { client, fromEmail } = getResendClient();
+    await client.emails.send({
+      from: fromEmail,
+      to: [to],
+      subject: `Your Sales Page Video Critique is Ready!`,
+      text: `Hey ${firstName}!
+
+Your sales page video critique is ready. I've recorded a detailed walkthrough with specific suggestions to improve your conversions.
+
+WATCH YOUR CRITIQUE
+-------------------
+${videoUrl}
+
+In this video, I cover:
+- First impressions and headline analysis
+- Structure and flow improvements
+- Specific copy suggestions
+- Call-to-action optimization
+- Quick wins you can implement today
+
+After watching, if you have questions or want to discuss any of the suggestions, just reply to this email.
+
+Looking forward to seeing your improved sales page!
+
+- Matt
+
+--
+21 Day AI SaaS Challenge
+`,
+    });
+    console.log('Critique completed email sent to:', to);
+  } catch (error) {
+    console.error('Failed to send critique completed email:', error);
+  }
+}
+
 export async function sendCoachingConfirmationEmail(params: CoachingEmailParams): Promise<void> {
   const { to, firstName, currency, amount } = params;
-
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
   try {
@@ -279,61 +265,33 @@ export async function sendCoachingConfirmationEmail(params: CoachingEmailParams)
       from: fromEmail,
       to: [to],
       subject: `Coaching Sessions Confirmed - Let's Build Together!`,
-      html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #334155; max-width: 600px; margin: 0 auto; padding: 20px;">
+      text: `Coaching Confirmed!
 
-  <div style="text-align: center; margin-bottom: 32px;">
-    <div style="width: 64px; height: 64px; background: #8b5cf6; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px;">
-      <span style="color: white; font-size: 32px;">🎯</span>
-    </div>
-    <h1 style="color: #0f172a; margin: 0; font-size: 28px;">Coaching Confirmed!</h1>
-  </div>
+Hey ${firstName}, great decision! You've just unlocked 4 hours of 1:1 coaching to supercharge your SaaS build.
 
-  <p style="font-size: 18px; margin-bottom: 24px;">
-    Hey ${firstName}, great decision! You've just unlocked 4 hours of 1:1 coaching to supercharge your SaaS build.
-  </p>
+YOUR COACHING PACKAGE
+---------------------
+4 x 1-Hour Live Sessions
 
-  <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">Your Coaching Package</h2>
-    <p style="margin: 0 0 8px 0;"><strong>4 x 1-Hour Live Sessions</strong></p>
-    <ul style="margin: 12px 0; padding-left: 20px;">
-      <li style="margin-bottom: 4px;">Direct 1:1 video calls</li>
-      <li style="margin-bottom: 4px;">Screen share building together</li>
-      <li style="margin-bottom: 4px;">Unblock any issue immediately</li>
-      <li style="margin-bottom: 0;">Flexible scheduling</li>
-    </ul>
-    <p style="margin: 16px 0 0 0; padding-top: 12px; border-top: 1px solid #e2e8f0;">
-      <strong>Total:</strong> ${currencySymbol}${amount}
-    </p>
-  </div>
+- Direct 1:1 video calls
+- Screen share building together
+- Unblock any issue immediately
+- Flexible scheduling
 
-  <div style="background: #fefce8; border: 2px solid #fef08a; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
-    <h2 style="color: #0f172a; margin: 0 0 12px 0; font-size: 18px;">How to Book Your Sessions</h2>
-    <p style="margin: 0;">
-      I'll be in touch within 24 hours with a link to book your first session. Keep an eye on your inbox!
-    </p>
-  </div>
+Total: ${currencySymbol}${amount}
 
-  <p style="color: #64748b; font-size: 14px; text-align: center;">
-    Questions? Reply to this email or reach me at matt@mattwebley.com
-  </p>
+HOW TO BOOK YOUR SESSIONS
+-------------------------
+I'll be in touch within 24 hours with a link to book your first session. Keep an eye on your inbox!
 
-  <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;" />
+Questions? Just reply to this email.
 
-  <p style="color: #94a3b8; font-size: 12px; text-align: center;">
-    21 Day AI SaaS Challenge<br/>
-    You're receiving this because you purchased coaching.
-  </p>
+- Matt
 
-</body>
-</html>
-      `,
+--
+21 Day AI SaaS Challenge
+You're receiving this because you purchased coaching.
+`,
     });
     console.log('Coaching confirmation email sent to:', to);
   } catch (error) {

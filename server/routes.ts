@@ -10,7 +10,7 @@ import crypto from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail } from "./emailService";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
 
 const dnsResolve = promisify(dns.resolve);
@@ -2473,7 +2473,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Stripe checkout - create checkout session for the 21 Day Challenge
   app.post("/api/checkout", async (req, res) => {
     try {
-      const { currency = 'usd', includePromptPack = false } = req.body;
+      const { currency = 'usd' } = req.body;
       const stripe = await getUncachableStripeClient();
 
       // Price IDs from Stripe - main challenge
@@ -2482,35 +2482,16 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         gbp: 'price_1SqGYdLcRVtxg5yVgbtDKL7S'
       };
 
-      // Price IDs for Prompt Pack bump ($49 USD / £39 GBP)
-      // TODO: Create these products in Stripe and update with real price IDs
-      const promptPackPriceIds: Record<string, string> = {
-        usd: 'price_PROMPT_PACK_USD', // TODO: Replace with real Stripe price ID
-        gbp: 'price_PROMPT_PACK_GBP'  // TODO: Replace with real Stripe price ID
-      };
-
       const priceId = priceIds[currency.toLowerCase()] || priceIds.usd;
       const host = req.get('host');
       const protocol = req.protocol;
 
-      // Build line items
-      const lineItems: Array<{ price: string; quantity: number }> = [{
-        price: priceId,
-        quantity: 1
-      }];
-
-      // Add prompt pack bump offer if selected
-      if (includePromptPack) {
-        const promptPackPriceId = promptPackPriceIds[currency.toLowerCase()] || promptPackPriceIds.usd;
-        lineItems.push({
-          price: promptPackPriceId,
-          quantity: 1
-        });
-      }
-
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
-        line_items: lineItems,
+        line_items: [{
+          price: priceId,
+          quantity: 1
+        }],
         mode: 'payment',
         success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}&currency=${currency}`,
         cancel_url: `${protocol}://${host}/order`,
@@ -2520,7 +2501,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           setup_future_usage: 'off_session',
         },
         metadata: {
-          includePromptPack: includePromptPack ? 'true' : 'false',
           currency: currency
         }
       });
@@ -2533,48 +2513,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   });
 
   // Stripe checkout - standalone Prompt Pack purchase (for users who already have the challenge)
-  app.post("/api/prompt-pack/checkout", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-
-    try {
-      const stripe = await getUncachableStripeClient();
-      const host = req.get('host');
-      const protocol = req.protocol;
-
-      // Price IDs for Prompt Pack ($49 USD / £39 GBP)
-      // TODO: Create these products in Stripe and update with real price IDs
-      const promptPackPriceIds: Record<string, string> = {
-        usd: 'price_PROMPT_PACK_USD', // TODO: Replace with real Stripe price ID
-        gbp: 'price_PROMPT_PACK_GBP'  // TODO: Replace with real Stripe price ID
-      };
-
-      // Default to USD for standalone purchase
-      const priceId = promptPackPriceIds.usd;
-
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [{
-          price: priceId,
-          quantity: 1
-        }],
-        mode: 'payment',
-        success_url: `${protocol}://${host}/prompt-pack?success=true`,
-        cancel_url: `${protocol}://${host}/prompt-pack`,
-        metadata: {
-          userId: (req.user as any).id,
-          productType: 'prompt_pack'
-        }
-      });
-
-      res.json({ url: session.url });
-    } catch (error: any) {
-      console.error("Error creating prompt pack checkout session:", error);
-      res.status(500).json({ message: "Failed to create checkout session" });
-    }
-  });
-
   // Stripe checkout - Coaching (4 x 1-hour sessions) - Traditional checkout flow
   app.post("/api/checkout/coaching", async (req, res) => {
     try {
@@ -2730,7 +2668,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Sales Page Video Critique checkout
   app.post("/api/checkout/critique", async (req, res) => {
     try {
-      const { currency = 'gbp', includeHeadlines = false } = req.body;
+      const { currency = 'gbp' } = req.body;
       const stripe = await getUncachableStripeClient();
       const host = req.get('host');
       const protocol = req.protocol;
@@ -2741,36 +2679,20 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         usd: 'price_CRITIQUE_USD', // $595 - TODO: Replace with real Stripe price ID
         gbp: 'price_CRITIQUE_GBP'  // £495 - TODO: Replace with real Stripe price ID
       };
-      const headlinesPriceIds: Record<string, string> = {
-        usd: 'price_CRITIQUE_HEADLINES_USD', // $97 - TODO: Replace with real Stripe price ID
-        gbp: 'price_CRITIQUE_HEADLINES_GBP'  // £95 - TODO: Replace with real Stripe price ID
-      };
 
       const priceId = critiquePriceIds[currency.toLowerCase()] || critiquePriceIds.gbp;
-      const headlinesPriceId = headlinesPriceIds[currency.toLowerCase()] || headlinesPriceIds.gbp;
-
-      const lineItems: any[] = [{
-        price: priceId,
-        quantity: 1
-      }];
-
-      // Add headlines bump offer if selected
-      if (includeHeadlines) {
-        lineItems.push({
-          price: headlinesPriceId,
-          quantity: 1
-        });
-      }
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
-        line_items: lineItems,
+        line_items: [{
+          price: priceId,
+          quantity: 1
+        }],
         mode: 'payment',
         success_url: `${protocol}://${host}/critique/success`,
         cancel_url: `${protocol}://${host}/critique`,
         metadata: {
           productType: 'critique',
-          includeHeadlines: includeHeadlines ? 'true' : 'false',
           currency: currency
         }
       });
@@ -2806,13 +2728,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       // Build update object based on what was purchased
       const updateData: Record<string, any> = {
-        challengePurchased: true, // Main challenge is always purchased
+        challengePurchased: true,
       };
-
-      // Check metadata for bump offers
-      if (session.metadata?.includePromptPack === 'true') {
-        updateData.promptPackPurchased = true;
-      }
 
       // Save Stripe customer ID for one-click upsells
       if (session.customer) {
@@ -2860,7 +2777,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         sendPurchaseConfirmationEmail({
           to: userEmail,
           firstName,
-          includesPromptPack: updateData.promptPackPurchased || false,
           currency,
           total
         }).catch(err => console.error('Email send error:', err));
@@ -2868,8 +2784,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       res.json({
         success: true,
-        challengePurchased: true,
-        promptPackPurchased: updateData.promptPackPurchased || false
+        challengePurchased: true
       });
     } catch (error: any) {
       console.error("Error processing checkout success:", error);
@@ -3407,18 +3322,20 @@ Example format:
         return res.status(404).json({ message: "User not found" });
       }
 
-      const { salesPageUrl, productDescription, targetAudience, specificQuestions } = req.body;
+      const { salesPageUrl, preferredEmail, productDescription, targetAudience, specificQuestions } = req.body;
 
       if (!salesPageUrl) {
         return res.status(400).json({ message: "Sales page URL is required" });
       }
 
       const userName = user.firstName || user.email || 'Unknown';
+      const emailForVideo = preferredEmail || user.email || 'unknown@email.com';
 
       // Save to database
       await db.insert(critiqueRequests).values({
         userId,
         salesPageUrl,
+        preferredEmail: emailForVideo,
         productDescription: productDescription || null,
         targetAudience: targetAudience || null,
         specificQuestions: specificQuestions || null,
@@ -3428,6 +3345,7 @@ Example format:
       console.log("Critique submission saved:", {
         userId,
         email: user.email,
+        preferredEmail: emailForVideo,
         name: userName,
         salesPageUrl
       });
@@ -3436,6 +3354,7 @@ Example format:
       try {
         await sendCritiqueNotificationEmail({
           userEmail: user.email || 'unknown@email.com',
+          preferredEmail: emailForVideo,
           userName,
           salesPageUrl,
           productDescription: productDescription || null,
@@ -3512,10 +3431,126 @@ Example format:
         .set(updateData)
         .where(eq(critiqueRequests.id, critiqueId));
 
+      // Send email to user when critique is completed with video
+      if (status === 'completed' && videoUrl) {
+        const [critique] = await db
+          .select({
+            preferredEmail: critiqueRequests.preferredEmail,
+            userEmail: users.email,
+            userFirstName: users.firstName
+          })
+          .from(critiqueRequests)
+          .leftJoin(users, eq(critiqueRequests.userId, users.id))
+          .where(eq(critiqueRequests.id, critiqueId));
+
+        if (critique) {
+          const recipientEmail = critique.preferredEmail || critique.userEmail;
+          const firstName = critique.userFirstName || 'there';
+
+          if (recipientEmail) {
+            sendCritiqueCompletedEmail({
+              to: recipientEmail,
+              firstName,
+              videoUrl
+            }).catch(err => console.error('Critique completed email error:', err));
+          }
+        }
+      }
+
       res.json({ success: true });
     } catch (error) {
       console.error("Error updating critique request:", error);
       res.status(500).json({ message: "Failed to update critique request" });
+    }
+  });
+
+  // Admin: Send test emails (one-time testing endpoint)
+  app.post("/api/admin/test-emails", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { emailType, toEmail } = req.body;
+      const targetEmail = toEmail || user.email;
+
+      if (!targetEmail) {
+        return res.status(400).json({ message: "Email address required" });
+      }
+
+      const results: string[] = [];
+
+      // Send test emails based on type (or all if type is 'all')
+      if (emailType === 'purchase' || emailType === 'all') {
+        await sendPurchaseConfirmationEmail({
+          to: targetEmail,
+          firstName: 'Matt',
+          currency: 'gbp',
+          total: 295
+        });
+        results.push('Purchase confirmation sent');
+      }
+
+      if (emailType === 'coaching' || emailType === 'all') {
+        await sendCoachingConfirmationEmail({
+          to: targetEmail,
+          firstName: 'Test User',
+          currency: 'gbp',
+          amount: 997
+        });
+        results.push('Coaching confirmation sent');
+      }
+
+      if (emailType === 'testimonial' || emailType === 'all') {
+        await sendTestimonialNotificationEmail({
+          userEmail: 'testuser@example.com',
+          userName: 'Test User',
+          testimonial: 'This is a test testimonial! The challenge was amazing and helped me build my SaaS in 21 days.',
+          videoUrl: 'https://example.com/test-video',
+          appName: 'TestApp',
+          appUrl: 'https://testapp.example.com',
+          sendTo: targetEmail
+        });
+        results.push('Testimonial notification sent');
+      }
+
+      if (emailType === 'critique' || emailType === 'all') {
+        await sendCritiqueNotificationEmail({
+          userEmail: 'testuser@example.com',
+          preferredEmail: 'testuser-preferred@example.com',
+          userName: 'Test User',
+          salesPageUrl: 'https://example.com/sales-page',
+          productDescription: 'This is a test product description for the critique.',
+          targetAudience: 'Small business owners looking to automate their workflow.',
+          specificQuestions: 'Is the headline compelling enough?\nDoes the CTA stand out?',
+          sendTo: targetEmail
+        });
+        results.push('Critique notification sent');
+      }
+
+      if (emailType === 'critique-completed' || emailType === 'all') {
+        await sendCritiqueCompletedEmail({
+          to: targetEmail,
+          firstName: 'Matt',
+          videoUrl: 'https://www.loom.com/share/example-critique-video'
+        });
+        results.push('Critique completed sent');
+      }
+
+      if (results.length === 0) {
+        return res.status(400).json({
+          message: "Invalid emailType. Use: purchase, coaching, testimonial, critique, critique-completed, or all"
+        });
+      }
+
+      console.log(`Test emails sent to ${targetEmail}:`, results);
+      res.json({ success: true, results });
+    } catch (error) {
+      console.error("Error sending test emails:", error);
+      res.status(500).json({ message: "Failed to send test emails", error: String(error) });
     }
   });
 

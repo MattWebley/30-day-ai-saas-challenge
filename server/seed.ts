@@ -450,7 +450,7 @@ Don't spend days on this. Spend 30 minutes, make something decent, move on. You 
       microDecisionQuestion: "Have you used AI coding tools before?",
       microDecisionOptions: JSON.stringify(["Never", "A little", "Regularly", "I'm experienced"]),
       reflectionQuestion: "What's holding you back from building right now?",
-      tip: "Get the PAID accounts. The prices are ridiculously low for what you get - just grab them and accept it as the cost of doing business.",
+      tip: "Get the PAID accounts. The prices are ridiculously low for what you get. IMPORTANT: We do most things through Claude Code, NOT Replit's AI. But when you DO use Replit's agent, click the lightning bolt icon for 'fast' mode. It handles most tasks and costs WAY less than the default mode.",
       lesson: `Your AI Tech Stack - Keep it SIMPLE:
 
 ESSENTIAL (you need both):

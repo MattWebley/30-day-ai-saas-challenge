@@ -1,16 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check, Send, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function CritiqueSuccess() {
+  const { user } = useAuth();
   const [salesPageUrl, setSalesPageUrl] = useState("");
+  const [preferredEmail, setPreferredEmail] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
   const [productDescription, setProductDescription] = useState("");
   const [targetAudience, setTargetAudience] = useState("");
   const [specificQuestions, setSpecificQuestions] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const accountEmail = (user as any)?.email || "";
+  const emailChanged = preferredEmail !== accountEmail && accountEmail !== "";
+  const emailsMatch = !emailChanged || preferredEmail === confirmEmail;
+
+  // Pre-populate email from user account
+  useEffect(() => {
+    if (accountEmail && !preferredEmail) {
+      setPreferredEmail(accountEmail);
+    }
+  }, [accountEmail]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,6 +39,7 @@ export default function CritiqueSuccess() {
         credentials: "include",
         body: JSON.stringify({
           salesPageUrl,
+          preferredEmail,
           productDescription,
           targetAudience,
           specificQuestions
@@ -112,6 +128,59 @@ export default function CritiqueSuccess() {
               </p>
             </div>
 
+            {/* Email for video delivery */}
+            <div className="space-y-2">
+              <label className="block font-bold text-slate-900">
+                Send video to <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="email"
+                value={preferredEmail}
+                onChange={(e) => {
+                  setPreferredEmail(e.target.value);
+                  if (e.target.value === accountEmail) {
+                    setConfirmEmail("");
+                  }
+                }}
+                placeholder="your@email.com"
+                required
+                className="w-full px-4 py-3 border-2 border-slate-200 rounded-lg focus:border-primary focus:outline-none text-slate-900"
+              />
+              <p className="text-sm text-slate-500">
+                Pre-filled with your account email. Change it if you want the video sent elsewhere.
+              </p>
+            </div>
+
+            {/* Confirm email - only shows when changed from account email */}
+            {emailChanged && (
+              <div className="space-y-2">
+                <label className="block font-bold text-slate-900">
+                  Confirm email <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  value={confirmEmail}
+                  onChange={(e) => setConfirmEmail(e.target.value)}
+                  onPaste={(e) => e.preventDefault()}
+                  placeholder="Type the email again to confirm"
+                  required
+                  className={`w-full px-4 py-3 border-2 rounded-lg focus:outline-none text-slate-900 ${
+                    confirmEmail && !emailsMatch
+                      ? "border-red-300 focus:border-red-500"
+                      : "border-slate-200 focus:border-primary"
+                  }`}
+                />
+                {confirmEmail && !emailsMatch && (
+                  <p className="text-sm text-red-500">
+                    Emails don't match
+                  </p>
+                )}
+                <p className="text-sm text-slate-500">
+                  Please type this email again (no copy/paste) to confirm it's correct.
+                </p>
+              </div>
+            )}
+
             {/* Product Description */}
             <div className="space-y-2">
               <label className="block font-bold text-slate-900">
@@ -157,7 +226,7 @@ export default function CritiqueSuccess() {
             {/* Submit */}
             <Button
               type="submit"
-              disabled={isSubmitting || !salesPageUrl.trim()}
+              disabled={isSubmitting || !salesPageUrl.trim() || !emailsMatch}
               size="lg"
               className="w-full h-14 text-lg font-bold"
             >

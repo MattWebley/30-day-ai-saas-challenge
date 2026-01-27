@@ -488,6 +488,7 @@ export const critiqueRequests = pgTable("critique_requests", {
   id: serial("id").primaryKey(),
   userId: varchar("user_id").notNull().references(() => users.id),
   salesPageUrl: text("sales_page_url").notNull(),
+  preferredEmail: text("preferred_email"), // Email to send the video to (may differ from account email)
   productDescription: text("product_description"),
   targetAudience: text("target_audience"),
   specificQuestions: text("specific_questions"),

@@ -107,27 +107,30 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-27 (VSL Video Added + Branch Merged)
+- **Last Session**: 2026-01-27 (Email System Overhaul & Cleanup)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
 ## Pending Tasks
-- [x] **Set up Stripe** - DONE: Keys added, checkout working
+- [x] **Set up Stripe** - DONE: Keys added, main challenge checkout working
 - [x] **Test Mode** - DONE: Defaults to false, toggle moved to Admin panel
-- [x] **Launch Pack** - REMOVED: Entire feature removed (sidebar, checkout, server routes)
+- [x] **Launch Pack** - REMOVED: Entire feature removed
+- [x] **Prompt Pack** - REMOVED: Orphaned code deleted
+- [x] **Add VSL video** - DONE: Vimeo embed added to landing page
+- [x] **Email System** - DONE: Plain text emails, 5 types working
+- [ ] Add real Stripe price IDs for: Coaching (4 tiers), Critique
 - [ ] Test AI Mentor chat bot (check browser console)
 - [ ] Test Showcase feature end-to-end
 - [ ] Test Day 0 → Day 1 → Day 2 flow
-- [ ] Test Day 8-21 components
+- [ ] Test email delivery (use admin test endpoint)
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx
 - [ ] Add coaching call booking links (Days 1-7, 19-21)
 - [ ] Enable "Book a Call" button in Day 2 (needs Calendly link)
-- [x] **Add VSL video** - DONE: Vimeo embed added to landing page hero section
-- [ ] Add real Stripe price IDs for: Prompt Pack, Coaching tiers, Critique
 
 ### PRE-LAUNCH BLOCKERS (DO THESE BEFORE GOING LIVE)
-- [ ] **CRITICAL: Set up Systeme.io waitlist autoresponder** - Day 21 "Join the Waitlist" button links to `challenge.mattwebley.com/waitlist` which currently 404s
-- [ ] **CRITICAL: Set up mattwebley.com/readiness page** - Day 21 Readiness Review CTA links here
+- [ ] **CRITICAL: Create Stripe products** - 5 products × 2 currencies = 10 price IDs
+- [ ] **CRITICAL: Set up challenge.mattwebley.com/waitlist** - Day 21 CTA 404s
+- [ ] **CRITICAL: Set up mattwebley.com/readiness page** - Readiness Review CTA
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
@@ -520,7 +523,55 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - **Cleanup:** Removed unused `Play` icon import
 - **Files Modified:**
   - `client/src/pages/Landing.tsx` - Vimeo video embed, text update
+
+### 2026-01-27 (Session 4) - Email System Overhaul & Cleanup
+- **Tasks Completed:**
+  - **Email System Complete Overhaul:**
+    - Converted all emails from HTML to plain text
+    - Changed sender from "Challenge <noreply@...>" to "Matt Webley <matt@challenge.mattwebley.com>"
+    - Added admin test endpoint `/api/admin/test-emails` to send test versions of all emails
+    - 5 email types now working:
+      1. Purchase Confirmation (to customer)
+      2. Coaching Confirmation (to customer)
+      3. Testimonial Notification (to Matt)
+      4. Critique Request Notification (to Matt)
+      5. **NEW: Critique Completed** (to customer when video is ready)
+  - **Critique Form Enhancement:**
+    - Added "preferred email" field so users can specify where to receive their critique video
+    - Email confirmation required when different from account email
+    - Schema updated with `preferredEmail` column
+  - **Removed Prompt Pack Entirely:**
+    - Deleted `PromptPack.tsx` page (was orphaned - no route existed)
+    - Removed `/api/prompt-pack/checkout` route
+    - Removed prompt pack bump from main checkout
+    - Cleaned up webhook handlers
+    - Removed from email params
+  - **Removed Headlines Bump:**
+    - Removed unused headlines bump code from critique checkout
+  - **Product Audit Completed:**
+    - Confirmed main challenge is set up ($399 USD / £295 GBP)
+    - Identified 5 products needing Stripe price IDs (10 total for USD/GBP)
+- **Files Modified:**
+  - `server/emailService.ts` - Complete rewrite to plain text, added critique completed email
+  - `server/routes.ts` - Added test email endpoint, critique completed email trigger, removed prompt pack
+  - `server/webhookHandlers.ts` - Simplified (removed prompt pack handling)
+  - `client/src/pages/CritiqueSuccess.tsx` - Added preferred email field
+  - `shared/schema.ts` - Added preferredEmail to critiqueRequests
+  - `server/seed.ts` - Updated Day 6 tip about Replit fast mode
+- **Files Deleted:**
+  - `client/src/pages/PromptPack.tsx`
+- **Stripe Products Needing Setup:**
+  | Product | USD | GBP |
+  |---------|-----|-----|
+  | Coaching Single (Expert) | $449 | £349 |
+  | Coaching 4-Pack (Expert) | $1,195 | £995 |
+  | Coaching Single (Matt) | $2,495 | £1,995 |
+  | Coaching 4-Pack (Matt) | $4,995 | £3,995 |
+  | Video Critique | $595 | £495 |
 - **Notes for Next Session:**
-  - Landing page now has real VSL video
-  - Test video playback on mobile
-  - Continue with pending tasks (AI Mentor, Showcase testing, etc.)
+  - Create 10 Stripe price IDs and update code
+  - Set up `challenge.mattwebley.com/waitlist` (Day 21 CTA 404s)
+  - Set up `mattwebley.com/readiness` page
+  - Test email delivery: restart server, run test from browser console
+  - Test main purchase flow end-to-end
+  - Run `npm run db:push` if preferredEmail column not yet in database

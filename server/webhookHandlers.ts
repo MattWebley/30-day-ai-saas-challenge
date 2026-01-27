@@ -1,7 +1,4 @@
-import { getStripeSync, getUncachableStripeClient } from './stripeClient';
-import { db } from './db';
-import { users } from '../shared/schema';
-import { eq } from 'drizzle-orm';
+import { getStripeSync } from './stripeClient';
 
 export class WebhookHandlers {
   static async processWebhook(payload: Buffer, signature: string): Promise<void> {
@@ -14,43 +11,8 @@ export class WebhookHandlers {
       );
     }
 
-    // Let StripeSync handle the webhook first
+    // Let StripeSync handle the webhook
     const sync = await getStripeSync();
     await sync.processWebhook(payload, signature);
-
-    // Now handle our custom prompt pack logic
-    try {
-      const stripe = await getUncachableStripeClient();
-      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-
-      if (webhookSecret) {
-        const event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
-
-        if (event.type === 'checkout.session.completed') {
-          const session = event.data.object;
-          const metadata = session.metadata || {};
-
-          // Handle standalone prompt pack purchase
-          if (metadata.productType === 'prompt_pack' && metadata.userId) {
-            console.log(`Prompt pack purchased by user ${metadata.userId}`);
-            await db.update(users)
-              .set({ promptPackPurchased: true })
-              .where(eq(users.id, metadata.userId));
-          }
-
-          // Handle prompt pack as part of main challenge purchase
-          if (metadata.includePromptPack === 'true' && session.customer_email) {
-            console.log(`Prompt pack included in challenge purchase for ${session.customer_email}`);
-            await db.update(users)
-              .set({ promptPackPurchased: true })
-              .where(eq(users.email, session.customer_email));
-          }
-
-        }
-      }
-    } catch (error) {
-      // Log but don't fail - the main webhook processing already succeeded
-      console.error('Error processing pack purchase webhook:', error);
-    }
   }
 }
