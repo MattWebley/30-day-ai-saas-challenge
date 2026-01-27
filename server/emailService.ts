@@ -1,43 +1,15 @@
 import { Resend } from 'resend';
 
-let connectionSettings: any;
+const FROM_EMAIL = 'Challenge <noreply@challenge.mattwebley.com>';
 
-async function getCredentials() {
-  const hostname = process.env.REPLIT_CONNECTORS_HOSTNAME;
-  const xReplitToken = process.env.REPL_IDENTITY 
-    ? 'repl ' + process.env.REPL_IDENTITY 
-    : process.env.WEB_REPL_RENEWAL 
-    ? 'depl ' + process.env.WEB_REPL_RENEWAL 
-    : null;
-
-  if (!xReplitToken) {
-    throw new Error('X_REPLIT_TOKEN not found for repl/depl');
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error('RESEND_API_KEY not set');
   }
-
-  connectionSettings = await fetch(
-    'https://' + hostname + '/api/v2/connection?include_secrets=true&connector_names=resend',
-    {
-      headers: {
-        'Accept': 'application/json',
-        'X_REPLIT_TOKEN': xReplitToken
-      }
-    }
-  ).then(res => res.json()).then(data => data.items?.[0]);
-
-  if (!connectionSettings || (!connectionSettings.settings.api_key)) {
-    throw new Error('Resend not connected');
-  }
-  return {
-    apiKey: connectionSettings.settings.api_key, 
-    fromEmail: connectionSettings.settings.from_email
-  };
-}
-
-async function getResendClient() {
-  const { apiKey, fromEmail } = await getCredentials();
   return {
     client: new Resend(apiKey),
-    fromEmail
+    fromEmail: FROM_EMAIL
   };
 }
 
@@ -70,7 +42,7 @@ export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams)
     : '';
 
   try {
-    const { client, fromEmail } = await getResendClient();
+    const { client, fromEmail } = getResendClient();
     await client.emails.send({
       from: fromEmail,
       to: [to],
@@ -153,7 +125,7 @@ export async function sendTestimonialNotificationEmail(params: TestimonialNotifi
   const { userEmail, userName, testimonial, videoUrl, appName, appUrl } = params;
 
   try {
-    const { client, fromEmail } = await getResendClient();
+    const { client, fromEmail } = getResendClient();
     await client.emails.send({
       from: fromEmail,
       to: ['matt@mattwebley.com'],
@@ -228,7 +200,7 @@ export async function sendCritiqueNotificationEmail(params: CritiqueNotification
   const { userEmail, userName, salesPageUrl, productDescription, targetAudience, specificQuestions } = params;
 
   try {
-    const { client, fromEmail } = await getResendClient();
+    const { client, fromEmail } = getResendClient();
     await client.emails.send({
       from: fromEmail,
       to: ['matt@mattwebley.com'],
@@ -302,7 +274,7 @@ export async function sendCoachingConfirmationEmail(params: CoachingEmailParams)
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
   try {
-    const { client, fromEmail } = await getResendClient();
+    const { client, fromEmail } = getResendClient();
     await client.emails.send({
       from: fromEmail,
       to: [to],
