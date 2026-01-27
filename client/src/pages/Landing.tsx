@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, TrendingUp, Shield, Star, Play, Lightbulb, Rocket, Code, Users } from "lucide-react";
 import { ds } from "@/lib/design-system";
 
-const DEFAULT_HEADLINE = "How to Build Your Own Software Product in 21 Days Without Writing a Single Line of Code (Even If You Don't Have an Idea Yet)...";
+const DEFAULT_HEADLINE = "How to Build Your Own Software Product in the Next 21 Days Without Writing a Single Line of Code...";
 
 export default function Landing() {
   const [headline, setHeadline] = useState(DEFAULT_HEADLINE);
@@ -75,8 +75,12 @@ export default function Landing() {
               {headline}
             </h1>
 
+            <p className="text-slate-600 text-sm italic -mt-4">
+              (...even if you don't have an idea yet!)
+            </p>
+
             <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
-              No Tech Skills. No Developers. Under $100. Just AI and Daily Micro-Tasks.
+              No Tech Skills. No $50K Developers. Just AI and Daily Micro-Tasks.
             </h2>
 
             {/* VSL - VIDEO SALES LETTER */}
