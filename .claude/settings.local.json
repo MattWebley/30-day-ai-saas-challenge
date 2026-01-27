@@ -78,7 +78,8 @@
       "Bash(for f in Day20GoingLive Day20BrandBeauty Day20LaunchPlan Day7ReplitBuild Day9RealityCheck Day11AddSuperpowers Day17Onboarding)",
       "Bash(do grep -l \"export.*$f\" /home/runner/workspace/client/src/components/*.tsx)",
       "Bash(done)",
-      "Bash(git tag:*)"
+      "Bash(git tag:*)",
+      "Bash(git log:*)"
     ]
   }
 }
