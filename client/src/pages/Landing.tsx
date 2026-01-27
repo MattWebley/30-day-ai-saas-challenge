@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, TrendingUp, Shield, Star, Play } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, TrendingUp, Shield, Star, Play, Lightbulb, Rocket, Code, Users } from "lucide-react";
+import { ds } from "@/lib/design-system";
 
 const DEFAULT_HEADLINE = "How Complete Beginners Are Using AI to Build Real, Working Software Products in 21 Days for Less Than $100...";
 
@@ -418,45 +420,65 @@ export default function Landing() {
               </p>
 
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6">
+                <Card className="p-6 border-2 border-slate-200 bg-white hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">1</div>
-                    <h3 className="text-xl font-bold text-slate-900">Idea</h3>
+                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+                      <Lightbulb className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-primary uppercase tracking-wide">Days 1-5</div>
+                      <h3 className={ds.heading}>Idea</h3>
+                    </div>
                   </div>
-                  <p className="text-slate-600">
+                  <p className={ds.body}>
                     Don't have an idea? We'll generate 28 for you. Already have one? We'll validate it. Either way, you'll leave with a winning idea, a name, domain, and logo.
                   </p>
-                </div>
+                </Card>
 
-                <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6">
+                <Card className="p-6 border-2 border-slate-200 bg-white hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">2</div>
-                    <h3 className="text-xl font-bold text-slate-900">Prepare</h3>
+                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+                      <Target className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-primary uppercase tracking-wide">Days 6-9</div>
+                      <h3 className={ds.heading}>Prepare</h3>
+                    </div>
                   </div>
-                  <p className="text-slate-600">
+                  <p className={ds.body}>
                     Set up your AI toolkit and start building. You'll have your first working version running before you know it. No coding - just directing AI with plain English.
                   </p>
-                </div>
+                </Card>
 
-                <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6">
+                <Card className="p-6 border-2 border-slate-200 bg-white hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">3</div>
-                    <h3 className="text-xl font-bold text-slate-900">Build</h3>
+                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+                      <Code className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-primary uppercase tracking-wide">Days 10-18</div>
+                      <h3 className={ds.heading}>Build</h3>
+                    </div>
                   </div>
-                  <p className="text-slate-600">
+                  <p className={ds.body}>
                     Add all the features that make a REAL product: user accounts, AI features, email, mobile support, admin dashboard. Everything a professional SaaS needs.
                   </p>
-                </div>
+                </Card>
 
-                <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6">
+                <Card className="p-6 border-2 border-slate-200 bg-white hover:border-primary/50 transition-colors">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">4</div>
-                    <h3 className="text-xl font-bold text-slate-900">Launch</h3>
+                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center">
+                      <Rocket className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-primary uppercase tracking-wide">Days 19-21</div>
+                      <h3 className={ds.heading}>Launch</h3>
+                    </div>
                   </div>
-                  <p className="text-slate-600">
+                  <p className={ds.body}>
                     Final polish, testing, and deployment. Make sure everything WORKS, looks professional, and is ready for your first users. Then hit that launch button.
                   </p>
-                </div>
+                </Card>
               </div>
 
               <p className="font-semibold text-slate-900 text-center text-xl pt-4">
@@ -537,7 +559,7 @@ export default function Landing() {
 
             <div className="space-y-16">
               {/* Product 1 - AuditMyListing - James F */}
-              <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
+              <Card className="border-2 border-slate-200 bg-white overflow-hidden">
                 <img
                   src="/auditmylisting-app.png"
                   alt="AuditMyListing app interface"
@@ -554,10 +576,10 @@ export default function Landing() {
                     <p className="text-slate-600">Built AuditMyListing - Amazon & eBay listing optimization tool</p>
                   </div>
                 </div>
-              </div>
+              </Card>
 
               {/* Product 2 - VerifyCreator - Jack G */}
-              <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
+              <Card className="border-2 border-slate-200 bg-white overflow-hidden">
                 <img
                   src="/verifycreator-app.png"
                   alt="VerifyCreator app interface"
@@ -574,10 +596,10 @@ export default function Landing() {
                     <p className="text-slate-600">Built VerifyCreator - AI-powered influencer verification platform</p>
                   </div>
                 </div>
-              </div>
+              </Card>
 
               {/* Product 3 - MusoBuddy - Tim F */}
-              <div className="bg-slate-50 border-2 border-slate-200 rounded-xl overflow-hidden">
+              <Card className="border-2 border-slate-200 bg-white overflow-hidden">
                 <img
                   src="/musobuddy-app.png"
                   alt="MusoBuddy app interface"
@@ -594,7 +616,7 @@ export default function Landing() {
                     <p className="text-slate-600">Built MusoBuddy - Gig management software for freelance musicians</p>
                   </div>
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
         </section>
@@ -618,54 +640,62 @@ export default function Landing() {
               Fair question. Here's the answer:
             </p>
 
-            <div className="space-y-6 mt-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Clock className="w-6 h-6 text-primary" />
+            <div className="grid md:grid-cols-2 gap-4 mt-6">
+              <Card className="p-5 border-2 border-slate-200 bg-white">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                    <Clock className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className={ds.heading}>Daily Micro-Tasks</h4>
+                    <p className={ds.body + " mt-1"}>
+                      You don't need 4 hours. Just show up daily and do ONE thing. The consistency builds momentum.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-slate-900 text-lg">Daily Micro-Tasks, Not Marathon Sessions</h4>
-                  <p className="text-slate-600 mt-1">
-                    You don't need to find 4 hours. You don't need a "free weekend." You just need to show up daily and do ONE thing. Some days that's 5 minutes. The CONSISTENCY is what builds momentum.
-                  </p>
-                </div>
-              </div>
+              </Card>
 
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Target className="w-6 h-6 text-primary" />
+              <Card className="p-5 border-2 border-slate-200 bg-white">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                    <Target className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className={ds.heading}>Zero Guesswork</h4>
+                    <p className={ds.body + " mt-1"}>
+                      Never wonder "what next?" Every day builds on the last. The path is laid out - just walk it.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-slate-900 text-lg">Perfectly Sequenced - Zero Guesswork</h4>
-                  <p className="text-slate-600 mt-1">
-                    You NEVER have to wonder "what should I do next?" Every day builds on the last. The path is laid out. You just have to WALK it.
-                  </p>
-                </div>
-              </div>
+              </Card>
 
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Zap className="w-6 h-6 text-primary" />
+              <Card className="p-5 border-2 border-slate-200 bg-white">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className={ds.heading}>AI Does the Work</h4>
+                    <p className={ds.body + " mt-1"}>
+                      Learn to DIRECT AI - not code yourself. Paste my prompts. AI builds. Like a developer on call 24/7.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-slate-900 text-lg">AI Does the Heavy Lifting</h4>
-                  <p className="text-slate-600 mt-1">
-                    You're NOT learning to code. You're learning to DIRECT AI to code for you. I give you the exact prompts. You paste them. The AI builds. It's like having a developer on call 24/7 for pennies.
-                  </p>
-                </div>
-              </div>
+              </Card>
 
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="w-6 h-6 text-primary" />
+              <Card className="p-5 border-2 border-slate-200 bg-white">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h4 className={ds.heading}>Built-In Accountability</h4>
+                    <p className={ds.body + " mt-1"}>
+                      Badges. Streaks. Progress tracking. The app shows exactly where you are - it STARES until you do the work.
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-slate-900 text-lg">An App That Holds You Accountable</h4>
-                  <p className="text-slate-600 mt-1">
-                    Badges. Streaks. A visual progress tracker. You can't lie to yourself - the app shows exactly where you are. Day 5. Day 12. Day 18. It's the same psychology that makes games addictive - but pointed at building something VALUABLE. And unlike a course you can ignore, this STARES at you until you do the work.
-                  </p>
-                </div>
-              </div>
+              </Card>
 
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
