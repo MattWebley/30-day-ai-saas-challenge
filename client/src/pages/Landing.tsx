@@ -188,8 +188,8 @@ export default function Landing() {
               And here's what most people don't understand yet:
             </p>
 
-            <div className="bg-slate-900 text-white p-6 rounded-xl my-8 shadow-xl shadow-slate-900/20">
-              <p className="text-xl font-bold">
+            <div className="bg-white border-2 border-slate-200 rounded-xl p-6 my-8">
+              <p className="text-xl font-bold text-slate-900">
                 The barrier to building software has dropped from $250,000+ and 2-3 YEARS... to less than $100 and 21 days. Even tiny tools used to cost $50K+. Now? Under $100.
               </p>
             </div>
@@ -299,11 +299,11 @@ export default function Landing() {
               Here's why I'm so passionate about helping people build SaaS:
             </p>
 
-            <div className="bg-slate-900 text-white p-8 rounded-xl my-6 space-y-4">
-              <p className="text-xl font-bold">
+            <div className="bg-white border-2 border-slate-200 rounded-xl p-8 my-6 space-y-4">
+              <p className="text-xl font-bold text-slate-900">
                 SaaS gives you a FACELESS, PASSIVE, RECURRING income stream you can run from ANYWHERE in the world.
               </p>
-              <p className="text-slate-300">
+              <p className="text-slate-600">
                 No inventory. No shipping. No customer service phone calls. No showing your face on camera if you don't want to. Just software that works 24/7, collecting payments while you sleep.
               </p>
             </div>
@@ -395,9 +395,9 @@ export default function Landing() {
               If you can TYPE, you can do this.
             </p>
 
-            <div className="bg-slate-900 text-white p-6 rounded-xl my-8">
-              <p className="text-lg">
-                <strong>By the way:</strong> this challenge app you're looking at right now? I built it using the EXACT same system I'm teaching you. The prompts, the process, the tools - all of it. User accounts, payments, AI features, mobile optimization - everything you see here, I built with this system. You're not just reading about what's possible. You're USING the proof.
+            <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-6 my-8">
+              <p className="text-lg text-slate-700">
+                <strong className="text-slate-900">By the way:</strong> this challenge app you're looking at right now? I built it using the EXACT same system I'm teaching you. The prompts, the process, the tools - all of it. User accounts, payments, AI features, mobile optimization - everything you see here, I built with this system. You're not just reading about what's possible. You're USING the proof.
               </p>
             </div>
           </div>
@@ -463,9 +463,9 @@ export default function Landing() {
                 By Day 21, you'll have a REAL, WORKING software product ready for customers.
               </p>
 
-              <div className="bg-slate-900 text-white p-6 rounded-xl my-8">
-                <h4 className="font-bold text-xl mb-3">Think About What You'll Have:</h4>
-                <p className="text-slate-300">
+              <div className="bg-white border-2 border-slate-200 rounded-xl p-6 my-8">
+                <h4 className="font-bold text-xl text-slate-900 mb-3">Think About What You'll Have:</h4>
+                <p className="text-slate-600">
                   Not notes. Not "knowledge." Not another certificate to add to your LinkedIn. An actual PRODUCT. Something you can show people. Something you can SELL. Something that could help hundreds, maybe THOUSANDS of people solve a problem they're struggling with right now. That's the difference between learning and DOING.
                 </p>
               </div>
@@ -854,66 +854,66 @@ export default function Landing() {
         {/* 6. THE OFFER STACK */}
         {/* ========================================== */}
         <section className="py-12 border-t border-slate-100">
-          <div className="bg-slate-900 rounded-2xl p-8 md:p-12 text-white space-y-8">
+          <div className="bg-white border-2 border-slate-200 rounded-2xl p-8 md:p-12 space-y-8">
             <div className="space-y-4 text-center">
-              <h2 className="text-3xl md:text-4xl font-black">
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900">
                 Get Instant Access for Just £295 (One Payment, 12 Months Access)
               </h2>
             </div>
 
             <div className="space-y-4">
-              <p className="text-slate-400 text-sm uppercase tracking-wide">Here's EVERYTHING you get:</p>
+              <p className="text-slate-500 text-sm uppercase tracking-wide">Here's EVERYTHING you get:</p>
               <ul className="space-y-3 text-lg">
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span>21 guided daily tasks with EXACT instructions <span className="text-slate-400">(Value: £500+)</span></span>
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="text-slate-700">21 guided daily tasks with EXACT instructions <span className="text-slate-400">(Value: £500+)</span></span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span>AI-powered idea generation - 28 ideas scored for YOU <span className="text-slate-400">(Value: £200+)</span></span>
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="text-slate-700">AI-powered idea generation - 28 ideas scored for YOU <span className="text-slate-400">(Value: £200+)</span></span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span>Copy-paste prompts for Replit Agent and Claude Code <span className="text-slate-400">(Value: £300+)</span></span>
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="text-slate-700">Copy-paste prompts for Replit Agent and Claude Code <span className="text-slate-400">(Value: £300+)</span></span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span>Progress tracking with badges and streaks <span className="text-slate-400">(Value: Priceless motivation)</span></span>
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="text-slate-700">Progress tracking with badges and streaks <span className="text-slate-400">(Value: Priceless motivation)</span></span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span>AI Mentor chat for instant help <span className="text-slate-400">(Value: £150+)</span></span>
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="text-slate-700">AI Mentor chat for instant help <span className="text-slate-400">(Value: £150+)</span></span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span>Build log to document your journey <span className="text-slate-400">(Value: Your proof of work)</span></span>
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="text-slate-700">Build log to document your journey <span className="text-slate-400">(Value: Your proof of work)</span></span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                  <span>12 months access to complete the challenge <span className="text-slate-400">(Value: Plenty of time)</span></span>
+                  <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
+                  <span className="text-slate-700">12 months access to complete the challenge <span className="text-slate-400">(Value: Plenty of time)</span></span>
                 </li>
               </ul>
             </div>
 
-            <div className="border-t border-slate-700 pt-8 space-y-6">
+            <div className="border-t border-slate-200 pt-8 space-y-6">
               <div className="text-center">
                 <p className="text-slate-400 line-through text-lg">Total Value: £1,150+</p>
                 <div className="flex items-baseline justify-center gap-3 mt-2">
-                  <span className="text-5xl font-black">£295</span>
-                  <span className="text-slate-400 text-lg">/ $399 USD</span>
+                  <span className="text-5xl font-black text-slate-900">£295</span>
+                  <span className="text-slate-500 text-lg">/ $399 USD</span>
                 </div>
-                <p className="text-slate-400 mt-2">
+                <p className="text-slate-500 mt-2">
                   One payment. 12 months access. No subscriptions.
                 </p>
               </div>
 
               <a href="/order" className="block">
-                <Button size="lg" className="w-full h-16 text-xl font-bold gap-3 bg-white text-slate-900 hover:bg-slate-100">
+                <Button size="lg" className="w-full h-16 text-xl font-bold gap-3">
                   Start the Challenge <ArrowRight className="w-6 h-6" />
                 </Button>
               </a>
 
-              <p className="text-center text-slate-400 text-sm">
+              <p className="text-center text-slate-500 text-sm">
                 Instant access. Start Day 1 IMMEDIATELY.
               </p>
             </div>
