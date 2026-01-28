@@ -48,9 +48,6 @@ export default function Landing() {
             <span className="text-xs text-slate-500 mt-1">by Matt Webley</span>
           </div>
           <div className="absolute right-6 flex gap-2 items-center">
-            <a href="/api/test-login">
-              <Button variant="outline" size="sm" className="border-blue-500 text-blue-500 hover:bg-blue-50">Test Login</Button>
-            </a>
             <a href="/api/login">
               <Button variant="ghost" size="sm">Login</Button>
             </a>
