@@ -27,13 +27,13 @@ export async function registerRoutes(
     // Check for existing test user or create one
     let testUser = await storage.getUser("test_user_id");
     if (!testUser) {
-      testUser = await storage.getOrCreateUser({
+      testUser = await storage.upsertUser({
         id: "test_user_id",
         email: "test@example.com",
         firstName: "Test",
         lastName: "User",
         coachingPurchased: true,
-        isEarlyAdopter: true,
+        referralCode: "TEST1234",
       });
     }
 
