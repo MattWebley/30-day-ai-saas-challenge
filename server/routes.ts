@@ -11,7 +11,7 @@ import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail } from "./emailService";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
-import { callClaude, callClaudeForJSON, callGPT, callGPTForJSON, detectAbuse, checkRateLimit, logAIUsage, sendAbuseAlert } from "./aiService";
+import { callClaude, callClaudeForJSON, detectAbuse, checkRateLimit, logAIUsage, sendAbuseAlert } from "./aiService";
 
 const dnsResolve = promisify(dns.resolve);
 
@@ -770,7 +770,7 @@ For each idea, provide:
 Return JSON array of 28 ideas, sorted by totalScore descending.
 Format: { "ideas": [...] }`;
 
-      const result = await callGPTForJSON<{ ideas: any[] }>({
+      const result = await callClaudeForJSON<{ ideas: any[] }>({
         userId,
         endpoint: 'generate-ideas',
         endpointType: 'ideaGen',
@@ -990,7 +990,7 @@ Format: { "ideas": [...] }`;
       const userId = req.user.claims.sub;
       const { prompt } = req.body;
 
-      const result = await callGPT({
+      const result = await callClaude({
         userId,
         endpoint: 'ai-prompt',
         endpointType: 'general',
@@ -1039,7 +1039,7 @@ Format: { "ideas": [...] }`;
       const screenshotUrl = `https://image.thum.io/get/width/1200/crop/800/${cleanUrl}`;
 
       // Use callClaude for text-based design analysis (describe what to look for)
-      const result = await callGPT({
+      const result = await callClaude({
         userId,
         endpoint: 'analyze-design',
         endpointType: 'general',
@@ -1134,7 +1134,7 @@ Be creative and specific. Focus on what would make this design FEEL professional
       const userId = req.user.claims.sub;
       const { ideaTitle, ideaDescription, targetCustomer } = req.body;
 
-      const competitorResult = await callGPTForJSON<{ competitors: any[] }>({
+      const competitorResult = await callClaudeForJSON<{ competitors: any[] }>({
         userId,
         endpoint: 'research-competitors',
         endpointType: 'features',
@@ -1203,7 +1203,7 @@ Respond in this exact JSON format:
 
       if (sharedFeatureNames.length > 0) {
         try {
-          const descResult = await callGPTForJSON<{ features: any[] }>({
+          const descResult = await callClaudeForJSON<{ features: any[] }>({
             userId,
             endpoint: 'feature-descriptions',
             endpointType: 'features',
@@ -1263,7 +1263,7 @@ Keep each description and why statement under 120 characters.`,
         `${c.name}: ${c.topFeatures?.join(', ')}`
       ).join('\n');
 
-      const result = await callGPT({
+      const result = await callClaude({
         userId,
         endpoint: 'generate-usp-features',
         endpointType: 'features',
@@ -1313,7 +1313,7 @@ List only the features, one per line, each under 10 words. No numbering or bulle
       const { idea, painPoints } = req.body;
 
       // Step 1: Generate core features based on idea and pain points
-      const coreResult = await callGPTForJSON<{ coreFeatures: any[] }>({
+      const coreResult = await callClaudeForJSON<{ coreFeatures: any[] }>({
         userId,
         endpoint: 'generate-core-features',
         endpointType: 'features',
@@ -1351,7 +1351,7 @@ Respond in this exact JSON format:
       const coreFeatures = coreResult.data?.coreFeatures || [];
 
       // Step 2: Find competitors and analyze shared features
-      const competitorResult = await callGPTForJSON<{ competitors: any[] }>({
+      const competitorResult = await callClaudeForJSON<{ competitors: any[] }>({
         userId,
         endpoint: 'find-competitors',
         endpointType: 'features',
@@ -1392,7 +1392,7 @@ Respond in this exact JSON format:
       // Generate descriptions for shared features
       let sharedFeatures: any[] = [];
       if (sharedFeatureNames.length > 0) {
-        const sharedResult = await callGPTForJSON<{ sharedFeatures: any[] }>({
+        const sharedResult = await callClaudeForJSON<{ sharedFeatures: any[] }>({
           userId,
           endpoint: 'describe-shared-features',
           endpointType: 'features',
@@ -1421,7 +1421,7 @@ Respond in this exact JSON format:
       }
 
       // Step 3: Generate USP features
-      const uspResult = await callGPTForJSON<{ uspFeatures: any[] }>({
+      const uspResult = await callClaudeForJSON<{ uspFeatures: any[] }>({
         userId,
         endpoint: 'generate-usp-features',
         endpointType: 'features',
@@ -1469,7 +1469,7 @@ Respond in this exact JSON format:
       const userId = req.user.claims.sub;
       const { idea, features } = req.body;
 
-      const result = await callGPTForJSON<{ mvpFeatures: any[]; postMvpFeatures: any[] }>({
+      const result = await callClaudeForJSON<{ mvpFeatures: any[]; postMvpFeatures: any[] }>({
         userId,
         endpoint: 'generate-mvp-roadmap',
         endpointType: 'features',
@@ -2515,7 +2515,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       // Generate AI suggested answer
       try {
-        const aiResult = await callGPT({
+        const aiResult = await callClaude({
           userId,
           endpoint: 'ai-suggested-answer',
           endpointType: 'general',
@@ -3461,7 +3461,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         return res.status(400).json({ message: "Current headline required" });
       }
 
-      const result = await callGPT({
+      const result = await callClaude({
         userId,
         endpoint: 'generate-ab-headlines',
         endpointType: 'general',

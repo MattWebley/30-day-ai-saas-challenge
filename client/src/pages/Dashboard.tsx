@@ -191,10 +191,9 @@ const VideoPlaceholder = ({ day, title }: { day: number; title: string }) => (
 // Add real Loom video URLs here as you record them
 // Format: dayNumber: "https://www.loom.com/embed/VIDEO_ID"
 const lessonVideos: Record<number, string> = {
-  // Add video URLs as you record them:
-  // 0: "https://www.loom.com/embed/YOUR_VIDEO_ID",
-  // 1: "https://www.loom.com/embed/YOUR_VIDEO_ID",
-  // etc.
+  0: "https://www.loom.com/embed/dac0eedf4efa4f1e83aca36cadab00ef",
+  1: "https://www.loom.com/embed/a333ecd106db43d591eedb1e9fbf5f4b",
+  // Add more video URLs as you record them
 };
 
 // Loom thumbnails - get from Loom share page (og:image meta tag)
