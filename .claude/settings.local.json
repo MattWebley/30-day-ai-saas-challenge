@@ -89,7 +89,10 @@
       "Bash(git -C /home/runner/workspace log --oneline -5)",
       "Bash(xargs:*)",
       "Bash(for day in 14 16)",
-      "Bash(do echo \"=== DAY $day ===\")"
+      "Bash(do echo \"=== DAY $day ===\")",
+      "Bash(git -C /home/runner/workspace diff)",
+      "Bash(git -C /home/runner/workspace add client/src/hooks/useDays.ts)",
+      "Bash(git -C /home/runner/workspace commit -m \"$\\(cat <<''EOF''\nFix Day 0 not loading - query was disabled for day=0\n\nThe useDayContent hook had `enabled: day > 0` which prevented the query\nfrom running when day was 0. Changed to `day >= 0` to include Day 0.\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }
