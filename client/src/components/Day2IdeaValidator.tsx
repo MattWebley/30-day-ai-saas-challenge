@@ -165,36 +165,32 @@ Be encouraging and focus on the positives. Every idea has potential - help them 
     },
   });
 
-  // Generate pain points for selected idea - customer avatar focused
+  // Generate pain points for selected idea
   const generatePainPoints = useMutation({
     mutationFn: async (ideaIndex: number) => {
       const idea = shortlistedIdeas[ideaIndex];
-      const prompt = `You ARE a ${idea.targetCustomer} who is FRUSTRATED. You're venting to a friend about daily struggles that "${idea.title}" could solve.
+      const prompt = `What problems does "${idea.title}" solve for ${idea.targetCustomer}?
 
-CONTEXT:
-- Product: ${idea.title}
-- What it does: ${idea.desc}
-- Your role: ${idea.targetCustomer}
+Product: ${idea.title}
+Description: ${idea.desc}
+Target customer: ${idea.targetCustomer}
 
-Step into their shoes completely. Think about:
-- What makes them curse under their breath at work?
-- What do they complain about to colleagues?
-- What task do they dread every single week?
-- What's costing them money, time, or sanity?
-- What embarrassing workarounds are they using?
+List 8 GENERAL pain points this product addresses. Keep them:
+- SHORT (under 10 words each)
+- GENERAL (apply to many people, not hyper-specific scenarios)
+- PROBLEM-FOCUSED (what's broken, not the solution)
 
-Write 8-10 pain points AS THE CUSTOMER WOULD SAY THEM:
-- First person voice ("I spend hours...", "I hate when...", "I've lost clients because...")
-- Specific scenarios, not abstract concepts
-- Include the EMOTIONAL impact (frustration, embarrassment, anxiety)
-- Real human language, no corporate jargon
+Good examples:
+- Wasting time on repetitive tasks
+- Missing deadlines due to poor organization
+- Losing track of customer conversations
+- Struggling to create professional content
 
-Format each pain point on its own line, numbered 1-10. Just the pain statement, no explanations.
+Bad examples (too specific):
+- "I spend 3 hours every Tuesday reformatting the same report for my boss Steve"
+- "My colleague Janet always asks me where the files are"
 
-Example format:
-1. I spend 3 hours every week manually copying data between spreadsheets
-2. I've definitely lost repeat clients because I forgot to follow up
-3. I cringe when clients ask for reports and I have to scramble to make them`;
+Format: One pain point per line, numbered 1-8. No explanations, just the pain point.`;
 
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
       return res.json();
