@@ -52,7 +52,7 @@ const DAY_INSTRUCTIONS: Record<number, string[]> = {
   6: [
     "Set up Claude Pro account (required)",
     "Set up Replit account (required)",
-    "Optional: ChatGPT Plus, OpenAI API, etc.",
+    "Optional: Wispr Flow, Abacus AI, OpenAI API",
     "Confirm both essential tools are ready"
   ],
   7: [

@@ -40,7 +40,8 @@ import {
   Pencil,
   Sparkles,
   ToggleLeft,
-  ToggleRight
+  ToggleRight,
+  Mail
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -180,6 +181,18 @@ interface AbTest {
   totalViews: number;
   totalConversions: number;
   overallConversionRate: string;
+}
+
+interface EmailTemplate {
+  id: number;
+  templateKey: string;
+  name: string;
+  subject: string;
+  body: string;
+  description: string | null;
+  variables: string | null;
+  isActive: boolean;
+  updatedAt: string;
 }
 
 const FONT_OPTIONS = [
@@ -323,12 +336,13 @@ export default function Admin() {
 
   // Critique requests management
   const [showCritiqueSection, setShowCritiqueSection] = useState(true);
+  const [critiqueTab, setCritiqueTab] = useState<'pending' | 'completed'>('pending');
 
   const { data: critiqueRequests = [] } = useQuery<CritiqueRequest[]>({
     queryKey: ["/api/admin/critiques"],
   });
 
-  const pendingCritiques = critiqueRequests.filter(c => c.status === 'pending');
+  const pendingCritiques = critiqueRequests.filter(c => c.status === 'pending' || c.status === 'in_progress');
 
   const updateCritiqueStatus = useMutation({
     mutationFn: async ({ id, status, videoUrl }: { id: number; status: string; videoUrl?: string }) => {
@@ -341,6 +355,61 @@ export default function Admin() {
     },
     onError: () => {
       toast.error("Failed to update critique");
+    }
+  });
+
+  const deleteCritique = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("DELETE", `/api/admin/critiques/${id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/critiques"] });
+      toast.success("Critique deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete critique");
+    }
+  });
+
+  const completedCritiques = critiqueRequests.filter(c => c.status === 'completed');
+
+  // Email templates management
+  const [showEmailTemplatesSection, setShowEmailTemplatesSection] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<string | null>(null);
+  const [editedSubject, setEditedSubject] = useState("");
+  const [editedBody, setEditedBody] = useState("");
+  const [testEmailAddress, setTestEmailAddress] = useState("");
+
+  const { data: emailTemplates = [] } = useQuery<EmailTemplate[]>({
+    queryKey: ["/api/admin/email-templates"],
+  });
+
+  const updateEmailTemplate = useMutation({
+    mutationFn: async ({ templateKey, subject, body, isActive }: { templateKey: string; subject?: string; body?: string; isActive?: boolean }) => {
+      const res = await apiRequest("PATCH", `/api/admin/email-templates/${templateKey}`, { subject, body, isActive });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/email-templates"] });
+      toast.success("Email template updated");
+      setEditingTemplate(null);
+    },
+    onError: () => {
+      toast.error("Failed to update email template");
+    }
+  });
+
+  const sendTestEmail = useMutation({
+    mutationFn: async ({ templateKey, testEmail }: { templateKey: string; testEmail: string }) => {
+      const res = await apiRequest("POST", `/api/admin/email-templates/${templateKey}/test`, { testEmail });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || "Test email sent");
+    },
+    onError: () => {
+      toast.error("Failed to send test email");
     }
   });
 
@@ -1092,14 +1161,40 @@ export default function Admin() {
 
           {showCritiqueSection && (
             <div className="space-y-4">
-              {critiqueRequests.length === 0 ? (
+              {/* Tabs */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCritiqueTab('pending')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    critiqueTab === 'pending'
+                      ? 'bg-primary text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Pending ({pendingCritiques.length})
+                </button>
+                <button
+                  onClick={() => setCritiqueTab('completed')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    critiqueTab === 'completed'
+                      ? 'bg-primary text-white'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  Completed ({completedCritiques.length})
+                </button>
+              </div>
+
+              {(critiqueTab === 'pending' ? pendingCritiques : completedCritiques).length === 0 ? (
                 <Card className="p-8 border-2 border-slate-100 text-center">
                   <Video className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-500">No critique requests yet</p>
+                  <p className="text-slate-500">
+                    {critiqueTab === 'pending' ? 'No pending critique requests' : 'No completed critiques yet'}
+                  </p>
                 </Card>
               ) : (
                 <div className="space-y-3">
-                  {critiqueRequests.map((critique) => (
+                  {(critiqueTab === 'pending' ? pendingCritiques : completedCritiques).map((critique) => (
                     <Card key={critique.id} className={`p-4 border-2 ${critique.status === 'pending' ? 'border-red-200 bg-red-50' : critique.status === 'completed' ? 'border-green-200 bg-green-50' : 'border-slate-200'}`}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
@@ -1131,36 +1226,70 @@ export default function Admin() {
                           )}
                         </div>
                         <div className="flex flex-col gap-2">
-                          {critique.status === 'pending' && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => updateCritiqueStatus.mutate({ id: critique.id, status: 'in_progress' })}
-                            >
-                              Start
-                            </Button>
-                          )}
-                          {critique.status === 'in_progress' && (
-                            <Button
-                              size="sm"
-                              onClick={() => {
-                                const videoUrl = prompt("Enter the video URL:");
-                                if (videoUrl) {
-                                  updateCritiqueStatus.mutate({ id: critique.id, status: 'completed', videoUrl });
-                                }
-                              }}
-                            >
-                              Mark Done
-                            </Button>
-                          )}
-                          {critique.status === 'completed' && critique.videoUrl && (
-                            <a href={critique.videoUrl} target="_blank" rel="noopener noreferrer">
-                              <Button size="sm" variant="outline">
-                                <Video className="w-4 h-4 mr-1" />
-                                View
+                          {(critique.status === 'pending' || critique.status === 'in_progress') && (
+                            <>
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  const videoUrl = prompt("Enter the video URL to mark complete:");
+                                  if (videoUrl) {
+                                    updateCritiqueStatus.mutate({ id: critique.id, status: 'completed', videoUrl });
+                                  }
+                                }}
+                              >
+                                <Check className="w-4 h-4 mr-1" />
+                                Complete
                               </Button>
-                            </a>
+                              {critique.status === 'pending' && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => updateCritiqueStatus.mutate({ id: critique.id, status: 'in_progress' })}
+                                >
+                                  Start Working
+                                </Button>
+                              )}
+                            </>
                           )}
+                          {critique.status === 'completed' && (
+                            <>
+                              {critique.videoUrl && (
+                                <a href={critique.videoUrl} target="_blank" rel="noopener noreferrer">
+                                  <Button size="sm" variant="outline" className="w-full">
+                                    <Video className="w-4 h-4 mr-1" />
+                                    View Video
+                                  </Button>
+                                </a>
+                              )}
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const newVideoUrl = prompt("Update video URL:", critique.videoUrl || "");
+                                  if (newVideoUrl !== null) {
+                                    updateCritiqueStatus.mutate({ id: critique.id, status: 'completed', videoUrl: newVideoUrl });
+                                  }
+                                }}
+                              >
+                                <Pencil className="w-4 h-4 mr-1" />
+                                Edit URL
+                              </Button>
+                            </>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-red-600 hover:bg-red-50 border-red-200"
+                            onClick={() => {
+                              if (confirm("Are you sure you want to delete this critique request?")) {
+                                deleteCritique.mutate(critique.id);
+                              }
+                            }}
+                            disabled={deleteCritique.isPending}
+                          >
+                            <Trash2 className="w-4 h-4 mr-1" />
+                            Delete
+                          </Button>
                         </div>
                       </div>
                     </Card>
@@ -1834,7 +1963,6 @@ export default function Admin() {
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">App URL</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Current Day</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Progress</th>
-                    <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">XP Earned</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Referrals</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Last Active</th>
                     <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
@@ -1882,9 +2010,6 @@ export default function Admin() {
                             </div>
                             <span className="text-sm text-slate-500">{Math.round(((user.currentDay || 0) / 30) * 100)}%</span>
                           </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span className="font-medium text-slate-900">{user.totalXp || 0} XP</span>
                         </td>
                         <td className="px-6 py-4">
                           {user.referralCount > 0 ? (
@@ -1960,6 +2085,154 @@ export default function Admin() {
               })}
             </div>
           </Card>
+        </div>
+
+        {/* Email Templates */}
+        <div className="space-y-4">
+          <button
+            onClick={() => setShowEmailTemplatesSection(!showEmailTemplatesSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <h2 className="text-xl font-bold text-slate-900">Email Templates</h2>
+            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
+              {emailTemplates.length} templates
+            </span>
+            {showEmailTemplatesSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showEmailTemplatesSection && (
+            <div className="space-y-4">
+              {emailTemplates.length === 0 ? (
+                <Card className="p-8 border-2 border-slate-100 text-center">
+                  <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">No email templates found. Run the seed script to create default templates.</p>
+                </Card>
+              ) : (
+                <div className="space-y-3">
+                  {emailTemplates.map((template) => (
+                    <Card key={template.templateKey} className={`p-4 border-2 ${template.isActive ? 'border-slate-200' : 'border-red-200 bg-red-50'}`}>
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-bold text-slate-900">{template.name}</h3>
+                            {!template.isActive && (
+                              <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded">Disabled</span>
+                            )}
+                          </div>
+                          <p className="text-sm text-slate-500 mt-1">{template.description}</p>
+                          {template.variables && (
+                            <p className="text-xs text-slate-400 mt-1">
+                              Variables: {template.variables.split(',').map(v => `{{${v.trim()}}}`).join(', ')}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              updateEmailTemplate.mutate({
+                                templateKey: template.templateKey,
+                                isActive: !template.isActive
+                              });
+                            }}
+                          >
+                            {template.isActive ? <ToggleRight className="w-4 h-4 text-green-600" /> : <ToggleLeft className="w-4 h-4 text-slate-400" />}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              if (editingTemplate === template.templateKey) {
+                                setEditingTemplate(null);
+                              } else {
+                                setEditingTemplate(template.templateKey);
+                                setEditedSubject(template.subject);
+                                setEditedBody(template.body);
+                              }
+                            }}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {editingTemplate === template.templateKey && (
+                        <div className="space-y-4 pt-4 border-t border-slate-200">
+                          <div>
+                            <Label>Subject</Label>
+                            <Input
+                              value={editedSubject}
+                              onChange={(e) => setEditedSubject(e.target.value)}
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label>Body (use {"{{variable}}"} for placeholders)</Label>
+                            <Textarea
+                              value={editedBody}
+                              onChange={(e) => setEditedBody(e.target.value)}
+                              className="mt-1 font-mono text-sm min-h-[300px]"
+                            />
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Button
+                              onClick={() => {
+                                updateEmailTemplate.mutate({
+                                  templateKey: template.templateKey,
+                                  subject: editedSubject,
+                                  body: editedBody
+                                });
+                              }}
+                              disabled={updateEmailTemplate.isPending}
+                            >
+                              <Save className="w-4 h-4 mr-1" />
+                              Save Changes
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => setEditingTemplate(null)}
+                            >
+                              Cancel
+                            </Button>
+                            <div className="flex-1" />
+                            <div className="flex items-center gap-2">
+                              <Input
+                                placeholder="Test email address"
+                                value={testEmailAddress}
+                                onChange={(e) => setTestEmailAddress(e.target.value)}
+                                className="w-48"
+                              />
+                              <Button
+                                variant="outline"
+                                onClick={() => {
+                                  if (!testEmailAddress) {
+                                    toast.error("Enter an email address first");
+                                    return;
+                                  }
+                                  sendTestEmail.mutate({
+                                    templateKey: template.templateKey,
+                                    testEmail: testEmailAddress
+                                  });
+                                }}
+                                disabled={sendTestEmail.isPending}
+                              >
+                                Send Test
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Layout>

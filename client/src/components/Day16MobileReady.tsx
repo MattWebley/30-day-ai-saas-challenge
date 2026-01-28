@@ -15,7 +15,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { ds } from "@/lib/design-system";
 
-interface Day19MobileReadyProps {
+interface Day16MobileReadyProps {
   appName: string;
   onComplete: (data: { testedOnPhone: boolean; mobileIssues: string }) => void;
 }
@@ -98,7 +98,7 @@ const PERFORMANCE_TESTS = [
   },
 ];
 
-export function Day19MobileReady({ appName, onComplete }: Day19MobileReadyProps) {
+export function Day16MobileReady({ appName, onComplete }: Day16MobileReadyProps) {
   const [step, setStep, containerRef] = useStepWithScroll<"test" | "performance" | "fix" | "done">("test");
   const [testResults, setTestResults] = useState<Map<string, boolean>>(new Map());
   const [perfResults, setPerfResults] = useState<Map<string, boolean>>(new Map());

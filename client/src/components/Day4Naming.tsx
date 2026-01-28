@@ -29,9 +29,6 @@ interface Day4NamingProps {
   onComplete: () => void;
 }
 
-// Namecheap affiliate link
-const NAMECHEAP_AFFILIATE = "https://www.namecheap.com/?aff=YOUR_AFFILIATE_ID";
-
 // Social platforms to register - with direct signup URLs
 const SOCIAL_PLATFORMS = [
   {

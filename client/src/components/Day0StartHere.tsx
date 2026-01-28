@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowRight, Check, Copy, ExternalLink, Award } from "lucide-react";
+import { ArrowRight, Check, Copy, ExternalLink, Award, ChevronDown } from "lucide-react";
 import { ds } from "@/lib/design-system";
 import { VideoSlides } from "@/components/VideoSlides";
 import { toast } from "sonner";
@@ -437,13 +437,20 @@ Day 1 starts now. Follow along if you want to see how this goes.
       <div className={ds.section}>
         <div
           className={`${ds.cardWithPadding} cursor-pointer transition-all ${
-            buildInPublicExpanded ? 'border-primary' : 'hover:border-slate-300'
+            buildInPublicExpanded ? 'border-primary' : 'hover:border-primary/50 hover:shadow-sm'
           }`}
           onClick={() => !buildInPublicExpanded && setBuildInPublicExpanded(true)}
         >
           <div className="flex items-center justify-between mb-3">
             <h3 className={ds.heading}>Build in Public</h3>
-            <span className="text-xs text-slate-400 uppercase tracking-wide">Optional</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-slate-400 uppercase tracking-wide">Optional</span>
+              <ChevronDown
+                className={`w-5 h-5 text-slate-400 transition-transform duration-200 ${
+                  buildInPublicExpanded ? 'rotate-180' : ''
+                }`}
+              />
+            </div>
           </div>
 
           <div className="flex items-start gap-4">
@@ -457,6 +464,11 @@ Day 1 starts now. Follow along if you want to see how this goes.
               <p className={`${ds.muted} mt-1 text-sm`}>
                 People who publicly commit are 65% more likely to follow through.
               </p>
+              {!buildInPublicExpanded && (
+                <p className="text-primary text-sm font-medium mt-2 flex items-center gap-1">
+                  Click to expand <ChevronDown className="w-4 h-4" />
+                </p>
+              )}
             </div>
           </div>
 

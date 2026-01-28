@@ -22,7 +22,7 @@ const REQUIRED_TOOLS: Tool[] = [
   {
     name: "Replit",
     description: "Your development environment. Easy to use, runs in browser, has a built-in AI agent as fallback.",
-    url: "https://replit.com/signup",
+    url: "https://replit.com/refer/info7410",
     required: true,
     icon: "💻",
   },
@@ -35,18 +35,21 @@ const REQUIRED_TOOLS: Tool[] = [
   },
 ];
 
-const OPTIONAL_TOOLS: Tool[] = [
+const RECOMMENDED_TOOLS: Tool[] = [
   {
-    name: "ChatGPT",
-    description: "Additional AI assistance for brainstorming and problem-solving.",
-    url: "https://chat.openai.com",
+    name: "Wispr Flow",
+    description: "Voice-to-text AI that lets you talk to your computer instead of typing. 3x faster than typing - speak your code, prompts, and ideas naturally.",
+    url: "https://ref.wisprflow.ai/matthew-webley",
     required: false,
-    icon: "💬",
+    icon: "🎙️",
   },
+];
+
+const OPTIONAL_TOOLS: Tool[] = [
   {
     name: "Abacus.AI",
     description: "Video generation, text-to-speech, image generation - all sorts of AI models to create assets.",
-    url: "https://abacus.ai",
+    url: "https://chatllm.abacus.ai/WlwgmxfvHg",
     required: false,
     icon: "🧮",
   },
@@ -129,7 +132,54 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
                     onClick={(e) => { e.stopPropagation(); window.open(tool.url, "_blank"); }}
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Sign Up for {tool.name}
+                    Open {tool.name}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Highly Recommended */}
+      <div className={ds.cardWithPadding}>
+        <div className="flex items-center gap-2 mb-4">
+          <h4 className={ds.label}>Highly Recommended</h4>
+          <span className="text-xs bg-primary text-white px-2 py-1 rounded font-medium">
+            GAME CHANGER
+          </span>
+        </div>
+        <p className={ds.body + " mb-4"}>
+          This tool will dramatically speed up how you work with AI
+        </p>
+
+        <div className="space-y-4">
+          {RECOMMENDED_TOOLS.map((tool, idx) => (
+            <div
+              key={idx}
+              className={completedTools.has(tool.name) ? ds.optionSelected : ds.optionDefault}
+              onClick={() => toggleTool(tool.name)}
+            >
+              <div className="flex items-start gap-3">
+                <Checkbox
+                  checked={completedTools.has(tool.name)}
+                  onCheckedChange={() => toggleTool(tool.name)}
+                  className="mt-1"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">{tool.icon}</span>
+                    <h5 className={ds.label}>{tool.name}</h5>
+                  </div>
+                  <p className={ds.muted + " mb-3"}>{tool.description}</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-2"
+                    onClick={(e) => { e.stopPropagation(); window.open(tool.url, "_blank"); }}
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    Open {tool.name}
                   </Button>
                 </div>
               </div>
@@ -154,7 +204,7 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
           {OPTIONAL_TOOLS.map((tool, idx) => (
             <div
               key={idx}
-              className={completedTools.has(tool.name) ? ds.optionSelected : ds.infoBoxHighlight + " cursor-pointer"}
+              className={completedTools.has(tool.name) ? ds.optionSelected : ds.optionDefault}
               onClick={() => toggleTool(tool.name)}
             >
               <div className="flex items-start gap-3">
@@ -170,13 +220,13 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
                   </div>
                   <p className={ds.muted + " mb-3"}>{tool.description}</p>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     className="gap-2"
                     onClick={(e) => { e.stopPropagation(); window.open(tool.url, "_blank"); }}
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Check Out {tool.name}
+                    Open {tool.name}
                   </Button>
                 </div>
               </div>

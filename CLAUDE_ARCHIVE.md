@@ -483,3 +483,65 @@ This file contains archived session logs from CLAUDE.md to keep the main file un
   - `client/src/components/Day18BuildYourMVP.tsx` - Complete redesign with pause button
   - `server/routes.ts` - Made screenshotUrl optional in showcase API
   - `shared/schema.ts` - Made screenshotUrl nullable
+
+### 2026-01-24 - Day 19 Overhaul & Critique Page
+- **Tasks Completed:**
+  - **New Critique Page:** Created standalone `/critique` page for Sales Page Video Critique
+    - Moved from Coaching page to its own route
+    - Pricing: £495/$595 base + £95/$97 headlines bump (50% off messaging)
+    - Currency toggle (USD/GBP) based on user's purchase currency
+    - Locked state for users who haven't reached Day 19
+    - "Sales Page Training Already Included" notice for Day 19+ users
+  - **Sidebar Updates:**
+    - Changed "Sales Letter Pack" → "Sales Letter Critique"
+    - Added uniform Lock/Unlock icons across Sales Letter Critique, Claude Code Guide, and Launch Pack
+    - Links to `/critique` when unlocked (Day 19+)
+  - **Ambassador Badge:** New badge (🌟) for submitting testimonials
+    - Added to seed.ts with triggerType "testimonial_submitted"
+    - Routes.ts awards badge when showcase entry includes testimonial
+  - **Day 19 Lesson Improvements:**
+    - Added "WHY SAAS IS EASIER TO SELL" section (free trials, zero risk)
+    - Added "BUILD IT ONCE, SELLS 24/7" messaging
+    - Removed duplication between lesson and interactive component
+    - Better whitespace and subheads for readability
+  - **Day 19 Interactive Component:**
+    - Made critique pitch its own step in flow (intro → structure → prompts → build → critique → showcase → complete)
+    - Added 50% off pricing display with strikethrough (£990/£495)
+    - Added visual feedback for copy buttons (green checkmark, "Copied!" text)
+    - Removed ChatGPT mention - only Claude.ai now
+    - Removed "20+ years" mentions - focus on conversion rates instead
+    - Fixed showcase section to match design system (bg-primary instead of bg-green-500)
+    - Updated social platforms: Instagram, TikTok, YouTube, Facebook, and email lists
+    - Changed "10-100 paying customers" → "first few paying customers" (honesty fix)
+    - Added republish reminders in build and complete steps
+
+### 2026-01-24 (Session 2) - Day 20 Overhaul: Keyword-First SEO
+- **Tasks Completed:**
+  - **Day 20 Complete Rebuild:** Changed from "Launch Plan" to "Get Found by Google" with keyword-first approach
+    - Created new `Day20GetFound.tsx` component with 7-step flow
+    - ONE comprehensive prompt does keyword research AND optimization together
+  - **Keyword Research Prompt:** Generates primary, secondary, long-tail, and competitor keywords with search intent and competition level
+  - **SEO Optimization Prompt:** 10-point comprehensive optimization based on user's chosen keywords
+  - **Lesson Updates:** Keyword-first messaging, explains why keywords matter before the technical stuff
+  - **VideoSlides Updates:** Keywords → Optimize → Submit flow
+  - **Coaching Pitch:** "SEO takes time. Want faster results? Our coaches can help."
+
+### 2026-01-24 (Session 3) - Day 21 Overhaul: Growth Strategies + Work With Matt CTA
+- **Tasks Completed:**
+  - **Day 21 Complete Rebuild:** Kept income calculator, added growth strategy education + call booking
+    - 8-step flow: intro → calculator → strategies-intro → passive → active → more → commitment → complete
+    - **Income Calculator:** Set income goal, pick price point, see customers needed
+    - **Passive Strategies (3):** AI-powered blog, comparison pages, affiliate program
+    - **Active Strategies (3):** Automated cold email, paid ads, influencer partnerships
+    - **77 Strategies Hook:** "That's just 6 of 77+ strategies" curiosity hook
+    - **Work With Matt CTA:** Dark card with benefits list, links to mattwebley.com/workwithmatt
+    - **Commitment:** Optional commitment statement
+
+### 2026-01-24 (Session 4) - Day 20 Simplified SEO + AI Search
+- **Tasks Completed:**
+  - **Simplified Day 20 Flow:** Removed multi-step keyword picking (too clunky)
+    - New flow: intro → optimize (one prompt) → submit → directories → complete
+  - **AI Search Section:** Added info about getting found by AI assistants (ChatGPT, Perplexity, etc.)
+  - **Day Name Change:** "Launch Plan" → "Get Found by Google" → "Get Found by Google & AI"
+  - **Duplicate Content Fix:** Trimmed Day 20 & 21 lessons to be short teasers
+  - **Google Trust Timeline:** Added note that Google doesn't trust new sites

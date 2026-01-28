@@ -58,7 +58,7 @@ const Day17BuildItOut = lazy(() => import("@/components/Day17BuildItOut").then(m
 const Day18AdminDashboard = lazy(() => import("@/components/Day18AdminDashboard").then(m => ({ default: m.Day18AdminDashboard })));
 const Day18BuildYourMVP = lazy(() => import("@/components/Day18BuildYourMVP").then(m => ({ default: m.Day18BuildYourMVP })));
 const Day18TestEverything = lazy(() => import("@/components/Day18TestEverything").then(m => ({ default: m.Day18TestEverything })));
-const Day19MobileReady = lazy(() => import("@/components/Day19MobileReady").then(m => ({ default: m.Day19MobileReady })));
+const Day16MobileReady = lazy(() => import("@/components/Day16MobileReady").then(m => ({ default: m.Day16MobileReady })));
 const Day19TheSalesMachine = lazy(() => import("@/components/Day19TheSalesMachine").then(m => ({ default: m.Day19TheSalesMachine })));
 const Day20GetFound = lazy(() => import("@/components/Day20GetFound").then(m => ({ default: m.Day20GetFound })));
 const Day21LaunchDay = lazy(() => import("@/components/Day21LaunchDay").then(m => ({ default: m.Day21LaunchDay })));
@@ -219,13 +219,27 @@ export default function Dashboard() {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [videoLoading, setVideoLoading] = useState(true);
 
-  // Determine current day from URL or default to 0 (Start Here)
-  const currentDay = params?.day ? parseInt(params.day) : 0;
-  
+  // Determine current day from URL
+  const urlDay = params?.day ? parseInt(params.day) : null;
+
   // Fetch data
   const { dayContent: allDays, isLoading: daysLoading } = useDayContent();
   const { progress, isLoading: progressLoading } = useUserProgress();
   const { stats, isLoading: statsLoading } = useUserStats();
+
+  // Calculate the user's actual current task (next incomplete day)
+  const lastCompletedDay = (stats as any)?.lastCompletedDay ?? -1;
+  const nextDay = Math.min(lastCompletedDay + 1, 21); // Cap at Day 21
+
+  // Redirect to current task if no day specified in URL
+  useEffect(() => {
+    if (urlDay === null && !statsLoading && stats) {
+      setLocation(`/dashboard/${nextDay}`, { replace: true });
+    }
+  }, [urlDay, statsLoading, stats, nextDay, setLocation]);
+
+  // Use URL day if provided, otherwise use calculated next day
+  const currentDay = urlDay ?? nextDay;
   const { badges: allBadges } = useAllBadges();
   const { userBadges } = useUserBadges();
   const completeDay = useCompleteDay();
@@ -1288,7 +1302,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
                     <h2 className="font-bold text-xl text-slate-900">Test on Mobile</h2>
                   </div>
-                  <Day19MobileReady
+                  <Day16MobileReady
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     onComplete={handleComplete}
                   />

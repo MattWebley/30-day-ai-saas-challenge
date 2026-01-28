@@ -50,7 +50,6 @@ export function ReportProblem({ currentDay }: ReportProblemProps) {
       } : null,
       stats: stats ? {
         currentStreak: stats.currentStreak,
-        totalXp: stats.totalXp,
         lastCompletedDay: stats.lastCompletedDay,
         lastActivityDate: stats.lastActivityDate,
       } : null,

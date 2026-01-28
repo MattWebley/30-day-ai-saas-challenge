@@ -454,6 +454,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                         }}
                       >
                         <span
+                          title={`Day ${day.day}: ${day.title}`}
                           className={cn(
                             "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-none group mb-0.5",
                             isLocked
@@ -467,14 +468,15 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                           data-testid={`nav-day-${day.day}`}
                         >
                           <div className="flex items-center gap-3">
-                            <div className={cn(
-                              "w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-colors",
-                              isCompleted
-                                ? "bg-primary border-primary text-primary-foreground"
-                                : currentDay === day.day
-                                  ? "border-primary text-primary font-bold"
-                                  : "border-muted-foreground/30 text-muted-foreground"
-                            )}>
+                            <div
+                              className={cn(
+                                "w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-colors",
+                                isCompleted
+                                  ? "bg-primary border-primary text-primary-foreground"
+                                  : currentDay === day.day
+                                    ? "border-primary text-primary font-bold"
+                                    : "border-muted-foreground/30 text-muted-foreground"
+                              )}>
                               {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5" /> : day.day === 0 ? <Rocket className="w-3.5 h-3.5" /> : day.day}
                             </div>
                             <span className="truncate">{day.title}</span>

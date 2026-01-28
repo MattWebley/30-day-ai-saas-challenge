@@ -443,7 +443,7 @@ export function Day6SummaryPRD({
         <div className="space-y-3">
           <div className="flex gap-3">
             <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0 text-sm font-bold text-slate-700">1</div>
-            <p className={ds.body}>Open <a href="https://replit.com/~" target="_blank" rel="noopener noreferrer" className="text-primary underline">Replit</a> and create a new project</p>
+            <p className={ds.body}>Open <a href="https://replit.com/refer/info7410" target="_blank" rel="noopener noreferrer" className="text-primary underline">Replit</a> and create a new project</p>
           </div>
           <div className="flex gap-3">
             <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0 text-sm font-bold text-slate-700">2</div>

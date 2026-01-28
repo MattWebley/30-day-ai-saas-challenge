@@ -172,7 +172,7 @@ const slideContent: Record<number, Slide[]> = {
       title: "How To Create It",
       points: [
         "AI tools change ALL THE TIME -what works today might not tomorrow",
-        "Use whatever AI you ALREADY have (ChatGPT, Claude, etc.)",
+        "Use Claude Pro if you have it -you already have access",
         "Or try Abacus AI to test multiple models with one prompt",
         "Fallback: 5-min text logo in Canva, or just hire someone on Fiverr",
       ],
@@ -216,7 +216,7 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "Optional Tools (Nice to Have)",
       points: [
-        "ChatGPT Plus -brainstorming, second opinions",
+        "Wispr Flow -voice-to-text AI, talk instead of type, 3x faster",
         "Abacus AI -video gen, text-to-speech, images, all sorts of assets",
         "OpenAI API -if your app needs AI features",
         "Add these LATER if you need them",

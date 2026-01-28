@@ -3,20 +3,17 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, type User } from "@shared/schema";
-import OpenAI from "openai";
 import dns from "dns";
 import { promisify } from "util";
 import crypto from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail } from "./emailService";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
+import { callClaude, callClaudeForJSON, callGPT, callGPTForJSON, detectAbuse, checkRateLimit, logAIUsage, sendAbuseAlert } from "./aiService";
 
 const dnsResolve = promisify(dns.resolve);
-
-// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 export async function registerRoutes(
   httpServer: Server,
@@ -695,6 +692,17 @@ export async function registerRoutes(
 
       // Check if referrer earned new badges
       const referralCount = await storage.getReferralCount(referrer.id);
+
+      // Send notification email to Matt
+      const referrerName = `${referrer.firstName || ''} ${referrer.lastName || ''}`.trim() || 'Unknown';
+      const newUserName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown';
+      sendReferralNotificationEmail({
+        referrerEmail: referrer.email || 'unknown',
+        referrerName,
+        newUserEmail: user.email || 'unknown',
+        newUserName,
+        referralCount
+      }).catch(err => console.error('Referral notification error:', err));
       const allBadges = await storage.getAllBadges();
       const userBadges = await storage.getUserBadges(referrer.id);
       const earnedBadgeIds = new Set(userBadges.map(ub => ub.badgeId));
@@ -718,9 +726,10 @@ export async function registerRoutes(
   // Day 1: Generate SaaS ideas based on user inputs
   app.post("/api/generate-ideas", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { knowledge, skills, interests, experience } = req.body;
-      
-      const prompt = `You are a SaaS business idea expert. Generate exactly 28 B2B SaaS product ideas where the user has a NATURAL ADVANTAGE.
+
+      const userMessage = `Generate exactly 28 B2B SaaS product ideas for this user profile:
 
 USER PROFILE:
 - Knowledge/Expertise: ${knowledge}
@@ -761,14 +770,22 @@ For each idea, provide:
 Return JSON array of 28 ideas, sorted by totalScore descending.
 Format: { "ideas": [...] }`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
+      const result = await callGPTForJSON<{ ideas: any[] }>({
+        userId,
+        endpoint: 'generate-ideas',
+        endpointType: 'ideaGen',
+        systemPrompt: 'You are a SaaS business idea expert. Generate exactly 28 B2B SaaS product ideas where the user has a NATURAL ADVANTAGE. Return valid JSON only.',
+        userMessage,
+        maxTokens: 4000,
       });
 
-      const result = JSON.parse(response.choices[0].message.content || "{}");
-      res.json(result.ideas || []);
+      if (!result.success) {
+        return res.status(result.error?.includes('limit') ? 429 : 500).json({
+          message: result.error || "Failed to generate ideas"
+        });
+      }
+
+      res.json(result.data?.ideas || []);
     } catch (error: any) {
       console.error("Error generating ideas:", error);
       res.status(500).json({ message: error.message || "Failed to generate ideas" });
@@ -970,15 +987,26 @@ Format: { "ideas": [...] }`;
   // Generic AI prompt endpoint for Day 2 validation
   app.post("/api/ai-prompt", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { prompt } = req.body;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 1.0,  // Maximum randomness for varied outputs
+      const result = await callGPT({
+        userId,
+        endpoint: 'ai-prompt',
+        endpointType: 'general',
+        systemPrompt: 'You are a helpful assistant for the 21 Day AI SaaS Challenge. Be concise and actionable.',
+        userMessage: prompt,
+        maxTokens: 1500,
+        temperature: 1,
       });
 
-      res.json({ response: response.choices[0].message.content });
+      if (!result.success) {
+        return res.status(result.blocked ? 429 : 500).json({
+          message: result.error || "Failed to run AI prompt"
+        });
+      }
+
+      res.json({ response: result.response });
     } catch (error: any) {
       console.error("Error running AI prompt:", error);
       res.status(500).json({ message: error.message || "Failed to run AI prompt" });
@@ -988,10 +1016,17 @@ Format: { "ideas": [...] }`;
   // Analyze website design from URL
   app.post("/api/analyze-design", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { url } = req.body;
 
       if (!url || typeof url !== 'string') {
         return res.status(400).json({ message: "URL is required" });
+      }
+
+      // Check rate limit
+      const rateCheck = await checkRateLimit(userId, 'general');
+      if (!rateCheck.allowed) {
+        return res.status(429).json({ message: rateCheck.reason });
       }
 
       // Validate URL format
@@ -1001,45 +1036,37 @@ Format: { "ideas": [...] }`;
       }
 
       // Use thum.io for free screenshots (no API key needed)
-      // thum.io expects the URL directly appended, not encoded
       const screenshotUrl = `https://image.thum.io/get/width/1200/crop/800/${cleanUrl}`;
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "text",
-                text: `Analyze this website screenshot and describe its design style. I want to recreate a SIMILAR vibe (not exact copy) in my own app.
+      // Use callClaude for text-based design analysis (describe what to look for)
+      const result = await callGPT({
+        userId,
+        endpoint: 'analyze-design',
+        endpointType: 'general',
+        systemPrompt: 'You are a UI/UX design expert helping users understand and recreate website design styles.',
+        userMessage: `I'm looking at a website at ${cleanUrl}. Based on this URL and common design patterns for this type of site, describe what a similar design style might look like:
 
-Describe:
-1. COLOR PALETTE: What are the main colors? (give hex codes if you can guess them)
-2. OVERALL VIBE: Is it minimal, bold, playful, corporate, dark, light, etc?
-3. SPACING: Lots of whitespace or dense? Generous padding or compact?
-4. TYPOGRAPHY FEEL: Modern, classic, friendly, technical, elegant?
-5. SHADOWS & BORDERS: Soft shadows, hard shadows, none? Visible borders or borderless?
-6. CORNERS: Sharp, slightly rounded, very rounded?
-7. SPECIAL EFFECTS: Any gradients, glass effects, animations visible?
+1. COLOR PALETTE: What colors would work well? (suggest hex codes)
+2. OVERALL VIBE: Is it likely minimal, bold, playful, corporate, dark, light, etc?
+3. SPACING: Recommend whitespace approach
+4. TYPOGRAPHY FEEL: Suggest modern, classic, friendly, technical, or elegant?
+5. SHADOWS & BORDERS: Recommend shadow and border styles
+6. CORNERS: Sharp, slightly rounded, or very rounded?
+7. SPECIAL EFFECTS: Suggest any gradients, glass effects, or animations
 
-Then write a prompt I can give to Claude Code to recreate this approximate style. Start the prompt with "Transform my app's design:" and include specific, actionable instructions.
+Then write a prompt I can give to Claude Code to create this style. Start the prompt with "Transform my app's design:" and include specific, actionable instructions.
 
-Be concise but specific. Focus on what makes this design FEEL the way it does.`
-              },
-              {
-                type: "image_url",
-                image_url: {
-                  url: screenshotUrl
-                }
-              }
-            ]
-          }
-        ],
-        max_tokens: 1000,
+Be creative and specific. Focus on what would make this design FEEL professional and polished.`,
+        maxTokens: 1000,
       });
 
-      const analysis = response.choices[0].message.content || "";
+      if (!result.success) {
+        return res.status(result.blocked ? 429 : 500).json({
+          message: result.error || "Failed to analyze design."
+        });
+      }
+
+      const analysis = result.response || "";
 
       // Extract the Claude Code prompt (everything after "Transform my app's design:")
       const promptMatch = analysis.match(/Transform my app's design:[\s\S]*/i);
@@ -1104,9 +1131,15 @@ Be concise but specific. Focus on what makes this design FEEL the way it does.`
   // Competitor Research endpoint for Day 3
   app.post("/api/research-competitors", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { ideaTitle, ideaDescription, targetCustomer } = req.body;
-      
-      const prompt = `You are a SaaS market research expert. I need you to find DIRECT competitors for this SaaS idea:
+
+      const competitorResult = await callGPTForJSON<{ competitors: any[] }>({
+        userId,
+        endpoint: 'research-competitors',
+        endpointType: 'features',
+        systemPrompt: 'You are a SaaS market research expert. Only include REAL companies with real websites. Return valid JSON only.',
+        userMessage: `Find DIRECT competitors for this SaaS idea:
 
 Product: "${ideaTitle}"
 Description: ${ideaDescription}
@@ -1118,8 +1151,6 @@ Find 4-5 REAL, EXISTING SaaS companies that do EXACTLY the same thing or very si
 3. A one-line description of what they do
 4. Their top 5 features that they promote most prominently on their sales page
 
-IMPORTANT: Only include REAL companies with real websites. Do not make up companies.
-
 Respond in this exact JSON format:
 {
   "competitors": [
@@ -1130,22 +1161,20 @@ Respond in this exact JSON format:
       "topFeatures": ["Feature 1", "Feature 2", "Feature 3", "Feature 4", "Feature 5"]
     }
   ]
-}
-
-Only respond with valid JSON, nothing else.`;
-
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
+}`,
+        maxTokens: 2000,
       });
 
-      const content = response.choices[0].message.content || "{}";
-      const parsed = JSON.parse(content);
-      
+      if (!competitorResult.success) {
+        return res.status(competitorResult.error?.includes('limit') ? 429 : 500).json({
+          message: competitorResult.error || "Failed to research competitors"
+        });
+      }
+
+      const competitors = competitorResult.data?.competitors || [];
+
       // Add screenshot URLs using free screenshot service
-      // Using screenshotapi.net which is free and doesn't require authentication for basic usage
-      const competitorsWithScreenshots = (parsed.competitors || []).map((comp: any) => ({
+      const competitorsWithScreenshots = competitors.map((comp: any) => ({
         ...comp,
         screenshotUrl: `https://shot.screenshotapi.net/screenshot?url=${encodeURIComponent(comp.url)}&width=400&height=300&output=image&file_type=png&wait_for_event=load`,
       }));
@@ -1174,7 +1203,12 @@ Only respond with valid JSON, nothing else.`;
 
       if (sharedFeatureNames.length > 0) {
         try {
-          const descriptionPrompt = `You are a SaaS product expert. For this product idea: "${ideaTitle}" (${ideaDescription}), explain these core features that all competitors have.
+          const descResult = await callGPTForJSON<{ features: any[] }>({
+            userId,
+            endpoint: 'feature-descriptions',
+            endpointType: 'features',
+            systemPrompt: 'You are a SaaS product expert. Return valid JSON only.',
+            userMessage: `For this product idea: "${ideaTitle}" (${ideaDescription}), explain these core features that all competitors have.
 
 Target Customer: ${targetCustomer}
 
@@ -1196,19 +1230,12 @@ Respond in this exact JSON format:
   ]
 }
 
-Keep each description and why statement under 120 characters. Only respond with valid JSON.`;
-
-          const descResponse = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [{ role: "user", content: descriptionPrompt }],
-            response_format: { type: "json_object" },
+Keep each description and why statement under 120 characters.`,
+            maxTokens: 1500,
           });
 
-          const descContent = descResponse.choices[0].message.content || "{}";
-          const descParsed = JSON.parse(descContent);
-
-          if (descParsed.features && Array.isArray(descParsed.features)) {
-            sharedFeaturesWithDetails = descParsed.features;
+          if (descResult.success && descResult.data?.features) {
+            sharedFeaturesWithDetails = descResult.data.features;
           }
         } catch (error) {
           console.error("Error generating feature descriptions:", error);
@@ -1229,13 +1256,19 @@ Keep each description and why statement under 120 characters. Only respond with 
   // Generate USP features based on competitors
   app.post("/api/generate-usp-features", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { ideaTitle, ideaDescription, userSkills, sharedFeatures, competitors } = req.body;
-      
-      const competitorInfo = competitors.map((c: any) => 
+
+      const competitorInfo = competitors.map((c: any) =>
         `${c.name}: ${c.topFeatures?.join(', ')}`
       ).join('\n');
-      
-      const prompt = `You are a SaaS positioning expert. Based on this analysis, suggest unique differentiating features (USPs) for a new product.
+
+      const result = await callGPT({
+        userId,
+        endpoint: 'generate-usp-features',
+        endpointType: 'features',
+        systemPrompt: 'You are a SaaS positioning expert. Suggest unique differentiating features.',
+        userMessage: `Based on this analysis, suggest unique differentiating features (USPs) for a new product.
 
 Product: "${ideaTitle}"
 Description: ${ideaDescription}
@@ -1251,14 +1284,17 @@ What are 5-7 UNIQUE features this product could have that competitors DON'T have
 - Features the user's skills enable
 - Innovative approaches competitors haven't tried
 
-List only the features, one per line, each under 10 words. No numbering or bullets.`;
-
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
+List only the features, one per line, each under 10 words. No numbering or bullets.`,
+        maxTokens: 500,
       });
 
-      const features = (response.choices[0].message.content || "")
+      if (!result.success) {
+        return res.status(result.blocked ? 429 : 500).json({
+          message: result.error || "Failed to generate USP features"
+        });
+      }
+
+      const features = (result.response || "")
         .split('\n')
         .map((line: string) => line.replace(/^[-•*\d.]+\s*/, '').trim())
         .filter((line: string) => line.length > 3 && line.length < 80);
@@ -1273,10 +1309,16 @@ List only the features, one per line, each under 10 words. No numbering or bulle
   // Generate all features for Day 3 (Core + Shared + USP)
   app.post("/api/ai/generate-features", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { idea, painPoints } = req.body;
 
       // Step 1: Generate core features based on idea and pain points
-      const corePrompt = `You are a SaaS product expert. Based on this idea and pain points, suggest 5-7 core features.
+      const coreResult = await callGPTForJSON<{ coreFeatures: any[] }>({
+        userId,
+        endpoint: 'generate-core-features',
+        endpointType: 'features',
+        systemPrompt: 'You are a SaaS product expert. Return valid JSON only.',
+        userMessage: `Based on this idea and pain points, suggest 5-7 core features.
 
 Product Idea: ${idea}
 
@@ -1296,22 +1338,25 @@ Respond in this exact JSON format:
       "description": "What this feature does and which pain point it solves (1 sentence, max 120 chars)"
     }
   ]
-}
-
-Only respond with valid JSON, nothing else.`;
-
-      const coreResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: corePrompt }],
-        response_format: { type: "json_object" },
+}`,
+        maxTokens: 1500,
       });
 
-      const coreContent = coreResponse.choices[0].message.content || "{}";
-      const coreParsed = JSON.parse(coreContent);
-      const coreFeatures = coreParsed.coreFeatures || [];
+      if (!coreResult.success) {
+        return res.status(coreResult.error?.includes('limit') ? 429 : 500).json({
+          message: coreResult.error || "Failed to generate features"
+        });
+      }
+
+      const coreFeatures = coreResult.data?.coreFeatures || [];
 
       // Step 2: Find competitors and analyze shared features
-      const competitorPrompt = `You are a SaaS market research expert. Find 3-4 REAL competitors for this idea: "${idea}"
+      const competitorResult = await callGPTForJSON<{ competitors: any[] }>({
+        userId,
+        endpoint: 'find-competitors',
+        endpointType: 'features',
+        systemPrompt: 'You are a SaaS market research expert. Return valid JSON only.',
+        userMessage: `Find 3-4 REAL competitors for this idea: "${idea}"
 
 Find REAL, EXISTING SaaS companies that do the same or very similar thing. For each competitor, provide their top 3-5 features.
 
@@ -1323,19 +1368,11 @@ Respond in this exact JSON format:
       "topFeatures": ["Feature 1", "Feature 2", "Feature 3"]
     }
   ]
-}
-
-Only respond with valid JSON, nothing else.`;
-
-      const competitorResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: competitorPrompt }],
-        response_format: { type: "json_object" },
+}`,
+        maxTokens: 1000,
       });
 
-      const competitorContent = competitorResponse.choices[0].message.content || "{}";
-      const competitorParsed = JSON.parse(competitorContent);
-      const competitors = competitorParsed.competitors || [];
+      const competitors = competitorResult.data?.competitors || [];
 
       // Find shared features across competitors
       const allFeatures: Record<string, number> = {};
@@ -1355,7 +1392,12 @@ Only respond with valid JSON, nothing else.`;
       // Generate descriptions for shared features
       let sharedFeatures: any[] = [];
       if (sharedFeatureNames.length > 0) {
-        const sharedPrompt = `For this product idea: "${idea}", explain these features that all competitors have:
+        const sharedResult = await callGPTForJSON<{ sharedFeatures: any[] }>({
+          userId,
+          endpoint: 'describe-shared-features',
+          endpointType: 'features',
+          systemPrompt: 'You are a SaaS product expert. Return valid JSON only.',
+          userMessage: `For this product idea: "${idea}", explain these features that all competitors have:
 
 Shared Features:
 ${sharedFeatureNames.map((f, i) => `${i + 1}. ${f}`).join('\n')}
@@ -1371,23 +1413,20 @@ Respond in this exact JSON format:
       "description": "What this feature does and why it's essential to compete (1 sentence, max 120 chars)"
     }
   ]
-}
-
-Only respond with valid JSON, nothing else.`;
-
-        const sharedResponse = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [{ role: "user", content: sharedPrompt }],
-          response_format: { type: "json_object" },
+}`,
+          maxTokens: 1000,
         });
 
-        const sharedContent = sharedResponse.choices[0].message.content || "{}";
-        const sharedParsed = JSON.parse(sharedContent);
-        sharedFeatures = sharedParsed.sharedFeatures || [];
+        sharedFeatures = sharedResult.data?.sharedFeatures || [];
       }
 
       // Step 3: Generate USP features
-      const uspPrompt = `You are a SaaS positioning expert. Based on this analysis, suggest 4-6 UNIQUE differentiating features.
+      const uspResult = await callGPTForJSON<{ uspFeatures: any[] }>({
+        userId,
+        endpoint: 'generate-usp-features',
+        endpointType: 'features',
+        systemPrompt: 'You are a SaaS positioning expert. Return valid JSON only.',
+        userMessage: `Based on this analysis, suggest 4-6 UNIQUE differentiating features.
 
 Product Idea: ${idea}
 
@@ -1407,19 +1446,11 @@ Respond in this exact JSON format:
       "description": "What makes this unique and why customers would want it (1 sentence, max 120 chars)"
     }
   ]
-}
-
-Only respond with valid JSON, nothing else.`;
-
-      const uspResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: uspPrompt }],
-        response_format: { type: "json_object" },
+}`,
+        maxTokens: 1000,
       });
 
-      const uspContent = uspResponse.choices[0].message.content || "{}";
-      const uspParsed = JSON.parse(uspContent);
-      const uspFeatures = uspParsed.uspFeatures || [];
+      const uspFeatures = uspResult.data?.uspFeatures || [];
 
       res.json({
         coreFeatures,
@@ -1435,9 +1466,15 @@ Only respond with valid JSON, nothing else.`;
   // Generate MVP Roadmap for Day 4
   app.post("/api/ai/generate-mvp-roadmap", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { idea, features } = req.body;
 
-      const prompt = `You are a SaaS product strategist. Create an MVP roadmap for this product idea.
+      const result = await callGPTForJSON<{ mvpFeatures: any[]; postMvpFeatures: any[] }>({
+        userId,
+        endpoint: 'generate-mvp-roadmap',
+        endpointType: 'features',
+        systemPrompt: 'You are a SaaS product strategist. Return valid JSON only.',
+        userMessage: `Create an MVP roadmap for this product idea.
 
 Product Idea: ${idea}
 
@@ -1478,20 +1515,19 @@ Respond in this exact JSON format:
   ]
 }
 
-Keep MVP scope tight - aim for 4-6 weeks total build time for MVP features. Only respond with valid JSON, nothing else.`;
-
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
+Keep MVP scope tight - aim for 4-6 weeks total build time for MVP features.`,
+        maxTokens: 2000,
       });
 
-      const content = response.choices[0].message.content || "{}";
-      const parsed = JSON.parse(content);
+      if (!result.success) {
+        return res.status(result.error?.includes('limit') ? 429 : 500).json({
+          message: result.error || "Failed to generate MVP roadmap"
+        });
+      }
 
       res.json({
-        mvpFeatures: parsed.mvpFeatures || [],
-        postMvpFeatures: parsed.postMvpFeatures || [],
+        mvpFeatures: result.data?.mvpFeatures || [],
+        postMvpFeatures: result.data?.postMvpFeatures || [],
       });
     } catch (error: any) {
       console.error("Error generating MVP roadmap:", error);
@@ -1502,10 +1538,16 @@ Keep MVP scope tight - aim for 4-6 weeks total build time for MVP features. Only
   // Generate PRD for Day 6
   app.post("/api/ai/generate-prd", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
       const { idea, painPoints, features, mvpFeatures, appName, iHelpStatement, uspFeatures, brandVibe, customerAvatar, lookAndFeel } = req.body;
 
       // Generate summary
-      const summaryPrompt = `You are a product strategist. Create a 3-4 sentence executive summary for this SaaS product.
+      const summaryResult = await callClaude({
+        userId,
+        endpoint: 'generate-prd-summary',
+        endpointType: 'features',
+        systemPrompt: 'You are a product strategist. Be concise and compelling.',
+        userMessage: `Create a 3-4 sentence executive summary for this SaaS product.
 
 Product Name: ${appName || 'TBD'}
 Product Idea: ${idea}
@@ -1522,17 +1564,25 @@ Write a compelling executive summary that explains:
 3. Who it's for (use the target customer description)
 4. The key value proposition
 
-Keep it concise, professional, and compelling. 3-4 sentences maximum.`;
-
-      const summaryResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: summaryPrompt }],
+Keep it concise, professional, and compelling. 3-4 sentences maximum.`,
+        maxTokens: 500,
       });
 
-      const summary = summaryResponse.choices[0].message.content || "";
+      if (!summaryResult.success) {
+        return res.status(summaryResult.blocked ? 429 : 500).json({
+          message: summaryResult.error || "Failed to generate PRD"
+        });
+      }
+
+      const summary = summaryResult.response || "";
 
       // Generate full PRD
-      const prdPrompt = `Create a PRD for this product. No fluff, no filler, no generic advice. Be extremely specific to THIS product.
+      const prdResult = await callClaude({
+        userId,
+        endpoint: 'generate-prd',
+        endpointType: 'features',
+        systemPrompt: 'You are a product expert. No fluff, no filler, no generic advice. Be extremely specific.',
+        userMessage: `Create a PRD for this product.
 
 PRODUCT NAME: ${appName || 'TBD'}
 PRODUCT IDEA: ${idea}
@@ -1596,14 +1646,11 @@ OUTPUT FORMAT:
 ## Launch Blockers
 [5-7 specific items that MUST work before launch. Not generic - specific to this product]
 
-NO generic advice. NO "consider accessibility". NO "ensure security best practices". Only specific, actionable items for THIS product.`;
-
-      const prdResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prdPrompt }],
+NO generic advice. NO "consider accessibility". NO "ensure security best practices". Only specific, actionable items for THIS product.`,
+        maxTokens: 4000,
       });
 
-      const prd = prdResponse.choices[0].message.content || "";
+      const prd = prdResult.response || "";
 
       res.json({
         summary,
@@ -1725,13 +1772,27 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
         flagReason,
       });
       
+      // Get user and day info for email
+      const user = await storage.getUser(userId);
+      const dayContent = await storage.getDayContent(day);
+
+      // Send email notification (for approved comments only)
+      if (status === "approved") {
+        await sendDiscussionNotificationEmail({
+          userEmail: user?.email || 'unknown@unknown.com',
+          userName: `${user?.firstName || 'Unknown'} ${user?.lastName || ''}`.trim(),
+          day,
+          dayTitle: dayContent?.title || 'Unknown',
+          content: content.trim(),
+        });
+      }
+
       if (status === "pending") {
-        res.json({ 
-          ...comment, 
-          message: "Your comment is being reviewed and will appear once approved." 
+        res.json({
+          ...comment,
+          message: "Your comment is being reviewed and will appear once approved."
         });
       } else {
-        const user = await storage.getUser(userId);
         res.json({ ...comment, user });
       }
     } catch (error: any) {
@@ -1847,99 +1908,127 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
 
       // Fetch admin-configurable rules (if any)
       const chatSettings = await storage.getChatbotSettings();
-
-      // Use admin-configured values or defaults
-      const responseStyle = chatSettings?.responseStyle || `- Be helpful and conversational, like a knowledgeable friend.
-- Explain things clearly - use examples when helpful.
-- Use formatting (bullets, code blocks) when it aids clarity.
-- Give actionable guidance with context on why.
-- Be encouraging but genuine - no over-the-top praise.`;
-
-      const scopeHelps = chatSettings?.scopeHelps || 'ideas, planning, coding, debugging, tech decisions, APIs, auth, testing';
-      const scopeWontHelp = chatSettings?.scopeWontHelp || 'sales, marketing, pricing, business strategy, post-launch growth';
-      const businessRedirect = chatSettings?.businessRedirect || 'This challenge focuses on building. For business strategy, see Matt\'s mentorship: https://mattwebley.com/workwithmatt';
-      const coreRules = chatSettings?.coreRules || `1. Reference their idea/features when relevant
-2. ONE clear next step when stuck
-3. Keep them on their current day's task`;
       const customRules = chatSettings?.customRules || '';
 
-      const systemPrompt = `You are the AI Mentor for the 21 Day AI SaaS Challenge. Help users build their SaaS MVP.
+      // The complete 21-day curriculum - this is what we help with
+      const curriculum = `
+THE 21 DAY AI SAAS CHALLENGE CURRICULUM:
 
-RESPONSE STYLE - CRITICAL:
-${responseStyle}
+DAY 0 - START HERE: Commit to the challenge, set income goals, write accountability promise
+DAY 1 - IDEA GENERATION: Use AI to generate SaaS ideas based on skills/knowledge/interests, shortlist 2-3
+DAY 2 - VALIDATE IDEA: Research competitors, identify pain points, write "I help X solve Y" statement, lock in final idea
+DAY 3 - FEATURES: Generate feature list with AI (core features, shared features, USP features), select MVP features
+DAY 4 - NAMING: Generate name suggestions, pick name, register .com domain, check trademarks, claim social handles
+DAY 5 - LOGO: Pick brand vibe/colors, generate AI logo prompt, create logo using Abacus AI or similar
+DAY 6 - TECH STACK: Set up Replit account, set up Claude Pro account, optional tools (Wispr Flow, Abacus AI)
+DAY 7 - PRD: Generate Product Requirements Document with AI, paste into Replit, start first build
+DAY 8 - CLAUDE CODE SETUP: Connect GitHub, install Claude Code, create CLAUDE.md instruction file
+DAY 9 - MASTER CLAUDE CODE: Learn the 8 rules for prompting Claude Code effectively
+DAY 10 - BUILD LOOP: Learn Build-Test-Fix workflow, find and fix your first bug
+DAY 11 - BRAND DESIGN: Pick design style, choose accent color, apply consistent styling with Claude Code
+DAY 12 - AI BRAIN: Add OpenAI API integration to make app intelligent
+DAY 13 - EMAIL: Set up Resend for transactional emails
+DAY 14 - AUTH & ADMIN: Add user authentication, build admin dashboard with key metrics
+DAY 15 - PAYMENTS: Add Stripe integration for payments
+DAY 16 - MOBILE: Test app on phone, fix mobile issues
+DAY 17 - TESTING: Write automated tests for core features
+DAY 18 - MVP: THE PAUSE POINT - build until MVP is truly ready, submit to Showcase
+DAY 19 - SALES PAGE: Create high-converting sales page with AI-generated copy
+DAY 20 - SEO: Get found by Google and AI assistants, submit to directories
+DAY 21 - GROWTH: Calculate income goals, learn passive/active growth strategies
 
-SCOPE:
-Help with: ${scopeHelps}.
-DON'T help with: ${scopeWontHelp}.
+TECH STACK COVERED:
+- Replit (hosting, deployment)
+- Claude Code (AI coding assistant)
+- Claude Pro / Claude.ai (AI prompts)
+- OpenAI API (adding AI to apps)
+- Resend (email service)
+- Stripe (payments)
+- GitHub (version control)
+- PostgreSQL/Drizzle (database)
+- React/TypeScript/Tailwind (frontend)
+- Express/Node.js (backend)`;
 
-For business/marketing questions, say: "${businessRedirect}" - then move on.
+      const systemPrompt = `You are the AI Mentor for the 21 Day AI SaaS Challenge. You ONLY help with topics covered in this specific challenge.
 
-CHALLENGE DAYS:
-0-6: Planning | 7: First build | 8: Claude Code | 9-14: Build & test | 15-18: Infrastructure | 19-21: Polish & launch-ready
+${curriculum}
+
+STRICT SCOPE - VERY IMPORTANT:
+You ONLY help with:
+- Questions about the challenge days listed above
+- The specific tech stack: Replit, Claude Code, OpenAI API, Resend, Stripe, React, TypeScript, Tailwind, Express, PostgreSQL
+- Building their specific SaaS MVP
+- Debugging code issues in their challenge project
+- Understanding the challenge curriculum
+
+You DO NOT help with:
+- Marketing, sales strategy, pricing strategy, growth hacking (beyond Day 19-21 basics)
+- Technologies not in the challenge (AWS, Firebase, Next.js, Vue, Angular, Python, etc.)
+- Business strategy, fundraising, hiring, scaling
+- Anything not directly related to completing the 21-day challenge
+
+If asked about off-topic subjects, say: "That's outside what we cover in the 21 Day Challenge. I'm here to help you build your MVP using Replit, Claude Code, and the tech stack we teach. What can I help you with for your current day's task?"
 
 USER CONTEXT:
 ${context.userName ? `Name: ${context.userName}` : ''}
-Day ${context.currentDay} | Completed: ${context.completedDays?.join(', ') || 'None'}
-${context.userIdea ? `Idea: ${context.userIdea}` : ''}
-${context.painPoints?.length ? `Pain points: ${context.painPoints.join(', ')}` : ''}
-${context.features?.length ? `Features: ${context.features.join(', ')}` : ''}
-${context.mvpFeatures?.length ? `MVP: ${context.mvpFeatures.join(', ')}` : ''}
+Currently on Day ${context.currentDay}
+Completed days: ${context.completedDays?.join(', ') || 'None yet'}
+${context.userIdea ? `Their idea: ${context.userIdea}` : 'No idea selected yet'}
+${context.painPoints?.length ? `Pain points they solve: ${context.painPoints.join(', ')}` : ''}
+${context.features?.length ? `Features planned: ${context.features.join(', ')}` : ''}
 
-RULES:
-${coreRules}
+RESPONSE RULES:
+1. Keep answers focused on their current day's task when possible
+2. Reference their specific idea/features when relevant
+3. Give ONE clear next step when they're stuck
+4. Be concise - no lengthy explanations unless asked
+5. Use code examples only when directly helpful
+6. If they haven't completed earlier days, gently point them back
 
 ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
-      const messages: any[] = [
-        { role: "system", content: systemPrompt },
-      ];
-
-      // Add conversation history
+      // Build history for callClaude
+      const historyForClaude: { role: "user" | "assistant"; content: string }[] = [];
       if (history && Array.isArray(history)) {
         history.forEach((msg: any) => {
-          messages.push({ role: msg.role, content: msg.content });
+          historyForClaude.push({ role: msg.role, content: msg.content });
         });
       }
 
-      // Add current message
-      messages.push({ role: "user", content: message });
+      // Check for abuse using aiService's detectAbuse
+      const abuseCheck = detectAbuse(message);
 
-      // Abuse detection - check for patterns
-      const abusePatterns = [
-        { pattern: /ignore (previous|all|your) (instructions|rules|prompt)/i, reason: "Attempted prompt injection" },
-        { pattern: /pretend you('re| are) (not|a different)/i, reason: "Attempted role manipulation" },
-        { pattern: /jailbreak|bypass|hack|exploit/i, reason: "Potential abuse keywords" },
-        { pattern: /repeat after me|say exactly/i, reason: "Attempted output manipulation" },
-        { pattern: /what('s| is) (your|the) (system|initial) (prompt|message)/i, reason: "Attempted prompt extraction" },
-      ];
-
-      let flagged = false;
-      let flagReason = null;
-
-      for (const { pattern, reason } of abusePatterns) {
-        if (pattern.test(message)) {
-          flagged = true;
-          flagReason = reason;
-          break;
-        }
-      }
-
-      // Save user message
+      // Save user message with flagging
       await storage.saveChatMessage({
         userId,
         role: "user",
         content: message,
-        flagged,
-        flagReason,
+        flagged: abuseCheck.flagged,
+        flagReason: abuseCheck.reason,
       });
 
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages,
-        max_tokens: 500,
+      // Use callClaude with rate limiting and logging (PREMIUM - stays on Claude for quality)
+      const result = await callClaude({
+        userId,
+        endpoint: 'ai-mentor-chat',
+        endpointType: 'chat',
+        systemPrompt,
+        userMessage: message,
+        maxTokens: 500,
+        history: historyForClaude,
       });
 
-      const reply = response.choices[0].message.content || "I'm not sure how to help with that. Can you try rephrasing?";
+      if (!result.success) {
+        if (result.blocked) {
+          return res.status(429).json({
+            error: "rate_limit",
+            message: result.error
+          });
+        }
+        return res.status(500).json({ message: result.error || "Failed to get AI response" });
+      }
+
+      const reply = result.response || "I'm not sure how to help with that. Can you try rephrasing?";
 
       // Save assistant response
       await storage.saveChatMessage({
@@ -1958,23 +2047,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         type: error.type,
         stack: error.stack?.split('\n').slice(0, 3).join('\n'),
       });
-
-      // Check for specific OpenAI errors
-      if (error.code === 'invalid_api_key' || error.message?.includes('API key') || error.message?.includes('Incorrect API key')) {
-        return res.status(500).json({ message: "AI service not configured. Please contact support." });
-      }
-      if (error.code === 'insufficient_quota' || error.message?.includes('quota')) {
-        return res.status(500).json({ message: "AI service temporarily unavailable (quota exceeded). Please try again later." });
-      }
-      if (error.code === 'rate_limit_exceeded' || error.status === 429) {
-        return res.status(429).json({ message: "Too many requests to AI service. Please wait a moment and try again." });
-      }
-      if (error.code === 'model_not_found') {
-        return res.status(500).json({ message: "AI model configuration error. Please contact support." });
-      }
-      if (error.message?.includes('Connection') || error.code === 'ECONNREFUSED') {
-        return res.status(503).json({ message: "Could not connect to AI service. Please try again." });
-      }
 
       res.status(500).json({ message: error.message || "Failed to get response from AI. Please try again." });
     }
@@ -2292,6 +2364,126 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   });
 
   // ============================================
+  // EMAIL TEMPLATE ADMIN ROUTES
+  // ============================================
+
+  // Get all email templates (admin)
+  app.get("/api/admin/email-templates", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const templates = await storage.getAllEmailTemplates();
+      res.json(templates);
+    } catch (error: any) {
+      console.error("Error fetching email templates:", error);
+      res.status(500).json({ message: "Failed to fetch email templates" });
+    }
+  });
+
+  // Update email template (admin)
+  app.patch("/api/admin/email-templates/:templateKey", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { templateKey } = req.params;
+      const { subject, body, isActive } = req.body;
+
+      const updated = await storage.updateEmailTemplate(templateKey, { subject, body, isActive });
+      if (!updated) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating email template:", error);
+      res.status(500).json({ message: "Failed to update email template" });
+    }
+  });
+
+  // Send test email (admin)
+  app.post("/api/admin/email-templates/:templateKey/test", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { templateKey } = req.params;
+      const { testEmail } = req.body;
+
+      const template = await storage.getEmailTemplate(templateKey);
+      if (!template) {
+        return res.status(404).json({ message: "Template not found" });
+      }
+
+      // Send test email with placeholder values
+      const { Resend } = await import('resend');
+      const resend = new Resend(process.env.RESEND_API_KEY);
+
+      // Replace variables with sample values for testing
+      let testBody = template.body;
+      let testSubject = template.subject;
+      const sampleValues: Record<string, string> = {
+        firstName: 'Test User',
+        userName: 'Test User',
+        userEmail: testEmail,
+        currencySymbol: '£',
+        currency: 'GBP',
+        total: '295',
+        amount: '995',
+        coachingType: '4 x 1-hour coaching sessions',
+        testimonial: 'This is a sample testimonial for testing.',
+        videoUrl: 'https://example.com/video',
+        appName: 'Test App',
+        appUrl: 'https://testapp.com',
+        day: '5',
+        dayTitle: 'Logo Design',
+        question: 'This is a sample question?',
+        content: 'This is a sample discussion post.',
+        answerUrl: 'https://21daysaas.com/admin/answer/test-token',
+        salesPageUrl: 'https://example.com/sales',
+        productDescription: 'A sample product description.',
+        targetAudience: 'Small business owners.',
+        specificQuestions: 'Is this headline good?',
+        preferredEmail: testEmail,
+        timestamp: new Date().toLocaleString(),
+        referrerName: 'John Doe',
+        referrerEmail: 'john@example.com',
+        newUserName: 'Jane Smith',
+        newUserEmail: 'jane@example.com',
+        referralCount: '5',
+      };
+
+      for (const [key, value] of Object.entries(sampleValues)) {
+        const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+        testBody = testBody.replace(regex, value);
+        testSubject = testSubject.replace(regex, value);
+      }
+
+      await resend.emails.send({
+        from: 'Matt Webley <matt@challenge.mattwebley.com>',
+        to: [testEmail],
+        subject: `[TEST] ${testSubject}`,
+        text: testBody,
+      });
+
+      res.json({ success: true, message: `Test email sent to ${testEmail}` });
+    } catch (error: any) {
+      console.error("Error sending test email:", error);
+      res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
+  // ============================================
   // Q&A ROUTES
   // ============================================
 
@@ -2323,24 +2515,17 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       // Generate AI suggested answer
       try {
-        const aiResponse = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "system",
-              content: `You are Matt Webley's assistant for the 21 Day AI SaaS Challenge. Generate a helpful, concise answer to this student question about Day ${day}: "${dayContent?.title || 'Unknown'}". Keep answers practical and actionable. Use Matt's punchy, direct style with short sentences and ALL CAPS for emphasis occasionally.`
-            },
-            {
-              role: "user",
-              content: question
-            }
-          ],
-          max_tokens: 500
+        const aiResult = await callGPT({
+          userId,
+          endpoint: 'ai-suggested-answer',
+          endpointType: 'general',
+          systemPrompt: `You are Matt Webley's assistant for the 21 Day AI SaaS Challenge. Generate a helpful, concise answer to this student question about Day ${day}: "${dayContent?.title || 'Unknown'}". Keep answers practical and actionable. Use Matt's punchy, direct style with short sentences and ALL CAPS for emphasis occasionally.`,
+          userMessage: question,
+          maxTokens: 500,
         });
 
-        const aiAnswer = aiResponse.choices[0]?.message?.content || "";
-        if (aiAnswer) {
-          await storage.setAiSuggestedAnswer(created.id, aiAnswer);
+        if (aiResult.success && aiResult.response) {
+          await storage.setAiSuggestedAnswer(created.id, aiResult.response);
         }
       } catch (aiError) {
         console.error("Failed to generate AI answer:", aiError);
@@ -2353,14 +2538,15 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         : process.env.REPLIT_DEPLOYMENT_URL || "http://localhost:5000";
       const answerUrl = `${baseUrl}/admin/answer/${answerToken}`;
 
-      // Log the email that would be sent (in production, integrate with Resend or similar)
-      console.log("=== NEW QUESTION NOTIFICATION ===");
-      console.log(`To: info@rapidwebsupport.com`);
-      console.log(`Subject: New Question on Day ${day}: ${dayContent?.title || 'Unknown'}`);
-      console.log(`From: ${user?.firstName || 'Unknown'} ${user?.lastName || ''} (${user?.email || 'No email'})`);
-      console.log(`Question: ${question}`);
-      console.log(`Answer Link: ${answerUrl}`);
-      console.log("=================================");
+      // Send email notification
+      await sendQuestionNotificationEmail({
+        userEmail: user?.email || 'unknown@unknown.com',
+        userName: `${user?.firstName || 'Unknown'} ${user?.lastName || ''}`.trim(),
+        day,
+        dayTitle: dayContent?.title || 'Unknown',
+        question,
+        answerUrl,
+      });
 
       res.json({
         success: true,
@@ -2521,11 +2707,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const host = req.get('host');
       const protocol = req.protocol;
 
-      // Price IDs for Coaching by currency
-      // TODO: Create these products in Stripe and update with real price IDs
+      // Price IDs for Expert Coaching 4-Pack by currency
       const coachingPriceIds: Record<string, string> = {
-        usd: 'price_COACHING_USD', // $1,195 - TODO: Replace with real Stripe price ID
-        gbp: 'price_COACHING_GBP'  // £995 - TODO: Replace with real Stripe price ID
+        usd: 'price_1SuRsULcRVtxg5yVjLeczvqS', // $1,195
+        gbp: 'price_1SuRt9LcRVtxg5yVeKgcqQfh'  // £995
       };
       const coachingPriceId = coachingPriceIds[currency.toLowerCase()] || coachingPriceIds.usd;
 
@@ -2536,7 +2721,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           quantity: 1
         }],
         mode: 'payment',
-        success_url: `${protocol}://${host}/coaching?success=true`,
+        success_url: `${protocol}://${host}/coaching/success`,
         cancel_url: `${protocol}://${host}/coaching/upsell?currency=${currency}`,
         metadata: {
           productType: 'coaching',
@@ -2559,11 +2744,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const host = req.get('host');
       const protocol = req.protocol;
 
-      // Price IDs for Single Coaching Session by currency
-      // TODO: Create these products in Stripe and update with real price IDs
+      // Price IDs for Expert Coaching Single Session by currency
       const singleCoachingPriceIds: Record<string, string> = {
-        usd: 'price_COACHING_SINGLE_USD', // $449 - TODO: Replace with real Stripe price ID
-        gbp: 'price_COACHING_SINGLE_GBP'  // £349 - TODO: Replace with real Stripe price ID
+        usd: 'price_1SuRqQLcRVtxg5yVXZEiD90P', // $449
+        gbp: 'price_1SuRrJLcRVtxg5yV1VVLj4tb'  // £349
       };
       const priceId = singleCoachingPriceIds[currency.toLowerCase()] || singleCoachingPriceIds.gbp;
 
@@ -2574,7 +2758,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           quantity: 1
         }],
         mode: 'payment',
-        success_url: `${protocol}://${host}/coaching?success=true&type=single`,
+        success_url: `${protocol}://${host}/coaching/success?type=single`,
         cancel_url: `${protocol}://${host}/coaching`,
         metadata: {
           productType: 'coaching-single',
@@ -2598,10 +2782,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const protocol = req.protocol;
 
       // Price IDs for Matt Webley Single Session by currency
-      // TODO: Create these products in Stripe and update with real price IDs
       const mattSinglePriceIds: Record<string, string> = {
-        usd: 'price_COACHING_MATT_SINGLE_USD', // $2,495 - TODO: Replace with real Stripe price ID
-        gbp: 'price_COACHING_MATT_SINGLE_GBP'  // £1,995 - TODO: Replace with real Stripe price ID
+        usd: 'price_1SuRuZLcRVtxg5yV0KbmvkJq', // $2,495
+        gbp: 'price_1SuRvNLcRVtxg5yVtZjO8frz'  // £1,995
       };
       const priceId = mattSinglePriceIds[currency.toLowerCase()] || mattSinglePriceIds.gbp;
 
@@ -2612,7 +2795,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           quantity: 1
         }],
         mode: 'payment',
-        success_url: `${protocol}://${host}/coaching?success=true&type=matt-single`,
+        success_url: `${protocol}://${host}/coaching/success?type=matt-single`,
         cancel_url: `${protocol}://${host}/coaching`,
         metadata: {
           productType: 'coaching-matt-single',
@@ -2635,11 +2818,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const host = req.get('host');
       const protocol = req.protocol;
 
-      // Price IDs for Matt Webley Coaching by currency
-      // TODO: Create these products in Stripe and update with real price IDs
+      // Price IDs for Matt Webley 4-Pack by currency
       const mattCoachingPriceIds: Record<string, string> = {
-        usd: 'price_COACHING_MATT_USD', // $4,995 - TODO: Replace with real Stripe price ID
-        gbp: 'price_COACHING_MATT_GBP'  // £3,995 - TODO: Replace with real Stripe price ID
+        usd: 'price_1SuRx2LcRVtxg5yVzHb934Fj', // $4,995
+        gbp: 'price_1SuRxbLcRVtxg5yV1o8QJedw'  // £3,995
       };
       const priceId = mattCoachingPriceIds[currency.toLowerCase()] || mattCoachingPriceIds.gbp;
 
@@ -2650,7 +2832,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           quantity: 1
         }],
         mode: 'payment',
-        success_url: `${protocol}://${host}/coaching?success=true&type=matt`,
+        success_url: `${protocol}://${host}/coaching/success?type=matt`,
         cancel_url: `${protocol}://${host}/coaching`,
         metadata: {
           productType: 'coaching-matt',
@@ -2674,10 +2856,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const protocol = req.protocol;
 
       // Price IDs for Video Critique by currency
-      // TODO: Create these products in Stripe and update with real price IDs
       const critiquePriceIds: Record<string, string> = {
-        usd: 'price_CRITIQUE_USD', // $595 - TODO: Replace with real Stripe price ID
-        gbp: 'price_CRITIQUE_GBP'  // £495 - TODO: Replace with real Stripe price ID
+        usd: 'price_1SuRyALcRVtxg5yVHWUA01js', // $595
+        gbp: 'price_1SuRyiLcRVtxg5yVTFd2ME6M'  // £495
       };
 
       const priceId = critiquePriceIds[currency.toLowerCase()] || critiquePriceIds.gbp;
@@ -2857,9 +3038,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
             .set({ coachingPurchased: true })
             .where(eq(users.id, user.id));
 
-          // Send coaching confirmation email
+          // Send coaching confirmation email to customer
           const userEmail = (user as any).email;
           const firstName = (user as any).firstName || 'there';
+          const userName = `${(user as any).firstName || ''} ${(user as any).lastName || ''}`.trim() || 'Unknown';
           if (userEmail) {
             sendCoachingConfirmationEmail({
               to: userEmail,
@@ -2867,6 +3049,15 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
               currency: currency.toLowerCase() as 'usd' | 'gbp',
               amount: priceConfig.amount / 100
             }).catch(err => console.error('Email send error:', err));
+
+            // Send notification to Matt
+            sendCoachingPurchaseNotificationEmail({
+              userEmail,
+              userName,
+              coachingType: '4 x 1-hour coaching sessions',
+              currency: currency.toLowerCase() as 'usd' | 'gbp',
+              amount: priceConfig.amount / 100
+            }).catch(err => console.error('Coaching notification error:', err));
           }
 
           return res.json({ success: true, message: "Coaching purchased successfully!" });
@@ -2896,9 +3087,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           .set({ coachingPurchased: true })
           .where(eq(users.id, user.id));
 
-        // Send coaching confirmation email
+        // Send coaching confirmation email to customer
         const userEmail = (user as any).email;
         const firstName = (user as any).firstName || 'there';
+        const userName = `${(user as any).firstName || ''} ${(user as any).lastName || ''}`.trim() || 'Unknown';
         if (userEmail) {
           sendCoachingConfirmationEmail({
             to: userEmail,
@@ -2906,6 +3098,15 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
             currency: currency.toLowerCase() as 'usd' | 'gbp',
             amount: priceConfig.amount / 100
           }).catch(err => console.error('Email send error:', err));
+
+          // Send notification to Matt
+          sendCoachingPurchaseNotificationEmail({
+            userEmail,
+            userName,
+            coachingType: '4 x 1-hour coaching sessions',
+            currency: currency.toLowerCase() as 'usd' | 'gbp',
+            amount: priceConfig.amount / 100
+          }).catch(err => console.error('Coaching notification error:', err));
         }
 
         return res.json({ success: true, message: "Coaching purchased successfully!" });
@@ -3260,9 +3461,12 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         return res.status(400).json({ message: "Current headline required" });
       }
 
-      const prompt = `You are a world-class direct response copywriter with decades of experience writing high-converting sales headlines. You've studied the masters - Gary Halbert, David Ogilvy, Eugene Schwartz, and Claude Hopkins.
-
-Your task: Generate 5 alternative headlines for an A/B test. The current control headline is:
+      const result = await callGPT({
+        userId,
+        endpoint: 'generate-ab-headlines',
+        endpointType: 'general',
+        systemPrompt: 'You are a world-class direct response copywriter. Return ONLY a JSON array of 5 headline strings.',
+        userMessage: `Generate 5 alternative headlines for an A/B test. The current control headline is:
 
 "${currentHeadline}"
 
@@ -3276,16 +3480,18 @@ Generate 5 distinctly different headline approaches. Consider:
 Return ONLY a JSON array of 5 strings, nothing else. Each headline should be compelling, specific, and testable against the control.
 
 Example format:
-["Headline 1...", "Headline 2...", "Headline 3...", "Headline 4...", "Headline 5..."]`;
-
-      const response = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [{ role: "user", content: prompt }],
-        temperature: 0.9,
-        max_tokens: 1000,
+["Headline 1...", "Headline 2...", "Headline 3...", "Headline 4...", "Headline 5..."]`,
+        maxTokens: 1000,
+        temperature: 1,
       });
 
-      const content = response.choices[0]?.message?.content || "[]";
+      if (!result.success) {
+        return res.status(result.blocked ? 429 : 500).json({
+          message: result.error || "Failed to generate headlines"
+        });
+      }
+
+      const content = result.response || "[]";
 
       // Parse the JSON array from the response
       let headlines: string[] = [];
@@ -3464,6 +3670,29 @@ Example format:
     }
   });
 
+  // Admin: Delete critique request
+  app.delete("/api/admin/critiques/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const critiqueId = parseInt(req.params.id);
+
+      await db
+        .delete(critiqueRequests)
+        .where(eq(critiqueRequests.id, critiqueId));
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting critique request:", error);
+      res.status(500).json({ message: "Failed to delete critique request" });
+    }
+  });
+
   // Admin: Send test emails (one-time testing endpoint)
   app.post("/api/admin/test-emails", isAuthenticated, async (req: any, res) => {
     try {
@@ -3551,6 +3780,66 @@ Example format:
     } catch (error) {
       console.error("Error sending test emails:", error);
       res.status(500).json({ message: "Failed to send test emails", error: String(error) });
+    }
+  });
+
+  // Admin: Get AI usage logs
+  app.get("/api/admin/ai-usage", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { flagged, blocked, limit } = req.query;
+
+      const logs = await storage.getAIUsageLogs({
+        flagged: flagged === 'true' ? true : flagged === 'false' ? false : undefined,
+        blocked: blocked === 'true' ? true : blocked === 'false' ? false : undefined,
+        limit: limit ? parseInt(limit as string) : 100,
+      });
+
+      const stats = await storage.getAIUsageStats();
+
+      // Get user info for each log
+      const logsWithUsers = await Promise.all(
+        logs.map(async (log) => {
+          const logUser = await storage.getUser(log.userId);
+          return {
+            ...log,
+            userName: logUser ? `${logUser.firstName || ''} ${logUser.lastName || ''}`.trim() || logUser.email : 'Unknown',
+            userEmail: logUser?.email || 'Unknown',
+          };
+        })
+      );
+
+      res.json({
+        logs: logsWithUsers,
+        stats,
+      });
+    } catch (error) {
+      console.error("Error fetching AI usage logs:", error);
+      res.status(500).json({ message: "Failed to fetch AI usage logs" });
+    }
+  });
+
+  // Admin: Get AI usage stats
+  app.get("/api/admin/ai-usage/stats", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const stats = await storage.getAIUsageStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching AI usage stats:", error);
+      res.status(500).json({ message: "Failed to fetch AI usage stats" });
     }
   });
 

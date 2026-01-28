@@ -112,7 +112,7 @@ export function Day10AIBrain({ userIdea, onComplete }: Day10AIBrainProps) {
 
             <div className="space-y-4">
               <p className={ds.body}>
-                OpenAI (makers of ChatGPT) is the easiest AI to add to your app. Here's how to get access
+                OpenAI's API is the easiest way to add AI features to your app. Here's how to get access
               </p>
 
               <div className={ds.infoBoxHighlight}>

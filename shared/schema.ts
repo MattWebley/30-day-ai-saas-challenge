@@ -507,3 +507,36 @@ export const critiqueRequestsRelations = relations(critiqueRequests, ({ one }) =
 
 export type CritiqueRequest = typeof critiqueRequests.$inferSelect;
 export type InsertCritiqueRequest = typeof critiqueRequests.$inferInsert;
+
+// Email templates - editable email content
+export const emailTemplates = pgTable("email_templates", {
+  id: serial("id").primaryKey(),
+  templateKey: varchar("template_key").notNull().unique(), // e.g., 'purchase_confirmation', 'coaching_purchase'
+  name: varchar("name").notNull(), // Human-readable name
+  subject: text("subject").notNull(), // Email subject line
+  body: text("body").notNull(), // Email body (plain text with {{variable}} placeholders)
+  description: text("description"), // Description of when this email is sent
+  variables: text("variables"), // Comma-separated list of available variables
+  isActive: boolean("is_active").default(true),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type EmailTemplate = typeof emailTemplates.$inferSelect;
+export type InsertEmailTemplate = typeof emailTemplates.$inferInsert;
+
+// AI usage logging - track all AI API calls for abuse prevention
+export const aiUsageLogs = pgTable("ai_usage_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  endpoint: varchar("endpoint").notNull(), // e.g., 'chat', 'idea-generation', 'features'
+  tokensUsed: integer("tokens_used").default(0),
+  blocked: boolean("blocked").default(false),
+  blockReason: text("block_reason"),
+  flagged: boolean("flagged").default(false),
+  flagReason: text("flag_reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type AIUsageLog = typeof aiUsageLogs.$inferSelect;
+export type InsertAIUsageLog = typeof aiUsageLogs.$inferInsert;

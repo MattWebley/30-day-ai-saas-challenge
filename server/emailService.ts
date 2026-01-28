@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { storage } from './storage';
 
 const FROM_EMAIL = 'Matt Webley <matt@challenge.mattwebley.com>';
 
@@ -11,6 +12,32 @@ function getResendClient() {
     client: new Resend(apiKey),
     fromEmail: FROM_EMAIL
   };
+}
+
+// Helper to replace {{variable}} placeholders in templates
+function replaceVariables(template: string, variables: Record<string, string | number | null | undefined>): string {
+  let result = template;
+  for (const [key, value] of Object.entries(variables)) {
+    const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+    result = result.replace(regex, value?.toString() || '');
+  }
+  return result;
+}
+
+// Get template from database with fallback to provided default
+async function getTemplate(templateKey: string, defaultSubject: string, defaultBody: string): Promise<{ subject: string; body: string; isActive: boolean }> {
+  try {
+    const template = await storage.getEmailTemplate(templateKey);
+    if (template && template.isActive) {
+      return { subject: template.subject, body: template.body, isActive: true };
+    }
+    if (template && !template.isActive) {
+      return { subject: defaultSubject, body: defaultBody, isActive: false };
+    }
+  } catch (error) {
+    console.error(`Error fetching template ${templateKey}:`, error);
+  }
+  return { subject: defaultSubject, body: defaultBody, isActive: true };
 }
 
 export interface EmailParams {
@@ -32,20 +59,15 @@ export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams)
   const { to, firstName, currency, total } = params;
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
-  try {
-    const { client, fromEmail } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      to: [to],
-      subject: `You're in! Welcome to the 21 Day AI SaaS Challenge`,
-      text: `You're In, ${firstName}!
+  const defaultSubject = `You're in! Welcome to the 21 Day AI SaaS Challenge`;
+  const defaultBody = `You're In, {{firstName}}!
 
 Welcome to the 21 Day AI SaaS Challenge. Your journey from idea to launch-ready product starts now.
 
 ORDER CONFIRMED
 ---------------
 21 Day AI SaaS Challenge
-Total: ${currencySymbol}${total}
+Total: {{currencySymbol}}{{total}}
 
 WHAT'S NEXT
 -----------
@@ -61,8 +83,25 @@ Questions? Just reply to this email.
 
 --
 21 Day AI SaaS Challenge
-You're receiving this because you purchased the challenge.
-`,
+You're receiving this because you purchased the challenge.`;
+
+  try {
+    const template = await getTemplate('purchase_confirmation', defaultSubject, defaultBody);
+    if (!template.isActive) {
+      console.log('Purchase confirmation email is disabled');
+      return;
+    }
+
+    const variables = { firstName, currencySymbol, total };
+    const subject = replaceVariables(template.subject, variables);
+    const body = replaceVariables(template.body, variables);
+
+    const { client, fromEmail } = getResendClient();
+    await client.emails.send({
+      from: fromEmail,
+      to: [to],
+      subject,
+      text: body,
     });
     console.log('Purchase confirmation email sent to:', to);
   } catch (error) {
@@ -255,6 +294,194 @@ Looking forward to seeing your improved sales page!
   }
 }
 
+export interface DiscussionNotificationParams {
+  userEmail: string;
+  userName: string;
+  day: number;
+  dayTitle: string;
+  content: string;
+  sendTo?: string;
+}
+
+export async function sendDiscussionNotificationEmail(params: DiscussionNotificationParams): Promise<void> {
+  const { userEmail, userName, day, dayTitle, content, sendTo } = params;
+  const recipient = sendTo || 'matt@mattwebley.com';
+
+  const body = `New Discussion Post on Day ${day}!
+
+FROM
+----
+Name: ${userName}
+Email: ${userEmail}
+
+DAY ${day}: ${dayTitle}
+
+MESSAGE
+-------
+${content}
+
+--
+View all comments: https://21daysaas.com/admin
+`;
+
+  try {
+    const { client, fromEmail } = getResendClient();
+    await client.emails.send({
+      from: fromEmail,
+      to: [recipient],
+      subject: `New Comment on Day ${day}: ${dayTitle}`,
+      text: body,
+    });
+    console.log('Discussion notification email sent to', recipient);
+  } catch (error) {
+    console.error('Failed to send discussion notification email:', error);
+  }
+}
+
+export interface QuestionNotificationParams {
+  userEmail: string;
+  userName: string;
+  day: number;
+  dayTitle: string;
+  question: string;
+  answerUrl: string;
+  sendTo?: string;
+}
+
+export async function sendQuestionNotificationEmail(params: QuestionNotificationParams): Promise<void> {
+  const { userEmail, userName, day, dayTitle, question, answerUrl, sendTo } = params;
+  const recipient = sendTo || 'matt@mattwebley.com';
+
+  const body = `New Question on Day ${day}!
+
+FROM
+----
+Name: ${userName}
+Email: ${userEmail}
+
+DAY ${day}: ${dayTitle}
+
+QUESTION
+--------
+${question}
+
+ANSWER NOW
+----------
+${answerUrl}
+
+Click the link above to view the question and submit your answer.
+
+--
+View all pending questions: https://21daysaas.com/admin
+`;
+
+  try {
+    const { client, fromEmail } = getResendClient();
+    await client.emails.send({
+      from: fromEmail,
+      to: [recipient],
+      subject: `New Question on Day ${day}: ${dayTitle}`,
+      text: body,
+    });
+    console.log('Question notification email sent to', recipient);
+  } catch (error) {
+    console.error('Failed to send question notification email:', error);
+  }
+}
+
+export interface CoachingPurchaseNotificationParams {
+  userEmail: string;
+  userName: string;
+  coachingType: string;
+  currency: 'usd' | 'gbp';
+  amount: number;
+  sendTo?: string;
+}
+
+export async function sendCoachingPurchaseNotificationEmail(params: CoachingPurchaseNotificationParams): Promise<void> {
+  const { userEmail, userName, coachingType, currency, amount, sendTo } = params;
+  const recipient = sendTo || 'matt@mattwebley.com';
+  const currencySymbol = currency === 'gbp' ? '£' : '$';
+
+  const body = `New Coaching Purchase!
+
+FROM
+----
+Name: ${userName}
+Email: ${userEmail}
+
+ORDER DETAILS
+-------------
+Package: ${coachingType}
+Amount: ${currencySymbol}${amount}
+Currency: ${currency.toUpperCase()}
+
+ACTION REQUIRED
+---------------
+Send booking link to customer within 24 hours.
+
+--
+View all users: https://21daysaas.com/admin
+`;
+
+  try {
+    const { client, fromEmail } = getResendClient();
+    await client.emails.send({
+      from: fromEmail,
+      to: [recipient],
+      subject: `New Coaching Purchase: ${coachingType} - ${currencySymbol}${amount}`,
+      text: body,
+    });
+    console.log('Coaching purchase notification email sent to', recipient);
+  } catch (error) {
+    console.error('Failed to send coaching purchase notification email:', error);
+  }
+}
+
+export interface ReferralNotificationParams {
+  referrerEmail: string;
+  referrerName: string;
+  newUserEmail: string;
+  newUserName: string;
+  referralCount: number;
+  sendTo?: string;
+}
+
+export async function sendReferralNotificationEmail(params: ReferralNotificationParams): Promise<void> {
+  const { referrerEmail, referrerName, newUserEmail, newUserName, referralCount, sendTo } = params;
+  const recipient = sendTo || 'matt@mattwebley.com';
+
+  const body = `New Referral!
+
+REFERRER
+--------
+Name: ${referrerName}
+Email: ${referrerEmail}
+Total Referrals: ${referralCount}
+
+NEW USER (REFERRED)
+-------------------
+Name: ${newUserName}
+Email: ${newUserEmail}
+
+--
+View all users: https://21daysaas.com/admin
+`;
+
+  try {
+    const { client, fromEmail } = getResendClient();
+    await client.emails.send({
+      from: fromEmail,
+      to: [recipient],
+      subject: `New Referral: ${referrerName} referred ${newUserName}`,
+      text: body,
+    });
+    console.log('Referral notification email sent to', recipient);
+  } catch (error) {
+    console.error('Failed to send referral notification email:', error);
+  }
+}
+
 export async function sendCoachingConfirmationEmail(params: CoachingEmailParams): Promise<void> {
   const { to, firstName, currency, amount } = params;
   const currencySymbol = currency === 'gbp' ? '£' : '$';
@@ -296,5 +523,56 @@ You're receiving this because you purchased coaching.
     console.log('Coaching confirmation email sent to:', to);
   } catch (error) {
     console.error('Failed to send coaching confirmation email:', error);
+  }
+}
+
+export interface AbuseAlertParams {
+  userId: string;
+  userEmail: string;
+  userName: string;
+  reason: string;
+  input: string;
+  sendTo?: string;
+}
+
+export async function sendAbuseAlertEmail(params: AbuseAlertParams): Promise<void> {
+  const { userId, userEmail, userName, reason, input, sendTo } = params;
+  const recipient = sendTo || 'matt@mattwebley.com';
+
+  const body = `AI ABUSE ALERT
+
+FLAGGED USER
+------------
+Name: ${userName}
+Email: ${userEmail}
+User ID: ${userId}
+
+REASON
+------
+${reason}
+
+USER INPUT (TRUNCATED)
+----------------------
+${input}
+
+TIMESTAMP
+---------
+${new Date().toISOString()}
+
+--
+Review AI usage: https://21daysaas.com/admin
+`;
+
+  try {
+    const { client, fromEmail } = getResendClient();
+    await client.emails.send({
+      from: fromEmail,
+      to: [recipient],
+      subject: `AI Abuse Alert: ${reason}`,
+      text: body,
+    });
+    console.log('Abuse alert email sent to', recipient);
+  } catch (error) {
+    console.error('Failed to send abuse alert email:', error);
   }
 }

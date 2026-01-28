@@ -27,6 +27,7 @@ import Order from "@/pages/Order";
 import SalesLetterPack from "@/pages/SalesLetterPack";
 import Coaching from "@/pages/Coaching";
 import CoachingUpsell from "@/pages/CoachingUpsell";
+import CoachingSuccess from "@/pages/CoachingSuccess";
 import Critique from "@/pages/Critique";
 import CritiqueSuccess from "@/pages/CritiqueSuccess";
 import Testimonial from "@/pages/Testimonial";
@@ -94,6 +95,7 @@ function Router() {
             <Route path="/admin" component={Admin} />
             <Route path="/design-preview" component={DesignPreview} />
             <Route path="/coaching" component={Coaching} />
+            <Route path="/coaching/success" component={CoachingSuccess} />
             <Route path="/critique" component={Critique} />
             <Route path="/critique/success" component={CritiqueSuccess} />
             <Route path="/testimonial" component={Testimonial} />

@@ -46,6 +46,12 @@ import {
   testimonials,
   type Testimonial,
   type InsertTestimonial,
+  emailTemplates,
+  type EmailTemplate,
+  type InsertEmailTemplate,
+  aiUsageLogs,
+  type AIUsageLog,
+  type InsertAIUsageLog,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, isNotNull } from "drizzle-orm";
@@ -154,6 +160,20 @@ export interface IStorage {
   getUserTestimonial(userId: string): Promise<Testimonial | undefined>;
   getAllTestimonials(): Promise<(Testimonial & { user: User })[]>;
   toggleTestimonialFeatured(id: number): Promise<Testimonial | undefined>;
+
+  // AI Usage logging operations
+  logAIUsage(log: {
+    userId: string;
+    endpoint: string;
+    tokensUsed: number;
+    blocked: boolean;
+    blockReason?: string;
+    flagged: boolean;
+    flagReason?: string;
+    timestamp: Date;
+  }): Promise<AIUsageLog>;
+  getAIUsageLogs(options?: { userId?: string; flagged?: boolean; blocked?: boolean; limit?: number }): Promise<AIUsageLog[]>;
+  getAIUsageStats(): Promise<{ totalCalls: number; totalTokens: number; blockedCalls: number; flaggedCalls: number }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -912,6 +932,112 @@ export class DatabaseStorage implements IStorage {
       .where(eq(testimonials.id, id))
       .returning();
     return updated;
+  }
+
+  // Email Templates
+  async getEmailTemplate(templateKey: string): Promise<EmailTemplate | undefined> {
+    const [template] = await db
+      .select()
+      .from(emailTemplates)
+      .where(eq(emailTemplates.templateKey, templateKey));
+    return template;
+  }
+
+  async getAllEmailTemplates(): Promise<EmailTemplate[]> {
+    return await db.select().from(emailTemplates).orderBy(emailTemplates.name);
+  }
+
+  async updateEmailTemplate(
+    templateKey: string,
+    updates: { subject?: string; body?: string; isActive?: boolean }
+  ): Promise<EmailTemplate | undefined> {
+    const [updated] = await db
+      .update(emailTemplates)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(emailTemplates.templateKey, templateKey))
+      .returning();
+    return updated;
+  }
+
+  async createEmailTemplate(template: InsertEmailTemplate): Promise<EmailTemplate> {
+    const [created] = await db
+      .insert(emailTemplates)
+      .values(template)
+      .returning();
+    return created;
+  }
+
+  async upsertEmailTemplate(template: InsertEmailTemplate): Promise<EmailTemplate> {
+    const existing = await this.getEmailTemplate(template.templateKey);
+    if (existing) {
+      const [updated] = await db
+        .update(emailTemplates)
+        .set({ ...template, updatedAt: new Date() })
+        .where(eq(emailTemplates.templateKey, template.templateKey))
+        .returning();
+      return updated;
+    }
+    return this.createEmailTemplate(template);
+  }
+
+  // AI Usage logging operations
+  async logAIUsage(log: {
+    userId: string;
+    endpoint: string;
+    tokensUsed: number;
+    blocked: boolean;
+    blockReason?: string;
+    flagged: boolean;
+    flagReason?: string;
+    timestamp: Date;
+  }): Promise<AIUsageLog> {
+    const [created] = await db
+      .insert(aiUsageLogs)
+      .values({
+        userId: log.userId,
+        endpoint: log.endpoint,
+        tokensUsed: log.tokensUsed,
+        blocked: log.blocked,
+        blockReason: log.blockReason || null,
+        flagged: log.flagged,
+        flagReason: log.flagReason || null,
+      })
+      .returning();
+    return created;
+  }
+
+  async getAIUsageLogs(options?: { userId?: string; flagged?: boolean; blocked?: boolean; limit?: number }): Promise<AIUsageLog[]> {
+    let query = db.select().from(aiUsageLogs);
+
+    const conditions = [];
+    if (options?.userId) {
+      conditions.push(eq(aiUsageLogs.userId, options.userId));
+    }
+    if (options?.flagged !== undefined) {
+      conditions.push(eq(aiUsageLogs.flagged, options.flagged));
+    }
+    if (options?.blocked !== undefined) {
+      conditions.push(eq(aiUsageLogs.blocked, options.blocked));
+    }
+
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as typeof query;
+    }
+
+    return await query
+      .orderBy(desc(aiUsageLogs.createdAt))
+      .limit(options?.limit || 100);
+  }
+
+  async getAIUsageStats(): Promise<{ totalCalls: number; totalTokens: number; blockedCalls: number; flaggedCalls: number }> {
+    const logs = await db.select().from(aiUsageLogs);
+
+    return {
+      totalCalls: logs.length,
+      totalTokens: logs.reduce((sum, log) => sum + (log.tokensUsed || 0), 0),
+      blockedCalls: logs.filter(log => log.blocked).length,
+      flaggedCalls: logs.filter(log => log.flagged).length,
+    };
   }
 }
 

@@ -51,7 +51,7 @@ A gamified 21 Day AI SaaS Challenge guiding users from idea to launch-ready prod
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, Radix UI, Wouter, TanStack Query
 - **Backend**: Node.js, Express, Passport.js, Express Session
 - **Database**: PostgreSQL, Drizzle ORM
-- **AI**: OpenAI
+- **AI**: Hybrid - Claude Sonnet (chat, PRD) + GPT-4o-mini (everything else)
 - **Real-time**: WebSockets
 
 ### Project Structure
@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-27 (Email System Overhaul & Cleanup)
+- **Last Session**: 2026-01-28 (AI Protection System & Hybrid AI Setup)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -118,8 +118,10 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - [x] **Prompt Pack** - REMOVED: Orphaned code deleted
 - [x] **Add VSL video** - DONE: Vimeo embed added to landing page
 - [x] **Email System** - DONE: Plain text emails, 5 types working
-- [ ] Add real Stripe price IDs for: Coaching (4 tiers), Critique
-- [ ] Test AI Mentor chat bot (check browser console)
+- [x] **Stripe Price IDs** - DONE: All 5 products configured (10 price IDs)
+- [x] **AI Protection System** - DONE: Rate limiting, abuse detection, logging
+- [x] **Hybrid AI Setup** - DONE: Claude for chat/PRD, GPT-4o-mini for rest (~90% cost savings)
+- [ ] Test AI Mentor chat bot (now on Claude API)
 - [ ] Test Showcase feature end-to-end
 - [ ] Test Day 0 → Day 1 → Day 2 flow
 - [ ] Test email delivery (use admin test endpoint)
@@ -177,160 +179,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - **Jan 12**: Build section restructure, admin comment delete, AI Mentor fix
 - **Jan 13**: Video Slides feature, Days 14-21 restructure, curriculum finalization
 
-*See CLAUDE_ARCHIVE.md for sessions from Jan 14-23, 2026*
-
-### 2026-01-24 - Day 19 Overhaul & Critique Page
-- **Tasks Completed:**
-  - **New Critique Page:** Created standalone `/critique` page for Sales Page Video Critique
-    - Moved from Coaching page to its own route
-    - Pricing: £495/$595 base + £95/$97 headlines bump (50% off messaging)
-    - Currency toggle (USD/GBP) based on user's purchase currency
-    - Locked state for users who haven't reached Day 19
-    - "Sales Page Training Already Included" notice for Day 19+ users
-  - **Sidebar Updates:**
-    - Changed "Sales Letter Pack" → "Sales Letter Critique"
-    - Added uniform Lock/Unlock icons across Sales Letter Critique, Claude Code Guide, and Launch Pack
-    - Links to `/critique` when unlocked (Day 19+)
-  - **Ambassador Badge:** New badge (🌟) for submitting testimonials
-    - Added to seed.ts with triggerType "testimonial_submitted"
-    - Routes.ts awards badge when showcase entry includes testimonial
-  - **Day 19 Lesson Improvements:**
-    - Added "WHY SAAS IS EASIER TO SELL" section (free trials, zero risk)
-    - Added "BUILD IT ONCE, SELLS 24/7" messaging
-    - Removed duplication between lesson and interactive component
-    - Better whitespace and subheads for readability
-  - **Day 19 Interactive Component:**
-    - Made critique pitch its own step in flow (intro → structure → prompts → build → critique → showcase → complete)
-    - Added 50% off pricing display with strikethrough (£990/£495)
-    - Added visual feedback for copy buttons (green checkmark, "Copied!" text)
-    - Removed ChatGPT mention - only Claude.ai now
-    - Removed "20+ years" mentions - focus on conversion rates instead
-    - Fixed showcase section to match design system (bg-primary instead of bg-green-500)
-    - Updated social platforms: Instagram, TikTok, YouTube, Facebook, and email lists
-    - Changed "10-100 paying customers" → "first few paying customers" (honesty fix)
-    - Added republish reminders in build and complete steps
-- **Fixes Applied:**
-  - Design system violations fixed (removed bg-green-500, bg-amber-500 for icon headers)
-  - Removed colored backgrounds (amber-50, etc.) - using ds.cardWithPadding
-  - Ambassador badge now properly seeded in database
-- **Files Created:**
-  - `client/src/pages/Critique.tsx` - Standalone critique page
-- **Files Modified:**
-  - `client/src/App.tsx` - Added /critique route
-  - `client/src/components/Day19TheSalesMachine.tsx` - Major updates (critique step, copy feedback, republish reminders)
-  - `client/src/components/Day18BuildYourMVP.tsx` - Minor updates
-  - `client/src/components/layout/Sidebar.tsx` - Sales Letter Critique link, uniform lock icons
-  - `client/src/pages/Coaching.tsx` - Removed critique content
-  - `client/src/pages/Dashboard.tsx` - Minor updates
-  - `client/src/pages/Landing.tsx` - Minor updates
-  - `client/src/pages/SalesLetterPack.tsx` - Simplified
-  - `server/routes.ts` - Ambassador badge awarding on testimonial submission
-  - `server/seed.ts` - Ambassador badge, Day 19 lesson updates
-- **Notes for Next Session:**
-  - Database was re-seeded - Ambassador badge is active
-  - Test Ambassador badge awarding (submit showcase with testimonial)
-  - Test /critique page flow and checkout
-  - Test Day 19 full flow with new critique step
-  - Confirm no badge needed after Day 19 (Builder at Day 18, Launcher at Day 21)
-
-### 2026-01-24 (Session 2) - Day 20 Overhaul: Keyword-First SEO
-- **Tasks Completed:**
-  - **Day 20 Complete Rebuild:** Changed from "Launch Plan" to "Get Found by Google" with keyword-first approach
-    - Created new `Day20GetFound.tsx` component with 7-step flow:
-    - Step 1: Intro - What is SEO, why keywords matter
-    - Step 2: Generate Keywords - AI prompt for primary, secondary, and long-tail keywords
-    - Step 3: Pick Keywords - User selects primary keyword + up to 5 secondary keywords
-    - Step 4: Optimize - Comprehensive SEO prompt using their chosen keywords (title tags, meta, H1/H2, URLs, images, internal links, OG tags, favicon, sitemap)
-    - Step 5: Submit to Google - Search Console walkthrough with verification help
-    - Step 6: Directories - Essential (Google, Bing) + 8 bonus directories
-    - Step 7: Complete - Summary showing their keyword strategy + coaching pitch
-  - **Keyword Research Prompt:** Generates primary, secondary, long-tail, and competitor keywords with search intent and competition level
-  - **SEO Optimization Prompt:** 10-point comprehensive optimization based on user's chosen keywords
-  - **Lesson Updates:** Keyword-first messaging, explains why keywords matter before the technical stuff
-  - **VideoSlides Updates:** Keywords → Optimize → Submit flow
-  - **Coaching Pitch:** "SEO takes time. Want faster results? Our coaches can help."
-- **Why This Approach:**
-  - Keywords first = actionable and personalized
-  - Users understand WHY they're optimizing (for specific searches)
-  - Comprehensive SEO prompt covers everything in one shot
-  - Saves their keyword research and choices for reference
-- **Files Modified:**
-  - `client/src/components/Day20GetFound.tsx` - Complete keyword-first rebuild
-  - `client/src/components/DayInstructions.tsx` - Updated for keyword flow
-  - `client/src/components/VideoSlides.tsx` - Keywords → Optimize → Submit
-  - `server/seed.ts` - Keyword-focused lesson content
-- **Notes for Next Session:**
-  - Database was re-seeded
-  - Test full Day 20 flow: intro → generate keywords → pick keywords → optimize → submit → directories → complete
-  - Test keyword research prompt generates good results
-  - Test SEO optimization prompt includes user's chosen keywords
-  - Old Day20LaunchPlan.tsx still exists but unused (can delete)
-
-### 2026-01-24 (Session 3) - Day 21 Overhaul: Growth Strategies + Work With Matt CTA
-- **Tasks Completed:**
-  - **Day 21 Complete Rebuild:** Kept income calculator, added growth strategy education + call booking
-    - 8-step flow: intro → calculator → strategies-intro → passive → active → more → commitment → complete
-    - **Income Calculator:** Set income goal, pick price point, see customers needed (kept from old version)
-    - **Strategies Intro:** "You only need 1-2 methods that work" messaging
-    - **Passive Strategies (3):** AI-powered blog, comparison pages, affiliate program
-      - Each has: what it is, why it's powerful, result preview
-    - **Active Strategies (3):** Automated cold email, paid ads, influencer partnerships
-      - Plus "and there's more..." hint (LinkedIn automation, webinars, etc.)
-    - **77 Strategies Hook:** "That's just 6 of 77+ strategies" curiosity hook
-    - **Work With Matt CTA:** Dark card with benefits list, links to mattwebley.com/workwithmatt
-    - **Commitment:** Optional commitment statement
-  - **Strategy Cards:** Explain WHAT and WHY but not HOW (teases coaching value)
-  - **Design System:** Matches Days 19-20 style (ds helpers, icon circles, back buttons)
-- **Key Messaging:**
-  - "The challenge taught you to BUILD. These strategies are how you SELL."
-  - "These aren't questions you can answer with another course or YouTube video."
-  - "Access to the full playbook of 77+ strategies" (coaching benefit)
-- **Files Modified:**
-  - `client/src/components/Day21LaunchDay.tsx` - Complete rebuild with growth strategies
-  - `client/src/pages/Dashboard.tsx` - Removed unused selectedStrategies prop
-  - `client/src/components/DayInstructions.tsx` - Updated Day 21 instructions
-  - `client/src/components/VideoSlides.tsx` - Updated Day 21 slides
-  - `server/seed.ts` - New Day 21 lesson with strategy teasers
-- **Notes for Next Session:**
-  - Database was re-seeded - Days 20 & 21 are up to date
-  - Test Day 20 full flow (keyword-first SEO)
-  - Test Day 21 full flow (calculator → strategies → call booking)
-  - Both days lead to mattwebley.com/workwithmatt for coaching
-  - Old unused components can be deleted: Day20LaunchPlan.tsx, Day20BrandBeauty.tsx
-
-### 2026-01-24 (Session 4) - Day 20 Simplified SEO + AI Search
-- **Tasks Completed:**
-  - **Simplified Day 20 Flow:** Removed multi-step keyword picking (too clunky)
-    - Old flow: generate keywords → manually pick → optimize → submit
-    - New flow: intro → optimize (one prompt) → submit → directories → complete
-    - ONE comprehensive prompt does keyword research AND optimization together
-    - Claude Code figures out the best keywords AND applies them
-  - **AI Search Section:** Added info about getting found by AI assistants (ChatGPT, Perplexity, etc.)
-    - Emerging field of "LLM SEO" - being mentioned across web helps AI recommend you
-    - Included in directories step with practical tips
-  - **Day Name Change:** "Launch Plan" → "Get Found by Google" → "Get Found by Google & AI"
-  - **Duplicate Content Fix:** Trimmed Day 20 & 21 lessons to be short teasers
-    - Lessons no longer repeat what's in the interactive component
-    - "The interactive section below walks you through everything..."
-  - **Google Trust Timeline:** Added note that Google doesn't trust new sites
-    - Can take weeks or MONTHS for traffic to flow
-    - Added to lesson + DayInstructions
-  - **Day 21 Active Methods:** Reduced from 4 to 3 + hint at more
-- **Files Modified:**
-  - `client/src/components/Day20GetFound.tsx` - Simplified to 5-step flow with one comprehensive prompt
-  - `client/src/components/Day21LaunchDay.tsx` - Reduced active methods, added hints
-  - `client/src/components/DayInstructions.tsx` - Updated Day 20 instructions for new flow
-  - `client/src/pages/Dashboard.tsx` - Updated title to "Get Found by Google & AI"
-  - `server/seed.ts` - Trimmed lessons, added Google trust timeline, updated titles
-- **Additional Updates:**
-  - VideoSlides Day 20 updated to match new 5-step flow
-  - Day 20 lesson updated - removed reference to "finding keywords" step
-  - Added AI assistant mention to lesson
-- **Notes for Next Session:**
-  - Database was re-seeded - all changes applied
-  - Test Day 20 simplified SEO flow
-  - Test Day 21 growth strategies flow
-  - Old unused components to delete: Day20LaunchPlan.tsx, Day20BrandBeauty.tsx
+*See CLAUDE_ARCHIVE.md for sessions from Jan 14-24, 2026*
 
 ### 2026-01-26 - Day 21 Growth Strategies Expansion + Congratulations Page
 - **Tasks Completed:**
@@ -575,3 +424,62 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test email delivery: restart server, run test from browser console
   - Test main purchase flow end-to-end
   - Run `npm run db:push` if preferredEmail column not yet in database
+
+### 2026-01-28 - AI Protection System & Hybrid AI Setup
+- **Tasks Completed:**
+  - **My Progress Page Redesign:**
+    - Timeline view with phases matching challenge structure (Start, Idea, Plan, Prepare, Build, Launch)
+    - Fixed badges showing 0 (was using wrong data source)
+    - Fixed days showing 22 instead of 21 (excluded Day 0 from count)
+    - Added `hasStarted` check to show timeline only after first day completed
+  - **Current Task Button Fix:**
+    - Now redirects to `lastCompletedDay + 1` instead of Day 0
+  - **Stripe Price IDs Added:**
+    - All 5 products configured with real price IDs (USD + GBP = 10 total)
+    - Coaching Single Expert, 4-Pack Expert, Single Matt, 4-Pack Matt, Video Critique
+  - **Coaching Success Page Created:**
+    - New `/coaching/success` page with product-specific messaging
+  - **Component Rename:**
+    - Renamed `Day19MobileReady.tsx` → `Day16MobileReady.tsx` for clarity
+  - **AI Mentor Chatbot Overhaul:**
+    - Rewrote system prompt with complete 21-day curriculum
+    - Strict scope boundaries (only helps with challenge topics)
+    - Switched from OpenAI to Claude API
+  - **Comprehensive AI Protection System:**
+    - Created `/server/aiService.ts` with:
+      - Rate limiting per endpoint type (chat: 20/hr, ideaGen: 5/hr, features: 10/hr, general: 15/hr)
+      - Abuse pattern detection (7 patterns: prompt injection, jailbreaks, etc.)
+      - Email alerts for abuse attempts (`sendAbuseAlertEmail`)
+      - Usage logging to database (`aiUsageLogs` table)
+    - Admin endpoints for viewing AI usage (`/api/admin/ai-usage`, `/api/admin/ai-usage/stats`)
+  - **Hybrid AI Configuration (Cost Optimization):**
+    - **Claude Sonnet** (premium): AI Mentor Chat, PRD Generation
+    - **GPT-4o-mini** (cheap): All other 9 endpoints
+    - Estimated ~90% cost reduction on bulk AI calls
+    - Both providers share same rate limiting and abuse detection
+- **Files Created:**
+  - `server/aiService.ts` - Centralized AI service with protections
+  - `client/src/components/Day16MobileReady.tsx` - Renamed from Day19
+  - `client/src/pages/CoachingSuccess.tsx` - Coaching thank you page
+- **Files Modified:**
+  - `server/routes.ts` - Updated all 11 AI endpoints to use aiService, added admin AI usage endpoints
+  - `server/storage.ts` - Added AI usage logging functions
+  - `server/emailService.ts` - Added abuse alert email function
+  - `shared/schema.ts` - Added `aiUsageLogs` table
+  - `client/src/pages/BuildLog.tsx` - Timeline redesign
+  - `client/src/pages/Dashboard.tsx` - Current task redirect fix, component rename
+  - `client/src/App.tsx` - Added coaching success route
+- **Files Deleted:**
+  - `client/src/components/Day19MobileReady.tsx` - Renamed to Day16
+- **Database:**
+  - Pushed new `aiUsageLogs` table schema
+- **AI Endpoint Distribution:**
+  | Provider | Endpoints |
+  |----------|-----------|
+  | Claude Sonnet | AI Mentor Chat, PRD Summary, PRD Full |
+  | GPT-4o-mini | Idea Gen, AI Prompts, Design Analysis, Competitor Research, USP Features, Core Features, Shared Features, MVP Roadmap, AI Answers, A/B Headlines |
+- **Notes for Next Session:**
+  - Test AI Mentor chat (now on Claude)
+  - Test AI protection (try "ignore all instructions" to trigger abuse alert)
+  - Check admin panel for AI usage logs after making AI requests
+  - Both ANTHROPIC_API_KEY and OPENAI_API_KEY must be set in Replit Secrets

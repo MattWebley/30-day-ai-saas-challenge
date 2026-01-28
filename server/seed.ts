@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { dayContent, badges } from "@shared/schema";
+import { dayContent, badges, emailTemplates } from "@shared/schema";
 
 async function seed() {
   console.log("🌱 Seeding database...");
@@ -242,7 +242,7 @@ Think NICHE - DO NOT THINK BROAD! The NICHER the BETTER usually...`,
 
 STEP 1: Ask your LLM
 
-Just straight up ASK ChatGPT or Claude if your idea is likely a VIABLE idea. Will this make money or not? And WHY? Tell it to BE HONEST and NOT sugar coat it.
+Just straight up ASK Claude if your idea is likely a VIABLE idea. Will this make money or not? And WHY? Tell it to BE HONEST and NOT sugar coat it.
 
 STEP 2: Look for competitors SELLING something similar
 
@@ -290,7 +290,7 @@ These are the features that your competitors have that if YOU don't have them, m
 
 STEP 2: Find Your USP
 
-Ask ChatGPT or Claude: "I am building SAAS for [NICHE]. My target market are [AVATAR] and the problem my SAAS solves is [PROBLEM]. Write me 28 USP ideas that my competition doesn't likely have that would make my software better than theirs."
+Ask Claude: "I am building SAAS for [NICHE]. My target market are [AVATAR] and the problem my SAAS solves is [PROBLEM]. Write me 28 USP ideas that my competition doesn't likely have that would make my software better than theirs."
 
 Go through them and PICK one or two that excite you. If results are generic, tell it: "I want these USP ideas to be so wild, it'd shock people in the space. NOTHING generic will do."
 
@@ -406,11 +406,11 @@ HOW WE'RE DOING THIS:
 
 AI image tools change ALL THE TIME. What works great today might not tomorrow. So here's the approach:
 
-OPTION 1: USE WHAT YOU ALREADY HAVE
-If you're already paying for an AI tool with image generation (ChatGPT Plus, Claude Pro, etc.) - use that. You already have it. We'll generate a prompt for you in the exercise below.
+OPTION 1 (RECOMMENDED): TRY MULTIPLE AI MODELS
+Use [Abacus AI](https://chatllm.abacus.ai/WlwgmxfvHg) to test your prompt across different image generators - DALL-E, Stable Diffusion, Midjourney-style models, and more. Same prompt, multiple models, see what looks best. This is the best way to find a model that works for YOUR logo.
 
-OPTION 2: TRY MULTIPLE AI MODELS
-Use [Abacus AI](https://abacus.ai/) to test your prompt across different AI image generators without signing up to a bunch of separate services. Same prompt, multiple models, see what works best.
+OPTION 2: USE WHAT YOU ALREADY HAVE
+If you're already paying for ChatGPT Plus or another AI with image generation - give it a try. Some models are better at logos than others, so you may need to experiment.
 
 FALLBACK: DIY TEXT LOGO IN 5 MINUTES
 1. Go to [Canva](https://www.canva.com/) (free)
@@ -467,7 +467,7 @@ Replit gives you the environment and ease of use. Claude Code does the heavy lif
 
 OPTIONAL (nice to have, not required):
 
-- ChatGPT Plus - Good for brainstorming, second opinions, general purpose
+- Wispr Flow - Voice-to-text AI that lets you talk instead of type. 3x faster.
 - Abacus AI - Video generation, text-to-speech, image generation, and all sorts of AI models to create assets
 - OpenAI API - If your app needs AI features (we'll cover this later)
 
@@ -1316,6 +1316,280 @@ This challenge taught you to BUILD. Now let's talk about how to SELL.`,
         completionMessage: day.completionMessage,
         xpReward: day.xpReward,
         estimatedMinutes: day.estimatedMinutes,
+      },
+    });
+  }
+
+  // Seed email templates
+  console.log("Creating email templates...");
+  const emailTemplateData = [
+    {
+      templateKey: "purchase_confirmation",
+      name: "Purchase Confirmation",
+      subject: "You're in! Welcome to the 21 Day AI SaaS Challenge",
+      body: `You're In, {{firstName}}!
+
+Welcome to the 21 Day AI SaaS Challenge. Your journey from idea to launch-ready product starts now.
+
+ORDER CONFIRMED
+---------------
+21 Day AI SaaS Challenge
+Total: {{currencySymbol}}{{total}}
+
+WHAT'S NEXT
+-----------
+1. Start Day 0 today - it only takes 5 minutes
+2. Complete one day at a time - go at your own pace
+3. In 21 days, you'll have a working product
+
+Start now: https://21daysaas.com/dashboard
+
+Questions? Just reply to this email.
+
+- Matt
+
+--
+21 Day AI SaaS Challenge
+You're receiving this because you purchased the challenge.`,
+      description: "Sent to customer after purchasing the main challenge",
+      variables: "firstName, currencySymbol, total",
+    },
+    {
+      templateKey: "coaching_confirmation",
+      name: "Coaching Confirmation",
+      subject: "Coaching Sessions Confirmed - Let's Build Together!",
+      body: `Coaching Confirmed!
+
+Hey {{firstName}}, great decision! You've just unlocked coaching sessions to supercharge your SaaS build.
+
+YOUR COACHING PACKAGE
+---------------------
+{{coachingType}}
+
+- Direct 1:1 video calls
+- Screen share building together
+- Unblock any issue immediately
+- Flexible scheduling
+
+Total: {{currencySymbol}}{{amount}}
+
+HOW TO BOOK YOUR SESSIONS
+-------------------------
+I'll be in touch within 24 hours with a link to book your first session. Keep an eye on your inbox!
+
+Questions? Just reply to this email.
+
+- Matt
+
+--
+21 Day AI SaaS Challenge
+You're receiving this because you purchased coaching.`,
+      description: "Sent to customer after purchasing coaching",
+      variables: "firstName, currencySymbol, amount, coachingType",
+    },
+    {
+      templateKey: "coaching_purchase_notification",
+      name: "Coaching Purchase Notification (Admin)",
+      subject: "New Coaching Purchase: {{coachingType}} - {{currencySymbol}}{{amount}}",
+      body: `New Coaching Purchase!
+
+FROM
+----
+Name: {{userName}}
+Email: {{userEmail}}
+
+ORDER DETAILS
+-------------
+Package: {{coachingType}}
+Amount: {{currencySymbol}}{{amount}}
+Currency: {{currency}}
+
+ACTION REQUIRED
+---------------
+Send booking link to customer within 24 hours.
+
+--
+View all users: https://21daysaas.com/admin`,
+      description: "Sent to admin when someone purchases coaching",
+      variables: "userName, userEmail, coachingType, currencySymbol, amount, currency",
+    },
+    {
+      templateKey: "testimonial_notification",
+      name: "Testimonial Notification (Admin)",
+      subject: "New Challenge Testimonial from {{userName}}",
+      body: `New Testimonial!
+
+FROM
+----
+Name: {{userName}}
+Email: {{userEmail}}
+
+WRITTEN TESTIMONIAL
+-------------------
+{{testimonial}}
+
+VIDEO TESTIMONIAL
+-----------------
+{{videoUrl}}
+
+THEIR APP
+---------
+Name: {{appName}}
+URL: {{appUrl}}
+
+--
+View all testimonials: https://21daysaas.com/admin`,
+      description: "Sent to admin when someone submits a testimonial",
+      variables: "userName, userEmail, testimonial, videoUrl, appName, appUrl",
+    },
+    {
+      templateKey: "critique_notification",
+      name: "Critique Request Notification (Admin)",
+      subject: "New Critique Request from {{userName}}",
+      body: `New Critique Request!
+
+FROM
+----
+Name: {{userName}}
+Send Video To: {{preferredEmail}}
+Backup Email: {{userEmail}}
+
+SALES PAGE URL
+--------------
+{{salesPageUrl}}
+
+PRODUCT DESCRIPTION
+-------------------
+{{productDescription}}
+
+TARGET AUDIENCE
+---------------
+{{targetAudience}}
+
+SPECIFIC QUESTIONS
+------------------
+{{specificQuestions}}
+
+--
+Submitted: {{timestamp}}
+View all requests: https://21daysaas.com/admin`,
+      description: "Sent to admin when someone requests a sales page critique",
+      variables: "userName, userEmail, preferredEmail, salesPageUrl, productDescription, targetAudience, specificQuestions, timestamp",
+    },
+    {
+      templateKey: "critique_completed",
+      name: "Critique Completed",
+      subject: "Your Sales Page Video Critique is Ready!",
+      body: `Hey {{firstName}}!
+
+Your sales page video critique is ready. I've recorded a detailed walkthrough with specific suggestions to improve your conversions.
+
+WATCH YOUR CRITIQUE
+-------------------
+{{videoUrl}}
+
+In this video, I cover:
+- First impressions and headline analysis
+- Structure and flow improvements
+- Specific copy suggestions
+- Call-to-action optimization
+- Quick wins you can implement today
+
+After watching, if you have questions or want to discuss any of the suggestions, just reply to this email.
+
+Looking forward to seeing your improved sales page!
+
+- Matt
+
+--
+21 Day AI SaaS Challenge`,
+      description: "Sent to customer when their sales page critique video is ready",
+      variables: "firstName, videoUrl",
+    },
+    {
+      templateKey: "question_notification",
+      name: "Question Notification (Admin)",
+      subject: "New Question on Day {{day}}: {{dayTitle}}",
+      body: `New Question on Day {{day}}!
+
+FROM
+----
+Name: {{userName}}
+Email: {{userEmail}}
+
+DAY {{day}}: {{dayTitle}}
+
+QUESTION
+--------
+{{question}}
+
+ANSWER NOW
+----------
+{{answerUrl}}
+
+Click the link above to view the question and submit your answer.
+
+--
+View all pending questions: https://21daysaas.com/admin`,
+      description: "Sent to admin when someone asks a question",
+      variables: "userName, userEmail, day, dayTitle, question, answerUrl",
+    },
+    {
+      templateKey: "discussion_notification",
+      name: "Discussion Notification (Admin)",
+      subject: "New Comment on Day {{day}}: {{dayTitle}}",
+      body: `New Discussion Post on Day {{day}}!
+
+FROM
+----
+Name: {{userName}}
+Email: {{userEmail}}
+
+DAY {{day}}: {{dayTitle}}
+
+MESSAGE
+-------
+{{content}}
+
+--
+View all comments: https://21daysaas.com/admin`,
+      description: "Sent to admin when someone posts a discussion comment",
+      variables: "userName, userEmail, day, dayTitle, content",
+    },
+    {
+      templateKey: "referral_notification",
+      name: "Referral Notification (Admin)",
+      subject: "New Referral: {{referrerName}} referred {{newUserName}}",
+      body: `New Referral!
+
+REFERRER
+--------
+Name: {{referrerName}}
+Email: {{referrerEmail}}
+Total Referrals: {{referralCount}}
+
+NEW USER (REFERRED)
+-------------------
+Name: {{newUserName}}
+Email: {{newUserEmail}}
+
+--
+View all users: https://21daysaas.com/admin`,
+      description: "Sent to admin when someone refers a new user",
+      variables: "referrerName, referrerEmail, newUserName, newUserEmail, referralCount",
+    },
+  ];
+
+  for (const template of emailTemplateData) {
+    await db.insert(emailTemplates).values(template).onConflictDoUpdate({
+      target: emailTemplates.templateKey,
+      set: {
+        name: template.name,
+        subject: template.subject,
+        body: template.body,
+        description: template.description,
+        variables: template.variables,
+        updatedAt: new Date(),
       },
     });
   }

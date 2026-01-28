@@ -264,13 +264,13 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                   <div>
                     <p className="font-bold text-slate-900">Option 1: Use What You Already Have</p>
                     <p className="text-slate-700 mt-1">
-                      If you're already paying for an AI tool with image generation (ChatGPT Plus, Claude Pro, etc.) - use that. You already have it. Paste the prompt and generate some options.
+                      If you're already paying for ChatGPT Plus or another AI with image generation - give it a try. Some models are better at logos than others, so you may need to experiment.
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Option 2: Abacus AI */}
+              {/* Option 2: Abacus AI (Recommended for images) */}
               <div
                 className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
                   toolUsed === "abacus" ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300 bg-white"
@@ -285,12 +285,15 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                     className="w-4 h-4 text-primary mt-1"
                   />
                   <div className="flex-1">
-                    <p className="font-bold text-slate-900">Option 2: Try Multiple AI Models</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-slate-900">Option 2: Try Multiple AI Models</p>
+                      <span className="text-xs bg-primary text-white px-2 py-0.5 rounded font-medium">RECOMMENDED</span>
+                    </div>
                     <p className="text-slate-700 mt-1">
-                      Use Abacus AI to test your prompt across different AI image generators without signing up to a bunch of separate services. Same prompt, multiple models, see what works best.
+                      Use Abacus AI to test your prompt across different image generators - DALL-E, Stable Diffusion, Midjourney-style models, and more. Same prompt, multiple models, see what looks best. This is the best way to get a great logo.
                     </p>
                     <a
-                      href="https://abacus.ai/"
+                      href="https://chatllm.abacus.ai/WlwgmxfvHg"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-primary hover:underline mt-2 font-medium"
