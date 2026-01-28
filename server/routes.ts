@@ -24,32 +24,44 @@ export async function registerRoutes(
 
   // Bypass Auth route for testing
   app.get('/api/test-login', async (req: any, res) => {
-    // Check for existing test user or create one
-    let testUser = await storage.getUser("test_user_id");
-    if (!testUser) {
-      testUser = await storage.upsertUser({
-        id: "test_user_id",
-        email: "test@example.com",
-        firstName: "Test",
-        lastName: "User",
-        coachingPurchased: true,
-        referralCode: "TEST1234",
-      });
-    }
-
-    // Manually set session data to mimic Replit Auth
-    req.session.passport = {
-      user: {
-        claims: {
-          sub: "test_user_id",
+    try {
+      // Check for existing test user or create one
+      let testUser = await storage.getUser("test_user_id");
+      if (!testUser) {
+        testUser = await storage.upsertUser({
+          id: "test_user_id",
           email: "test@example.com",
-          given_name: "Test",
-          family_name: "User"
-        }
+          firstName: "Test",
+          lastName: "User",
+          coachingPurchased: true,
+          referralCode: "TEST1234",
+        });
       }
-    };
-    
-    res.redirect('/dashboard');
+
+      // Manually set session data to mimic Replit Auth
+      req.session.passport = {
+        user: {
+          claims: {
+            sub: "test_user_id",
+            email: "test@example.com",
+            given_name: "Test",
+            family_name: "User"
+          }
+        }
+      };
+
+      // Save session explicitly before redirecting
+      req.session.save((err: any) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).send("Session error");
+        }
+        res.redirect('/dashboard');
+      });
+    } catch (error) {
+      console.error("Test login error:", error);
+      res.status(500).send("Test login failed");
+    }
   });
 
   // Auth routes
