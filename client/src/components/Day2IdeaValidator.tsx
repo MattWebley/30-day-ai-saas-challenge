@@ -69,6 +69,8 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   // Competitor research state
   const [competitors, setCompetitors] = useState<Competitor[]>([]);
   const [newCompetitor, setNewCompetitor] = useState({ name: '', url: '', notes: '' });
+  const [loadingCompetitors, setLoadingCompetitors] = useState(false);
+  const [showManualAdd, setShowManualAdd] = useState(false);
 
   // I Help statement
   const [iHelpStatement, setIHelpStatement] = useState("");
@@ -212,6 +214,40 @@ Example format:
       setLoadingPainPoints(false);
     },
   });
+
+  // Find competitors with AI
+  const findCompetitors = useMutation({
+    mutationFn: async (ideaIndex: number) => {
+      const idea = shortlistedIdeas[ideaIndex];
+      const res = await apiRequest("POST", "/api/research-competitors", {
+        ideaTitle: idea.title,
+        ideaDescription: idea.desc,
+        targetCustomer: idea.targetCustomer,
+      });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      const aiCompetitors = (data.competitors || []).map((comp: any) => ({
+        name: comp.name,
+        url: comp.url || '',
+        notes: comp.description || '',
+      }));
+      setCompetitors(aiCompetitors);
+      setLoadingCompetitors(false);
+      toast.success(`Found ${aiCompetitors.length} competitors`);
+    },
+    onError: () => {
+      toast.error("Failed to find competitors. Try adding them manually.");
+      setLoadingCompetitors(false);
+      setShowManualAdd(true);
+    },
+  });
+
+  const handleFindCompetitors = () => {
+    if (selectedIdeaIndex === null) return;
+    setLoadingCompetitors(true);
+    findCompetitors.mutate(selectedIdeaIndex);
+  };
 
   const handleValidateIdea = (index: number) => {
     if (validationInsights[index]) return; // Already validated
@@ -446,49 +482,54 @@ Example format:
           <p className={ds.muted}>Finding competitors proves there's money in this market. No competitors = risky.</p>
         </div>
 
-        {/* Search queries */}
-        <div className={ds.cardWithPadding}>
-          <div className="flex items-center gap-2 mb-3">
-            <Search className="w-5 h-5 text-slate-600" />
-            <h3 className={ds.label}>Search These on Google</h3>
-          </div>
-          <p className={`${ds.muted} mb-4`}>Click to copy, paste into Google, and see what's out there.</p>
-
-          <div className="space-y-2">
-            {searchQueries.map((query, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-100 transition-colors"
-                onClick={() => copyToClipboard(query)}
-              >
-                <code className="text-sm text-slate-700">{query}</code>
-                <Copy className="w-4 h-4 text-slate-400" />
+        {/* AI Competitor Search */}
+        {competitors.length === 0 && !loadingCompetitors && (
+          <div className={ds.cardWithPadding}>
+            <div className="text-center space-y-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                <Search className="w-6 h-6 text-primary" />
               </div>
-            ))}
+              <div>
+                <h3 className={ds.label}>Let AI Find Your Competitors</h3>
+                <p className={`${ds.muted} mt-1`}>We'll search for real companies doing something similar to your idea.</p>
+              </div>
+              <Button
+                size="lg"
+                onClick={handleFindCompetitors}
+                className="w-full h-14 text-lg font-bold gap-2"
+              >
+                <Search className="w-5 h-5" /> Find Competitors
+              </Button>
+            </div>
           </div>
+        )}
 
-          <a
-            href={`https://www.google.com/search?q=${encodeURIComponent(searchQueries[0])}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 mt-4 text-primary hover:underline"
-          >
-            Open Google Search <ExternalLink className="w-4 h-4" />
-          </a>
-        </div>
+        {/* Loading state */}
+        {loadingCompetitors && (
+          <div className={ds.cardWithPadding}>
+            <div className="text-center space-y-4 py-8">
+              <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
+              <p className={ds.body}>Searching for competitors...</p>
+            </div>
+          </div>
+        )}
 
-        {/* Add competitors */}
-        <div className={ds.cardWithPadding}>
-          <h3 className={`${ds.label} mb-3`}>Add Competitors You Found</h3>
-          <p className={`${ds.muted} mb-4`}>Add 2-3 competitors. This helps validate demand and informs your features.</p>
+        {/* Competitors list */}
+        {competitors.length > 0 && (
+          <div className={ds.cardWithPadding}>
+            <h3 className={`${ds.label} mb-3`}>Competitors Found</h3>
+            <p className={`${ds.muted} mb-4`}>Review these competitors. Remove any that aren't relevant.</p>
 
-          {competitors.length > 0 && (
             <div className="space-y-2 mb-4">
               {competitors.map((comp, idx) => (
-                <div key={idx} className="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200">
-                  <div>
+                <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
+                  <div className="flex-1 min-w-0">
                     <p className={ds.label}>{comp.name}</p>
-                    {comp.url && <p className={`${ds.muted} text-xs`}>{comp.url}</p>}
+                    {comp.url && (
+                      <a href={comp.url.startsWith('http') ? comp.url : `https://${comp.url}`} target="_blank" rel="noopener noreferrer" className="text-primary text-sm hover:underline flex items-center gap-1">
+                        {comp.url} <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
                     {comp.notes && <p className={`${ds.muted} text-sm mt-1`}>{comp.notes}</p>}
                   </div>
                   <Button variant="ghost" size="sm" onClick={() => removeCompetitor(idx)}>
@@ -497,29 +538,39 @@ Example format:
                 </div>
               ))}
             </div>
-          )}
 
-          <div className="space-y-3">
-            <Input
-              placeholder="Competitor name (e.g., Notion, Asana)"
-              value={newCompetitor.name}
-              onChange={(e) => setNewCompetitor({ ...newCompetitor, name: e.target.value })}
-            />
-            <Input
-              placeholder="Website URL (optional)"
-              value={newCompetitor.url}
-              onChange={(e) => setNewCompetitor({ ...newCompetitor, url: e.target.value })}
-            />
-            <Input
-              placeholder="What do they do well or poorly? (optional)"
-              value={newCompetitor.notes}
-              onChange={(e) => setNewCompetitor({ ...newCompetitor, notes: e.target.value })}
-            />
-            <Button variant="outline" onClick={addCompetitor} className="w-full gap-2">
-              <Plus className="w-4 h-4" /> Add Competitor
+            <Button variant="outline" onClick={() => setShowManualAdd(!showManualAdd)} className="w-full gap-2">
+              <Plus className="w-4 h-4" /> {showManualAdd ? 'Hide Manual Add' : 'Add More Manually'}
             </Button>
           </div>
-        </div>
+        )}
+
+        {/* Manual add section */}
+        {showManualAdd && (
+          <div className={ds.cardWithPadding}>
+            <h3 className={`${ds.label} mb-3`}>Add Competitor Manually</h3>
+            <div className="space-y-3">
+              <Input
+                placeholder="Competitor name (e.g., Notion, Asana)"
+                value={newCompetitor.name}
+                onChange={(e) => setNewCompetitor({ ...newCompetitor, name: e.target.value })}
+              />
+              <Input
+                placeholder="Website URL (optional)"
+                value={newCompetitor.url}
+                onChange={(e) => setNewCompetitor({ ...newCompetitor, url: e.target.value })}
+              />
+              <Input
+                placeholder="What do they do? (optional)"
+                value={newCompetitor.notes}
+                onChange={(e) => setNewCompetitor({ ...newCompetitor, notes: e.target.value })}
+              />
+              <Button variant="outline" onClick={addCompetitor} className="w-full gap-2">
+                <Plus className="w-4 h-4" /> Add Competitor
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Progress indicator */}
         <div className={ds.infoBoxHighlight}>
