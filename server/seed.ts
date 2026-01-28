@@ -1,5 +1,20 @@
 import { db } from "./db";
 import { dayContent, badges, emailTemplates } from "@shared/schema";
+import { count } from "drizzle-orm";
+
+export async function seedIfNeeded() {
+  try {
+    const [result] = await db.select({ count: count() }).from(dayContent);
+    if (result.count > 0) {
+      console.log("✅ Database already seeded, skipping...");
+      return;
+    }
+    console.log("📦 Database empty, running seed...");
+    await seed();
+  } catch (error) {
+    console.error("Error checking database:", error);
+  }
+}
 
 async function seed() {
   console.log("🌱 Seeding database...");
@@ -1596,8 +1611,3 @@ View all users: https://21daysaas.com/admin`,
 
   console.log("✅ Seeding complete!");
 }
-
-seed().catch((err) => {
-  console.error("Seeding failed:", err);
-  process.exit(1);
-});
