@@ -51,7 +51,7 @@ A gamified 21 Day AI SaaS Challenge guiding users from idea to launch-ready prod
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, Radix UI, Wouter, TanStack Query
 - **Backend**: Node.js, Express, Passport.js, Express Session
 - **Database**: PostgreSQL, Drizzle ORM
-- **AI**: Hybrid - Claude Sonnet (chat, PRD) + GPT-4o-mini (everything else)
+- **AI**: Claude Sonnet (all AI features - single API key)
 - **Real-time**: WebSockets
 
 ### Project Structure
@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-28 (AI Protection System & Hybrid AI Setup)
+- **Last Session**: 2026-01-28 (Day 0 fix, videos, Claude-only AI)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -120,7 +120,9 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 - [x] **Email System** - DONE: Plain text emails, 5 types working
 - [x] **Stripe Price IDs** - DONE: All 5 products configured (10 price IDs)
 - [x] **AI Protection System** - DONE: Rate limiting, abuse detection, logging
-- [x] **Hybrid AI Setup** - DONE: Claude for chat/PRD, GPT-4o-mini for rest (~90% cost savings)
+- [x] **AI Setup** - DONE: All AI now uses Claude Sonnet (single API key: ANTHROPIC_API_KEY)
+- [x] **Day 0 Video** - DONE: Loom video added
+- [x] **Day 1 Video** - DONE: Loom video added
 - [ ] Test AI Mentor chat bot (now on Claude API)
 - [ ] Test Showcase feature end-to-end
 - [ ] Test Day 0 → Day 1 → Day 2 flow
@@ -483,3 +485,38 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test AI protection (try "ignore all instructions" to trigger abuse alert)
   - Check admin panel for AI usage logs after making AI requests
   - Both ANTHROPIC_API_KEY and OPENAI_API_KEY must be set in Replit Secrets
+
+### 2026-01-28 (Session 2) - Day 0 Fix, Videos, Claude-Only AI
+- **Tasks Completed:**
+  - **Fixed Day 0 Not Loading:**
+    - Bug in `useDays.ts`: `enabled: day > 0` excluded Day 0
+    - Changed to `day >= 0` to include Day 0
+    - Also fixed `day ?` to `day !== undefined` (0 is falsy in JS)
+  - **Added Loom Videos:**
+    - Day 0: `https://www.loom.com/embed/dac0eedf4efa4f1e83aca36cadab00ef`
+    - Day 1: `https://www.loom.com/embed/a333ecd106db43d591eedb1e9fbf5f4b`
+  - **Switched All AI to Claude:**
+    - Removed hybrid setup (was Claude + GPT-4o-mini)
+    - All 13 AI endpoints now use `callClaude` instead of `callGPT`
+    - Only need `ANTHROPIC_API_KEY` in Replit Secrets (not OpenAI)
+  - **Day 2 Competitor Research Overhaul:**
+    - Removed manual Google search queries
+    - Added "Find Competitors" button that uses AI to find real competitors
+    - Shows loading state, displays results with URLs
+    - Users can remove irrelevant ones or add more manually
+  - **Day 2 Pain Points Simplified:**
+    - Old prompt generated overly specific pain points
+    - New prompt generates SHORT (under 10 words), GENERAL pain points
+    - Example: "Wasting time on repetitive tasks" instead of long specific scenarios
+  - **Browser Title Updated:** Changed "21 Day" to "21-Day" (with hyphen)
+- **Files Modified:**
+  - `client/src/hooks/useDays.ts` - Fixed Day 0 loading bug
+  - `client/src/pages/Dashboard.tsx` - Added Day 0 & Day 1 video URLs
+  - `client/index.html` - Updated title to "21-Day"
+  - `server/routes.ts` - Switched all AI calls from GPT to Claude
+  - `client/src/components/Day2IdeaValidator.tsx` - AI competitor search, simplified pain points
+- **Notes for Next Session:**
+  - Only ANTHROPIC_API_KEY needed now (OpenAI key no longer required)
+  - Test Day 2 competitor search and pain point generation
+  - Add more Loom videos as they're recorded (Days 2-21)
+  - Test full Day 0 → Day 1 → Day 2 flow after redeployment
