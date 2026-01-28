@@ -22,6 +22,36 @@ export async function registerRoutes(
   // Setup Replit Auth
   await setupAuth(app);
 
+  // Bypass Auth route for testing
+  app.get('/api/test-login', async (req: any, res) => {
+    // Check for existing test user or create one
+    let testUser = await storage.getUser("test_user_id");
+    if (!testUser) {
+      testUser = await storage.getOrCreateUser({
+        id: "test_user_id",
+        email: "test@example.com",
+        firstName: "Test",
+        lastName: "User",
+        coachingPurchased: true,
+        isEarlyAdopter: true,
+      });
+    }
+
+    // Manually set session data to mimic Replit Auth
+    req.session.passport = {
+      user: {
+        claims: {
+          sub: "test_user_id",
+          email: "test@example.com",
+          given_name: "Test",
+          family_name: "User"
+        }
+      }
+    };
+    
+    res.redirect('/dashboard');
+  });
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
