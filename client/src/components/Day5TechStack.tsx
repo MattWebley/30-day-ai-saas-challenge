@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ExternalLink, Copy } from "lucide-react";
+import { ExternalLink, Copy, Check } from "lucide-react";
 import { ds } from "@/lib/design-system";
 import { toast } from "sonner";
 
@@ -57,6 +57,14 @@ const OPTIONAL_TOOLS: Tool[] = [
 
 export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
   const [completedTools, setCompletedTools] = useState<Set<string>>(new Set());
+  const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
+
+  const copyPrompt = (id: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedPrompt(id);
+    toast.success("Prompt copied!");
+    setTimeout(() => setCopiedPrompt(null), 2000);
+  };
 
   const toggleTool = (toolName: string) => {
     const newCompleted = new Set(completedTools);
@@ -278,16 +286,13 @@ How do I fix this?`}</p>
         <Button
           variant="outline"
           size="sm"
-          className="gap-2 mb-4"
-          onClick={() => {
-            navigator.clipboard.writeText(`I'm trying to [WHAT YOU WANT TO HAPPEN].
+          className={`gap-2 mb-4 transition-colors ${copiedPrompt === "fix" ? "bg-green-600 hover:bg-green-600 text-white border-green-600" : ""}`}
+          onClick={() => copyPrompt("fix", `I'm trying to [WHAT YOU WANT TO HAPPEN].
 But instead [WHAT'S ACTUALLY HAPPENING].
 Error: [PASTE ERROR IF ANY]
-How do I fix this?`);
-            toast.success("Prompt copied!");
-          }}
+How do I fix this?`)}
         >
-          <Copy className="w-4 h-4" /> Copy
+          {copiedPrompt === "fix" ? <><Check className="w-4 h-4" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy</>}
         </Button>
 
         {/* Advice/Hive Mind Prompt */}
@@ -300,15 +305,12 @@ What are my options? What would you recommend and why?`}</p>
         <Button
           variant="outline"
           size="sm"
-          className="gap-2 mb-4"
-          onClick={() => {
-            navigator.clipboard.writeText(`I'm building [YOUR APP].
+          className={`gap-2 mb-4 transition-colors ${copiedPrompt === "advice" ? "bg-green-600 hover:bg-green-600 text-white border-green-600" : ""}`}
+          onClick={() => copyPrompt("advice", `I'm building [YOUR APP].
 I need to decide: [YOUR QUESTION/DECISION]
-What are my options? What would you recommend and why?`);
-            toast.success("Prompt copied!");
-          }}
+What are my options? What would you recommend and why?`)}
         >
-          <Copy className="w-4 h-4" /> Copy
+          {copiedPrompt === "advice" ? <><Check className="w-4 h-4" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy</>}
         </Button>
 
         {/* How Do I Prompt */}
@@ -320,14 +322,11 @@ Give me a simple example I can follow.`}</p>
         <Button
           variant="outline"
           size="sm"
-          className="gap-2 mb-4"
-          onClick={() => {
-            navigator.clipboard.writeText(`How do I [THING YOU WANT TO DO] in [CONTEXT/TECH]?
-Give me a simple example I can follow.`);
-            toast.success("Prompt copied!");
-          }}
+          className={`gap-2 mb-4 transition-colors ${copiedPrompt === "howto" ? "bg-green-600 hover:bg-green-600 text-white border-green-600" : ""}`}
+          onClick={() => copyPrompt("howto", `How do I [THING YOU WANT TO DO] in [CONTEXT/TECH]?
+Give me a simple example I can follow.`)}
         >
-          <Copy className="w-4 h-4" /> Copy
+          {copiedPrompt === "howto" ? <><Check className="w-4 h-4" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy</>}
         </Button>
 
         {/* Review My Approach Prompt */}
@@ -340,15 +339,12 @@ What problems might I run into?`}</p>
         <Button
           variant="outline"
           size="sm"
-          className="gap-2"
-          onClick={() => {
-            navigator.clipboard.writeText(`I'm planning to [YOUR APPROACH].
+          className={`gap-2 transition-colors ${copiedPrompt === "review" ? "bg-green-600 hover:bg-green-600 text-white border-green-600" : ""}`}
+          onClick={() => copyPrompt("review", `I'm planning to [YOUR APPROACH].
 Is this a good idea? What am I missing?
-What problems might I run into?`);
-            toast.success("Prompt copied!");
-          }}
+What problems might I run into?`)}
         >
-          <Copy className="w-4 h-4" /> Copy
+          {copiedPrompt === "review" ? <><Check className="w-4 h-4" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy</>}
         </Button>
 
         <p className={ds.muted + " mt-4"}>
