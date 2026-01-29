@@ -171,7 +171,7 @@ TECHNIQUE: Take random pleasant syllables and combine them:
 - Second syllables: ly, vo, xi, ba, ko, ra, mi, ple, zo, na
 
 REQUIREMENTS:
-- 5-7 characters only
+- 6-9 characters only
 - Must be pronounceable in English
 - Must NOT be a real word or obvious combination
 - Must sound like a tech startup name
