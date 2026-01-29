@@ -148,35 +148,38 @@ export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }
     const featuresList = features.slice(0, 3).join(', ') || 'core functionality';
 
     try {
-      const prompt = `You are a SaaS naming expert. Create 6 unique, brandable product names.
+      const prompt = `You are a startup naming expert who creates COMPLETELY MADE-UP words that sound good but don't exist.
 
-THE PRODUCT:
+THE PRODUCT (for context only - DO NOT use obvious keywords from this):
 "${userIdea}"
 
-KEY PROBLEMS IT SOLVES:
-${painPointsList}
+CRITICAL RULES - FOLLOW EXACTLY:
+1. NEVER use obvious/descriptive words (no "track", "sync", "hub", "flow", "data", "cloud", "smart", etc.)
+2. NEVER use real English words - only INVENTED nonsense words that sound nice
+3. Names must be PRONOUNCEABLE but MEANINGLESS (like Xerox, Kodak, Hulu, Roku, Venmo)
+4. Mix unexpected consonants and vowels: zr, vl, qo, px, etc.
+5. Use unusual letter combinations that feel fresh
 
-CORE FEATURES:
-${featuresList}
+GOOD EXAMPLES (completely made up):
+- Zorply, Kyvex, Ploxo, Wiblu, Quorvo, Frenki, Droply, Vexli, Zumba, Pixar
 
-NAMING STRATEGIES (use a mix):
-1. INVENTED WORDS: Combine syllables to create new words (like Spotify = spot + identify, Trello = "trellis")
-2. PORTMANTEAU: Blend two relevant words (like Pinterest = pin + interest)
-3. MODIFIED SPELLING: Take a relevant word and modify it (like Lyft, Fiverr, Tumblr)
-4. ABSTRACT + SUFFIX: Use abstract roots with tech suffixes -io, -ly, -ify, -able (like Airtable, Loomly)
-5. ACTION WORDS: Verbs that describe the benefit (like Zoom, Slack, Notion)
-6. METAPHORS: Names that evoke the feeling/benefit (like Asana = yoga pose for calm workflow)
+BAD EXAMPLES (too obvious/descriptive - NEVER do these):
+- TrackFlow, DataSync, CloudHub, SmartTask, EasyTrack, QuickSync
+
+TECHNIQUE: Take random pleasant syllables and combine them:
+- First syllables: Zu, Ky, Vo, Plo, Fre, Dro, Qui, Wex, Zor, Bri
+- Second syllables: ly, vo, xi, ba, ko, ra, mi, ple, zo, na
 
 REQUIREMENTS:
-- Each name MUST be 4-9 characters
-- Easy to spell and pronounce
-- .com domain should be potentially available (avoid common words)
-- Generate names that could work for: ${userIdea.slice(0, 50)}
+- 5-7 characters only
+- Must be pronounceable in English
+- Must NOT be a real word or obvious combination
+- Must sound like a tech startup name
 
-ATTEMPT ${attemptNumber} OF 3 - Be creative and different! Timestamp: ${Date.now()}
+ATTEMPT ${attemptNumber} - Generate 6 COMPLETELY DIFFERENT random-sounding names. Timestamp: ${Date.now()}
 
-Return ONLY this JSON format:
-{"names":[{"name":"ProductName","domain":"productname","tagline":"5-7 word tagline","why":"Brief explanation of naming logic"}]}`;
+Return ONLY this JSON:
+{"names":[{"name":"Zorply","domain":"zorply","tagline":"5-7 word tagline","why":"Made from Zor + ply syllables"}]}`;
 
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
       const data = await res.json();
@@ -203,22 +206,20 @@ Return ONLY this JSON format:
     } catch (error) {
       console.error("Error generating names:", error);
 
-      // Smart fallback using their actual product keywords
-      const baseWords = extractKeywords();
-      const prefixes = ['Nova', 'Flux', 'Sync', 'Apex', 'Vibe', 'Pulse'];
-      const suffixes = ['ly', 'io', 'fy', 'hub', 'app', 'base'];
+      // Fallback with random invented names
+      const firstParts = ['Zor', 'Ky', 'Plo', 'Vex', 'Qui', 'Dro', 'Wib', 'Fren', 'Brix', 'Novu'];
+      const secondParts = ['ply', 'vo', 'xi', 'ra', 'ko', 'mi', 'lu', 'ba', 'zo', 'na'];
 
-      const fallbackNames = prefixes.map((pre, i) => {
-        const keyword = baseWords[i] || '';
-        const suffix = suffixes[i];
-        const name = keyword ?
-          `${keyword.charAt(0).toUpperCase()}${keyword.slice(1, 4)}${suffix}` :
-          `${pre}${suffix}`;
+      // Shuffle and combine randomly
+      const shuffled = firstParts.sort(() => Math.random() - 0.5);
+      const fallbackNames = shuffled.slice(0, 6).map((first, i) => {
+        const second = secondParts[(i + Date.now()) % secondParts.length];
+        const name = `${first}${second}`;
         return {
           name: name,
           domain: name.toLowerCase(),
-          tagline: `Smart ${userIdea.split(' ').slice(0, 3).join(' ')} solution`,
-          why: "Generated based on your product keywords"
+          tagline: `The smarter way to work`,
+          why: "Invented brandable name"
         };
       });
 
