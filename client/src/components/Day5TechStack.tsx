@@ -257,8 +257,8 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
           The founders who WIN treat AI as a <span className="font-bold">THINKING PARTNER</span>, not just a code generator.
         </p>
 
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg mb-4">
-          <p className="text-green-800 text-sm">
+        <div className={ds.infoBoxHighlight + " mb-4"}>
+          <p className={ds.muted}>
             <strong>Coming soon:</strong> When Claude Code is plugged into Replit (next lessons), it has FULL CONTEXT of your app. You can just ask questions naturally - no need for detailed explanations.
           </p>
         </div>
