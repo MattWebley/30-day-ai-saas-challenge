@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-28 (Day 0 fix, videos, Claude-only AI)
+- **Last Session**: 2026-01-29 (Design system fixes, security hardening)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -572,4 +572,45 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test Day 1 → Day 2 → Day 3 full flow
   - Day 3 feature generation may still be slow (makes 3-4 AI calls)
   - Consider caching competitor data between Day 2 and Day 3
-  - 20+ commits still need to be pushed to origin
+
+### 2026-01-29 (Session 2) - Design System Fixes & Security Hardening
+- **Tasks Completed:**
+  - **Day 5 (Logo) Design System Overhaul:**
+    - Replaced all manual `Card` styling with `ds.cardWithPadding`
+    - Changed step circles from `bg-slate-900` to `ds.stepCircle` (primary color)
+    - Updated all text to use design system classes (`ds.body`, `ds.label`, `ds.muted`, `ds.heading`)
+    - Updated option buttons to use `ds.optionDefault`/`ds.optionSelected`
+    - Converted info boxes to use `ds.infoBoxHighlight`
+    - Removed unused Card import
+  - **Day 6 (PRD) Design System Fix:**
+    - Changed step circles from grey (`bg-slate-200`) to primary color (`ds.stepCircle`)
+  - **Day 5 TechStack Fixes:**
+    - Fixed green background on "Coming soon" box → `ds.infoBoxHighlight`
+    - Added visual feedback to copy buttons (turn green with checkmark, show "Copied!" for 2 seconds)
+  - **Security: Discussion & Q&A Protection:**
+    - Added 11 prompt injection detection patterns to `detectSpam()`:
+      - `ignore previous/all instructions`
+      - `pretend you're a different`
+      - `jailbreak`, `bypass`, `hack`, `exploit`
+      - `repeat after me`, `say exactly`
+      - `what's your system prompt`
+      - `act as`, `roleplay as`, `pretend to be`
+      - `DAN`, `developer mode`, `god mode`
+      - `disregard instructions`
+      - `you are now`, `forget your rules`
+      - Script injection (`<script>`, `javascript:`)
+      - Template injection (`{{}}`, `${}`)
+    - Added `sanitizeContent()` function for XSS prevention (escapes HTML)
+    - Applied sanitization to comments, questions, and answers before storage
+    - Added length validation: questions (10-2000 chars), answers (max 10000 chars)
+    - Blocked suspicious content with friendly error messages
+- **Files Modified:**
+  - `client/src/components/Day5Logo.tsx` - Full design system overhaul
+  - `client/src/components/Day6SummaryPRD.tsx` - Step circles fixed
+  - `client/src/components/Day5TechStack.tsx` - Green bg fix, copy button feedback
+  - `server/routes.ts` - Security: spam detection, sanitization, validation
+- **Notes for Next Session:**
+  - All Day components now use consistent design system
+  - Discussion/Q&A protected against prompt injection and XSS
+  - Test copy buttons on Day 5 TechStack page
+  - Test submitting questions with suspicious content to verify blocking works
