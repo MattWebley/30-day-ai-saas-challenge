@@ -1681,9 +1681,41 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
   });
 
   // Anti-spam detection function
+  // Sanitize user content to prevent XSS
+  function sanitizeContent(content: string): string {
+    return content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\//g, '&#x2F;');
+  }
+
   function detectSpam(content: string): { isSpam: boolean; reason?: string } {
     const lowerContent = content.toLowerCase();
-    
+
+    // Check for prompt injection attempts (IMPORTANT: before any AI processing)
+    const promptInjectionPatterns = [
+      { pattern: /ignore (previous|all|your|above|prior) (instructions|rules|prompt|context)/i, reason: "Prompt injection attempt" },
+      { pattern: /pretend you('re| are) (not|a different|an? )/i, reason: "Role manipulation attempt" },
+      { pattern: /\b(jailbreak|bypass security|hack this|exploit)\b/i, reason: "Abuse keywords detected" },
+      { pattern: /repeat after me|say exactly|output the following/i, reason: "Output manipulation attempt" },
+      { pattern: /what('s| is) (your|the) (system|initial|original) (prompt|message|instructions)/i, reason: "Prompt extraction attempt" },
+      { pattern: /act as (if you|a |an )|roleplay as|pretend to be/i, reason: "Role hijacking attempt" },
+      { pattern: /\b(DAN|developer mode|unrestricted mode|god mode)\b/i, reason: "Known jailbreak attempt" },
+      { pattern: /disregard (all |your |previous )?instructions/i, reason: "Instruction override attempt" },
+      { pattern: /you are now|from now on you|forget (everything|your rules)/i, reason: "Context manipulation attempt" },
+      { pattern: /<\/?script|javascript:|on\w+\s*=/i, reason: "Script injection attempt" },
+      { pattern: /\{\{.*\}\}|\$\{.*\}/i, reason: "Template injection attempt" },
+    ];
+
+    for (const { pattern, reason } of promptInjectionPatterns) {
+      if (pattern.test(content)) {
+        return { isSpam: true, reason };
+      }
+    }
+
     // Check for links (various patterns)
     const linkPatterns = [
       /https?:\/\//i,
@@ -1709,23 +1741,23 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
       /\[at\]/i,
       /\(at\)/i,
     ];
-    
+
     for (const pattern of linkPatterns) {
       if (pattern.test(content)) {
         return { isSpam: true, reason: "Contains links or link-like content" };
       }
     }
-    
+
     // Check for email patterns
     if (/[\w.-]+@[\w.-]+\.\w+/.test(content)) {
       return { isSpam: true, reason: "Contains email address" };
     }
-    
+
     // Check for phone numbers
     if (/(\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/.test(content)) {
       return { isSpam: true, reason: "Contains phone number" };
     }
-    
+
     // Check for promotional keywords
     const promoKeywords = ["buy now", "click here", "free money", "guaranteed", "limited time", "act now", "discount code", "promo code", "affiliate"];
     for (const keyword of promoKeywords) {
@@ -1733,7 +1765,7 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
         return { isSpam: true, reason: `Contains promotional content: ${keyword}` };
       }
     }
-    
+
     return { isSpam: false };
   }
 
@@ -1773,7 +1805,7 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
       const comment = await storage.createDayComment({
         day,
         userId,
-        content: content.trim(),
+        content: sanitizeContent(content.trim()),
         status,
         flagReason,
       });
@@ -2503,6 +2535,27 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         return res.status(400).json({ message: "Day and question are required" });
       }
 
+      // Validate question length
+      if (question.length > 2000) {
+        return res.status(400).json({ message: "Question too long (max 2000 characters)" });
+      }
+
+      if (question.trim().length < 10) {
+        return res.status(400).json({ message: "Question too short (min 10 characters)" });
+      }
+
+      // Check for spam/abuse patterns (including prompt injection)
+      const spamCheck = detectSpam(question);
+      if (spamCheck.isSpam) {
+        console.warn(`[Q&A] Blocked question from user ${userId}: ${spamCheck.reason}`);
+        return res.status(400).json({
+          message: "Your question couldn't be submitted. Please rephrase and try again."
+        });
+      }
+
+      // Sanitize the question content
+      const sanitizedQuestion = sanitizeContent(question.trim());
+
       // Generate unique answer token
       const answerToken = crypto.randomUUID();
 
@@ -2510,7 +2563,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const created = await storage.createQuestion({
         day,
         userId,
-        question,
+        question: sanitizedQuestion,
         answerToken,
         status: "pending"
       });
@@ -2619,12 +2672,20 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         return res.status(400).json({ message: "Answer is required" });
       }
 
+      // Validate answer length
+      if (answer.length > 10000) {
+        return res.status(400).json({ message: "Answer too long (max 10000 characters)" });
+      }
+
       const question = await storage.getQuestionByToken(token);
       if (!question) {
         return res.status(404).json({ message: "Question not found" });
       }
 
-      const updated = await storage.answerQuestion(question.id, answer);
+      // Sanitize the answer content
+      const sanitizedAnswer = sanitizeContent(answer.trim());
+
+      const updated = await storage.answerQuestion(question.id, sanitizedAnswer);
       res.json({ success: true, question: updated });
     } catch (error: any) {
       console.error("Error answering question:", error);
