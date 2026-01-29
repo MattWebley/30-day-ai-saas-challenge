@@ -704,7 +704,8 @@ Return ONLY this JSON:
                 </div>
               </div>
               <p className={ds.muted + " mb-4"}>
-                If you're committed to this product, consider registering common typos and variations to protect your brand. Don't go overboard - 3-5 extra domains is plenty.
+                If you're committed to this product, consider registering common typos and variations to protect your brand.
+                <strong> Don't spend more than ~$100 total</strong> - grab 3-5 cheap variations and move on.
               </p>
 
               <div className="space-y-3">
@@ -721,7 +722,7 @@ Return ONLY this JSON:
 
                 <div className={ds.infoBox}>
                   <p className={ds.muted}>
-                    <strong>Budget tip:</strong> Only buy these if they're ~$10-15 each. Don't spend hundreds on domain protection right now - but do grab the cheap obvious ones early, before someone else does.
+                    <strong>Budget tip:</strong> Only buy domains that are ~$10-15 each. Set a hard limit of $100 max for all extra domains combined. If a domain costs more, skip it - it's not worth it at this stage.
                   </p>
                 </div>
 
