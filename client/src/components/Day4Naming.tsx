@@ -169,7 +169,7 @@ ${painPointsList}
 
 Generate a MIX of these name types:
 
-TYPE A - KEYWORD-BASED, LONGER NAMES (3 names):
+TYPE A - KEYWORD-BASED, LONGER NAMES (5 names - THIS IS THE PRIORITY):
 These can be longer (up to 15 chars) and use real words creatively:
 - Two words combined uniquely: "GetLeadFox", "TryInvoicely", "GoTrackWell"
 - Verb + Noun combos: "ShipMetrics", "RunDeals", "HitQuota"
@@ -178,12 +178,11 @@ These can be longer (up to 15 chars) and use real words creatively:
 - Misspell creatively: "Kustomer", "Bizplan", "Salez"
 The key: combine words in ways nobody else thought of!
 
-TYPE B - SHORT INVENTED BRAND NAMES (3 names):
-Pure made-up words, 6-9 characters:
+TYPE B - SHORT INVENTED BRAND NAME (1 name only):
+One pure made-up word, 6-9 characters:
 - Combine random syllables: Zorply, Kyvex, Ploxir, Quorvix
 - Mutate keywords heavily: "invoice" → "Voinex", "track" → "Trakovo"
 - Use unusual letter combos: X, Q, Z, K, V in unexpected places
-- Unusual endings: -ix, -yx, -ovo, -vex, -ori
 
 WHAT MAKES NAMES AVAILABLE:
 - Unusual word combinations nobody thought of
@@ -197,8 +196,8 @@ BANNED (always taken):
 - Simple word + "ly/ify/hub/app"
 
 REQUIREMENTS:
-- TYPE A: 8-15 characters, can be multiple words
-- TYPE B: 6-9 characters, single invented word
+- Generate 5 TYPE A names (keyword-based, 8-15 characters, multiple words OK)
+- Generate 1 TYPE B name (invented, 6-9 characters, single word)
 - All must be pronounceable
 - .com LIKELY available (be creative!)
 
