@@ -158,33 +158,37 @@ ${painPointsList}
 
 Generate a MIX of these name types:
 
-TYPE A - KEYWORD-INSPIRED BUT MUTATED (3 names):
-Take a relevant keyword and HEAVILY modify it so it's unrecognizable but hints at meaning:
-- Remove vowels or consonants: "track" → "Trakr" is TOO OBVIOUS. Instead: "Trkly" or "Raekt"
-- Swap letters: "invoice" → "Invoxe" or "Voinix"
-- Add unusual prefixes/suffixes: "report" → "Reporix" or "Zereport"
-- Blend 2 keywords into one weird word: "sales+track" → "Salyx" or "Traksli"
-- Use first 2-3 letters + invented ending: "analytics" → "Analyx", "customer" → "Custrix"
+TYPE A - KEYWORD-BASED, LONGER NAMES (3 names):
+These can be longer (up to 15 chars) and use real words creatively:
+- Two words combined uniquely: "GetLeadFox", "TryInvoicely", "GoTrackWell"
+- Verb + Noun combos: "ShipMetrics", "RunDeals", "HitQuota"
+- Adjective + Noun: "BrightLedger", "SwiftPipeline", "ClearRevenue"
+- Add prefixes: "Un-", "Re-", "My-", "Go-", "Try-", "Get-"
+- Misspell creatively: "Kustomer", "Bizplan", "Salez"
+The key: combine words in ways nobody else thought of!
 
-TYPE B - COMPLETELY INVENTED (3 names):
-Pure nonsense words that sound techy and pleasant:
-- Combine random syllables: Zorply, Kyvex, Ploxir, Quorvix, Drofina
-- Use unusual letter combos: xy, qo, vr, zl, etc.
+TYPE B - SHORT INVENTED BRAND NAMES (3 names):
+Pure made-up words, 6-9 characters:
+- Combine random syllables: Zorply, Kyvex, Ploxir, Quorvix
+- Mutate keywords heavily: "invoice" → "Voinex", "track" → "Trakovo"
+- Use unusual letter combos: X, Q, Z, K, V in unexpected places
+- Unusual endings: -ix, -yx, -ovo, -vex, -ori
 
-CRITICAL - WHAT MAKES NAMES AVAILABLE:
-- Add X, Q, Z, K, V in unexpected places
-- Use unusual endings: -ix, -yx, -ori, -ovo, -lix, -vex
-- Combine 3 syllables instead of 2
-- Double consonants in weird spots: Trakko, Vennix, Zorrify
+WHAT MAKES NAMES AVAILABLE:
+- Unusual word combinations nobody thought of
+- X, Q, Z, K, V in unexpected places
+- Creative misspellings
+- Three-word combos for longer names
 
 BANNED (always taken):
-- Any real English word
-- Simple word + "ly/ify/hub/flow/sync/app"
-- Two common words combined (TaskFlow, DataSync, etc.)
+- Single common words
+- Obvious two-word combos (TaskFlow, DataSync, SalesHub)
+- Simple word + "ly/ify/hub/app"
 
 REQUIREMENTS:
-- 6-9 characters
-- Pronounceable
+- TYPE A: 8-15 characters, can be multiple words
+- TYPE B: 6-9 characters, single invented word
+- All must be pronounceable
 - .com LIKELY available (be creative!)
 
 ATTEMPT ${attemptNumber} - Make these VERY unique! Timestamp: ${Date.now()}
