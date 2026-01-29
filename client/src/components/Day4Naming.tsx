@@ -296,11 +296,19 @@ Return ONLY this JSON:
 
             {/* Don't Get Stuck Warning */}
             <div className={ds.infoBoxHighlight}>
-              <p className={ds.label + " mb-2"}>Don't overthink this.</p>
+              <p className={ds.label + " mb-2"}>Real talk about naming...</p>
+              <p className={ds.muted + " mb-3"}>
+                The chance of finding your "perfect" name from AI suggestions is VERY small. That's just reality -
+                most good .com domains are taken. But here's the thing: <strong>your name matters far less than your product.</strong>
+              </p>
+              <p className={ds.muted + " mb-3"}>
+                Google, Spotify, Hulu, Roku - these meant NOTHING before the products made them famous.
+                Your product will define your name, not the other way around.
+              </p>
               <p className={ds.muted}>
-                Finding the "perfect" name can paralyze you for weeks. The truth is, your name matters far less than your product.
-                Pick something decent that has an available .com and MOVE ON. You can always rebrand later if your product takes off - many successful companies have.
-                Done is better than perfect.
+                So use these suggestions as inspiration, get creative, mash things together, add letters,
+                remove vowels - whatever it takes to find something available. Register it and MOVE ON.
+                You can always rebrand later if your product takes off.
               </p>
             </div>
 
