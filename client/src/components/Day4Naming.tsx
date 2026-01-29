@@ -771,41 +771,46 @@ Return ONLY this JSON:
               </div>
             )}
 
-            {/* Skip notice */}
-            <div className={ds.infoBoxHighlight}>
-              <p className={ds.muted}>
-                <strong>Short on time?</strong> You don't have to register everything right now.
-                The checklist above is just to help you track what you've done. You can complete this day
-                and come back to register things later - just don't wait too long or someone might grab your name!
-              </p>
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => setCurrentStep("confirm")}
-                className="gap-2"
-              >
-                <ChevronLeft className="w-5 h-5" /> Back
-              </Button>
-              <Button
-                size="lg"
-                className="flex-1 h-14 text-lg font-bold gap-2"
-                onClick={() => {
-                  console.log('[Day4] Complete button clicked, calling onComplete');
-                  toast.info("Completing Day 4...");
-                  try {
-                    onComplete();
-                    console.log('[Day4] onComplete called successfully');
-                  } catch (error) {
-                    console.error('[Day4] Error calling onComplete:', error);
-                    toast.error("Error completing day - check console");
-                  }
-                }}
-              >
-                {registeredItems.size === 0 ? "Skip Registration for Now" : "Complete Day 4"} <ChevronRight className="w-5 h-5" />
-              </Button>
+            {/* Complete Day Section */}
+            <div className={ds.cardWithPadding + " border-2 border-primary"}>
+              <div className="text-center space-y-4">
+                <h3 className={ds.heading}>Ready to Complete Day 4?</h3>
+                <p className={ds.muted}>
+                  The checklists above are just to help you track progress. You can complete this day now
+                  and come back to register things later - just don't wait too long or someone might grab your name!
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => setCurrentStep("confirm")}
+                    className="gap-2"
+                  >
+                    <ChevronLeft className="w-5 h-5" /> Back
+                  </Button>
+                  <Button
+                    size="lg"
+                    className="h-14 text-lg font-bold gap-2 px-8"
+                    onClick={() => {
+                      console.log('[Day4] Complete button clicked, calling onComplete');
+                      try {
+                        onComplete();
+                        console.log('[Day4] onComplete called successfully');
+                      } catch (error) {
+                        console.error('[Day4] Error calling onComplete:', error);
+                        toast.error("Error completing day - check console");
+                      }
+                    }}
+                  >
+                    Complete Day 4 <ChevronRight className="w-5 h-5" />
+                  </Button>
+                </div>
+                {registeredItems.size > 0 && (
+                  <p className={ds.muted + " text-sm"}>
+                    {registeredItems.size} item{registeredItems.size !== 1 ? 's' : ''} registered
+                  </p>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
