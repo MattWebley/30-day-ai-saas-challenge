@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ds } from "@/lib/design-system";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
   Loader2,
@@ -98,7 +98,18 @@ const SOCIAL_PLATFORMS = [
 
 export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }: Day4NamingProps) {
   const queryClient = useQueryClient();
-  const [currentStep, setCurrentStep] = useState<"generate" | "confirm" | "complete">("generate");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [currentStep, setCurrentStepInternal] = useState<"generate" | "confirm" | "complete">("generate");
+
+  const setCurrentStep = useCallback((step: "generate" | "confirm" | "complete") => {
+    setCurrentStepInternal(step);
+    // Scroll to top of component when step changes
+    setTimeout(() => {
+      if (containerRef.current) {
+        containerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 50);
+  }, []);
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiAttempts, setAiAttempts] = useState(0);
   const MAX_AI_ATTEMPTS = 5;
@@ -272,7 +283,7 @@ Return ONLY this JSON:
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       {/* Context Card */}
       {userIdea && (
         <div className={ds.infoBoxHighlight}>
