@@ -442,19 +442,19 @@ export function Day6SummaryPRD({
         <h3 className={ds.heading + " mb-4"}>Now Paste It Into Replit</h3>
         <div className="space-y-3">
           <div className="flex gap-3">
-            <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0 text-sm font-bold text-slate-700">1</div>
+            <div className={ds.stepCircle + " flex-shrink-0"}>1</div>
             <p className={ds.body}>Open <a href="https://replit.com/refer/info7410" target="_blank" rel="noopener noreferrer" className="text-primary underline">Replit</a> and create a new project</p>
           </div>
           <div className="flex gap-3">
-            <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0 text-sm font-bold text-slate-700">2</div>
+            <div className={ds.stepCircle + " flex-shrink-0"}>2</div>
             <p className={ds.body}>Open the Replit AI chat and paste your entire PRD</p>
           </div>
           <div className="flex gap-3">
-            <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0 text-sm font-bold text-slate-700">3</div>
+            <div className={ds.stepCircle + " flex-shrink-0"}>3</div>
             <p className={ds.body}>Tell it: "Build this app based on my PRD"</p>
           </div>
           <div className="flex gap-3">
-            <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0 text-sm font-bold text-slate-700">4</div>
+            <div className={ds.stepCircle + " flex-shrink-0"}>4</div>
             <p className={ds.body}>Watch the magic happen!</p>
           </div>
         </div>

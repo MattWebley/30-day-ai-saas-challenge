@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useStepWithScroll } from "@/hooks/useStepWithScroll";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CheckCircle2, ChevronLeft, ChevronDown, ChevronUp, ExternalLink, Copy, Sparkles, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { ds } from "@/lib/design-system";
 
 interface Day5LogoProps {
   appName: string;
@@ -93,9 +93,9 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
       {/* Step 1: Brand Vibe & Colors - Generate AI Prompt */}
       {step === "customize" && (
         <>
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="text-lg font-bold text-slate-900 mb-2">What's your brand vibe?</h4>
-            <p className="text-slate-600 mb-4">Pick the style that fits your app.</p>
+          <div className={ds.cardWithPadding}>
+            <h4 className={ds.heading + " mb-2"}>What's your brand vibe?</h4>
+            <p className={ds.muted + " mb-4"}>Pick the style that fits your app.</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {BRAND_VIBES.map((vibe) => {
                 const isSelected = brandVibe === vibe.id;
@@ -103,25 +103,21 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                   <button
                     key={vibe.id}
                     onClick={() => setBrandVibe(vibe.id)}
-                    className={`p-3 rounded-lg border-2 text-left transition-colors ${
-                      isSelected
-                        ? "border-primary bg-primary/5"
-                        : "border-slate-200 hover:border-slate-300 bg-white"
-                    }`}
+                    className={isSelected ? ds.optionSelected : ds.optionDefault}
                   >
-                    <p className={`font-medium ${isSelected ? "text-primary" : "text-slate-900"}`}>
+                    <p className={isSelected ? "font-medium text-primary" : ds.label}>
                       {vibe.label}
                     </p>
                   </button>
                 );
               })}
             </div>
-          </Card>
+          </div>
 
           {brandVibe && (
-            <Card className="p-6 border-2 border-slate-200 bg-white">
-              <h4 className="text-lg font-bold text-slate-900 mb-2">What colors do you want?</h4>
-              <p className="text-slate-600 mb-4">Pick a color style for your logo.</p>
+            <div className={ds.cardWithPadding}>
+              <h4 className={ds.heading + " mb-2"}>What colors do you want?</h4>
+              <p className={ds.muted + " mb-4"}>Pick a color style for your logo.</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {COLOR_PREFERENCES.map((color) => {
                   const isSelected = colorPreference === color.id;
@@ -129,11 +125,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                     <button
                       key={color.id}
                       onClick={() => setColorPreference(color.id)}
-                      className={`p-4 rounded-lg border-2 text-left transition-all ${
-                        isSelected
-                          ? "border-primary bg-primary/5 scale-[1.02]"
-                          : "border-slate-200 hover:border-slate-300 bg-white"
-                      }`}
+                      className={isSelected ? ds.optionSelected + " scale-[1.02]" : ds.optionDefault}
                     >
                       <div className="flex gap-1 mb-2">
                         {color.id === "other" ? (
@@ -155,7 +147,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                           ))
                         )}
                       </div>
-                      <p className={`font-medium text-sm ${isSelected ? "text-primary" : "text-slate-900"}`}>
+                      <p className={isSelected ? "font-medium text-sm text-primary" : ds.label + " text-sm"}>
                         {color.label}
                       </p>
                     </button>
@@ -166,7 +158,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
               {/* Custom color input when "Other" is selected */}
               {colorPreference === "other" && (
                 <div className="mt-4 pt-4 border-t border-slate-200">
-                  <label className="block text-sm font-medium text-slate-900 mb-2">
+                  <label className={ds.label + " block mb-2"}>
                     Describe your colors
                   </label>
                   <Input
@@ -176,15 +168,15 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                   />
                 </div>
               )}
-            </Card>
+            </div>
           )}
 
           {brandVibe && colorPreference && (colorPreference !== "other" || customColors.length > 0) && (
-            <Card className="p-6 border-2 border-slate-200 bg-white">
+            <div className={ds.cardWithPadding}>
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h4 className="text-lg font-bold text-slate-900">Your AI Logo Prompt</h4>
-                  <p className="text-slate-600">Copy this into any AI image tool.</p>
+                  <h4 className={ds.heading}>Your AI Logo Prompt</h4>
+                  <p className={ds.muted}>Copy this into any AI image tool.</p>
                 </div>
                 <Button
                   variant="outline"
@@ -200,7 +192,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
               {!generatedPrompt ? (
                 <div className="p-8 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 text-center">
                   <Sparkles className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                  <p className="text-slate-600">Click "Generate" to create your logo prompt</p>
+                  <p className={ds.muted}>Click "Generate" to create your logo prompt</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -222,7 +214,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                   </Button>
                 </div>
               )}
-            </Card>
+            </div>
           )}
 
           {generatedPrompt && (
@@ -240,18 +232,16 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
       {/* Step 2: Create Logo with AI Tools */}
       {step === "create" && (
         <>
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="text-lg font-bold text-slate-900 mb-2">Create Your Logo with AI</h4>
-            <p className="text-slate-700 mb-4">
+          <div className={ds.cardWithPadding}>
+            <h4 className={ds.heading + " mb-2"}>Create Your Logo with AI</h4>
+            <p className={ds.body + " mb-4"}>
               AI image tools change ALL the time. What works great today might not tomorrow. Here's the approach
             </p>
 
             <div className="space-y-4">
               {/* Option 1: Use what you have */}
               <div
-                className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
-                  toolUsed === "existing-ai" ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300 bg-white"
-                }`}
+                className={toolUsed === "existing-ai" ? ds.optionSelected : ds.optionDefault}
                 onClick={() => setToolUsed("existing-ai")}
               >
                 <div className="flex items-start gap-3">
@@ -262,8 +252,8 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                     className="w-4 h-4 text-primary mt-1"
                   />
                   <div>
-                    <p className="font-bold text-slate-900">Option 1: Use What You Already Have</p>
-                    <p className="text-slate-700 mt-1">
+                    <p className={ds.label}>Option 1: Use What You Already Have</p>
+                    <p className={ds.body + " mt-1"}>
                       If you're already paying for ChatGPT Plus or another AI with image generation - give it a try. Some models are better at logos than others, so you may need to experiment.
                     </p>
                   </div>
@@ -272,9 +262,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
 
               {/* Option 2: Abacus AI (Recommended for images) */}
               <div
-                className={`p-4 rounded-lg border-2 cursor-pointer transition-colors ${
-                  toolUsed === "abacus" ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300 bg-white"
-                }`}
+                className={toolUsed === "abacus" ? ds.optionSelected : ds.optionDefault}
                 onClick={() => setToolUsed("abacus")}
               >
                 <div className="flex items-start gap-3">
@@ -286,10 +274,10 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-bold text-slate-900">Option 2: Try Multiple AI Models</p>
+                      <p className={ds.label}>Option 2: Try Multiple AI Models</p>
                       <span className="text-xs bg-primary text-white px-2 py-0.5 rounded font-medium">RECOMMENDED</span>
                     </div>
-                    <p className="text-slate-700 mt-1">
+                    <p className={ds.body + " mt-1"}>
                       Use Abacus AI to test your prompt across different image generators - DALL-E, Stable Diffusion, Midjourney-style models, and more. Same prompt, multiple models, see what looks best. This is the best way to get a great logo.
                     </p>
                     <a
@@ -308,7 +296,7 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
 
             {/* Prompt reference */}
             <div className="mt-4 p-4 bg-slate-900 rounded-lg">
-              <p className="text-slate-400 text-xs mb-2 font-medium">YOUR PROMPT</p>
+              <p className={ds.capsLabel + " text-slate-400 mb-2"}>YOUR PROMPT</p>
               <p className="text-slate-100 font-mono text-sm leading-relaxed">
                 {generatedPrompt}
               </p>
@@ -320,17 +308,17 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                 {copied ? <><CheckCircle2 className="w-4 h-4" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy Prompt</>}
               </Button>
             </div>
-          </Card>
+          </div>
 
           {/* Fallback Options */}
-          <Card className="p-4 border-2 border-slate-200 bg-white">
+          <div className={ds.cardWithPadding}>
             <button
               onClick={() => setShowCanvaGuide(!showCanvaGuide)}
               className="w-full flex items-center justify-between text-left"
             >
               <div>
-                <p className="font-medium text-slate-900">AI not working? Fallback options</p>
-                <p className="text-slate-600">DIY text logo or hire someone cheap</p>
+                <p className={ds.label}>AI not working? Fallback options</p>
+                <p className={ds.muted}>DIY text logo or hire someone cheap</p>
               </div>
               {showCanvaGuide ? (
                 <ChevronUp className="w-5 h-5 text-slate-400" />
@@ -343,35 +331,35 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
               <div className="mt-4 pt-4 border-t border-slate-200 space-y-6">
                 {/* Canva DIY */}
                 <div>
-                  <h5 className="font-bold text-slate-900 mb-3">Make a Text Logo in 5 Minutes (Free)</h5>
+                  <h5 className={ds.label + " mb-3"}>Make a Text Logo in 5 Minutes (Free)</h5>
                   <div className="space-y-3">
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">1</div>
-                      <p className="text-slate-700">Go to <a href="https://www.canva.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Canva</a> (free)</p>
+                      <div className={ds.stepCircle + " flex-shrink-0"}>1</div>
+                      <p className={ds.body}>Go to <a href="https://www.canva.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Canva</a> (free)</p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">2</div>
-                      <p className="text-slate-700">Search "logo" templates</p>
+                      <div className={ds.stepCircle + " flex-shrink-0"}>2</div>
+                      <p className={ds.body}>Search "logo" templates</p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">3</div>
-                      <p className="text-slate-700">Pick one that's SIMPLE (avoid busy designs)</p>
+                      <div className={ds.stepCircle + " flex-shrink-0"}>3</div>
+                      <p className={ds.body}>Pick one that's SIMPLE (avoid busy designs)</p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">4</div>
-                      <p className="text-slate-700">Replace the text with your app name... <strong>{displayName}</strong></p>
+                      <div className={ds.stepCircle + " flex-shrink-0"}>4</div>
+                      <p className={ds.body}>Replace the text with your app name... <strong>{displayName}</strong></p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">5</div>
-                      <p className="text-slate-700">Choose 1-2 colors max</p>
+                      <div className={ds.stepCircle + " flex-shrink-0"}>5</div>
+                      <p className={ds.body}>Choose 1-2 colors max</p>
                     </div>
                     <div className="flex items-start gap-3">
-                      <div className="w-6 h-6 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold flex-shrink-0">6</div>
-                      <p className="text-slate-700">Download as PNG</p>
+                      <div className={ds.stepCircle + " flex-shrink-0"}>6</div>
+                      <p className={ds.body}>Download as PNG</p>
                     </div>
                   </div>
-                  <div className="mt-4 p-3 bg-slate-50 rounded-lg">
-                    <p className="text-sm text-slate-600">
+                  <div className={ds.infoBoxHighlight + " mt-4"}>
+                    <p className={ds.muted}>
                       <strong>Pro tip</strong> - Text-only logos are totally fine. Stripe, Google, and FedEx all use text logos. Simple = memorable.
                     </p>
                   </div>
@@ -389,8 +377,8 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
 
                 {/* Fiverr outsource */}
                 <div className="pt-4 border-t border-slate-200">
-                  <h5 className="font-bold text-slate-900 mb-2">Or Just Outsource It ($5-20)</h5>
-                  <p className="text-slate-700 mb-3">
+                  <h5 className={ds.label + " mb-2"}>Or Just Outsource It ($5-20)</h5>
+                  <p className={ds.body + " mb-3"}>
                     Not into design? Hire someone on Fiverr. Logos start at $5 and you can get something decent for under $20. Takes the pressure off.
                   </p>
                   <Button
@@ -406,12 +394,12 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                 </div>
               </div>
             )}
-          </Card>
+          </div>
 
           {/* Confirmation */}
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="text-lg font-bold text-slate-900 mb-3">I've created my logo</h4>
-            <p className="text-slate-700 mb-4">
+          <div className={ds.cardWithPadding}>
+            <h4 className={ds.heading + " mb-3"}>I've created my logo</h4>
+            <p className={ds.body + " mb-4"}>
               Describe your logo briefly (helps you remember what you chose)
             </p>
             <Input
@@ -428,11 +416,11 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                 onChange={(e) => setHasCreated(e.target.checked)}
                 className="w-5 h-5 text-primary rounded"
               />
-              <label htmlFor="hasCreated" className="text-slate-700">
+              <label htmlFor="hasCreated" className={ds.body}>
                 I've created and saved my logo file
               </label>
             </div>
-          </Card>
+          </div>
 
           <div className="flex gap-3">
             <Button
@@ -459,23 +447,23 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
       {/* Step 3: Confirm */}
       {step === "confirm" && (
         <>
-          <Card className="p-6 border-2 border-slate-200 bg-white">
+          <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center">
+              <div className={ds.stepCircleComplete + " w-12 h-12"}>
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="font-bold text-xl text-green-600">Logo Created!</h4>
-                <p className="text-slate-700">
+                <h4 className={ds.successText + " font-bold text-xl"}>Logo Created!</h4>
+                <p className={ds.body}>
                   Your app now has a face.
                 </p>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-6 border-2 border-slate-200 bg-white">
-            <h4 className="text-lg font-bold text-slate-900 mb-3">Your Logo</h4>
-            <div className="space-y-2 text-slate-700">
+          <div className={ds.cardWithPadding}>
+            <h4 className={ds.heading + " mb-3"}>Your Logo</h4>
+            <div className={"space-y-2 " + ds.body}>
               <p><strong>Vibe:</strong> {BRAND_VIBES.find(v => v.id === brandVibe)?.label}</p>
               <p><strong>Colors:</strong> {COLOR_PREFERENCES.find(c => c.id === colorPreference)?.label}</p>
               <p><strong>Method:</strong> {
@@ -486,13 +474,13 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
               }</p>
               <p><strong>Description:</strong> {logoDescription}</p>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <p className="text-slate-600">
+          <div className={ds.infoBoxHighlight}>
+            <p className={ds.muted}>
               <strong>Tip:</strong> Save your logo in multiple sizes (favicon at 32x32, header at ~200px wide). You can always refine it later.
             </p>
-          </Card>
+          </div>
 
           <div className="flex gap-3">
             <Button
