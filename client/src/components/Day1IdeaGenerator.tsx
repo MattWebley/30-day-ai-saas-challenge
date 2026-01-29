@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -58,19 +58,66 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   const [customIdea, setCustomIdea] = useState({ title: "", desc: "", targetCustomer: "" });
   const [editingIdeaIndex, setEditingIdeaIndex] = useState<number | null>(null);
   const [editingIdea, setEditingIdea] = useState({ title: "", desc: "", targetCustomer: "" });
+  const [visibleIdeasCount, setVisibleIdeasCount] = useState(existingProgress?.generatedIdeas?.length || 0);
+  const [isRevealing, setIsRevealing] = useState(false);
+  const [regenerationCount, setRegenerationCount] = useState(0);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  // Cooldown timer effect
+  useEffect(() => {
+    if (cooldownSeconds > 0) {
+      const timer = setTimeout(() => {
+        setCooldownSeconds((prev: number) => prev - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [cooldownSeconds]);
+
+  // Staggered reveal effect - show ideas one at a time
+  useEffect(() => {
+    if (isRevealing && visibleIdeasCount < ideas.length) {
+      const timer = setTimeout(() => {
+        setVisibleIdeasCount((prev: number) => prev + 1);
+      }, 150); // 150ms delay between each idea
+      return () => clearTimeout(timer);
+    }
+    if (visibleIdeasCount >= ideas.length && isRevealing) {
+      setIsRevealing(false);
+    }
+  }, [isRevealing, visibleIdeasCount, ideas.length]);
 
   const generateIdeas = useMutation({
     mutationFn: async () => {
+      console.log('[Day1] Starting idea generation with inputs:', inputs);
       const res = await apiRequest("POST", "/api/generate-ideas", inputs);
-      return res.json();
+      const data = await res.json();
+      console.log('[Day1] Received response:', data);
+
+      // Check if response is an error object
+      if (data.message && !Array.isArray(data)) {
+        throw new Error(data.message);
+      }
+
+      // Check if we got valid ideas
+      if (!Array.isArray(data) || data.length === 0) {
+        console.error('[Day1] Invalid response format:', data);
+        throw new Error("AI returned invalid data. Please try again.");
+      }
+
+      return data;
     },
     onSuccess: (data) => {
+      console.log('[Day1] Successfully generated', data.length, 'ideas');
       setIdeas(data);
+      setSelectedIdeas([]); // Clear selections on regenerate
+      setVisibleIdeasCount(0); // Reset to start reveal from beginning
+      setIsRevealing(true); // Start the staggered reveal
       setStep('ideas');
       saveProgress.mutate({ userInputs: inputs, generatedIdeas: data, shortlistedIdeas: [] });
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to generate ideas");
+      console.error('[Day1] Idea generation failed:', error);
+      toast.error(error.message || "Failed to generate ideas. Please try again.");
       setStep('inputs');
     },
   });
@@ -90,6 +137,21 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
       toast.error("Please fill in at least knowledge, skills, and interests");
       return;
     }
+    setStep('generating');
+    generateIdeas.mutate();
+  };
+
+  const handleRegenerate = () => {
+    if (cooldownSeconds > 0) {
+      toast.error(`Please wait ${cooldownSeconds} seconds before regenerating`);
+      return;
+    }
+    if (regenerationCount >= 10) {
+      toast.error("You've reached the maximum number of regenerations");
+      return;
+    }
+    setRegenerationCount((prev: number) => prev + 1);
+    setCooldownSeconds(30);
     setStep('generating');
     generateIdeas.mutate();
   };
@@ -282,7 +344,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
               <div>
                 <h3 className={`${ds.label} mb-2`}>Generate Ideas For Me</h3>
                 <p className={ds.muted}>
-                  Tell us about your skills and interests, and AI will generate 28 personalized SaaS ideas scored against proven criteria.
+                  Tell us about your skills and interests, and AI will generate 3 personalized SaaS ideas scored against proven criteria.
                 </p>
               </div>
             </div>
@@ -430,7 +492,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
               ← Back to options
             </button>
           </div>
-          <p className={ds.muted}>Tell us about yourself and we'll generate 28 personalized ideas scored against Matt's criteria</p>
+          <p className={ds.muted}>Tell us about yourself and we'll generate 3 personalized ideas scored against Matt's criteria</p>
         </div>
 
         <div className="grid gap-6">
@@ -496,10 +558,10 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
                 onClick={handleGenerate}
                 data-testid="button-generate-ideas"
               >
-                Generate 28 SaaS Ideas
+                Generate 3 SaaS Ideas
               </Button>
             </TooltipTrigger>
-            <TooltipContent>AI will create 28 personalized ideas based on your profile</TooltipContent>
+            <TooltipContent>AI will create 3 personalized ideas based on your profile</TooltipContent>
           </Tooltip>
         </TooltipProvider>
       </div>
@@ -509,10 +571,11 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   if (step === 'generating') {
     return (
       <div ref={containerRef} className="flex flex-col items-center justify-center py-16 space-y-6">
-        <Loader2 className="w-10 h-10 text-primary animate-spin" />
-        <div className="text-center">
-          <h3 className={`${ds.heading} mb-2`}>Generating Your Ideas...</h3>
-          <p className={ds.muted}>AI is analyzing your profile and finding the best opportunities</p>
+        <Loader2 className="w-12 h-12 text-primary animate-spin" />
+        <div className="text-center space-y-3">
+          <h3 className={`${ds.heading} mb-2`}>Generating 3 Personalized Ideas...</h3>
+          <p className={ds.muted}>AI is analyzing your profile and scoring each idea against 5 criteria</p>
+          <p className="text-sm text-amber-600 font-medium">This can take up to 2 minutes - please don't refresh!</p>
         </div>
       </div>
     );
@@ -526,7 +589,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
         <div className="flex items-center justify-between">
           <div>
             <h2 className={ds.heading}>
-              {showConfirmation ? `Your Top ${selectedIdeas.length} ${selectedIdeas.length === 1 ? 'Idea' : 'Ideas'}` : "Select Your Favorites"}
+              {showConfirmation ? `Your Top ${selectedIdeas.length} ${selectedIdeas.length === 1 ? 'Idea' : 'Ideas'}` : "Your 3 Ideas"}
             </h2>
             <p className={ds.muted}>
               {showConfirmation
@@ -551,6 +614,34 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
             </TooltipProvider>
           )}
         </div>
+
+        {/* Regenerate button */}
+        {!showConfirmation && regenerationCount < 10 && (
+          <div className={`${ds.infoBoxHighlight} flex items-center justify-between`}>
+            <div>
+              <p className={ds.label}>Not feeling these ideas?</p>
+              <p className={`${ds.muted} text-sm`}>
+                {cooldownSeconds > 0
+                  ? `Wait ${cooldownSeconds}s before regenerating...`
+                  : "Generate 3 completely new ideas"}
+              </p>
+              {regenerationCount >= 5 && (
+                <p className="text-amber-600 text-sm mt-1">
+                  {10 - regenerationCount} regenerations remaining
+                </p>
+              )}
+            </div>
+            <Button
+              variant="outline"
+              onClick={handleRegenerate}
+              disabled={cooldownSeconds > 0 || generateIdeas.isPending}
+              className="gap-2"
+            >
+              <Sparkles className="w-4 h-4" />
+              {cooldownSeconds > 0 ? `Wait ${cooldownSeconds}s` : "Regenerate"}
+            </Button>
+          </div>
+        )}
 
         {!showConfirmation && (
           <div className={`${ds.infoBoxHighlight} border-dashed`}>
@@ -616,17 +707,25 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
           </div>
         )}
 
+        {/* Show loading indicator while revealing */}
+        {isRevealing && visibleIdeasCount < ideas.length && (
+          <div className="flex items-center gap-3 text-slate-500 py-2">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span>Loading ideas... ({visibleIdeasCount}/{ideas.length})</span>
+          </div>
+        )}
+
         <div className="space-y-4">
           <AnimatePresence>
-            {(showConfirmation 
+            {(showConfirmation
               ? ideas.filter((_, i) => selectedIdeas.includes(i))
-              : ideas
+              : ideas.slice(0, visibleIdeasCount)
             ).map((idea, displayIndex) => {
-              const actualIndex = showConfirmation 
-                ? selectedIdeas[displayIndex] 
+              const actualIndex = showConfirmation
+                ? selectedIdeas[displayIndex]
                 : displayIndex;
               const isSelected = selectedIdeas.includes(actualIndex);
-              
+
               const scoreColors = getTotalScoreColor(idea.totalScore);
               
               return (

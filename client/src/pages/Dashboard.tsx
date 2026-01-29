@@ -310,15 +310,9 @@ export default function Dashboard() {
           }
         }
 
-        if (componentData?.startDay1Now) {
-          // User chose to start Day 1 immediately
-          toast.success("Let's do this! Starting Day 1...");
-          setLocation("/dashboard/1");
-        } else {
-          // User chose to start tomorrow
-          toast.success("See you tomorrow! Your commitment is locked in.");
-          setLocation("/dashboard/1");
-        }
+        // Show completion modal for Day 0
+        toast.success("Day completed!");
+        setShowCompletionModal(true);
         return;
       }
 

@@ -30,6 +30,7 @@ export default function Settings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/badges/user"] });
       toast.success("All progress has been reset. Starting fresh!");
       window.location.href = "/dashboard/1";
     },

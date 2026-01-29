@@ -43,18 +43,33 @@ export function Day3CoreFeatures({
 
   const generateFeatures = useMutation({
     mutationFn: async () => {
+      console.log('[Day3] Generating features for:', { idea: userIdea, painPoints: userPainPoints });
+
+      if (!userIdea || userIdea.trim() === '') {
+        throw new Error("No idea found. Please complete Day 2 first.");
+      }
+      if (!userPainPoints || userPainPoints.length === 0) {
+        throw new Error("No pain points found. Please complete Day 2 first.");
+      }
+
       const response = await fetch("/api/ai/generate-features", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           idea: userIdea,
           painPoints: userPainPoints,
         }),
       });
-      if (!response.ok) throw new Error("Failed to generate features");
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to generate features");
+      }
       return response.json();
     },
     onSuccess: (data) => {
+      console.log('[Day3] Features generated:', data);
       setCoreFeatures(data.coreFeatures || []);
       setSharedFeatures(data.sharedFeatures || []);
       setUspFeatures(data.uspFeatures || []);
@@ -63,6 +78,10 @@ export function Day3CoreFeatures({
       setSelectedFeatures(new Set());
 
       setStep("select");
+    },
+    onError: (error: any) => {
+      console.error('[Day3] Feature generation failed:', error);
+      toast.error(error.message || "Failed to generate features. Please try again.");
     },
   });
 
@@ -132,33 +151,52 @@ export function Day3CoreFeatures({
         </div>
 
         <div className={ds.cardWithPadding}>
-          <div className="space-y-4">
-            <h3 className={ds.heading}>
-              Ready to Define Your Features?
-            </h3>
-            <p className={ds.muted}>
-              AI will analyze your idea and generate
-            </p>
-            <ul className="space-y-2">
-              <li className={ds.body}><strong>Core Features</strong> - Essential features based on your pain points</li>
-              <li className={ds.body}><strong>Shared Features</strong> - Must-haves your competitors all have</li>
-              <li className={ds.body}><strong>USP Features</strong> - Unique features that make you stand out</li>
-            </ul>
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className={ds.heading + " mb-2"}>
+                Ready to Define Your Features?
+              </h3>
+              <p className={ds.muted}>
+                AI will analyze your idea and competitors to generate your feature set
+              </p>
+            </div>
+
+            <div className="grid gap-3">
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.label}>Core Features</p>
+                <p className={ds.muted + " text-sm"}>Essential features based on your pain points</p>
+              </div>
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.label}>Shared Features</p>
+                <p className={ds.muted + " text-sm"}>Must-haves your competitors all have</p>
+              </div>
+              <div className={ds.infoBoxHighlight}>
+                <p className={ds.label}>USP Features</p>
+                <p className={ds.muted + " text-sm"}>Unique features that make you stand out</p>
+              </div>
+            </div>
 
             <Button
               size="lg"
               onClick={() => generateFeatures.mutate()}
               disabled={generateFeatures.isPending}
+              className="w-full h-14 text-lg font-bold"
             >
               {generateFeatures.isPending ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Analyzing competitors & generating features...
                 </>
               ) : (
                 "Generate My Features"
               )}
             </Button>
+
+            {generateFeatures.isPending && (
+              <p className="text-sm text-amber-600 font-medium text-center">
+                This can take up to 2 minutes - please don't refresh!
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -70,9 +70,9 @@ const slideContent: Record<number, Slide[]> = {
     {
       title: "Your Task Today",
       points: [
-        "Generate 28 personalized ideas using AI",
+        "Generate personalized ideas using AI",
+        "Don't like them? Regenerate for fresh ones",
         "Score each against the 4-point filter",
-        "Shortlist your top 3-5 ideas",
         "Don't overthink -trust your gut",
       ],
     },
@@ -118,7 +118,7 @@ const slideContent: Record<number, Slide[]> = {
       points: [
         "STEP 1: List ESSENTIAL features competitors share",
         "STEP 2: Find ONE thing they DON'T have",
-        "Ask AI for 28 wild USP ideas that would SHOCK the space",
+        "Ask AI for wild USP ideas that would SHOCK the space",
       ],
     },
     {

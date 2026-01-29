@@ -520,3 +520,56 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Test Day 2 competitor search and pain point generation
   - Add more Loom videos as they're recorded (Days 2-21)
   - Test full Day 0 → Day 1 → Day 2 flow after redeployment
+
+### 2026-01-29 - Idea Generation Overhaul, GPT Removal, Day 3 Fixes
+- **Tasks Completed:**
+  - **Removed All GPT/OpenAI Code:**
+    - Deleted `callGPT` and `callGPTForJSON` functions from aiService.ts
+    - Removed OpenAI import and client initialization
+    - App now 100% Claude-powered (single ANTHROPIC_API_KEY)
+  - **Day 1 Idea Generation Overhaul:**
+    - Reduced from 28 ideas → 3 ideas (faster, cheaper)
+    - Added regeneration feature (up to 10 times, 30s cooldown)
+    - Shows warning after 5 regenerations about remaining count
+    - Added staggered reveal animation (ideas appear one at a time)
+    - Updated time estimate to "up to 2 minutes"
+    - Added detailed logging for debugging
+  - **Updated All "28 Ideas" References:**
+    - Landing.tsx (5 places), Order.tsx, VideoSlides.tsx, seed.ts
+    - Changed to "personalized ideas" or "AI-generated ideas"
+  - **Day 0 Completion Modal:**
+    - Day 0 now shows completion modal like other days (was skipping it)
+  - **Badge Reset Fix:**
+    - Added `deleteUserBadges()` function to storage.ts
+    - Reset now clears badges AND progress
+    - Frontend invalidates badge cache on reset
+  - **Day 2 Improvements:**
+    - "Book a Call" button now opens /coaching in new tab (was disabled)
+    - Added Google search keywords after AI finds competitors
+    - Search queries use description keywords (not made-up product name)
+  - **Day 3 Feature Generation Fix:**
+    - Added `credentials: "include"` to fetch (was failing auth)
+    - Added validation for missing idea/pain points
+    - Added error handling with toast messages
+    - Updated UI styling to match design system (full-width button, better layout)
+  - **AI Service Logging:**
+    - Added detailed logging to `callClaude` and `callClaudeForJSON`
+    - Logs endpoint, token usage, response length, errors
+- **Files Modified:**
+  - `server/aiService.ts` - Removed GPT code, added logging
+  - `server/routes.ts` - Reduced to 3 ideas, better logging
+  - `server/storage.ts` - Added deleteUserBadges function
+  - `server/seed.ts` - Updated Day 1 description, USP prompt
+  - `client/src/components/Day1IdeaGenerator.tsx` - Regeneration, staggered reveal
+  - `client/src/components/Day2IdeaValidator.tsx` - Google search, Book a Call fix
+  - `client/src/components/Day3CoreFeatures.tsx` - Auth fix, UI improvements
+  - `client/src/pages/Dashboard.tsx` - Day 0 completion modal
+  - `client/src/pages/Settings.tsx` - Badge cache invalidation on reset
+  - `client/src/pages/Landing.tsx` - Removed "28 ideas" mentions
+  - `client/src/pages/Order.tsx` - Removed "28 ideas" mention
+  - `client/src/components/VideoSlides.tsx` - Updated idea generation text
+- **Notes for Next Session:**
+  - Test Day 1 → Day 2 → Day 3 full flow
+  - Day 3 feature generation may still be slow (makes 3-4 AI calls)
+  - Consider caching competitor data between Day 2 and Day 3
+  - 20+ commits still need to be pushed to origin

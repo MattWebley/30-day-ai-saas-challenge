@@ -88,6 +88,7 @@ export interface IStorage {
   // User badge operations
   getUserBadges(userId: string): Promise<UserBadge[]>;
   awardBadge(userId: string, badgeId: number): Promise<UserBadge>;
+  deleteUserBadges(userId: string): Promise<void>;
   
   // User stats operations
   getUserStats(userId: string): Promise<UserStats | undefined>;
@@ -332,6 +333,10 @@ export class DatabaseStorage implements IStorage {
       .values({ userId, badgeId })
       .returning();
     return awarded;
+  }
+
+  async deleteUserBadges(userId: string): Promise<void> {
+    await db.delete(userBadges).where(eq(userBadges.userId, userId));
   }
 
   // User stats operations

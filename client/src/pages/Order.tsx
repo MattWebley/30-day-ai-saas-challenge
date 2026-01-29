@@ -94,7 +94,7 @@ export default function Order() {
               <div className="space-y-3">
                 {[
                   'The complete 21 Day Challenge with daily tasks',
-                  '28 AI-generated SaaS ideas scored for YOU',
+                  'AI-generated SaaS ideas personalized for YOU',
                   'Copy-paste prompts that do the heavy lifting',
                   'AI Mentor to help when you get stuck',
                   'Progress tracking with badges and streaks',

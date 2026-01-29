@@ -417,7 +417,7 @@ export default function Landing() {
                     </div>
                   </div>
                   <p className={ds.body}>
-                    Don't have an idea? We'll generate 28 for you. Already have one? We'll validate it. Either way, you'll leave with a winning idea, a name, domain, and logo.
+                    Don't have an idea? AI will generate personalized ideas for you. Already have one? We'll validate it. Either way, you'll leave with a winning idea, a name, domain, and logo.
                   </p>
                 </Card>
 
@@ -737,7 +737,7 @@ export default function Landing() {
 
               <div className="flex items-center gap-4">
                 <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <span className="font-semibold text-slate-900">28 unique SaaS ideas scored for YOUR skills (not generic lists)</span>
+                <span className="font-semibold text-slate-900">AI-generated SaaS ideas scored for YOUR skills (not generic lists)</span>
               </div>
 
               <div className="flex items-center gap-4">
@@ -875,7 +875,7 @@ export default function Landing() {
                   "I don't even have an idea."
                 </p>
                 <p>
-                  Neither did most people on Day 0. That's why Day 1 exists. The AI generates 28 ideas tailored to YOUR skills and interests, scores them, and ranks them. Your only job is to pick one.
+                  Neither did most people on Day 0. That's why Day 1 exists. The AI generates ideas tailored to YOUR skills and interests, scores them, and ranks them. Don't like them? Regenerate until you find one that excites you. Your only job is to pick one.
                 </p>
               </div>
 
@@ -991,7 +991,7 @@ export default function Landing() {
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
-                  <span className="text-slate-700">AI-powered idea generation - 28 ideas scored for YOU <span className="text-slate-400">(Value: £200+)</span></span>
+                  <span className="text-slate-700">AI-powered idea generation - personalized ideas scored for YOU <span className="text-slate-400">(Value: £200+)</span></span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-1" />
@@ -1314,7 +1314,7 @@ export default function Landing() {
           </p>
 
           <p>
-            The 21 Day AI SaaS Challenge takes you from "I want to build something" to "I have a WORKING product" in 21 days. No idea yet? Day 1 generates 28 personalized ideas for you. No coding required. AI does the heavy lifting. You just show up daily and follow the system.
+            The 21 Day AI SaaS Challenge takes you from "I want to build something" to "I have a WORKING product" in 21 days. No idea yet? Day 1 generates personalized ideas for you. No coding required. AI does the heavy lifting. You just show up daily and follow the system.
           </p>
 
           <p>

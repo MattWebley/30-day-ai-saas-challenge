@@ -208,7 +208,7 @@ Ready? Let's go.`,
       videoUrl: null,
       aiTaskType: "suggestion",
       aiTaskTitle: "AI Idea Generator",
-      aiTaskDescription: "Tell us about yourself and AI will generate 28 personalized SaaS ideas scored against proven criteria.",
+      aiTaskDescription: "Tell us about yourself and AI will generate personalized SaaS ideas scored against proven criteria. Don't like them? Regenerate for fresh ideas!",
       suggestions: null,
       template: null,
       microDecisionQuestion: "Which area excites you most?",
@@ -305,7 +305,7 @@ These are the features that your competitors have that if YOU don't have them, m
 
 STEP 2: Find Your USP
 
-Ask Claude: "I am building SAAS for [NICHE]. My target market are [AVATAR] and the problem my SAAS solves is [PROBLEM]. Write me 28 USP ideas that my competition doesn't likely have that would make my software better than theirs."
+Ask Claude: "I am building SAAS for [NICHE]. My target market are [AVATAR] and the problem my SAAS solves is [PROBLEM]. Write me 10 USP ideas that my competition doesn't likely have that would make my software better than theirs."
 
 Go through them and PICK one or two that excite you. If results are generic, tell it: "I want these USP ideas to be so wild, it'd shock people in the space. NOTHING generic will do."
 

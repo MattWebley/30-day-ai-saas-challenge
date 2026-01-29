@@ -1,10 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
-import OpenAI from "openai";
 import { storage } from "./storage";
 
-// Initialize API clients
+// Initialize Claude API client
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // Rate limit settings per endpoint type
 const RATE_LIMITS = {
@@ -202,7 +200,7 @@ async function preCallChecks(options: AICallOptions): Promise<{ allowed: boolean
 }
 
 // ============================================
-// CLAUDE API (Premium - for chat & PRD)
+// CLAUDE API
 // ============================================
 
 export async function callClaude(options: AICallOptions): Promise<{ success: boolean; response?: string; error?: string; blocked?: boolean }> {
@@ -215,11 +213,16 @@ export async function callClaude(options: AICallOptions): Promise<{ success: boo
     history = [],
   } = options;
 
+  console.log(`[callClaude] Starting for endpoint: ${endpoint}, userId: ${userId}, maxTokens: ${maxTokens}`);
+
   // Pre-call checks
   const checks = await preCallChecks(options);
   if (!checks.allowed) {
+    console.log(`[callClaude] Pre-check failed: ${checks.error}`);
     return { success: false, error: checks.error, blocked: checks.blocked };
   }
+
+  console.log(`[callClaude] Pre-checks passed, calling Claude API...`);
 
   // Make the API call
   try {
@@ -235,11 +238,14 @@ export async function callClaude(options: AICallOptions): Promise<{ success: boo
       messages,
     });
 
+    console.log(`[callClaude] API response received, stop_reason: ${response.stop_reason}`);
+
     const responseText = response.content[0].type === "text"
       ? response.content[0].text
       : "I couldn't generate a response. Please try again.";
 
     const tokensUsed = (response.usage?.input_tokens || 0) + (response.usage?.output_tokens || 0);
+    console.log(`[callClaude] Tokens used: ${tokensUsed}, response length: ${responseText.length}`);
 
     await logAIUsage({
       userId,
@@ -252,7 +258,9 @@ export async function callClaude(options: AICallOptions): Promise<{ success: boo
 
     return { success: true, response: responseText };
   } catch (error: any) {
-    console.error(`Claude API error (${endpoint}):`, error.message);
+    console.error(`[callClaude] API error (${endpoint}):`, error.message);
+    console.error(`[callClaude] Error status:`, error.status);
+    console.error(`[callClaude] Full error:`, error);
 
     await logAIUsage({
       userId,
@@ -275,10 +283,14 @@ export async function callClaude(options: AICallOptions): Promise<{ success: boo
 }
 
 export async function callClaudeForJSON<T>(options: Omit<AICallOptions, 'history'>): Promise<{ success: boolean; data?: T; error?: string }> {
+  console.log(`[callClaudeForJSON] Starting for endpoint: ${options.endpoint}`);
+
   const result = await callClaude({
     ...options,
     maxTokens: options.maxTokens || 2000,
   });
+
+  console.log(`[callClaudeForJSON] callClaude result: success=${result.success}, error=${result.error || 'none'}, responseLength=${result.response?.length || 0}`);
 
   if (!result.success) {
     return { success: false, error: result.error };
@@ -286,153 +298,22 @@ export async function callClaudeForJSON<T>(options: Omit<AICallOptions, 'history
 
   try {
     let jsonStr = result.response!;
+
+    // Log first 500 chars of response for debugging
+    console.log(`[callClaudeForJSON] Raw response (first 500 chars): ${jsonStr.substring(0, 500)}`);
+
     const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (jsonMatch) {
+      console.log(`[callClaudeForJSON] Found JSON in code block`);
       jsonStr = jsonMatch[1];
     }
 
     const data = JSON.parse(jsonStr.trim()) as T;
+    console.log(`[callClaudeForJSON] Successfully parsed JSON`);
     return { success: true, data };
-  } catch (parseError) {
-    console.error("Failed to parse Claude JSON response:", parseError);
+  } catch (parseError: any) {
+    console.error("[callClaudeForJSON] Failed to parse JSON:", parseError.message);
+    console.error("[callClaudeForJSON] Full response was:", result.response);
     return { success: false, error: "Failed to parse AI response. Please try again." };
-  }
-}
-
-// ============================================
-// GPT-4o-mini API (Cheap - for most features)
-// ============================================
-
-export async function callGPT(options: AICallOptions): Promise<{ success: boolean; response?: string; error?: string; blocked?: boolean }> {
-  const {
-    userId,
-    endpoint,
-    systemPrompt,
-    userMessage,
-    maxTokens = 1000,
-    temperature = 1,
-    history = [],
-  } = options;
-
-  // Pre-call checks
-  const checks = await preCallChecks(options);
-  if (!checks.allowed) {
-    return { success: false, error: checks.error, blocked: checks.blocked };
-  }
-
-  // Make the API call
-  try {
-    const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
-      { role: "system", content: systemPrompt },
-      ...history,
-      { role: "user", content: userMessage },
-    ];
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      max_tokens: maxTokens,
-      temperature,
-      messages,
-    });
-
-    const responseText = response.choices[0]?.message?.content || "I couldn't generate a response. Please try again.";
-
-    const tokensUsed = (response.usage?.prompt_tokens || 0) + (response.usage?.completion_tokens || 0);
-
-    await logAIUsage({
-      userId,
-      endpoint: endpoint + " (gpt-mini)",
-      tokensUsed,
-      blocked: false,
-      flagged: false,
-      timestamp: new Date(),
-    });
-
-    return { success: true, response: responseText };
-  } catch (error: any) {
-    console.error(`GPT API error (${endpoint}):`, error.message);
-
-    await logAIUsage({
-      userId,
-      endpoint: endpoint + " (gpt-error)",
-      tokensUsed: 0,
-      blocked: false,
-      flagged: false,
-      timestamp: new Date(),
-    });
-
-    if (error.status === 401) {
-      return { success: false, error: "AI service not configured. Please contact support." };
-    }
-    if (error.status === 429) {
-      return { success: false, error: "AI service is busy. Please wait a moment and try again." };
-    }
-
-    return { success: false, error: "Failed to get AI response. Please try again." };
-  }
-}
-
-export async function callGPTForJSON<T>(options: Omit<AICallOptions, 'history'>): Promise<{ success: boolean; data?: T; error?: string }> {
-  const {
-    userId,
-    endpoint,
-    endpointType,
-    systemPrompt,
-    userMessage,
-    maxTokens = 2000,
-  } = options;
-
-  // Pre-call checks
-  const checks = await preCallChecks(options);
-  if (!checks.allowed) {
-    return { success: false, error: checks.error };
-  }
-
-  // Make the API call with JSON mode
-  try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      max_tokens: maxTokens,
-      messages: [
-        { role: "system", content: systemPrompt + "\n\nRespond with valid JSON only." },
-        { role: "user", content: userMessage },
-      ],
-      response_format: { type: "json_object" },
-    });
-
-    const responseText = response.choices[0]?.message?.content || "{}";
-    const tokensUsed = (response.usage?.prompt_tokens || 0) + (response.usage?.completion_tokens || 0);
-
-    await logAIUsage({
-      userId,
-      endpoint: endpoint + " (gpt-mini)",
-      tokensUsed,
-      blocked: false,
-      flagged: false,
-      timestamp: new Date(),
-    });
-
-    const data = JSON.parse(responseText) as T;
-    return { success: true, data };
-  } catch (error: any) {
-    console.error(`GPT API error (${endpoint}):`, error.message);
-
-    await logAIUsage({
-      userId,
-      endpoint: endpoint + " (gpt-error)",
-      tokensUsed: 0,
-      blocked: false,
-      flagged: false,
-      timestamp: new Date(),
-    });
-
-    if (error.status === 401) {
-      return { success: false, error: "AI service not configured. Please contact support." };
-    }
-    if (error.status === 429) {
-      return { success: false, error: "AI service is busy. Please wait a moment and try again." };
-    }
-
-    return { success: false, error: "Failed to get AI response. Please try again." };
   }
 }

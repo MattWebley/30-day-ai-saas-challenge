@@ -729,7 +729,10 @@ export async function registerRoutes(
       const userId = req.user.claims.sub;
       const { knowledge, skills, interests, experience } = req.body;
 
-      const userMessage = `Generate exactly 28 B2B SaaS product ideas for this user profile:
+      console.log(`[generate-ideas] Starting for user ${userId}`);
+      console.log(`[generate-ideas] Inputs: knowledge=${knowledge?.length || 0} chars, skills=${skills?.length || 0} chars`);
+
+      const userMessage = `Generate exactly 3 B2B SaaS product ideas for this user profile:
 
 USER PROFILE:
 - Knowledge/Expertise: ${knowledge}
@@ -742,15 +745,7 @@ CRITICAL RULES:
 2. DO NOT force weird combinations of all three unless it's genuinely natural
 3. Focus on problems they ALREADY understand deeply from one of their inputs
 4. Ideas should feel obvious given their background, not Frankenstein combinations
-
-GOOD EXAMPLES:
-- If they have "accounting knowledge" → Ideas solving accounting pain points
-- If they have "sales experience" → Ideas automating sales workflows
-- If they know "healthcare" → Ideas for healthcare professionals
-
-BAD EXAMPLES:
-- Combining "loves gaming" + "knows Excel" + "worked in HR" into one weird idea
-- Forcing all inputs into every idea when they don't naturally connect
+5. Make each idea DIFFERENT - don't give variations of the same concept
 
 SCORING CRITERIA (rate each 1-5):
 1. Market Demand - Is there proven demand? Are competitors making money?
@@ -767,27 +762,37 @@ For each idea, provide:
 - totalScore: Sum of all scores (out of 25)
 - whyThisWorks: One sentence explaining why THEIR background gives them an edge
 
-Return JSON array of 28 ideas, sorted by totalScore descending.
+Return JSON array of 3 ideas, sorted by totalScore descending.
 Format: { "ideas": [...] }`;
 
       const result = await callClaudeForJSON<{ ideas: any[] }>({
         userId,
         endpoint: 'generate-ideas',
         endpointType: 'ideaGen',
-        systemPrompt: 'You are a SaaS business idea expert. Generate exactly 28 B2B SaaS product ideas where the user has a NATURAL ADVANTAGE. Return valid JSON only.',
+        systemPrompt: 'You are a SaaS business idea expert. Generate exactly 3 diverse B2B SaaS product ideas where the user has a NATURAL ADVANTAGE. Each idea should be distinctly different. Return valid JSON only.',
         userMessage,
-        maxTokens: 4000,
+        maxTokens: 2000,
       });
 
+      console.log(`[generate-ideas] Claude result: success=${result.success}, error=${result.error || 'none'}, ideas count=${result.data?.ideas?.length || 0}`);
+
       if (!result.success) {
+        console.error(`[generate-ideas] Failed for user ${userId}:`, result.error);
         return res.status(result.error?.includes('limit') ? 429 : 500).json({
           message: result.error || "Failed to generate ideas"
         });
       }
 
-      res.json(result.data?.ideas || []);
+      const ideas = result.data?.ideas || [];
+      if (ideas.length === 0) {
+        console.error(`[generate-ideas] No ideas returned for user ${userId}`);
+        return res.status(500).json({ message: "AI generated no ideas. Please try again." });
+      }
+
+      console.log(`[generate-ideas] Success! Returning ${ideas.length} ideas for user ${userId}`);
+      res.json(ideas);
     } catch (error: any) {
-      console.error("Error generating ideas:", error);
+      console.error("[generate-ideas] Exception:", error);
       res.status(500).json({ message: error.message || "Failed to generate ideas" });
     }
   });
@@ -918,6 +923,7 @@ Format: { "ideas": [...] }`;
     try {
       const userId = req.user.claims.sub;
       await storage.deleteAllUserProgress(userId);
+      await storage.deleteUserBadges(userId);
       res.json({ success: true, message: "All progress reset" });
     } catch (error: any) {
       console.error("Error resetting progress:", error);

@@ -285,14 +285,24 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
   };
 
   const getSearchQueries = (idea: Idea) => {
-    const niche = idea.targetCustomer || 'business';
-    const problem = idea.desc?.split(' ').slice(0, 5).join(' ') || idea.title;
+    // Extract keywords from description (what it DOES), not the made-up title
+    const desc = idea.desc.toLowerCase();
+    const target = idea.targetCustomer?.toLowerCase() || '';
+
+    // Common filler words to remove
+    const stopWords = ['a', 'an', 'the', 'for', 'to', 'and', 'or', 'that', 'this', 'with', 'your', 'their', 'helps', 'help', 'allows', 'enables', 'makes', 'it', 'is', 'are', 'be', 'been', 'being'];
+
+    // Get meaningful words from description (first 4 non-stop words)
+    const descWords = desc.replace(/[^a-z0-9 ]/g, '').split(' ').filter(w => w.length > 2 && !stopWords.includes(w)).slice(0, 4);
+    const keyPhrase = descWords.slice(0, 3).join(' ');
+
+    // Get target customer keyword
+    const targetWord = target.replace(/[^a-z0-9 ]/g, '').split(' ').filter(w => w.length > 2 && !stopWords.includes(w))[0] || '';
+
     return [
-      `${idea.title.toLowerCase().replace(/[^a-z0-9 ]/g, '')} alternatives`,
-      `best ${niche} software tools`,
-      `${problem} software`,
-      `${niche} SaaS tools 2024`,
-    ];
+      `${keyPhrase} software`,
+      targetWord ? `${targetWord} ${descWords[0] || ''} tools` : `${keyPhrase} tools`,
+    ].filter(q => q.trim().length > 5);
   };
 
   const togglePainPoint = (pain: string) => {
@@ -538,6 +548,27 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
             <Button variant="outline" onClick={() => setShowManualAdd(!showManualAdd)} className="w-full gap-2">
               <Plus className="w-4 h-4" /> {showManualAdd ? 'Hide Manual Add' : 'Add More Manually'}
             </Button>
+          </div>
+        )}
+
+        {/* Google Search suggestion */}
+        {competitors.length > 0 && (
+          <div className={ds.cardWithPadding}>
+            <h3 className={`${ds.label} mb-2`}>Want to find more?</h3>
+            <p className={`${ds.muted} mb-4`}>Search Google manually to discover competitors we might have missed.</p>
+            <div className="flex flex-wrap gap-2">
+              {searchQueries.slice(0, 2).map((query, idx) => (
+                <Button
+                  key={idx}
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={() => window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank')}
+                >
+                  <Search className="w-4 h-4" /> {query}
+                </Button>
+              ))}
+            </div>
           </div>
         )}
 
@@ -830,14 +861,14 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
         <div className="text-center space-y-3">
           <h3 className={ds.label}>Stuck? Can't Decide?</h3>
           <p className={ds.muted}>
-            Sometimes you just need a fresh perspective. Book a 30-minute 1:1 call with Matt to talk through your ideas and get unstuck.
+            Sometimes you just need a fresh perspective. Book a 1:1 call with Matt to talk through your ideas and get unstuck.
           </p>
           <Button
             variant="outline"
             className="border-2"
-            disabled
+            onClick={() => window.open('/coaching', '_blank')}
           >
-            Book a Call - Coming Soon
+            Book a Call
           </Button>
         </div>
       </div>
