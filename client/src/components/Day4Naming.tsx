@@ -148,38 +148,49 @@ export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }
     const featuresList = features.slice(0, 3).join(', ') || 'core functionality';
 
     try {
-      const prompt = `You are a startup naming expert who creates COMPLETELY MADE-UP words that sound good but don't exist.
+      const prompt = `You are a startup naming expert. Create 6 HIGHLY UNIQUE brandable names that are likely to have .com available.
 
-THE PRODUCT (for context only - DO NOT use obvious keywords from this):
+THE PRODUCT:
 "${userIdea}"
 
-CRITICAL RULES - FOLLOW EXACTLY:
-1. NEVER use obvious/descriptive words (no "track", "sync", "hub", "flow", "data", "cloud", "smart", etc.)
-2. NEVER use real English words - only INVENTED nonsense words that sound nice
-3. Names must be PRONOUNCEABLE but MEANINGLESS (like Xerox, Kodak, Hulu, Roku, Venmo)
-4. Mix unexpected consonants and vowels: zr, vl, qo, px, etc.
-5. Use unusual letter combinations that feel fresh
+TARGET MARKET:
+${painPointsList}
 
-GOOD EXAMPLES (completely made up):
-- Zorply, Kyvex, Ploxo, Wiblu, Quorvo, Frenki, Droply, Vexli, Zumba, Pixar
+Generate a MIX of these name types:
 
-BAD EXAMPLES (too obvious/descriptive - NEVER do these):
-- TrackFlow, DataSync, CloudHub, SmartTask, EasyTrack, QuickSync
+TYPE A - KEYWORD-INSPIRED BUT MUTATED (3 names):
+Take a relevant keyword and HEAVILY modify it so it's unrecognizable but hints at meaning:
+- Remove vowels or consonants: "track" → "Trakr" is TOO OBVIOUS. Instead: "Trkly" or "Raekt"
+- Swap letters: "invoice" → "Invoxe" or "Voinix"
+- Add unusual prefixes/suffixes: "report" → "Reporix" or "Zereport"
+- Blend 2 keywords into one weird word: "sales+track" → "Salyx" or "Traksli"
+- Use first 2-3 letters + invented ending: "analytics" → "Analyx", "customer" → "Custrix"
 
-TECHNIQUE: Take random pleasant syllables and combine them:
-- First syllables: Zu, Ky, Vo, Plo, Fre, Dro, Qui, Wex, Zor, Bri
-- Second syllables: ly, vo, xi, ba, ko, ra, mi, ple, zo, na
+TYPE B - COMPLETELY INVENTED (3 names):
+Pure nonsense words that sound techy and pleasant:
+- Combine random syllables: Zorply, Kyvex, Ploxir, Quorvix, Drofina
+- Use unusual letter combos: xy, qo, vr, zl, etc.
+
+CRITICAL - WHAT MAKES NAMES AVAILABLE:
+- Add X, Q, Z, K, V in unexpected places
+- Use unusual endings: -ix, -yx, -ori, -ovo, -lix, -vex
+- Combine 3 syllables instead of 2
+- Double consonants in weird spots: Trakko, Vennix, Zorrify
+
+BANNED (always taken):
+- Any real English word
+- Simple word + "ly/ify/hub/flow/sync/app"
+- Two common words combined (TaskFlow, DataSync, etc.)
 
 REQUIREMENTS:
-- 6-9 characters only
-- Must be pronounceable in English
-- Must NOT be a real word or obvious combination
-- Must sound like a tech startup name
+- 6-9 characters
+- Pronounceable
+- .com LIKELY available (be creative!)
 
-ATTEMPT ${attemptNumber} - Generate 6 COMPLETELY DIFFERENT random-sounding names. Timestamp: ${Date.now()}
+ATTEMPT ${attemptNumber} - Make these VERY unique! Timestamp: ${Date.now()}
 
 Return ONLY this JSON:
-{"names":[{"name":"Zorply","domain":"zorply","tagline":"5-7 word tagline","why":"Made from Zor + ply syllables"}]}`;
+{"names":[{"name":"Trkovo","domain":"trkovo","tagline":"5-7 word tagline","why":"From 'track' heavily mutated"}]}`;
 
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
       const data = await res.json();
