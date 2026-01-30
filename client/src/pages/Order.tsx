@@ -35,6 +35,11 @@ export default function Order() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        // If user needs to log in, redirect to login
+        if (errorData.requiresLogin) {
+          window.location.href = '/api/login';
+          return;
+        }
         const details = errorData.error ? ` (${errorData.error})` : '';
         throw new Error((errorData.message || 'Checkout failed') + details);
       }

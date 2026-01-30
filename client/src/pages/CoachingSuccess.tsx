@@ -2,8 +2,10 @@ import { Check, ArrowRight, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, useSearch } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function CoachingSuccess() {
+  const { isAuthenticated, isLoading } = useAuth();
   const searchString = useSearch();
   const params = new URLSearchParams(searchString);
   const type = params.get("type") || "coaching";
@@ -50,12 +52,21 @@ export default function CoachingSuccess() {
           Check your inbox (and spam folder) for my email.
         </p>
 
-        <Link href="/dashboard">
-          <Button className="w-full">
-            Back to Dashboard
-            <ArrowRight className="w-4 h-4 ml-2" />
+        <a href={isLoading ? "#" : (isAuthenticated ? "/dashboard" : "/api/login")} onClick={(e) => isLoading && e.preventDefault()}>
+          <Button className="w-full" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                Loading...
+              </>
+            ) : (
+              <>
+                {isAuthenticated ? "Back to Dashboard" : "Log In to Continue"}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </>
+            )}
           </Button>
-        </Link>
+        </a>
       </Card>
     </div>
   );

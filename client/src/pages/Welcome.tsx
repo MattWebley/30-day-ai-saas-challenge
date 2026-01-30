@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import confetti from "canvas-confetti";
 
 export default function Welcome() {
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
@@ -64,11 +64,21 @@ export default function Welcome() {
 
         {/* CTA */}
         <a
-          href="/dashboard"
-          className="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-xl py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 w-full"
+          href={isLoading ? "#" : (isAuthenticated ? "/dashboard" : "/api/login")}
+          className={`inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-xl py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 w-full ${isLoading ? 'opacity-75 cursor-wait' : ''}`}
+          onClick={(e) => isLoading && e.preventDefault()}
         >
-          Start Day 0
-          <ArrowRight className="w-6 h-6" />
+          {isLoading ? (
+            <>
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Loading...
+            </>
+          ) : (
+            <>
+              Start Day 0
+              <ArrowRight className="w-6 h-6" />
+            </>
+          )}
         </a>
 
         {/* Support Note */}

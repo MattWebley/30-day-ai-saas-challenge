@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function CheckoutSuccess() {
   const [, setLocation] = useLocation();
   const [status, setStatus] = useState("Processing your order...");
+  const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
+    // Wait for auth to finish loading before making decisions
+    if (isLoading) return;
+
     const processCheckout = async () => {
       // Get URL params to check what was purchased
       const params = new URLSearchParams(window.location.search);
@@ -31,13 +36,13 @@ export default function CheckoutSuccess() {
         // Redirect to coaching upsell page with currency
         setLocation(`/coaching/upsell?currency=${currency}`);
       } else {
-        // Otherwise redirect to dashboard
-        setLocation('/dashboard');
+        // Otherwise redirect to dashboard (or login if not authenticated)
+        setLocation(isAuthenticated ? '/dashboard' : '/api/login');
       }
     };
 
     processCheckout();
-  }, [setLocation]);
+  }, [setLocation, isAuthenticated, isLoading]);
 
   // Show loading while redirecting
   return (

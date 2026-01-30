@@ -2,11 +2,10 @@ import { useState, useEffect } from "react";
 import { Check, Send, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function CritiqueSuccess() {
-  const { user } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const [salesPageUrl, setSalesPageUrl] = useState("");
   const [preferredEmail, setPreferredEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
@@ -80,12 +79,21 @@ export default function CritiqueSuccess() {
             Keep an eye on your inbox. I'll email you when it's ready.
           </p>
 
-          <Link href="/dashboard">
-            <Button className="w-full">
-              Back to Dashboard
-              <ArrowRight className="w-4 h-4 ml-2" />
+          <a href={isLoading ? "#" : (isAuthenticated ? "/dashboard" : "/api/login")} onClick={(e) => isLoading && e.preventDefault()}>
+            <Button className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  {isAuthenticated ? "Back to Dashboard" : "Log In to Continue"}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </>
+              )}
             </Button>
-          </Link>
+          </a>
         </Card>
       </div>
     );

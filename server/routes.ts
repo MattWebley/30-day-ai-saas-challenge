@@ -3316,6 +3316,11 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
   // Stripe checkout - create checkout session for the 21-Day Challenge
   app.post("/api/checkout", async (req, res) => {
+    // Require authentication to ensure we can grant access after payment
+    if (!req.isAuthenticated() || !req.user) {
+      return res.status(401).json({ message: "Please log in to purchase", requiresLogin: true });
+    }
+
     try {
       const { currency = 'usd' } = req.body;
       const stripe = await getUncachableStripeClient();
