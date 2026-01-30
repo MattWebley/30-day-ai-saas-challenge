@@ -40,6 +40,7 @@ export default function Critique() {
       const response = await fetch("/api/checkout/critique", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ currency })
       });
       const data = await response.json();

@@ -45,6 +45,7 @@ export default function Coaching() {
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ currency })
       });
       const data = await response.json();

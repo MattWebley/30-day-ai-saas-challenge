@@ -3647,7 +3647,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // One-click upsell - Coaching purchase using saved payment method
   app.post("/api/upsell/coaching", async (req, res) => {
     if (!req.isAuthenticated() || !req.user) {
-      return res.status(401).json({ message: "Not authenticated" });
+      // Not authenticated - fall back to regular checkout
+      return res.status(401).json({ message: "Not authenticated", requiresCheckout: true });
     }
 
     try {

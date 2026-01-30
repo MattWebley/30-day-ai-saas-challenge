@@ -50,6 +50,7 @@ export default function CoachingUpsell() {
       const response = await fetch('/api/upsell/coaching', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ currency })
       });
       const data = await response.json();
@@ -71,17 +72,24 @@ export default function CoachingUpsell() {
         const checkoutResponse = await fetch('/api/checkout/coaching', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({ currency })
         });
         const checkoutData = await checkoutResponse.json();
         if (checkoutData.url) {
           window.location.href = checkoutData.url;
+        } else {
+          console.error('Checkout error:', checkoutData);
+          alert('Checkout failed: ' + (checkoutData.error || checkoutData.message || 'Unknown error'));
+          setButtonText("Yes! Add Coaching to My Order");
+          setIsProcessing(false);
         }
         return;
       }
 
       // Other error
       console.error('Upsell error:', data.message);
+      alert('Error: ' + (data.message || 'Something went wrong'));
       setButtonText("Yes! Add Coaching to My Order");
       setIsProcessing(false);
     } catch (error) {
@@ -130,14 +138,15 @@ export default function CoachingUpsell() {
               </p>
             </div>
 
-            {/* Video Placeholder */}
-            <div className="aspect-video bg-slate-900 rounded-xl flex items-center justify-center">
-              <div className="text-center space-y-3">
-                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto">
-                  <Video className="w-8 h-8 text-white" />
-                </div>
-                <p className="text-white/60 text-sm">Video coming soon</p>
-              </div>
+            {/* Video */}
+            <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden">
+              <iframe
+                src="https://player.vimeo.com/video/1160158404?h=a3c5d7d3ab&title=0&byline=0&portrait=0"
+                className="w-full h-full"
+                frameBorder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+              />
             </div>
 
             {/* What You Get */}

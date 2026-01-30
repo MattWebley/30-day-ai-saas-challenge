@@ -20,6 +20,7 @@ export default function CheckoutSuccess() {
           await fetch('/api/checkout/process-success', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
             body: JSON.stringify({ sessionId })
           });
         } catch (error) {

@@ -27,6 +27,7 @@ export default function Order() {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify({ currency: selectedCurrency }),
         signal: controller.signal
       });
