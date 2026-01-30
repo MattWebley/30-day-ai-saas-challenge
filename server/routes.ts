@@ -3693,6 +3693,25 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     }
   });
 
+  // Debug endpoint to check session state
+  app.get("/api/debug/session", (req, res) => {
+    const isLoggedIn = req.isAuthenticated() && req.user;
+    res.json({
+      sessionId: req.sessionID,
+      hasSession: !!req.session,
+      isLoggedIn,
+      sessionData: {
+        stripeCustomerId: (req.session as any)?.stripeCustomerId || null,
+        purchaseCurrency: (req.session as any)?.purchaseCurrency || null,
+      },
+      userData: isLoggedIn ? {
+        id: (req.user as any).id,
+        stripeCustomerId: (req.user as any).stripeCustomerId || null,
+      } : null,
+      cookies: req.headers.cookie ? 'present' : 'missing',
+    });
+  });
+
   // One-click upsell - Coaching purchase using saved payment method
   // Works for both logged-in users and guests (uses session-stored customer ID)
   app.post("/api/upsell/coaching", async (req, res) => {
@@ -3709,15 +3728,23 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       // Get customer ID from user record OR session (for guests)
       const isLoggedIn = req.isAuthenticated() && req.user;
-      const userCustomerId = isLoggedIn ? (req.user as any).stripeCustomerId : null;
+      const userId = isLoggedIn ? (req.user as User).id : null;
+
+      // For logged-in users, fetch FRESH data from database (req.user might be stale)
+      let userCustomerId = null;
+      if (isLoggedIn && userId) {
+        const [freshUser] = await db.select().from(users).where(eq(users.id, userId));
+        userCustomerId = freshUser?.stripeCustomerId || null;
+        console.log('[One-click upsell] Fresh user data - customerId:', userCustomerId);
+      }
+
       const sessionCustomerId = (req.session as any)?.stripeCustomerId;
       const stripeCustomerId = userCustomerId || sessionCustomerId;
 
-      const userId = isLoggedIn ? (req.user as User).id : null;
       console.log('[One-click upsell] User:', userId || 'guest');
-      console.log('[One-click upsell] User customerId:', userCustomerId);
+      console.log('[One-click upsell] User customerId (from DB):', userCustomerId);
       console.log('[One-click upsell] Session customerId:', sessionCustomerId);
-      console.log('[One-click upsell] Using customerId:', stripeCustomerId, '(from', userCustomerId ? 'user' : sessionCustomerId ? 'session' : 'none', ')');
+      console.log('[One-click upsell] Using customerId:', stripeCustomerId, '(from', userCustomerId ? 'user-db' : sessionCustomerId ? 'session' : 'none', ')');
 
       // Pricing based on currency (amount in smallest unit - cents/pence)
       const coachingPricing: Record<string, { amount: number; currency: string }> = {
