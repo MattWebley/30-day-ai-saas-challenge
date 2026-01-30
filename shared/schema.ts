@@ -42,6 +42,13 @@ export const users = pgTable("users", {
   // Referral system
   referralCode: varchar("referral_code"), // User's unique referral code
   referredBy: varchar("referred_by"), // Referral code of the user who referred them
+  // Admin notes
+  adminNotes: text("admin_notes"), // Private notes about this user (only visible to admins)
+  // Ban system
+  isBanned: boolean("is_banned").default(false),
+  banReason: text("ban_reason"),
+  bannedAt: timestamp("banned_at"),
+  bannedBy: varchar("banned_by"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -540,3 +547,100 @@ export const aiUsageLogs = pgTable("ai_usage_logs", {
 
 export type AIUsageLog = typeof aiUsageLogs.$inferSelect;
 export type InsertAIUsageLog = typeof aiUsageLogs.$inferInsert;
+
+// Activity Logs - Track admin and user actions
+export const activityLogs = pgTable("activity_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "set null" }), // Who performed the action
+  targetUserId: varchar("target_user_id").references(() => users.id, { onDelete: "set null" }), // Who was affected (if applicable)
+  action: varchar("action").notNull(), // 'user_created', 'access_granted', 'refund_issued', etc.
+  category: varchar("category").notNull(), // 'user', 'payment', 'content', 'system'
+  details: jsonb("details"), // Additional context (e.g., amount refunded, old/new values)
+  ipAddress: varchar("ip_address"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("activity_logs_user_id_idx").on(table.userId),
+  index("activity_logs_action_idx").on(table.action),
+  index("activity_logs_category_idx").on(table.category),
+  index("activity_logs_created_at_idx").on(table.createdAt),
+]);
+
+export type ActivityLog = typeof activityLogs.$inferSelect;
+export type InsertActivityLog = typeof activityLogs.$inferInsert;
+
+// Coupon codes table
+export const coupons = pgTable("coupons", {
+  id: serial("id").primaryKey(),
+  code: varchar("code").notNull().unique(), // e.g., "LAUNCH50"
+  description: varchar("description"), // Internal note about what this coupon is for
+  discountType: varchar("discount_type").notNull(), // 'percent' or 'fixed'
+  discountAmount: integer("discount_amount").notNull(), // Amount in cents for fixed, percentage for percent
+  maxUses: integer("max_uses"), // null = unlimited
+  currentUses: integer("current_uses").default(0),
+  minPurchaseAmount: integer("min_purchase_amount"), // Minimum purchase in cents
+  applicableProducts: jsonb("applicable_products").$type<string[]>(), // null = all products
+  startsAt: timestamp("starts_at"),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true),
+  createdBy: varchar("created_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => [
+  index("coupons_code_idx").on(table.code),
+  index("coupons_is_active_idx").on(table.isActive),
+]);
+
+export type Coupon = typeof coupons.$inferSelect;
+export type InsertCoupon = typeof coupons.$inferInsert;
+
+// Coupon usage tracking table
+export const couponUsages = pgTable("coupon_usages", {
+  id: serial("id").primaryKey(),
+  couponId: integer("coupon_id").references(() => coupons.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "set null" }),
+  orderId: varchar("order_id"), // Stripe payment intent/charge ID
+  discountApplied: integer("discount_applied").notNull(), // Amount discounted in cents
+  usedAt: timestamp("used_at").defaultNow(),
+}, (table) => [
+  index("coupon_usages_coupon_id_idx").on(table.couponId),
+  index("coupon_usages_user_id_idx").on(table.userId),
+]);
+
+export type CouponUsage = typeof couponUsages.$inferSelect;
+export type InsertCouponUsage = typeof couponUsages.$inferInsert;
+
+// Announcements table
+export const announcements = pgTable("announcements", {
+  id: serial("id").primaryKey(),
+  title: varchar("title").notNull(),
+  message: text("message").notNull(),
+  type: varchar("type").notNull().default('info'), // 'info', 'warning', 'success', 'promo'
+  targetSegment: varchar("target_segment").default('all'), // 'all', 'paid', 'unpaid', 'active', etc.
+  dismissible: boolean("dismissible").default(true),
+  linkUrl: varchar("link_url"), // Optional CTA link
+  linkText: varchar("link_text"), // Optional CTA text
+  startsAt: timestamp("starts_at"),
+  expiresAt: timestamp("expires_at"),
+  isActive: boolean("is_active").default(true),
+  priority: integer("priority").default(0), // Higher = shown first
+  createdBy: varchar("created_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type Announcement = typeof announcements.$inferSelect;
+export type InsertAnnouncement = typeof announcements.$inferInsert;
+
+// Track which users have dismissed which announcements
+export const announcementDismissals = pgTable("announcement_dismissals", {
+  id: serial("id").primaryKey(),
+  announcementId: integer("announcement_id").references(() => announcements.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
+  dismissedAt: timestamp("dismissed_at").defaultNow(),
+}, (table) => [
+  index("announcement_dismissals_user_idx").on(table.userId),
+  index("announcement_dismissals_announcement_idx").on(table.announcementId),
+]);
+
+export type AnnouncementDismissal = typeof announcementDismissals.$inferSelect;
+export type InsertAnnouncementDismissal = typeof announcementDismissals.$inferInsert;

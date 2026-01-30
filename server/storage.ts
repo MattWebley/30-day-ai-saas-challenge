@@ -52,6 +52,21 @@ import {
   aiUsageLogs,
   type AIUsageLog,
   type InsertAIUsageLog,
+  activityLogs,
+  type ActivityLog,
+  type InsertActivityLog,
+  coupons,
+  type Coupon,
+  type InsertCoupon,
+  couponUsages,
+  type CouponUsage,
+  type InsertCouponUsage,
+  announcements,
+  type Announcement,
+  type InsertAnnouncement,
+  announcementDismissals,
+  type AnnouncementDismissal,
+  type InsertAnnouncementDismissal,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, isNotNull } from "drizzle-orm";
@@ -61,7 +76,10 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
-  
+  updateUser(id: string, data: Partial<UpsertUser>): Promise<User | undefined>;
+  deleteUser(id: string): Promise<void>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+
   // Day content operations
   getDayContent(day: number): Promise<DayContent | undefined>;
   getAllDayContent(): Promise<DayContent[]>;
@@ -207,7 +225,34 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users);
+    return await db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async updateUser(id: string, data: Partial<UpsertUser>): Promise<User | undefined> {
+    const [updated] = await db
+      .update(users)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    // Delete related data first (cascading will handle most, but be explicit)
+    await db.delete(userProgress).where(eq(userProgress.userId, id));
+    await db.delete(userBadges).where(eq(userBadges.userId, id));
+    await db.delete(userStats).where(eq(userStats.userId, id));
+    await db.delete(chatMessages).where(eq(chatMessages.userId, id));
+    await db.delete(chatUsage).where(eq(chatUsage.userId, id));
+    await db.delete(dayComments).where(eq(dayComments.userId, id));
+    await db.delete(userSpamStatus).where(eq(userSpamStatus.userId, id));
+    // Finally delete the user
+    await db.delete(users).where(eq(users.id, id));
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
   }
 
   // Day content operations
@@ -1043,6 +1088,279 @@ export class DatabaseStorage implements IStorage {
       blockedCalls: logs.filter(log => log.blocked).length,
       flaggedCalls: logs.filter(log => log.flagged).length,
     };
+  }
+
+  // Activity log operations
+  async logActivity(log: InsertActivityLog): Promise<ActivityLog> {
+    const [created] = await db
+      .insert(activityLogs)
+      .values(log)
+      .returning();
+    return created;
+  }
+
+  async getActivityLogs(options?: {
+    userId?: string;
+    category?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<(ActivityLog & { user?: User; targetUser?: User })[]> {
+    const conditions = [];
+    if (options?.userId) {
+      conditions.push(eq(activityLogs.userId, options.userId));
+    }
+    if (options?.category) {
+      conditions.push(eq(activityLogs.category, options.category));
+    }
+
+    let query = db.select().from(activityLogs);
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as typeof query;
+    }
+
+    const logs = await query
+      .orderBy(desc(activityLogs.createdAt))
+      .limit(options?.limit || 100)
+      .offset(options?.offset || 0);
+
+    // Fetch user info for each log
+    const logsWithUsers = await Promise.all(
+      logs.map(async (log) => {
+        const user = log.userId ? await this.getUser(log.userId) : undefined;
+        const targetUser = log.targetUserId ? await this.getUser(log.targetUserId) : undefined;
+        return { ...log, user, targetUser };
+      })
+    );
+
+    return logsWithUsers;
+  }
+
+  async getActivityLogStats(): Promise<{
+    totalLogs: number;
+    todayLogs: number;
+    categoryCounts: Record<string, number>;
+  }> {
+    const logs = await db.select().from(activityLogs);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const categoryCounts: Record<string, number> = {};
+    let todayCount = 0;
+
+    logs.forEach(log => {
+      // Count by category
+      categoryCounts[log.category] = (categoryCounts[log.category] || 0) + 1;
+
+      // Count today's logs
+      if (log.createdAt && new Date(log.createdAt) >= today) {
+        todayCount++;
+      }
+    });
+
+    return {
+      totalLogs: logs.length,
+      todayLogs: todayCount,
+      categoryCounts,
+    };
+  }
+
+  // Coupon operations
+  async createCoupon(coupon: InsertCoupon): Promise<Coupon> {
+    const [created] = await db
+      .insert(coupons)
+      .values(coupon)
+      .returning();
+    return created;
+  }
+
+  async getCoupon(id: number): Promise<Coupon | undefined> {
+    const [coupon] = await db
+      .select()
+      .from(coupons)
+      .where(eq(coupons.id, id));
+    return coupon;
+  }
+
+  async getCouponByCode(code: string): Promise<Coupon | undefined> {
+    const [coupon] = await db
+      .select()
+      .from(coupons)
+      .where(eq(coupons.code, code.toUpperCase()));
+    return coupon;
+  }
+
+  async getAllCoupons(): Promise<Coupon[]> {
+    return await db
+      .select()
+      .from(coupons)
+      .orderBy(desc(coupons.createdAt));
+  }
+
+  async updateCoupon(id: number, data: Partial<InsertCoupon>): Promise<Coupon | undefined> {
+    const [updated] = await db
+      .update(coupons)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(coupons.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteCoupon(id: number): Promise<void> {
+    await db.delete(coupons).where(eq(coupons.id, id));
+  }
+
+  async incrementCouponUsage(id: number): Promise<void> {
+    const coupon = await this.getCoupon(id);
+    if (coupon) {
+      await db
+        .update(coupons)
+        .set({ currentUses: (coupon.currentUses || 0) + 1 })
+        .where(eq(coupons.id, id));
+    }
+  }
+
+  async recordCouponUsage(usage: InsertCouponUsage): Promise<CouponUsage> {
+    const [created] = await db
+      .insert(couponUsages)
+      .values(usage)
+      .returning();
+    // Also increment the usage count on the coupon
+    if (usage.couponId) {
+      await this.incrementCouponUsage(usage.couponId);
+    }
+    return created;
+  }
+
+  async getCouponUsages(couponId: number): Promise<CouponUsage[]> {
+    return await db
+      .select()
+      .from(couponUsages)
+      .where(eq(couponUsages.couponId, couponId))
+      .orderBy(desc(couponUsages.usedAt));
+  }
+
+  async validateCoupon(code: string, purchaseAmount?: number): Promise<{
+    valid: boolean;
+    coupon?: Coupon;
+    error?: string;
+    discountAmount?: number;
+  }> {
+    const coupon = await this.getCouponByCode(code);
+
+    if (!coupon) {
+      return { valid: false, error: 'Invalid coupon code' };
+    }
+
+    if (!coupon.isActive) {
+      return { valid: false, error: 'This coupon is no longer active' };
+    }
+
+    const now = new Date();
+    if (coupon.startsAt && new Date(coupon.startsAt) > now) {
+      return { valid: false, error: 'This coupon is not yet active' };
+    }
+
+    if (coupon.expiresAt && new Date(coupon.expiresAt) < now) {
+      return { valid: false, error: 'This coupon has expired' };
+    }
+
+    if (coupon.maxUses && coupon.currentUses && coupon.currentUses >= coupon.maxUses) {
+      return { valid: false, error: 'This coupon has reached its usage limit' };
+    }
+
+    if (purchaseAmount && coupon.minPurchaseAmount && purchaseAmount < coupon.minPurchaseAmount) {
+      return { valid: false, error: `Minimum purchase of ${coupon.minPurchaseAmount / 100} required` };
+    }
+
+    // Calculate discount amount
+    let discountAmount = 0;
+    if (purchaseAmount) {
+      if (coupon.discountType === 'percent') {
+        discountAmount = Math.floor(purchaseAmount * (coupon.discountAmount / 100));
+      } else {
+        discountAmount = Math.min(coupon.discountAmount, purchaseAmount);
+      }
+    }
+
+    return { valid: true, coupon, discountAmount };
+  }
+
+  // Announcement operations
+  async createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement> {
+    const [created] = await db
+      .insert(announcements)
+      .values(announcement)
+      .returning();
+    return created;
+  }
+
+  async getAnnouncement(id: number): Promise<Announcement | undefined> {
+    const [announcement] = await db
+      .select()
+      .from(announcements)
+      .where(eq(announcements.id, id));
+    return announcement;
+  }
+
+  async getAllAnnouncements(): Promise<Announcement[]> {
+    return await db
+      .select()
+      .from(announcements)
+      .orderBy(desc(announcements.priority), desc(announcements.createdAt));
+  }
+
+  async getActiveAnnouncements(): Promise<Announcement[]> {
+    const now = new Date();
+    const all = await db
+      .select()
+      .from(announcements)
+      .where(eq(announcements.isActive, true))
+      .orderBy(desc(announcements.priority), desc(announcements.createdAt));
+
+    // Filter by date range
+    return all.filter(a => {
+      if (a.startsAt && new Date(a.startsAt) > now) return false;
+      if (a.expiresAt && new Date(a.expiresAt) < now) return false;
+      return true;
+    });
+  }
+
+  async getAnnouncementsForUser(userId: string, segment: string): Promise<Announcement[]> {
+    const active = await this.getActiveAnnouncements();
+
+    // Get dismissed announcements for this user
+    const dismissed = await db
+      .select()
+      .from(announcementDismissals)
+      .where(eq(announcementDismissals.userId, userId));
+    const dismissedIds = new Set(dismissed.map(d => d.announcementId));
+
+    // Filter by segment and not dismissed
+    return active.filter(a => {
+      if (dismissedIds.has(a.id)) return false;
+      if (a.targetSegment === 'all') return true;
+      return a.targetSegment === segment;
+    });
+  }
+
+  async updateAnnouncement(id: number, data: Partial<InsertAnnouncement>): Promise<Announcement | undefined> {
+    const [updated] = await db
+      .update(announcements)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(announcements.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteAnnouncement(id: number): Promise<void> {
+    await db.delete(announcements).where(eq(announcements.id, id));
+  }
+
+  async dismissAnnouncement(announcementId: number, userId: string): Promise<void> {
+    await db
+      .insert(announcementDismissals)
+      .values({ announcementId, userId })
+      .onConflictDoNothing();
   }
 }
 

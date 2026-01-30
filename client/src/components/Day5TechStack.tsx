@@ -38,7 +38,7 @@ const REQUIRED_TOOLS: Tool[] = [
 const RECOMMENDED_TOOLS: Tool[] = [
   {
     name: "Wispr Flow",
-    description: "Voice-to-text AI that lets you talk to your computer instead of typing. 3x faster than typing - speak your code, prompts, and ideas naturally.",
+    description: "The secret weapon that separates fast builders from slow ones. Dictate your prompts, ideas, and instructions 3x faster than typing. Your brain moves faster than your fingers - Wispr Flow removes that bottleneck.",
     url: "https://ref.wisprflow.ai/matthew-webley",
     required: false,
     icon: "🎙️",
@@ -149,23 +149,34 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
         </div>
       </div>
 
-      {/* Highly Recommended */}
-      <div className={ds.cardWithPadding}>
-        <div className="flex items-center gap-2 mb-4">
-          <h4 className={ds.label}>Highly Recommended</h4>
-          <span className="text-xs bg-primary text-white px-2 py-1 rounded font-medium">
-            GAME CHANGER
+      {/* Highly Recommended - Wispr Flow */}
+      <div className="relative overflow-hidden rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-primary/10 p-6">
+        {/* Speed Badge */}
+        <div className="absolute top-4 right-4">
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary text-white text-xs font-bold rounded-full">
+            ⚡ 3X FASTER
           </span>
         </div>
+
+        <div className="flex items-center gap-2 mb-2">
+          <h4 className={ds.label}>Highly Recommended</h4>
+          <span className="text-xs bg-amber-500 text-white px-2 py-1 rounded font-medium">
+            SPEED BOOST
+          </span>
+        </div>
+
+        <p className="text-lg font-bold text-slate-900 mb-2">
+          Want to build your SaaS 3x faster?
+        </p>
         <p className={ds.body + " mb-4"}>
-          This tool will dramatically speed up how you work with AI
+          Most students who use Wispr Flow complete the challenge in half the time. Why? Because you can speak 3x faster than you type. Your ideas flow directly into Claude without the typing bottleneck.
         </p>
 
         <div className="space-y-4">
           {RECOMMENDED_TOOLS.map((tool, idx) => (
             <div
               key={idx}
-              className={completedTools.has(tool.name) ? ds.optionSelected : ds.optionDefault}
+              className={`${completedTools.has(tool.name) ? 'bg-white border-2 border-primary' : 'bg-white/80 border-2 border-slate-200'} rounded-lg p-4 cursor-pointer transition-all hover:border-primary/50`}
               onClick={() => toggleTool(tool.name)}
             >
               <div className="flex items-start gap-3">
@@ -180,20 +191,41 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
                     <h5 className={ds.label}>{tool.name}</h5>
                   </div>
                   <p className={ds.muted + " mb-3"}>{tool.description}</p>
+
+                  {/* Benefits List */}
+                  <div className="grid grid-cols-2 gap-2 mb-4 text-sm">
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <span className="text-green-500">✓</span> Talk instead of type
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <span className="text-green-500">✓</span> Works everywhere
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <span className="text-green-500">✓</span> Perfect for long prompts
+                    </div>
+                    <div className="flex items-center gap-2 text-slate-600">
+                      <span className="text-green-500">✓</span> Free trial available
+                    </div>
+                  </div>
+
                   <Button
-                    variant="outline"
+                    variant="default"
                     size="sm"
                     className="gap-2"
                     onClick={(e) => { e.stopPropagation(); window.open(tool.url, "_blank"); }}
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Open {tool.name}
+                    Try Wispr Flow Free
                   </Button>
                 </div>
               </div>
             </div>
           ))}
         </div>
+
+        <p className="text-xs text-slate-500 mt-4 text-center">
+          Seriously - once you try dictation, you'll never go back to typing long prompts
+        </p>
       </div>
 
       {/* Optional Tools */}

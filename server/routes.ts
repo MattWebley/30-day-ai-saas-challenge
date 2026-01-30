@@ -15,6 +15,44 @@ import { callClaude, callClaudeForJSON, detectAbuse, checkRateLimit, logAIUsage,
 
 const dnsResolve = promisify(dns.resolve);
 
+// In-memory tracking for live users (no DB overhead)
+interface LiveUserActivity {
+  userId: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  profileImageUrl: string | null;
+  currentPage: string;
+  lastSeen: Date;
+}
+
+const liveUsers = new Map<string, LiveUserActivity>();
+
+// Clean up stale entries every 5 minutes
+setInterval(() => {
+  const cutoff = new Date(Date.now() - 5 * 60 * 1000); // 5 minutes ago
+  Array.from(liveUsers.entries()).forEach(([userId, activity]) => {
+    if (activity.lastSeen < cutoff) {
+      liveUsers.delete(userId);
+    }
+  });
+}, 5 * 60 * 1000);
+
+// Helper to track user activity (called on authenticated requests)
+function trackUserActivity(user: any, page: string = 'unknown') {
+  if (!user?.id) return;
+
+  liveUsers.set(user.id, {
+    userId: user.id,
+    email: user.email,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    profileImageUrl: user.profileImageUrl,
+    currentPage: page,
+    lastSeen: new Date(),
+  });
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -27,10 +65,71 @@ export async function registerRoutes(
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
+
+      // Check if user is banned
+      if (user?.isBanned) {
+        return res.status(403).json({
+          message: "Account suspended",
+          banned: true,
+          reason: user.banReason || "Your account has been suspended. Please contact support.",
+        });
+      }
+
+      // Track user activity (for live users feature)
+      if (user) {
+        trackUserActivity(user, 'dashboard');
+      }
+
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Heartbeat endpoint for live user tracking (lightweight, no DB)
+  app.post('/api/heartbeat', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      const { page } = req.body;
+
+      if (user) {
+        trackUserActivity(user, page || 'unknown');
+      }
+
+      res.json({ ok: true });
+    } catch (error) {
+      res.json({ ok: true }); // Don't fail - this is non-critical
+    }
+  });
+
+  // Admin endpoint to get live users (only fetched when admin is viewing)
+  app.get('/api/admin/live-users', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Get users active in the last 3 minutes
+      const cutoff = new Date(Date.now() - 3 * 60 * 1000);
+      const activeUsers: LiveUserActivity[] = Array.from(liveUsers.values()).filter(
+        (activity) => activity.lastSeen >= cutoff
+      );
+
+      // Sort by most recently seen
+      activeUsers.sort((a, b) => b.lastSeen.getTime() - a.lastSeen.getTime());
+
+      res.json({
+        count: activeUsers.length,
+        users: activeUsers,
+      });
+    } catch (error) {
+      console.error("Error fetching live users:", error);
+      res.status(500).json({ message: "Failed to fetch live users" });
     }
   });
 
@@ -60,8 +159,14 @@ export async function registerRoutes(
   });
 
   // Admin route to create/update day content (protected)
-  app.post("/api/admin/days", isAuthenticated, async (req, res) => {
+  app.post("/api/admin/days", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
       const parsed = insertDayContentSchema.parse(req.body);
       const content = await storage.createDayContent(parsed);
       res.json(content);
@@ -71,8 +176,14 @@ export async function registerRoutes(
     }
   });
 
-  app.patch("/api/admin/days/:day", isAuthenticated, async (req, res) => {
+  app.patch("/api/admin/days/:day", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
       const day = parseInt(req.params.day);
       const updated = await storage.updateDayContent(day, req.body);
       if (!updated) {
@@ -219,6 +330,13 @@ export async function registerRoutes(
   // Admin stats route
   app.get("/api/admin/stats", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
       const allUsers = await storage.getAllUsers();
       const allStats = await storage.getAllUserStats();
       const allProgress = await storage.getAllUserProgress();
@@ -284,6 +402,410 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching admin stats:", error);
       res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  // ========== USER MANAGEMENT ROUTES ==========
+
+  // Get all users with detailed info
+  app.get("/api/admin/users", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const allUsers = await storage.getAllUsers();
+      const allStats = await storage.getAllUserStats();
+      const allProgress = await storage.getAllUserProgress();
+
+      const usersWithDetails = await Promise.all(allUsers.map(async (user) => {
+        const stats = allStats.find((s: any) => s.userId === user.id);
+        const progress = allProgress.filter((p: any) => p.userId === user.id);
+        const completedDays = progress.filter((p: any) => p.completed).length;
+
+        return {
+          ...user,
+          stats: {
+            lastCompletedDay: stats?.lastCompletedDay || 0,
+            totalXp: stats?.totalXp || 0,
+            currentStreak: stats?.currentStreak || 0,
+            lastActivityDate: stats?.lastActivityDate,
+          },
+          completedDays,
+        };
+      }));
+
+      res.json(usersWithDetails);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // Get single user with full details
+  app.get("/api/admin/users/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const user = await storage.getUser(id);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const stats = await storage.getUserStats(id);
+      const progress = await storage.getUserProgress(id);
+      const badges = await storage.getUserBadges(id);
+
+      res.json({
+        ...user,
+        stats,
+        progress,
+        badges,
+      });
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Create new user
+  app.post("/api/admin/users", isAuthenticated, async (req: any, res) => {
+    try {
+      const { email, firstName, lastName, isAdmin, challengePurchased, coachingPurchased } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User with this email already exists" });
+      }
+
+      // Generate a unique referral code
+      const referralCode = `REF${Date.now().toString(36).toUpperCase()}`;
+
+      const newUser = await storage.upsertUser({
+        email,
+        firstName: firstName || null,
+        lastName: lastName || null,
+        isAdmin: isAdmin || false,
+        challengePurchased: challengePurchased || false,
+        coachingPurchased: coachingPurchased || false,
+        referralCode,
+      });
+
+      // Log activity
+      const adminUserId = req.user?.claims?.sub;
+      await storage.logActivity({
+        userId: adminUserId,
+        targetUserId: newUser.id,
+        action: 'user_created',
+        category: 'user',
+        details: { email, challengePurchased, coachingPurchased },
+        ipAddress: req.ip,
+      });
+
+      res.json(newUser);
+    } catch (error) {
+      console.error("Error creating user:", error);
+      res.status(500).json({ message: "Failed to create user" });
+    }
+  });
+
+  // Update user
+  app.patch("/api/admin/users/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+      const {
+        email,
+        firstName,
+        lastName,
+        isAdmin,
+        challengePurchased,
+        coachingPurchased,
+        stripeCustomerId,
+        purchaseCurrency,
+        adminNotes
+      } = req.body;
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // If changing email, check it's not taken
+      if (email && email !== user.email) {
+        const existingUser = await storage.getUserByEmail(email);
+        if (existingUser) {
+          return res.status(400).json({ message: "Email already in use" });
+        }
+      }
+
+      // Protected admin accounts - cannot have admin status removed
+      const PROTECTED_ADMIN_EMAILS = ['info@rapidwebsupport.com'];
+      if (isAdmin === false && user.email && PROTECTED_ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+        return res.status(403).json({ message: "This admin account is protected and cannot be modified" });
+      }
+
+      const updated = await storage.updateUser(id, {
+        email: email !== undefined ? email : user.email,
+        firstName: firstName !== undefined ? firstName : user.firstName,
+        lastName: lastName !== undefined ? lastName : user.lastName,
+        isAdmin: isAdmin !== undefined ? isAdmin : user.isAdmin,
+        challengePurchased: challengePurchased !== undefined ? challengePurchased : user.challengePurchased,
+        coachingPurchased: coachingPurchased !== undefined ? coachingPurchased : user.coachingPurchased,
+        stripeCustomerId: stripeCustomerId !== undefined ? stripeCustomerId : user.stripeCustomerId,
+        purchaseCurrency: purchaseCurrency !== undefined ? purchaseCurrency : user.purchaseCurrency,
+        adminNotes: adminNotes !== undefined ? adminNotes : user.adminNotes,
+      });
+
+      // Log activity with changes
+      const adminUserId = req.user?.claims?.sub;
+      const changes: Record<string, { from: unknown; to: unknown }> = {};
+      if (challengePurchased !== undefined && challengePurchased !== user.challengePurchased) {
+        changes.challengePurchased = { from: user.challengePurchased, to: challengePurchased };
+      }
+      if (coachingPurchased !== undefined && coachingPurchased !== user.coachingPurchased) {
+        changes.coachingPurchased = { from: user.coachingPurchased, to: coachingPurchased };
+      }
+      if (isAdmin !== undefined && isAdmin !== user.isAdmin) {
+        changes.isAdmin = { from: user.isAdmin, to: isAdmin };
+      }
+
+      let action = 'user_updated';
+      if (changes.challengePurchased && changes.challengePurchased.to) action = 'access_granted';
+      else if (changes.challengePurchased && !changes.challengePurchased.to) action = 'access_revoked';
+      else if (changes.isAdmin && changes.isAdmin.to) action = 'admin_granted';
+      else if (changes.isAdmin && !changes.isAdmin.to) action = 'admin_revoked';
+
+      await storage.logActivity({
+        userId: adminUserId,
+        targetUserId: id,
+        action,
+        category: 'user',
+        details: { changes },
+        ipAddress: req.ip,
+      });
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+
+  // Delete user
+  app.delete("/api/admin/users/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Prevent deleting yourself
+      if (req.user && req.user.id === id) {
+        return res.status(400).json({ message: "Cannot delete your own account" });
+      }
+
+      // Protected admin accounts - cannot be deleted
+      const PROTECTED_ADMIN_EMAILS = ['info@rapidwebsupport.com'];
+      if (user.email && PROTECTED_ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+        return res.status(403).json({ message: "This admin account is protected and cannot be deleted" });
+      }
+
+      // Log before deletion (since user won't exist after)
+      const adminUserId = req.user?.claims?.sub;
+      await storage.logActivity({
+        userId: adminUserId,
+        action: 'user_deleted',
+        category: 'user',
+        details: { deletedUserId: id, deletedEmail: user.email },
+        ipAddress: req.ip,
+      });
+
+      await storage.deleteUser(id);
+      res.json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
+  // Ban user
+  app.post("/api/admin/users/:id/ban", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUserId = req.user?.claims?.sub;
+      const adminUser = await storage.getUser(adminUserId);
+
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { id } = req.params;
+      const { reason } = req.body;
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Prevent banning yourself
+      if (id === adminUserId) {
+        return res.status(400).json({ message: "Cannot ban yourself" });
+      }
+
+      // Prevent banning other admins
+      if (user.isAdmin) {
+        return res.status(400).json({ message: "Cannot ban an admin user" });
+      }
+
+      const updated = await storage.updateUser(id, {
+        isBanned: true,
+        banReason: reason || 'No reason provided',
+        bannedAt: new Date(),
+        bannedBy: adminUserId,
+      });
+
+      // Log activity
+      await storage.logActivity({
+        userId: adminUserId,
+        targetUserId: id,
+        action: 'user_banned',
+        category: 'user',
+        details: { reason: reason || 'No reason provided', userEmail: user.email },
+        ipAddress: req.ip,
+      });
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error banning user:", error);
+      res.status(500).json({ message: "Failed to ban user" });
+    }
+  });
+
+  // Unban user
+  app.post("/api/admin/users/:id/unban", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUserId = req.user?.claims?.sub;
+      const adminUser = await storage.getUser(adminUserId);
+
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { id } = req.params;
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const updated = await storage.updateUser(id, {
+        isBanned: false,
+        banReason: null,
+        bannedAt: null,
+        bannedBy: null,
+      });
+
+      // Log activity
+      await storage.logActivity({
+        userId: adminUserId,
+        targetUserId: id,
+        action: 'user_unbanned',
+        category: 'user',
+        details: { userEmail: user.email },
+        ipAddress: req.ip,
+      });
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error unbanning user:", error);
+      res.status(500).json({ message: "Failed to unban user" });
+    }
+  });
+
+  // Reset user progress (without deleting user)
+  app.post("/api/admin/users/:id/reset-progress", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      await storage.deleteAllUserProgress(id);
+      await storage.deleteUserBadges(id);
+
+      // Reset user stats
+      await storage.updateUserStats(id, {
+        lastCompletedDay: 0,
+        totalXp: 0,
+        currentStreak: 0,
+        longestStreak: 0,
+      });
+
+      // Log activity
+      const adminUserId = req.user?.claims?.sub;
+      await storage.logActivity({
+        userId: adminUserId,
+        targetUserId: id,
+        action: 'progress_reset',
+        category: 'user',
+        details: { userEmail: user.email },
+        ipAddress: req.ip,
+      });
+
+      res.json({ message: "User progress reset successfully" });
+    } catch (error) {
+      console.error("Error resetting user progress:", error);
+      res.status(500).json({ message: "Failed to reset user progress" });
+    }
+  });
+
+  // Get detailed progress for a specific user (for admin)
+  app.get("/api/admin/users/:id/progress", isAuthenticated, async (req: any, res) => {
+    try {
+      const { id } = req.params;
+
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const progress = await storage.getUserProgress(id);
+      const stats = await storage.getUserStats(id);
+
+      // Return all progress entries with their data
+      res.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        },
+        stats,
+        progress: progress.map(p => ({
+          day: p.day,
+          completed: p.completed,
+          completedAt: p.completedAt,
+          userInputs: p.userInputs,
+          generatedIdeas: p.generatedIdeas,
+          shortlistedIdeas: p.shortlistedIdeas,
+          selectedSuggestion: p.selectedSuggestion,
+          microDecisionChoice: p.microDecisionChoice,
+          reflectionAnswer: p.reflectionAnswer,
+        })),
+      });
+    } catch (error) {
+      console.error("Error fetching user progress:", error);
+      res.status(500).json({ message: "Failed to fetch user progress" });
     }
   });
 
@@ -3976,6 +4498,658 @@ Example format:
     } catch (error) {
       console.error("Error fetching AI usage stats:", error);
       res.status(500).json({ message: "Failed to fetch AI usage stats" });
+    }
+  });
+
+  // ========== REVENUE & PAYMENTS ==========
+
+  // Admin: Get revenue overview
+  app.get("/api/admin/revenue", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const stripe = await getUncachableStripeClient();
+
+      // Get balance
+      const balance = await stripe.balance.retrieve();
+
+      // Get recent charges (last 100)
+      const charges = await stripe.charges.list({
+        limit: 100,
+        expand: ['data.customer'],
+      });
+
+      // Get refunds (last 50)
+      const refunds = await stripe.refunds.list({
+        limit: 50,
+      });
+
+      // Calculate totals
+      const now = new Date();
+      const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      // All-time stats from successful charges
+      const successfulCharges = charges.data.filter(c => c.status === 'succeeded' && !c.refunded);
+      const totalRevenue = successfulCharges.reduce((sum, c) => sum + c.amount, 0);
+      const totalTransactions = successfulCharges.length;
+
+      // Last 30 days
+      const last30DaysCharges = successfulCharges.filter(c => new Date(c.created * 1000) >= thirtyDaysAgo);
+      const revenue30Days = last30DaysCharges.reduce((sum, c) => sum + c.amount, 0);
+
+      // Last 7 days
+      const last7DaysCharges = successfulCharges.filter(c => new Date(c.created * 1000) >= sevenDaysAgo);
+      const revenue7Days = last7DaysCharges.reduce((sum, c) => sum + c.amount, 0);
+
+      // Refund stats
+      const totalRefunds = refunds.data.reduce((sum, r) => sum + r.amount, 0);
+      const refundCount = refunds.data.length;
+
+      // Recent transactions (last 20)
+      const recentTransactions = charges.data.slice(0, 20).map(charge => ({
+        id: charge.id,
+        amount: charge.amount,
+        currency: charge.currency,
+        status: charge.status,
+        refunded: charge.refunded,
+        customerEmail: (charge.customer as any)?.email || charge.billing_details?.email || 'Unknown',
+        customerName: charge.billing_details?.name || 'Unknown',
+        description: charge.description || 'Challenge Purchase',
+        created: charge.created,
+      }));
+
+      // Revenue by product (from metadata or description)
+      const revenueByProduct: Record<string, { amount: number; count: number }> = {};
+      successfulCharges.forEach(charge => {
+        const product = charge.description || 'Challenge';
+        if (!revenueByProduct[product]) {
+          revenueByProduct[product] = { amount: 0, count: 0 };
+        }
+        revenueByProduct[product].amount += charge.amount;
+        revenueByProduct[product].count += 1;
+      });
+
+      res.json({
+        balance: {
+          available: balance.available.reduce((sum, b) => sum + b.amount, 0),
+          pending: balance.pending.reduce((sum, b) => sum + b.amount, 0),
+          currency: balance.available[0]?.currency || 'gbp',
+        },
+        totals: {
+          allTime: totalRevenue,
+          last30Days: revenue30Days,
+          last7Days: revenue7Days,
+          transactions: totalTransactions,
+        },
+        refunds: {
+          total: totalRefunds,
+          count: refundCount,
+        },
+        recentTransactions,
+        revenueByProduct: Object.entries(revenueByProduct).map(([name, data]) => ({
+          name,
+          amount: data.amount,
+          count: data.count,
+        })),
+      });
+    } catch (error) {
+      console.error("Error fetching revenue data:", error);
+      res.status(500).json({ message: "Failed to fetch revenue data" });
+    }
+  });
+
+  // Admin: Issue refund
+  app.post("/api/admin/refund", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { chargeId, amount, reason } = req.body;
+
+      if (!chargeId) {
+        return res.status(400).json({ message: "Charge ID is required" });
+      }
+
+      const stripe = await getUncachableStripeClient();
+
+      const refund = await stripe.refunds.create({
+        charge: chargeId,
+        amount: amount || undefined, // If not provided, refunds full amount
+        reason: reason || 'requested_by_customer',
+      });
+
+      // Log the refund activity
+      await storage.logActivity({
+        userId,
+        action: 'refund_issued',
+        category: 'payment',
+        details: {
+          chargeId,
+          refundId: refund.id,
+          amount: refund.amount,
+          reason: reason || 'requested_by_customer',
+        },
+        ipAddress: req.ip,
+      });
+
+      res.json({
+        success: true,
+        refund: {
+          id: refund.id,
+          amount: refund.amount,
+          status: refund.status,
+        },
+      });
+    } catch (error: any) {
+      console.error("Error processing refund:", error);
+      res.status(500).json({ message: error.message || "Failed to process refund" });
+    }
+  });
+
+  // Admin: Get activity logs
+  app.get("/api/admin/activity-logs", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { category, limit, offset } = req.query;
+
+      const logs = await storage.getActivityLogs({
+        category: category as string | undefined,
+        limit: limit ? parseInt(limit as string) : 100,
+        offset: offset ? parseInt(offset as string) : 0,
+      });
+
+      const stats = await storage.getActivityLogStats();
+
+      res.json({ logs, stats });
+    } catch (error) {
+      console.error("Error fetching activity logs:", error);
+      res.status(500).json({ message: "Failed to fetch activity logs" });
+    }
+  });
+
+  // Admin: Get all coupons
+  app.get("/api/admin/coupons", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const coupons = await storage.getAllCoupons();
+      res.json(coupons);
+    } catch (error) {
+      console.error("Error fetching coupons:", error);
+      res.status(500).json({ message: "Failed to fetch coupons" });
+    }
+  });
+
+  // Admin: Create coupon
+  app.post("/api/admin/coupons", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { code, description, discountType, discountAmount, maxUses, minPurchaseAmount, applicableProducts, startsAt, expiresAt } = req.body;
+
+      if (!code || !discountType || discountAmount === undefined) {
+        return res.status(400).json({ message: "Code, discount type, and discount amount are required" });
+      }
+
+      // Check if code already exists
+      const existing = await storage.getCouponByCode(code);
+      if (existing) {
+        return res.status(400).json({ message: "A coupon with this code already exists" });
+      }
+
+      const coupon = await storage.createCoupon({
+        code: code.toUpperCase(),
+        description,
+        discountType,
+        discountAmount,
+        maxUses: maxUses || null,
+        minPurchaseAmount: minPurchaseAmount || null,
+        applicableProducts: applicableProducts || null,
+        startsAt: startsAt ? new Date(startsAt) : null,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        createdBy: userId,
+      });
+
+      // Log activity
+      await storage.logActivity({
+        userId,
+        action: 'coupon_created',
+        category: 'payment',
+        details: { couponCode: code, discountType, discountAmount },
+        ipAddress: req.ip,
+      });
+
+      res.json(coupon);
+    } catch (error) {
+      console.error("Error creating coupon:", error);
+      res.status(500).json({ message: "Failed to create coupon" });
+    }
+  });
+
+  // Admin: Update coupon
+  app.patch("/api/admin/coupons/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { id } = req.params;
+      const updates = req.body;
+
+      const coupon = await storage.getCoupon(parseInt(id));
+      if (!coupon) {
+        return res.status(404).json({ message: "Coupon not found" });
+      }
+
+      // If updating code, ensure it doesn't conflict
+      if (updates.code && updates.code.toUpperCase() !== coupon.code) {
+        const existing = await storage.getCouponByCode(updates.code);
+        if (existing) {
+          return res.status(400).json({ message: "A coupon with this code already exists" });
+        }
+        updates.code = updates.code.toUpperCase();
+      }
+
+      // Convert date strings to Date objects
+      if (updates.startsAt) updates.startsAt = new Date(updates.startsAt);
+      if (updates.expiresAt) updates.expiresAt = new Date(updates.expiresAt);
+
+      const updated = await storage.updateCoupon(parseInt(id), updates);
+
+      // Log activity
+      await storage.logActivity({
+        userId,
+        action: 'coupon_updated',
+        category: 'payment',
+        details: { couponId: id, couponCode: coupon.code, updates },
+        ipAddress: req.ip,
+      });
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating coupon:", error);
+      res.status(500).json({ message: "Failed to update coupon" });
+    }
+  });
+
+  // Admin: Delete coupon
+  app.delete("/api/admin/coupons/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { id } = req.params;
+
+      const coupon = await storage.getCoupon(parseInt(id));
+      if (!coupon) {
+        return res.status(404).json({ message: "Coupon not found" });
+      }
+
+      await storage.deleteCoupon(parseInt(id));
+
+      // Log activity
+      await storage.logActivity({
+        userId,
+        action: 'coupon_deleted',
+        category: 'payment',
+        details: { couponId: id, couponCode: coupon.code },
+        ipAddress: req.ip,
+      });
+
+      res.json({ message: "Coupon deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting coupon:", error);
+      res.status(500).json({ message: "Failed to delete coupon" });
+    }
+  });
+
+  // Admin: Get coupon usages
+  app.get("/api/admin/coupons/:id/usages", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { id } = req.params;
+      const usages = await storage.getCouponUsages(parseInt(id));
+      res.json(usages);
+    } catch (error) {
+      console.error("Error fetching coupon usages:", error);
+      res.status(500).json({ message: "Failed to fetch coupon usages" });
+    }
+  });
+
+  // Public: Validate coupon code (for checkout)
+  app.post("/api/validate-coupon", async (req, res) => {
+    try {
+      const { code, purchaseAmount } = req.body;
+
+      if (!code) {
+        return res.status(400).json({ valid: false, error: "Coupon code is required" });
+      }
+
+      const result = await storage.validateCoupon(code, purchaseAmount);
+      res.json(result);
+    } catch (error) {
+      console.error("Error validating coupon:", error);
+      res.status(500).json({ valid: false, error: "Failed to validate coupon" });
+    }
+  });
+
+  // Admin: Send test broadcast email
+  app.post("/api/admin/broadcast/test", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { subject, body, email } = req.body;
+
+      if (!subject || !body || !email) {
+        return res.status(400).json({ message: "Subject, body, and email are required" });
+      }
+
+      const { sendBroadcastEmail } = await import('./emailService');
+      const success = await sendBroadcastEmail({
+        to: email,
+        firstName: 'Test',
+        subject,
+        body,
+      });
+
+      if (success) {
+        res.json({ message: "Test email sent successfully" });
+      } else {
+        res.status(500).json({ message: "Failed to send test email" });
+      }
+    } catch (error) {
+      console.error("Error sending test broadcast:", error);
+      res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
+  // Admin: Send broadcast email to segment
+  app.post("/api/admin/broadcast/send", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { subject, body, segment } = req.body;
+
+      if (!subject || !body || !segment) {
+        return res.status(400).json({ message: "Subject, body, and segment are required" });
+      }
+
+      // Get all users
+      const allUsers = await storage.getAllUsers();
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+      // Filter by segment
+      let targetUsers = allUsers;
+      switch (segment) {
+        case 'paid':
+          targetUsers = allUsers.filter(u => u.challengePurchased);
+          break;
+        case 'unpaid':
+          targetUsers = allUsers.filter(u => !u.challengePurchased);
+          break;
+        case 'active':
+          const activeStats = await storage.getAllUserStats();
+          const activeUserIds = new Set(
+            activeStats
+              .filter(s => s.lastActivityDate && new Date(s.lastActivityDate) > sevenDaysAgo)
+              .map(s => s.userId)
+          );
+          targetUsers = allUsers.filter(u => activeUserIds.has(u.id));
+          break;
+        case 'inactive':
+          const inactiveStats = await storage.getAllUserStats();
+          const inactiveUserIds = new Set(
+            inactiveStats
+              .filter(s => !s.lastActivityDate || new Date(s.lastActivityDate) <= sevenDaysAgo)
+              .map(s => s.userId)
+          );
+          targetUsers = allUsers.filter(u => inactiveUserIds.has(u.id));
+          break;
+        case 'stuck':
+          const stuckStats = await storage.getAllUserStats();
+          const stuckUserIds = new Set(
+            stuckStats
+              .filter(s => s.lastCompletedDay !== null && s.lastCompletedDay > 0 && s.lastCompletedDay < 21 &&
+                (!s.lastActivityDate || new Date(s.lastActivityDate) <= sevenDaysAgo))
+              .map(s => s.userId)
+          );
+          targetUsers = allUsers.filter(u => stuckUserIds.has(u.id));
+          break;
+      }
+
+      // Only send to users with email addresses
+      targetUsers = targetUsers.filter(u => u.email);
+
+      const { sendBroadcastEmail } = await import('./emailService');
+      let sent = 0;
+
+      // Send emails (with small delay to avoid rate limits)
+      for (const targetUser of targetUsers) {
+        if (targetUser.email) {
+          const success = await sendBroadcastEmail({
+            to: targetUser.email,
+            firstName: targetUser.firstName || 'there',
+            subject,
+            body,
+          });
+          if (success) sent++;
+
+          // Small delay between emails
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+
+      // Log activity
+      await storage.logActivity({
+        userId,
+        action: 'broadcast_sent',
+        category: 'content',
+        details: { segment, recipientCount: sent, subject },
+        ipAddress: req.ip,
+      });
+
+      res.json({ sent, total: targetUsers.length });
+    } catch (error) {
+      console.error("Error sending broadcast:", error);
+      res.status(500).json({ message: "Failed to send broadcast" });
+    }
+  });
+
+  // Admin: Get all announcements
+  app.get("/api/admin/announcements", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const announcements = await storage.getAllAnnouncements();
+      res.json(announcements);
+    } catch (error) {
+      console.error("Error fetching announcements:", error);
+      res.status(500).json({ message: "Failed to fetch announcements" });
+    }
+  });
+
+  // Admin: Create announcement
+  app.post("/api/admin/announcements", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { title, message, type, targetSegment, dismissible, linkUrl, linkText, startsAt, expiresAt, priority } = req.body;
+
+      if (!title || !message) {
+        return res.status(400).json({ message: "Title and message are required" });
+      }
+
+      const announcement = await storage.createAnnouncement({
+        title,
+        message,
+        type: type || 'info',
+        targetSegment: targetSegment || 'all',
+        dismissible: dismissible !== false,
+        linkUrl: linkUrl || null,
+        linkText: linkText || null,
+        startsAt: startsAt ? new Date(startsAt) : null,
+        expiresAt: expiresAt ? new Date(expiresAt) : null,
+        priority: priority || 0,
+        createdBy: userId,
+      });
+
+      // Log activity
+      await storage.logActivity({
+        userId,
+        action: 'announcement_created',
+        category: 'content',
+        details: { announcementId: announcement.id, title },
+        ipAddress: req.ip,
+      });
+
+      res.json(announcement);
+    } catch (error) {
+      console.error("Error creating announcement:", error);
+      res.status(500).json({ message: "Failed to create announcement" });
+    }
+  });
+
+  // Admin: Update announcement
+  app.patch("/api/admin/announcements/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { id } = req.params;
+      const updates = req.body;
+
+      // Convert date strings to Date objects
+      if (updates.startsAt) updates.startsAt = new Date(updates.startsAt);
+      if (updates.expiresAt) updates.expiresAt = new Date(updates.expiresAt);
+
+      const updated = await storage.updateAnnouncement(parseInt(id), updates);
+      if (!updated) {
+        return res.status(404).json({ message: "Announcement not found" });
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating announcement:", error);
+      res.status(500).json({ message: "Failed to update announcement" });
+    }
+  });
+
+  // Admin: Delete announcement
+  app.delete("/api/admin/announcements/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { id } = req.params;
+      await storage.deleteAnnouncement(parseInt(id));
+      res.json({ message: "Announcement deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting announcement:", error);
+      res.status(500).json({ message: "Failed to delete announcement" });
+    }
+  });
+
+  // User: Get announcements for current user
+  app.get("/api/announcements", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      const stats = await storage.getUserStats(userId);
+
+      // Determine user segment
+      let segment = 'all';
+      if (user?.challengePurchased) {
+        segment = 'paid';
+      } else {
+        segment = 'unpaid';
+      }
+
+      const announcements = await storage.getAnnouncementsForUser(userId, segment);
+      res.json(announcements);
+    } catch (error) {
+      console.error("Error fetching user announcements:", error);
+      res.status(500).json({ message: "Failed to fetch announcements" });
+    }
+  });
+
+  // User: Dismiss announcement
+  app.post("/api/announcements/:id/dismiss", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { id } = req.params;
+
+      await storage.dismissAnnouncement(parseInt(id), userId);
+      res.json({ message: "Announcement dismissed" });
+    } catch (error) {
+      console.error("Error dismissing announcement:", error);
+      res.status(500).json({ message: "Failed to dismiss announcement" });
     }
   });
 

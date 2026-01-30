@@ -32,6 +32,7 @@ import { DayCommunity } from "@/components/DayCommunity";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
 import { VideoSlides } from "@/components/VideoSlides";
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import { toast } from "sonner";
 
 // Lazy load Day components - only loads the component for the current day
@@ -361,6 +362,9 @@ export default function Dashboard() {
   return (
     <Layout currentDay={currentDay}>
       <div className="space-y-8 pb-20 font-sans">
+        {/* Announcements */}
+        <AnnouncementBanner />
+
         {/* Header - Clean & Sharp */}
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 border-b border-slate-200 pb-8">
           <div className="space-y-2">

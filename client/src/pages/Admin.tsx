@@ -41,7 +41,30 @@ import {
   Sparkles,
   ToggleLeft,
   ToggleRight,
-  Mail
+  Mail,
+  UserPlus,
+  Search,
+  CreditCard,
+  RefreshCw,
+  UserX,
+  DollarSign,
+  PoundSterling,
+  ArrowUpRight,
+  ArrowDownRight,
+  Wallet,
+  Receipt,
+  Activity,
+  Filter,
+  Tag,
+  Percent,
+  Calendar,
+  Send,
+  Radio,
+  Megaphone,
+  Info,
+  AlertCircle,
+  CheckCircle,
+  Gift
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -195,6 +218,140 @@ interface EmailTemplate {
   updatedAt: string;
 }
 
+interface AdminUser {
+  id: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  profileImageUrl: string | null;
+  isAdmin: boolean | null;
+  challengePurchased: boolean | null;
+  coachingPurchased: boolean | null;
+  stripeCustomerId: string | null;
+  purchaseCurrency: string | null;
+  referralCode: string | null;
+  adminNotes: string | null;
+  isBanned: boolean | null;
+  banReason: string | null;
+  bannedAt: string | null;
+  createdAt: string;
+  stats: {
+    lastCompletedDay: number;
+    totalXp: number;
+    currentStreak: number;
+    lastActivityDate: string | null;
+  };
+  completedDays: number;
+}
+
+interface RevenueData {
+  balance: {
+    available: number;
+    pending: number;
+    currency: string;
+  };
+  totals: {
+    allTime: number;
+    last30Days: number;
+    last7Days: number;
+    transactions: number;
+  };
+  refunds: {
+    total: number;
+    count: number;
+  };
+  recentTransactions: {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+    refunded: boolean;
+    customerEmail: string;
+    customerName: string;
+    description: string;
+    created: number;
+  }[];
+  revenueByProduct: {
+    name: string;
+    amount: number;
+    count: number;
+  }[];
+}
+
+interface ActivityLog {
+  id: number;
+  userId: string | null;
+  targetUserId: string | null;
+  action: string;
+  category: string;
+  details: Record<string, unknown> | null;
+  ipAddress: string | null;
+  createdAt: string;
+  user?: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+  };
+  targetUser?: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+  };
+}
+
+interface ActivityLogResponse {
+  logs: ActivityLog[];
+  stats: {
+    totalLogs: number;
+    todayLogs: number;
+    categoryCounts: Record<string, number>;
+  };
+}
+
+interface Coupon {
+  id: number;
+  code: string;
+  description: string | null;
+  discountType: string;
+  discountAmount: number;
+  maxUses: number | null;
+  currentUses: number | null;
+  minPurchaseAmount: number | null;
+  applicableProducts: string[] | null;
+  startsAt: string | null;
+  expiresAt: string | null;
+  isActive: boolean | null;
+  createdAt: string;
+}
+
+interface Announcement {
+  id: number;
+  title: string;
+  message: string;
+  type: string;
+  targetSegment: string | null;
+  dismissible: boolean | null;
+  linkUrl: string | null;
+  linkText: string | null;
+  startsAt: string | null;
+  expiresAt: string | null;
+  isActive: boolean | null;
+  priority: number | null;
+  createdAt: string;
+}
+
+interface LiveUser {
+  userId: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  profileImageUrl: string | null;
+  currentPage: string;
+  lastSeen: string;
+}
+
 const FONT_OPTIONS = [
   "Poppins",
   "Inter",
@@ -226,8 +383,8 @@ export default function Admin() {
       <Layout currentDay={1}>
         <div className="flex items-center justify-center min-h-[60vh]">
           <Card className="p-8 text-center max-w-md">
-            <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-              <AlertTriangle className="w-8 h-8 text-red-600" />
+            <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle className="w-8 h-8 text-primary" />
             </div>
             <h1 className="text-2xl font-bold text-slate-900 mb-2">Access Denied</h1>
             <p className="text-slate-600">You don't have permission to access the admin panel.</p>
@@ -301,7 +458,314 @@ export default function Admin() {
   const [businessRedirect, setBusinessRedirect] = useState("This challenge focuses on building. For business strategy, see Matt's mentorship: https://mattwebley.com/workwithmatt");
   const [coreRules, setCoreRules] = useState("1. Reference their idea/features when relevant\n2. ONE clear next step when stuck\n3. Keep them on their current day's task");
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [showChatSection, setShowChatSection] = useState(true); // Open by default
+  const [showChatSection, setShowChatSection] = useState(false);
+  const [showCommentsSection, setShowCommentsSection] = useState(false);
+  const [showBrandSection, setShowBrandSection] = useState(false);
+  const [showProgressSection, setShowProgressSection] = useState(false);
+  const [showDayCompletionSection, setShowDayCompletionSection] = useState(false);
+  const [showRevenueSection, setShowRevenueSection] = useState(false);
+  const [showActivityLogSection, setShowActivityLogSection] = useState(false);
+  const [activityLogCategory, setActivityLogCategory] = useState<string>('');
+  const [showFunnelSection, setShowFunnelSection] = useState(false);
+  const [showLiveUsersSection, setShowLiveUsersSection] = useState(false);
+  const [showCouponsSection, setShowCouponsSection] = useState(false);
+  const [showBroadcastSection, setShowBroadcastSection] = useState(false);
+  const [showAnnouncementsSection, setShowAnnouncementsSection] = useState(false);
+  const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
+  const [newAnnouncement, setNewAnnouncement] = useState({
+    title: '',
+    message: '',
+    type: 'info' as 'info' | 'warning' | 'success' | 'promo',
+    targetSegment: 'all',
+    dismissible: true,
+    linkUrl: '',
+    linkText: '',
+    expiresAt: '',
+  });
+  const [broadcastEmail, setBroadcastEmail] = useState({
+    subject: '',
+    body: '',
+    segment: 'all' as 'all' | 'paid' | 'unpaid' | 'active' | 'inactive' | 'stuck',
+    testEmail: '',
+  });
+  const [showCreateCoupon, setShowCreateCoupon] = useState(false);
+  const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
+  const [newCoupon, setNewCoupon] = useState({
+    code: '',
+    description: '',
+    discountType: 'percent' as 'percent' | 'fixed',
+    discountAmount: 0,
+    maxUses: '',
+    expiresAt: '',
+  });
+
+  // Activity log data
+  const { data: activityLogData, isLoading: activityLogLoading } = useQuery<ActivityLogResponse>({
+    queryKey: [activityLogCategory ? `/api/admin/activity-logs?category=${activityLogCategory}` : "/api/admin/activity-logs"],
+  });
+
+  // Live users data (only fetches when section is visible)
+  const { data: liveUsersData, refetch: refetchLiveUsers } = useQuery<{ count: number; users: LiveUser[] }>({
+    queryKey: ["/api/admin/live-users"],
+    enabled: showLiveUsersSection, // Only fetch when viewing this section
+    refetchInterval: showLiveUsersSection ? 10000 : false, // Refresh every 10s when visible
+  });
+
+  // Coupons data
+  const { data: couponsData = [], refetch: refetchCoupons } = useQuery<Coupon[]>({
+    queryKey: ["/api/admin/coupons"],
+  });
+
+  const createCouponMutation = useMutation({
+    mutationFn: async (data: typeof newCoupon) => {
+      const res = await fetch("/api/admin/coupons", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          ...data,
+          maxUses: data.maxUses ? parseInt(data.maxUses) : null,
+          expiresAt: data.expiresAt || null,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to create coupon");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Coupon created successfully");
+      refetchCoupons();
+      setShowCreateCoupon(false);
+      setNewCoupon({ code: '', description: '', discountType: 'percent', discountAmount: 0, maxUses: '', expiresAt: '' });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const updateCouponMutation = useMutation({
+    mutationFn: async ({ id, ...data }: Partial<Coupon> & { id: number }) => {
+      const res = await fetch(`/api/admin/coupons/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to update coupon");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Coupon updated successfully");
+      refetchCoupons();
+      setEditingCoupon(null);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const deleteCouponMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/admin/coupons/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to delete coupon");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Coupon deleted successfully");
+      refetchCoupons();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Announcements data
+  const { data: announcementsData = [], refetch: refetchAnnouncements } = useQuery<Announcement[]>({
+    queryKey: ["/api/admin/announcements"],
+  });
+
+  const createAnnouncementMutation = useMutation({
+    mutationFn: async (data: typeof newAnnouncement) => {
+      const res = await fetch("/api/admin/announcements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          ...data,
+          expiresAt: data.expiresAt || null,
+          linkUrl: data.linkUrl || null,
+          linkText: data.linkText || null,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to create announcement");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Announcement created successfully");
+      refetchAnnouncements();
+      setShowCreateAnnouncement(false);
+      setNewAnnouncement({ title: '', message: '', type: 'info', targetSegment: 'all', dismissible: true, linkUrl: '', linkText: '', expiresAt: '' });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const updateAnnouncementMutation = useMutation({
+    mutationFn: async ({ id, ...data }: Partial<Announcement> & { id: number }) => {
+      const res = await fetch(`/api/admin/announcements/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to update announcement");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Announcement updated");
+      refetchAnnouncements();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const deleteAnnouncementMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await fetch(`/api/admin/announcements/${id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to delete announcement");
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Announcement deleted");
+      refetchAnnouncements();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Ban/unban user mutations
+  const banUserMutation = useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason: string }) => {
+      const res = await fetch(`/api/admin/users/${id}/ban`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ reason }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to ban user");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("User banned successfully");
+      refetchUsers();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const unbanUserMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/users/${id}/unban`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to unban user");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("User unbanned successfully");
+      refetchUsers();
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Broadcast email mutations
+  const sendTestEmailMutation = useMutation({
+    mutationFn: async (data: { subject: string; body: string; email: string }) => {
+      const res = await fetch("/api/admin/broadcast/test", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to send test email");
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      toast.success("Test email sent successfully");
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const sendBroadcastMutation = useMutation({
+    mutationFn: async (data: { subject: string; body: string; segment: string }) => {
+      const res = await fetch("/api/admin/broadcast/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to send broadcast");
+      }
+      return res.json();
+    },
+    onSuccess: (data: { sent: number }) => {
+      toast.success(`Broadcast sent to ${data.sent} users`);
+      setBroadcastEmail({ subject: '', body: '', segment: 'all', testEmail: '' });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
+  // Revenue data
+  const { data: revenueData, isLoading: revenueLoading } = useQuery<RevenueData>({
+    queryKey: ["/api/admin/revenue"],
+  });
+
+  const formatCurrency = (amount: number, currency: string = 'gbp') => {
+    const symbol = currency === 'usd' ? '$' : '£';
+    return `${symbol}${(amount / 100).toFixed(2)}`;
+  };
 
   const { data: chatbotSettings } = useQuery<ChatbotSettings>({
     queryKey: ["/api/admin/chatbot/settings"],
@@ -411,6 +875,206 @@ export default function Admin() {
     onError: () => {
       toast.error("Failed to send test email");
     }
+  });
+
+  // User Management state
+  const [showUserManagement, setShowUserManagement] = useState(false);
+  const [userSearchQuery, setUserSearchQuery] = useState("");
+  const [userFilter, setUserFilter] = useState<'all' | 'paid' | 'unpaid' | 'active' | 'inactive' | 'stuck' | 'completed'>('all');
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [isAddingUser, setIsAddingUser] = useState(false);
+  const [editingNotesFor, setEditingNotesFor] = useState<string | null>(null);
+  const [notesText, setNotesText] = useState("");
+  const [newUserEmail, setNewUserEmail] = useState("");
+  const [newUserFirstName, setNewUserFirstName] = useState("");
+  const [newUserLastName, setNewUserLastName] = useState("");
+  const [newUserIsAdmin, setNewUserIsAdmin] = useState(false);
+  const [newUserHasPurchased, setNewUserHasPurchased] = useState(false);
+
+  const { data: adminUsers = [], refetch: refetchUsers } = useQuery<AdminUser[]>({
+    queryKey: ["/api/admin/users"],
+  });
+
+  // Calculate user segments
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const userSegments = {
+    all: adminUsers.length,
+    paid: adminUsers.filter(u => u.challengePurchased).length,
+    unpaid: adminUsers.filter(u => !u.challengePurchased).length,
+    active: adminUsers.filter(u => u.stats.lastActivityDate && new Date(u.stats.lastActivityDate) > sevenDaysAgo).length,
+    inactive: adminUsers.filter(u => !u.stats.lastActivityDate || new Date(u.stats.lastActivityDate) <= sevenDaysAgo).length,
+    stuck: adminUsers.filter(u => u.stats.lastCompletedDay > 0 && u.stats.lastCompletedDay < 21 && (!u.stats.lastActivityDate || new Date(u.stats.lastActivityDate) <= sevenDaysAgo)).length,
+    completed: adminUsers.filter(u => u.stats.lastCompletedDay >= 21).length,
+  };
+
+  // Funnel data - progression through challenge phases
+  const funnelData = [
+    { stage: 'Signed Up', count: adminUsers.length, color: 'bg-slate-400' },
+    { stage: 'Purchased', count: adminUsers.filter(u => u.challengePurchased).length, color: 'bg-blue-500' },
+    { stage: 'Started (Day 0)', count: adminUsers.filter(u => u.stats.lastCompletedDay >= 0 && u.challengePurchased).length, color: 'bg-cyan-500' },
+    { stage: 'Idea Phase (1-4)', count: adminUsers.filter(u => u.stats.lastCompletedDay >= 1).length, color: 'bg-teal-500' },
+    { stage: 'Prepare (5-9)', count: adminUsers.filter(u => u.stats.lastCompletedDay >= 5).length, color: 'bg-green-500' },
+    { stage: 'Build (10-18)', count: adminUsers.filter(u => u.stats.lastCompletedDay >= 10).length, color: 'bg-amber-500' },
+    { stage: 'Launch (19-21)', count: adminUsers.filter(u => u.stats.lastCompletedDay >= 19).length, color: 'bg-orange-500' },
+    { stage: 'Completed', count: adminUsers.filter(u => u.stats.lastCompletedDay >= 21).length, color: 'bg-emerald-600' },
+  ];
+  const maxFunnelCount = Math.max(...funnelData.map(d => d.count), 1);
+
+  const filteredUsers = adminUsers.filter(user => {
+    // Apply segment filter
+    if (userFilter !== 'all') {
+      const isActive = user.stats.lastActivityDate && new Date(user.stats.lastActivityDate) > sevenDaysAgo;
+      const isStuck = user.stats.lastCompletedDay > 0 && user.stats.lastCompletedDay < 21 && !isActive;
+
+      switch (userFilter) {
+        case 'paid': if (!user.challengePurchased) return false; break;
+        case 'unpaid': if (user.challengePurchased) return false; break;
+        case 'active': if (!isActive) return false; break;
+        case 'inactive': if (isActive) return false; break;
+        case 'stuck': if (!isStuck) return false; break;
+        case 'completed': if (user.stats.lastCompletedDay < 21) return false; break;
+      }
+    }
+
+    // Apply search filter
+    if (!userSearchQuery) return true;
+    const query = userSearchQuery.toLowerCase();
+    return (
+      user.email?.toLowerCase().includes(query) ||
+      user.firstName?.toLowerCase().includes(query) ||
+      user.lastName?.toLowerCase().includes(query) ||
+      user.id.toLowerCase().includes(query)
+    );
+  });
+
+  // Bulk selection helpers
+  const toggleUserSelection = (userId: string) => {
+    const newSelected = new Set(selectedUsers);
+    if (newSelected.has(userId)) {
+      newSelected.delete(userId);
+    } else {
+      newSelected.add(userId);
+    }
+    setSelectedUsers(newSelected);
+  };
+
+  const selectAllFiltered = () => {
+    if (selectedUsers.size === filteredUsers.length) {
+      setSelectedUsers(new Set());
+    } else {
+      setSelectedUsers(new Set(filteredUsers.map(u => u.id)));
+    }
+  };
+
+  const exportUsersCSV = () => {
+    const usersToExport = selectedUsers.size > 0
+      ? filteredUsers.filter(u => selectedUsers.has(u.id))
+      : filteredUsers;
+
+    const headers = ['Email', 'First Name', 'Last Name', 'Paid', 'Day', 'XP', 'Signed Up', 'Last Active'];
+    const rows = usersToExport.map(u => [
+      u.email || '',
+      u.firstName || '',
+      u.lastName || '',
+      u.challengePurchased ? 'Yes' : 'No',
+      u.stats.lastCompletedDay.toString(),
+      u.stats.totalXp.toString(),
+      u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '',
+      u.stats.lastActivityDate ? new Date(u.stats.lastActivityDate).toLocaleDateString() : '',
+    ]);
+
+    const csv = [headers, ...rows].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `users-${userFilter}-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${usersToExport.length} users to CSV`);
+  };
+
+  // Refund mutation
+  const issueRefund = useMutation({
+    mutationFn: async ({ chargeId, amount }: { chargeId: string; amount?: number }) => {
+      const res = await apiRequest("POST", "/api/admin/refund", { chargeId, amount });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/revenue"] });
+      toast.success("Refund issued successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to issue refund");
+    },
+  });
+
+  const createUser = useMutation({
+    mutationFn: async (data: { email: string; firstName?: string; lastName?: string; isAdmin?: boolean; challengePurchased?: boolean }) => {
+      const res = await apiRequest("POST", "/api/admin/users", data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setIsAddingUser(false);
+      setNewUserEmail("");
+      setNewUserFirstName("");
+      setNewUserLastName("");
+      setNewUserIsAdmin(false);
+      setNewUserHasPurchased(false);
+      toast.success("User created successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create user");
+    },
+  });
+
+  const updateUser = useMutation({
+    mutationFn: async ({ id, ...data }: { id: string; [key: string]: any }) => {
+      const res = await apiRequest("PATCH", `/api/admin/users/${id}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      toast.success("User updated successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to update user");
+    },
+  });
+
+  const deleteUser = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiRequest("DELETE", `/api/admin/users/${id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setSelectedUser(null);
+      toast.success("User deleted successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete user");
+    },
+  });
+
+  const resetUserProgress = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await apiRequest("POST", `/api/admin/users/${id}/reset-progress`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      toast.success("User progress reset successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to reset user progress");
+    },
   });
 
   // A/B Testing state
@@ -662,101 +1326,1736 @@ export default function Admin() {
   return (
     <Layout currentDay={1}>
       <div className="space-y-8 pb-20">
-        <div className="border-b border-slate-200 pb-6">
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Admin Dashboard</h1>
-          <p className="text-slate-500 mt-1">Track student progress and engagement metrics</p>
+        <div className="border-b border-slate-200 pb-6 flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight text-slate-900">Admin Dashboard</h1>
+            <p className="text-slate-500 mt-1">Track student progress and engagement metrics</p>
+          </div>
+          <button
+            onClick={() => setTestMode(!testMode)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              testMode
+                ? "bg-primary text-white"
+                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+            }`}
+            title={testMode ? "All days unlocked, bypass time restrictions" : "Normal day unlocking rules apply"}
+          >
+            {testMode ? (
+              <ToggleRight className="w-4 h-4" />
+            ) : (
+              <ToggleLeft className="w-4 h-4" />
+            )}
+            Test Mode
+          </button>
         </div>
 
-        {/* Overview Stats */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-6 border-2 border-slate-100">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
-                <Users className="w-6 h-6 text-primary" />
+        {/* Overview Stats - Two Column Layout */}
+        <div className="grid lg:grid-cols-2 gap-4">
+          {/* Students Card */}
+          <Card
+            className="p-5 border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors"
+            onClick={() => {
+              setShowUserManagement(true);
+              setTimeout(() => {
+                document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }, 100);
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                  <Users className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900">Students</h3>
+              </div>
+              <span className="text-xs text-slate-400">Click to manage</span>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-3xl font-bold text-slate-900">{stats.totalUsers}</p>
+                <p className="text-slate-600">Total</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-500">Total Students</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.totalUsers}</p>
+                <p className="text-3xl font-bold text-primary">{stats.activeUsers}</p>
+                <p className="text-slate-600">Active (7d)</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-slate-400">{stats.totalUsers - stats.activeUsers}</p>
+                <p className="text-slate-600">Inactive</p>
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 border-2 border-slate-100">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-primary" />
+          {/* Revenue Card */}
+          <Card
+            className="p-5 border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors"
+            onClick={() => {
+              setShowRevenueSection(true);
+              setTimeout(() => {
+                document.getElementById('revenue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }, 100);
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                  <PoundSterling className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900">Revenue</h3>
               </div>
-              <div>
-                <p className="text-sm font-medium text-slate-500">Active (7 days)</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.activeUsers}</p>
-              </div>
+              <span className="text-xs text-slate-400">Click for details</span>
             </div>
-          </Card>
-
-          <Card className="p-6 border-2 border-slate-100">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
-                <Trophy className="w-6 h-6 text-primary" />
-              </div>
+            <div className="grid grid-cols-3 gap-4">
               <div>
-                <p className="text-sm font-medium text-slate-500">Completed 21 Days</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.completedChallenges}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 border-2 border-slate-100">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
-                <BarChart3 className="w-6 h-6 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-slate-500">Avg Progress</p>
-                <p className="text-2xl font-bold text-slate-900">{Math.round(stats.avgProgress)}%</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Test Mode Toggle */}
-        <Card className="p-4 border-2 border-slate-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              {testMode ? (
-                <ToggleRight className="w-6 h-6 text-primary" />
-              ) : (
-                <ToggleLeft className="w-6 h-6 text-slate-400" />
-              )}
-              <div>
-                <h3 className="font-bold text-slate-900">Test Mode</h3>
-                <p className="text-slate-600 text-sm">
-                  {testMode ? "All days unlocked, bypass time restrictions" : "Normal day unlocking rules apply"}
+                <p className="text-3xl font-bold text-primary">
+                  {revenueData ? formatCurrency(revenueData.balance.available, revenueData.balance.currency) : '—'}
                 </p>
+                <p className="text-slate-600">Available</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-slate-900">
+                  {revenueData ? formatCurrency(revenueData.totals.last7Days, revenueData.balance.currency) : '—'}
+                </p>
+                <p className="text-slate-600">Last 7 days</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-slate-900">
+                  {revenueData ? formatCurrency(revenueData.totals.last30Days, revenueData.balance.currency) : '—'}
+                </p>
+                <p className="text-slate-600">Last 30 days</p>
               </div>
             </div>
-            <Button
-              variant={testMode ? "default" : "outline"}
-              onClick={() => setTestMode(!testMode)}
-              className="min-w-[80px]"
-            >
-              {testMode ? "ON" : "OFF"}
-            </Button>
-          </div>
-        </Card>
+          </Card>
 
-        {/* Admin Reminders */}
-        <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-          <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-slate-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-bold text-slate-900">Reminder: Affiliate Links</h3>
-              <p className="text-slate-700 text-sm mt-1">
-                Once you hit <strong>10 sales</strong>, add your Fiverr affiliate links to Day 5 (Logo).
-                Stop being lazy and go sign up at <a href="https://www.fiverr.com/partnerships/affiliates" target="_blank" rel="noopener noreferrer" className="underline font-medium">fiverr.com/partnerships/affiliates</a>
-              </p>
+          {/* Progress Card */}
+          <Card
+            className="p-5 border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors"
+            onClick={() => {
+              setShowProgressSection(true);
+              setTimeout(() => {
+                document.getElementById('progress-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }, 100);
+            }}
+          >
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-900">Progress</h3>
+              </div>
+              <span className="text-xs text-slate-400">Click for details</span>
             </div>
-          </div>
-        </Card>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-3xl font-bold text-slate-900">{Math.round(stats.avgProgress)}%</p>
+                <p className="text-slate-600">Avg Progress</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-primary">{stats.completedChallenges}</p>
+                <p className="text-slate-600">Completed</p>
+              </div>
+              <div>
+                <p className="text-3xl font-bold text-slate-400">
+                  {stats.totalUsers > 0 ? Math.round((stats.completedChallenges / stats.totalUsers) * 100) : 0}%
+                </p>
+                <p className="text-slate-600">Completion Rate</p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Quick Actions Card */}
+          <Card className="p-5 border border-slate-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="text-lg font-bold text-slate-900">Quick Actions</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="justify-start"
+                onClick={() => {
+                  setShowUserManagement(true);
+                  setIsAddingUser(true);
+                  setTimeout(() => {
+                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 100);
+                }}
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Add User
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="justify-start"
+                onClick={() => setShowCommentsSection(true)}
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Comments {pendingComments.length > 0 && `(${pendingComments.length})`}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="justify-start"
+                onClick={() => setShowEmailTemplatesSection(true)}
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Emails
+              </Button>
+              <a
+                href="https://dashboard.stripe.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-start gap-2 px-3 py-2 text-sm border border-slate-200 rounded-md hover:bg-slate-50"
+              >
+                <PoundSterling className="w-4 h-4" />
+                Stripe
+                <ExternalLink className="w-3 h-3 ml-auto" />
+              </a>
+            </div>
+          </Card>
+        </div>
+
+        {/* Live Users Section */}
+        <div className="space-y-4" id="live-users-section">
+          <button
+            onClick={() => setShowLiveUsersSection(!showLiveUsersSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <div className="relative">
+              <Users className="w-6 h-6 text-primary" />
+              {liveUsersData && liveUsersData.count > 0 && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+              )}
+            </div>
+            <h2 className="text-xl font-bold text-slate-900">Live Users</h2>
+            <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
+              liveUsersData && liveUsersData.count > 0
+                ? 'bg-green-100 text-green-700'
+                : 'bg-slate-100 text-slate-700'
+            }`}>
+              {liveUsersData?.count || 0} online
+            </span>
+            {showLiveUsersSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showLiveUsersSection && (
+            <Card className="p-6 border border-slate-200">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm text-slate-500">
+                  Users active in the last 3 minutes • Updates every 10 seconds
+                </p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => refetchLiveUsers()}
+                  className="gap-1"
+                >
+                  <RefreshCw className="w-3 h-3" />
+                  Refresh
+                </Button>
+              </div>
+
+              {!liveUsersData || liveUsersData.count === 0 ? (
+                <div className="text-center py-8 text-slate-500">
+                  <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p>No users currently online</p>
+                  <p className="text-sm text-slate-400 mt-1">Users will appear here when they're active on the site</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {liveUsersData.users.map((user) => (
+                    <div
+                      key={user.userId}
+                      className="flex items-center justify-between p-3 rounded-lg border border-slate-200 hover:bg-slate-50"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="relative">
+                          {user.profileImageUrl ? (
+                            <img
+                              src={user.profileImageUrl}
+                              alt=""
+                              className="w-10 h-10 rounded-full"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center">
+                              <span className="text-sm font-bold text-slate-500">
+                                {user.firstName?.[0] || user.email?.[0]?.toUpperCase() || '?'}
+                              </span>
+                            </div>
+                          )}
+                          <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-slate-900">
+                            {user.firstName || user.lastName
+                              ? `${user.firstName || ''} ${user.lastName || ''}`.trim()
+                              : user.email || 'Unknown'}
+                          </p>
+                          <p className="text-sm text-slate-500">{user.email}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-700 text-sm font-medium rounded">
+                          {user.currentPage}
+                        </span>
+                        <p className="text-xs text-slate-400 mt-1">
+                          {formatDistanceToNow(new Date(user.lastSeen), { addSuffix: true })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          )}
+        </div>
+
+        {/* Revenue & Payments Section */}
+        <div className="space-y-4" id="revenue-section">
+          <button
+            onClick={() => setShowRevenueSection(!showRevenueSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <PoundSterling className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">Revenue & Payments</h2>
+            {revenueData && (
+              <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
+                {formatCurrency(revenueData.totals.allTime, revenueData.balance.currency)} total
+              </span>
+            )}
+            {showRevenueSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showRevenueSection && (
+            <div className="space-y-4">
+              {/* Stripe Dashboard Link */}
+              <div className="flex justify-end">
+                <a
+                  href="https://dashboard.stripe.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#635BFF] text-white text-sm font-medium rounded-lg hover:bg-[#5851ea] transition-colors"
+                >
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
+                  </svg>
+                  Open Stripe Dashboard
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+
+              {revenueLoading ? (
+                <Card className="p-8 border border-slate-200 text-center">
+                  <p className="text-slate-500">Loading revenue data...</p>
+                </Card>
+              ) : revenueData ? (
+                <>
+                  {/* Revenue Stats */}
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <Card className="p-4 border border-slate-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                          <Wallet className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-slate-500">Available Balance</p>
+                          <p className="text-xl font-bold text-green-600">
+                            {formatCurrency(revenueData.balance.available, revenueData.balance.currency)}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="p-4 border border-slate-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                          <ArrowUpRight className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-slate-500">Last 7 Days</p>
+                          <p className="text-xl font-bold text-slate-900">
+                            {formatCurrency(revenueData.totals.last7Days, revenueData.balance.currency)}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="p-4 border border-slate-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                          <TrendingUp className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-slate-500">Last 30 Days</p>
+                          <p className="text-xl font-bold text-slate-900">
+                            {formatCurrency(revenueData.totals.last30Days, revenueData.balance.currency)}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+
+                    <Card className="p-4 border border-slate-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                          <ArrowDownRight className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-medium text-slate-500">Refunds</p>
+                          <p className="text-xl font-bold text-red-600">
+                            {formatCurrency(revenueData.refunds.total, revenueData.balance.currency)}
+                            <span className="text-sm font-normal text-red-400 ml-1">({revenueData.refunds.count})</span>
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+
+                  {/* Revenue by Product */}
+                  {revenueData.revenueByProduct.length > 0 && (
+                    <Card className="p-4 border border-slate-200">
+                      <h3 className="font-bold text-slate-900 mb-3">Revenue by Product</h3>
+                      <div className="space-y-2">
+                        {revenueData.revenueByProduct.map((product, i) => (
+                          <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
+                            <div>
+                              <p className="font-medium text-slate-900">{product.name}</p>
+                              <p className="text-sm text-slate-500">{product.count} sales</p>
+                            </div>
+                            <p className="font-bold text-slate-900">
+                              {formatCurrency(product.amount, revenueData.balance.currency)}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  )}
+
+                  {/* Recent Transactions */}
+                  <Card className="border border-slate-200 overflow-hidden">
+                    <div className="p-4 border-b border-slate-100">
+                      <h3 className="font-bold text-slate-900">Recent Transactions</h3>
+                    </div>
+                    <div className="divide-y divide-slate-100 max-h-[400px] overflow-y-auto">
+                      {revenueData.recentTransactions.length === 0 ? (
+                        <div className="p-8 text-center text-slate-500">
+                          No transactions yet
+                        </div>
+                      ) : (
+                        revenueData.recentTransactions.map((tx) => (
+                          <div key={tx.id} className="p-4 flex items-center justify-between hover:bg-slate-50">
+                            <div className="flex items-center gap-3">
+                              <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                                tx.refunded ? 'bg-red-100' : tx.status === 'succeeded' ? 'bg-green-100' : 'bg-slate-100'
+                              }`}>
+                                {tx.refunded ? (
+                                  <ArrowDownRight className="w-4 h-4 text-red-600" />
+                                ) : (
+                                  <Receipt className="w-4 h-4 text-green-600" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="font-medium text-slate-900">
+                                  {tx.customerName !== 'Unknown' ? tx.customerName : tx.customerEmail}
+                                </p>
+                                <p className="text-sm text-slate-500">{tx.description}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              {!tx.refunded && tx.status === 'succeeded' && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  onClick={() => {
+                                    if (confirm(`Refund ${formatCurrency(tx.amount, tx.currency)} to ${tx.customerEmail}?`)) {
+                                      issueRefund.mutate({ chargeId: tx.id });
+                                    }
+                                  }}
+                                  disabled={issueRefund.isPending}
+                                >
+                                  Refund
+                                </Button>
+                              )}
+                              {tx.refunded && (
+                                <span className="text-xs text-red-500 font-medium">Refunded</span>
+                              )}
+                              <div className="text-right">
+                                <p className={`font-bold ${tx.refunded ? 'text-red-600 line-through' : 'text-slate-900'}`}>
+                                  {formatCurrency(tx.amount, tx.currency)}
+                                </p>
+                                <p className="text-xs text-slate-400">
+                                  {new Date(tx.created * 1000).toLocaleDateString('en-GB', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </Card>
+
+                  {/* Pending Balance Note */}
+                  {revenueData.balance.pending > 0 && (
+                    <Card className="p-4 border border-slate-200 bg-slate-50">
+                      <div className="flex items-center gap-3">
+                        <Clock className="w-5 h-5 text-primary" />
+                        <div>
+                          <p className="font-medium text-slate-900">Pending Balance</p>
+                          <p className="text-sm text-slate-600">
+                            {formatCurrency(revenueData.balance.pending, revenueData.balance.currency)} is being processed and will be available soon.
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  )}
+                </>
+              ) : (
+                <Card className="p-8 border border-slate-200 text-center">
+                  <PoundSterling className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                  <p className="text-slate-500">Unable to load revenue data. Check Stripe configuration.</p>
+                </Card>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Coupons Section */}
+        <div className="space-y-4" id="coupons-section">
+          <button
+            onClick={() => setShowCouponsSection(!showCouponsSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <Tag className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">Coupon Codes</h2>
+            <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
+              {couponsData.filter(c => c.isActive).length} active
+            </span>
+            {showCouponsSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showCouponsSection && (
+            <div className="space-y-4">
+              {/* Create Coupon Button */}
+              <div className="flex justify-end">
+                <Button
+                  onClick={() => setShowCreateCoupon(!showCreateCoupon)}
+                  className="gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Coupon
+                </Button>
+              </div>
+
+              {/* Create Coupon Form */}
+              {showCreateCoupon && (
+                <Card className="p-6 border border-slate-200 bg-slate-50">
+                  <h3 className="font-bold text-slate-900 mb-4">Create New Coupon</h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label>Coupon Code</Label>
+                      <Input
+                        placeholder="e.g., LAUNCH50"
+                        value={newCoupon.code}
+                        onChange={(e) => setNewCoupon({ ...newCoupon, code: e.target.value.toUpperCase() })}
+                        className="bg-white"
+                      />
+                    </div>
+                    <div>
+                      <Label>Description (internal)</Label>
+                      <Input
+                        placeholder="e.g., Launch promotion"
+                        value={newCoupon.description}
+                        onChange={(e) => setNewCoupon({ ...newCoupon, description: e.target.value })}
+                        className="bg-white"
+                      />
+                    </div>
+                    <div>
+                      <Label>Discount Type</Label>
+                      <select
+                        className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white"
+                        value={newCoupon.discountType}
+                        onChange={(e) => setNewCoupon({ ...newCoupon, discountType: e.target.value as 'percent' | 'fixed' })}
+                      >
+                        <option value="percent">Percentage (%)</option>
+                        <option value="fixed">Fixed Amount (£)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <Label>
+                        {newCoupon.discountType === 'percent' ? 'Discount (%)' : 'Discount Amount (£)'}
+                      </Label>
+                      <Input
+                        type="number"
+                        placeholder={newCoupon.discountType === 'percent' ? '10' : '5'}
+                        value={newCoupon.discountAmount || ''}
+                        onChange={(e) => setNewCoupon({
+                          ...newCoupon,
+                          discountAmount: newCoupon.discountType === 'percent'
+                            ? parseInt(e.target.value)
+                            : parseInt(e.target.value) * 100 // Convert to cents
+                        })}
+                        className="bg-white"
+                      />
+                    </div>
+                    <div>
+                      <Label>Max Uses (optional)</Label>
+                      <Input
+                        type="number"
+                        placeholder="Unlimited"
+                        value={newCoupon.maxUses}
+                        onChange={(e) => setNewCoupon({ ...newCoupon, maxUses: e.target.value })}
+                        className="bg-white"
+                      />
+                    </div>
+                    <div>
+                      <Label>Expires (optional)</Label>
+                      <Input
+                        type="date"
+                        value={newCoupon.expiresAt}
+                        onChange={(e) => setNewCoupon({ ...newCoupon, expiresAt: e.target.value })}
+                        className="bg-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-4">
+                    <Button
+                      onClick={() => createCouponMutation.mutate(newCoupon)}
+                      disabled={!newCoupon.code || createCouponMutation.isPending}
+                    >
+                      {createCouponMutation.isPending ? 'Creating...' : 'Create Coupon'}
+                    </Button>
+                    <Button variant="outline" onClick={() => setShowCreateCoupon(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </Card>
+              )}
+
+              {/* Coupons List */}
+              <Card className="border border-slate-200 overflow-hidden">
+                <div className="divide-y divide-slate-100">
+                  {couponsData.length === 0 ? (
+                    <div className="p-8 text-center text-slate-500">
+                      <Tag className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p>No coupons created yet</p>
+                    </div>
+                  ) : (
+                    couponsData.map((coupon) => (
+                      <div key={coupon.id} className="p-4 hover:bg-slate-50">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                              coupon.isActive ? 'bg-slate-100' : 'bg-slate-100'
+                            }`}>
+                              {coupon.discountType === 'percent' ? (
+                                <Percent className={`w-5 h-5 ${coupon.isActive ? 'text-primary' : 'text-slate-400'}`} />
+                              ) : (
+                                <PoundSterling className={`w-5 h-5 ${coupon.isActive ? 'text-primary' : 'text-slate-400'}`} />
+                              )}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono font-bold text-slate-900">{coupon.code}</span>
+                                {!coupon.isActive && (
+                                  <span className="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded">Inactive</span>
+                                )}
+                              </div>
+                              <p className="text-sm text-slate-500">
+                                {coupon.discountType === 'percent'
+                                  ? `${coupon.discountAmount}% off`
+                                  : `£${(coupon.discountAmount / 100).toFixed(2)} off`
+                                }
+                                {coupon.description && ` • ${coupon.description}`}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            <div className="text-right text-sm">
+                              <p className="font-medium text-slate-900">
+                                {coupon.currentUses || 0}{coupon.maxUses ? `/${coupon.maxUses}` : ''} uses
+                              </p>
+                              {coupon.expiresAt && (
+                                <p className="text-xs text-slate-400 flex items-center gap-1">
+                                  <Calendar className="w-3 h-3" />
+                                  Expires {new Date(coupon.expiresAt).toLocaleDateString()}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => updateCouponMutation.mutate({ id: coupon.id, isActive: !coupon.isActive })}
+                              >
+                                {coupon.isActive ? 'Deactivate' : 'Activate'}
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => {
+                                  if (confirm(`Delete coupon ${coupon.code}?`)) {
+                                    deleteCouponMutation.mutate(coupon.id);
+                                  }
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </Card>
+            </div>
+          )}
+        </div>
+
+        {/* Broadcast Email Section */}
+        <div className="space-y-4" id="broadcast-section">
+          <button
+            onClick={() => setShowBroadcastSection(!showBroadcastSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <Radio className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">Broadcast Email</h2>
+            {showBroadcastSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showBroadcastSection && (
+            <Card className="p-6 border border-slate-200">
+              <div className="space-y-4">
+                {/* Segment Selection */}
+                <div>
+                  <Label className="mb-2 block">Target Segment</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { value: 'all', label: 'All Users', count: userSegments.all },
+                      { value: 'paid', label: 'Paid', count: userSegments.paid },
+                      { value: 'unpaid', label: 'Unpaid', count: userSegments.unpaid },
+                      { value: 'active', label: 'Active (7d)', count: userSegments.active },
+                      { value: 'inactive', label: 'Inactive', count: userSegments.inactive },
+                      { value: 'stuck', label: 'Stuck', count: userSegments.stuck },
+                    ].map((seg) => (
+                      <button
+                        key={seg.value}
+                        onClick={() => setBroadcastEmail({ ...broadcastEmail, segment: seg.value as typeof broadcastEmail.segment })}
+                        className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
+                          broadcastEmail.segment === seg.value
+                            ? 'bg-primary text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        {seg.label} ({seg.count})
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Subject */}
+                <div>
+                  <Label>Subject</Label>
+                  <Input
+                    placeholder="Your subject line..."
+                    value={broadcastEmail.subject}
+                    onChange={(e) => setBroadcastEmail({ ...broadcastEmail, subject: e.target.value })}
+                  />
+                  <p className="text-xs text-slate-400 mt-1">Use {"{{firstName}}"} for personalization</p>
+                </div>
+
+                {/* Body */}
+                <div>
+                  <Label>Message Body</Label>
+                  <Textarea
+                    placeholder="Write your email message here..."
+                    value={broadcastEmail.body}
+                    onChange={(e) => setBroadcastEmail({ ...broadcastEmail, body: e.target.value })}
+                    className="min-h-[200px]"
+                  />
+                </div>
+
+                {/* Test Email */}
+                <div className="flex items-end gap-2 pt-4 border-t border-slate-100">
+                  <div className="flex-1">
+                    <Label>Send Test Email To</Label>
+                    <Input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={broadcastEmail.testEmail}
+                      onChange={(e) => setBroadcastEmail({ ...broadcastEmail, testEmail: e.target.value })}
+                    />
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={() => sendTestEmailMutation.mutate({
+                      subject: broadcastEmail.subject,
+                      body: broadcastEmail.body,
+                      email: broadcastEmail.testEmail,
+                    })}
+                    disabled={!broadcastEmail.subject || !broadcastEmail.body || !broadcastEmail.testEmail || sendTestEmailMutation.isPending}
+                  >
+                    {sendTestEmailMutation.isPending ? 'Sending...' : 'Send Test'}
+                  </Button>
+                </div>
+
+                {/* Send Broadcast Button */}
+                <div className="pt-4 border-t border-slate-100">
+                  <Button
+                    className="w-full gap-2"
+                    onClick={() => {
+                      const count = userSegments[broadcastEmail.segment as keyof typeof userSegments] || 0;
+                      if (confirm(`Send this email to ${count} users in the "${broadcastEmail.segment}" segment?`)) {
+                        sendBroadcastMutation.mutate({
+                          subject: broadcastEmail.subject,
+                          body: broadcastEmail.body,
+                          segment: broadcastEmail.segment,
+                        });
+                      }
+                    }}
+                    disabled={!broadcastEmail.subject || !broadcastEmail.body || sendBroadcastMutation.isPending}
+                  >
+                    <Send className="w-4 h-4" />
+                    {sendBroadcastMutation.isPending ? 'Sending...' : `Send to ${
+                      userSegments[broadcastEmail.segment as keyof typeof userSegments] || 0
+                    } Users`}
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          )}
+        </div>
+
+        {/* Announcements Section */}
+        <div className="space-y-4" id="announcements-section">
+          <button
+            onClick={() => setShowAnnouncementsSection(!showAnnouncementsSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <Megaphone className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">In-App Announcements</h2>
+            <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
+              {announcementsData.filter(a => a.isActive).length} active
+            </span>
+            {showAnnouncementsSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showAnnouncementsSection && (
+            <div className="space-y-4">
+              {/* Create Announcement Button */}
+              <div className="flex justify-end">
+                <Button
+                  onClick={() => setShowCreateAnnouncement(!showCreateAnnouncement)}
+                  className="gap-2"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create Announcement
+                </Button>
+              </div>
+
+              {/* Create Announcement Form */}
+              {showCreateAnnouncement && (
+                <Card className="p-6 border border-slate-200 bg-slate-50">
+                  <h3 className="font-bold text-slate-900 mb-4">Create New Announcement</h3>
+                  <div className="space-y-4">
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <Label>Title</Label>
+                        <Input
+                          placeholder="Announcement title..."
+                          value={newAnnouncement.title}
+                          onChange={(e) => setNewAnnouncement({ ...newAnnouncement, title: e.target.value })}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label>Type</Label>
+                        <select
+                          className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white"
+                          value={newAnnouncement.type}
+                          onChange={(e) => setNewAnnouncement({ ...newAnnouncement, type: e.target.value as typeof newAnnouncement.type })}
+                        >
+                          <option value="info">Info (Blue)</option>
+                          <option value="warning">Warning (Amber)</option>
+                          <option value="success">Success (Green)</option>
+                          <option value="promo">Promo (Purple)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label>Message</Label>
+                      <Textarea
+                        placeholder="Announcement message..."
+                        value={newAnnouncement.message}
+                        onChange={(e) => setNewAnnouncement({ ...newAnnouncement, message: e.target.value })}
+                        className="bg-white min-h-[100px]"
+                      />
+                    </div>
+
+                    <div className="grid sm:grid-cols-3 gap-4">
+                      <div>
+                        <Label>Target Segment</Label>
+                        <select
+                          className="w-full h-10 px-3 rounded-md border border-slate-200 bg-white"
+                          value={newAnnouncement.targetSegment}
+                          onChange={(e) => setNewAnnouncement({ ...newAnnouncement, targetSegment: e.target.value })}
+                        >
+                          <option value="all">All Users</option>
+                          <option value="paid">Paid Only</option>
+                          <option value="unpaid">Unpaid Only</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label>Expires (optional)</Label>
+                        <Input
+                          type="date"
+                          value={newAnnouncement.expiresAt}
+                          onChange={(e) => setNewAnnouncement({ ...newAnnouncement, expiresAt: e.target.value })}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div className="flex items-end">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={newAnnouncement.dismissible}
+                            onChange={(e) => setNewAnnouncement({ ...newAnnouncement, dismissible: e.target.checked })}
+                            className="w-4 h-4"
+                          />
+                          <span className="text-sm text-slate-700">Dismissible</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      <div>
+                        <Label>CTA Link (optional)</Label>
+                        <Input
+                          placeholder="https://..."
+                          value={newAnnouncement.linkUrl}
+                          onChange={(e) => setNewAnnouncement({ ...newAnnouncement, linkUrl: e.target.value })}
+                          className="bg-white"
+                        />
+                      </div>
+                      <div>
+                        <Label>CTA Text</Label>
+                        <Input
+                          placeholder="Learn more"
+                          value={newAnnouncement.linkText}
+                          onChange={(e) => setNewAnnouncement({ ...newAnnouncement, linkText: e.target.value })}
+                          className="bg-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-2">
+                      <Button
+                        onClick={() => createAnnouncementMutation.mutate(newAnnouncement)}
+                        disabled={!newAnnouncement.title || !newAnnouncement.message || createAnnouncementMutation.isPending}
+                      >
+                        {createAnnouncementMutation.isPending ? 'Creating...' : 'Create Announcement'}
+                      </Button>
+                      <Button variant="outline" onClick={() => setShowCreateAnnouncement(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              )}
+
+              {/* Announcements List */}
+              <Card className="border border-slate-200 overflow-hidden">
+                <div className="divide-y divide-slate-100">
+                  {announcementsData.length === 0 ? (
+                    <div className="p-8 text-center text-slate-500">
+                      <Megaphone className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p>No announcements created yet</p>
+                    </div>
+                  ) : (
+                    announcementsData.map((announcement) => (
+                      <div key={announcement.id} className="p-4 hover:bg-slate-50">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 bg-slate-100">
+                              {announcement.type === 'info' ? <Info className="w-5 h-5 text-primary" /> :
+                               announcement.type === 'warning' ? <AlertCircle className="w-5 h-5 text-primary" /> :
+                               announcement.type === 'success' ? <CheckCircle className="w-5 h-5 text-primary" /> :
+                               <Gift className="w-5 h-5 text-primary" />}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-slate-900">{announcement.title}</span>
+                                {!announcement.isActive && (
+                                  <span className="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded">Inactive</span>
+                                )}
+                              </div>
+                              <p className="text-sm text-slate-600 mt-1 line-clamp-2">{announcement.message}</p>
+                              <div className="flex gap-2 mt-2">
+                                <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
+                                  {announcement.targetSegment}
+                                </span>
+                                {announcement.expiresAt && (
+                                  <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded">
+                                    Expires {new Date(announcement.expiresAt).toLocaleDateString()}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 flex-shrink-0">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => updateAnnouncementMutation.mutate({ id: announcement.id, isActive: !announcement.isActive })}
+                            >
+                              {announcement.isActive ? 'Deactivate' : 'Activate'}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                if (confirm(`Delete announcement "${announcement.title}"?`)) {
+                                  deleteAnnouncementMutation.mutate(announcement.id);
+                                }
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </Card>
+            </div>
+          )}
+        </div>
+
+        {/* Activity Log Section */}
+        <div className="space-y-4" id="activity-log-section">
+          <button
+            onClick={() => setShowActivityLogSection(!showActivityLogSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <Activity className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">Activity Log</h2>
+            {activityLogData?.stats && (
+              <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
+                {activityLogData.stats.todayLogs} today
+              </span>
+            )}
+            {showActivityLogSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showActivityLogSection && (
+            <div className="space-y-4">
+              {/* Category Filter */}
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-slate-400" />
+                <div className="flex gap-2 flex-wrap">
+                  {['', 'user', 'payment', 'content', 'system'].map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setActivityLogCategory(cat)}
+                      className={`px-3 py-1 text-sm font-medium rounded-full transition-colors ${
+                        activityLogCategory === cat
+                          ? 'bg-primary text-white'
+                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                      }`}
+                    >
+                      {cat || 'All'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Stats Cards */}
+              {activityLogData?.stats && (
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <Card className="p-4 border border-slate-200">
+                    <p className="text-xs font-medium text-slate-500">Total Activities</p>
+                    <p className="text-xl font-bold text-slate-900">{activityLogData.stats.totalLogs}</p>
+                  </Card>
+                  <Card className="p-4 border border-slate-200">
+                    <p className="text-xs font-medium text-slate-500">Today</p>
+                    <p className="text-xl font-bold text-slate-900">{activityLogData.stats.todayLogs}</p>
+                  </Card>
+                  <Card className="p-4 border border-slate-200">
+                    <p className="text-xs font-medium text-slate-500">By Category</p>
+                    <div className="flex gap-2 flex-wrap mt-1">
+                      {Object.entries(activityLogData.stats.categoryCounts).map(([cat, count]) => (
+                        <span key={cat} className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded">
+                          {cat}: {count}
+                        </span>
+                      ))}
+                    </div>
+                  </Card>
+                </div>
+              )}
+
+              {/* Activity Log List */}
+              <Card className="border border-slate-200 overflow-hidden">
+                <div className="divide-y divide-slate-100 max-h-[500px] overflow-y-auto">
+                  {activityLogLoading ? (
+                    <div className="p-8 text-center text-slate-500">Loading activity log...</div>
+                  ) : !activityLogData?.logs.length ? (
+                    <div className="p-8 text-center text-slate-500">
+                      <Activity className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <p>No activity recorded yet</p>
+                    </div>
+                  ) : (
+                    activityLogData.logs.map((log) => (
+                      <div key={log.id} className="p-4 hover:bg-slate-50">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-slate-100">
+                              {log.category === 'payment' ? (
+                                <DollarSign className="w-4 h-4 text-primary" />
+                              ) : log.category === 'user' ? (
+                                <Users className="w-4 h-4 text-primary" />
+                              ) : (
+                                <Activity className="w-4 h-4 text-primary" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-900">
+                                {log.action.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                              </p>
+                              <p className="text-sm text-slate-500">
+                                {log.user ? (
+                                  <>by <span className="font-medium">{log.user.firstName || log.user.email || 'Admin'}</span></>
+                                ) : (
+                                  <span className="text-slate-400">System</span>
+                                )}
+                                {log.targetUser && (
+                                  <> → <span className="font-medium">{log.targetUser.firstName || log.targetUser.email}</span></>
+                                )}
+                              </p>
+                              {log.details && Object.keys(log.details).length > 0 && (
+                                <div className="mt-1 text-xs text-slate-400 bg-slate-50 rounded px-2 py-1 inline-block">
+                                  {JSON.stringify(log.details).slice(0, 100)}
+                                  {JSON.stringify(log.details).length > 100 && '...'}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                              {log.category}
+                            </span>
+                            <p className="text-xs text-slate-400 mt-1">
+                              {log.createdAt ? formatDistanceToNow(new Date(log.createdAt), { addSuffix: true }) : 'Unknown'}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </Card>
+            </div>
+          )}
+        </div>
+
+        {/* User Funnel Section */}
+        <div className="space-y-4" id="funnel-section">
+          <button
+            onClick={() => setShowFunnelSection(!showFunnelSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <BarChart3 className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">User Funnel</h2>
+            {userSegments.completed > 0 && (
+              <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">
+                {userSegments.completed} completed
+              </span>
+            )}
+            {showFunnelSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showFunnelSection && (
+            <Card className="p-6 border border-slate-200">
+              <div className="space-y-4">
+                {funnelData.map((stage, index) => {
+                  const widthPercent = (stage.count / maxFunnelCount) * 100;
+                  const conversionRate = index > 0 && funnelData[index - 1].count > 0
+                    ? ((stage.count / funnelData[index - 1].count) * 100).toFixed(0)
+                    : null;
+                  const overallRate = funnelData[0].count > 0
+                    ? ((stage.count / funnelData[0].count) * 100).toFixed(0)
+                    : '0';
+
+                  return (
+                    <div key={stage.stage} className="space-y-1">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-slate-900">{stage.stage}</span>
+                          {conversionRate && (
+                            <span className="text-xs text-slate-400">
+                              ({conversionRate}% from previous)
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-slate-400">{overallRate}%</span>
+                          <span className="font-bold text-slate-900 w-12 text-right">{stage.count}</span>
+                        </div>
+                      </div>
+                      <div className="h-8 bg-slate-100 rounded-lg overflow-hidden">
+                        <div
+                          className={`h-full ${stage.color} transition-all duration-500 rounded-lg flex items-center justify-end pr-2`}
+                          style={{ width: `${Math.max(widthPercent, 2)}%` }}
+                        >
+                          {widthPercent > 15 && (
+                            <span className="text-xs text-white font-medium">{stage.count}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {/* Funnel Insights */}
+                <div className="pt-4 border-t border-slate-100 mt-4">
+                  <h4 className="text-sm font-bold text-slate-900 mb-3">Key Metrics</h4>
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    <div className="bg-slate-50 rounded-lg p-3">
+                      <p className="text-xs text-slate-500">Conversion to Purchase</p>
+                      <p className="text-lg font-bold text-slate-900">
+                        {userSegments.all > 0 ? ((userSegments.paid / userSegments.all) * 100).toFixed(1) : 0}%
+                      </p>
+                    </div>
+                    <div className="bg-slate-50 rounded-lg p-3">
+                      <p className="text-xs text-slate-500">Completion Rate</p>
+                      <p className="text-lg font-bold text-slate-900">
+                        {userSegments.paid > 0 ? ((userSegments.completed / userSegments.paid) * 100).toFixed(1) : 0}%
+                      </p>
+                    </div>
+                    <div className="bg-slate-50 rounded-lg p-3">
+                      <p className="text-xs text-slate-500">Stuck Users</p>
+                      <p className="text-lg font-bold text-slate-900">
+                        {userSegments.stuck}
+                        <span className="text-sm font-normal text-slate-400 ml-1">
+                          ({userSegments.paid > 0 ? ((userSegments.stuck / userSegments.paid) * 100).toFixed(0) : 0}%)
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
+        </div>
+
+        {/* User Management Section */}
+        <div className="space-y-4" id="user-management-section">
+          <button
+            onClick={() => setShowUserManagement(!showUserManagement)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <Users className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">User Management</h2>
+            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
+              {adminUsers.length} users
+            </span>
+            {showUserManagement ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showUserManagement && (
+            <div className="space-y-4">
+              {/* Search and Add User */}
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Input
+                    placeholder="Search by email, name, or ID..."
+                    value={userSearchQuery}
+                    onChange={(e) => setUserSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Button
+                  onClick={() => setIsAddingUser(true)}
+                  className="gap-2"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Add User
+                </Button>
+              </div>
+
+              {/* Segment Filters */}
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: 'all', label: 'All' },
+                  { key: 'paid', label: 'Paid' },
+                  { key: 'unpaid', label: 'Unpaid' },
+                  { key: 'active', label: 'Active' },
+                  { key: 'inactive', label: 'Inactive' },
+                  { key: 'stuck', label: 'Stuck' },
+                  { key: 'completed', label: 'Completed' },
+                ].map(segment => (
+                  <button
+                    key={segment.key}
+                    onClick={() => setUserFilter(segment.key as typeof userFilter)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                      userFilter === segment.key
+                        ? 'bg-primary text-white'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {segment.label}
+                    <span className="ml-1.5 opacity-70">
+                      {userSegments[segment.key as keyof typeof userSegments]}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Bulk Actions */}
+              <div className="flex items-center gap-2 py-2 border-y border-slate-100">
+                <button
+                  onClick={selectAllFiltered}
+                  className="text-sm text-primary hover:underline"
+                >
+                  {selectedUsers.size === filteredUsers.length && filteredUsers.length > 0
+                    ? 'Deselect all'
+                    : `Select all ${filteredUsers.length}`}
+                </button>
+                {selectedUsers.size > 0 && (
+                  <>
+                    <span className="text-slate-300">|</span>
+                    <span className="text-sm text-slate-500">{selectedUsers.size} selected</span>
+                    <span className="text-slate-300">|</span>
+                    <button
+                      onClick={exportUsersCSV}
+                      className="text-sm text-primary hover:underline flex items-center gap-1"
+                    >
+                      Export CSV
+                    </button>
+                    <button
+                      onClick={() => {
+                        const selectedUsersList = filteredUsers.filter(u => selectedUsers.has(u.id));
+                        selectedUsersList.forEach(u => {
+                          updateUser.mutate({ id: u.id, challengePurchased: true });
+                        });
+                        toast.success(`Granted access to ${selectedUsers.size} users`);
+                        setSelectedUsers(new Set());
+                      }}
+                      className="text-sm text-primary hover:underline"
+                    >
+                      Grant Access
+                    </button>
+                    <button
+                      onClick={() => setSelectedUsers(new Set())}
+                      className="text-sm text-slate-400 hover:underline ml-auto"
+                    >
+                      Clear
+                    </button>
+                  </>
+                )}
+                {selectedUsers.size === 0 && (
+                  <button
+                    onClick={exportUsersCSV}
+                    className="text-sm text-slate-500 hover:text-primary ml-auto flex items-center gap-1"
+                  >
+                    Export all to CSV
+                  </button>
+                )}
+              </div>
+
+              {/* Add User Form */}
+              {isAddingUser && (
+                <Card className="p-4 border border-slate-200 bg-slate-50">
+                  <h3 className="font-bold text-slate-900 mb-4">Add New User</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Email *</Label>
+                      <Input
+                        type="email"
+                        value={newUserEmail}
+                        onChange={(e) => setNewUserEmail(e.target.value)}
+                        placeholder="user@example.com"
+                      />
+                    </div>
+                    <div>
+                      <Label>First Name</Label>
+                      <Input
+                        value={newUserFirstName}
+                        onChange={(e) => setNewUserFirstName(e.target.value)}
+                        placeholder="John"
+                      />
+                    </div>
+                    <div>
+                      <Label>Last Name</Label>
+                      <Input
+                        value={newUserLastName}
+                        onChange={(e) => setNewUserLastName(e.target.value)}
+                        placeholder="Doe"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Permissions</Label>
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={newUserHasPurchased}
+                            onChange={(e) => setNewUserHasPurchased(e.target.checked)}
+                            className="rounded"
+                          />
+                          <span className="text-sm">Challenge Access</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={newUserIsAdmin}
+                            onChange={(e) => setNewUserIsAdmin(e.target.checked)}
+                            className="rounded"
+                          />
+                          <span className="text-sm">Admin</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 mt-4">
+                    <Button
+                      onClick={() => {
+                        if (!newUserEmail) {
+                          toast.error("Email is required");
+                          return;
+                        }
+                        createUser.mutate({
+                          email: newUserEmail,
+                          firstName: newUserFirstName || undefined,
+                          lastName: newUserLastName || undefined,
+                          isAdmin: newUserIsAdmin,
+                          challengePurchased: newUserHasPurchased,
+                        });
+                      }}
+                      disabled={createUser.isPending}
+                    >
+                      {createUser.isPending ? "Creating..." : "Create User"}
+                    </Button>
+                    <Button variant="outline" onClick={() => setIsAddingUser(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </Card>
+              )}
+
+              {/* User List */}
+              <div className="space-y-2 max-h-[600px] overflow-y-auto">
+                {filteredUsers.length === 0 ? (
+                  <Card className="p-4 text-center text-slate-500">
+                    {userSearchQuery ? "No users found matching your search" : "No users yet"}
+                  </Card>
+                ) : (
+                  filteredUsers.map((user) => (
+                    <Card
+                      key={user.id}
+                      className={`p-4 border-2 cursor-pointer transition-colors ${
+                        selectedUsers.has(user.id)
+                          ? "border-primary bg-primary/5"
+                          : selectedUser?.id === user.id
+                          ? "border-primary bg-slate-50"
+                          : "border-slate-200 hover:border-slate-300"
+                      }`}
+                      onClick={() => setSelectedUser(selectedUser?.id === user.id ? null : user)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          {/* Bulk selection checkbox */}
+                          <input
+                            type="checkbox"
+                            checked={selectedUsers.has(user.id)}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              toggleUserSelection(user.id);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary"
+                          />
+                          {user.profileImageUrl ? (
+                            <img
+                              src={user.profileImageUrl}
+                              alt=""
+                              className="w-10 h-10 rounded-full"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center">
+                              <Users className="w-5 h-5 text-slate-500" />
+                            </div>
+                          )}
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium text-slate-900">
+                                {user.firstName || user.lastName
+                                  ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+                                  : "No name"}
+                              </p>
+                              {user.isAdmin && (
+                                <span className="px-1.5 py-0.5 bg-slate-100 text-primary text-xs font-bold rounded">
+                                  Admin
+                                </span>
+                              )}
+                              {user.isBanned && (
+                                <span className="px-1.5 py-0.5 bg-slate-100 text-red-600 text-xs font-bold rounded">
+                                  Banned
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-slate-500">{user.email || "No email"}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-6 text-sm">
+                          <div className="text-right hidden md:block">
+                            <p className="text-slate-500 text-xs">Signed up</p>
+                            <p className="text-slate-700">
+                              {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "Unknown"}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <div className="flex items-center gap-1">
+                              {user.challengePurchased ? (
+                                <span className="flex items-center gap-1 text-primary">
+                                  <CreditCard className="w-4 h-4" />
+                                  Paid
+                                </span>
+                              ) : (
+                                <span className="text-slate-400">No purchase</span>
+                              )}
+                            </div>
+                            <p className="text-slate-500">
+                              Day {user.stats.lastCompletedDay}/{21} · {user.stats.totalXp} XP
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Expanded Details */}
+                      {selectedUser?.id === user.id && (
+                        <div className="mt-4 pt-4 border-t border-slate-200 space-y-4">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div>
+                              <p className="text-slate-500">User ID</p>
+                              <p className="font-mono text-xs break-all">{user.id}</p>
+                            </div>
+                            <div>
+                              <p className="text-slate-500">Stripe ID</p>
+                              <p className="font-mono text-xs break-all">{user.stripeCustomerId || "None"}</p>
+                            </div>
+                            <div>
+                              <p className="text-slate-500">Currency</p>
+                              <p>{user.purchaseCurrency?.toUpperCase() || "Not set"}</p>
+                            </div>
+                            <div>
+                              <p className="text-slate-500">Referral Code</p>
+                              <p className="font-mono text-xs">{user.referralCode || "None"}</p>
+                            </div>
+                            <div>
+                              <p className="text-slate-500">Signed Up</p>
+                              <p>{user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "Unknown"}</p>
+                              <p className="text-xs text-slate-400">{user.createdAt ? formatDistanceToNow(new Date(user.createdAt), { addSuffix: true }) : ""}</p>
+                            </div>
+                            <div>
+                              <p className="text-slate-500">Last Active</p>
+                              <p>{user.stats.lastActivityDate ? formatDistanceToNow(new Date(user.stats.lastActivityDate), { addSuffix: true }) : "Never"}</p>
+                            </div>
+                            <div>
+                              <p className="text-slate-500">Current Streak</p>
+                              <p>{user.stats.currentStreak} days</p>
+                            </div>
+                            <div>
+                              <p className="text-slate-500">Days Completed</p>
+                              <p>{user.completedDays} of 21</p>
+                            </div>
+                          </div>
+
+                          {/* Admin Notes */}
+                          <div className="pt-3 border-t border-slate-200">
+                            <div className="flex items-center justify-between mb-2">
+                              <p className="text-sm font-medium text-slate-700">Admin Notes</p>
+                              {editingNotesFor !== user.id && (
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingNotesFor(user.id);
+                                    setNotesText(user.adminNotes || '');
+                                  }}
+                                  className="text-xs text-primary hover:underline"
+                                >
+                                  {user.adminNotes ? 'Edit' : 'Add note'}
+                                </button>
+                              )}
+                            </div>
+                            {editingNotesFor === user.id ? (
+                              <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                                <Textarea
+                                  value={notesText}
+                                  onChange={(e) => setNotesText(e.target.value)}
+                                  placeholder="Add private notes about this user..."
+                                  className="text-sm min-h-[80px]"
+                                />
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => {
+                                      updateUser.mutate({ id: user.id, adminNotes: notesText });
+                                      setEditingNotesFor(null);
+                                    }}
+                                  >
+                                    Save
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setEditingNotesFor(null)}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : user.adminNotes ? (
+                              <p className="text-sm text-slate-600 bg-slate-50 p-2 rounded whitespace-pre-wrap">
+                                {user.adminNotes}
+                              </p>
+                            ) : (
+                              <p className="text-sm text-slate-400 italic">No notes yet</p>
+                            )}
+                          </div>
+
+                          {/* Quick Actions */}
+                          <div className="flex flex-wrap gap-2 pt-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateUser.mutate({
+                                  id: user.id,
+                                  challengePurchased: !user.challengePurchased,
+                                });
+                              }}
+                            >
+                              {user.challengePurchased ? "Revoke Access" : "Grant Access"}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                updateUser.mutate({
+                                  id: user.id,
+                                  isAdmin: !user.isAdmin,
+                                });
+                              }}
+                            >
+                              {user.isAdmin ? "Remove Admin" : "Make Admin"}
+                            </Button>
+                            {!user.isAdmin && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (user.isBanned) {
+                                    unbanUserMutation.mutate(user.id);
+                                  } else {
+                                    const reason = prompt("Enter ban reason (optional):");
+                                    if (reason !== null) {
+                                      banUserMutation.mutate({ id: user.id, reason: reason || "No reason provided" });
+                                    }
+                                  }
+                                }}
+                                className={user.isBanned ? "text-primary hover:text-primary/80" : "text-slate-600 hover:text-slate-700"}
+                              >
+                                {user.isBanned ? "Unban User" : "Ban User"}
+                              </Button>
+                            )}
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm("Reset all progress for this user? This cannot be undone.")) {
+                                  resetUserProgress.mutate(user.id);
+                                }
+                              }}
+                              className="text-slate-600 hover:text-slate-700"
+                            >
+                              <RefreshCw className="w-4 h-4 mr-1" />
+                              Reset Progress
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm(`Delete user ${user.email || user.id}? This cannot be undone.`)) {
+                                  deleteUser.mutate(user.id);
+                                }
+                              }}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <UserX className="w-4 h-4 mr-1" />
+                              Delete User
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </Card>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* A/B Testing Section */}
         <div className="space-y-4">
@@ -764,10 +3063,10 @@ export default function Admin() {
             onClick={() => setShowAbTestSection(!showAbTestSection)}
             className="flex items-center gap-3 w-full text-left"
           >
-            <FlaskConical className="w-6 h-6 text-purple-600" />
+            <FlaskConical className="w-6 h-6 text-primary" />
             <h2 className="text-xl font-bold text-slate-900">A/B Headline Testing</h2>
             {abTests.some(t => t.isActive) && (
-              <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+              <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
                 Test Running
               </span>
             )}
@@ -791,7 +3090,7 @@ export default function Admin() {
                   Create New Headline Test
                 </Button>
               ) : (
-                <Card className="p-4 border-2 border-purple-200">
+                <Card className="p-4 border border-slate-200 bg-slate-50">
                   <h3 className="font-bold text-slate-900 mb-4">New Headline Test</h3>
                   <div className="space-y-4">
                     <div>
@@ -900,21 +3199,21 @@ export default function Admin() {
 
               {/* Existing Tests */}
               {abTests.length === 0 && !isCreatingTest ? (
-                <Card className="p-8 border-2 border-slate-100 text-center">
+                <Card className="p-8 border border-slate-200 text-center">
                   <FlaskConical className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                   <p className="text-slate-500">No headline tests yet</p>
                   <p className="text-slate-400 text-sm mt-1">Create a test to compare different headlines on your sales page</p>
                 </Card>
               ) : (
                 abTests.map((test) => (
-                  <Card key={test.id} className={`p-4 border-2 ${test.isActive ? 'border-green-300 bg-green-50/50' : 'border-slate-100'}`}>
+                  <Card key={test.id} className={`p-4 border ${test.isActive ? 'border-primary' : 'border-slate-200'}`}>
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <div className="flex items-center gap-2">
                           <h3 className="font-bold text-slate-900">{test.name}</h3>
                           {test.isActive && (
-                            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full flex items-center gap-1">
-                              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                            <span className="px-2 py-0.5 bg-slate-100 text-primary text-xs font-bold rounded-full flex items-center gap-1">
+                              <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                               Live
                             </span>
                           )}
@@ -981,18 +3280,16 @@ export default function Admin() {
                         return (
                           <div
                             key={variant.id}
-                            className={`p-3 rounded-lg border ${isWinning ? 'border-green-300 bg-green-50' : 'border-slate-200 bg-white'}`}
+                            className={`p-3 rounded-lg border ${isWinning ? 'border-primary bg-slate-50' : 'border-slate-200 bg-white'}`}
                           >
                             <div className="flex items-start justify-between gap-3">
                               <div className="flex-1">
                                 <div className="flex items-center gap-2 mb-1">
-                                  <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${
-                                    variant.name === 'A' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
-                                  }`}>
+                                  <span className="text-xs font-bold px-1.5 py-0.5 rounded bg-slate-100 text-slate-700">
                                     {variant.name}
                                   </span>
                                   {isWinning && (
-                                    <span className="text-xs font-bold text-green-600 flex items-center gap-1">
+                                    <span className="text-xs font-bold text-primary flex items-center gap-1">
                                       <Trophy className="w-3 h-3" /> Leading
                                     </span>
                                   )}
@@ -1050,7 +3347,7 @@ export default function Admin() {
                                 <CheckCircle2 className="w-3 h-3 inline mr-1" />
                                 {variant.conversions} conversions
                               </span>
-                              <span className={`font-bold ${isWinning ? 'text-green-600' : 'text-slate-700'}`}>
+                              <span className={`font-bold ${isWinning ? 'text-primary' : 'text-slate-700'}`}>
                                 {conversionRate}%
                               </span>
                             </div>
@@ -1067,22 +3364,31 @@ export default function Admin() {
 
         {/* Comment Approval Queue */}
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowCommentsSection(!showCommentsSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <MessageSquare className="w-6 h-6 text-primary" />
             <h2 className="text-xl font-bold text-slate-900">Comment Approval Queue</h2>
             {pendingComments.length > 0 && (
-              <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">
+              <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
                 {pendingComments.length} pending
               </span>
             )}
-          </div>
-          
-          {pendingComments.length === 0 ? (
-            <Card className="p-8 border-2 border-slate-100 text-center">
+            {showCommentsSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showCommentsSection && (pendingComments.length === 0 ? (
+            <Card className="p-8 border border-slate-200 text-center">
               <MessageSquare className="w-12 h-12 text-slate-300 mx-auto mb-3" />
               <p className="text-slate-500">No comments pending approval</p>
             </Card>
           ) : (
-            <Card className="border-2 border-slate-100 divide-y divide-slate-100">
+            <Card className="border border-slate-200 divide-y divide-slate-100">
               {pendingComments.map((comment) => (
                 <div key={comment.id} className="p-4" data-testid={`pending-comment-${comment.id}`}>
                   <div className="flex items-start justify-between gap-4">
@@ -1104,7 +3410,7 @@ export default function Admin() {
                       </p>
                       
                       {comment.flagReason && (
-                        <div className="flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded inline-flex">
+                        <div className="flex items-center gap-1 text-xs text-slate-600 bg-slate-100 px-2 py-1 rounded inline-flex">
                           <AlertTriangle className="w-3 h-3" />
                           {comment.flagReason}
                         </div>
@@ -1115,7 +3421,7 @@ export default function Admin() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="gap-1 border-green-200 text-green-700 hover:bg-green-50"
+                        className="gap-1 border-slate-200 text-primary hover:bg-slate-50"
                         onClick={() => updateCommentStatus.mutate({ id: comment.id, status: "approved" })}
                         disabled={updateCommentStatus.isPending}
                         data-testid={`approve-comment-${comment.id}`}
@@ -1125,7 +3431,7 @@ export default function Admin() {
                       <Button
                         size="sm"
                         variant="outline"
-                        className="gap-1 border-red-200 text-red-700 hover:bg-red-50"
+                        className="gap-1 border-slate-200 text-slate-600 hover:bg-slate-50"
                         onClick={() => updateCommentStatus.mutate({ id: comment.id, status: "rejected" })}
                         disabled={updateCommentStatus.isPending}
                         data-testid={`reject-comment-${comment.id}`}
@@ -1137,7 +3443,7 @@ export default function Admin() {
                 </div>
               ))}
             </Card>
-          )}
+          ))}
         </div>
 
         {/* Critique Requests */}
@@ -1146,9 +3452,10 @@ export default function Admin() {
             onClick={() => setShowCritiqueSection(!showCritiqueSection)}
             className="flex items-center gap-3 w-full text-left"
           >
+            <Video className="w-6 h-6 text-primary" />
             <h2 className="text-xl font-bold text-slate-900">Video Critiques</h2>
             {pendingCritiques.length > 0 && (
-              <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">
+              <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
                 {pendingCritiques.length} to do
               </span>
             )}
@@ -1186,7 +3493,7 @@ export default function Admin() {
               </div>
 
               {(critiqueTab === 'pending' ? pendingCritiques : completedCritiques).length === 0 ? (
-                <Card className="p-8 border-2 border-slate-100 text-center">
+                <Card className="p-8 border border-slate-200 text-center">
                   <Video className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                   <p className="text-slate-500">
                     {critiqueTab === 'pending' ? 'No pending critique requests' : 'No completed critiques yet'}
@@ -1195,14 +3502,14 @@ export default function Admin() {
               ) : (
                 <div className="space-y-3">
                   {(critiqueTab === 'pending' ? pendingCritiques : completedCritiques).map((critique) => (
-                    <Card key={critique.id} className={`p-4 border-2 ${critique.status === 'pending' ? 'border-red-200 bg-red-50' : critique.status === 'completed' ? 'border-green-200 bg-green-50' : 'border-slate-200'}`}>
+                    <Card key={critique.id} className={`p-4 border ${critique.status === 'pending' ? 'border-slate-300' : critique.status === 'completed' ? 'border-slate-200' : 'border-slate-200'}`}>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-2">
                             <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${
-                              critique.status === 'pending' ? 'bg-red-100 text-red-700' :
-                              critique.status === 'in_progress' ? 'bg-amber-100 text-amber-700' :
-                              'bg-green-100 text-green-700'
+                              critique.status === 'pending' ? 'bg-slate-100 text-slate-700' :
+                              critique.status === 'in_progress' ? 'bg-slate-100 text-slate-700' :
+                              'bg-slate-100 text-primary'
                             }`}>
                               {critique.status === 'pending' ? 'TO DO' : critique.status === 'in_progress' ? 'IN PROGRESS' : 'DONE'}
                             </span>
@@ -1279,7 +3586,7 @@ export default function Admin() {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="text-red-600 hover:bg-red-50 border-red-200"
+                            className="text-slate-600 hover:bg-slate-100 border-slate-200"
                             onClick={() => {
                               if (confirm("Are you sure you want to delete this critique request?")) {
                                 deleteCritique.mutate(critique.id);
@@ -1306,9 +3613,10 @@ export default function Admin() {
             onClick={() => setShowShowcaseSection(!showShowcaseSection)}
             className="flex items-center gap-3 w-full text-left"
           >
+            <Image className="w-6 h-6 text-primary" />
             <h2 className="text-xl font-bold text-slate-900">Showcase Moderation</h2>
             {pendingShowcase.length > 0 && (
-              <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">
+              <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
                 {pendingShowcase.length} pending
               </span>
             )}
@@ -1322,7 +3630,7 @@ export default function Admin() {
           {showShowcaseSection && (
             <div className="space-y-4">
               {pendingShowcase.length === 0 ? (
-                <Card className="p-8 border-2 border-slate-100 text-center">
+                <Card className="p-8 border border-slate-200 text-center">
                   <Image className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                   <p className="text-slate-500">No apps pending approval</p>
                   <a href="/showcase" target="_blank" rel="noopener noreferrer" className="text-primary text-sm hover:underline mt-2 inline-block">
@@ -1332,7 +3640,7 @@ export default function Admin() {
               ) : (
                 <div className="grid gap-4">
                   {pendingShowcase.map((entry) => (
-                    <Card key={entry.id} className="p-0 border-2 border-slate-100 overflow-hidden">
+                    <Card key={entry.id} className="p-0 border border-slate-200 overflow-hidden">
                       <div className="flex flex-col md:flex-row">
                         {/* Screenshot */}
                         <div className="w-full md:w-48 h-32 md:h-auto bg-slate-100 flex-shrink-0">
@@ -1374,7 +3682,7 @@ export default function Admin() {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="gap-1 border-green-200 text-green-700 hover:bg-green-50"
+                              className="gap-1 border-slate-200 text-primary hover:bg-slate-50"
                               onClick={() => updateShowcaseStatus.mutate({ id: entry.id, status: "approved" })}
                               disabled={updateShowcaseStatus.isPending}
                             >
@@ -1383,7 +3691,7 @@ export default function Admin() {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="gap-1 border-red-200 text-red-700 hover:bg-red-50"
+                              className="gap-1 border-slate-200 text-slate-600 hover:bg-slate-50"
                               onClick={() => updateShowcaseStatus.mutate({ id: entry.id, status: "rejected" })}
                               disabled={updateShowcaseStatus.isPending}
                             >
@@ -1394,13 +3702,13 @@ export default function Admin() {
                               variant="outline"
                               className={`gap-1 ${
                                 entry.featured
-                                  ? "border-amber-200 text-amber-700 bg-amber-50"
+                                  ? "border-primary text-primary bg-slate-50"
                                   : "border-slate-200 text-slate-600 hover:bg-slate-50"
                               }`}
                               onClick={() => toggleShowcaseFeatured.mutate({ id: entry.id, featured: !entry.featured })}
                               disabled={toggleShowcaseFeatured.isPending}
                             >
-                              <Star className={`w-4 h-4 ${entry.featured ? "fill-amber-500" : ""}`} />
+                              <Star className={`w-4 h-4 ${entry.featured ? "fill-current" : ""}`} />
                               {entry.featured ? "Featured" : "Feature"}
                             </Button>
                           </div>
@@ -1431,9 +3739,10 @@ export default function Admin() {
             onClick={() => setShowTestimonialsSection(!showTestimonialsSection)}
             className="flex items-center gap-3 w-full text-left"
           >
+            <Star className="w-6 h-6 text-primary" />
             <h2 className="text-xl font-bold text-slate-900">Testimonials</h2>
             {testimonials.length > 0 && (
-              <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+              <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
                 {testimonials.length} received
               </span>
             )}
@@ -1447,14 +3756,14 @@ export default function Admin() {
           {showTestimonialsSection && (
             <div className="space-y-4">
               {testimonials.length === 0 ? (
-                <Card className="p-8 border-2 border-slate-100 text-center">
+                <Card className="p-8 border border-slate-200 text-center">
                   <Heart className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                   <p className="text-slate-500">No testimonials received yet</p>
                 </Card>
               ) : (
                 <div className="grid gap-4">
                   {testimonials.map((entry) => (
-                    <Card key={entry.id} className="p-4 border-2 border-slate-100">
+                    <Card key={entry.id} className="p-4 border border-slate-200">
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div>
                           <div className="flex items-center gap-2">
@@ -1462,7 +3771,7 @@ export default function Admin() {
                               {entry.user?.firstName || "Unknown"} {entry.user?.lastName || ""}
                             </p>
                             {entry.featured && (
-                              <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-medium rounded">
+                              <span className="px-2 py-0.5 bg-slate-100 text-primary text-xs font-medium rounded">
                                 Featured
                               </span>
                             )}
@@ -1477,13 +3786,13 @@ export default function Admin() {
                           variant="outline"
                           className={`gap-1 ${
                             entry.featured
-                              ? "border-amber-200 text-amber-700 bg-amber-50"
+                              ? "border-primary text-primary bg-slate-50"
                               : "border-slate-200 text-slate-600 hover:bg-slate-50"
                           }`}
                           onClick={() => toggleTestimonialFeatured.mutate(entry.id)}
                           disabled={toggleTestimonialFeatured.isPending}
                         >
-                          <Star className={`w-4 h-4 ${entry.featured ? "fill-amber-500" : ""}`} />
+                          <Star className={`w-4 h-4 ${entry.featured ? "fill-current" : ""}`} />
                           {entry.featured ? "Featured" : "Feature"}
                         </Button>
                       </div>
@@ -1496,7 +3805,7 @@ export default function Admin() {
 
                       {entry.videoUrl && (
                         <div className="flex items-center gap-2 text-sm mb-3">
-                          <Video className="w-4 h-4 text-amber-600" />
+                          <Video className="w-4 h-4 text-primary" />
                           <a
                             href={entry.videoUrl}
                             target="_blank"
@@ -1534,23 +3843,24 @@ export default function Admin() {
 
         {/* Brand Pack */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-bold text-slate-900">Brand Pack</h2>
-              <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs font-bold rounded-full">
-                App-wide
-              </span>
-            </div>
-            <a
-              href="/design-preview"
-              className="text-sm font-medium text-primary hover:underline flex items-center gap-1"
-            >
-              <Palette className="w-4 h-4" />
-              Preview Design Styles
-            </a>
-          </div>
+          <button
+            onClick={() => setShowBrandSection(!showBrandSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <Palette className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">Brand Pack</h2>
+            <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
+              App-wide
+            </span>
+            {showBrandSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
 
-          <Card className="p-6 border-2 border-slate-100">
+          {showBrandSection && (
+          <Card className="p-6 border border-slate-200">
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <Label htmlFor="appName">App Name</Label>
@@ -1700,6 +4010,7 @@ export default function Admin() {
               </Button>
             </div>
           </Card>
+          )}
         </div>
 
         {/* AI Mentor Management */}
@@ -1708,9 +4019,10 @@ export default function Admin() {
             onClick={() => setShowChatSection(!showChatSection)}
             className="flex items-center gap-3 w-full text-left"
           >
+            <Bot className="w-6 h-6 text-primary" />
             <h2 className="text-xl font-bold text-slate-900">AI Mentor Management</h2>
             {flaggedMessages.length > 0 && (
-              <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded-full">
+              <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
                 {flaggedMessages.length} flagged
               </span>
             )}
@@ -1724,11 +4036,11 @@ export default function Admin() {
           {showChatSection && (
             <div className="space-y-6">
               {/* Chatbot Rules Editor */}
-              <Card className="p-6 border-2 border-slate-100">
+              <Card className="p-6 border border-slate-200">
                 <div className="flex items-center gap-2 mb-6">
                   <Bot className="w-5 h-5 text-slate-600" />
                   <h3 className="font-semibold text-slate-900">Chatbot System Prompt</h3>
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Editable</span>
+                  <span className="text-xs bg-slate-100 text-primary px-2 py-0.5 rounded">Editable</span>
                 </div>
 
                 <div className="space-y-6">
@@ -1820,9 +4132,9 @@ export default function Admin() {
               </Card>
 
               {/* Flagged Messages */}
-              <Card className="p-6 border-2 border-slate-100">
+              <Card className="p-6 border border-slate-200">
                 <div className="flex items-center gap-2 mb-4">
-                  <Flag className="w-5 h-5 text-red-500" />
+                  <Flag className="w-5 h-5 text-primary" />
                   <h3 className="font-semibold text-slate-900">Flagged Messages</h3>
                   {flaggedMessages.length > 0 && (
                     <span className="text-sm text-slate-500">({flaggedMessages.length} need review)</span>
@@ -1834,7 +4146,7 @@ export default function Admin() {
                 ) : (
                   <div className="space-y-3 max-h-96 overflow-y-auto">
                     {flaggedMessages.map((msg) => (
-                      <div key={msg.id} className="p-3 bg-red-50 border border-red-100 rounded-lg">
+                      <div key={msg.id} className="p-3 bg-slate-50 border border-slate-200 rounded-lg">
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
@@ -1846,7 +4158,7 @@ export default function Admin() {
                               </span>
                             </div>
                             <p className="text-sm text-slate-700 mb-2">{msg.content}</p>
-                            <div className="flex items-center gap-1 text-xs text-red-600">
+                            <div className="flex items-center gap-1 text-xs text-slate-600">
                               <AlertTriangle className="w-3 h-3" />
                               {msg.flagReason}
                             </div>
@@ -1868,7 +4180,7 @@ export default function Admin() {
               </Card>
 
               {/* User Chat Activity */}
-              <Card className="p-6 border-2 border-slate-100">
+              <Card className="p-6 border border-slate-200">
                 <div className="flex items-center gap-2 mb-4">
                   <MessageCircle className="w-5 h-5 text-primary" />
                   <h3 className="font-semibold text-slate-900">User Chat Activity</h3>
@@ -1904,7 +4216,7 @@ export default function Admin() {
                           <div className="text-right">
                             <p className="text-sm font-medium text-slate-900">{summary.messageCount} messages</p>
                             {summary.flaggedCount > 0 && (
-                              <p className="text-xs text-red-600">{summary.flaggedCount} flagged</p>
+                              <p className="text-xs text-slate-600">{summary.flaggedCount} flagged</p>
                             )}
                           </div>
                         </div>
@@ -1952,9 +4264,21 @@ export default function Admin() {
         </div>
 
         {/* Student Progress Table */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-bold text-slate-900">Student Progress</h2>
-          <Card className="border-2 border-slate-100 overflow-hidden">
+        <div className="space-y-4" id="progress-section">
+          <button
+            onClick={() => setShowProgressSection(!showProgressSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <TrendingUp className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">Student Progress</h2>
+            {showProgressSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+          {showProgressSection && (
+          <Card className="border border-slate-200 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-slate-50 border-b border-slate-200">
@@ -2013,7 +4337,7 @@ export default function Admin() {
                         </td>
                         <td className="px-6 py-4">
                           {user.referralCount > 0 ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium">
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-primary text-sm font-medium">
                               {user.referralCount}
                             </span>
                           ) : (
@@ -2028,11 +4352,11 @@ export default function Admin() {
                         </td>
                         <td className="px-6 py-4">
                           {user.currentDay >= 30 ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium">
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-slate-100 text-primary text-xs font-medium">
                               <CheckCircle2 className="w-3 h-3" /> Completed
                             </span>
                           ) : user.isActive ? (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">
+                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-medium">
                               Active
                             </span>
                           ) : (
@@ -2054,12 +4378,25 @@ export default function Admin() {
               </table>
             </div>
           </Card>
+          )}
         </div>
 
         {/* Day Completion Stats */}
         <div className="space-y-4">
-          <h2 className="text-xl font-bold text-slate-900">Day-by-Day Completion</h2>
-          <Card className="p-6 border-2 border-slate-100">
+          <button
+            onClick={() => setShowDayCompletionSection(!showDayCompletionSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <BarChart3 className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">Day-by-Day Completion</h2>
+            {showDayCompletionSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+          {showDayCompletionSection && (
+          <Card className="p-6 border border-slate-200">
             <div className="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-15 gap-2">
               {Array.from({ length: 30 }, (_, i) => {
                 const dayNum = i + 1;
@@ -2085,6 +4422,7 @@ export default function Admin() {
               })}
             </div>
           </Card>
+          )}
         </div>
 
         {/* Email Templates */}
@@ -2093,6 +4431,7 @@ export default function Admin() {
             onClick={() => setShowEmailTemplatesSection(!showEmailTemplatesSection)}
             className="flex items-center gap-3 w-full text-left"
           >
+            <Mail className="w-6 h-6 text-primary" />
             <h2 className="text-xl font-bold text-slate-900">Email Templates</h2>
             <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
               {emailTemplates.length} templates
@@ -2107,20 +4446,20 @@ export default function Admin() {
           {showEmailTemplatesSection && (
             <div className="space-y-4">
               {emailTemplates.length === 0 ? (
-                <Card className="p-8 border-2 border-slate-100 text-center">
+                <Card className="p-8 border border-slate-200 text-center">
                   <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                   <p className="text-slate-500">No email templates found. Run the seed script to create default templates.</p>
                 </Card>
               ) : (
                 <div className="space-y-3">
                   {emailTemplates.map((template) => (
-                    <Card key={template.templateKey} className={`p-4 border-2 ${template.isActive ? 'border-slate-200' : 'border-red-200 bg-red-50'}`}>
+                    <Card key={template.templateKey} className={`p-4 border ${template.isActive ? 'border-slate-200' : 'border-slate-300 bg-slate-50'}`}>
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <h3 className="font-bold text-slate-900">{template.name}</h3>
                             {!template.isActive && (
-                              <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-bold rounded">Disabled</span>
+                              <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded">Disabled</span>
                             )}
                           </div>
                           <p className="text-sm text-slate-500 mt-1">{template.description}</p>
@@ -2141,7 +4480,7 @@ export default function Admin() {
                               });
                             }}
                           >
-                            {template.isActive ? <ToggleRight className="w-4 h-4 text-green-600" /> : <ToggleLeft className="w-4 h-4 text-slate-400" />}
+                            {template.isActive ? <ToggleRight className="w-4 h-4 text-primary" /> : <ToggleLeft className="w-4 h-4 text-slate-400" />}
                           </Button>
                           <Button
                             size="sm"

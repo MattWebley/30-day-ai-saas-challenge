@@ -576,3 +576,35 @@ Review AI usage: https://21daysaas.com/admin
     console.error('Failed to send abuse alert email:', error);
   }
 }
+
+// Broadcast email interface
+export interface BroadcastEmailParams {
+  to: string;
+  firstName: string;
+  subject: string;
+  body: string;
+}
+
+export async function sendBroadcastEmail(params: BroadcastEmailParams): Promise<boolean> {
+  const { to, firstName, subject, body } = params;
+
+  try {
+    const { client, fromEmail } = getResendClient();
+
+    // Replace {{firstName}} placeholder
+    const processedBody = body.replace(/\{\{firstName\}\}/g, firstName || 'there');
+    const processedSubject = subject.replace(/\{\{firstName\}\}/g, firstName || 'there');
+
+    await client.emails.send({
+      from: fromEmail,
+      to,
+      subject: processedSubject,
+      text: processedBody,
+    });
+
+    return true;
+  } catch (error) {
+    console.error('Failed to send broadcast email:', error);
+    return false;
+  }
+}

@@ -8,6 +8,7 @@ import { BrandProvider } from "@/components/BrandProvider";
 import { TestModeProvider, useTestMode } from "@/contexts/TestModeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { captureReferralCode, useReferralTracking } from "@/hooks/useReferral";
+import { useHeartbeat } from "@/hooks/useHeartbeat";
 
 // Capture referral code from URL immediately on load
 captureReferralCode();
@@ -51,6 +52,9 @@ function Router() {
 
   // Track referrals after authentication
   useReferralTracking();
+
+  // Send heartbeat for live user tracking (lightweight, in-memory only)
+  useHeartbeat(isAuthenticated);
 
   // Public routes that don't need auth check
   const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/sales-letter-pack', '/coaching/upsell', '/welcome'];
