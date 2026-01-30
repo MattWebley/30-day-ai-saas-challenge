@@ -45,8 +45,7 @@ export default function Critique() {
       });
       const data = await response.json();
       if (data.url) {
-        window.open(data.url, '_blank');
-        setIsProcessing(false);
+        window.location.href = data.url;
       }
     } catch (error) {
       console.error('Checkout error:', error);

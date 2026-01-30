@@ -41,8 +41,7 @@ export default function Order() {
 
       const data = await response.json();
       if (data.url) {
-        window.open(data.url, '_blank');
-        setIsCheckingOut(false);
+        window.location.href = data.url;
       } else {
         throw new Error('No checkout URL received');
       }
