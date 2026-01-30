@@ -107,7 +107,7 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ## Current Status
 - **Status**: In Progress
-- **Last Session**: 2026-01-29 (Design system fixes, security hardening)
+- **Last Session**: 2026-01-30 (One-click upsell fixes, Stripe debugging)
 - **Branch**: main
 - **Repo**: MattWebley/30-day-ai-saas-challenge
 
@@ -370,3 +370,43 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Discussion/Q&A protected against prompt injection and XSS
   - Test copy buttons on Day 5 TechStack page
   - Test submitting questions with suspicious content to verify blocking works
+
+### 2026-01-30 - One-Click Upsell Fixes & Stripe Debugging
+- **Tasks Completed:**
+  - **One-Click Upsell Session Persistence Fixes:**
+    - Added explicit `req.session.save()` in process-success endpoint
+    - Session wasn't persisting stripeCustomerId before response was sent
+    - Added 500ms delay in CheckoutSuccess before redirect to ensure cookie is processed
+    - Added `sameSite: 'lax'` to session cookie configuration
+  - **Fixed Stale User Data Bug:**
+    - `req.user` object was stale after process-success updated database
+    - Upsell endpoint now fetches fresh user data from DB instead of using `req.user`
+  - **Added Debug Endpoint:**
+    - Created `/api/debug/session` to check session state
+    - Shows sessionId, stripeCustomerId, login status
+  - **Added Webhook Debugging:**
+    - Added logging to show webhook secret info (first/last chars)
+    - Logs signature received for debugging verification failures
+  - **Stripe Key Management:**
+    - Discovered duplicate `STRIPE_SECRET_KEY` in Replit Secrets causing issues
+    - Helped user roll/rotate keys after accidental exposure
+    - Cleaned up to single key entry
+- **Key Discovery:**
+  - **100% discount coupons don't save payment methods** - Stripe doesn't capture card info when there's no charge
+  - One-click upsell only works when customer actually pays (card is saved)
+  - Test with real card or partial discount, not 100% off coupons
+- **Files Modified:**
+  - `server/routes.ts` - Session save, fresh DB fetch, debug endpoint, better logging
+  - `server/webhookHandlers.ts` - Added webhook secret debugging logs
+  - `server/replitAuth.ts` - Added sameSite cookie config
+  - `client/src/pages/CheckoutSuccess.tsx` - Added delay before redirect, better logging
+- **Known Issues:**
+  - Stripe webhook signature verification failing (400 errors)
+  - User has correct webhook secret but verification still fails
+  - May be related to how StripeSync library processes webhooks
+  - One-click upsell should work via process-success endpoint (doesn't need webhook)
+- **Notes for Next Session:**
+  - Test one-click upsell with real card payment (not 100% discount)
+  - Webhook issue is separate from upsell - investigate if needed
+  - Consider removing or fixing StripeSync integration if webhooks remain problematic
+  - Coupon `TEST100` exists in admin (100% off) - don't use for upsell testing
