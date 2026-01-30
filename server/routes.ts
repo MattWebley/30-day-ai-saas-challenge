@@ -3606,24 +3606,50 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const paymentIntent = session.payment_intent as any;
       let paymentMethodId: string | null = null;
       
+      console.log('[Process Success] PaymentIntent type:', typeof paymentIntent);
+      console.log('[Process Success] PaymentIntent value:', paymentIntent ? JSON.stringify({
+        id: paymentIntent.id || paymentIntent,
+        payment_method: paymentIntent.payment_method,
+        status: paymentIntent.status
+      }) : 'null');
+      
       if (paymentIntent) {
         // payment_intent can be a string or an expanded object
         if (typeof paymentIntent === 'string') {
           // Need to retrieve it to get the payment method
+          console.log('[Process Success] PI is string, retrieving:', paymentIntent);
           try {
             const pi = await stripe.paymentIntents.retrieve(paymentIntent);
+            console.log('[Process Success] Retrieved PI payment_method:', pi.payment_method);
             paymentMethodId = typeof pi.payment_method === 'string' 
               ? pi.payment_method 
-              : pi.payment_method?.id || null;
+              : (pi.payment_method as any)?.id || null;
             console.log('[Process Success] Retrieved payment method from PI:', paymentMethodId);
           } catch (err) {
             console.error('[Process Success] Error retrieving payment intent:', err);
           }
-        } else if (paymentIntent.payment_method) {
-          paymentMethodId = typeof paymentIntent.payment_method === 'string'
-            ? paymentIntent.payment_method
-            : paymentIntent.payment_method?.id || null;
-          console.log('[Process Success] Got payment method from expanded PI:', paymentMethodId);
+        } else {
+          // It's an expanded object
+          console.log('[Process Success] PI is object, payment_method field:', paymentIntent.payment_method);
+          if (paymentIntent.payment_method) {
+            paymentMethodId = typeof paymentIntent.payment_method === 'string'
+              ? paymentIntent.payment_method
+              : paymentIntent.payment_method?.id || null;
+            console.log('[Process Success] Got payment method from expanded PI:', paymentMethodId);
+          } else {
+            // Payment method not in expanded object, retrieve fresh
+            console.log('[Process Success] No PM in expanded PI, retrieving fresh...');
+            try {
+              const pi = await stripe.paymentIntents.retrieve(paymentIntent.id);
+              console.log('[Process Success] Fresh PI payment_method:', pi.payment_method);
+              paymentMethodId = typeof pi.payment_method === 'string' 
+                ? pi.payment_method 
+                : (pi.payment_method as any)?.id || null;
+              console.log('[Process Success] Got payment method from fresh PI:', paymentMethodId);
+            } catch (err) {
+              console.error('[Process Success] Error retrieving fresh PI:', err);
+            }
+          }
         }
       }
 
