@@ -3603,55 +3603,73 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         : session.customer?.id;
 
       // Get payment method from the payment intent for one-click upsells
-      const paymentIntent = session.payment_intent as any;
       let paymentMethodId: string | null = null;
       
-      console.log('[Process Success] PaymentIntent type:', typeof paymentIntent);
-      console.log('[Process Success] PaymentIntent value:', paymentIntent ? JSON.stringify({
-        id: paymentIntent.id || paymentIntent,
-        payment_method: paymentIntent.payment_method,
-        status: paymentIntent.status
-      }) : 'null');
+      // Try to get payment intent ID from session
+      const paymentIntentId = typeof session.payment_intent === 'string' 
+        ? session.payment_intent 
+        : (session.payment_intent as any)?.id || null;
       
-      if (paymentIntent) {
-        // payment_intent can be a string or an expanded object
-        if (typeof paymentIntent === 'string') {
-          // Need to retrieve it to get the payment method
-          console.log('[Process Success] PI is string, retrieving:', paymentIntent);
-          try {
-            const pi = await stripe.paymentIntents.retrieve(paymentIntent);
-            console.log('[Process Success] Retrieved PI payment_method:', pi.payment_method);
-            paymentMethodId = typeof pi.payment_method === 'string' 
-              ? pi.payment_method 
-              : (pi.payment_method as any)?.id || null;
-            console.log('[Process Success] Retrieved payment method from PI:', paymentMethodId);
-          } catch (err) {
-            console.error('[Process Success] Error retrieving payment intent:', err);
-          }
-        } else {
-          // It's an expanded object
-          console.log('[Process Success] PI is object, payment_method field:', paymentIntent.payment_method);
-          if (paymentIntent.payment_method) {
-            paymentMethodId = typeof paymentIntent.payment_method === 'string'
-              ? paymentIntent.payment_method
-              : paymentIntent.payment_method?.id || null;
-            console.log('[Process Success] Got payment method from expanded PI:', paymentMethodId);
-          } else {
-            // Payment method not in expanded object, retrieve fresh
-            console.log('[Process Success] No PM in expanded PI, retrieving fresh...');
-            try {
-              const pi = await stripe.paymentIntents.retrieve(paymentIntent.id);
-              console.log('[Process Success] Fresh PI payment_method:', pi.payment_method);
+      console.log('[Process Success] PaymentIntent ID from session:', paymentIntentId);
+      
+      if (paymentIntentId) {
+        // Retrieve the payment intent to get the payment method
+        try {
+          const pi = await stripe.paymentIntents.retrieve(paymentIntentId);
+          console.log('[Process Success] Retrieved PI:', pi.id, 'payment_method:', pi.payment_method, 'status:', pi.status);
+          paymentMethodId = typeof pi.payment_method === 'string' 
+            ? pi.payment_method 
+            : (pi.payment_method as any)?.id || null;
+          console.log('[Process Success] Got payment method from PI:', paymentMethodId);
+        } catch (err) {
+          console.error('[Process Success] Error retrieving payment intent:', err);
+        }
+      }
+      
+      // Fallback: If no payment method found, search customer's payment intents
+      if (!paymentMethodId && customerId) {
+        console.log('[Process Success] No PM from session PI, searching customer payment intents...');
+        try {
+          const paymentIntents = await stripe.paymentIntents.list({
+            customer: customerId,
+            limit: 5
+          });
+          console.log('[Process Success] Found', paymentIntents.data.length, 'payment intents for customer');
+          
+          // Find the most recent successful one with a payment method
+          for (const pi of paymentIntents.data) {
+            if (pi.status === 'succeeded' && pi.payment_method) {
               paymentMethodId = typeof pi.payment_method === 'string' 
                 ? pi.payment_method 
                 : (pi.payment_method as any)?.id || null;
-              console.log('[Process Success] Got payment method from fresh PI:', paymentMethodId);
-            } catch (err) {
-              console.error('[Process Success] Error retrieving fresh PI:', err);
+              console.log('[Process Success] Found PM from customer PI:', paymentMethodId);
+              break;
             }
           }
+        } catch (err) {
+          console.error('[Process Success] Error searching customer PIs:', err);
         }
       }
+      
+      // Last fallback: List payment methods attached to customer
+      if (!paymentMethodId && customerId) {
+        console.log('[Process Success] Still no PM, listing customer payment methods...');
+        try {
+          const paymentMethods = await stripe.paymentMethods.list({
+            customer: customerId,
+            type: 'card',
+            limit: 1
+          });
+          if (paymentMethods.data.length > 0) {
+            paymentMethodId = paymentMethods.data[0].id;
+            console.log('[Process Success] Found PM from customer list:', paymentMethodId);
+          }
+        } catch (err) {
+          console.error('[Process Success] Error listing customer PMs:', err);
+        }
+      }
+      
+      console.log('[Process Success] Final payment method ID:', paymentMethodId);
 
       // Store customer ID and payment method in session for immediate upsells (works for guests)
       // CRITICAL: Must save session explicitly before responding for it to persist
