@@ -3587,9 +3587,21 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       const stripe = await getUncachableStripeClient();
       const session = await stripe.checkout.sessions.retrieve(sessionId, {
-        expand: ['payment_intent']
+        expand: ['payment_intent', 'payment_intent.payment_method']
       });
 
+      // Debug: Log the full session object to understand what Stripe returns
+      console.log('[Process Success] Full session object:', JSON.stringify({
+        id: session.id,
+        mode: session.mode,
+        payment_status: session.payment_status,
+        status: session.status,
+        customer: session.customer,
+        payment_intent: session.payment_intent,
+        payment_method_types: session.payment_method_types,
+        amount_total: session.amount_total
+      }, null, 2));
+      
       console.log('[Process Success] Payment status:', session.payment_status, 'Customer:', session.customer);
 
       // Verify payment was successful
