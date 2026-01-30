@@ -3602,12 +3602,38 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         ? session.customer
         : session.customer?.id;
 
-      // Store customer ID in session for immediate upsells (works for guests)
+      // Get payment method from the payment intent for one-click upsells
+      const paymentIntent = session.payment_intent as any;
+      let paymentMethodId: string | null = null;
+      
+      if (paymentIntent) {
+        // payment_intent can be a string or an expanded object
+        if (typeof paymentIntent === 'string') {
+          // Need to retrieve it to get the payment method
+          try {
+            const pi = await stripe.paymentIntents.retrieve(paymentIntent);
+            paymentMethodId = typeof pi.payment_method === 'string' 
+              ? pi.payment_method 
+              : pi.payment_method?.id || null;
+            console.log('[Process Success] Retrieved payment method from PI:', paymentMethodId);
+          } catch (err) {
+            console.error('[Process Success] Error retrieving payment intent:', err);
+          }
+        } else if (paymentIntent.payment_method) {
+          paymentMethodId = typeof paymentIntent.payment_method === 'string'
+            ? paymentIntent.payment_method
+            : paymentIntent.payment_method?.id || null;
+          console.log('[Process Success] Got payment method from expanded PI:', paymentMethodId);
+        }
+      }
+
+      // Store customer ID and payment method in session for immediate upsells (works for guests)
       // CRITICAL: Must save session explicitly before responding for it to persist
       if (customerId && req.session) {
         (req.session as any).stripeCustomerId = customerId;
+        (req.session as any).stripePaymentMethodId = paymentMethodId;
         (req.session as any).purchaseCurrency = session.metadata?.currency?.toLowerCase() || 'usd';
-        console.log('[Process Success] Storing in session - Customer:', customerId);
+        console.log('[Process Success] Storing in session - Customer:', customerId, 'PaymentMethod:', paymentMethodId);
 
         // Explicitly save session to ensure it persists before response
         await new Promise<void>((resolve, reject) => {
@@ -3660,22 +3686,36 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         }
       }
 
-      // Send purchase confirmation email
-      const user = req.user as User;
-      const userEmail = (user as any).email;
-      const firstName = (user as any).firstName || 'there';
-      const currency = (session.metadata?.currency || 'usd').toLowerCase() as 'usd' | 'gbp';
+      // Send purchase confirmation email (only if logged in)
+      if (isLoggedIn && req.user) {
+        const user = req.user as any;
+        const userEmail = user.email;
+        const firstName = user.firstName || 'there';
+        const currency = (session.metadata?.currency || 'usd').toLowerCase() as 'usd' | 'gbp';
+        const total = session.amount_total ? session.amount_total / 100 : 399;
 
-      // Calculate total from session amount
-      const total = session.amount_total ? session.amount_total / 100 : 399;
+        if (userEmail) {
+          sendPurchaseConfirmationEmail({
+            to: userEmail,
+            firstName,
+            currency,
+            total
+          }).catch(err => console.error('Email send error:', err));
+        }
+      } else if (session.customer_email || session.customer_details?.email) {
+        // Guest checkout - send email to customer email from session
+        const guestEmail = session.customer_email || session.customer_details?.email;
+        const currency = (session.metadata?.currency || 'usd').toLowerCase() as 'usd' | 'gbp';
+        const total = session.amount_total ? session.amount_total / 100 : 399;
 
-      if (userEmail) {
-        sendPurchaseConfirmationEmail({
-          to: userEmail,
-          firstName,
-          currency,
-          total
-        }).catch(err => console.error('Email send error:', err));
+        if (guestEmail) {
+          sendPurchaseConfirmationEmail({
+            to: guestEmail,
+            firstName: 'there',
+            currency,
+            total
+          }).catch(err => console.error('Email send error:', err));
+        }
       }
 
       res.json({
@@ -3719,6 +3759,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     console.log('[One-click upsell] Session ID:', req.sessionID);
     console.log('[One-click upsell] Session data:', JSON.stringify({
       stripeCustomerId: (req.session as any)?.stripeCustomerId,
+      stripePaymentMethodId: (req.session as any)?.stripePaymentMethodId,
       purchaseCurrency: (req.session as any)?.purchaseCurrency,
       hasSession: !!req.session
     }));
@@ -3739,11 +3780,13 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       }
 
       const sessionCustomerId = (req.session as any)?.stripeCustomerId;
+      const sessionPaymentMethodId = (req.session as any)?.stripePaymentMethodId;
       const stripeCustomerId = userCustomerId || sessionCustomerId;
 
       console.log('[One-click upsell] User:', userId || 'guest');
       console.log('[One-click upsell] User customerId (from DB):', userCustomerId);
       console.log('[One-click upsell] Session customerId:', sessionCustomerId);
+      console.log('[One-click upsell] Session paymentMethodId:', sessionPaymentMethodId);
       console.log('[One-click upsell] Using customerId:', stripeCustomerId, '(from', userCustomerId ? 'user-db' : sessionCustomerId ? 'session' : 'none', ')');
 
       // Pricing based on currency (amount in smallest unit - cents/pence)
@@ -3759,6 +3802,104 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       }
 
       const stripe = await getUncachableStripeClient();
+
+      // If we have a stored payment method from session, use it directly
+      if (sessionPaymentMethodId) {
+        console.log('[One-click upsell] Using stored payment method from session:', sessionPaymentMethodId);
+        
+        try {
+          // Get customer email for receipts
+          const customer = await stripe.customers.retrieve(stripeCustomerId) as any;
+          const customerEmail = customer.email;
+          
+          // Create and confirm payment intent with the stored payment method
+          const paymentIntent = await stripe.paymentIntents.create({
+            amount: priceConfig.amount,
+            currency: priceConfig.currency,
+            customer: stripeCustomerId,
+            payment_method: sessionPaymentMethodId,
+            off_session: true,
+            confirm: true,
+            description: '1:1 Vibe Coding Coaching - 4 x 1-hour sessions',
+            metadata: {
+              userId: userId || '',
+              productType: 'coaching',
+              email: customerEmail || ''
+            }
+          });
+
+          console.log('[One-click upsell] Stored PM payment intent status:', paymentIntent.status);
+
+          if (paymentIntent.status === 'succeeded') {
+            console.log('[One-click upsell] SUCCESS with stored PM! Charging completed for:', userId || 'guest');
+
+            if (userId) {
+              await db.update(users)
+                .set({ coachingPurchased: true })
+                .where(eq(users.id, userId));
+
+              const user = req.user as any;
+              const userEmail = user?.email;
+              const firstName = user?.firstName || 'there';
+              const userName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Unknown';
+              if (userEmail) {
+                sendCoachingConfirmationEmail({
+                  to: userEmail,
+                  firstName,
+                  currency: currency.toLowerCase() as 'usd' | 'gbp',
+                  amount: priceConfig.amount / 100
+                }).catch(err => console.error('Email send error:', err));
+
+                sendCoachingPurchaseNotificationEmail({
+                  userEmail,
+                  userName,
+                  coachingType: '4 x 1-hour coaching sessions',
+                  currency: currency.toLowerCase() as 'usd' | 'gbp',
+                  amount: priceConfig.amount / 100
+                }).catch(err => console.error('Coaching notification error:', err));
+              }
+            } else if (customerEmail) {
+              await db.insert(pendingPurchases).values({
+                email: customerEmail,
+                stripeCustomerId,
+                stripeSessionId: `pi_${paymentIntent.id}`,
+                productType: 'coaching',
+                currency: priceConfig.currency,
+                amountPaid: priceConfig.amount
+              }).onConflictDoNothing();
+
+              sendCoachingConfirmationEmail({
+                to: customerEmail,
+                firstName: 'there',
+                currency: currency.toLowerCase() as 'usd' | 'gbp',
+                amount: priceConfig.amount / 100
+              }).catch(err => console.error('Email send error:', err));
+
+              sendCoachingPurchaseNotificationEmail({
+                userEmail: customerEmail,
+                userName: customerEmail,
+                coachingType: '4 x 1-hour coaching sessions (guest)',
+                currency: currency.toLowerCase() as 'usd' | 'gbp',
+                amount: priceConfig.amount / 100
+              }).catch(err => console.error('Coaching notification error:', err));
+            }
+
+            return res.json({ success: true, message: "Coaching purchased successfully!" });
+          } else if (paymentIntent.status === 'requires_action' || paymentIntent.status === 'requires_payment_method') {
+            console.log('[One-click upsell] Stored PM requires action - falling back to checkout');
+            return res.status(400).json({ 
+              message: "Card requires additional verification", 
+              requiresCheckout: true 
+            });
+          } else {
+            console.log('[One-click upsell] Stored PM failed with status:', paymentIntent.status);
+            return res.status(400).json({ message: "Payment failed", status: paymentIntent.status, requiresCheckout: true });
+          }
+        } catch (storedPmError: any) {
+          console.error('[One-click upsell] Error with stored PM:', storedPmError.message);
+          // Fall through to try other methods
+        }
+      }
 
       // Get the customer with expanded payment methods info
       const customer = await stripe.customers.retrieve(stripeCustomerId, {
