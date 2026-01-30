@@ -43,7 +43,7 @@ export function ReferralSection() {
 
   const shareToX = () => {
     if (!referralData) return;
-    const text = `I'm taking the 21 Day AI SaaS Challenge - building my own AI-powered SaaS from scratch! Join me:`;
+    const text = `I'm taking the 21-Day AI SaaS Challenge - building my own AI-powered SaaS from scratch! Join me:`;
     window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getShareUrl())}`, '_blank');
   };
 
@@ -57,8 +57,8 @@ export function ReferralSection() {
 
   const shareViaEmail = () => {
     if (!referralData) return;
-    const subject = "Join me in the 21 Day AI SaaS Challenge";
-    const body = `Hey!\n\nI'm building my own AI-powered SaaS in just 21 days with the 21 Day AI SaaS Challenge. No coding required - it's all AI-powered.\n\nYou should join me! Use my link:\n${referralData.referralLink}\n\nLet's build something awesome together!`;
+    const subject = "Join me in the 21-Day AI SaaS Challenge";
+    const body = `Hey!\n\nI'm building my own AI-powered SaaS in just 21 days with the 21-Day AI SaaS Challenge. No coding required - it's all AI-powered.\n\nYou should join me! Use my link:\n${referralData.referralLink}\n\nLet's build something awesome together!`;
     window.open(`mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`, '_blank');
   };
 

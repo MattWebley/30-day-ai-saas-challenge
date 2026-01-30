@@ -59,14 +59,14 @@ export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams)
   const { to, firstName, currency, total } = params;
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
-  const defaultSubject = `You're in! Welcome to the 21 Day AI SaaS Challenge`;
+  const defaultSubject = `You're in! Welcome to the 21-Day AI SaaS Challenge`;
   const defaultBody = `You're In, {{firstName}}!
 
-Welcome to the 21 Day AI SaaS Challenge. Your journey from idea to launch-ready product starts now.
+Welcome to the 21-Day AI SaaS Challenge. Your journey from idea to launch-ready product starts now.
 
 ORDER CONFIRMED
 ---------------
-21 Day AI SaaS Challenge
+21-Day AI SaaS Challenge
 Total: {{currencySymbol}}{{total}}
 
 WHAT'S NEXT
@@ -82,7 +82,7 @@ Questions? Just reply to this email.
 - Matt
 
 --
-21 Day AI SaaS Challenge
+21-Day AI SaaS Challenge
 You're receiving this because you purchased the challenge.`;
 
   try {
@@ -285,7 +285,7 @@ Looking forward to seeing your improved sales page!
 - Matt
 
 --
-21 Day AI SaaS Challenge
+21-Day AI SaaS Challenge
 `,
     });
     console.log('Critique completed email sent to:', to);
@@ -516,7 +516,7 @@ Questions? Just reply to this email.
 - Matt
 
 --
-21 Day AI SaaS Challenge
+21-Day AI SaaS Challenge
 You're receiving this because you purchased coaching.
 `,
     });

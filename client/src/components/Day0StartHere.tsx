@@ -202,7 +202,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
           <VideoSlides day={0} />
         </div>
         <h1 className="text-3xl font-black text-slate-900">
-          Welcome to the 21 Day AI SaaS Challenge
+          Welcome to the 21-Day AI SaaS Challenge
         </h1>
         <p className={`text-lg ${ds.body} max-w-2xl mx-auto`}>
           In the next 21 days, you'll go from idea to launch-ready product.

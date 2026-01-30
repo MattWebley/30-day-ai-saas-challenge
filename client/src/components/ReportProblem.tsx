@@ -66,7 +66,7 @@ export function ReportProblem({ currentDay }: ReportProblemProps) {
     const debugInfo = getDebugInfo();
     const debugText = JSON.stringify(debugInfo, null, 2);
 
-    const subject = encodeURIComponent(`[21 Day Challenge Bug] Day ${currentDay ?? 'Unknown'} - Issue Report`);
+    const subject = encodeURIComponent(`[21-Day Challenge Bug] Day ${currentDay ?? 'Unknown'} - Issue Report`);
     const body = encodeURIComponent(
       `PROBLEM DESCRIPTION:\n${description}\n\n` +
       `---\n\n` +

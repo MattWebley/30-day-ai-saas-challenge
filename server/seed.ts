@@ -157,7 +157,7 @@ async function seed() {
     {
       day: 0,
       title: "Start Here",
-      description: "Welcome to the 21 Day AI SaaS Challenge! Get motivated, learn the rules for success, and commit to your journey.",
+      description: "Welcome to the 21-Day AI SaaS Challenge! Get motivated, learn the rules for success, and commit to your journey.",
       phase: "Start",
       videoUrl: null,
       aiTaskType: null,
@@ -169,7 +169,7 @@ async function seed() {
       microDecisionOptions: null,
       reflectionQuestion: null,
       tip: "This challenge has been carefully designed to take you from zero to launch-ready. Set a daily reminder, same time every day, and trust the process. The people who finish are the ones who show up consistently.",
-      lesson: `Welcome to the 21 Day AI SaaS Challenge!
+      lesson: `Welcome to the 21-Day AI SaaS Challenge!
 
 In the next 21 days, you're going to go from idea to launch-ready product. No fluff. No theory. Just focused action every single day.
 
@@ -1303,7 +1303,7 @@ You went from "I have an idea" to "I have a WORKING PRODUCT" in just a few weeks
 
 This challenge taught you to BUILD. Now let's talk about how to SELL.`,
       outcome: "Challenge complete! Growth strategies revealed and income potential calculated.",
-      completionMessage: "CONGRATULATIONS! You completed the 21 Day AI SaaS Challenge. From idea to product to growth strategies. Now go build that business.",
+      completionMessage: "CONGRATULATIONS! You completed the 21-Day AI SaaS Challenge. From idea to product to growth strategies. Now go build that business.",
       xpReward: 200,
       estimatedMinutes: 15,
     },
@@ -1341,14 +1341,14 @@ This challenge taught you to BUILD. Now let's talk about how to SELL.`,
     {
       templateKey: "purchase_confirmation",
       name: "Purchase Confirmation",
-      subject: "You're in! Welcome to the 21 Day AI SaaS Challenge",
+      subject: "You're in! Welcome to the 21-Day AI SaaS Challenge",
       body: `You're In, {{firstName}}!
 
-Welcome to the 21 Day AI SaaS Challenge. Your journey from idea to launch-ready product starts now.
+Welcome to the 21-Day AI SaaS Challenge. Your journey from idea to launch-ready product starts now.
 
 ORDER CONFIRMED
 ---------------
-21 Day AI SaaS Challenge
+21-Day AI SaaS Challenge
 Total: {{currencySymbol}}{{total}}
 
 WHAT'S NEXT
@@ -1364,7 +1364,7 @@ Questions? Just reply to this email.
 - Matt
 
 --
-21 Day AI SaaS Challenge
+21-Day AI SaaS Challenge
 You're receiving this because you purchased the challenge.`,
       description: "Sent to customer after purchasing the main challenge",
       variables: "firstName, currencySymbol, total",
@@ -1397,7 +1397,7 @@ Questions? Just reply to this email.
 - Matt
 
 --
-21 Day AI SaaS Challenge
+21-Day AI SaaS Challenge
 You're receiving this because you purchased coaching.`,
       description: "Sent to customer after purchasing coaching",
       variables: "firstName, currencySymbol, amount, coachingType",
@@ -1517,7 +1517,7 @@ Looking forward to seeing your improved sales page!
 - Matt
 
 --
-21 Day AI SaaS Challenge`,
+21-Day AI SaaS Challenge`,
       description: "Sent to customer when their sales page critique video is ready",
       variables: "firstName, videoUrl",
     },

@@ -26,7 +26,7 @@ export function Layout({ children, currentDay = 1 }: LayoutProps) {
         <div className="flex items-center ml-3 flex-1">
           <img
             src="/logo.png?v=3"
-            alt="21 Day AI SaaS Challenge"
+            alt="21-Day AI SaaS Challenge"
             className="h-8 w-auto object-contain"
             style={{ imageRendering: 'auto' }}
           />

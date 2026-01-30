@@ -68,7 +68,7 @@ export async function generateBadgeImage(options: BadgeImageOptions): Promise<Bu
                       color: '#94a3b8',
                       fontWeight: 500,
                     },
-                    children: '21 Day AI SaaS Challenge',
+                    children: '21-Day AI SaaS Challenge',
                   },
                 },
               ],

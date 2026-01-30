@@ -41,7 +41,7 @@ export default function Congratulations() {
             YOU DID IT!
           </h1>
           <p className="text-xl text-slate-600">
-            You completed the 21 Day AI SaaS Challenge
+            You completed the 21-Day AI SaaS Challenge
           </p>
         </div>
 

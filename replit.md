@@ -1,4 +1,4 @@
-# 21 Day AI SaaS Challenge
+# 21-Day AI SaaS Challenge
 
 ## Overview
 

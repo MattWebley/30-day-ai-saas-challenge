@@ -87,7 +87,7 @@ export function Day19TheSalesMachine({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/showcase", {
         appName: showcaseAppName,
-        description: `Built with the 21 Day AI SaaS Challenge`,
+        description: `Built with the 21-Day AI SaaS Challenge`,
         screenshotUrl: "",
         liveUrl: appUrl,
         testimonial,
@@ -563,7 +563,7 @@ Style it with:
               </div>
               <div className="text-center mt-2">
                 <span className="text-2xl font-bold text-slate-900">£495 / $595</span>
-                <p className={ds.muted + " mt-1"}>During the 21 Day Challenge only</p>
+                <p className={ds.muted + " mt-1"}>During the 21-Day Challenge only</p>
               </div>
             </div>
           </div>

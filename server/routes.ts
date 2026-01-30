@@ -939,7 +939,7 @@ export async function registerRoutes(
   <meta property="og:type" content="website">
   <meta property="og:url" content="${shareUrl}">
   <meta property="og:title" content="Build Your Own AI SaaS in 21 Days">
-  <meta property="og:description" content="No coding required. 100% AI-powered. Join the 21 Day Challenge and launch your own software business.">
+  <meta property="og:description" content="No coding required. 100% AI-powered. Join the 21-Day Challenge and launch your own software business.">
   <meta property="og:image" content="${imageUrl}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -948,7 +948,7 @@ export async function registerRoutes(
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="${shareUrl}">
   <meta name="twitter:title" content="Build Your Own AI SaaS in 21 Days">
-  <meta name="twitter:description" content="No coding required. 100% AI-powered. Join the 21 Day Challenge and launch your own software business.">
+  <meta name="twitter:description" content="No coding required. 100% AI-powered. Join the 21-Day Challenge and launch your own software business.">
   <meta name="twitter:image" content="${imageUrl}">
 
   <meta http-equiv="refresh" content="0;url=${shareUrl}">
@@ -993,13 +993,13 @@ export async function registerRoutes(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${badge.name} - 21 Day AI SaaS Challenge Badge</title>
+  <title>${badge.name} - 21-Day AI SaaS Challenge Badge</title>
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="${shareUrl}">
   <meta property="og:title" content="I earned the ${badge.name} badge!">
-  <meta property="og:description" content="${badge.description} - 21 Day AI SaaS Challenge by Matt Webley">
+  <meta property="og:description" content="${badge.description} - 21-Day AI SaaS Challenge by Matt Webley">
   <meta property="og:image" content="${imageUrl}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -1008,7 +1008,7 @@ export async function registerRoutes(
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="${shareUrl}">
   <meta name="twitter:title" content="I earned the ${badge.name} badge!">
-  <meta name="twitter:description" content="${badge.description} - 21 Day AI SaaS Challenge by Matt Webley">
+  <meta name="twitter:description" content="${badge.description} - 21-Day AI SaaS Challenge by Matt Webley">
   <meta name="twitter:image" content="${imageUrl}">
 
   <style>
@@ -1098,7 +1098,7 @@ export async function registerRoutes(
     <div class="badge-earned">Badge Earned</div>
     <h1 class="badge-name">${badge.name}</h1>
     <p class="badge-desc">${badge.description}</p>
-    <a href="/" class="cta-button">Join the 21 Day Challenge</a>
+    <a href="/" class="cta-button">Join the 21-Day Challenge</a>
     <p class="branding">by <a href="https://mattwebley.com" target="_blank">Matt Webley</a></p>
   </div>
 </body>
@@ -1522,7 +1522,7 @@ Format: { "ideas": [...] }`;
         userId,
         endpoint: 'ai-prompt',
         endpointType: 'general',
-        systemPrompt: 'You are a helpful assistant for the 21 Day AI SaaS Challenge. Be concise and actionable.',
+        systemPrompt: 'You are a helpful assistant for the 21-Day AI SaaS Challenge. Be concise and actionable.',
         userMessage: prompt,
         maxTokens: 1500,
         temperature: 1,
@@ -2485,7 +2485,7 @@ Just output the look & feel description, nothing else.`,
         accentColor: "#007BFF",
         fontFamily: "Poppins",
         borderRadius: 6,
-        appName: "21 Day AI SaaS Challenge",
+        appName: "21-Day AI SaaS Challenge",
       });
     } catch (error) {
       console.error("Error fetching brand settings:", error);
@@ -2578,7 +2578,7 @@ TECH STACK COVERED:
 - React/TypeScript/Tailwind (frontend)
 - Express/Node.js (backend)`;
 
-      const systemPrompt = `You are the AI Mentor for the 21 Day AI SaaS Challenge. You ONLY help with topics covered in this specific challenge.
+      const systemPrompt = `You are the AI Mentor for the 21-Day AI SaaS Challenge. You ONLY help with topics covered in this specific challenge.
 
 ${curriculum}
 
@@ -2596,7 +2596,7 @@ You DO NOT help with:
 - Business strategy, fundraising, hiring, scaling
 - Anything not directly related to completing the 21-day challenge
 
-If asked about off-topic subjects, say: "That's outside what we cover in the 21 Day Challenge. I'm here to help you build your MVP using Replit, Claude Code, and the tech stack we teach. What can I help you with for your current day's task?"
+If asked about off-topic subjects, say: "That's outside what we cover in the 21-Day Challenge. I'm here to help you build your MVP using Replit, Claude Code, and the tech stack we teach. What can I help you with for your current day's task?"
 
 USER CONTEXT:
 ${context.userName ? `Name: ${context.userName}` : ''}
@@ -3169,7 +3169,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           userId,
           endpoint: 'ai-suggested-answer',
           endpointType: 'general',
-          systemPrompt: `You are Matt Webley's assistant for the 21 Day AI SaaS Challenge. Generate a helpful, concise answer to this student question about Day ${day}: "${dayContent?.title || 'Unknown'}". Keep answers practical and actionable. Use Matt's punchy, direct style with short sentences and ALL CAPS for emphasis occasionally.`,
+          systemPrompt: `You are Matt Webley's assistant for the 21-Day AI SaaS Challenge. Generate a helpful, concise answer to this student question about Day ${day}: "${dayContent?.title || 'Unknown'}". Keep answers practical and actionable. Use Matt's punchy, direct style with short sentences and ALL CAPS for emphasis occasionally.`,
           userMessage: question,
           maxTokens: 500,
         });
@@ -3314,7 +3314,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     }
   });
 
-  // Stripe checkout - create checkout session for the 21 Day Challenge
+  // Stripe checkout - create checkout session for the 21-Day Challenge
   app.post("/api/checkout", async (req, res) => {
     try {
       const { currency = 'usd' } = req.body;
@@ -3337,6 +3337,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           quantity: 1
         }],
         mode: 'payment',
+        allow_promotion_codes: true,
         success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}&currency=${currency}`,
         cancel_url: `${protocol}://${host}/order`,
         // Create a customer and save their payment method for one-click upsells
@@ -3379,6 +3380,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           quantity: 1
         }],
         mode: 'payment',
+        allow_promotion_codes: true,
         success_url: `${protocol}://${host}/coaching/success`,
         cancel_url: `${protocol}://${host}/coaching/upsell?currency=${currency}`,
         metadata: {
@@ -3416,6 +3418,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           quantity: 1
         }],
         mode: 'payment',
+        allow_promotion_codes: true,
         success_url: `${protocol}://${host}/coaching/success?type=single`,
         cancel_url: `${protocol}://${host}/coaching`,
         metadata: {
@@ -3453,6 +3456,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           quantity: 1
         }],
         mode: 'payment',
+        allow_promotion_codes: true,
         success_url: `${protocol}://${host}/coaching/success?type=matt-single`,
         cancel_url: `${protocol}://${host}/coaching`,
         metadata: {
@@ -3490,6 +3494,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           quantity: 1
         }],
         mode: 'payment',
+        allow_promotion_codes: true,
         success_url: `${protocol}://${host}/coaching/success?type=matt`,
         cancel_url: `${protocol}://${host}/coaching`,
         metadata: {
@@ -3528,6 +3533,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           quantity: 1
         }],
         mode: 'payment',
+        allow_promotion_codes: true,
         success_url: `${protocol}://${host}/critique/success`,
         cancel_url: `${protocol}://${host}/critique`,
         metadata: {
@@ -4128,7 +4134,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
 "${currentHeadline}"
 
-This is for a product called "21 Day AI SaaS Challenge" - a course that teaches complete beginners how to build working software products using AI, without coding experience, in 21 days, for less than $100.
+This is for a product called "21-Day AI SaaS Challenge" - a course that teaches complete beginners how to build working software products using AI, without coding experience, in 21 days, for less than $100.
 
 Generate 5 distinctly different headline approaches. Consider:
 - Different emotional angles (fear, curiosity, aspiration, urgency)

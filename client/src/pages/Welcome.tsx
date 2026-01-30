@@ -36,7 +36,7 @@ export default function Welcome() {
             You're In, {firstName}!
           </h1>
           <p className="text-xl text-slate-600">
-            Welcome to the 21 Day AI SaaS Challenge
+            Welcome to the 21-Day AI SaaS Challenge
           </p>
         </div>
 

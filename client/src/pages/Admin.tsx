@@ -416,7 +416,7 @@ export default function Admin() {
     accentColor: "#007BFF",
     fontFamily: "Poppins",
     borderRadius: 6,
-    appName: "21 Day AI SaaS Challenge",
+    appName: "21-Day AI SaaS Challenge",
   });
 
   useEffect(() => {
@@ -429,7 +429,7 @@ export default function Admin() {
         fontFamily: brandSettings.fontFamily || "Poppins",
         borderRadius: brandSettings.borderRadius || 6,
         logoUrl: brandSettings.logoUrl || "",
-        appName: brandSettings.appName || "21 Day AI SaaS Challenge",
+        appName: brandSettings.appName || "21-Day AI SaaS Challenge",
       });
     }
   }, [brandSettings]);

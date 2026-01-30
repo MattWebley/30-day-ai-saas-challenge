@@ -649,7 +649,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
             className="w-full h-14 text-lg font-bold gap-2"
             onClick={() => setStep("complete")}
           >
-            Complete the 21 Day Challenge <Trophy className="w-5 h-5" />
+            Complete the 21-Day Challenge <Trophy className="w-5 h-5" />
           </Button>
         </>
       )}
@@ -666,7 +666,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
                 CONGRATULATIONS!
               </h4>
               <p className={ds.body}>
-                You completed the 21 Day AI SaaS Challenge.
+                You completed the 21-Day AI SaaS Challenge.
               </p>
             </div>
           </Card>

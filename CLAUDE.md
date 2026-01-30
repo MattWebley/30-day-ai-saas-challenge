@@ -1,4 +1,4 @@
-# Project: 21 Day AI SaaS Challenge
+# Project: 21-Day AI SaaS Challenge
 
 ## Rules for Claude (Always Follow)
 
@@ -38,7 +38,7 @@ Interactive components MUST match lesson text styling:
 
 ## Project Overview
 
-A gamified 21 Day AI SaaS Challenge guiding users from idea to launch-ready product through daily micro-tasks.
+A gamified 21-Day AI SaaS Challenge guiding users from idea to launch-ready product through daily micro-tasks.
 
 ### Challenge Structure
 - **Days 0-4**: Idea & Planning (Start, Idea, Validate, Features, Name)

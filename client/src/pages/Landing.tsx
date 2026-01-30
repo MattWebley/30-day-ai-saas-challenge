@@ -41,7 +41,7 @@ export default function Landing() {
           <div className="flex flex-col items-center">
             <img
               src="/logo.png?v=3"
-              alt="21 Day AI SaaS Challenge"
+              alt="21-Day AI SaaS Challenge"
               className="h-20 sm:h-24 w-auto object-contain"
               style={{ imageRendering: 'auto' }}
             />
@@ -385,7 +385,7 @@ export default function Landing() {
 
             <a href="/order" className="block">
               <Button size="lg" className="w-full py-4 text-lg font-bold">
-                Start the 21 Day Challenge <ArrowRight className="w-5 h-5 inline ml-1" />
+                Start the 21-Day Challenge <ArrowRight className="w-5 h-5 inline ml-1" />
               </Button>
             </a>
           </div>
@@ -528,7 +528,7 @@ export default function Landing() {
                   I'm not telling you this to brag. I'm telling you because I've seen EXACTLY what it takes to build software products that actually make money. I've made every mistake. I've learned every lesson. And now I've packaged it all into a system that works.
                 </p>
                 <p>
-                  The 21 Day AI SaaS Challenge is the distillation of EVERYTHING I've learned about what it ACTUALLY takes to go from zero to launched product. No fluff. No theory. Just the stuff that matters.
+                  The 21-Day AI SaaS Challenge is the distillation of EVERYTHING I've learned about what it ACTUALLY takes to go from zero to launched product. No fluff. No theory. Just the stuff that matters.
                 </p>
 
                 <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-4">
@@ -1348,7 +1348,7 @@ export default function Landing() {
           </p>
 
           <p>
-            The 21 Day AI SaaS Challenge takes you from "I want to build something" to "I have a WORKING product" in 21 days. No idea yet? Day 1 generates personalized ideas for you. No coding required. AI does the heavy lifting. You just show up daily and follow the system.
+            The 21-Day AI SaaS Challenge takes you from "I want to build something" to "I have a WORKING product" in 21 days. No idea yet? Day 1 generates personalized ideas for you. No coding required. AI does the heavy lifting. You just show up daily and follow the system.
           </p>
 
           <p>
@@ -1376,7 +1376,7 @@ export default function Landing() {
               className="w-8 h-8 rounded-full"
               loading="lazy"
             />
-            <span className="font-semibold">21 Day AI SaaS Challenge</span>
+            <span className="font-semibold">21-Day AI SaaS Challenge</span>
           </div>
           <p className="text-sm text-slate-500">
             © {new Date().getFullYear()} Webley Global - FZCO, Dubai. All rights reserved.

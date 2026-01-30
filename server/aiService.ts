@@ -171,7 +171,7 @@ async function preCallChecks(options: AICallOptions): Promise<{ allowed: boolean
 
     return {
       allowed: false,
-      error: "I can only help with questions about the 21 Day Challenge. Let's get back on track - what are you working on today?",
+      error: "I can only help with questions about the 21-Day Challenge. Let's get back on track - what are you working on today?",
       blocked: true,
     };
   }

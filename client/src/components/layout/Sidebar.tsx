@@ -106,7 +106,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
           <div className="flex items-center">
             <img
               src="/logo.png?v=3"
-              alt="21 Day AI SaaS Challenge"
+              alt="21-Day AI SaaS Challenge"
               className="h-16 w-auto object-contain"
               style={{ imageRendering: 'auto' }}
             />

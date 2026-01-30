@@ -11,7 +11,7 @@ async function createProducts() {
   console.log('Checking for existing products...');
   
   const existingProducts = await stripe.products.search({ 
-    query: "name:'21 Day AI SaaS Challenge'" 
+    query: "name:'21-Day AI SaaS Challenge'" 
   });
 
   if (existingProducts.data.length > 0) {
@@ -31,7 +31,7 @@ async function createProducts() {
 
   console.log('Creating product...');
   const product = await stripe.products.create({
-    name: '21 Day AI SaaS Challenge',
+    name: '21-Day AI SaaS Challenge',
     description: 'Build your first AI SaaS product in 21 days with daily micro-tasks, AI-powered tools, and step-by-step guidance.',
     metadata: {
       type: 'course',

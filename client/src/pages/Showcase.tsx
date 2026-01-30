@@ -41,7 +41,7 @@ export default function Showcase() {
                 alt="Matt Webley"
                 className="w-10 h-10 rounded-full"
               />
-              <span className="font-bold text-xl tracking-tight">21 Day AI SaaS Challenge</span>
+              <span className="font-bold text-xl tracking-tight">21-Day AI SaaS Challenge</span>
             </a>
           </Link>
           <div className="flex gap-4 items-center">
@@ -77,7 +77,7 @@ export default function Showcase() {
             </h1>
 
             <p className="text-xl text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
-              Real products built by real people who completed the 21 Day AI SaaS Challenge.
+              Real products built by real people who completed the 21-Day AI SaaS Challenge.
               No fluff. Just shipped.
             </p>
 
@@ -106,7 +106,7 @@ export default function Showcase() {
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">No apps yet</h3>
                 <p className="text-slate-500 max-w-md mx-auto">
-                  Be the first to complete the 21 Day Challenge and get featured here!
+                  Be the first to complete the 21-Day Challenge and get featured here!
                 </p>
                 <a href="/api/login" className="mt-6 inline-block">
                   <Button className="gap-2">
@@ -178,7 +178,7 @@ export default function Showcase() {
               alt="Matt Webley"
               className="w-6 h-6 rounded-full"
             />
-            <span>21 Day AI SaaS Challenge by Matt Webley</span>
+            <span>21-Day AI SaaS Challenge by Matt Webley</span>
           </div>
           <div className="flex gap-6">
             <a href="https://mattwebley.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary">

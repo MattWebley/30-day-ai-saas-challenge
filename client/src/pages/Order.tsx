@@ -67,7 +67,7 @@ export default function Order() {
           <div className="flex flex-col items-center">
             <img
               src="/logo.png?v=3"
-              alt="21 Day AI SaaS Challenge"
+              alt="21-Day AI SaaS Challenge"
               className="h-12 w-auto object-contain"
               style={{ imageRendering: 'auto' }}
             />
@@ -93,7 +93,7 @@ export default function Order() {
               <h2 className="font-bold text-slate-900 text-lg">Here's what you're getting:</h2>
               <div className="space-y-3">
                 {[
-                  'The complete 21 Day Challenge with daily tasks',
+                  'The complete 21-Day Challenge with daily tasks',
                   'AI-generated SaaS ideas personalized for YOU',
                   'Copy-paste prompts that do the heavy lifting',
                   'AI Mentor to help when you get stuck',
@@ -138,7 +138,7 @@ export default function Order() {
             {/* Order Summary */}
             <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-slate-700 font-medium">21 Day AI SaaS Challenge</span>
+                <span className="text-slate-700 font-medium">21-Day AI SaaS Challenge</span>
                 <span className="font-bold text-slate-900">
                   {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].amount}
                 </span>

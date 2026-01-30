@@ -297,7 +297,7 @@ export const brandSettings = pgTable("brand_settings", {
   fontFamily: varchar("font_family").default("Poppins"),
   borderRadius: integer("border_radius").default(6),
   logoUrl: text("logo_url"),
-  appName: varchar("app_name").default("21 Day AI SaaS Challenge"),
+  appName: varchar("app_name").default("21-Day AI SaaS Challenge"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

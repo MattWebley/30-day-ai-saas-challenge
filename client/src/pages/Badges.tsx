@@ -65,7 +65,7 @@ export default function Badges() {
   };
 
   const shareToX = (badge: Badge) => {
-    const text = `I just earned the "${badge.name}" badge in the 21 Day AI SaaS Challenge! ${badge.description}`;
+    const text = `I just earned the "${badge.name}" badge in the 21-Day AI SaaS Challenge! ${badge.description}`;
     const url = getShareUrl(badge);
     window.open(`https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
   };
@@ -227,7 +227,7 @@ export default function Badges() {
               <p className="text-green-400 text-xs font-semibold uppercase tracking-wider mb-1">Badge Earned</p>
               <h4 className="text-white text-xl font-bold mb-1">{shareModalBadge.name}</h4>
               <p className="text-slate-400 text-sm">{shareModalBadge.description}</p>
-              <p className="text-slate-500 text-xs mt-3">21 Day AI SaaS Challenge by Matt Webley</p>
+              <p className="text-slate-500 text-xs mt-3">21-Day AI SaaS Challenge by Matt Webley</p>
             </div>
 
             {/* Share Options */}

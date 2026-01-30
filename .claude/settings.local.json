@@ -96,7 +96,8 @@
       "Bash(git -C /home/runner/workspace diff client/src/hooks/useDays.ts)",
       "Bash(git -C /home/runner/workspace diff --stat)",
       "Bash(git -C /home/runner/workspace add client/src/pages/Dashboard.tsx server/routes.ts)",
-      "Bash(git -C /home/runner/workspace commit -m \"$\\(cat <<''EOF''\nAdd Day 0 & 1 videos, switch all AI to Claude\n\n- Added Loom video for Day 0 \\(intro\\)\n- Added Loom video for Day 1 \\(idea generation\\)\n- Switched all AI calls from GPT-4o-mini to Claude\n- Simplifies to single API provider \\(ANTHROPIC_API_KEY only\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git -C /home/runner/workspace commit -m \"$\\(cat <<''EOF''\nAdd Day 0 & 1 videos, switch all AI to Claude\n\n- Added Loom video for Day 0 \\(intro\\)\n- Added Loom video for Day 1 \\(idea generation\\)\n- Switched all AI calls from GPT-4o-mini to Claude\n- Simplifies to single API provider \\(ANTHROPIC_API_KEY only\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git status:*)"
     ]
   }
 }
