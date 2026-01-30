@@ -34,7 +34,8 @@ export default function Order() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || 'Checkout failed');
+        const details = errorData.error ? ` (${errorData.error})` : '';
+        throw new Error((errorData.message || 'Checkout failed') + details);
       }
 
       const data = await response.json();
@@ -198,7 +199,7 @@ export default function Order() {
                 <Shield className="w-6 h-6 text-green-600" />
               </div>
               <div>
-                <p className="font-bold text-slate-900">Do the Work Guarantee</p>
+                <p className="font-bold text-slate-900">Zero Risk Guarantee</p>
                 <p className="text-slate-600 mt-1">
                   Complete the challenge and don't have a working product? We'll help you fix it. Still stuck? Full refund. You literally can't lose.
                 </p>

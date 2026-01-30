@@ -3353,7 +3353,14 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       res.json({ url: session.url });
     } catch (error: any) {
       console.error("Error creating checkout session:", error);
-      res.status(500).json({ message: "Failed to create checkout session" });
+      const errorMessage = error?.message || "Unknown error";
+      const errorType = error?.type || "unknown";
+      res.status(500).json({
+        message: "Failed to create checkout session",
+        error: errorMessage,
+        type: errorType,
+        code: error?.code
+      });
     }
   });
 
