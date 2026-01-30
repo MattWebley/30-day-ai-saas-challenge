@@ -57,7 +57,7 @@ function Router() {
   useHeartbeat(isAuthenticated);
 
   // Public routes that don't need auth check
-  const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/sales-letter-pack', '/coaching/upsell', '/welcome'];
+  const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome'];
   const isPublicRoute = publicPaths.some(path => location.startsWith(path)) || location === '/';
 
   // Only show loading spinner for protected routes
@@ -83,6 +83,8 @@ function Router() {
         <Route path="/admin/answer/:token" component={AdminAnswer} />
         <Route path="/sales-letter-pack" component={SalesLetterPack} />
         <Route path="/coaching/upsell" component={CoachingUpsell} />
+        <Route path="/coaching/success" component={CoachingSuccess} />
+        <Route path="/critique/success" component={CritiqueSuccess} />
         <Route path="/welcome" component={Welcome} />
         {!isAuthenticated ? (
           <Route path="/" component={Landing} />
@@ -99,9 +101,7 @@ function Router() {
             <Route path="/admin" component={Admin} />
             <Route path="/design-preview" component={DesignPreview} />
             <Route path="/coaching" component={Coaching} />
-            <Route path="/coaching/success" component={CoachingSuccess} />
             <Route path="/critique" component={Critique} />
-            <Route path="/critique/success" component={CritiqueSuccess} />
             <Route path="/testimonial" component={Testimonial} />
             <Route path="/congratulations" component={Congratulations} />
           </>
