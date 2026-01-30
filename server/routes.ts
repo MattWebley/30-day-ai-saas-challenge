@@ -3760,30 +3760,72 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       const stripe = await getUncachableStripeClient();
 
-      // Get the customer's default payment method
-      const customer = await stripe.customers.retrieve(stripeCustomerId) as any;
-      const paymentMethodId = customer.invoice_settings?.default_payment_method ||
-                              customer.default_source;
+      // Get the customer with expanded payment methods info
+      const customer = await stripe.customers.retrieve(stripeCustomerId, {
+        expand: ['invoice_settings.default_payment_method']
+      }) as any;
+      
+      console.log('[One-click upsell] Customer retrieved:', {
+        id: customer.id,
+        email: customer.email,
+        defaultPM: customer.invoice_settings?.default_payment_method,
+        defaultSource: customer.default_source
+      });
 
-      console.log('[One-click upsell] Customer default payment method:', paymentMethodId);
+      let paymentMethodId = customer.invoice_settings?.default_payment_method?.id ||
+                            customer.invoice_settings?.default_payment_method ||
+                            customer.default_source;
+
+      console.log('[One-click upsell] Initial payment method ID:', paymentMethodId);
 
       if (!paymentMethodId) {
-        // If no default, get the first payment method
+        // If no default, list all payment methods attached to customer
         const paymentMethods = await stripe.paymentMethods.list({
           customer: stripeCustomerId,
           type: 'card',
-          limit: 1
+          limit: 10
         });
 
         console.log('[One-click upsell] Payment methods found:', paymentMethods.data.length);
-
-        if (paymentMethods.data.length === 0) {
-          console.log('[One-click upsell] No payment methods - falling back to checkout');
-          return res.status(400).json({ message: "No saved payment method", requiresCheckout: true });
+        if (paymentMethods.data.length > 0) {
+          console.log('[One-click upsell] Available payment methods:', paymentMethods.data.map(pm => ({
+            id: pm.id,
+            brand: pm.card?.brand,
+            last4: pm.card?.last4,
+            created: pm.created
+          })));
         }
 
-        // Use the first available payment method
-        const pm = paymentMethods.data[0];
+        if (paymentMethods.data.length === 0) {
+          // Last resort: check recent payment intents for this customer
+          console.log('[One-click upsell] No payment methods via list - checking recent payment intents...');
+          
+          const recentPayments = await stripe.paymentIntents.list({
+            customer: stripeCustomerId,
+            limit: 5
+          });
+          
+          console.log('[One-click upsell] Recent payment intents:', recentPayments.data.length);
+          
+          // Find the most recent successful payment with a payment method
+          const successfulPayment = recentPayments.data.find(pi => 
+            pi.status === 'succeeded' && pi.payment_method
+          );
+          
+          if (successfulPayment && successfulPayment.payment_method) {
+            const pmId = typeof successfulPayment.payment_method === 'string' 
+              ? successfulPayment.payment_method 
+              : successfulPayment.payment_method.id;
+            console.log('[One-click upsell] Found payment method from recent intent:', pmId);
+            paymentMethodId = pmId;
+          } else {
+            console.log('[One-click upsell] No payment methods found anywhere - falling back to checkout');
+            return res.status(400).json({ message: "No saved payment method", requiresCheckout: true });
+          }
+        }
+
+        // Use the first available payment method (or the one from payment intent)
+        const pm = paymentMethods.data[0] || { id: paymentMethodId };
 
         // Get customer email from Stripe for guest purchases
         const customerEmail = customer.email;
@@ -3865,8 +3907,16 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           }
 
           return res.json({ success: true, message: "Coaching purchased successfully!" });
+        } else if (paymentIntent.status === 'requires_action' || paymentIntent.status === 'requires_payment_method') {
+          // Card requires 3D Secure - fall back to checkout
+          console.log('[One-click upsell] Listed PM requires action - falling back to checkout');
+          return res.status(400).json({ 
+            message: "Card requires additional verification", 
+            requiresCheckout: true 
+          });
         } else {
-          return res.status(400).json({ message: "Payment failed", status: paymentIntent.status });
+          console.log('[One-click upsell] Listed PM failed with status:', paymentIntent.status);
+          return res.status(400).json({ message: "Payment failed", status: paymentIntent.status, requiresCheckout: true });
         }
       }
 
@@ -3948,21 +3998,37 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         }
 
         return res.json({ success: true, message: "Coaching purchased successfully!" });
+      } else if (paymentIntent.status === 'requires_action' || paymentIntent.status === 'requires_payment_method') {
+        // Card requires 3D Secure or additional action - fall back to checkout
+        console.log('[One-click upsell] Payment requires action - falling back to checkout');
+        return res.status(400).json({ 
+          message: "Card requires additional verification", 
+          requiresCheckout: true 
+        });
       } else {
-        return res.status(400).json({ message: "Payment failed", status: paymentIntent.status });
+        console.log('[One-click upsell] Payment failed with status:', paymentIntent.status);
+        return res.status(400).json({ message: "Payment failed", status: paymentIntent.status, requiresCheckout: true });
       }
     } catch (error: any) {
       console.error("Error processing one-click upsell:", error);
+      console.error("Error details:", { 
+        code: error.code, 
+        type: error.type, 
+        message: error.message,
+        decline_code: error.decline_code
+      });
 
       // Handle card declined or authentication required
-      if (error.code === 'authentication_required' || error.code === 'card_declined') {
+      if (error.code === 'authentication_required' || 
+          error.code === 'card_declined' ||
+          error.code === 'payment_intent_authentication_failure') {
         return res.status(400).json({
           message: "Card requires authentication or was declined",
           requiresCheckout: true
         });
       }
 
-      res.status(500).json({ message: "Failed to process payment" });
+      res.status(500).json({ message: "Failed to process payment", requiresCheckout: true });
     }
   });
 
