@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, type User } from "@shared/schema";
+import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, type User } from "@shared/schema";
 import dns from "dns";
 import { promisify } from "util";
 import crypto from "crypto";
@@ -3315,14 +3315,11 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   });
 
   // Stripe checkout - create checkout session for the 21-Day Challenge
+  // No auth required - users can buy as guests, access granted via webhook
   app.post("/api/checkout", async (req, res) => {
-    // Require authentication to ensure we can grant access after payment
-    if (!req.isAuthenticated() || !req.user) {
-      return res.status(401).json({ message: "Please log in to purchase", requiresLogin: true });
-    }
-
     try {
       const { currency = 'usd' } = req.body;
+      const userEmail = req.isAuthenticated() && req.user ? (req.user as any).email : null;
       const stripe = await getUncachableStripeClient();
 
       // Price IDs from Stripe - main challenge
@@ -3335,7 +3332,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const host = req.get('host');
       const protocol = req.protocol;
 
-      const session = await stripe.checkout.sessions.create({
+      const userId = req.isAuthenticated() && req.user ? (req.user as User).id : null;
+
+      const sessionConfig: any = {
         payment_method_types: ['card'],
         line_items: [{
           price: priceId,
@@ -3351,9 +3350,18 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           setup_future_usage: 'off_session',
         },
         metadata: {
-          currency: currency
+          currency: currency,
+          productType: 'challenge',
+          userId: userId || ''
         }
-      });
+      };
+
+      // Pre-fill email if user is logged in (reduces friction)
+      if (userEmail) {
+        sessionConfig.customer_email = userEmail;
+      }
+
+      const session = await stripe.checkout.sessions.create(sessionConfig);
 
       res.json({ url: session.url });
     } catch (error: any) {
@@ -3561,11 +3569,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     }
   });
 
-  // Process checkout success - verify purchase and grant access
+  // Process checkout success - verify purchase and store customer ID for upsells
+  // No auth required - works for guests and logged-in users
   app.post("/api/checkout/process-success", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
+    console.log('[Process Success] Starting...');
 
     try {
       const { sessionId } = req.body;
@@ -3573,36 +3580,52 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         return res.status(400).json({ message: "Session ID required" });
       }
 
+      const isLoggedIn = req.isAuthenticated() && req.user;
+      console.log('[Process Success] Session:', sessionId, 'Logged in:', !!isLoggedIn);
+
       const stripe = await getUncachableStripeClient();
       const session = await stripe.checkout.sessions.retrieve(sessionId, {
         expand: ['payment_intent']
       });
+
+      console.log('[Process Success] Payment status:', session.payment_status, 'Customer:', session.customer);
 
       // Verify payment was successful
       if (session.payment_status !== 'paid') {
         return res.status(400).json({ message: "Payment not completed" });
       }
 
-      // Build update object based on what was purchased
-      const updateData: Record<string, any> = {
-        challengePurchased: true,
-      };
+      // Get customer ID for one-click upsells
+      const customerId = typeof session.customer === 'string'
+        ? session.customer
+        : session.customer?.id;
 
-      // Save Stripe customer ID for one-click upsells
-      if (session.customer) {
-        const customerId = typeof session.customer === 'string' ? session.customer : session.customer.id;
-        updateData.stripeCustomerId = customerId;
+      // Store customer ID in session for immediate upsells (works for guests)
+      if (customerId && req.session) {
+        (req.session as any).stripeCustomerId = customerId;
+        (req.session as any).purchaseCurrency = session.metadata?.currency?.toLowerCase() || 'usd';
+        console.log('[Process Success] Stored in session - Customer:', customerId);
       }
 
-      // Save purchase currency for future default
-      if (session.metadata?.currency) {
-        updateData.purchaseCurrency = session.metadata.currency.toLowerCase();
-      }
+      // If user is logged in, also update their user record
+      if (isLoggedIn) {
+        const updateData: Record<string, any> = {
+          challengePurchased: true,
+        };
 
-      // Update user record with all purchases
-      await db.update(users)
-        .set(updateData)
-        .where(eq(users.id, (req.user as User).id));
+        if (customerId) {
+          updateData.stripeCustomerId = customerId;
+        }
+        if (session.metadata?.currency) {
+          updateData.purchaseCurrency = session.metadata.currency.toLowerCase();
+        }
+
+        await db.update(users)
+          .set(updateData)
+          .where(eq(users.id, (req.user as User).id));
+
+        console.log('[Process Success] Updated user record:', (req.user as User).id);
+      }
 
       // Track A/B test conversion if variant was assigned
       const abVariantId = req.cookies?.ab_variant;
@@ -3650,16 +3673,21 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   });
 
   // One-click upsell - Coaching purchase using saved payment method
+  // Works for both logged-in users and guests (uses session-stored customer ID)
   app.post("/api/upsell/coaching", async (req, res) => {
-    if (!req.isAuthenticated() || !req.user) {
-      // Not authenticated - fall back to regular checkout
-      return res.status(401).json({ message: "Not authenticated", requiresCheckout: true });
-    }
+    console.log('[One-click upsell] Starting...');
 
     try {
-      const user = req.user as User;
-      const stripeCustomerId = (user as any).stripeCustomerId;
       const { currency = 'usd' } = req.body;
+
+      // Get customer ID from user record OR session (for guests)
+      const isLoggedIn = req.isAuthenticated() && req.user;
+      const userCustomerId = isLoggedIn ? (req.user as any).stripeCustomerId : null;
+      const sessionCustomerId = (req.session as any)?.stripeCustomerId;
+      const stripeCustomerId = userCustomerId || sessionCustomerId;
+
+      const userId = isLoggedIn ? (req.user as User).id : null;
+      console.log('[One-click upsell] User:', userId || 'guest', 'Stripe Customer:', stripeCustomerId, 'Source:', userCustomerId ? 'user' : 'session');
 
       // Pricing based on currency (amount in smallest unit - cents/pence)
       const coachingPricing: Record<string, { amount: number; currency: string }> = {
@@ -3669,6 +3697,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const priceConfig = coachingPricing[currency.toLowerCase()] || coachingPricing.usd;
 
       if (!stripeCustomerId) {
+        console.log('[One-click upsell] No stripeCustomerId found - falling back to checkout');
         return res.status(400).json({ message: "No saved payment method", requiresCheckout: true });
       }
 
@@ -3679,6 +3708,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const paymentMethodId = customer.invoice_settings?.default_payment_method ||
                               customer.default_source;
 
+      console.log('[One-click upsell] Customer default payment method:', paymentMethodId);
+
       if (!paymentMethodId) {
         // If no default, get the first payment method
         const paymentMethods = await stripe.paymentMethods.list({
@@ -3687,12 +3718,18 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           limit: 1
         });
 
+        console.log('[One-click upsell] Payment methods found:', paymentMethods.data.length);
+
         if (paymentMethods.data.length === 0) {
+          console.log('[One-click upsell] No payment methods - falling back to checkout');
           return res.status(400).json({ message: "No saved payment method", requiresCheckout: true });
         }
 
         // Use the first available payment method
         const pm = paymentMethods.data[0];
+
+        // Get customer email from Stripe for guest purchases
+        const customerEmail = customer.email;
 
         // Create and confirm payment intent
         const paymentIntent = await stripe.paymentIntents.create({
@@ -3704,34 +3741,67 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           confirm: true,
           description: '1:1 Vibe Coding Coaching - 4 x 1-hour sessions',
           metadata: {
-            userId: user.id,
-            productType: 'coaching'
+            userId: userId || '',
+            productType: 'coaching',
+            email: customerEmail || ''
           }
         });
 
-        if (paymentIntent.status === 'succeeded') {
-          // Mark coaching as purchased
-          await db.update(users)
-            .set({ coachingPurchased: true })
-            .where(eq(users.id, user.id));
+        console.log('[One-click upsell] Payment intent status:', paymentIntent.status);
 
-          // Send coaching confirmation email to customer
-          const userEmail = (user as any).email;
-          const firstName = (user as any).firstName || 'there';
-          const userName = `${(user as any).firstName || ''} ${(user as any).lastName || ''}`.trim() || 'Unknown';
-          if (userEmail) {
+        if (paymentIntent.status === 'succeeded') {
+          console.log('[One-click upsell] SUCCESS! Charging completed for:', userId || 'guest');
+
+          if (userId) {
+            // Logged-in user - update their record directly
+            await db.update(users)
+              .set({ coachingPurchased: true })
+              .where(eq(users.id, userId));
+
+            // Send coaching confirmation email to customer
+            const user = req.user as any;
+            const userEmail = user.email;
+            const firstName = user.firstName || 'there';
+            const userName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown';
+            if (userEmail) {
+              sendCoachingConfirmationEmail({
+                to: userEmail,
+                firstName,
+                currency: currency.toLowerCase() as 'usd' | 'gbp',
+                amount: priceConfig.amount / 100
+              }).catch(err => console.error('Email send error:', err));
+
+              sendCoachingPurchaseNotificationEmail({
+                userEmail,
+                userName,
+                coachingType: '4 x 1-hour coaching sessions',
+                currency: currency.toLowerCase() as 'usd' | 'gbp',
+                amount: priceConfig.amount / 100
+              }).catch(err => console.error('Coaching notification error:', err));
+            }
+          } else if (customerEmail) {
+            // Guest - save as pending purchase (will be linked when they log in)
+            await db.insert(pendingPurchases).values({
+              email: customerEmail,
+              stripeCustomerId,
+              stripeSessionId: `pi_${paymentIntent.id}`, // Use payment intent ID as unique identifier
+              productType: 'coaching',
+              currency: priceConfig.currency,
+              amountPaid: priceConfig.amount
+            }).onConflictDoNothing();
+
+            // Send emails using customer email
             sendCoachingConfirmationEmail({
-              to: userEmail,
-              firstName,
+              to: customerEmail,
+              firstName: 'there',
               currency: currency.toLowerCase() as 'usd' | 'gbp',
               amount: priceConfig.amount / 100
             }).catch(err => console.error('Email send error:', err));
 
-            // Send notification to Matt
             sendCoachingPurchaseNotificationEmail({
-              userEmail,
-              userName,
-              coachingType: '4 x 1-hour coaching sessions',
+              userEmail: customerEmail,
+              userName: customerEmail,
+              coachingType: '4 x 1-hour coaching sessions (guest)',
               currency: currency.toLowerCase() as 'usd' | 'gbp',
               amount: priceConfig.amount / 100
             }).catch(err => console.error('Coaching notification error:', err));
@@ -3743,6 +3813,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         }
       }
 
+      // Get customer email from Stripe for guest purchases
+      const customerEmail = customer.email;
+
       // Create and confirm payment intent with default payment method
       const paymentIntent = await stripe.paymentIntents.create({
         amount: priceConfig.amount,
@@ -3753,34 +3826,65 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         confirm: true,
         description: '1:1 Vibe Coding Coaching - 4 x 1-hour sessions',
         metadata: {
-          userId: user.id,
-          productType: 'coaching'
+          userId: userId || '',
+          productType: 'coaching',
+          email: customerEmail || ''
         }
       });
 
-      if (paymentIntent.status === 'succeeded') {
-        // Mark coaching as purchased
-        await db.update(users)
-          .set({ coachingPurchased: true })
-          .where(eq(users.id, user.id));
+      console.log('[One-click upsell] Payment intent status (default PM):', paymentIntent.status);
 
-        // Send coaching confirmation email to customer
-        const userEmail = (user as any).email;
-        const firstName = (user as any).firstName || 'there';
-        const userName = `${(user as any).firstName || ''} ${(user as any).lastName || ''}`.trim() || 'Unknown';
-        if (userEmail) {
+      if (paymentIntent.status === 'succeeded') {
+        console.log('[One-click upsell] SUCCESS! Charging completed for:', userId || 'guest');
+
+        if (userId) {
+          // Logged-in user - update their record directly
+          await db.update(users)
+            .set({ coachingPurchased: true })
+            .where(eq(users.id, userId));
+
+          const user = req.user as any;
+          const userEmail = user.email;
+          const firstName = user.firstName || 'there';
+          const userName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown';
+          if (userEmail) {
+            sendCoachingConfirmationEmail({
+              to: userEmail,
+              firstName,
+              currency: currency.toLowerCase() as 'usd' | 'gbp',
+              amount: priceConfig.amount / 100
+            }).catch(err => console.error('Email send error:', err));
+
+            sendCoachingPurchaseNotificationEmail({
+              userEmail,
+              userName,
+              coachingType: '4 x 1-hour coaching sessions',
+              currency: currency.toLowerCase() as 'usd' | 'gbp',
+              amount: priceConfig.amount / 100
+            }).catch(err => console.error('Coaching notification error:', err));
+          }
+        } else if (customerEmail) {
+          // Guest - save as pending purchase
+          await db.insert(pendingPurchases).values({
+            email: customerEmail,
+            stripeCustomerId,
+            stripeSessionId: `pi_${paymentIntent.id}`,
+            productType: 'coaching',
+            currency: priceConfig.currency,
+            amountPaid: priceConfig.amount
+          }).onConflictDoNothing();
+
           sendCoachingConfirmationEmail({
-            to: userEmail,
-            firstName,
+            to: customerEmail,
+            firstName: 'there',
             currency: currency.toLowerCase() as 'usd' | 'gbp',
             amount: priceConfig.amount / 100
           }).catch(err => console.error('Email send error:', err));
 
-          // Send notification to Matt
           sendCoachingPurchaseNotificationEmail({
-            userEmail,
-            userName,
-            coachingType: '4 x 1-hour coaching sessions',
+            userEmail: customerEmail,
+            userName: customerEmail,
+            coachingType: '4 x 1-hour coaching sessions (guest)',
             currency: currency.toLowerCase() as 'usd' | 'gbp',
             amount: priceConfig.amount / 100
           }).catch(err => console.error('Coaching notification error:', err));

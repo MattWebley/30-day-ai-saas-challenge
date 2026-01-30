@@ -67,9 +67,11 @@ import {
   announcementDismissals,
   type AnnouncementDismissal,
   type InsertAnnouncementDismissal,
+  pendingPurchases,
+  type PendingPurchase,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, isNotNull } from "drizzle-orm";
+import { eq, and, desc, isNotNull, isNull } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -214,14 +216,86 @@ export class DatabaseStorage implements IStorage {
         },
       })
       .returning();
-    
+
     // Create user stats if new user
     const existingStats = await this.getUserStats(user.id);
     if (!existingStats) {
       await this.createUserStats({ userId: user.id });
     }
-    
+
+    // Link any pending purchases for this email
+    if (userData.email) {
+      await this.linkPendingPurchases(user.id, userData.email);
+    }
+
     return user;
+  }
+
+  async linkPendingPurchases(userId: string, email: string): Promise<void> {
+    try {
+      // Find unlinked purchases for this email
+      const pending = await db
+        .select()
+        .from(pendingPurchases)
+        .where(
+          and(
+            eq(pendingPurchases.email, email),
+            isNull(pendingPurchases.linkedToUserId)
+          )
+        );
+
+      if (pending.length === 0) return;
+
+      console.log(`[Link Purchases] Found ${pending.length} pending purchases for ${email}`);
+
+      // Grant access based on product types
+      const updateData: Partial<UpsertUser> = {};
+      let stripeCustomerId = '';
+      let purchaseCurrency = '';
+
+      for (const purchase of pending) {
+        stripeCustomerId = purchase.stripeCustomerId;
+        purchaseCurrency = purchase.currency;
+
+        switch (purchase.productType) {
+          case 'challenge':
+            updateData.challengePurchased = true;
+            break;
+          case 'coaching':
+          case 'coaching-single':
+          case 'coaching-matt':
+          case 'coaching-matt-single':
+            updateData.coachingPurchased = true;
+            break;
+        }
+
+        // Mark as linked
+        await db
+          .update(pendingPurchases)
+          .set({
+            linkedToUserId: userId,
+            linkedAt: new Date()
+          })
+          .where(eq(pendingPurchases.id, purchase.id));
+      }
+
+      // Update user with purchases and Stripe customer ID
+      if (Object.keys(updateData).length > 0 || stripeCustomerId) {
+        await db
+          .update(users)
+          .set({
+            ...updateData,
+            stripeCustomerId: stripeCustomerId || undefined,
+            purchaseCurrency: purchaseCurrency || undefined,
+            updatedAt: new Date()
+          })
+          .where(eq(users.id, userId));
+
+        console.log(`[Link Purchases] Granted access to user ${userId}:`, updateData);
+      }
+    } catch (error) {
+      console.error('[Link Purchases] Error:', error);
+    }
   }
 
   async getAllUsers(): Promise<User[]> {

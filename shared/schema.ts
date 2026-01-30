@@ -56,6 +56,22 @@ export const users = pgTable("users", {
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
 
+// Pending purchases - for users who buy before logging in
+export const pendingPurchases = pgTable("pending_purchases", {
+  id: serial("id").primaryKey(),
+  email: varchar("email").notNull(),
+  stripeCustomerId: varchar("stripe_customer_id").notNull(),
+  stripeSessionId: varchar("stripe_session_id").notNull().unique(),
+  productType: varchar("product_type").notNull(), // 'challenge', 'coaching', 'critique', etc.
+  currency: varchar("currency").notNull(),
+  amountPaid: integer("amount_paid").notNull(), // in cents
+  linkedToUserId: varchar("linked_to_user_id"), // set when user logs in and claims purchase
+  linkedAt: timestamp("linked_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type PendingPurchase = typeof pendingPurchases.$inferSelect;
+
 // Day content table - stores the 21-day curriculum
 export const dayContent = pgTable("day_content", {
   id: serial("id").primaryKey(),
