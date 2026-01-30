@@ -64,7 +64,8 @@ import {
   Info,
   AlertCircle,
   CheckCircle,
-  Gift
+  Gift,
+  Ban
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -244,6 +245,12 @@ interface AdminUser {
   completedDays: number;
 }
 
+interface CurrencyBreakdown {
+  currency: string;
+  amount: number;
+  count: number;
+}
+
 interface RevenueData {
   balance: {
     available: number;
@@ -256,6 +263,9 @@ interface RevenueData {
     last7Days: number;
     transactions: number;
   };
+  revenueByCurrency: CurrencyBreakdown[];
+  last7DaysByCurrency: CurrencyBreakdown[];
+  last30DaysByCurrency: CurrencyBreakdown[];
   refunds: {
     total: number;
     count: number;
@@ -275,6 +285,7 @@ interface RevenueData {
     name: string;
     amount: number;
     count: number;
+    currency: string;
   }[];
 }
 
@@ -464,6 +475,7 @@ export default function Admin() {
   const [showProgressSection, setShowProgressSection] = useState(false);
   const [showDayCompletionSection, setShowDayCompletionSection] = useState(false);
   const [showRevenueSection, setShowRevenueSection] = useState(false);
+  const [revenueDateRange, setRevenueDateRange] = useState<'7d' | '30d' | '90d' | '365d' | 'all'>('all');
   const [showActivityLogSection, setShowActivityLogSection] = useState(false);
   const [activityLogCategory, setActivityLogCategory] = useState<string>('');
   const [showFunnelSection, setShowFunnelSection] = useState(false);
@@ -759,12 +771,28 @@ export default function Admin() {
 
   // Revenue data
   const { data: revenueData, isLoading: revenueLoading } = useQuery<RevenueData>({
-    queryKey: ["/api/admin/revenue"],
+    queryKey: ["/api/admin/revenue", revenueDateRange],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/revenue?range=${revenueDateRange}`, {
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to fetch revenue');
+      return res.json();
+    },
   });
 
   const formatCurrency = (amount: number, currency: string = 'gbp') => {
-    const symbol = currency === 'usd' ? '$' : '£';
-    return `${symbol}${(amount / 100).toFixed(2)}`;
+    // Use Intl.NumberFormat to properly format any currency
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency.toUpperCase(),
+        minimumFractionDigits: 2,
+      }).format(amount / 100);
+    } catch {
+      // Fallback for invalid currency codes
+      return `${currency.toUpperCase()} ${(amount / 100).toFixed(2)}`;
+    }
   };
 
   const { data: chatbotSettings } = useQuery<ChatbotSettings>({
@@ -844,6 +872,57 @@ export default function Admin() {
   const [editedSubject, setEditedSubject] = useState("");
   const [editedBody, setEditedBody] = useState("");
   const [testEmailAddress, setTestEmailAddress] = useState("");
+
+  // Refund confirmation modal state
+  const [refundConfirmation, setRefundConfirmation] = useState<{
+    isOpen: boolean;
+    chargeId: string;
+    amount: number;
+    currency: string;
+    customerEmail: string;
+    confirmText: string;
+    step: 1 | 2;
+  }>({
+    isOpen: false,
+    chargeId: '',
+    amount: 0,
+    currency: 'gbp',
+    customerEmail: '',
+    confirmText: '',
+    step: 1,
+  });
+
+  // Delete user confirmation modal state
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    userId: string;
+    userEmail: string;
+    confirmText: string;
+    step: 1 | 2;
+  }>({
+    isOpen: false,
+    userId: '',
+    userEmail: '',
+    confirmText: '',
+    step: 1,
+  });
+
+  // Ban user confirmation modal state
+  const [banConfirmation, setBanConfirmation] = useState<{
+    isOpen: boolean;
+    userId: string;
+    userEmail: string;
+    banReason: string;
+    confirmText: string;
+    step: 1 | 2;
+  }>({
+    isOpen: false,
+    userId: '',
+    userEmail: '',
+    banReason: '',
+    confirmText: '',
+    step: 1,
+  });
 
   const { data: emailTemplates = [] } = useQuery<EmailTemplate[]>({
     queryKey: ["/api/admin/email-templates"],
@@ -1408,19 +1487,19 @@ export default function Admin() {
             <div className="grid grid-cols-3 gap-4">
               <div>
                 <p className="text-3xl font-bold text-primary">
-                  {revenueData ? formatCurrency(revenueData.balance.available, revenueData.balance.currency) : '—'}
+                  {revenueData?.totals.transactions || 0}
                 </p>
-                <p className="text-slate-600">Available</p>
+                <p className="text-slate-600">Total Sales</p>
               </div>
               <div>
                 <p className="text-3xl font-bold text-slate-900">
-                  {revenueData ? formatCurrency(revenueData.totals.last7Days, revenueData.balance.currency) : '—'}
+                  {revenueData?.totals.last7Days || 0}
                 </p>
                 <p className="text-slate-600">Last 7 days</p>
               </div>
               <div>
                 <p className="text-3xl font-bold text-slate-900">
-                  {revenueData ? formatCurrency(revenueData.totals.last30Days, revenueData.balance.currency) : '—'}
+                  {revenueData?.totals.last30Days || 0}
                 </p>
                 <p className="text-slate-600">Last 30 days</p>
               </div>
@@ -1629,7 +1708,7 @@ export default function Admin() {
             <h2 className="text-xl font-bold text-slate-900">Revenue & Payments</h2>
             {revenueData && (
               <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
-                {formatCurrency(revenueData.totals.allTime, revenueData.balance.currency)} total
+                {revenueData.totals.transactions} sales
               </span>
             )}
             {showRevenueSection ? (
@@ -1641,8 +1720,32 @@ export default function Admin() {
 
           {showRevenueSection && (
             <div className="space-y-4">
-              {/* Stripe Dashboard Link */}
-              <div className="flex justify-end">
+              {/* Date Range Filter & Stripe Link */}
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-slate-500">Date range:</span>
+                  <div className="flex gap-1">
+                    {[
+                      { value: '7d', label: '7 days' },
+                      { value: '30d', label: '30 days' },
+                      { value: '90d', label: '90 days' },
+                      { value: '365d', label: '1 year' },
+                      { value: 'all', label: 'All time' },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setRevenueDateRange(option.value as typeof revenueDateRange)}
+                        className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
+                          revenueDateRange === option.value
+                            ? 'bg-primary text-white'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <a
                   href="https://dashboard.stripe.com"
                   target="_blank"
@@ -1663,45 +1766,61 @@ export default function Admin() {
                 </Card>
               ) : revenueData ? (
                 <>
-                  {/* Revenue Stats */}
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <Card className="p-4 border border-slate-200">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                          <Wallet className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-medium text-slate-500">Available Balance</p>
-                          <p className="text-xl font-bold text-green-600">
-                            {formatCurrency(revenueData.balance.available, revenueData.balance.currency)}
-                          </p>
-                        </div>
+                  {/* Revenue by Currency */}
+                  <Card className="p-4 border border-slate-200">
+                    <h3 className="font-bold text-slate-900 mb-4">Revenue by Currency</h3>
+                    {revenueData.revenueByCurrency.length === 0 ? (
+                      <p className="text-slate-500 text-sm">No sales yet</p>
+                    ) : (
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        {revenueData.revenueByCurrency.map((curr) => (
+                          <div key={curr.currency} className="p-4 bg-slate-50 rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-lg font-bold text-slate-900">{curr.currency}</span>
+                              <span className="text-xs bg-slate-200 text-slate-600 px-2 py-0.5 rounded">
+                                {curr.count} sale{curr.count !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                            <p className="text-2xl font-bold text-primary">
+                              {formatCurrency(curr.amount, curr.currency)}
+                            </p>
+                            <div className="mt-3 pt-3 border-t border-slate-200 grid grid-cols-2 gap-2 text-sm">
+                              <div>
+                                <p className="text-slate-500">Last 7 days</p>
+                                <p className="font-medium text-slate-900">
+                                  {formatCurrency(
+                                    revenueData.last7DaysByCurrency.find(c => c.currency === curr.currency)?.amount || 0,
+                                    curr.currency
+                                  )}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-slate-500">Last 30 days</p>
+                                <p className="font-medium text-slate-900">
+                                  {formatCurrency(
+                                    revenueData.last30DaysByCurrency.find(c => c.currency === curr.currency)?.amount || 0,
+                                    curr.currency
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    </Card>
+                    )}
+                  </Card>
 
+                  {/* Quick Stats */}
+                  <div className="grid sm:grid-cols-2 gap-4">
                     <Card className="p-4 border border-slate-200">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                          <ArrowUpRight className="w-5 h-5 text-primary" />
+                          <Receipt className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                          <p className="text-xs font-medium text-slate-500">Last 7 Days</p>
+                          <p className="text-xs font-medium text-slate-500">Total Sales</p>
                           <p className="text-xl font-bold text-slate-900">
-                            {formatCurrency(revenueData.totals.last7Days, revenueData.balance.currency)}
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-
-                    <Card className="p-4 border border-slate-200">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                          <TrendingUp className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-xs font-medium text-slate-500">Last 30 Days</p>
-                          <p className="text-xl font-bold text-slate-900">
-                            {formatCurrency(revenueData.totals.last30Days, revenueData.balance.currency)}
+                            {revenueData.totals.transactions}
                           </p>
                         </div>
                       </div>
@@ -1715,8 +1834,7 @@ export default function Admin() {
                         <div>
                           <p className="text-xs font-medium text-slate-500">Refunds</p>
                           <p className="text-xl font-bold text-red-600">
-                            {formatCurrency(revenueData.refunds.total, revenueData.balance.currency)}
-                            <span className="text-sm font-normal text-red-400 ml-1">({revenueData.refunds.count})</span>
+                            {revenueData.refunds.count}
                           </p>
                         </div>
                       </div>
@@ -1735,7 +1853,7 @@ export default function Admin() {
                               <p className="text-sm text-slate-500">{product.count} sales</p>
                             </div>
                             <p className="font-bold text-slate-900">
-                              {formatCurrency(product.amount, revenueData.balance.currency)}
+                              {formatCurrency(product.amount, product.currency)}
                             </p>
                           </div>
                         ))}
@@ -1780,9 +1898,15 @@ export default function Admin() {
                                   size="sm"
                                   className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                   onClick={() => {
-                                    if (confirm(`Refund ${formatCurrency(tx.amount, tx.currency)} to ${tx.customerEmail}?`)) {
-                                      issueRefund.mutate({ chargeId: tx.id });
-                                    }
+                                    setRefundConfirmation({
+                                      isOpen: true,
+                                      chargeId: tx.id,
+                                      amount: tx.amount,
+                                      currency: tx.currency,
+                                      customerEmail: tx.customerEmail,
+                                      confirmText: '',
+                                      step: 1,
+                                    });
                                   }}
                                   disabled={issueRefund.isPending}
                                 >
@@ -1812,20 +1936,6 @@ export default function Admin() {
                     </div>
                   </Card>
 
-                  {/* Pending Balance Note */}
-                  {revenueData.balance.pending > 0 && (
-                    <Card className="p-4 border border-slate-200 bg-slate-50">
-                      <div className="flex items-center gap-3">
-                        <Clock className="w-5 h-5 text-primary" />
-                        <div>
-                          <p className="font-medium text-slate-900">Pending Balance</p>
-                          <p className="text-sm text-slate-600">
-                            {formatCurrency(revenueData.balance.pending, revenueData.balance.currency)} is being processed and will be available soon.
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
-                  )}
                 </>
               ) : (
                 <Card className="p-8 border border-slate-200 text-center">
@@ -3007,10 +3117,14 @@ export default function Admin() {
                                   if (user.isBanned) {
                                     unbanUserMutation.mutate(user.id);
                                   } else {
-                                    const reason = prompt("Enter ban reason (optional):");
-                                    if (reason !== null) {
-                                      banUserMutation.mutate({ id: user.id, reason: reason || "No reason provided" });
-                                    }
+                                    setBanConfirmation({
+                                      isOpen: true,
+                                      userId: user.id,
+                                      userEmail: user.email || user.id,
+                                      banReason: '',
+                                      confirmText: '',
+                                      step: 1,
+                                    });
                                   }
                                 }}
                                 className={user.isBanned ? "text-primary hover:text-primary/80" : "text-slate-600 hover:text-slate-700"}
@@ -3037,9 +3151,13 @@ export default function Admin() {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                if (confirm(`Delete user ${user.email || user.id}? This cannot be undone.`)) {
-                                  deleteUser.mutate(user.id);
-                                }
+                                setDeleteConfirmation({
+                                  isOpen: true,
+                                  userId: user.id,
+                                  userEmail: user.email || user.id,
+                                  confirmText: '',
+                                  step: 1,
+                                });
                               }}
                               className="text-red-600 hover:text-red-700"
                             >
@@ -4574,6 +4692,246 @@ export default function Admin() {
           )}
         </div>
       </div>
+
+      {/* Delete User Confirmation Modal */}
+      {deleteConfirmation.isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md p-6 bg-white">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <UserX className="w-8 h-8 text-red-600" />
+              </div>
+              <h2 className="text-xl font-bold text-slate-900">Delete User</h2>
+              <p className="text-slate-600 mt-2">
+                You are about to permanently delete <strong>{deleteConfirmation.userEmail}</strong>
+              </p>
+              <p className="text-red-600 text-sm mt-2 font-medium">
+                This action cannot be undone. All user data will be lost.
+              </p>
+            </div>
+
+            {deleteConfirmation.step === 1 ? (
+              <div className="space-y-4">
+                <p className="text-sm text-slate-600 text-center">
+                  Click the button below to proceed to final confirmation.
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setDeleteConfirmation(prev => ({ ...prev, isOpen: false }))}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-red-600 hover:bg-red-700"
+                    onClick={() => setDeleteConfirmation(prev => ({ ...prev, step: 2 }))}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium text-slate-900">
+                    Type <span className="font-mono bg-red-100 text-red-700 px-1 rounded">DELETE</span> to confirm
+                  </Label>
+                  <Input
+                    value={deleteConfirmation.confirmText}
+                    onChange={(e) => setDeleteConfirmation(prev => ({ ...prev, confirmText: e.target.value }))}
+                    placeholder="Type DELETE here"
+                    className="mt-2"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setDeleteConfirmation(prev => ({ ...prev, isOpen: false, step: 1, confirmText: '' }))}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-red-600 hover:bg-red-700"
+                    disabled={deleteConfirmation.confirmText !== 'DELETE' || deleteUser.isPending}
+                    onClick={() => {
+                      deleteUser.mutate(deleteConfirmation.userId);
+                      setDeleteConfirmation(prev => ({ ...prev, isOpen: false, step: 1, confirmText: '' }));
+                    }}
+                  >
+                    {deleteUser.isPending ? 'Deleting...' : 'Delete User'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* Ban User Confirmation Modal */}
+      {banConfirmation.isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md p-6 bg-white">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <Ban className="w-8 h-8 text-red-600" />
+              </div>
+              <h2 className="text-xl font-bold text-slate-900">Ban User</h2>
+              <p className="text-slate-600 mt-2">
+                You are about to ban <strong>{banConfirmation.userEmail}</strong>
+              </p>
+              <p className="text-red-600 text-sm mt-2 font-medium">
+                This user will no longer be able to access their account.
+              </p>
+            </div>
+
+            {banConfirmation.step === 1 ? (
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium text-slate-900">Ban reason (optional)</Label>
+                  <Input
+                    value={banConfirmation.banReason}
+                    onChange={(e) => setBanConfirmation(prev => ({ ...prev, banReason: e.target.value }))}
+                    placeholder="Enter reason for banning"
+                    className="mt-2"
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setBanConfirmation(prev => ({ ...prev, isOpen: false }))}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-red-600 hover:bg-red-700"
+                    onClick={() => setBanConfirmation(prev => ({ ...prev, step: 2 }))}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium text-slate-900">
+                    Type <span className="font-mono bg-red-100 text-red-700 px-1 rounded">BAN</span> to confirm
+                  </Label>
+                  <Input
+                    value={banConfirmation.confirmText}
+                    onChange={(e) => setBanConfirmation(prev => ({ ...prev, confirmText: e.target.value }))}
+                    placeholder="Type BAN here"
+                    className="mt-2"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setBanConfirmation(prev => ({ ...prev, isOpen: false, step: 1, confirmText: '', banReason: '' }))}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-red-600 hover:bg-red-700"
+                    disabled={banConfirmation.confirmText !== 'BAN' || banUserMutation.isPending}
+                    onClick={() => {
+                      banUserMutation.mutate({
+                        id: banConfirmation.userId,
+                        reason: banConfirmation.banReason || 'No reason provided'
+                      });
+                      setBanConfirmation(prev => ({ ...prev, isOpen: false, step: 1, confirmText: '', banReason: '' }));
+                    }}
+                  >
+                    {banUserMutation.isPending ? 'Banning...' : 'Ban User'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
+
+      {/* Refund Confirmation Modal */}
+      {refundConfirmation.isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md p-6 bg-white">
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="w-8 h-8 text-red-600" />
+              </div>
+              <h2 className="text-xl font-bold text-slate-900">Confirm Refund</h2>
+              <p className="text-slate-600 mt-2">
+                You are about to refund <strong>{formatCurrency(refundConfirmation.amount, refundConfirmation.currency)}</strong> to <strong>{refundConfirmation.customerEmail}</strong>
+              </p>
+              <p className="text-red-600 text-sm mt-2 font-medium">
+                This action cannot be undone and will cost you money.
+              </p>
+            </div>
+
+            {refundConfirmation.step === 1 ? (
+              <div className="space-y-4">
+                <p className="text-sm text-slate-600 text-center">
+                  Click the button below to proceed to final confirmation.
+                </p>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setRefundConfirmation(prev => ({ ...prev, isOpen: false }))}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-red-600 hover:bg-red-700"
+                    onClick={() => setRefundConfirmation(prev => ({ ...prev, step: 2 }))}
+                  >
+                    Continue
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div>
+                  <Label className="text-sm font-medium text-slate-900">
+                    Type <span className="font-mono bg-red-100 text-red-700 px-1 rounded">REFUND</span> to confirm
+                  </Label>
+                  <Input
+                    value={refundConfirmation.confirmText}
+                    onChange={(e) => setRefundConfirmation(prev => ({ ...prev, confirmText: e.target.value }))}
+                    placeholder="Type REFUND here"
+                    className="mt-2"
+                    autoFocus
+                  />
+                </div>
+                <div className="flex gap-3">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setRefundConfirmation(prev => ({ ...prev, isOpen: false, step: 1, confirmText: '' }))}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1 bg-red-600 hover:bg-red-700"
+                    disabled={refundConfirmation.confirmText !== 'REFUND' || issueRefund.isPending}
+                    onClick={() => {
+                      issueRefund.mutate({ chargeId: refundConfirmation.chargeId });
+                      setRefundConfirmation(prev => ({ ...prev, isOpen: false, step: 1, confirmText: '' }));
+                    }}
+                  >
+                    {issueRefund.isPending ? 'Processing...' : 'Issue Refund'}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Card>
+        </div>
+      )}
     </Layout>
   );
 }

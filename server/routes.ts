@@ -4504,6 +4504,10 @@ Example format:
   // ========== REVENUE & PAYMENTS ==========
 
   // Admin: Get revenue overview
+  // IMPORTANT: Only show Stripe data from 2026-01-30 onwards (challenge launch date)
+  // This filters out any pre-existing Stripe data from other products
+  const STRIPE_DATA_CUTOFF = new Date('2026-01-30T00:00:00Z');
+
   app.get("/api/admin/revenue", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -4513,28 +4517,51 @@ Example format:
         return res.status(403).json({ message: "Admin access required" });
       }
 
+      // Parse date range filter
+      const dateRange = req.query.range as string || 'all';
+      const now = new Date();
+      let rangeStart = STRIPE_DATA_CUTOFF;
+
+      switch (dateRange) {
+        case '7d':
+          rangeStart = new Date(Math.max(now.getTime() - 7 * 24 * 60 * 60 * 1000, STRIPE_DATA_CUTOFF.getTime()));
+          break;
+        case '30d':
+          rangeStart = new Date(Math.max(now.getTime() - 30 * 24 * 60 * 60 * 1000, STRIPE_DATA_CUTOFF.getTime()));
+          break;
+        case '90d':
+          rangeStart = new Date(Math.max(now.getTime() - 90 * 24 * 60 * 60 * 1000, STRIPE_DATA_CUTOFF.getTime()));
+          break;
+        case '365d':
+          rangeStart = new Date(Math.max(now.getTime() - 365 * 24 * 60 * 60 * 1000, STRIPE_DATA_CUTOFF.getTime()));
+          break;
+        default:
+          rangeStart = STRIPE_DATA_CUTOFF;
+      }
+
       const stripe = await getUncachableStripeClient();
 
-      // Get balance
+      // Get balance (this shows current balance, not historical)
       const balance = await stripe.balance.retrieve();
 
-      // Get recent charges (last 100)
+      // Get charges created after the range start (respecting the cutoff)
       const charges = await stripe.charges.list({
         limit: 100,
+        created: { gte: Math.floor(rangeStart.getTime() / 1000) },
         expand: ['data.customer'],
       });
 
-      // Get refunds (last 50)
+      // Get refunds created after the range start
       const refunds = await stripe.refunds.list({
         limit: 50,
+        created: { gte: Math.floor(rangeStart.getTime() / 1000) },
       });
 
       // Calculate totals
-      const now = new Date();
       const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
       const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-      // All-time stats from successful charges
+      // All-time stats from successful charges (already filtered by range)
       const successfulCharges = charges.data.filter(c => c.status === 'succeeded' && !c.refunded);
       const totalRevenue = successfulCharges.reduce((sum, c) => sum + c.amount, 0);
       const totalTransactions = successfulCharges.length;
@@ -4547,11 +4574,11 @@ Example format:
       const last7DaysCharges = successfulCharges.filter(c => new Date(c.created * 1000) >= sevenDaysAgo);
       const revenue7Days = last7DaysCharges.reduce((sum, c) => sum + c.amount, 0);
 
-      // Refund stats
+      // Refund stats (already filtered by cutoff)
       const totalRefunds = refunds.data.reduce((sum, r) => sum + r.amount, 0);
       const refundCount = refunds.data.length;
 
-      // Recent transactions (last 20)
+      // Recent transactions (already filtered by cutoff)
       const recentTransactions = charges.data.slice(0, 20).map(charge => ({
         id: charge.id,
         amount: charge.amount,
@@ -4565,14 +4592,49 @@ Example format:
       }));
 
       // Revenue by product (from metadata or description)
-      const revenueByProduct: Record<string, { amount: number; count: number }> = {};
+      const revenueByProduct: Record<string, { amount: number; count: number; currency: string }> = {};
       successfulCharges.forEach(charge => {
         const product = charge.description || 'Challenge';
-        if (!revenueByProduct[product]) {
-          revenueByProduct[product] = { amount: 0, count: 0 };
+        const currency = charge.currency.toUpperCase();
+        const key = `${product}__${currency}`;
+        if (!revenueByProduct[key]) {
+          revenueByProduct[key] = { amount: 0, count: 0, currency };
         }
-        revenueByProduct[product].amount += charge.amount;
-        revenueByProduct[product].count += 1;
+        revenueByProduct[key].amount += charge.amount;
+        revenueByProduct[key].count += 1;
+      });
+
+      // Revenue by currency (GBP vs USD breakdown)
+      const revenueByCurrency: Record<string, { amount: number; count: number }> = {};
+      successfulCharges.forEach(charge => {
+        const currency = charge.currency.toUpperCase();
+        if (!revenueByCurrency[currency]) {
+          revenueByCurrency[currency] = { amount: 0, count: 0 };
+        }
+        revenueByCurrency[currency].amount += charge.amount;
+        revenueByCurrency[currency].count += 1;
+      });
+
+      // Also calculate 7-day and 30-day by currency
+      const last7DaysByCurrency: Record<string, { amount: number; count: number }> = {};
+      const last30DaysByCurrency: Record<string, { amount: number; count: number }> = {};
+
+      last7DaysCharges.forEach(charge => {
+        const currency = charge.currency.toUpperCase();
+        if (!last7DaysByCurrency[currency]) {
+          last7DaysByCurrency[currency] = { amount: 0, count: 0 };
+        }
+        last7DaysByCurrency[currency].amount += charge.amount;
+        last7DaysByCurrency[currency].count += 1;
+      });
+
+      last30DaysCharges.forEach(charge => {
+        const currency = charge.currency.toUpperCase();
+        if (!last30DaysByCurrency[currency]) {
+          last30DaysByCurrency[currency] = { amount: 0, count: 0 };
+        }
+        last30DaysByCurrency[currency].amount += charge.amount;
+        last30DaysByCurrency[currency].count += 1;
       });
 
       res.json({
@@ -4582,20 +4644,36 @@ Example format:
           currency: balance.available[0]?.currency || 'gbp',
         },
         totals: {
-          allTime: totalRevenue,
-          last30Days: revenue30Days,
-          last7Days: revenue7Days,
+          allTime: totalTransactions,
+          last30Days: last30DaysCharges.length,
+          last7Days: last7DaysCharges.length,
           transactions: totalTransactions,
         },
+        revenueByCurrency: Object.entries(revenueByCurrency).map(([currency, data]) => ({
+          currency,
+          amount: data.amount,
+          count: data.count,
+        })),
+        last7DaysByCurrency: Object.entries(last7DaysByCurrency).map(([currency, data]) => ({
+          currency,
+          amount: data.amount,
+          count: data.count,
+        })),
+        last30DaysByCurrency: Object.entries(last30DaysByCurrency).map(([currency, data]) => ({
+          currency,
+          amount: data.amount,
+          count: data.count,
+        })),
         refunds: {
           total: totalRefunds,
           count: refundCount,
         },
         recentTransactions,
-        revenueByProduct: Object.entries(revenueByProduct).map(([name, data]) => ({
-          name,
+        revenueByProduct: Object.entries(revenueByProduct).map(([key, data]) => ({
+          name: key.split('__')[0],
           amount: data.amount,
           count: data.count,
+          currency: data.currency,
         })),
       });
     } catch (error) {
@@ -4621,6 +4699,16 @@ Example format:
       }
 
       const stripe = await getUncachableStripeClient();
+
+      // Verify the charge exists and was created after the cutoff date
+      const charge = await stripe.charges.retrieve(chargeId);
+      const chargeDate = new Date(charge.created * 1000);
+
+      if (chargeDate < STRIPE_DATA_CUTOFF) {
+        return res.status(403).json({
+          message: "Cannot refund charges from before the challenge launch date"
+        });
+      }
 
       const refund = await stripe.refunds.create({
         charge: chargeId,
