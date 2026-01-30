@@ -183,6 +183,10 @@ export function Day11Brand({ appName, onComplete }: Day11BrandProps) {
   } | null>(null);
   const [urlError, setUrlError] = useState<string | null>(null);
 
+  // AI usage limits
+  const [urlAnalyzeAttempts, setUrlAnalyzeAttempts] = useState(0);
+  const MAX_URL_ATTEMPTS = 3;
+
   const currentPersonality = DESIGN_PERSONALITIES.find(p => p.id === selectedPersonality);
   const currentColor = COLOR_OPTIONS.find(c => c.id === selectedColor);
   const finalColor = customColor || currentColor?.hex || "#3B82F6";
@@ -237,6 +241,11 @@ The app is called "${appName || 'my app'}". Make it look like it belongs in the 
   const analyzeUrl = async () => {
     if (!urlInput.trim()) return;
 
+    if (urlAnalyzeAttempts >= MAX_URL_ATTEMPTS) {
+      setUrlError("Analysis limit reached. Please choose a design personality instead.");
+      return;
+    }
+
     setIsAnalyzing(true);
     setUrlError(null);
 
@@ -260,6 +269,7 @@ The app is called "${appName || 'my app'}". Make it look like it belongs in the 
 
       const data = await response.json();
       setUrlAnalysis(data);
+      setUrlAnalyzeAttempts(prev => prev + 1);
       setStep("url-result");
     } catch (error: any) {
       setUrlError(error.message || "Failed to analyze the website. Try a different URL.");
@@ -338,7 +348,7 @@ The app is called "${appName || 'my app'}". Make it look like it belongs in the 
                   />
                   <Button
                     onClick={analyzeUrl}
-                    disabled={!urlInput.trim() || isAnalyzing}
+                    disabled={!urlInput.trim() || isAnalyzing || urlAnalyzeAttempts >= MAX_URL_ATTEMPTS}
                     className="gap-2"
                   >
                     {isAnalyzing ? (
@@ -346,10 +356,12 @@ The app is called "${appName || 'my app'}". Make it look like it belongs in the 
                         <Loader2 className="w-4 h-4 animate-spin" />
                         Analyzing...
                       </>
+                    ) : urlAnalyzeAttempts >= MAX_URL_ATTEMPTS ? (
+                      <>Limit reached</>
+                    ) : urlAnalyzeAttempts > 0 ? (
+                      <>Try Another URL</>
                     ) : (
-                      <>
-                        Analyze <ExternalLink className="w-4 h-4" />
-                      </>
+                      <>Analyze</>
                     )}
                   </Button>
                 </div>

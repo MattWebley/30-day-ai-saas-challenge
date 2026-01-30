@@ -365,8 +365,12 @@ Return ONLY this JSON:
                     <><Loader2 className="w-4 h-4 animate-spin" /> Generating Names...</>
                   ) : aiAttempts >= MAX_AI_ATTEMPTS ? (
                     <>No attempts left</>
+                  ) : aiAttempts >= MAX_AI_ATTEMPTS - 2 ? (
+                    <>Regenerate Names ({MAX_AI_ATTEMPTS - aiAttempts} left)</>
+                  ) : aiAttempts > 0 ? (
+                    <>Regenerate Names</>
                   ) : (
-                    <>Generate 6 Name Ideas {aiAttempts > 0 ? `(${MAX_AI_ATTEMPTS - aiAttempts} left)` : ''}</>
+                    <>Generate 6 Name Ideas</>
                   )}
                 </Button>
               </div>

@@ -1680,6 +1680,75 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
     }
   });
 
+  // Generate PRD details (customer avatar or look & feel)
+  app.post("/api/ai/generate-prd-details", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { type, idea, painPoints, iHelpStatement, brandVibe, appName } = req.body;
+
+      if (type === "avatar") {
+        const result = await callClaude({
+          userId,
+          endpoint: 'generate-prd-avatar',
+          endpointType: 'features',
+          systemPrompt: 'You are a marketing expert who specializes in customer personas. Be specific and vivid.',
+          userMessage: `Based on this product idea, generate a specific customer avatar description.
+
+Product Idea: ${idea}
+${iHelpStatement ? `Value Proposition: "${iHelpStatement}"` : ''}
+${painPoints && painPoints.length > 0 ? `Pain Points: ${painPoints.join(', ')}` : ''}
+
+Write a detailed customer avatar in 2-3 sentences. Be SPECIFIC - not just "business owners" but describe their exact situation, frustrations, and daily reality. Include:
+- Their specific role/profession
+- Their key frustration related to this problem
+- What they're currently doing that isn't working
+
+Example format: "Freelance graphic designers who waste hours chasing invoices and tracking project deadlines across multiple apps, often losing track of which clients owe them money..."
+
+Just output the avatar description, nothing else.`,
+          maxTokens: 200,
+        });
+
+        if (!result.success) {
+          return res.status(result.blocked ? 429 : 500).json({ message: result.error || "Failed to generate" });
+        }
+        return res.json({ result: result.response });
+
+      } else if (type === "lookfeel") {
+        const result = await callClaude({
+          userId,
+          endpoint: 'generate-prd-lookfeel',
+          endpointType: 'features',
+          systemPrompt: 'You are a UI/UX designer who knows popular apps. Be specific and reference real products.',
+          userMessage: `Based on this product, suggest a look & feel description.
+
+Product: ${appName || idea}
+${brandVibe ? `Brand Vibe: ${brandVibe}` : ''}
+
+Write a 2-3 sentence description of how this app should look and feel. Reference REAL, well-known apps as examples (like Notion, Stripe, Linear, Slack, etc). Include:
+- Overall visual style (clean, bold, minimal, playful, etc)
+- 1-2 specific apps to reference for inspiration
+- Any specific UI preferences (dark mode, animations, etc)
+
+Example format: "Clean and minimal like Notion, with a dashboard similar to Stripe. Dark mode option. Professional but not boring..."
+
+Just output the look & feel description, nothing else.`,
+          maxTokens: 200,
+        });
+
+        if (!result.success) {
+          return res.status(result.blocked ? 429 : 500).json({ message: result.error || "Failed to generate" });
+        }
+        return res.json({ result: result.response });
+      }
+
+      return res.status(400).json({ message: "Invalid type" });
+    } catch (error: any) {
+      console.error("Error generating PRD details:", error);
+      res.status(500).json({ message: error.message || "Failed to generate" });
+    }
+  });
+
   // Anti-spam detection function
   // Sanitize user content to prevent XSS
   function sanitizeContent(content: string): string {

@@ -75,6 +75,12 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   // I Help statement
   const [iHelpStatement, setIHelpStatement] = useState("");
 
+  // AI usage limits (silent until close to limit)
+  const [painPointAttempts, setPainPointAttempts] = useState(0);
+  const [competitorAttempts, setCompetitorAttempts] = useState(0);
+  const MAX_PAIN_ATTEMPTS = 5;
+  const MAX_COMPETITOR_ATTEMPTS = 3;
+
   const { data: day1Progress } = useQuery({
     queryKey: ["/api/progress/1"],
     queryFn: async () => {
@@ -204,6 +210,7 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
         .filter((l: string) => l.length > 10);
       setPainPoints(lines);
       setLoadingPainPoints(false);
+      setPainPointAttempts(prev => prev + 1);
     },
     onError: () => {
       toast.error("Failed to generate pain points");
@@ -230,6 +237,7 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
       }));
       setCompetitors(aiCompetitors);
       setLoadingCompetitors(false);
+      setCompetitorAttempts(prev => prev + 1);
       toast.success(`Found ${aiCompetitors.length} competitors`);
     },
     onError: () => {
@@ -241,6 +249,11 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
 
   const handleFindCompetitors = () => {
     if (selectedIdeaIndex === null) return;
+    if (competitorAttempts >= MAX_COMPETITOR_ATTEMPTS) {
+      toast.error("Search limit reached. Please add competitors manually.");
+      setShowManualAdd(true);
+      return;
+    }
     setLoadingCompetitors(true);
     findCompetitors.mutate(selectedIdeaIndex);
   };
@@ -503,9 +516,13 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
                 size="lg"
                 onClick={handleFindCompetitors}
                 className="w-full h-14 text-lg font-bold gap-2"
+                disabled={competitorAttempts >= MAX_COMPETITOR_ATTEMPTS}
               >
-                <Search className="w-5 h-5" /> Find Competitors
+                <Search className="w-5 h-5" /> {competitorAttempts >= MAX_COMPETITOR_ATTEMPTS ? "Search limit reached" : "Find Competitors"}
               </Button>
+              {competitorAttempts >= MAX_COMPETITOR_ATTEMPTS - 1 && competitorAttempts < MAX_COMPETITOR_ATTEMPTS && (
+                <p className="text-sm text-amber-600 text-center mt-2">1 search remaining</p>
+              )}
             </div>
           </div>
         )}

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, ChevronLeft, ChevronDown, ChevronUp, ExternalLink, Copy, Sparkles, RefreshCw } from "lucide-react";
+import { CheckCircle2, ChevronLeft, ChevronDown, ChevronUp, ExternalLink, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { ds } from "@/lib/design-system";
 
@@ -179,19 +179,15 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                   <p className={ds.muted}>Copy this into any AI image tool.</p>
                 </div>
                 <Button
-                  variant="outline"
                   size="sm"
                   onClick={generatedPrompt ? regeneratePrompt : generateAIPrompt}
-                  className="gap-2"
                 >
-                  {generatedPrompt ? <RefreshCw className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
                   {generatedPrompt ? "Regenerate" : "Generate"}
                 </Button>
               </div>
 
               {!generatedPrompt ? (
                 <div className="p-8 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200 text-center">
-                  <Sparkles className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                   <p className={ds.muted}>Click "Generate" to create your logo prompt</p>
                 </div>
               ) : (

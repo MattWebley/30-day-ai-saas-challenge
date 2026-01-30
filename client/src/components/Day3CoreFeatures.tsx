@@ -41,6 +41,10 @@ export function Day3CoreFeatures({
   const [newFeatureName, setNewFeatureName] = useState("");
   const [newFeatureDesc, setNewFeatureDesc] = useState("");
 
+  // AI usage limits
+  const [generateAttempts, setGenerateAttempts] = useState(0);
+  const MAX_GENERATE_ATTEMPTS = 5;
+
   const generateFeatures = useMutation({
     mutationFn: async () => {
       console.log('[Day3] Generating features for:', { idea: userIdea, painPoints: userPainPoints });
@@ -76,6 +80,7 @@ export function Day3CoreFeatures({
 
       // Don't pre-select - let user choose which features they want
       setSelectedFeatures(new Set());
+      setGenerateAttempts(prev => prev + 1);
 
       setStep("select");
     },
@@ -179,7 +184,7 @@ export function Day3CoreFeatures({
             <Button
               size="lg"
               onClick={() => generateFeatures.mutate()}
-              disabled={generateFeatures.isPending}
+              disabled={generateFeatures.isPending || generateAttempts >= MAX_GENERATE_ATTEMPTS}
               className="w-full h-14 text-lg font-bold"
             >
               {generateFeatures.isPending ? (
@@ -187,6 +192,10 @@ export function Day3CoreFeatures({
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Analyzing competitors & generating features...
                 </>
+              ) : generateAttempts >= MAX_GENERATE_ATTEMPTS ? (
+                "Generation limit reached"
+              ) : generateAttempts > 0 ? (
+                "Regenerate Features"
               ) : (
                 "Generate My Features"
               )}
@@ -195,6 +204,11 @@ export function Day3CoreFeatures({
             {generateFeatures.isPending && (
               <p className="text-sm text-amber-600 font-medium text-center">
                 This can take up to 2 minutes - please don't refresh!
+              </p>
+            )}
+            {generateAttempts >= MAX_GENERATE_ATTEMPTS - 2 && generateAttempts < MAX_GENERATE_ATTEMPTS && (
+              <p className="text-sm text-amber-600 font-medium text-center">
+                {MAX_GENERATE_ATTEMPTS - generateAttempts} generation{MAX_GENERATE_ATTEMPTS - generateAttempts !== 1 ? 's' : ''} remaining
               </p>
             )}
           </div>

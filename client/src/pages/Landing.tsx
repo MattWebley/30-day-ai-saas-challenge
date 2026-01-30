@@ -629,6 +629,25 @@ export default function Landing() {
           </div>
         </section>
 
+        {/* VIDEO TESTIMONIALS - Previous Students */}
+        <section className="py-12 border-t border-slate-100">
+          <div className="space-y-8">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 text-center">
+              Past Client & Student Testimonials
+            </h2>
+
+            {/* Vimeo Video Testimonial */}
+            <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-xl">
+              <iframe
+                src="https://player.vimeo.com/video/1160082444?h=60d64115d2&title=0&byline=0&portrait=0"
+                className="w-full h-full"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </section>
+
         {/* The "This Actually Works" Section */}
         <section className="py-12 border-t border-slate-100">
           <div className="space-y-6 text-lg text-slate-700">

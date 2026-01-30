@@ -631,11 +631,11 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
             </Button>
             <Button
               size="lg"
-              className="flex-1 h-14 text-lg font-bold gap-2"
+              className="flex-1 h-14 text-lg font-bold"
               onClick={() => setStep("admin-prompt")}
               disabled={!mainAction.trim()}
             >
-              Generate My Dashboard Prompt <Sparkles className="w-5 h-5" />
+              Generate My Dashboard Prompt
             </Button>
           </div>
         </>

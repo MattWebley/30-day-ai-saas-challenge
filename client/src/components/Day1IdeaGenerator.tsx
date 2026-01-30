@@ -632,12 +632,9 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
               )}
             </div>
             <Button
-              variant="outline"
               onClick={handleRegenerate}
               disabled={cooldownSeconds > 0 || generateIdeas.isPending}
-              className="gap-2"
             >
-              <Sparkles className="w-4 h-4" />
               {cooldownSeconds > 0 ? `Wait ${cooldownSeconds}s` : "Regenerate"}
             </Button>
           </div>

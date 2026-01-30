@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { ChevronLeft, Loader2, Download, Edit3, RefreshCw, RotateCcw, Pencil } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { ds } from "@/lib/design-system";
+import { useToast } from "@/hooks/use-toast";
 
 interface Day6SummaryPRDProps {
   dayId: number;
@@ -35,6 +36,14 @@ export function Day6SummaryPRD({
   const [step, setStep, containerRef] = useStepWithScroll<"generate" | "review" | "edit">("generate");
   const [customerAvatar, setCustomerAvatar] = useState("");
   const [lookAndFeel, setLookAndFeel] = useState("");
+  const { toast } = useToast();
+
+  // AI usage limits
+  const [prdAttempts, setPrdAttempts] = useState(0);
+  const [avatarAttempts, setAvatarAttempts] = useState(0);
+  const [lookFeelAttempts, setLookFeelAttempts] = useState(0);
+  const MAX_PRD_ATTEMPTS = 5;
+  const MAX_DETAIL_ATTEMPTS = 5;
   const [summary, setSummary] = useState("");
   const [prd, setPrd] = useState("");
   const [editedPrd, setEditedPrd] = useState("");
@@ -76,11 +85,66 @@ export function Day6SummaryPRD({
       setPrd(data.prd || "");
       setEditedPrd(data.prd || "");
       setOriginalPrd(data.prd || ""); // Store for revert
+      setPrdAttempts(prev => prev + 1);
       setStep("review");
     },
   });
 
+  const generateAvatar = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/ai/generate-prd-details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          type: "avatar",
+          idea: editIdea,
+          painPoints: editPainPoints.split("\n").filter(p => p.trim()),
+          iHelpStatement: editHelpStatement,
+        }),
+      });
+      if (!response.ok) throw new Error("Failed to generate");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setCustomerAvatar(data.result || "");
+      setAvatarAttempts(prev => prev + 1);
+    },
+    onError: () => {
+      toast({ title: "Failed to generate", description: "Please try again", variant: "destructive" });
+    },
+  });
+
+  const generateLookFeel = useMutation({
+    mutationFn: async () => {
+      const response = await fetch("/api/ai/generate-prd-details", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          type: "lookfeel",
+          idea: editIdea,
+          brandVibe: editBrandVibe,
+          appName: editAppName,
+        }),
+      });
+      if (!response.ok) throw new Error("Failed to generate");
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setLookAndFeel(data.result || "");
+      setLookFeelAttempts(prev => prev + 1);
+    },
+    onError: () => {
+      toast({ title: "Failed to generate", description: "Please try again", variant: "destructive" });
+    },
+  });
+
   const handleRegenerate = () => {
+    if (prdAttempts >= MAX_PRD_ATTEMPTS) {
+      toast({ title: "Limit reached", description: "You've reached the maximum number of regenerations", variant: "destructive" });
+      return;
+    }
     generatePRD.mutate();
   };
 
@@ -283,7 +347,24 @@ export function Day6SummaryPRD({
 
           <div className="space-y-6">
             <div>
-              <h4 className={ds.label + " mb-2"}>Customer Avatar</h4>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className={ds.label}>Customer Avatar</h4>
+                <Button
+                  size="sm"
+                  onClick={() => generateAvatar.mutate()}
+                  disabled={generateAvatar.isPending || !editIdea.trim() || avatarAttempts >= MAX_DETAIL_ATTEMPTS}
+                >
+                  {generateAvatar.isPending ? (
+                    <><Loader2 className="w-3 h-3 animate-spin mr-1" /> Generating...</>
+                  ) : avatarAttempts >= MAX_DETAIL_ATTEMPTS ? (
+                    "Limit reached"
+                  ) : avatarAttempts > 0 ? (
+                    "Regenerate"
+                  ) : (
+                    "Generate"
+                  )}
+                </Button>
+              </div>
               <p className={ds.muted + " mb-2"}>
                 Who exactly is this for? Be specific - not just "businesses" but "freelance designers who struggle with..."
               </p>
@@ -296,7 +377,24 @@ export function Day6SummaryPRD({
             </div>
 
             <div>
-              <h4 className={ds.label + " mb-2"}>Look & Feel</h4>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className={ds.label}>Look & Feel</h4>
+                <Button
+                  size="sm"
+                  onClick={() => generateLookFeel.mutate()}
+                  disabled={generateLookFeel.isPending || !editIdea.trim() || lookFeelAttempts >= MAX_DETAIL_ATTEMPTS}
+                >
+                  {generateLookFeel.isPending ? (
+                    <><Loader2 className="w-3 h-3 animate-spin mr-1" /> Generating...</>
+                  ) : lookFeelAttempts >= MAX_DETAIL_ATTEMPTS ? (
+                    "Limit reached"
+                  ) : lookFeelAttempts > 0 ? (
+                    "Regenerate"
+                  ) : (
+                    "Generate"
+                  )}
+                </Button>
+              </div>
               <p className={ds.muted + " mb-2"}>
                 What apps or websites do you want yours to look/feel like? What style are you going for?
               </p>
@@ -322,18 +420,25 @@ export function Day6SummaryPRD({
             <Button
               size="lg"
               onClick={() => generatePRD.mutate()}
-              disabled={generatePRD.isPending || !customerAvatar.trim() || !lookAndFeel.trim()}
+              disabled={generatePRD.isPending || !customerAvatar.trim() || !lookAndFeel.trim() || prdAttempts >= MAX_PRD_ATTEMPTS}
             >
               {generatePRD.isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Generating PRD...
                 </>
+              ) : prdAttempts >= MAX_PRD_ATTEMPTS ? (
+                "Generation limit reached"
               ) : (
                 "Generate My PRD"
               )}
             </Button>
           </div>
+          {generatePRD.isPending && (
+            <p className="text-sm text-amber-600 font-medium text-center mt-3">
+              This can take up to a minute - please don't refresh!
+            </p>
+          )}
         </div>
       </div>
     );
@@ -386,7 +491,7 @@ export function Day6SummaryPRD({
               variant="outline"
               size="sm"
               onClick={handleRegenerate}
-              disabled={generatePRD.isPending}
+              disabled={generatePRD.isPending || prdAttempts >= MAX_PRD_ATTEMPTS}
               className="gap-2"
             >
               {generatePRD.isPending ? (
@@ -394,7 +499,7 @@ export function Day6SummaryPRD({
               ) : (
                 <RefreshCw className="w-4 h-4" />
               )}
-              Regenerate
+              {prdAttempts >= MAX_PRD_ATTEMPTS ? "Limit reached" : prdAttempts >= MAX_PRD_ATTEMPTS - 2 ? `Regenerate (${MAX_PRD_ATTEMPTS - prdAttempts} left)` : "Regenerate"}
             </Button>
             {prd !== originalPrd && originalPrd && (
               <Button variant="outline" size="sm" onClick={handleRevertToOriginal} className="gap-2">

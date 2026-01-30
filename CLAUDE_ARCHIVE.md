@@ -545,3 +545,48 @@ This file contains archived session logs from CLAUDE.md to keep the main file un
   - **Day Name Change:** "Launch Plan" → "Get Found by Google" → "Get Found by Google & AI"
   - **Duplicate Content Fix:** Trimmed Day 20 & 21 lessons to be short teasers
   - **Google Trust Timeline:** Added note that Google doesn't trust new sites
+
+---
+
+## Archived Sessions (Jan 26-27, 2026)
+
+### 2026-01-26 - Day 21 Growth Strategies Expansion + Congratulations Page
+- **Tasks Completed:**
+  - **Day 21 Expanded to 40 Strategies:** 20 passive + 20 active growth methods
+  - **Readiness Review CTA:** Changed from mentorship pitch to lower-commitment call booking
+  - **New Congratulations Page:** `/congratulations` route with video placeholder, stats, accomplishments checklist
+  - **New Favicon:** SVG favicon with "21"
+- **Files Created:** `Congratulations.tsx`, `favicon.svg`
+
+### 2026-01-26 (Session 2) - Cleanup, Admin Restriction, Design System Fixes
+- **Tasks Completed:**
+  - Day 0 journey milestones fixed (full 21-day journey)
+  - Launch Pack removed entirely (sidebar, routes, webhook handlers)
+  - 7 orphaned components deleted
+  - Test Mode: default false, toggle moved to Admin panel (admin-only)
+  - Mobile fixes, landing page design improvements
+  - Partial design system fixes
+
+### 2026-01-27 - Complete Design System Fixes
+- Fixed all remaining design system violations in 9 components
+- Created backup branch `pre-design-system-fixes-jan27`
+- All info boxes now use `bg-slate-50 border-slate-200`
+
+### 2026-01-27 (Session 2) - Landing Page Sales Copy Overhaul
+- Complete landing page copy rewrite with sales psychology techniques
+- "The Daily Build Method" named unique mechanism
+- Future pacing, false close, price anchoring, reason why
+- 8 objection handlers, "by Matt Webley" header
+- Access period changed from 12 to 6 months
+- Order page redesigned
+
+### 2026-01-27 (Session 3) - VSL Video Added + Branch Merged
+- Merged landing-dashboard-style to main
+- Vimeo VSL video embedded in landing page
+
+### 2026-01-27 (Session 4) - Email System Overhaul & Cleanup
+- Email system converted to plain text
+- 5 email types working (purchase, coaching, testimonial, critique request, critique completed)
+- Critique form: added preferred email field
+- Prompt Pack removed entirely
+- Product audit completed (10 Stripe price IDs needed)
