@@ -3573,6 +3573,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // No auth required - works for guests and logged-in users
   app.post("/api/checkout/process-success", async (req, res) => {
     console.log('[Process Success] Starting...');
+    console.log('[Process Success] Express Session ID:', req.sessionID);
+    console.log('[Process Success] Has session:', !!req.session);
 
     try {
       const { sessionId } = req.body;
@@ -3581,7 +3583,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       }
 
       const isLoggedIn = req.isAuthenticated() && req.user;
-      console.log('[Process Success] Session:', sessionId, 'Logged in:', !!isLoggedIn);
+      console.log('[Process Success] Stripe Session:', sessionId, 'Logged in:', !!isLoggedIn);
 
       const stripe = await getUncachableStripeClient();
       const session = await stripe.checkout.sessions.retrieve(sessionId, {
@@ -3601,10 +3603,24 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         : session.customer?.id;
 
       // Store customer ID in session for immediate upsells (works for guests)
+      // CRITICAL: Must save session explicitly before responding for it to persist
       if (customerId && req.session) {
         (req.session as any).stripeCustomerId = customerId;
         (req.session as any).purchaseCurrency = session.metadata?.currency?.toLowerCase() || 'usd';
-        console.log('[Process Success] Stored in session - Customer:', customerId);
+        console.log('[Process Success] Storing in session - Customer:', customerId);
+
+        // Explicitly save session to ensure it persists before response
+        await new Promise<void>((resolve, reject) => {
+          req.session.save((err) => {
+            if (err) {
+              console.error('[Process Success] Session save error:', err);
+              reject(err);
+            } else {
+              console.log('[Process Success] Session saved successfully');
+              resolve();
+            }
+          });
+        });
       }
 
       // If user is logged in, also update their user record
@@ -3664,7 +3680,12 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       res.json({
         success: true,
-        challengePurchased: true
+        challengePurchased: true,
+        // Debug info for tracking session persistence
+        debug: {
+          sessionId: req.sessionID,
+          hasStripeCustomer: !!(req.session as any)?.stripeCustomerId
+        }
       });
     } catch (error: any) {
       console.error("Error processing checkout success:", error);
@@ -3676,6 +3697,12 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Works for both logged-in users and guests (uses session-stored customer ID)
   app.post("/api/upsell/coaching", async (req, res) => {
     console.log('[One-click upsell] Starting...');
+    console.log('[One-click upsell] Session ID:', req.sessionID);
+    console.log('[One-click upsell] Session data:', JSON.stringify({
+      stripeCustomerId: (req.session as any)?.stripeCustomerId,
+      purchaseCurrency: (req.session as any)?.purchaseCurrency,
+      hasSession: !!req.session
+    }));
 
     try {
       const { currency = 'usd' } = req.body;
@@ -3687,7 +3714,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const stripeCustomerId = userCustomerId || sessionCustomerId;
 
       const userId = isLoggedIn ? (req.user as User).id : null;
-      console.log('[One-click upsell] User:', userId || 'guest', 'Stripe Customer:', stripeCustomerId, 'Source:', userCustomerId ? 'user' : 'session');
+      console.log('[One-click upsell] User:', userId || 'guest');
+      console.log('[One-click upsell] User customerId:', userCustomerId);
+      console.log('[One-click upsell] Session customerId:', sessionCustomerId);
+      console.log('[One-click upsell] Using customerId:', stripeCustomerId, '(from', userCustomerId ? 'user' : sessionCustomerId ? 'session' : 'none', ')');
 
       // Pricing based on currency (amount in smallest unit - cents/pence)
       const coachingPricing: Record<string, { amount: number; currency: string }> = {

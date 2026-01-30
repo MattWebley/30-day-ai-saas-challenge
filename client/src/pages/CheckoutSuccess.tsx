@@ -22,12 +22,21 @@ export default function CheckoutSuccess() {
         try {
           // Save the Stripe customer ID for one-click upsells
           setStatus("Saving your payment details...");
-          await fetch('/api/checkout/process-success', {
+          const response = await fetch('/api/checkout/process-success', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
             body: JSON.stringify({ sessionId })
           });
+
+          const data = await response.json();
+          console.log('[CheckoutSuccess] Process result:', data);
+
+          if (data.success) {
+            setStatus("Payment details saved! Redirecting...");
+            // Small delay to ensure session cookie is fully processed by browser
+            await new Promise(resolve => setTimeout(resolve, 500));
+          }
         } catch (error) {
           console.error('Error processing checkout:', error);
           // Continue anyway - the upsell will just use traditional checkout

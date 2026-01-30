@@ -36,6 +36,7 @@ export function getSession() {
       httpOnly: true,
       secure: true,
       maxAge: sessionTtl,
+      sameSite: 'lax', // Allow cookies on navigation from Stripe
     },
   });
 }
