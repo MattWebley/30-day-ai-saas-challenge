@@ -1128,43 +1128,58 @@ export default function Landing() {
         {/* 7. GUARANTEE */}
         {/* ========================================== */}
         <section className="py-12 border-t border-slate-100">
-          <div className="space-y-6 text-lg text-slate-700">
-            <div className="flex flex-col items-center text-center space-y-4">
-              <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center">
-                <Shield className="w-10 h-10 text-green-600" />
+          <div className="relative bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-8 md:p-12 overflow-hidden">
+            {/* Decorative background elements */}
+            <div className="absolute top-0 right-0 w-40 h-40 bg-green-100 rounded-full -translate-y-1/2 translate-x-1/2 opacity-50" />
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-100 rounded-full translate-y-1/2 -translate-x-1/2 opacity-50" />
+
+            <div className="relative space-y-6 text-lg text-slate-700">
+              {/* Badge and heading */}
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full bg-white border-4 border-green-500 flex items-center justify-center shadow-lg">
+                    <Shield className="w-12 h-12 text-green-600" />
+                  </div>
+                  <div className="absolute -top-2 -right-2 bg-green-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                    GUARANTEE
+                  </div>
+                </div>
+                <h2 className="text-3xl md:text-4xl font-black text-slate-900 pt-2">
+                  Do The Work, Get a Working Product - Or Your Money Back
+                </h2>
               </div>
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900">
-                Do The Work, Get a Working Product - Or Your Money Back
-              </h2>
+
+              <p className="text-center">
+                Here's my promise to you:
+              </p>
+
+              <div className="bg-white/80 backdrop-blur rounded-xl p-6 border border-green-100">
+                <p>
+                  If you go through the challenge every day, do the work, and DON'T have a working software product at the end of it, one of my vibe coding coaches will jump on a call with you, figure out what went wrong, and help you fix it.
+                </p>
+              </div>
+
+              <h3 className="text-2xl md:text-3xl font-black text-green-700 text-center pt-4">
+                And If We Still Can't Get You There? Full Refund. No Questions.
+              </h3>
+
+              <p>
+                Why am I confident making this offer? Because I KNOW that if you actually show up and follow the system, you WILL have a product at the end. That's not a guess. That's just how this works.
+              </p>
+
+              <div className="bg-white/80 backdrop-blur rounded-xl p-6 border border-green-100 text-center">
+                <h3 className="text-xl md:text-2xl font-black text-slate-900">
+                  The Only Way to Fail Is to Not Show Up
+                </h3>
+                <p className="mt-2 text-slate-600">
+                  And if you're the type who won't show up, please don't join. Save us both the time.
+                </p>
+              </div>
+
+              <p className="font-bold text-slate-900 text-right pt-4">
+                - Matt Webley
+              </p>
             </div>
-
-            <p>
-              Here's my promise to you:
-            </p>
-
-            <p>
-              If you go through the challenge every day, do the work, and DON'T have a working software product at the end of it, one of my vibe coding coaches will jump on a call with you, figure out what went wrong, and help you fix it.
-            </p>
-
-            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              And If We Still Can't Get You There? Full Refund. No Questions.
-            </h3>
-
-            <p>
-              Why am I confident making this offer? Because I KNOW that if you actually show up and follow the system, you WILL have a product at the end. That's not a guess. That's just how this works.
-            </p>
-
-            <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center pt-6">
-              The Only Way to Fail Is to Not Show Up
-            </h3>
-
-            <p>
-              And if you're the type who won't show up, please don't join. Save us both the time.
-            </p>
-
-            <p className="font-bold text-slate-900 text-right pt-4">
-              - Matt Webley
-            </p>
           </div>
         </section>
 
