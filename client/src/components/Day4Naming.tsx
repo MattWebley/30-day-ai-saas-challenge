@@ -121,6 +121,12 @@ export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }
   const [finalDomain, setFinalDomain] = useState("");
   const [registeredItems, setRegisteredItems] = useState<Set<string>>(new Set());
 
+  // Helper: get clean base name without any domain extensions (for variations)
+  const baseName = finalName
+    .replace(/\.(com|co|io|net|org|app|dev|ai|xyz|me|us|uk|ca)$/i, '')
+    .replace(/\s+/g, '')
+    .toLowerCase();
+
   const toggleRegistered = (itemId: string) => {
     const newRegistered = new Set(registeredItems);
     if (newRegistered.has(itemId)) {
@@ -265,8 +271,14 @@ Return ONLY this JSON:
 
   const handleCustomName = () => {
     if (!customName.trim()) return;
-    const domainName = customName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    setFinalName(customName.trim());
+    // Strip any domain extensions (.com, .co, .io, .net, .org, .app, etc.)
+    const cleanName = customName.trim()
+      .replace(/\.(com|co|io|net|org|app|dev|ai|xyz|me|us|uk|ca)$/i, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    // Create domain-safe version (only lowercase alphanumeric)
+    const domainName = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    setFinalName(cleanName);
     setFinalDomain(`${domainName}.com`);
     setCurrentStep("confirm");
   };
@@ -401,7 +413,7 @@ Return ONLY this JSON:
                                   {suggestion.domain.replace(/\.com$/i, '')}.com
                                 </span>
                                 <a
-                                  href={`https://www.namecheap.com/domains/registration/results/?domain=${suggestion.domain.replace(/\.com$/i, '')}.com`}
+                                  href={`https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(suggestion.domain.replace(/\.com$/i, ''))}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   onClick={(e) => e.stopPropagation()}
@@ -567,7 +579,7 @@ Return ONLY this JSON:
               </p>
               <div className="text-center">
                 <a
-                  href={`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}`}
+                  href={`https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(finalDomain.replace(/\.com$/i, ''))}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={ds.optionDefault + " inline-flex items-center gap-2 font-medium"}
@@ -697,7 +709,7 @@ Return ONLY this JSON:
                 </div>
 
                 <a
-                  href={`https://www.namecheap.com/domains/registration/results/?domain=${finalDomain}`}
+                  href={`https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(finalDomain.replace(/\.com$/i, ''))}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
@@ -726,9 +738,9 @@ Return ONLY this JSON:
                 <div className={ds.infoBoxHighlight}>
                   <p className={ds.label + " mb-2"}>Common variations to consider:</p>
                   <ul className={ds.muted + " space-y-1"}>
-                    <li>• <strong>Typos:</strong> {finalName.toLowerCase().replace(/\s+/g, '').slice(0, -1) + finalName.slice(-1).repeat(2)}.com (double letter)</li>
-                    <li>• <strong>Plurals:</strong> {finalName.toLowerCase().replace(/\s+/g, '')}s.com</li>
-                    <li>• <strong>Hyphenated:</strong> {finalName.toLowerCase().replace(/\s+/g, '-')}.com (if multi-word)</li>
+                    <li>• <strong>Typos:</strong> {baseName.slice(0, -1) + baseName.slice(-1).repeat(2)}.com (double letter)</li>
+                    <li>• <strong>Plurals:</strong> {baseName}s.com</li>
+                    <li>• <strong>Hyphenated:</strong> {finalName.toLowerCase().replace(/\s+/g, '-').replace(/\.(com|co|io|net|org|app|dev|ai)$/i, '')}.com (if multi-word)</li>
                     <li>• <strong>Common misspellings:</strong> Think about how people might mishear or misspell it</li>
                     <li>• <strong>Alternative TLDs:</strong> .co, .io, .app, .ai, or your country (.co.uk, .de, .com.au, etc.) - only if cheap</li>
                   </ul>
@@ -747,7 +759,7 @@ Return ONLY this JSON:
                 </div>
 
                 <a
-                  href={`https://www.namecheap.com/domains/registration/results/?domain=${finalName.toLowerCase().replace(/\s+/g, '')}`}
+                  href={`https://www.namecheap.com/domains/registration/results/?domain=${encodeURIComponent(baseName)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
