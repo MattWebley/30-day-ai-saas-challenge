@@ -18,6 +18,7 @@ interface DayCompletionModalProps {
   day: number;
   title: string;
   completionMessage?: string;
+  motivationalQuote?: string;
   onContinue: () => void;
 }
 
@@ -26,6 +27,7 @@ export function DayCompletionModal({
   day,
   title,
   completionMessage,
+  motivationalQuote,
   onContinue,
 }: DayCompletionModalProps) {
   // Fetch all badges to check if this day awards one
@@ -116,6 +118,18 @@ export function DayCompletionModal({
                   <p className="text-slate-700 font-medium leading-relaxed">
                     {completionMessage}
                   </p>
+                </motion.div>
+              )}
+
+              {/* Motivational Quote */}
+              {motivationalQuote && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: earnedBadge ? 0.65 : 0.55 }}
+                  className="text-center"
+                >
+                  <p className="text-slate-500 italic text-lg">{motivationalQuote}</p>
                 </motion.div>
               )}
 

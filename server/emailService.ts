@@ -64,7 +64,7 @@ export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams)
   const defaultSubject = `You're in! Welcome to the 21-Day AI SaaS Challenge`;
   const defaultBody = `You're In, {{firstName}}!
 
-Welcome to the 21-Day AI SaaS Challenge. Your journey from idea to launch-ready product starts now.
+Welcome to the 21-Day AI SaaS Challenge.
 
 ORDER CONFIRMED
 ---------------
@@ -73,9 +73,9 @@ Total: {{currencySymbol}}{{total}}
 
 WHAT'S NEXT
 -----------
-1. Start Day 0 today - it only takes 5 minutes
-2. Complete one day at a time - go at your own pace
-3. In 21 days, you'll have a working product
+1. Log in and start Day 0
+2. Complete one day at a time at your own pace
+3. The challenge covers 21 days of lessons and exercises
 
 Start now: https://challenge.mattwebley.com/dashboard
 
@@ -268,25 +268,16 @@ export async function sendCritiqueCompletedEmail(params: CritiqueCompletedParams
       from: fromEmail,
       replyTo: replyTo,
       to: [to],
-      subject: `Your Sales Page Video Critique is Ready!`,
+      subject: `Your Sales Page Video Critique is Ready`,
       text: `Hey ${firstName}!
 
-Your sales page video critique is ready. I've recorded a detailed walkthrough with specific suggestions to improve your conversions.
+Your sales page video critique is ready.
 
 WATCH YOUR CRITIQUE
 -------------------
 ${videoUrl}
 
-In this video, I cover:
-- First impressions and headline analysis
-- Structure and flow improvements
-- Specific copy suggestions
-- Call-to-action optimization
-- Quick wins you can implement today
-
-After watching, if you have questions or want to discuss any of the suggestions, just reply to this email.
-
-Looking forward to seeing your improved sales page!
+If you have questions after watching, just reply to this email.
 
 - Matt
 
@@ -502,25 +493,24 @@ export async function sendCoachingConfirmationEmail(params: CoachingEmailParams)
       from: fromEmail,
       replyTo: replyTo,
       to: [to],
-      subject: `Coaching Sessions Confirmed - Let's Build Together!`,
+      subject: `Coaching Sessions Confirmed`,
       text: `Coaching Confirmed!
 
-Hey ${firstName}, great decision! You've just unlocked 4 hours of 1:1 coaching to supercharge your SaaS build.
+Hey ${firstName}, your coaching purchase is confirmed.
 
 YOUR COACHING PACKAGE
 ---------------------
-4 x 1-Hour Live Sessions
+4 x 1-Hour Sessions
 
-- Direct 1:1 video calls
-- Screen share building together
-- Unblock any issue immediately
-- Flexible scheduling
+What's included:
+- 1:1 video calls
+- Screen sharing
 
 Total: ${currencySymbol}${amount}
 
 HOW TO BOOK YOUR SESSIONS
 -------------------------
-I'll be in touch within 24 hours with a link to book your first session. Keep an eye on your inbox!
+I'll email you within 24 hours with a booking link.
 
 Questions? Just reply to this email.
 

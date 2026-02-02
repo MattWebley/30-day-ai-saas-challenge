@@ -410,3 +410,47 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Webhook issue is separate from upsell - investigate if needed
   - Consider removing or fixing StripeSync integration if webhooks remain problematic
   - Coupon `TEST100` exists in admin (100% off) - don't use for upsell testing
+
+### 2026-02-02 - Email System Overhaul, Motivational Quotes, Admin Preview Mode
+- **Tasks Completed:**
+  - **Email System Updates:**
+    - Changed all email URLs from `21daysaas.com` to `challenge.mattwebley.com`
+    - Updated from address to `matt@mattwebley.com` with reply-to header
+    - Added configurable test email address in admin (persists to localStorage)
+    - Added quick "Send Test" button on each email template card
+    - Rewrote emails to be factual (removed marketing fluff and unverifiable claims)
+    - Replaced Bill Gates quote with Reid Hoffman quote per user request
+  - **Admin Preview Mode for Success Pages:**
+    - Added `?preview=true` query param for admin-only page previews
+    - Works on: `/checkout/success`, `/coaching/upsell`, `/congratulations`
+    - Shows preview banner, disables purchase buttons in preview mode
+  - **Motivational Quotes Feature:**
+    - Added `motivationalQuote` field to database schema
+    - Created 22 quotes (Days 0-21) from legends (Jim Rohn, Steve Jobs, Walt Disney, etc.)
+    - Quotes display in Day Completion Modal with fade-in animation
+    - Tested multiple display locations and styles before finalizing
+  - **Quote Authors Used:**
+    - Steve Jobs (Days 0, 5), Walt Disney (Day 1), Reid Hoffman (Day 2)
+    - Leonardo da Vinci (Day 3), Muhtar Kent (Day 4), John Johnson (Day 6)
+    - Abraham Lincoln (Day 7), Chinese Proverb (Day 8), Winston Churchill (Days 9, 21)
+    - Jim Rohn (Days 10, 19), Simon Sinek (Day 11), Mark Twain (Day 12)
+    - Henry David Thoreau (Day 13), Bruce Lee (Day 14), Sam Levenson (Day 15)
+    - Franklin D. Roosevelt (Day 16), Sheryl Sandberg (Day 17)
+    - Martin Luther King Jr. (Day 18), Tom Fishburne (Day 20)
+- **Files Modified:**
+  - `shared/schema.ts` - Added `motivationalQuote` field
+  - `server/seed.ts` - Added quotes to all 22 days, fixed upsert to include new field
+  - `server/emailService.ts` - Updated from/reply-to, simplified email content
+  - `client/src/pages/Admin.tsx` - Test email config with localStorage persistence
+  - `client/src/pages/Dashboard.tsx` - Passes quote to completion modal
+  - `client/src/components/DayCompletionModal.tsx` - Displays motivational quote
+  - `client/src/pages/CheckoutSuccess.tsx` - Admin preview mode
+  - `client/src/pages/CoachingUpsell.tsx` - Admin preview mode
+  - `client/src/pages/Congratulations.tsx` - Admin preview mode
+- **Database:**
+  - Pushed `motivationalQuote` column to `dayContent` table
+  - Ran direct SQL update to populate quotes (seed skips existing data)
+- **Notes for Next Session:**
+  - Quotes are now in completion modals - test by completing a day
+  - Admin preview: add `?preview=true` to success page URLs while logged in as admin
+  - Email test: set test email in admin panel, then click send icon on any template

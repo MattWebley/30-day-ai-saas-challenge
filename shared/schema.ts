@@ -89,6 +89,7 @@ export const dayContent = pgTable("day_content", {
   microDecisionOptions: jsonb("micro_decision_options"), // Array of strings
   reflectionQuestion: text("reflection_question"),
   tip: text("tip"),
+  motivationalQuote: text("motivational_quote"), // Quote from a legend with attribution
   lesson: text("lesson"),
   outcome: text("outcome"), // What the user will have accomplished by the end of the day
   completionMessage: text("completion_message"), // Motivational message shown after completing the day

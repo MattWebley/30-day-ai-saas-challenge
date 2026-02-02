@@ -169,6 +169,7 @@ async function seed() {
       microDecisionOptions: null,
       reflectionQuestion: null,
       tip: "This challenge has been carefully designed to take you from zero to launch-ready. Set a daily reminder, same time every day, and trust the process. The people who finish are the ones who show up consistently.",
+      motivationalQuote: `"The only way to do great work is to love what you do." – Steve Jobs`,
       lesson: `Welcome to the 21-Day AI SaaS Challenge!
 
 In the next 21 days, you're going to go from idea to launch-ready product. No fluff. No theory. Just focused action every single day.
@@ -215,6 +216,7 @@ Ready? Let's go.`,
       microDecisionOptions: JSON.stringify(["B2B SaaS", "B2C Apps", "Developer Tools", "Productivity"]),
       reflectionQuestion: "What problem do you want to solve and why does it matter to you?",
       tip: "The BEST first projects come from what you ALREADY KNOW. If you've been in any business where people make REAL MONEY - you've got a MASSIVE head start! Getting someone to buy something that helps them MAKE MORE MONEY is an EASY sell.",
+      motivationalQuote: `"The way to get started is to quit talking and begin doing." – Walt Disney`,
       lesson: `Here's the BRUTAL truth: The BEST first projects come from what you ALREADY KNOW.
 
 If you've been in KDP, print on demand, Amazon FBA, online courses, or ANY business where people are making REAL MONEY - you've got a MASSIVE head start!
@@ -253,6 +255,7 @@ Think NICHE - DO NOT THINK BROAD! The NICHER the BETTER usually...`,
       microDecisionOptions: JSON.stringify(["Better UX", "Lower Price", "Unique Feature", "Niche Focus"]),
       reflectionQuestion: "What makes your solution different from existing alternatives?",
       tip: "Competition is NOT bad - it means there's MONEY in it! If you can't find at LEAST 3 active competitors, demand might be UNPROVEN. Look for where people are COMPLAINING about existing tools.",
+      motivationalQuote: `"If you're not embarrassed by the first version of your product, you've launched too late." – Reid Hoffman`,
       lesson: `There's absolutely NO point trying to build a SaaS if you aren't going to make any MONEY at it! Here's the 3-step framework to validate your idea:
 
 STEP 1: Ask your LLM
@@ -297,6 +300,7 @@ By end of today, you should be able to say: "I help [SPECIFIC PERSON] solve [PAI
       microDecisionOptions: JSON.stringify(["Speed/Simplicity", "AI-Powered", "Better Integration", "Niche-Specific"]),
       reflectionQuestion: "What one unique feature will make customers choose you over competitors?",
       tip: "Why create a 'clone' when you can have ALL their best features AND be 10-20% better with just ONE unique feature? That's a WINNING combination.",
+      motivationalQuote: `"Simplicity is the ultimate sophistication." – Leonardo da Vinci`,
       lesson: `The TRUTH is, if you just create something with the SAME feature set as a competitor then YOU can have a WILDLY successful business! BUT... Why create some "clone" when you can have ALL of their best features AND be 10-20% better by including ONE feature they don't have!
 
 STEP 1: List Essential Core Features
@@ -332,6 +336,7 @@ CLONED CORE FEATURES + USP + LONGER FREE TRIAL + CHEAPER MONTHLY PRICE = WIN`,
       microDecisionOptions: JSON.stringify(["Short & Punchy (Slack, Zoom)", "Made-up Word (Spotify, Trello)", "Compound Word (Mailchimp, Dropbox)", "Action Word (Notion, Figma)"]),
       reflectionQuestion: "Say your product name out loud 5 times. Does it feel right? If you have to spell it for people, it's wrong.",
       tip: "NEVER pay more than $10-15/year for a .com domain. If someone wants $100+, it's a domain squatter. Change the name instead. Your time is better spent building than negotiating with hoarders.",
+      motivationalQuote: `"A brand is a promise. A good brand is a promise kept." – Muhtar Kent`,
       lesson: `Your name is your first impression. Get this RIGHT.
 
 THE GOLDEN RULES:
@@ -409,6 +414,7 @@ You'll get AI-generated name suggestions, then clickable links to check everythi
       microDecisionOptions: JSON.stringify(["Text-only logo", "Icon + text", "Abstract symbol", "Lettermark (initials)"]),
       reflectionQuestion: "Does your logo feel like YOUR brand?",
       tip: "A text-only logo in a clean font is better than a bad graphic. Don't overthink it - you can always refine later.",
+      motivationalQuote: `"Design is not just what it looks like and feels like. Design is how it works." – Steve Jobs`,
       lesson: `Your logo is the FACE of your product.
 
 It doesn't need to be perfect. It needs to be DONE.
@@ -466,6 +472,7 @@ Don't spend days on this. Spend 30 minutes, make something decent, move on. You 
       microDecisionOptions: JSON.stringify(["Never", "A little", "Regularly", "I'm experienced"]),
       reflectionQuestion: "What's holding you back from building right now?",
       tip: "Get the PAID accounts. The prices are ridiculously low for what you get. IMPORTANT: We do most things through Claude Code, NOT Replit's AI. But when you DO use Replit's agent, click the lightning bolt icon for 'fast' mode. It handles most tasks and costs WAY less than the default mode.",
+      motivationalQuote: `"First, solve the problem. Then, write the code." – John Johnson`,
       lesson: `Your AI Tech Stack - Keep it SIMPLE:
 
 ESSENTIAL (you need both):
@@ -507,6 +514,7 @@ The goal is to START BUILDING, not to collect subscriptions.`,
       microDecisionOptions: JSON.stringify(["Brief overview", "Standard detail", "Very detailed", "Everything included"]),
       reflectionQuestion: "Looking at everything you've defined, what excites you most about building this?",
       tip: "We write the PRD with Claude, then paste it into Replit to build the initial app. After that, we switch to Claude Code for 99% of ongoing work - it's much better for iterating, adding features, and keeping costs down.",
+      motivationalQuote: `"Give me six hours to chop down a tree and I will spend the first four sharpening the axe." – Abraham Lincoln`,
       lesson: `WHAT IS A PRD?
 
 A PRD (Product Requirements Document) is your SAAS blueprint. A detailed written plan that outlines EXACTLY what you're going to build.
@@ -547,6 +555,7 @@ But don't worry about filling that in - we'll generate a proper PRD for you in t
       microDecisionOptions: JSON.stringify(["Authentication", "Main core feature", "Database setup", "Landing page"]),
       reflectionQuestion: "What will it feel like when you see your first feature working?",
       tip: "Get into the habit of using the entire app AS you build it. This prevents you breaking something and not knowing about it until later.",
+      motivationalQuote: `"The best time to plant a tree was 20 years ago. The second best time is now." – Chinese Proverb`,
       lesson: `Today we set up the tools. Three things:
 
 1. GITHUB
@@ -606,6 +615,7 @@ Let's get it done.`,
       microDecisionOptions: JSON.stringify(["Not sure what to ask", "Results aren't what I want", "Don't know how to fix errors", "Everything feels overwhelming"]),
       reflectionQuestion: "What feature would you build if you knew Claude Code would get it right first time?",
       tip: "Don't overthink it. Be creative, have fun, but commit often so you can always go back.",
+      motivationalQuote: `"Success is not final, failure is not fatal: it is the courage to continue that counts." – Winston Churchill`,
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 Now let's learn how to TALK to Claude Code.
@@ -650,6 +660,7 @@ Let's go through each one.`,
       microDecisionOptions: JSON.stringify(["Fixed something broken", "Improved how it looks", "Added a missing piece", "Made it clearer to use"]),
       reflectionQuestion: "How did it feel to complete your first Build-Test-Fix loop?",
       tip: "Finding bugs isn't failure - it's PROGRESS. NO software is ever 100% bug-free. Our goal isn't perfection (that takes years and is impossible). We fix everything WE can find and what any BETA testers find, then ship it and fix issues FAST with AI when they crop up. Perfectionism = procrastination.",
+      motivationalQuote: `"Discipline is the bridge between goals and accomplishment." – Jim Rohn`,
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 This is THE skill that separates people who ship from people who don't.
@@ -699,6 +710,7 @@ Find ONE bug in your app. Describe it clearly. Fix it with Claude Code. That's i
       microDecisionOptions: JSON.stringify(["Professional & trustworthy", "Fun & friendly", "Bold & energetic", "Minimal & clean"]),
       reflectionQuestion: "Would your target customer feel at home with this brand?",
       tip: "Happy with what you've got? SKIP this day. Design changes can always happen later - features matter more right now.",
+      motivationalQuote: `"People don't buy what you do; they buy why you do it." – Simon Sinek`,
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 Look at your app right now. How does it FEEL?
@@ -749,6 +761,7 @@ Remember: You're not stuck with anything. "Reverse that" brings it all back.`,
       microDecisionOptions: JSON.stringify(["Generate content", "Analyze/summarize data", "Answer questions", "Automate tasks"]),
       reflectionQuestion: "What manual task could AI do for your users that would make them say 'THIS IS AMAZING'?",
       tip: "Worried about AI costs? Here's the reality: most SaaS subscribers barely use the features they pay for. Whatever your worst-case cost estimate is, actual usage will be way lower.",
+      motivationalQuote: `"The secret of getting ahead is getting started." – Mark Twain`,
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 Today your app gets a BRAIN.
@@ -817,6 +830,7 @@ There are other AI APIs out there - Claude's API, Google's Gemini, and more. The
       microDecisionOptions: JSON.stringify(["Payments (Stripe)", "Data/Scraping", "Third-party integration", "None needed yet"]),
       reflectionQuestion: "What can your app do now that it couldn't do before?",
       tip: "Before adding ANY external API, ask Replit Agent first... 'Can you do [thing] without an external service?' Often Replit can handle it natively. Also... Replit sometimes offers easy one-click API integrations, but they're not always the most cost-effective option. Yes, use them to build your app, but be willing to swap them out when you start getting customers.",
+      motivationalQuote: `"Success usually comes to those who are too busy to be looking for it." – Henry David Thoreau`,
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 External APIs let your app do things you couldn't easily build yourself. Here are the popular ones...
@@ -864,6 +878,7 @@ Add ONE at a time. Get it working. Test it. Then consider the next one. Every ex
       microDecisionOptions: JSON.stringify(["Yes, it works", "No, need to add it", "Not sure", "Don't need it"]),
       reflectionQuestion: "Can users sign up and see only their own data?",
       tip: "Replit probably already added auth when you first built your app. Check before adding it again. Ask Replit: 'Does my app have user authentication?'",
+      motivationalQuote: `"The successful warrior is the average man, with laser-like focus." – Bruce Lee`,
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 Today you're doing TWO things: authentication (letting people sign up and log in) and admin dashboard (so you can see what's happening).
@@ -928,6 +943,7 @@ Data tells you what to fix. Check your dashboard every day.`,
       microDecisionOptions: JSON.stringify(["Monthly subscription", "One-time purchase", "Credits/tokens", "Premium features"]),
       reflectionQuestion: "What's the first thing you want to charge money for in your app?",
       tip: "Use TEST MODE while building. Stripe's test card is 4242 4242 4242 4242. You can switch to live mode when you're ready to launch.",
+      motivationalQuote: `"Don't watch the clock; do what it does. Keep going." – Sam Levenson`,
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 Today you're adding the ability to take payments. The exercise below walks you through setting up Stripe step by step.
@@ -973,6 +989,7 @@ Quick math: A $29/month app with 100 paying users = $2,900/month. You don't need
       microDecisionOptions: JSON.stringify(["Fast and looks great", "Works but a bit slow", "Some things are broken", "Haven't tested yet"]),
       reflectionQuestion: "Can users complete the main task on their phone without frustration or waiting?",
       tip: "Test on a REAL phone with mobile data (not wifi). That's what your users will experience. If you're frustrated waiting, they will be too.",
+      motivationalQuote: `"The only limit to our realization of tomorrow is our doubts of today." – Franklin D. Roosevelt`,
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 Today we fix TWO things that kill apps: broken mobile and slow loading.
@@ -1021,6 +1038,7 @@ Don't overthink it. The question is simple: Can someone use this on their phone 
       microDecisionOptions: JSON.stringify(["Yes, main stuff works", "Tested a bit", "Just a quick look", "Haven't tested yet"]),
       reflectionQuestion: "Does your main feature work well enough for beta testers?",
       tip: "You WILL ship with bugs. Every app does. The goal isn't perfection - it's making sure the core stuff works. Real users will find the edge cases you'd never think of. With AI you can fix bugs FAST, so don't worry.",
+      motivationalQuote: `"Done is better than perfect." – Sheryl Sandberg`,
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 Here's the truth about building a SaaS business - you WILL ship with bugs. You can't find them all yourself. The only way to truly find every edge case is with REAL USERS using your app in ways you'd never think of.
@@ -1089,6 +1107,7 @@ NEED HELP? Ask Claude Code - "Help me connect my domain [yourdomain.com] from [r
       microDecisionOptions: JSON.stringify(["Core features", "Bug fixes", "UI polish", "New functionality"]),
       reflectionQuestion: "Does your app solve the ONE core problem you set out to solve?",
       tip: "THIS IS THE PAUSE POINT. Your MVP isn't about having every feature - it's about having ONE thing that works brilliantly. Stay here until that's true. Typically this looks like your competitor's core feature set PLUS your USP feature - then you're ready to go!",
+      motivationalQuote: `"Take the first step in faith. You don't have to see the whole staircase, just take the first step." – Martin Luther King Jr.`,
       lesson: `***FIRST: Open the [Claude Code Guide](/claude-code). Use those prompts to start your session.***
 
 STOP. READ THIS CAREFULLY.
@@ -1207,6 +1226,7 @@ Now go build. Come back when it's ready.`,
       microDecisionOptions: JSON.stringify(["Clear value proposition", "Easy to understand", "Removes objections", "Makes signing up easy"]),
       reflectionQuestion: "How will it feel when your sales page starts converting visitors into customers?",
       tip: "The headline is the most important part. If they don't read the headline, they won't read anything else. Test multiple options.",
+      motivationalQuote: `"Either you run the day, or the day runs you." – Jim Rohn`,
       lesson: `Time to SELL what you've built.
 
 
@@ -1266,6 +1286,7 @@ The interactive section below walks you through the exact structure and gives yo
       microDecisionOptions: JSON.stringify(["Very important", "Somewhat important", "Not sure yet", "I'll focus on other channels"]),
       reflectionQuestion: "What would it mean if people started finding your app through Google?",
       tip: "SEO takes time, but it compounds. And more people are asking AI for recommendations now - being mentioned across the web helps with both.",
+      motivationalQuote: `"The best marketing doesn't feel like marketing." – Tom Fishburne`,
       lesson: `Right now, if someone Googles what your app does... they won't find you.
 
 People search Google 8.5 BILLION times per day. If even a tiny fraction of those searches are for what your app does, that's free traffic. Every day. Forever.
@@ -1297,6 +1318,7 @@ Let's get you found.`,
       microDecisionOptions: JSON.stringify(["Figure it out myself", "Get expert guidance", "Take a break first", "Not sure yet"]),
       reflectionQuestion: "What would your life look like with your target number of paying customers?",
       tip: "You only need ONE or TWO growth strategies that work. Most successful founders focus on 1-2 channels and go ALL IN. I can help you build AI systems that take care of most of this for you, growing your SaaS business on autopilot.",
+      motivationalQuote: `"Success is walking from failure to failure with no loss of enthusiasm." – Winston Churchill`,
       lesson: `You just did something 99% of people NEVER do.
 
 You went from "I have an idea" to "I have a WORKING PRODUCT" in just a few weeks. That puts you in RARE company.
@@ -1326,6 +1348,7 @@ This challenge taught you to BUILD. Now let's talk about how to SELL.`,
         microDecisionOptions: day.microDecisionOptions,
         reflectionQuestion: day.reflectionQuestion,
         tip: day.tip,
+        motivationalQuote: day.motivationalQuote,
         lesson: day.lesson,
         outcome: day.outcome,
         completionMessage: day.completionMessage,
@@ -1344,7 +1367,7 @@ This challenge taught you to BUILD. Now let's talk about how to SELL.`,
       subject: "You're in! Welcome to the 21-Day AI SaaS Challenge",
       body: `You're In, {{firstName}}!
 
-Welcome to the 21-Day AI SaaS Challenge. Your journey from idea to launch-ready product starts now.
+Welcome to the 21-Day AI SaaS Challenge.
 
 ORDER CONFIRMED
 ---------------
@@ -1353,9 +1376,9 @@ Total: {{currencySymbol}}{{total}}
 
 WHAT'S NEXT
 -----------
-1. Start Day 0 today - it only takes 5 minutes
-2. Complete one day at a time - go at your own pace
-3. In 21 days, you'll have a working product
+1. Log in and start Day 0
+2. Complete one day at a time at your own pace
+3. The challenge covers 21 days of lessons and exercises
 
 Start now: https://challenge.mattwebley.com/dashboard
 
@@ -1372,25 +1395,24 @@ You're receiving this because you purchased the challenge.`,
     {
       templateKey: "coaching_confirmation",
       name: "Coaching Confirmation",
-      subject: "Coaching Sessions Confirmed - Let's Build Together!",
+      subject: "Coaching Sessions Confirmed",
       body: `Coaching Confirmed!
 
-Hey {{firstName}}, great decision! You've just unlocked coaching sessions to supercharge your SaaS build.
+Hey {{firstName}}, your coaching purchase is confirmed.
 
 YOUR COACHING PACKAGE
 ---------------------
 {{coachingType}}
 
-- Direct 1:1 video calls
-- Screen share building together
-- Unblock any issue immediately
-- Flexible scheduling
+What's included:
+- 1:1 video calls
+- Screen sharing
 
 Total: {{currencySymbol}}{{amount}}
 
 HOW TO BOOK YOUR SESSIONS
 -------------------------
-I'll be in touch within 24 hours with a link to book your first session. Keep an eye on your inbox!
+I'll email you within 24 hours with a booking link.
 
 Questions? Just reply to this email.
 
@@ -1494,25 +1516,16 @@ View all requests: https://challenge.mattwebley.com/admin`,
     {
       templateKey: "critique_completed",
       name: "Critique Completed",
-      subject: "Your Sales Page Video Critique is Ready!",
+      subject: "Your Sales Page Video Critique is Ready",
       body: `Hey {{firstName}}!
 
-Your sales page video critique is ready. I've recorded a detailed walkthrough with specific suggestions to improve your conversions.
+Your sales page video critique is ready.
 
 WATCH YOUR CRITIQUE
 -------------------
 {{videoUrl}}
 
-In this video, I cover:
-- First impressions and headline analysis
-- Structure and flow improvements
-- Specific copy suggestions
-- Call-to-action optimization
-- Quick wins you can implement today
-
-After watching, if you have questions or want to discuss any of the suggestions, just reply to this email.
-
-Looking forward to seeing your improved sales page!
+If you have questions after watching, just reply to this email.
 
 - Matt
 

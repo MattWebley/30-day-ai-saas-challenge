@@ -367,49 +367,49 @@ export default function Dashboard() {
 
         {/* Header - Clean & Sharp */}
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 border-b border-slate-200 pb-8">
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-               <span className="bg-primary text-white px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
-                Day {dayData.day}
-              </span>
-              <span className="text-sm font-semibold text-slate-400 uppercase tracking-wider">{dayData.phase}</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                 <span className="bg-primary text-white px-3 py-1 rounded-md text-xs font-bold uppercase tracking-wider">
+                  Day {dayData.day}
+                </span>
+                <span className="text-sm font-semibold text-slate-400 uppercase tracking-wider">{dayData.phase}</span>
+              </div>
+              <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">{dayData.title}</h1>
+              <p className="text-lg text-slate-500 max-w-3xl leading-relaxed">
+                {dayData.description}
+              </p>
             </div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">{dayData.title}</h1>
-            <p className="text-lg text-slate-500 max-w-3xl leading-relaxed">
-              {dayData.description}
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-4 shrink-0">
-             <FocusButton />
-             <div className="h-10 w-px bg-slate-200 hidden md:block"></div>
-             <div className="text-right hidden md:block">
-               <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Est. Time</div>
-               <div className="font-bold text-slate-900 text-lg">5 Min</div>
-             </div>
-             {/* COMMENTED OUT - Video button moved to lesson section
-             {lessonVideos[currentDay] && (
-               <>
-                 <div className="h-10 w-px bg-slate-200 hidden md:block"></div>
-                 <Button
-                   variant="outline"
-                   className="gap-2 border-2 border-slate-200 hover:border-primary hover:text-primary font-bold"
-                   onClick={() => setShowVideoModal(true)}
-                 >
-                   <Play className="w-4 h-4" /> Watch Lesson
-                 </Button>
-               </>
-             )}
-             */}
-          </div>
+
+            <div className="flex items-center gap-4 shrink-0">
+               <FocusButton />
+               <div className="h-10 w-px bg-slate-200 hidden md:block"></div>
+               <div className="text-right hidden md:block">
+                 <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">Est. Time</div>
+                 <div className="font-bold text-slate-900 text-lg">5 Min</div>
+               </div>
+               {/* COMMENTED OUT - Video button moved to lesson section
+               {lessonVideos[currentDay] && (
+                 <>
+                   <div className="h-10 w-px bg-slate-200 hidden md:block"></div>
+                   <Button
+                     variant="outline"
+                     className="gap-2 border-2 border-slate-200 hover:border-primary hover:text-primary font-bold"
+                     onClick={() => setShowVideoModal(true)}
+                   >
+                     <Play className="w-4 h-4" /> Watch Lesson
+                   </Button>
+                 </>
+               )}
+               */}
+            </div>
         </div>
 
         {/* Matt Webley's Tip */}
         {dayData.tip && (
           <div className="bg-slate-50 border border-slate-200 p-5 rounded-lg">
             <div className="flex items-start gap-4">
-              <img 
-                src="/matt-webley.png" 
+              <img
+                src="/matt-webley.png"
                 alt="Matt Webley"
                 className="w-14 h-14 rounded-full object-cover flex-shrink-0"
               />
@@ -1653,6 +1653,7 @@ export default function Dashboard() {
         day={currentDay}
         title={dayData.title}
         completionMessage={dayData.completionMessage}
+        motivationalQuote={dayData.motivationalQuote}
         onContinue={handleContinueFromModal}
       />
 

@@ -10,12 +10,16 @@ export default function CoachingUpsell() {
   const { testMode } = useTestMode();
   const { user } = useAuth();
 
-  // Check if user already has coaching - redirect to dashboard
+  // Check for admin preview mode
+  const params = new URLSearchParams(window.location.search);
+  const isPreview = params.get('preview') === 'true' && (user as any)?.isAdmin;
+
+  // Check if user already has coaching - redirect to dashboard (skip in preview mode)
   useEffect(() => {
-    if ((user as any)?.coachingPurchased && !testMode) {
+    if ((user as any)?.coachingPurchased && !testMode && !isPreview) {
       window.location.href = '/dashboard';
     }
-  }, [user, testMode]);
+  }, [user, testMode, isPreview]);
 
   // Get currency from URL params, fall back to user's purchase currency
   const currency: 'usd' | 'gbp' = useMemo(() => {
@@ -106,8 +110,16 @@ export default function CoachingUpsell() {
 
   return (
     <div className="min-h-screen bg-slate-100">
+      {/* Preview Mode Banner */}
+      {isPreview && (
+        <div className="bg-purple-600 text-white text-center py-2 px-4 text-sm font-medium flex items-center justify-center gap-2">
+          <Eye className="w-4 h-4" />
+          Admin Preview Mode - Buttons disabled
+        </div>
+      )}
+
       {/* Test Mode Banner */}
-      {testMode && (
+      {testMode && !isPreview && (
         <div className="bg-amber-500 text-white text-center py-2 px-4 text-sm font-medium flex items-center justify-center gap-2">
           <Eye className="w-4 h-4" />
           Test Mode: This upsell page is only visible because test mode is ON
@@ -237,10 +249,12 @@ export default function CoachingUpsell() {
             {/* CTA */}
             <button
               onClick={handleAddToOrder}
-              disabled={isProcessing || purchaseSuccess}
+              disabled={isProcessing || purchaseSuccess || isPreview}
               className={`w-full font-bold text-xl py-5 px-8 rounded-xl shadow-lg transition-all duration-200 ${
                 purchaseSuccess
                   ? 'bg-green-600 text-white cursor-default'
+                  : isPreview
+                  ? 'bg-slate-400 text-white cursor-not-allowed'
                   : 'bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white hover:shadow-xl transform hover:-translate-y-0.5'
               }`}
             >

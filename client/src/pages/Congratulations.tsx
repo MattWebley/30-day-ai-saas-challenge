@@ -9,6 +9,10 @@ import { ds } from "@/lib/design-system";
 export default function Congratulations() {
   const [, setLocation] = useLocation();
 
+  // Check for admin preview mode
+  const params = new URLSearchParams(window.location.search);
+  const isPreviewParam = params.get('preview') === 'true';
+
   const { data: user } = useQuery({
     queryKey: ["/api/user"],
   });
@@ -17,18 +21,27 @@ export default function Congratulations() {
     queryKey: ["/api/progress"],
   });
 
-  // Redirect if not logged in or hasn't completed the challenge
+  const isPreview = isPreviewParam && (user as any)?.isAdmin;
+
+  // Redirect if not logged in or hasn't completed the challenge (skip in preview mode)
   useEffect(() => {
-    if (user === null) {
+    if (user === null && !isPreviewParam) {
       setLocation("/");
     }
-  }, [user, setLocation]);
+  }, [user, setLocation, isPreviewParam]);
 
   const completedDays = Array.isArray(progress) ? progress.filter((p: any) => p.completed)?.length : 0;
   const hasCompletedChallenge = completedDays >= 21;
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Preview Mode Banner */}
+      {isPreview && (
+        <div className="bg-purple-600 text-white text-center py-2 px-4 text-sm font-medium">
+          Admin Preview Mode
+        </div>
+      )}
+
       <div className="max-w-3xl mx-auto px-4 py-12">
         {/* Confetti/Celebration Header */}
         <div className="text-center mb-8">
