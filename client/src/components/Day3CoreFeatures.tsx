@@ -50,12 +50,15 @@ export function Day3CoreFeatures({
       console.log('[Day3] Generating features for:', { idea: userIdea, painPoints: userPainPoints });
 
       if (!userIdea || userIdea.trim() === '') {
-        throw new Error("No idea found. Please complete Day 2 first.");
+        console.error('[Day3] No idea found. userIdea:', userIdea);
+        throw new Error("No idea found. Please complete Day 2 first (click 'Lock In My Choice').");
       }
       if (!userPainPoints || userPainPoints.length === 0) {
-        throw new Error("No pain points found. Please complete Day 2 first.");
+        console.error('[Day3] No pain points found. userPainPoints:', userPainPoints);
+        throw new Error("No pain points found. Please complete Day 2 first (select pain points).");
       }
 
+      console.log('[Day3] Sending request to /api/ai/generate-features...');
       const response = await fetch("/api/ai/generate-features", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -66,11 +69,18 @@ export function Day3CoreFeatures({
         }),
       });
 
+      console.log('[Day3] Response status:', response.status);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.error('[Day3] Error response:', errorData);
+        if (response.status === 429) {
+          throw new Error("Rate limit reached. Please wait a few minutes and try again.");
+        }
         throw new Error(errorData.message || "Failed to generate features");
       }
-      return response.json();
+      const data = await response.json();
+      console.log('[Day3] Success response:', data);
+      return data;
     },
     onSuccess: (data) => {
       console.log('[Day3] Features generated:', data);
@@ -134,23 +144,42 @@ export function Day3CoreFeatures({
     });
   };
 
+  // Check if Day 2 data is missing
+  const missingData = !userIdea || userIdea.trim() === '' || !userPainPoints || userPainPoints.length === 0;
+
   if (step === "generate") {
     return (
       <div ref={containerRef} className="space-y-6">
+        {missingData && (
+          <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-lg">
+            <p className="text-amber-800 font-medium">
+              ⚠️ Missing Day 2 data. Please go back to Day 2 and complete all steps:
+            </p>
+            <ul className="text-amber-700 text-sm mt-2 list-disc list-inside">
+              {(!userIdea || userIdea.trim() === '') && <li>Choose an idea and click "Lock In My Choice"</li>}
+              {(!userPainPoints || userPainPoints.length === 0) && <li>Select your pain points</li>}
+            </ul>
+          </div>
+        )}
+
         <div className={ds.cardWithPadding}>
           <div className="space-y-4">
             <div>
               <h3 className={ds.label + " mb-2"}>Your Idea</h3>
-              <p className={ds.body}>{userIdea}</p>
+              <p className={ds.body}>{userIdea || <span className="text-amber-600 italic">No idea saved yet</span>}</p>
             </div>
 
             <div>
               <h3 className={ds.label + " mb-2"}>Pain Points</h3>
-              <ul className="list-disc list-inside space-y-1">
-                {userPainPoints.map((pain, idx) => (
-                  <li key={idx} className={ds.body}>{pain}</li>
-                ))}
-              </ul>
+              {userPainPoints.length > 0 ? (
+                <ul className="list-disc list-inside space-y-1">
+                  {userPainPoints.map((pain, idx) => (
+                    <li key={idx} className={ds.body}>{pain}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-amber-600 italic">No pain points saved yet</p>
+              )}
             </div>
           </div>
         </div>
@@ -184,7 +213,7 @@ export function Day3CoreFeatures({
             <Button
               size="lg"
               onClick={() => generateFeatures.mutate()}
-              disabled={generateFeatures.isPending || generateAttempts >= MAX_GENERATE_ATTEMPTS}
+              disabled={generateFeatures.isPending || generateAttempts >= MAX_GENERATE_ATTEMPTS || missingData}
               className="w-full h-14 text-lg font-bold"
             >
               {generateFeatures.isPending ? (
@@ -192,6 +221,8 @@ export function Day3CoreFeatures({
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Analyzing competitors & generating features...
                 </>
+              ) : missingData ? (
+                "Complete Day 2 first"
               ) : generateAttempts >= MAX_GENERATE_ATTEMPTS ? (
                 "Generation limit reached"
               ) : generateAttempts > 0 ? (

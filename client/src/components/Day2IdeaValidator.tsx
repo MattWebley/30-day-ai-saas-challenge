@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,6 +90,26 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
     },
   });
 
+  // Load Day 2 progress (for restoring iHelpStatement)
+  const { data: day2Progress } = useQuery({
+    queryKey: ["/api/progress/2"],
+    queryFn: async () => {
+      const res = await fetch("/api/progress", { credentials: "include" });
+      const all = await res.json();
+      return all.find((p: any) => p.day === 2);
+    },
+  });
+
+  // Restore iHelpStatement from saved progress
+  const initializedRef = useRef(false);
+  useEffect(() => {
+    const savedStatement = (day2Progress?.userInputs as any)?.iHelpStatement;
+    if (savedStatement && !initializedRef.current) {
+      setIHelpStatement(savedStatement);
+      initializedRef.current = true;
+    }
+  }, [day2Progress]);
+
   const shortlistedIdeas: Idea[] = day1Progress?.generatedIdeas?.filter((_: Idea, i: number) =>
     day1Progress?.shortlistedIdeas?.includes(i)
   ) || [];
@@ -103,6 +123,30 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
       queryClient.invalidateQueries({ queryKey: ["/api/progress"] });
     },
   });
+
+  // Auto-save iHelpStatement with debounce
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const hasUserTypedRef = useRef(false);
+  useEffect(() => {
+    // Don't auto-save empty values or before user has typed
+    if (!iHelpStatement.trim() || !hasUserTypedRef.current) return;
+
+    // Clear previous timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Debounce save by 1 second
+    saveTimeoutRef.current = setTimeout(() => {
+      saveProgress.mutate({ iHelpStatement: iHelpStatement.trim() });
+    }, 1000);
+
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, [iHelpStatement]);
 
   // Validate a single idea - encouraging analysis focused on potential
   const validateIdea = useMutation({
@@ -448,7 +492,10 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
             <Input
               placeholder="I help small business owners automate their invoicing so they can get paid faster..."
               value={iHelpStatement}
-              onChange={(e) => setIHelpStatement(e.target.value)}
+              onChange={(e) => {
+                hasUserTypedRef.current = true;
+                setIHelpStatement(e.target.value);
+              }}
               className="w-full"
             />
           </div>

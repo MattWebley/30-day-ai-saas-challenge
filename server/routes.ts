@@ -1357,12 +1357,22 @@ Format: { "ideas": [...] }`;
   app.post("/api/progress/day2", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { chosenIdea, chosenIdeaTitle, selectedPainPoints, validationInsights } = req.body;
+      const { chosenIdea, chosenIdeaTitle, selectedPainPoints, validationInsights, iHelpStatement } = req.body;
 
       const existing = await storage.getUserProgressForDay(userId, 2);
 
+      // Build new inputs, only including fields that were provided
+      const newInputs: Record<string, any> = {};
+      if (chosenIdea !== undefined) newInputs.chosenIdea = chosenIdea;
+      if (chosenIdeaTitle !== undefined) newInputs.chosenIdeaTitle = chosenIdeaTitle;
+      if (selectedPainPoints !== undefined) newInputs.selectedPainPoints = selectedPainPoints;
+      if (validationInsights !== undefined) newInputs.validationInsights = validationInsights;
+      if (iHelpStatement !== undefined) newInputs.iHelpStatement = iHelpStatement;
+
+      // Merge with existing data
+      const existingInputs = (existing?.userInputs as Record<string, any>) || {};
       const progressData = {
-        userInputs: { chosenIdea, chosenIdeaTitle, selectedPainPoints, validationInsights },
+        userInputs: { ...existingInputs, ...newInputs },
       };
 
       if (existing) {
