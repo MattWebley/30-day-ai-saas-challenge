@@ -31,7 +31,6 @@ import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
 import { DayCommunity } from "@/components/DayCommunity";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
-import { VideoSlides } from "@/components/VideoSlides";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import { toast } from "sonner";
 
@@ -479,7 +478,6 @@ export default function Dashboard() {
                       <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                       <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                     </div>
-                    <VideoSlides day={1} />
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     {/* VIDEO SECTION - Day 1 */}
@@ -551,7 +549,6 @@ export default function Dashboard() {
                       <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                       <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                     </div>
-                    <VideoSlides day={2} />
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     {/* VIDEO SECTION - Day 2 */}
@@ -609,7 +606,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={3} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 3 */}
@@ -666,7 +662,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={4} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 4 */}
@@ -740,7 +735,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={5} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 5 */}
@@ -794,7 +788,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={6} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 6 */}
@@ -849,7 +842,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={7} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 7 */}
@@ -905,7 +897,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={8} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 8 */}
@@ -925,6 +916,22 @@ export default function Dashboard() {
                         {dayData.lesson.split('\n\n').map((paragraph: string, i: number) => (
                           <p key={i} className={`leading-relaxed mb-4 last:mb-0 whitespace-pre-line ${isSubheadline(paragraph) ? 'text-slate-900 font-bold' : 'text-slate-700'}`}>{parseLinks(paragraph)}</p>
                         ))}
+                      </div>
+
+                      {/* Day 8.1 Video: Navigating Claude Code + Replit Workspace */}
+                      <div className="mt-6 pt-6 border-t border-slate-200">
+                        <div className="relative rounded-xl overflow-hidden" style={{ paddingBottom: '56.25%' }}>
+                          <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+                            <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
+                              <div className="text-slate-400 text-xs font-medium uppercase tracking-widest mb-1">Video Lesson</div>
+                              <div className="text-primary/80 text-sm font-medium uppercase tracking-widest mb-2">Day</div>
+                              <div className="text-7xl md:text-8xl font-extrabold text-white mb-3">8.1</div>
+                              <div className="text-xl md:text-2xl font-bold text-white">Navigating Claude Code + Replit Workspace</div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </Card>
                   </div>
@@ -951,7 +958,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={9} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 9 */}
@@ -997,7 +1003,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={10} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 10 */}
@@ -1040,7 +1045,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={11} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 11 */}
@@ -1086,7 +1090,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={12} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 12 */}
@@ -1132,7 +1135,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={13} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 13 */}
@@ -1178,7 +1180,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={14} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 14 */}
@@ -1223,7 +1224,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={15} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 15 */}
@@ -1269,7 +1269,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={16} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 16 */}
@@ -1315,7 +1314,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={17} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 17 */}
@@ -1361,7 +1359,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={18} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 18 */}
@@ -1408,7 +1405,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={19} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 19 */}
@@ -1459,7 +1455,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={20} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 20 */}
@@ -1505,7 +1500,6 @@ export default function Dashboard() {
                         <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
                         <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
                       </div>
-                      <VideoSlides day={21} />
                     </div>
                     <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                       {/* VIDEO SECTION - Day 21 */}

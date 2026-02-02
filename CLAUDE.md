@@ -51,7 +51,7 @@ A gamified 21-Day AI SaaS Challenge guiding users from idea to launch-ready prod
 - **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, Radix UI, Wouter, TanStack Query
 - **Backend**: Node.js, Express, Passport.js, Express Session
 - **Database**: PostgreSQL, Drizzle ORM
-- **AI**: Claude Sonnet (all AI features - single API key)
+- **AI**: Claude Opus 4.5 (all AI features - single API key)
 - **Real-time**: WebSockets
 
 ### Project Structure
@@ -454,3 +454,51 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
   - Quotes are now in completion modals - test by completing a day
   - Admin preview: add `?preview=true` to success page URLs while logged in as admin
   - Email test: set test email in admin panel, then click send icon on any template
+
+### 2026-02-02 (Session 2) - AI Upgrade, Day Fixes, UX Improvements
+- **Tasks Completed:**
+  - **Upgraded AI Model:**
+    - Changed from Claude Sonnet 4 to **Claude Opus 4.5** (`claude-opus-4-5-20251101`)
+    - Single line change in `aiService.ts` - all AI features now use Opus 4.5
+    - Better quality responses, ~5x more expensive
+  - **Day 2 "I Help" Statement Auto-Save:**
+    - Added query to load existing Day 2 progress
+    - Statement now auto-saves with 1-second debounce after typing
+    - Persists and restores on page reload
+    - Server endpoint updated to merge data (not overwrite)
+  - **Day 2 Validation Insights Fix:**
+    - Added detailed console logging for debugging
+    - Improved error messages (shows actual error reason, not generic message)
+    - Rate limit errors now display specific message
+  - **Day 3 Feature Generation Fix:**
+    - Added warning banner when Day 2 data is missing
+    - Shows "No idea saved yet" / "No pain points saved yet" in amber text
+    - Button now says "Complete Day 2 first" and is disabled when data missing
+    - Better error handling with specific messages
+  - **Day 4 Namecheap URL Fixes:**
+    - Fixed blank Namecheap pages - removed `.com` from URL query parameter
+    - Added `encodeURIComponent()` for proper URL encoding
+    - Namecheap now correctly populates search results
+  - **Day 4 Domain Input Sanitization:**
+    - User input now strips domain extensions (.com, .co, .io, .net, .org, .app, .dev, .ai, etc.)
+    - Added `baseName` helper for clean variations
+    - Fixed "goshipsaas.coms.com" bug in variations display
+  - **Day 8 Video Placeholder:**
+    - Added "Day 8.1: Navigating Claude Code + Replit Workspace" video placeholder
+    - Matches branded style (dark gradient, primary glow, large day number)
+    - Positioned after lesson text, before "Set Up Your Tools" section
+  - **Removed VideoSlides Feature:**
+    - Removed `VideoSlides` import and all 21 component instances
+    - VideoSlides icon no longer appears on any day
+- **Files Modified:**
+  - `server/aiService.ts` - Upgraded to Claude Opus 4.5
+  - `server/routes.ts` - Day 2 endpoint now merges data, supports iHelpStatement
+  - `client/src/components/Day2IdeaValidator.tsx` - Auto-save, better error handling, logging
+  - `client/src/components/Day3CoreFeatures.tsx` - Missing data warnings, better errors
+  - `client/src/components/Day4Naming.tsx` - URL encoding, input sanitization, baseName helper
+  - `client/src/pages/Dashboard.tsx` - Day 8.1 video placeholder, removed VideoSlides
+- **Notes for Next Session:**
+  - All AI now uses Opus 4.5 - monitor costs
+  - Day 8.1 video placeholder ready - add Loom URL when recorded
+  - Test Day 2 → Day 3 flow to verify data passes correctly
+  - Day 4 domain variations now clean - test with various input formats
