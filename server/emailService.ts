@@ -1,7 +1,8 @@
 import { Resend } from 'resend';
 import { storage } from './storage';
 
-const FROM_EMAIL = 'Matt Webley <matt@challenge.mattwebley.com>';
+const FROM_EMAIL = 'Matt Webley <matt@mattwebley.com>';
+const REPLY_TO = 'matt@mattwebley.com';
 
 function getResendClient() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -10,7 +11,8 @@ function getResendClient() {
   }
   return {
     client: new Resend(apiKey),
-    fromEmail: FROM_EMAIL
+    fromEmail: FROM_EMAIL,
+    replyTo: REPLY_TO
   };
 }
 
@@ -75,7 +77,7 @@ WHAT'S NEXT
 2. Complete one day at a time - go at your own pace
 3. In 21 days, you'll have a working product
 
-Start now: https://21daysaas.com/dashboard
+Start now: https://challenge.mattwebley.com/dashboard
 
 Questions? Just reply to this email.
 
@@ -96,9 +98,10 @@ You're receiving this because you purchased the challenge.`;
     const subject = replaceVariables(template.subject, variables);
     const body = replaceVariables(template.body, variables);
 
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to: [to],
       subject,
       text: body,
@@ -158,13 +161,14 @@ ${appUrl ? `URL: ${appUrl}` : ''}
 
   body += `
 --
-View all testimonials: https://21daysaas.com/admin
+View all testimonials: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to: [recipient],
       subject: `New Challenge Testimonial from ${userName}`,
       text: body,
@@ -230,13 +234,14 @@ ${specificQuestions}
   body += `
 --
 Submitted: ${new Date().toLocaleString()}
-View all requests: https://21daysaas.com/admin
+View all requests: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to: [recipient],
       subject: `New Critique Request from ${userName}`,
       text: body,
@@ -258,9 +263,10 @@ export async function sendCritiqueCompletedEmail(params: CritiqueCompletedParams
   const { to, firstName, videoUrl } = params;
 
   try {
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to: [to],
       subject: `Your Sales Page Video Critique is Ready!`,
       text: `Hey ${firstName}!
@@ -321,13 +327,14 @@ MESSAGE
 ${content}
 
 --
-View all comments: https://21daysaas.com/admin
+View all comments: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to: [recipient],
       subject: `New Comment on Day ${day}: ${dayTitle}`,
       text: body,
@@ -372,13 +379,14 @@ ${answerUrl}
 Click the link above to view the question and submit your answer.
 
 --
-View all pending questions: https://21daysaas.com/admin
+View all pending questions: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to: [recipient],
       subject: `New Question on Day ${day}: ${dayTitle}`,
       text: body,
@@ -421,13 +429,14 @@ ACTION REQUIRED
 Send booking link to customer within 24 hours.
 
 --
-View all users: https://21daysaas.com/admin
+View all users: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to: [recipient],
       subject: `New Coaching Purchase: ${coachingType} - ${currencySymbol}${amount}`,
       text: body,
@@ -465,13 +474,14 @@ Name: ${newUserName}
 Email: ${newUserEmail}
 
 --
-View all users: https://21daysaas.com/admin
+View all users: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to: [recipient],
       subject: `New Referral: ${referrerName} referred ${newUserName}`,
       text: body,
@@ -487,9 +497,10 @@ export async function sendCoachingConfirmationEmail(params: CoachingEmailParams)
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
   try {
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to: [to],
       subject: `Coaching Sessions Confirmed - Let's Build Together!`,
       text: `Coaching Confirmed!
@@ -560,13 +571,14 @@ TIMESTAMP
 ${new Date().toISOString()}
 
 --
-Review AI usage: https://21daysaas.com/admin
+Review AI usage: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to: [recipient],
       subject: `AI Abuse Alert: ${reason}`,
       text: body,
@@ -589,7 +601,7 @@ export async function sendBroadcastEmail(params: BroadcastEmailParams): Promise<
   const { to, firstName, subject, body } = params;
 
   try {
-    const { client, fromEmail } = getResendClient();
+    const { client, fromEmail, replyTo } = getResendClient();
 
     // Replace {{firstName}} placeholder
     const processedBody = body.replace(/\{\{firstName\}\}/g, firstName || 'there');
@@ -597,6 +609,7 @@ export async function sendBroadcastEmail(params: BroadcastEmailParams): Promise<
 
     await client.emails.send({
       from: fromEmail,
+      replyTo: replyTo,
       to,
       subject: processedSubject,
       text: processedBody,

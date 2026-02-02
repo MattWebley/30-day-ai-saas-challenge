@@ -3078,7 +3078,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         dayTitle: 'Logo Design',
         question: 'This is a sample question?',
         content: 'This is a sample discussion post.',
-        answerUrl: 'https://21daysaas.com/admin/answer/test-token',
+        answerUrl: 'https://challenge.mattwebley.com/admin/answer/test-token',
         salesPageUrl: 'https://example.com/sales',
         productDescription: 'A sample product description.',
         targetAudience: 'Small business owners.',

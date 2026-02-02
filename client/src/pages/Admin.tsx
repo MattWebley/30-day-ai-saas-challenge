@@ -871,7 +871,16 @@ export default function Admin() {
   const [editingTemplate, setEditingTemplate] = useState<string | null>(null);
   const [editedSubject, setEditedSubject] = useState("");
   const [editedBody, setEditedBody] = useState("");
-  const [testEmailAddress, setTestEmailAddress] = useState("");
+  const [testEmailAddress, setTestEmailAddress] = useState(() => {
+    return localStorage.getItem('adminTestEmailAddress') || '';
+  });
+
+  // Persist test email address to localStorage
+  useEffect(() => {
+    if (testEmailAddress) {
+      localStorage.setItem('adminTestEmailAddress', testEmailAddress);
+    }
+  }, [testEmailAddress]);
 
   // Refund confirmation modal state
   const [refundConfirmation, setRefundConfirmation] = useState<{
@@ -4563,6 +4572,21 @@ export default function Admin() {
 
           {showEmailTemplatesSection && (
             <div className="space-y-4">
+              {/* Test Email Address Config */}
+              <Card className="p-4 border border-slate-200 bg-slate-50">
+                <div className="flex items-center gap-3">
+                  <Label className="text-slate-700 font-medium whitespace-nowrap">Test Email Address:</Label>
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={testEmailAddress}
+                    onChange={(e) => setTestEmailAddress(e.target.value)}
+                    className="flex-1 max-w-xs"
+                  />
+                  <span className="text-sm text-slate-500">All test emails will be sent here</span>
+                </div>
+              </Card>
+
               {emailTemplates.length === 0 ? (
                 <Card className="p-8 border border-slate-200 text-center">
                   <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
@@ -4614,6 +4638,24 @@ export default function Admin() {
                             }}
                           >
                             <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              if (!testEmailAddress) {
+                                toast.error("Set a test email address above first");
+                                return;
+                              }
+                              sendTestEmail.mutate({
+                                templateKey: template.templateKey,
+                                testEmail: testEmailAddress
+                              });
+                            }}
+                            disabled={sendTestEmail.isPending}
+                            title={testEmailAddress ? `Send test to ${testEmailAddress}` : "Set test email address first"}
+                          >
+                            <Send className="w-4 h-4" />
                           </Button>
                         </div>
                       </div>

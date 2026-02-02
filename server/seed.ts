@@ -1357,7 +1357,7 @@ WHAT'S NEXT
 2. Complete one day at a time - go at your own pace
 3. In 21 days, you'll have a working product
 
-Start now: https://21daysaas.com/dashboard
+Start now: https://challenge.mattwebley.com/dashboard
 
 Questions? Just reply to this email.
 
@@ -1424,7 +1424,7 @@ ACTION REQUIRED
 Send booking link to customer within 24 hours.
 
 --
-View all users: https://21daysaas.com/admin`,
+View all users: https://challenge.mattwebley.com/admin`,
       description: "Sent to admin when someone purchases coaching",
       variables: "userName, userEmail, coachingType, currencySymbol, amount, currency",
     },
@@ -1453,7 +1453,7 @@ Name: {{appName}}
 URL: {{appUrl}}
 
 --
-View all testimonials: https://21daysaas.com/admin`,
+View all testimonials: https://challenge.mattwebley.com/admin`,
       description: "Sent to admin when someone submits a testimonial",
       variables: "userName, userEmail, testimonial, videoUrl, appName, appUrl",
     },
@@ -1487,7 +1487,7 @@ SPECIFIC QUESTIONS
 
 --
 Submitted: {{timestamp}}
-View all requests: https://21daysaas.com/admin`,
+View all requests: https://challenge.mattwebley.com/admin`,
       description: "Sent to admin when someone requests a sales page critique",
       variables: "userName, userEmail, preferredEmail, salesPageUrl, productDescription, targetAudience, specificQuestions, timestamp",
     },
@@ -1545,7 +1545,7 @@ ANSWER NOW
 Click the link above to view the question and submit your answer.
 
 --
-View all pending questions: https://21daysaas.com/admin`,
+View all pending questions: https://challenge.mattwebley.com/admin`,
       description: "Sent to admin when someone asks a question",
       variables: "userName, userEmail, day, dayTitle, question, answerUrl",
     },
@@ -1567,7 +1567,7 @@ MESSAGE
 {{content}}
 
 --
-View all comments: https://21daysaas.com/admin`,
+View all comments: https://challenge.mattwebley.com/admin`,
       description: "Sent to admin when someone posts a discussion comment",
       variables: "userName, userEmail, day, dayTitle, content",
     },
@@ -1589,7 +1589,7 @@ Name: {{newUserName}}
 Email: {{newUserEmail}}
 
 --
-View all users: https://21daysaas.com/admin`,
+View all users: https://challenge.mattwebley.com/admin`,
       description: "Sent to admin when someone refers a new user",
       variables: "referrerName, referrerEmail, newUserName, newUserEmail, referralCount",
     },
