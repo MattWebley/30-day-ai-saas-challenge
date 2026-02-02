@@ -107,7 +107,9 @@ export function Day2IdeaValidator({ onComplete }: Day2Props) {
   // Validate a single idea - encouraging analysis focused on potential
   const validateIdea = useMutation({
     mutationFn: async (ideaIndex: number) => {
+      console.log("[Day2 Mutation] Starting mutation for ideaIndex:", ideaIndex);
       const idea = shortlistedIdeas[ideaIndex];
+      console.log("[Day2 Mutation] Found idea:", idea?.title || "NOT FOUND");
       const prompt = `You are an encouraging SaaS coach helping a first-time builder validate their idea. Your job is to help them see the POTENTIAL and give them confidence to move forward. Focus on what's GOOD about the idea and how they can succeed.
 
 IDEA: "${idea.title}"
@@ -128,10 +130,15 @@ Be encouraging and focus on the positives. Every idea has potential - help them 
   "verdict": "Proceed - [encouraging reason why this idea has legs]"
 }`;
 
+      console.log("[Day2 Mutation] Sending request to /api/ai-prompt");
       const res = await apiRequest("POST", "/api/ai-prompt", { prompt });
-      return res.json();
+      console.log("[Day2 Mutation] Got response, parsing JSON...");
+      const data = await res.json();
+      console.log("[Day2 Mutation] Response data:", data);
+      return data;
     },
     onSuccess: (data, ideaIndex) => {
+      console.log("[Day2 Mutation] onSuccess called with data:", data);
       try {
         // Try to extract JSON from response
         let jsonStr = data.response;
@@ -165,8 +172,17 @@ Be encouraging and focus on the positives. Every idea has potential - help them 
       }
       setLoadingValidation(null);
     },
-    onError: () => {
-      toast.error("Failed to validate idea");
+    onError: (error: any) => {
+      console.error("Validation error:", error);
+      // Try to extract the error message from the response
+      const message = error?.message || "Failed to validate idea";
+      if (message.includes("429")) {
+        toast.error("Rate limit reached. Please wait a few minutes and try again.");
+      } else if (message.includes("401")) {
+        toast.error("AI service not configured. Please contact support.");
+      } else {
+        toast.error(message.includes(":") ? message.split(":").slice(1).join(":").trim() : message);
+      }
       setLoadingValidation(null);
     },
   });
@@ -259,7 +275,23 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
   };
 
   const handleValidateIdea = (index: number) => {
-    if (validationInsights[index]) return; // Already validated
+    console.log("[Day2] handleValidateIdea called with index:", index);
+    console.log("[Day2] shortlistedIdeas:", shortlistedIdeas);
+    console.log("[Day2] validationInsights:", validationInsights);
+
+    if (validationInsights[index]) {
+      console.log("[Day2] Already validated, returning early");
+      return;
+    }
+
+    const idea = shortlistedIdeas[index];
+    if (!idea) {
+      console.error("[Day2] No idea found at index:", index);
+      toast.error("Could not find idea to validate. Please refresh the page.");
+      return;
+    }
+
+    console.log("[Day2] Starting validation for idea:", idea.title);
     setLoadingValidation(index);
     validateIdea.mutate(index);
   };
