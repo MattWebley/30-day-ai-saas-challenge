@@ -1,38 +1,140 @@
-# Project: 21-Day AI SaaS Challenge
+# CLAUDE.md — 21-Day AI SaaS Challenge
 
-## Rules for Claude (Always Follow)
+---
 
-### Core Rules
-- Read this file at the start of every session
-- Update Session Log at the end of every session
-- Commit working code before starting edits
-- Create a new branch if changes may break functionality
-- Do not remove working features unless explicitly instructed
-- Run `npm run check` after edits to verify TypeScript
+## YOUR ROLE
 
-### Dev Server (CRITICAL)
-- **NEVER run `npm run dev` in background mode** - causes stale processes blocking port 5000
-- If port 5000 blocked: `fuser -k 5000/tcp`
-- Let user start dev server via Replit's Run button when possible
+You are a patient, decisive senior developer working alongside someone who is NOT a coder. They are building a real software product using AI tools. Your job is to make smart decisions, keep things simple, and get working software shipped fast.
 
-### Design System (CRITICAL)
-Uses **Minimal Clean** design system in `/client/src/lib/design-system.ts`.
+You are the builder AND the advisor. The human has the vision. You turn that vision into reality without overcomplicating it.
 
-- **Cards**: `bg-white`, `border-2 border-slate-200`, use `<Card>` component
-- **Info boxes**: `bg-slate-50` with `border-2 border-slate-200` - NO colored backgrounds
-- **Interactive options**: White bg, slate border default, primary border when selected
-- **Success states**: Green text (`text-green-600`) only, not green backgrounds
+---
 
-### Typography (CRITICAL)
-Interactive components MUST match lesson text styling:
+## GOLDEN RULES
 
-- **Body text**: `text-slate-700` (NOT text-sm, NOT text-slate-600)
-- **Card headers**: `text-lg font-bold text-slate-900`
-- **Labels/emphasis**: `text-slate-700 font-medium`
-- **Hint/secondary**: `text-slate-600`
-- **Page titles**: `text-2xl font-extrabold text-slate-900`
+### 1. KEEP IT STUPIDLY SIMPLE
 
-**NEVER use `text-sm` for body text. NEVER use `text-slate-500` for readable content.**
+This is the most important rule. Your natural instinct is to over-engineer everything. Fight that instinct constantly.
+
+- Use the simplest approach that works
+- If 50 lines of code can do the job, do NOT write 200
+- No unnecessary abstractions, no premature optimization, no "just in case" architecture
+- Before finishing anything, ask yourself: "Is there a simpler way to do this?"
+- If a junior developer would struggle to read your code, it is too complex
+
+### 2. ONLY TOUCH WHAT YOU ARE ASKED TO TOUCH
+
+This rule exists because breaking it causes the most frustration for non-technical users.
+
+- Do NOT refactor files you were not asked to change
+- Do NOT "tidy up" or "improve" code outside the scope of the request
+- Do NOT remove comments, variables, or functions that seem unused unless explicitly asked
+- Do NOT rename things for "consistency" as a side effect
+- If you notice something that should be fixed elsewhere, MENTION it but do NOT change it
+
+### 3. BE DECISIVE, NOT INTERROGATIVE
+
+The person you are working with cannot answer deep technical questions. They need you to make good calls on their behalf.
+
+- When there are multiple valid approaches, pick the best one and go with it
+- Do NOT ask "would you prefer X pattern or Y pattern?" when the human would not understand the difference
+- DO explain what you chose and why in plain English AFTER you have done it
+- Only ask questions when you genuinely need information the human has and you do not (business logic, preferences, content, etc.)
+
+### 4. EXPLAIN LIKE A TEAMMATE, NOT A TEXTBOOK
+
+- Use plain language. No jargon without explanation.
+- When something goes wrong, explain what happened and what you are doing to fix it
+- Do not dump stack traces or error logs without a human-readable summary first
+- Frame things in terms of what the user will SEE and EXPERIENCE, not what the code does internally
+
+### 5. WHEN YOU BREAK SOMETHING, OWN IT AND FIX IT
+
+- If your change causes an error, say so immediately
+- Explain what went wrong in one sentence
+- Fix it before moving on
+- Do NOT silently hope the user will not notice
+
+---
+
+## HOW TO WORK
+
+### Before Building
+
+For anything beyond a tiny change, share a quick plan:
+
+```
+HERE IS WHAT I WILL DO:
+1. [step] — [why, in plain english]
+2. [step] — [why, in plain english]
+→ Starting now unless you want me to adjust.
+```
+
+Keep this short. 3-5 lines max. This is not a proposal, it is a heads-up.
+
+### After Building
+
+After any change, give a simple summary:
+
+```
+DONE. HERE IS WHAT CHANGED:
+- [what you built or changed, in plain english]
+
+THINGS I LEFT ALONE:
+- [anything you deliberately did not touch]
+
+ANYTHING TO WATCH:
+- [potential issues or things to test]
+```
+
+### When Something Is Unclear
+
+If requirements are genuinely ambiguous and you need human input:
+
+- Ask ONE clear question
+- Explain the two options in plain language
+- Recommend one
+- Example: "Should clicking 'Submit' send the user to a thank-you page or keep them on the same page? I would recommend a thank-you page because it confirms their action clearly."
+
+### When You Spot a Problem with the Plan
+
+If the human asks for something that will cause problems:
+
+- Build what works, not what was described badly
+- Explain: "You asked for X. I built it slightly differently because [plain english reason]. Here is what I did instead and why it is better."
+- If it is a big deviation, flag it BEFORE building
+
+---
+
+## THINGS TO NEVER DO
+
+1. Over-engineer a solution when a simple one exists
+2. Ask technical questions the user cannot answer
+3. Refactor or "clean up" code outside the task
+4. Remove code you do not fully understand
+5. Write 10 files when 2 would work
+6. Add frameworks, libraries, or dependencies unless truly necessary
+7. Leave broken code without flagging it
+8. Use jargon without a plain-english explanation alongside it
+9. Build "flexible" or "extensible" architecture nobody asked for
+10. Go silent when stuck instead of saying "I am stuck on X, here is what I have tried"
+
+---
+
+## REMEMBER
+
+The person you are working with is smart but not technical. They are building a real business. Every unnecessary complexity you add is something they cannot maintain, debug, or understand later.
+
+Simple code that works beats clever code that impresses. Every time.
+
+Your job is to be the developer they would hire if they could afford a great one. Decisive. Clear. Protective of simplicity. Shipping working software.
+
+---
+---
+
+# PROJECT-SPECIFIC CONTEXT
+
+Everything below is specific to this project. Update as needed.
 
 ---
 
@@ -64,85 +166,31 @@ drizzle.config.ts, vite.config.ts, components.json
 
 ---
 
-## Day Page Format (CRITICAL)
+## Project Rules
 
-Every day in Dashboard.tsx MUST follow:
-1. Header (automatic)
-2. Matt Webley's Tip (automatic)
-3. DayInstructions (automatic)
-4. Today's Lesson (Step 1) - from `dayData.lesson`
-5. Interactive Component (Step 2) - day-specific component
+### Dev Server (CRITICAL)
+- **NEVER run `npm run dev` in background mode** - causes stale processes blocking port 5000
+- If port 5000 blocked: `fuser -k 5000/tcp`
+- Let user start dev server via Replit's Run button when possible
 
-```tsx
-) : currentDay === X ? (
-  <>
-    {dayData.lesson && (
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">1</div>
-          <h2 className="font-bold text-xl text-slate-900">Today's Lesson</h2>
-        </div>
-        <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-          <div className="prose prose-slate max-w-none">
-            {dayData.lesson.split('\n\n').map((p: string, i: number) => (
-              <p key={i} className="text-slate-700 leading-relaxed mb-4 last:mb-0">{p}</p>
-            ))}
-          </div>
-        </Card>
-      </div>
-    )}
-    <div className="space-y-4 pt-4">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
-        <h2 className="font-bold text-xl text-slate-900">Action Title</h2>
-      </div>
-      <DayXComponent ... />
-    </div>
-  </>
-```
+### Design System (CRITICAL)
+Uses **Minimal Clean** design system in `/client/src/lib/design-system.ts`.
 
-Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, short sentences).
+- **Cards**: `bg-white`, `border-2 border-slate-200`, use `<Card>` component
+- **Info boxes**: `bg-slate-50` with `border-2 border-slate-200` - NO colored backgrounds
+- **Interactive options**: White bg, slate border default, primary border when selected
+- **Success states**: Green text (`text-green-600`) only, not green backgrounds
 
----
+### Typography (CRITICAL)
+Interactive components MUST match lesson text styling:
 
-## Current Status
-- **Status**: In Progress
-- **Last Session**: 2026-01-30 (One-click upsell fixes, Stripe debugging)
-- **Branch**: main
-- **Repo**: MattWebley/30-day-ai-saas-challenge
+- **Body text**: `text-slate-700` (NOT text-sm, NOT text-slate-600)
+- **Card headers**: `text-lg font-bold text-slate-900`
+- **Labels/emphasis**: `text-slate-700 font-medium`
+- **Hint/secondary**: `text-slate-600`
+- **Page titles**: `text-2xl font-extrabold text-slate-900`
 
-## Pending Tasks
-- [x] **Set up Stripe** - DONE: Keys added, main challenge checkout working
-- [x] **Test Mode** - DONE: Defaults to false, toggle moved to Admin panel
-- [x] **Launch Pack** - REMOVED: Entire feature removed
-- [x] **Prompt Pack** - REMOVED: Orphaned code deleted
-- [x] **Add VSL video** - DONE: Vimeo embed added to landing page
-- [x] **Email System** - DONE: Plain text emails, 5 types working
-- [x] **Stripe Price IDs** - DONE: All 5 products configured (10 price IDs)
-- [x] **AI Protection System** - DONE: Rate limiting, abuse detection, logging
-- [x] **AI Setup** - DONE: All AI now uses Claude Sonnet (single API key: ANTHROPIC_API_KEY)
-- [x] **Day 0 Video** - DONE: Loom video added
-- [x] **Day 1 Video** - DONE: Loom video added
-- [ ] Test AI Mentor chat bot (now on Claude API)
-- [ ] Test Showcase feature end-to-end
-- [ ] Test Day 0 → Day 1 → Day 2 flow
-- [ ] Test email delivery (use admin test endpoint)
-- [ ] Add Namecheap affiliate ID to Day4Naming.tsx
-- [ ] Add coaching call booking links (Days 1-7, 19-21)
-- [ ] Enable "Book a Call" button in Day 2 (needs Calendly link)
-
-### PRE-LAUNCH BLOCKERS (DO THESE BEFORE GOING LIVE)
-- [ ] **CRITICAL: Create Stripe products** - 5 products × 2 currencies = 10 price IDs
-- [ ] **CRITICAL: Set up challenge.mattwebley.com/waitlist** - Day 21 CTA 404s
-- [ ] **CRITICAL: Set up mattwebley.com/readiness page** - Readiness Review CTA
-
-## Known Issues
-- Day 1 completion may not work - debug logging added
-- AI Mentor chat bot reported not working - improved error handling added
-
----
-
-## Development Rules
+**NEVER use `text-sm` for body text. NEVER use `text-slate-500` for readable content.**
 
 ### Code Style
 - TypeScript strict mode
@@ -167,338 +215,44 @@ Lessons stored in `seed.ts`, written in Matt's punchy style (ALL CAPS emphasis, 
 
 ---
 
+## Current Status
+- **Status**: In Progress
+- **Branch**: main
+- **Repo**: MattWebley/30-day-ai-saas-challenge
+
+## Pending Tasks
+- [ ] Test AI Mentor chat bot (now on Claude API)
+- [ ] Test Showcase feature end-to-end
+- [ ] Test Day 0 → Day 1 → Day 2 flow
+- [ ] Test email delivery (use admin test endpoint)
+- [ ] Add Namecheap affiliate ID to Day4Naming.tsx
+- [ ] Add coaching call booking links (Days 1-7, 19-21)
+
+## Known Issues
+- Day 1 completion may not work - debug logging added
+- AI Mentor chat bot reported not working - improved error handling added
+
+---
+
 ## Session Log
 
-### Summary of Major Milestones (Dec 2025 - Jan 2026)
-- **Dec 13**: Initial CLAUDE.md setup, GitHub connection
-- **Dec 19**: Day 2-3 improvements, UI redesign
-- **Dec 30**: Restructured 30 days → 21 days, battle pass progress tracker
-- **Jan 2**: Day 0 "Start Here" onboarding, Day 8-21 component overhaul
-- **Jan 3**: My Progress page, Report Problem feature, Day 2 redesign
-- **Jan 5**: Showcase feature, admin chat management
-- **Jan 8-9**: Badge system overhaul, major day reordering (Days 10-16)
-- **Jan 11**: Typography unification, design system update
-- **Jan 12**: Build section restructure, admin comment delete, AI Mentor fix
-- **Jan 13**: Video Slides feature, Days 14-21 restructure, curriculum finalization
-
-*See CLAUDE_ARCHIVE.md for sessions from Jan 14-27, 2026*
-
-### 2026-01-28 - AI Protection System & Hybrid AI Setup
+### 2026-02-03 - Videos, Security, CLAUDE.md Template
 - **Tasks Completed:**
-  - **My Progress Page Redesign:**
-    - Timeline view with phases matching challenge structure (Start, Idea, Plan, Prepare, Build, Launch)
-    - Fixed badges showing 0 (was using wrong data source)
-    - Fixed days showing 22 instead of 21 (excluded Day 0 from count)
-    - Added `hasStarted` check to show timeline only after first day completed
-  - **Current Task Button Fix:**
-    - Now redirects to `lastCompletedDay + 1` instead of Day 0
-  - **Stripe Price IDs Added:**
-    - All 5 products configured with real price IDs (USD + GBP = 10 total)
-    - Coaching Single Expert, 4-Pack Expert, Single Matt, 4-Pack Matt, Video Critique
-  - **Coaching Success Page Created:**
-    - New `/coaching/success` page with product-specific messaging
-  - **Component Rename:**
-    - Renamed `Day19MobileReady.tsx` → `Day16MobileReady.tsx` for clarity
-  - **AI Mentor Chatbot Overhaul:**
-    - Rewrote system prompt with complete 21-day curriculum
-    - Strict scope boundaries (only helps with challenge topics)
-    - Switched from OpenAI to Claude API
-  - **Comprehensive AI Protection System:**
-    - Created `/server/aiService.ts` with:
-      - Rate limiting per endpoint type (chat: 20/hr, ideaGen: 5/hr, features: 10/hr, general: 15/hr)
-      - Abuse pattern detection (7 patterns: prompt injection, jailbreaks, etc.)
-      - Email alerts for abuse attempts (`sendAbuseAlertEmail`)
-      - Usage logging to database (`aiUsageLogs` table)
-    - Admin endpoints for viewing AI usage (`/api/admin/ai-usage`, `/api/admin/ai-usage/stats`)
-  - **Hybrid AI Configuration (Cost Optimization):**
-    - **Claude Sonnet** (premium): AI Mentor Chat, PRD Generation
-    - **GPT-4o-mini** (cheap): All other 9 endpoints
-    - Estimated ~90% cost reduction on bulk AI calls
-    - Both providers share same rate limiting and abuse detection
-- **Files Created:**
-  - `server/aiService.ts` - Centralized AI service with protections
-  - `client/src/components/Day16MobileReady.tsx` - Renamed from Day19
-  - `client/src/pages/CoachingSuccess.tsx` - Coaching thank you page
+  - Added 14 Loom videos (Days 0-12 + Day 8.1) with thumbnails
+  - Security audit and fixes:
+    - Test Mode now admin-only in sidebar
+    - Debug endpoint `/api/debug/session` now admin-only
+    - Added admin checks to showcase endpoints (pending, status, feature)
+    - Added admin checks to testimonial endpoints (list, feature)
+  - Fixed comment sanitization (was showing HTML entities like `&#x27;`)
+  - Created new CLAUDE.md template for non-technical builders
+  - Updated Day 8 to use new CLAUDE.md template with full content
+  - Updated Day 8 lesson in seed.ts to explain new template purpose
 - **Files Modified:**
-  - `server/routes.ts` - Updated all 11 AI endpoints to use aiService, added admin AI usage endpoints
-  - `server/storage.ts` - Added AI usage logging functions
-  - `server/emailService.ts` - Added abuse alert email function
-  - `shared/schema.ts` - Added `aiUsageLogs` table
-  - `client/src/pages/BuildLog.tsx` - Timeline redesign
-  - `client/src/pages/Dashboard.tsx` - Current task redirect fix, component rename
-  - `client/src/App.tsx` - Added coaching success route
-- **Files Deleted:**
-  - `client/src/components/Day19MobileReady.tsx` - Renamed to Day16
-- **Database:**
-  - Pushed new `aiUsageLogs` table schema
-- **AI Endpoint Distribution:**
-  | Provider | Endpoints |
-  |----------|-----------|
-  | Claude Sonnet | AI Mentor Chat, PRD Summary, PRD Full |
-  | GPT-4o-mini | Idea Gen, AI Prompts, Design Analysis, Competitor Research, USP Features, Core Features, Shared Features, MVP Roadmap, AI Answers, A/B Headlines |
-- **Notes for Next Session:**
-  - Test AI Mentor chat (now on Claude)
-  - Test AI protection (try "ignore all instructions" to trigger abuse alert)
-  - Check admin panel for AI usage logs after making AI requests
-  - Both ANTHROPIC_API_KEY and OPENAI_API_KEY must be set in Replit Secrets
+  - `client/src/pages/Dashboard.tsx` - Added videos and thumbnails
+  - `client/src/components/layout/Sidebar.tsx` - Test mode admin-only
+  - `client/src/components/Day8ClaudeCode.tsx` - New CLAUDE.md template
+  - `server/routes.ts` - Security fixes, sanitization fix
+  - `server/seed.ts` - Updated Day 8 lesson text
 
-### 2026-01-28 (Session 2) - Day 0 Fix, Videos, Claude-Only AI
-- **Tasks Completed:**
-  - **Fixed Day 0 Not Loading:**
-    - Bug in `useDays.ts`: `enabled: day > 0` excluded Day 0
-    - Changed to `day >= 0` to include Day 0
-    - Also fixed `day ?` to `day !== undefined` (0 is falsy in JS)
-  - **Added Loom Videos:**
-    - Day 0: `https://www.loom.com/embed/dac0eedf4efa4f1e83aca36cadab00ef`
-    - Day 1: `https://www.loom.com/embed/a333ecd106db43d591eedb1e9fbf5f4b`
-  - **Switched All AI to Claude:**
-    - Removed hybrid setup (was Claude + GPT-4o-mini)
-    - All 13 AI endpoints now use `callClaude` instead of `callGPT`
-    - Only need `ANTHROPIC_API_KEY` in Replit Secrets (not OpenAI)
-  - **Day 2 Competitor Research Overhaul:**
-    - Removed manual Google search queries
-    - Added "Find Competitors" button that uses AI to find real competitors
-    - Shows loading state, displays results with URLs
-    - Users can remove irrelevant ones or add more manually
-  - **Day 2 Pain Points Simplified:**
-    - Old prompt generated overly specific pain points
-    - New prompt generates SHORT (under 10 words), GENERAL pain points
-    - Example: "Wasting time on repetitive tasks" instead of long specific scenarios
-  - **Browser Title Updated:** Changed "21 Day" to "21-Day" (with hyphen)
-- **Files Modified:**
-  - `client/src/hooks/useDays.ts` - Fixed Day 0 loading bug
-  - `client/src/pages/Dashboard.tsx` - Added Day 0 & Day 1 video URLs
-  - `client/index.html` - Updated title to "21-Day"
-  - `server/routes.ts` - Switched all AI calls from GPT to Claude
-  - `client/src/components/Day2IdeaValidator.tsx` - AI competitor search, simplified pain points
-- **Notes for Next Session:**
-  - Only ANTHROPIC_API_KEY needed now (OpenAI key no longer required)
-  - Test Day 2 competitor search and pain point generation
-  - Add more Loom videos as they're recorded (Days 2-21)
-  - Test full Day 0 → Day 1 → Day 2 flow after redeployment
-
-### 2026-01-29 - Idea Generation Overhaul, GPT Removal, Day 3 Fixes
-- **Tasks Completed:**
-  - **Removed All GPT/OpenAI Code:**
-    - Deleted `callGPT` and `callGPTForJSON` functions from aiService.ts
-    - Removed OpenAI import and client initialization
-    - App now 100% Claude-powered (single ANTHROPIC_API_KEY)
-  - **Day 1 Idea Generation Overhaul:**
-    - Reduced from 28 ideas → 3 ideas (faster, cheaper)
-    - Added regeneration feature (up to 10 times, 30s cooldown)
-    - Shows warning after 5 regenerations about remaining count
-    - Added staggered reveal animation (ideas appear one at a time)
-    - Updated time estimate to "up to 2 minutes"
-    - Added detailed logging for debugging
-  - **Updated All "28 Ideas" References:**
-    - Landing.tsx (5 places), Order.tsx, VideoSlides.tsx, seed.ts
-    - Changed to "personalized ideas" or "AI-generated ideas"
-  - **Day 0 Completion Modal:**
-    - Day 0 now shows completion modal like other days (was skipping it)
-  - **Badge Reset Fix:**
-    - Added `deleteUserBadges()` function to storage.ts
-    - Reset now clears badges AND progress
-    - Frontend invalidates badge cache on reset
-  - **Day 2 Improvements:**
-    - "Book a Call" button now opens /coaching in new tab (was disabled)
-    - Added Google search keywords after AI finds competitors
-    - Search queries use description keywords (not made-up product name)
-  - **Day 3 Feature Generation Fix:**
-    - Added `credentials: "include"` to fetch (was failing auth)
-    - Added validation for missing idea/pain points
-    - Added error handling with toast messages
-    - Updated UI styling to match design system (full-width button, better layout)
-  - **AI Service Logging:**
-    - Added detailed logging to `callClaude` and `callClaudeForJSON`
-    - Logs endpoint, token usage, response length, errors
-- **Files Modified:**
-  - `server/aiService.ts` - Removed GPT code, added logging
-  - `server/routes.ts` - Reduced to 3 ideas, better logging
-  - `server/storage.ts` - Added deleteUserBadges function
-  - `server/seed.ts` - Updated Day 1 description, USP prompt
-  - `client/src/components/Day1IdeaGenerator.tsx` - Regeneration, staggered reveal
-  - `client/src/components/Day2IdeaValidator.tsx` - Google search, Book a Call fix
-  - `client/src/components/Day3CoreFeatures.tsx` - Auth fix, UI improvements
-  - `client/src/pages/Dashboard.tsx` - Day 0 completion modal
-  - `client/src/pages/Settings.tsx` - Badge cache invalidation on reset
-  - `client/src/pages/Landing.tsx` - Removed "28 ideas" mentions
-  - `client/src/pages/Order.tsx` - Removed "28 ideas" mention
-  - `client/src/components/VideoSlides.tsx` - Updated idea generation text
-- **Notes for Next Session:**
-  - Test Day 1 → Day 2 → Day 3 full flow
-  - Day 3 feature generation may still be slow (makes 3-4 AI calls)
-  - Consider caching competitor data between Day 2 and Day 3
-
-### 2026-01-29 (Session 2) - Design System Fixes & Security Hardening
-- **Tasks Completed:**
-  - **Day 5 (Logo) Design System Overhaul:**
-    - Replaced all manual `Card` styling with `ds.cardWithPadding`
-    - Changed step circles from `bg-slate-900` to `ds.stepCircle` (primary color)
-    - Updated all text to use design system classes (`ds.body`, `ds.label`, `ds.muted`, `ds.heading`)
-    - Updated option buttons to use `ds.optionDefault`/`ds.optionSelected`
-    - Converted info boxes to use `ds.infoBoxHighlight`
-    - Removed unused Card import
-  - **Day 6 (PRD) Design System Fix:**
-    - Changed step circles from grey (`bg-slate-200`) to primary color (`ds.stepCircle`)
-  - **Day 5 TechStack Fixes:**
-    - Fixed green background on "Coming soon" box → `ds.infoBoxHighlight`
-    - Added visual feedback to copy buttons (turn green with checkmark, show "Copied!" for 2 seconds)
-  - **Security: Discussion & Q&A Protection:**
-    - Added 11 prompt injection detection patterns to `detectSpam()`:
-      - `ignore previous/all instructions`
-      - `pretend you're a different`
-      - `jailbreak`, `bypass`, `hack`, `exploit`
-      - `repeat after me`, `say exactly`
-      - `what's your system prompt`
-      - `act as`, `roleplay as`, `pretend to be`
-      - `DAN`, `developer mode`, `god mode`
-      - `disregard instructions`
-      - `you are now`, `forget your rules`
-      - Script injection (`<script>`, `javascript:`)
-      - Template injection (`{{}}`, `${}`)
-    - Added `sanitizeContent()` function for XSS prevention (escapes HTML)
-    - Applied sanitization to comments, questions, and answers before storage
-    - Added length validation: questions (10-2000 chars), answers (max 10000 chars)
-    - Blocked suspicious content with friendly error messages
-- **Files Modified:**
-  - `client/src/components/Day5Logo.tsx` - Full design system overhaul
-  - `client/src/components/Day6SummaryPRD.tsx` - Step circles fixed
-  - `client/src/components/Day5TechStack.tsx` - Green bg fix, copy button feedback
-  - `server/routes.ts` - Security: spam detection, sanitization, validation
-- **Notes for Next Session:**
-  - All Day components now use consistent design system
-  - Discussion/Q&A protected against prompt injection and XSS
-  - Test copy buttons on Day 5 TechStack page
-  - Test submitting questions with suspicious content to verify blocking works
-
-### 2026-01-30 - One-Click Upsell Fixes & Stripe Debugging
-- **Tasks Completed:**
-  - **One-Click Upsell Session Persistence Fixes:**
-    - Added explicit `req.session.save()` in process-success endpoint
-    - Session wasn't persisting stripeCustomerId before response was sent
-    - Added 500ms delay in CheckoutSuccess before redirect to ensure cookie is processed
-    - Added `sameSite: 'lax'` to session cookie configuration
-  - **Fixed Stale User Data Bug:**
-    - `req.user` object was stale after process-success updated database
-    - Upsell endpoint now fetches fresh user data from DB instead of using `req.user`
-  - **Added Debug Endpoint:**
-    - Created `/api/debug/session` to check session state
-    - Shows sessionId, stripeCustomerId, login status
-  - **Added Webhook Debugging:**
-    - Added logging to show webhook secret info (first/last chars)
-    - Logs signature received for debugging verification failures
-  - **Stripe Key Management:**
-    - Discovered duplicate `STRIPE_SECRET_KEY` in Replit Secrets causing issues
-    - Helped user roll/rotate keys after accidental exposure
-    - Cleaned up to single key entry
-- **Key Discovery:**
-  - **100% discount coupons don't save payment methods** - Stripe doesn't capture card info when there's no charge
-  - One-click upsell only works when customer actually pays (card is saved)
-  - Test with real card or partial discount, not 100% off coupons
-- **Files Modified:**
-  - `server/routes.ts` - Session save, fresh DB fetch, debug endpoint, better logging
-  - `server/webhookHandlers.ts` - Added webhook secret debugging logs
-  - `server/replitAuth.ts` - Added sameSite cookie config
-  - `client/src/pages/CheckoutSuccess.tsx` - Added delay before redirect, better logging
-- **Known Issues:**
-  - Stripe webhook signature verification failing (400 errors)
-  - User has correct webhook secret but verification still fails
-  - May be related to how StripeSync library processes webhooks
-  - One-click upsell should work via process-success endpoint (doesn't need webhook)
-- **Notes for Next Session:**
-  - Test one-click upsell with real card payment (not 100% discount)
-  - Webhook issue is separate from upsell - investigate if needed
-  - Consider removing or fixing StripeSync integration if webhooks remain problematic
-  - Coupon `TEST100` exists in admin (100% off) - don't use for upsell testing
-
-### 2026-02-02 - Email System Overhaul, Motivational Quotes, Admin Preview Mode
-- **Tasks Completed:**
-  - **Email System Updates:**
-    - Changed all email URLs from `21daysaas.com` to `challenge.mattwebley.com`
-    - Updated from address to `matt@mattwebley.com` with reply-to header
-    - Added configurable test email address in admin (persists to localStorage)
-    - Added quick "Send Test" button on each email template card
-    - Rewrote emails to be factual (removed marketing fluff and unverifiable claims)
-    - Replaced Bill Gates quote with Reid Hoffman quote per user request
-  - **Admin Preview Mode for Success Pages:**
-    - Added `?preview=true` query param for admin-only page previews
-    - Works on: `/checkout/success`, `/coaching/upsell`, `/congratulations`
-    - Shows preview banner, disables purchase buttons in preview mode
-  - **Motivational Quotes Feature:**
-    - Added `motivationalQuote` field to database schema
-    - Created 22 quotes (Days 0-21) from legends (Jim Rohn, Steve Jobs, Walt Disney, etc.)
-    - Quotes display in Day Completion Modal with fade-in animation
-    - Tested multiple display locations and styles before finalizing
-  - **Quote Authors Used:**
-    - Steve Jobs (Days 0, 5), Walt Disney (Day 1), Reid Hoffman (Day 2)
-    - Leonardo da Vinci (Day 3), Muhtar Kent (Day 4), John Johnson (Day 6)
-    - Abraham Lincoln (Day 7), Chinese Proverb (Day 8), Winston Churchill (Days 9, 21)
-    - Jim Rohn (Days 10, 19), Simon Sinek (Day 11), Mark Twain (Day 12)
-    - Henry David Thoreau (Day 13), Bruce Lee (Day 14), Sam Levenson (Day 15)
-    - Franklin D. Roosevelt (Day 16), Sheryl Sandberg (Day 17)
-    - Martin Luther King Jr. (Day 18), Tom Fishburne (Day 20)
-- **Files Modified:**
-  - `shared/schema.ts` - Added `motivationalQuote` field
-  - `server/seed.ts` - Added quotes to all 22 days, fixed upsert to include new field
-  - `server/emailService.ts` - Updated from/reply-to, simplified email content
-  - `client/src/pages/Admin.tsx` - Test email config with localStorage persistence
-  - `client/src/pages/Dashboard.tsx` - Passes quote to completion modal
-  - `client/src/components/DayCompletionModal.tsx` - Displays motivational quote
-  - `client/src/pages/CheckoutSuccess.tsx` - Admin preview mode
-  - `client/src/pages/CoachingUpsell.tsx` - Admin preview mode
-  - `client/src/pages/Congratulations.tsx` - Admin preview mode
-- **Database:**
-  - Pushed `motivationalQuote` column to `dayContent` table
-  - Ran direct SQL update to populate quotes (seed skips existing data)
-- **Notes for Next Session:**
-  - Quotes are now in completion modals - test by completing a day
-  - Admin preview: add `?preview=true` to success page URLs while logged in as admin
-  - Email test: set test email in admin panel, then click send icon on any template
-
-### 2026-02-02 (Session 2) - AI Upgrade, Day Fixes, UX Improvements
-- **Tasks Completed:**
-  - **Upgraded AI Model:**
-    - Changed from Claude Sonnet 4 to **Claude Opus 4.5** (`claude-opus-4-5-20251101`)
-    - Single line change in `aiService.ts` - all AI features now use Opus 4.5
-    - Better quality responses, ~5x more expensive
-  - **Day 2 "I Help" Statement Auto-Save:**
-    - Added query to load existing Day 2 progress
-    - Statement now auto-saves with 1-second debounce after typing
-    - Persists and restores on page reload
-    - Server endpoint updated to merge data (not overwrite)
-  - **Day 2 Validation Insights Fix:**
-    - Added detailed console logging for debugging
-    - Improved error messages (shows actual error reason, not generic message)
-    - Rate limit errors now display specific message
-  - **Day 3 Feature Generation Fix:**
-    - Added warning banner when Day 2 data is missing
-    - Shows "No idea saved yet" / "No pain points saved yet" in amber text
-    - Button now says "Complete Day 2 first" and is disabled when data missing
-    - Better error handling with specific messages
-  - **Day 4 Namecheap URL Fixes:**
-    - Fixed blank Namecheap pages - removed `.com` from URL query parameter
-    - Added `encodeURIComponent()` for proper URL encoding
-    - Namecheap now correctly populates search results
-  - **Day 4 Domain Input Sanitization:**
-    - User input now strips domain extensions (.com, .co, .io, .net, .org, .app, .dev, .ai, etc.)
-    - Added `baseName` helper for clean variations
-    - Fixed "goshipsaas.coms.com" bug in variations display
-  - **Day 8 Video Placeholder:**
-    - Added "Day 8.1: Navigating Claude Code + Replit Workspace" video placeholder
-    - Matches branded style (dark gradient, primary glow, large day number)
-    - Positioned after lesson text, before "Set Up Your Tools" section
-  - **Removed VideoSlides Feature:**
-    - Removed `VideoSlides` import and all 21 component instances
-    - VideoSlides icon no longer appears on any day
-- **Files Modified:**
-  - `server/aiService.ts` - Upgraded to Claude Opus 4.5
-  - `server/routes.ts` - Day 2 endpoint now merges data, supports iHelpStatement
-  - `client/src/components/Day2IdeaValidator.tsx` - Auto-save, better error handling, logging
-  - `client/src/components/Day3CoreFeatures.tsx` - Missing data warnings, better errors
-  - `client/src/components/Day4Naming.tsx` - URL encoding, input sanitization, baseName helper
-  - `client/src/pages/Dashboard.tsx` - Day 8.1 video placeholder, removed VideoSlides
-- **Notes for Next Session:**
-  - All AI now uses Opus 4.5 - monitor costs
-  - Day 8.1 video placeholder ready - add Loom URL when recorded
-  - Test Day 2 → Day 3 flow to verify data passes correctly
-  - Day 4 domain variations now clean - test with various input formats
+*See CLAUDE.md.backup for previous version. See CLAUDE_ARCHIVE.md for older session logs.*

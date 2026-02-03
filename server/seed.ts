@@ -578,11 +578,11 @@ This one change will save you THOUSANDS over time.
 
 3. CLAUDE.md
 
-A text file that tells Claude about your project. Claude reads it at the start of every session.
+A text file that tells Claude HOW TO WORK WITH YOU. Claude reads it at the start of every session.
 
-What goes in it? Your app name. What it does. What tech you're using. Some rules. A session log.
+I've written one specifically for non-technical builders. It includes rules like "keep it stupidly simple" and "don't ask technical questions I can't answer." It tells Claude to be DECISIVE instead of asking you to choose between things you don't understand.
 
-It starts simple. It grows over time. When Claude keeps making the same mistake, you add a rule. When you finish a session, you update the log. It gets SMARTER as you use it.
+You'll copy-paste my template. It transforms Claude from a generic AI into a patient senior developer who GETS what you need.
 
 WHY THIS MATTERS:
 

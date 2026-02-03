@@ -2282,15 +2282,20 @@ Just output the look & feel description, nothing else.`,
   });
 
   // Anti-spam detection function
-  // Sanitize user content to prevent XSS
+  // Sanitize user content - strip dangerous HTML tags but keep normal text
+  // React handles XSS protection, so we only need to remove script/event handlers
   function sanitizeContent(content: string): string {
     return content
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;')
-      .replace(/\//g, '&#x2F;');
+      // Remove script tags and their content
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      // Remove event handlers (onclick, onerror, etc.)
+      .replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '')
+      // Remove javascript: URLs
+      .replace(/javascript:/gi, '')
+      // Remove other potentially dangerous tags
+      .replace(/<(iframe|object|embed|link|style|meta)[^>]*>/gi, '')
+      // Keep normal characters like apostrophes, quotes, etc.
+      .trim();
   }
 
   function detectSpam(content: string): { isSpam: boolean; reason?: string } {
@@ -2939,6 +2944,11 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Get pending showcase entries
   app.get("/api/admin/showcase/pending", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
       const entries = await storage.getPendingShowcase();
       res.json(entries);
     } catch (error: any) {
@@ -2950,6 +2960,11 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Update showcase status
   app.post("/api/admin/showcase/:id/status", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
       const id = parseInt(req.params.id);
       const { status } = req.body;
       const updated = await storage.updateShowcaseStatus(id, status);
@@ -2963,6 +2978,11 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Toggle featured
   app.post("/api/admin/showcase/:id/feature", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
       const id = parseInt(req.params.id);
       const updated = await storage.toggleShowcaseFeatured(id);
       res.json(updated);
@@ -2979,6 +2999,11 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Get all testimonials (admin)
   app.get("/api/admin/testimonials", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
       const testimonials = await storage.getAllTestimonials();
       res.json(testimonials);
     } catch (error: any) {
@@ -2990,6 +3015,11 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Toggle testimonial featured status (admin)
   app.post("/api/admin/testimonials/:id/feature", isAuthenticated, async (req: any, res) => {
     try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
       const id = parseInt(req.params.id);
       const updated = await storage.toggleTestimonialFeatured(id);
       if (!updated) {
@@ -3799,23 +3829,33 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     }
   });
 
-  // Debug endpoint to check session state
-  app.get("/api/debug/session", (req, res) => {
-    const isLoggedIn = req.isAuthenticated() && req.user;
-    res.json({
-      sessionId: req.sessionID,
-      hasSession: !!req.session,
-      isLoggedIn,
-      sessionData: {
-        stripeCustomerId: (req.session as any)?.stripeCustomerId || null,
-        purchaseCurrency: (req.session as any)?.purchaseCurrency || null,
-      },
-      userData: isLoggedIn ? {
-        id: (req.user as any).id,
-        stripeCustomerId: (req.user as any).stripeCustomerId || null,
-      } : null,
-      cookies: req.headers.cookie ? 'present' : 'missing',
-    });
+  // Debug endpoint to check session state (Admin only)
+  app.get("/api/debug/session", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const isLoggedIn = req.isAuthenticated() && req.user;
+      res.json({
+        sessionId: req.sessionID,
+        hasSession: !!req.session,
+        isLoggedIn,
+        sessionData: {
+          stripeCustomerId: (req.session as any)?.stripeCustomerId || null,
+          purchaseCurrency: (req.session as any)?.purchaseCurrency || null,
+        },
+        userData: isLoggedIn ? {
+          id: (req.user as any).id,
+          stripeCustomerId: (req.user as any).stripeCustomerId || null,
+        } : null,
+        cookies: req.headers.cookie ? 'present' : 'missing',
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Error checking session" });
+    }
   });
 
   // One-click upsell - Coaching purchase using saved payment method

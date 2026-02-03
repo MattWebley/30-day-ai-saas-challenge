@@ -220,18 +220,21 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
           </div>
         </div>
 
-        <button
-          onClick={() => setTestMode(!testMode)}
-          className={cn(
-            "mt-4 w-full text-xs py-1.5 px-3 rounded-md transition-colors",
-            testMode 
-              ? "bg-blue-500 text-white" 
-              : "bg-muted text-muted-foreground hover:bg-muted/80"
-          )}
-          data-testid="button-test-mode"
-        >
-          {testMode ? "Test Mode: ON" : "Test Mode: OFF"}
-        </button>
+{/* Test Mode - Admin Only */}
+        {(user as any)?.isAdmin && (
+          <button
+            onClick={() => setTestMode(!testMode)}
+            className={cn(
+              "mt-4 w-full text-xs py-1.5 px-3 rounded-md transition-colors",
+              testMode
+                ? "bg-blue-500 text-white"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            )}
+            data-testid="button-test-mode"
+          >
+            {testMode ? "Test Mode: ON" : "Test Mode: OFF"}
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
