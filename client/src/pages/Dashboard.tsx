@@ -204,6 +204,8 @@ const lessonVideos: Record<number, string> = {
   10: "https://www.loom.com/embed/a0ac8556397c44f499705aea89006bef",
   11: "https://www.loom.com/embed/db96d2052c2049d59c9aa068eaf6254e",
   12: "https://www.loom.com/embed/c58f457ceeb94a2f86951b33c50ce122",
+  13: "https://www.loom.com/embed/4e5d0e48ddda4ec6b4ebaba32cbbbf87",
+  14: "https://www.loom.com/embed/ece8c4cb3ea64ae38b5fb86e92fced8d",
 };
 
 // Loom thumbnails - get from Loom share page (og:image meta tag)
@@ -222,6 +224,8 @@ const lessonThumbnails: Record<number, string> = {
   10: "https://cdn.loom.com/sessions/thumbnails/a0ac8556397c44f499705aea89006bef-0f695db1328b2df6.jpg",
   11: "https://cdn.loom.com/sessions/thumbnails/db96d2052c2049d59c9aa068eaf6254e-d8b8a4696f2f07e1.jpg",
   12: "https://cdn.loom.com/sessions/thumbnails/c58f457ceeb94a2f86951b33c50ce122-d7fd22defea71464.jpg",
+  13: "https://cdn.loom.com/sessions/thumbnails/4e5d0e48ddda4ec6b4ebaba32cbbbf87-a4b3dd8bc6c04481.jpg",
+  14: "https://cdn.loom.com/sessions/thumbnails/ece8c4cb3ea64ae38b5fb86e92fced8d-a9d2703ebf0728fd.jpg",
 };
 
 // Helper to get Loom thumbnail URL
