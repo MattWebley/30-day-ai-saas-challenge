@@ -191,16 +191,37 @@ const VideoPlaceholder = ({ day, title }: { day: number; title: string }) => (
 // Add real Loom video URLs here as you record them
 // Format: dayNumber: "https://www.loom.com/embed/VIDEO_ID"
 const lessonVideos: Record<number, string> = {
-  0: "https://www.loom.com/embed/dac0eedf4efa4f1e83aca36cadab00ef",
-  1: "https://www.loom.com/embed/a333ecd106db43d591eedb1e9fbf5f4b",
-  // Add more video URLs as you record them
+  0: "https://www.loom.com/embed/6c4be7738abf4a869444c5a7986468d5",
+  1: "https://www.loom.com/embed/a3b5eed63a7e49ecbc211f0f82c3f14c",
+  2: "https://www.loom.com/embed/f024af4c9d2242aca619157ca75010ad",
+  3: "https://www.loom.com/embed/a90b6b7c65404c87be97f5e34ab8c0a0",
+  4: "https://www.loom.com/embed/e4cd5abeafc948b09e0d283a83b8fc60",
+  5: "https://www.loom.com/embed/ad6ce2f5b61242f6a1bc8281d5596ef7",
+  6: "https://www.loom.com/embed/2c18d6b1e1064cdfa851d8ad84e5cc09",
+  7: "https://www.loom.com/embed/270dce571f864abc8bbb2fd8f10c545a",
+  8: "https://www.loom.com/embed/1fab6aab8cff41fb91f659fdb3270540",
+  9: "https://www.loom.com/embed/ea9b7d19dc914dce95a03235f1ed3766",
+  10: "https://www.loom.com/embed/a0ac8556397c44f499705aea89006bef",
+  11: "https://www.loom.com/embed/db96d2052c2049d59c9aa068eaf6254e",
+  12: "https://www.loom.com/embed/c58f457ceeb94a2f86951b33c50ce122",
 };
 
 // Loom thumbnails - get from Loom share page (og:image meta tag)
 // To find: go to https://www.loom.com/share/VIDEO_ID, view page source, find og:image
 const lessonThumbnails: Record<number, string> = {
-  0: "https://cdn.loom.com/sessions/thumbnails/420c8729c9d544c3a265ea8273fe797e-49b24f08ffb05d98.jpg",
-  // Add thumbnails for other days as you record them
+  0: "https://cdn.loom.com/sessions/thumbnails/6c4be7738abf4a869444c5a7986468d5-4acdf957ee3ba4b0.jpg",
+  1: "https://cdn.loom.com/sessions/thumbnails/a3b5eed63a7e49ecbc211f0f82c3f14c-28ed8b180b0bfce1.jpg",
+  2: "https://cdn.loom.com/sessions/thumbnails/f024af4c9d2242aca619157ca75010ad-a4afa00732d61d3a.jpg",
+  3: "https://cdn.loom.com/sessions/thumbnails/a90b6b7c65404c87be97f5e34ab8c0a0-8f59a92731381051.jpg",
+  4: "https://cdn.loom.com/sessions/thumbnails/e4cd5abeafc948b09e0d283a83b8fc60-0a7b23082d2f1a8a.jpg",
+  5: "https://cdn.loom.com/sessions/thumbnails/ad6ce2f5b61242f6a1bc8281d5596ef7-7d21ac7daf452aae.jpg",
+  6: "https://cdn.loom.com/sessions/thumbnails/2c18d6b1e1064cdfa851d8ad84e5cc09-1a87624b9eff981f.jpg",
+  7: "https://cdn.loom.com/sessions/thumbnails/270dce571f864abc8bbb2fd8f10c545a-7bccfb91cd998ba0.jpg",
+  8: "https://cdn.loom.com/sessions/thumbnails/1fab6aab8cff41fb91f659fdb3270540-069e9fb75df02bc6.jpg",
+  9: "https://cdn.loom.com/sessions/thumbnails/ea9b7d19dc914dce95a03235f1ed3766-f0a7643ef54eef3b.jpg",
+  10: "https://cdn.loom.com/sessions/thumbnails/a0ac8556397c44f499705aea89006bef-0f695db1328b2df6.jpg",
+  11: "https://cdn.loom.com/sessions/thumbnails/db96d2052c2049d59c9aa068eaf6254e-d8b8a4696f2f07e1.jpg",
+  12: "https://cdn.loom.com/sessions/thumbnails/c58f457ceeb94a2f86951b33c50ce122-d7fd22defea71464.jpg",
 };
 
 // Helper to get Loom thumbnail URL
@@ -920,17 +941,14 @@ export default function Dashboard() {
 
                       {/* Day 8.1 Video: Navigating Claude Code + Replit Workspace */}
                       <div className="mt-6 pt-6 border-t border-slate-200">
+                        <h3 className="font-bold text-lg text-slate-900 mb-3">Day 8.1: Navigating Repl.it Workspace</h3>
                         <div className="relative rounded-xl overflow-hidden" style={{ paddingBottom: '56.25%' }}>
-                          <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                            <div className="absolute bottom-0 left-0 w-48 h-48 bg-primary/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-                              <div className="text-slate-400 text-xs font-medium uppercase tracking-widest mb-1">Video Lesson</div>
-                              <div className="text-primary/80 text-sm font-medium uppercase tracking-widest mb-2">Day</div>
-                              <div className="text-7xl md:text-8xl font-extrabold text-white mb-3">8.1</div>
-                              <div className="text-xl md:text-2xl font-bold text-white">Navigating Claude Code + Replit Workspace</div>
-                            </div>
-                          </div>
+                          <iframe
+                            src="https://www.loom.com/embed/158cfe31e2a9475f954f74977a6282de"
+                            frameBorder="0"
+                            allowFullScreen
+                            className="absolute inset-0 w-full h-full"
+                          />
                         </div>
                       </div>
                     </Card>
