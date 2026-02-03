@@ -245,14 +245,24 @@ Interactive components MUST match lesson text styling:
     - Added admin checks to showcase endpoints (pending, status, feature)
     - Added admin checks to testimonial endpoints (list, feature)
   - Fixed comment sanitization (was showing HTML entities like `&#x27;`)
-  - Created new CLAUDE.md template for non-technical builders
+  - Created new CLAUDE.md template for non-technical builders (5 Golden Rules)
   - Updated Day 8 to use new CLAUDE.md template with full content
   - Updated Day 8 lesson in seed.ts to explain new template purpose
+  - Merged behavioral rules into project CLAUDE.md (this file)
+  - Confirmed only 1 admin user (info@rapidwebsupport.com)
 - **Files Modified:**
+  - `CLAUDE.md` - Merged with non-technical builder template
   - `client/src/pages/Dashboard.tsx` - Added videos and thumbnails
   - `client/src/components/layout/Sidebar.tsx` - Test mode admin-only
   - `client/src/components/Day8ClaudeCode.tsx` - New CLAUDE.md template
   - `server/routes.ts` - Security fixes, sanitization fix
   - `server/seed.ts` - Updated Day 8 lesson text
+- **Files Created:**
+  - `CLAUDE.md.backup` - Previous version for reverting
+- **No New Issues Discovered**
+- **Notes for Next Session:**
+  - All AI prompts reviewed - left unchanged (working fine)
+  - Videos added for Days 0-12, still need Days 13-21
+  - Pending tasks remain: test AI Mentor, test Showcase, add Namecheap affiliate ID
 
 *See CLAUDE.md.backup for previous version. See CLAUDE_ARCHIVE.md for older session logs.*
