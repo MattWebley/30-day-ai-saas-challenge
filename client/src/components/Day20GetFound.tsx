@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useStepWithScroll } from "@/hooks/useStepWithScroll";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   ChevronRight,
@@ -123,21 +122,19 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
       {/* Step 1: Intro */}
       {step === "intro" && (
         <>
-          <Card className={`${ds.card} p-5`}>
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <Search className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className={ds.heading}>Get Found Online</h3>
-                <p className={ds.body}>
-                  Right now, if someone Googles or asks AI for what your app does, they won't find you. Let's fix that.
-                </p>
+                <p className={ds.muted}>Right now, if someone Googles or asks AI for what your app does, they won't find you. Let's fix that.</p>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <h4 className={`${ds.heading} mb-4`}>What is SEO?</h4>
             <p className={`${ds.body} mb-4`}>
               SEO (Search Engine Optimization) is making your app easy for Google to understand
@@ -147,9 +144,9 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
               It starts with <strong>keywords</strong> - the words people type when looking for a solution like yours.
               Then you optimize your pages so Google knows what you're about.
             </p>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <h4 className={`${ds.heading} mb-4`}>Why This Matters</h4>
             <div className="space-y-3">
               {[
@@ -164,14 +161,14 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4 border border-slate-200 bg-slate-50">
-            <p className="text-sm text-slate-600">
-              <strong className="text-slate-800">The catch:</strong> Google doesn't trust brand new sites.
+          <div className={ds.infoBoxHighlight}>
+            <p className={ds.body}>
+              <strong>The catch:</strong> Google doesn't trust brand new sites.
               It can take weeks or months before they start sending traffic. The sooner you do this, the sooner that clock starts.
             </p>
-          </Card>
+          </div>
 
           <Button
             size="lg"
@@ -192,24 +189,22 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
             </Button>
           </div>
 
-          <Card className={`${ds.card} p-5`}>
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className={ds.heading}>Complete SEO Setup</h3>
-                <p className={ds.body}>
-                  One prompt that does everything - keyword research AND optimization.
-                </p>
+                <p className={ds.muted}>One prompt that does everything - keyword research AND optimization.</p>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <h4 className={`${ds.heading} mb-2`}>What This Prompt Does</h4>
             <p className={`${ds.muted} mb-4`}>Claude Code will handle all of this for you:</p>
-            <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="grid grid-cols-2 gap-2">
               {[
                 "Find the best keywords",
                 "Title tags",
@@ -224,13 +219,13 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
               ].map((item) => (
                 <div key={item} className="flex items-center gap-2">
                   <Check className="w-4 h-4 text-green-600" />
-                  <span className="text-slate-700">{item}</span>
+                  <span className={ds.body}>{item}</span>
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <h4 className={`${ds.heading} mb-3`}>The SEO Prompt</h4>
             <p className={`${ds.muted} mb-4`}>Copy this into Claude Code and let it do the work</p>
 
@@ -255,9 +250,9 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
                 </>
               )}
             </Button>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSeoOptimized(!seoOptimized)}
@@ -271,7 +266,7 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
               </button>
               <p className={ds.body}>I've run the SEO prompt in Claude Code</p>
             </div>
-          </Card>
+          </div>
 
           <Button
             size="lg"
@@ -292,21 +287,19 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
             </Button>
           </div>
 
-          <Card className={`${ds.card} p-5`}>
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <Globe className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className={ds.heading}>Submit to Google</h3>
-                <p className={ds.body}>
-                  Now tell Google your site exists. This is how you get indexed.
-                </p>
+                <p className={ds.muted}>Now tell Google your site exists. This is how you get indexed.</p>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <h4 className={`${ds.heading} mb-4`}>Google Search Console Setup</h4>
             <div className="space-y-4">
               {[
@@ -332,19 +325,19 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
                   desc: "Go to Sitemaps → Enter 'sitemap.xml' → Submit."
                 }
               ].map((item) => (
-                <div key={item.step} className="flex items-start gap-4">
-                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold flex-shrink-0">
+                <div key={item.step} className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold flex-shrink-0">
                     {item.step}
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-slate-900">{item.title}</p>
-                    <p className="text-sm text-slate-600">{item.desc}</p>
+                    <p className={ds.label}>{item.title}</p>
+                    <p className={ds.muted}>{item.desc}</p>
                     {item.link && (
                       <a
                         href={item.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-sm text-primary hover:underline mt-1"
+                        className="inline-flex items-center gap-1 text-primary hover:underline mt-1"
                       >
                         Open Google Search Console <ExternalLink className="w-3 h-3" />
                       </a>
@@ -353,9 +346,9 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
                 </div>
               ))}
             </div>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <p className={`${ds.body} mb-4`}>
               <strong>Need help with verification?</strong> Tell Claude Code:
             </p>
@@ -364,9 +357,9 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
               [paste the meta tag here]{"\n\n"}
               Add it to my site's {"<head>"} section.
             </div>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSubmittedToGoogle(!submittedToGoogle)}
@@ -380,14 +373,14 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
               </button>
               <p className={ds.body}>I've submitted my site to Google Search Console</p>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4 border border-slate-200 bg-slate-50">
-            <p className="text-sm text-slate-600">
-              <strong className="text-slate-800">Don't worry if it takes time.</strong> Google can take
+          <div className={ds.infoBoxHighlight}>
+            <p className={ds.body}>
+              <strong>Don't worry if it takes time.</strong> Google can take
               days or weeks to fully index your site. The important thing is you've submitted it.
             </p>
-          </Card>
+          </div>
 
           <Button
             size="lg"
@@ -409,31 +402,29 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
             <span className="text-sm text-slate-500">{submittedDirectories.length} submitted</span>
           </div>
 
-          <Card className={`${ds.card} p-5`}>
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+          <div className={ds.cardWithPadding}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
                 <ListChecks className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className={ds.heading}>Directory Submissions</h3>
-                <p className={ds.body}>
-                  Free backlinks and traffic. Do these while watching TV.
-                </p>
+                <p className={ds.muted}>Free backlinks and traffic. Do these while watching TV.</p>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <h4 className={`${ds.heading} mb-2`}>Essential</h4>
-            <p className="text-sm text-slate-600 mb-4">Do these first - most important for getting found</p>
+            <p className={`${ds.muted} mb-4`}>Do these first - most important for getting found</p>
             <div className="space-y-2">
               {DIRECTORIES.filter(d => d.priority).map((dir) => {
                 const isSubmitted = submittedDirectories.includes(dir.name);
                 return (
                   <div
                     key={dir.name}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      isSubmitted ? "border-green-200 bg-green-50/50" : "border-slate-200"
+                    className={`p-3 rounded-lg border transition-all ${
+                      isSubmitted ? "border-green-300 bg-green-50/50" : "border-slate-200"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -449,7 +440,7 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
                       </button>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-slate-900">{dir.name}</p>
+                          <p className={ds.label}>{dir.name}</p>
                           <a
                             href={dir.url}
                             target="_blank"
@@ -459,18 +450,18 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
                             <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
-                        <p className="text-sm text-slate-600">{dir.description}</p>
+                        <p className={ds.muted}>{dir.description}</p>
                       </div>
                     </div>
                   </div>
                 );
               })}
             </div>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <h4 className={`${ds.heading} mb-2`}>Nice to Have</h4>
-            <p className="text-sm text-slate-600 mb-4">Do these when you have time</p>
+            <p className={`${ds.muted} mb-4`}>Do these when you have time</p>
             <div className="space-y-2">
               {DIRECTORIES.filter(d => !d.priority).map((dir) => {
                 const isSubmitted = submittedDirectories.includes(dir.name);
@@ -478,7 +469,7 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
                   <div
                     key={dir.name}
                     className={`p-3 rounded-lg border transition-all ${
-                      isSubmitted ? "border-green-200 bg-green-50/50" : "border-slate-200"
+                      isSubmitted ? "border-green-300 bg-green-50/50" : "border-slate-200"
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -494,7 +485,7 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
                       </button>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <p className="font-medium text-slate-900 text-sm">{dir.name}</p>
+                          <p className={ds.label}>{dir.name}</p>
                           <a
                             href={dir.url}
                             target="_blank"
@@ -504,17 +495,17 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         </div>
-                        <p className="text-xs text-slate-600">{dir.description}</p>
+                        <p className={ds.muted}>{dir.description}</p>
                       </div>
                     </div>
                   </div>
                 );
               })}
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4 border-2 border-slate-200 bg-slate-50">
-            <h4 className="font-bold text-slate-900 mb-2">What About AI Search?</h4>
+          <div className={ds.infoBoxHighlight}>
+            <h4 className={`${ds.heading} mb-2`}>What About AI Search?</h4>
             <p className={`${ds.body} mb-3`}>
               More people are asking ChatGPT, Claude, and Perplexity for recommendations instead of Googling.
             </p>
@@ -522,7 +513,7 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
               <strong>What helps:</strong> Being mentioned across the web - Reddit threads, review sites,
               comparison articles, forums. The directories above are a good start.
             </p>
-          </Card>
+          </div>
 
           <Button
             size="lg"
@@ -537,22 +528,22 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
       {/* Step 5: Complete */}
       {step === "complete" && (
         <>
-          <Card className="p-6 border-2 border-slate-200 bg-slate-50">
-            <div className="text-center">
-              <div className="w-16 h-16 rounded-full bg-green-600 flex items-center justify-center mx-auto mb-4">
-                <Search className="w-8 h-8 text-white" />
+          <div className={ds.cardWithPadding}>
+            <div className="text-center py-4">
+              <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <Search className="w-8 h-8 text-green-600" />
               </div>
               <h3 className="text-2xl font-extrabold text-slate-900 mb-2">You're Now Discoverable</h3>
               <p className={ds.body}>
                 Google knows you exist. Your pages are optimized. Traffic will come.
               </p>
-              <p className="text-sm text-slate-600 mt-3">
+              <p className={`${ds.muted} mt-3`}>
                 Adding an automated SEO blog written by AI (one post per day) will help even more, but that's beyond the scope of this training.
               </p>
             </div>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <h4 className={`${ds.heading} mb-3`}>What You've Done</h4>
             <div className="space-y-2">
               <div className="flex items-center gap-3">
@@ -572,20 +563,20 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
                 <p className={ds.body}>Understand AI search discoverability</p>
               </div>
             </div>
-          </Card>
+          </div>
 
-          <Card className={ds.cardWithPadding}>
+          <div className={ds.cardWithPadding}>
             <h4 className={`${ds.heading} mb-3`}>Tomorrow: The Finish Line</h4>
             <p className={ds.body}>
               Day 21 is about seeing what {appName || "your app"} could actually earn -
               and completing the challenge. You're almost there.
             </p>
-          </Card>
+          </div>
 
           {/* Mentorship pitch */}
-          <Card className="p-5 border border-slate-200 bg-slate-50">
-            <p className="text-slate-700">
-              <span className="font-semibold text-slate-900">Want help getting your first customers?</span>{" "}
+          <div className={ds.infoBoxHighlight}>
+            <p className={ds.body}>
+              <strong>Want help getting your first customers?</strong>{" "}
               SEO takes time to kick in. If you want faster results, I can help you
               build a launch & marketing strategy that fits your app and audience - and work with you to implement it.
             </p>
@@ -597,7 +588,7 @@ Apply these to my homepage first. Show me which keywords you chose and why.`;
             >
               Book a free call <ChevronRight className="w-4 h-4" />
             </a>
-          </Card>
+          </div>
 
           <Button
             size="lg"

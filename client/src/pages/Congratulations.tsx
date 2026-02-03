@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy, ArrowUpRight, PartyPopper, Calendar, Rocket } from "lucide-react";
+import { Trophy, ArrowUpRight, PartyPopper, Calendar } from "lucide-react";
 import { ds } from "@/lib/design-system";
 
 export default function Congratulations() {
@@ -60,13 +60,17 @@ export default function Congratulations() {
 
         {/* Video Section */}
         <Card className={`${ds.cardWithPadding} mb-6`}>
-          <div className="aspect-video bg-slate-900 rounded-lg flex items-center justify-center mb-4">
-            {/* Replace this with actual video embed */}
-            <div className="text-center text-white">
-              <Rocket className="w-16 h-16 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium">Congratulations Video</p>
-              <p className="text-slate-400 text-sm">Video coming soon</p>
-            </div>
+          <div className="aspect-video bg-slate-900 rounded-lg overflow-hidden mb-4">
+            <video 
+              className="w-full h-full object-cover"
+              controls
+              autoPlay
+              playsInline
+              poster=""
+            >
+              <source src="/congrats-day21.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
           </div>
           <p className={`${ds.body} text-center`}>
             A personal message from Matt
