@@ -116,7 +116,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
               onClick={() => setStep(item.step)}
             >
               <div className={`h-2 rounded-full transition-all ${item.done ? "bg-green-500 group-hover:bg-green-600" : "bg-slate-200 group-hover:bg-slate-300"}`} />
-              <p className={`text-xs mt-1 text-center transition-colors ${item.done ? "text-green-600 font-medium group-hover:text-green-700" : "text-slate-500 group-hover:text-slate-700"}`}>
+              <p className={`text-xs mt-1 text-center transition-colors hidden sm:block ${item.done ? "text-green-600 font-medium group-hover:text-green-700" : "text-slate-500 group-hover:text-slate-700"}`}>
                 {item.label}
               </p>
             </div>
