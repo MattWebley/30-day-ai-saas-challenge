@@ -206,6 +206,13 @@ const lessonVideos: Record<number, string> = {
   12: "https://www.loom.com/embed/c58f457ceeb94a2f86951b33c50ce122",
   13: "https://www.loom.com/embed/4e5d0e48ddda4ec6b4ebaba32cbbbf87",
   14: "https://www.loom.com/embed/ece8c4cb3ea64ae38b5fb86e92fced8d",
+  15: "https://www.loom.com/embed/216c42835a27463197b5ed2483f190b4",
+  16: "https://www.loom.com/embed/2098284abe504c52ba98bbe7fef4ff27",
+  17: "https://www.loom.com/embed/101a4c0f439b47aca7b2dfd21d3015a6",
+  18: "https://www.loom.com/embed/cde2aea90b51452ba896717ae89e0e19",
+  19: "https://www.loom.com/embed/dee7fc2179f7433e801be1ec844583ad",
+  20: "https://www.loom.com/embed/9bb2d94afa53484dbb2860053ee2c348",
+  21: "https://www.loom.com/embed/6c93d7eb9cc64dee8f127b22bf861dd8",
 };
 
 // Loom thumbnails - get from Loom share page (og:image meta tag)
@@ -226,6 +233,13 @@ const lessonThumbnails: Record<number, string> = {
   12: "https://cdn.loom.com/sessions/thumbnails/c58f457ceeb94a2f86951b33c50ce122-d7fd22defea71464.jpg",
   13: "https://cdn.loom.com/sessions/thumbnails/4e5d0e48ddda4ec6b4ebaba32cbbbf87-a4b3dd8bc6c04481.jpg",
   14: "https://cdn.loom.com/sessions/thumbnails/ece8c4cb3ea64ae38b5fb86e92fced8d-a9d2703ebf0728fd.jpg",
+  15: "https://cdn.loom.com/sessions/thumbnails/216c42835a27463197b5ed2483f190b4-675bffc35b5f6e18.jpg",
+  16: "https://cdn.loom.com/sessions/thumbnails/2098284abe504c52ba98bbe7fef4ff27-885d90b660ab21d6.jpg",
+  17: "https://cdn.loom.com/sessions/thumbnails/101a4c0f439b47aca7b2dfd21d3015a6-9370d93ae042ecda.jpg",
+  18: "https://cdn.loom.com/sessions/thumbnails/cde2aea90b51452ba896717ae89e0e19-4dc2765b0e2e0e2a.jpg",
+  19: "https://cdn.loom.com/sessions/thumbnails/dee7fc2179f7433e801be1ec844583ad-1b958f8314c6c782.jpg",
+  20: "https://cdn.loom.com/sessions/thumbnails/9bb2d94afa53484dbb2860053ee2c348-0fec4dea0dbc4552.jpg",
+  21: "https://cdn.loom.com/sessions/thumbnails/6c93d7eb9cc64dee8f127b22bf861dd8-19da29416e391a38.jpg",
 };
 
 // Helper to get Loom thumbnail URL
