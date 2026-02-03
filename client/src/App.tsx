@@ -35,6 +35,8 @@ import Testimonial from "@/pages/Testimonial";
 import Welcome from "@/pages/Welcome";
 import Referrals from "@/pages/Referrals";
 import Congratulations from "@/pages/Congratulations";
+import Terms from "@/pages/Terms";
+import Privacy from "@/pages/Privacy";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -57,7 +59,7 @@ function Router() {
   useHeartbeat(isAuthenticated);
 
   // Public routes that don't need auth check
-  const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome'];
+  const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy'];
   const isPublicRoute = publicPaths.some(path => location.startsWith(path)) || location === '/';
 
   // Only show loading spinner for protected routes
@@ -86,6 +88,8 @@ function Router() {
         <Route path="/coaching/success" component={CoachingSuccess} />
         <Route path="/critique/success" component={CritiqueSuccess} />
         <Route path="/welcome" component={Welcome} />
+        <Route path="/terms" component={Terms} />
+        <Route path="/privacy" component={Privacy} />
         {!isAuthenticated ? (
           <Route path="/" component={Landing} />
         ) : (

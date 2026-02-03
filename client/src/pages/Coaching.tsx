@@ -2,11 +2,16 @@ import { useState, useEffect } from "react";
 import { ArrowRight, Check, Video, Calendar, Clock, Users, Zap, Shield, Star } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { useAuth } from "@/hooks/useAuth";
+import { useTestMode } from "@/contexts/TestModeContext";
+import { useLocation } from "wouter";
 
 export default function Coaching() {
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
   const [currency, setCurrency] = useState<"gbp" | "usd">("gbp");
   const { user } = useAuth();
+  const { testMode } = useTestMode();
+  const [, setLocation] = useLocation();
+  const isAdmin = (user as any)?.isAdmin;
 
   // Set default currency based on user's purchase currency
   useEffect(() => {
@@ -34,6 +39,19 @@ export default function Coaching() {
   const handlePurchase = async (type: "single" | "pack" | "matt-single" | "matt") => {
     if (isProcessing) return;
     setIsProcessing(type);
+
+    // Test mode for admins - skip checkout and go straight to success page
+    if (testMode && isAdmin) {
+      const successTypes: Record<string, string> = {
+        "single": "expert-single",
+        "pack": "expert",
+        "matt-single": "matt-single",
+        "matt": "matt"
+      };
+      setLocation(`/coaching/success?type=${successTypes[type]}`);
+      return;
+    }
+
     try {
       const endpoints: Record<string, string> = {
         "single": "/api/checkout/coaching-single",

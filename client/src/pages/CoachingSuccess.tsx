@@ -11,16 +11,20 @@ export default function CoachingSuccess() {
   const type = params.get("type") || "coaching";
 
   // Determine what they bought based on type param
+  const isMattSession = type === "matt" || type === "matt-single";
+
   const getProductName = () => {
     switch (type) {
-      case "single":
+      case "expert-single":
         return "Expert Coaching Session";
+      case "expert":
+        return "4x Expert Coaching Sessions";
       case "matt-single":
         return "1-on-1 Session with Matt";
       case "matt":
         return "4x Coaching Sessions with Matt";
       default:
-        return "Expert Coaching Package";
+        return "Coaching Package";
     }
   };
 
@@ -38,7 +42,7 @@ export default function CoachingSuccess() {
           </p>
         </div>
 
-        {(type === "matt" || type === "matt-single") ? (
+        {isMattSession ? (
           <>
             <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4 space-y-3">
               <div className="flex items-center justify-center gap-2 text-slate-700">

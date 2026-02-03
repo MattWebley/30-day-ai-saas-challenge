@@ -1378,13 +1378,17 @@ export default function Landing() {
             />
             <span className="font-semibold">21-Day AI SaaS Challenge</span>
           </div>
-          <p className="text-sm text-slate-500">
-            © {new Date().getFullYear()} Webley Global - FZCO, Dubai. All rights reserved.
-          </p>
-          <p className="text-sm text-slate-500">
+          <div className="flex items-center justify-center gap-4 text-sm text-slate-500">
+            <a href="/terms" className="hover:text-slate-900">Terms of Service</a>
+            <span>•</span>
+            <a href="/privacy" className="hover:text-slate-900">Privacy Policy</a>
+            <span>•</span>
             <a href="https://mattwebley.com" target="_blank" rel="noopener noreferrer" className="hover:text-slate-900">
               mattwebley.com
             </a>
+          </div>
+          <p className="text-sm text-slate-500">
+            © {new Date().getFullYear()} Webley Global - FZCO, Dubai. All rights reserved.
           </p>
           <p className="text-xs text-slate-400 max-w-xl mx-auto mt-4">
             Disclaimer: Results vary. Building a product does not guarantee income. Most software products never generate significant revenue. Your success depends on your effort, market conditions, and many factors outside our control. This challenge teaches you how to build - what you do with what you build is up to you.
