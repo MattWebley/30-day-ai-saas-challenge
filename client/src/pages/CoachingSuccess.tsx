@@ -17,13 +17,13 @@ export default function CoachingSuccess() {
   // Track purchase with Meta Pixel
   useEffect(() => {
     if (window.fbq) {
-      // Determine value based on type
+      // Determine value based on type (GBP prices)
       const getPurchaseValue = () => {
         switch (type) {
-          case "expert-single": return 299;
+          case "expert-single": return 349;
           case "expert": return 995;
-          case "matt-single": return 495;
-          case "matt": return 1495;
+          case "matt-single": return 1995;
+          case "matt": return 3995;
           default: return 995;
         }
       };
