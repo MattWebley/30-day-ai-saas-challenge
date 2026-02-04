@@ -130,7 +130,7 @@ export default function Congratulations() {
           </div>
 
           <a
-            href="https://www.mattwebley.com/readiness"
+            href="https://cal.com/mattwebley/readiness-review"
             target="_blank"
             rel="noopener noreferrer"
             className="block"
