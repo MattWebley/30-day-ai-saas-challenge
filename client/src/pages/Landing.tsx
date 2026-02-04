@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, TrendingUp, Shield, Star, Lightbulb, Rocket, Code, Users } from "lucide-react";
 import { ds } from "@/lib/design-system";
+import { LazyVimeo } from "@/components/LazyVimeo";
 
 const DEFAULT_HEADLINE = "How to Build Your Own Software Product in the Next 21 Days Without Writing a Single Line of Code...";
 
@@ -89,12 +90,7 @@ export default function Landing() {
 
               {/* Vimeo Video Embed */}
               <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-xl">
-                <iframe
-                  src="https://player.vimeo.com/video/1158816837?h=38a9da32e3&title=0&byline=0&portrait=0"
-                  className="w-full h-full"
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
-                />
+                <LazyVimeo videoId="1158816837" hash="38a9da32e3" title="How the 21-Day Challenge works" />
               </div>
 
               <a href="/order" className="block">
@@ -328,7 +324,7 @@ export default function Landing() {
             {/* Dashboard Preview */}
             <div className="my-8">
               <img
-                src="/dashboard-preview.png"
+                src="/dashboard-preview.jpg"
                 alt="Challenge dashboard showing daily progress tracker"
                 className="w-full rounded-lg shadow-2xl border border-slate-200"
                 loading="lazy"
@@ -554,14 +550,14 @@ export default function Landing() {
               {/* Product 1 - AuditMyListing - James F */}
               <Card className="border-2 border-slate-200 bg-white overflow-hidden">
                 <img
-                  src="/auditmylisting-app.png"
+                  src="/auditmylisting-app.jpg"
                   alt="AuditMyListing app interface"
                   className="w-full"
                   loading="lazy"
                 />
                 <div className="p-6 flex items-center gap-4">
                   <img
-                    src="/james-f.png"
+                    src="/james-f.jpg"
                     alt="James F."
                     className="w-20 h-20 rounded-full object-cover"
                     loading="lazy"
@@ -576,14 +572,14 @@ export default function Landing() {
               {/* Product 2 - VerifyCreator - Jack G */}
               <Card className="border-2 border-slate-200 bg-white overflow-hidden">
                 <img
-                  src="/verifycreator-app.png"
+                  src="/verifycreator-app.jpg"
                   alt="VerifyCreator app interface"
                   className="w-full"
                   loading="lazy"
                 />
                 <div className="p-6 flex items-center gap-4">
                   <img
-                    src="/jack-g.png"
+                    src="/jack-g.jpg"
                     alt="Jack G."
                     className="w-20 h-20 rounded-full object-cover"
                     loading="lazy"
@@ -598,14 +594,14 @@ export default function Landing() {
               {/* Product 3 - MusoBuddy - Tim F */}
               <Card className="border-2 border-slate-200 bg-white overflow-hidden">
                 <img
-                  src="/musobuddy-app.png"
+                  src="/musobuddy-app.jpg"
                   alt="MusoBuddy app interface"
                   className="w-full"
                   loading="lazy"
                 />
                 <div className="p-6 flex items-center gap-4">
                   <img
-                    src="/tim-f.png"
+                    src="/tim-f.jpg"
                     alt="Tim F."
                     className="w-20 h-20 rounded-full object-cover"
                     loading="lazy"
@@ -638,12 +634,7 @@ export default function Landing() {
 
             {/* Vimeo Video Testimonial */}
             <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-xl">
-              <iframe
-                src="https://player.vimeo.com/video/1160082444?h=60d64115d2&title=0&byline=0&portrait=0"
-                className="w-full h-full"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-              />
+              <LazyVimeo videoId="1160082444" hash="60d64115d2" title="Client testimonials" />
             </div>
           </div>
         </section>
