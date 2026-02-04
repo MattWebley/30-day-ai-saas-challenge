@@ -61,16 +61,14 @@ export default function Congratulations() {
         {/* Video Section */}
         <Card className={`${ds.cardWithPadding} mb-6`}>
           <div className="aspect-video bg-slate-900 rounded-lg overflow-hidden mb-4">
-            <video 
-              className="w-full h-full object-cover"
-              controls
-              autoPlay
-              playsInline
-              poster=""
-            >
-              <source src="/congrats-day21.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            <iframe
+              src="https://player.vimeo.com/video/1161713172?h=441e2ae754&autoplay=1"
+              className="w-full h-full"
+              frameBorder="0"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+              title="Congratulations from Matt"
+            />
           </div>
           <p className={`${ds.body} text-center`}>
             A personal message from Matt
