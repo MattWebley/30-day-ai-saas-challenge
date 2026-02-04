@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { ArrowRight, Check, Video, Calendar, Clock, Users, Zap, Shield, Eye, CheckCircle } from "lucide-react";
 import { useTestMode } from "@/contexts/TestModeContext";
 import { useAuth } from "@/hooks/useAuth";
+import { LazyVimeo } from "@/components/LazyVimeo";
 
 export default function CoachingUpsell() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -152,13 +153,7 @@ export default function CoachingUpsell() {
 
             {/* Video */}
             <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden">
-              <iframe
-                src="https://player.vimeo.com/video/1160158404?h=a3c5d7d3ab&title=0&byline=0&portrait=0"
-                className="w-full h-full"
-                frameBorder="0"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-              />
+              <LazyVimeo videoId="1160158404" hash="a3c5d7d3ab" title="Coaching overview" />
             </div>
 
             {/* What You Get */}

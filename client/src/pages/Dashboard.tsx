@@ -32,6 +32,7 @@ import { DayCommunity } from "@/components/DayCommunity";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
+import { LazyLoom } from "@/components/LazyLoom";
 import { toast } from "sonner";
 
 // Lazy load Day components - only loads the component for the current day
@@ -961,12 +962,9 @@ export default function Dashboard() {
                       <div className="mt-6 pt-6 border-t border-slate-200">
                         <h3 className="font-bold text-lg text-slate-900 mb-3">Day 8.1: Navigating Repl.it Workspace</h3>
                         <div className="relative rounded-xl overflow-hidden" style={{ paddingBottom: '56.25%' }}>
-                          <iframe
-                            src="https://www.loom.com/embed/158cfe31e2a9475f954f74977a6282de"
-                            frameBorder="0"
-                            allowFullScreen
-                            className="absolute inset-0 w-full h-full"
-                          />
+                          <div className="absolute inset-0">
+                            <LazyLoom videoId="158cfe31e2a9475f954f74977a6282de" title="Navigating Repl.it Workspace" />
+                          </div>
                         </div>
                       </div>
                     </Card>

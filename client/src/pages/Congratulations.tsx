@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trophy, ArrowUpRight, PartyPopper, Calendar } from "lucide-react";
 import { ds } from "@/lib/design-system";
+import { LazyVimeo } from "@/components/LazyVimeo";
 
 export default function Congratulations() {
   const [, setLocation] = useLocation();
@@ -61,14 +62,7 @@ export default function Congratulations() {
         {/* Video Section */}
         <Card className={`${ds.cardWithPadding} mb-6`}>
           <div className="aspect-video bg-slate-900 rounded-lg overflow-hidden mb-4">
-            <iframe
-              src="https://player.vimeo.com/video/1161713172?h=441e2ae754&autoplay=1"
-              className="w-full h-full"
-              frameBorder="0"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-              title="Congratulations from Matt"
-            />
+            <LazyVimeo videoId="1161713172" hash="441e2ae754" title="Congratulations from Matt" />
           </div>
           <p className={`${ds.body} text-center`}>
             A personal message from Matt
