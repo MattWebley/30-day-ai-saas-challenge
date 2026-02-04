@@ -5,12 +5,13 @@ interface LazyVimeoProps {
   videoId: string;
   hash?: string;
   title?: string;
+  thumbnail?: string;
 }
 
-export function LazyVimeo({ videoId, hash, title = "Video" }: LazyVimeoProps) {
+export function LazyVimeo({ videoId, hash, title = "Video", thumbnail }: LazyVimeoProps) {
   const [loaded, setLoaded] = useState(false);
 
-  const thumbnailUrl = `https://vumbnail.com/${videoId}.jpg`;
+  const thumbnailUrl = thumbnail || `https://vumbnail.com/${videoId}.jpg`;
   const embedUrl = hash
     ? `https://player.vimeo.com/video/${videoId}?h=${hash}&autoplay=1&title=0&byline=0&portrait=0`
     : `https://player.vimeo.com/video/${videoId}?autoplay=1&title=0&byline=0&portrait=0`;
