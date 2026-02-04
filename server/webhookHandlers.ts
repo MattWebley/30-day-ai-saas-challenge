@@ -105,12 +105,24 @@ export class WebhookHandlers {
 
       // Send purchase confirmation email with login instructions
       const firstName = session.customer_details?.name?.split(' ')[0] || 'there';
+      const lastName = session.customer_details?.name?.split(' ').slice(1).join(' ') || undefined;
+
       await sendPurchaseConfirmationEmail({
         to: email,
         firstName,
         currency: (currency as 'usd' | 'gbp') || 'usd',
         total: amountPaid / 100
       }).catch((err: any) => console.error('[Webhook] Purchase email error:', err));
+
+      // Add guest purchaser to Systeme.io immediately (don't wait for account creation)
+      if (productType === 'challenge') {
+        addContactToSysteme({
+          email,
+          firstName: firstName !== 'there' ? firstName : undefined,
+          lastName,
+          tags: ['21-Day Challenge Buyer'],
+        }).catch((err: any) => console.error('[Webhook] Systeme.io guest error:', err));
+      }
     }
   }
 
