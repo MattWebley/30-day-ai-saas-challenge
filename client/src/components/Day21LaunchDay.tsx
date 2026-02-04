@@ -585,7 +585,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
             </div>
 
             <a
-              href="https://www.mattwebley.com/readiness"
+              href="https://cal.com/mattwebley/readiness-review"
               target="_blank"
               rel="noopener noreferrer"
               className="block"
@@ -695,7 +695,7 @@ export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
               You've built something real. Now the question is - is it ready for customers? Book a free Readiness Review and I'll tell you exactly where you stand and what to do next.
             </p>
             <a
-              href="https://www.mattwebley.com/readiness"
+              href="https://cal.com/mattwebley/readiness-review"
               target="_blank"
               rel="noopener noreferrer"
               className="block"
