@@ -1054,22 +1054,6 @@ export default function Landing() {
                 </p>
               </div>
 
-              {/* PRICE ANCHORING */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center space-y-2">
-                <p className="text-slate-700">
-                  That's less than <strong className="text-slate-900">£14 per day</strong> over the 21 days.
-                </p>
-                <p className="text-slate-600">
-                  Less than a single hour with a freelance developer. Less than one month of most "SaaS courses." Less than a fancy dinner out.
-                </p>
-              </div>
-
-              {/* REASON WHY */}
-              <div className="text-center text-slate-600">
-                <p>
-                  <strong className="text-slate-900">Why so affordable?</strong> Because I'm not looking for tire-kickers who need convincing. I want builders who are ready to DO THE WORK. The price filters for action-takers. If £295 feels like too much to invest in building your own software product, this probably isn't for you anyway.
-                </p>
-              </div>
 
               <a href="/order" className="block">
                 <Button size="lg" className="w-full h-16 text-xl font-bold gap-3">
