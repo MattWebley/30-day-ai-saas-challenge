@@ -157,7 +157,7 @@ export class WebhookHandlers {
           sessionsTotal: isSingleSession ? 1 : 4,
           amountPaid,
           currency: currency.toLowerCase(),
-          stripeSessionId: sessionId,
+          stripeSessionId: `coaching_${userId}_${Date.now()}`,
         });
         console.log('[Webhook] Coaching purchase recorded:', { email, coach: isMattCoach ? 'matt' : 'expert', sessions: isSingleSession ? 1 : 4 });
 
