@@ -27,6 +27,16 @@ export default function CheckoutSuccess() {
 
       // If there's a session_id, this is coming from main challenge checkout
       if (sessionId) {
+        // Track purchase with Meta Pixel
+        if (window.fbq) {
+          window.fbq('track', 'Purchase', {
+            value: currency === 'gbp' ? 295 : 399,
+            currency: currency.toUpperCase(),
+            content_name: '21-Day AI SaaS Challenge',
+            content_type: 'product'
+          });
+        }
+
         try {
           // Save the Stripe customer ID for one-click upsells
           setStatus("Saving your payment details...");

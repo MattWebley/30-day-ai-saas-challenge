@@ -6,8 +6,8 @@ const FACEBOOK_PIXEL_ID = "";
 
 declare global {
   interface Window {
-    fbq: any;
-    _fbq: any;
+    fbq?: (...args: any[]) => void;
+    _fbq?: any;
   }
 }
 
@@ -44,9 +44,9 @@ export function FacebookPixel() {
     const s = b.getElementsByTagName(e)[0];
     s?.parentNode?.insertBefore(t, s);
 
-    // Initialize pixel
-    window.fbq("init", FACEBOOK_PIXEL_ID);
-    window.fbq("track", "PageView");
+    // Initialize pixel (use n directly since we just assigned it)
+    n("init", FACEBOOK_PIXEL_ID);
+    n("track", "PageView");
 
   }, []);
 

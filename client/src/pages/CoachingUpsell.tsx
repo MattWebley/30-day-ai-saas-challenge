@@ -62,6 +62,16 @@ export default function CoachingUpsell() {
 
       if (data.success) {
         // One-click purchase succeeded!
+        // Track purchase with Meta Pixel
+        if (window.fbq) {
+          window.fbq('track', 'Purchase', {
+            value: price.amount,
+            currency: currency.toUpperCase(),
+            content_name: '4x Coaching Sessions (Upsell)',
+            content_type: 'product'
+          });
+        }
+
         setPurchaseSuccess(true);
         setButtonText("Added to Your Order!");
         // Redirect to welcome page after a moment

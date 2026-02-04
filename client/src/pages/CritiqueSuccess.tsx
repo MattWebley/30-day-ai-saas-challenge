@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Check, Send, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,20 @@ export default function CritiqueSuccess() {
   const accountEmail = (user as any)?.email || "";
   const emailChanged = preferredEmail !== accountEmail && accountEmail !== "";
   const emailsMatch = !emailChanged || preferredEmail === confirmEmail;
+  const purchaseTracked = useRef(false);
+
+  // Track purchase with Meta Pixel (only once)
+  useEffect(() => {
+    if (window.fbq && !purchaseTracked.current) {
+      purchaseTracked.current = true;
+      window.fbq('track', 'Purchase', {
+        value: 495,
+        currency: 'GBP',
+        content_name: 'Sales Page Critique',
+        content_type: 'product'
+      });
+    }
+  }, []);
 
   // Pre-populate email from user account
   useEffect(() => {

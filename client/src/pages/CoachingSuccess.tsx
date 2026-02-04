@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Check, ArrowRight, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,29 @@ export default function CoachingSuccess() {
 
   // Determine what they bought based on type param
   const isMattSession = type === "matt" || type === "matt-single";
+
+  // Track purchase with Meta Pixel
+  useEffect(() => {
+    if (window.fbq) {
+      // Determine value based on type
+      const getPurchaseValue = () => {
+        switch (type) {
+          case "expert-single": return 299;
+          case "expert": return 995;
+          case "matt-single": return 495;
+          case "matt": return 1495;
+          default: return 995;
+        }
+      };
+
+      window.fbq('track', 'Purchase', {
+        value: getPurchaseValue(),
+        currency: 'GBP',
+        content_name: getProductName(),
+        content_type: 'product'
+      });
+    }
+  }, [type]);
 
   const getProductName = () => {
     switch (type) {
