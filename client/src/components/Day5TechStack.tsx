@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ExternalLink, Copy, Check } from "lucide-react";
+import { ExternalLink, Copy, Check, Users } from "lucide-react";
+import { Link } from "wouter";
 import { ds } from "@/lib/design-system";
 import { toast } from "sonner";
 
@@ -382,6 +383,26 @@ What problems might I run into?`)}
         <p className={ds.muted + " mt-4"}>
           These templates are training wheels. Soon you'll just talk to Claude like a colleague - but start here.
         </p>
+      </div>
+
+      {/* Coaching CTA */}
+      <div className={ds.infoBoxHighlight}>
+        <div className="flex items-start gap-4">
+          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <Users className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex-1">
+            <p className={ds.label + " mb-1"}>Want an expert building alongside you?</p>
+            <p className={ds.muted + " mb-3"}>
+              The build phase starts soon. If you'd prefer hands-on help from someone who's done this before, our coaching sessions let you build live on a call with an experienced vibe coder.
+            </p>
+            <Link href="/coaching">
+              <Button variant="outline" size="sm">
+                Learn About Coaching
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Continue Button */}
