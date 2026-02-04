@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, type User } from "@shared/schema";
+import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, type User } from "@shared/schema";
 import dns from "dns";
 import { promisify } from "util";
 import crypto from "crypto";
@@ -402,6 +402,23 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching admin stats:", error);
       res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  // Get all coaching purchases
+  app.get("/api/admin/coaching-purchases", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const purchases = await db.select().from(coachingPurchases).orderBy(coachingPurchases.purchasedAt);
+      res.json(purchases.reverse()); // Most recent first
+    } catch (error) {
+      console.error("Error fetching coaching purchases:", error);
+      res.status(500).json({ message: "Failed to fetch coaching purchases" });
     }
   });
 
@@ -3441,7 +3458,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         }],
         mode: 'payment',
         allow_promotion_codes: true,
-        success_url: `${protocol}://${host}/coaching/success`,
+        success_url: `${protocol}://${host}/coaching/success?type=expert`,
         cancel_url: `${protocol}://${host}/coaching/upsell?currency=${currency}`,
         metadata: {
           productType: 'coaching',
@@ -3479,7 +3496,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         }],
         mode: 'payment',
         allow_promotion_codes: true,
-        success_url: `${protocol}://${host}/coaching/success?type=single`,
+        success_url: `${protocol}://${host}/coaching/success?type=expert-single`,
         cancel_url: `${protocol}://${host}/coaching`,
         metadata: {
           productType: 'coaching-single',

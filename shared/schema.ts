@@ -72,6 +72,22 @@ export const pendingPurchases = pgTable("pending_purchases", {
 
 export type PendingPurchase = typeof pendingPurchases.$inferSelect;
 
+// Coaching purchases - tracks who bought what coaching package
+export const coachingPurchases = pgTable("coaching_purchases", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id"), // null if purchased before login
+  email: varchar("email").notNull(),
+  coachType: varchar("coach_type").notNull(), // 'matt' or 'expert'
+  packageType: varchar("package_type").notNull(), // 'single' or 'pack'
+  sessionsTotal: integer("sessions_total").notNull(), // 1 or 4
+  amountPaid: integer("amount_paid").notNull(), // in cents
+  currency: varchar("currency").notNull(), // 'usd' or 'gbp'
+  stripeSessionId: varchar("stripe_session_id"),
+  purchasedAt: timestamp("purchased_at").defaultNow(),
+});
+
+export type CoachingPurchase = typeof coachingPurchases.$inferSelect;
+
 // Day content table - stores the 21-day curriculum
 export const dayContent = pgTable("day_content", {
   id: serial("id").primaryKey(),

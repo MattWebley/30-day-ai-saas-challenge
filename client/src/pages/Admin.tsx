@@ -481,6 +481,7 @@ export default function Admin() {
   const [showFunnelSection, setShowFunnelSection] = useState(false);
   const [showLiveUsersSection, setShowLiveUsersSection] = useState(false);
   const [showCouponsSection, setShowCouponsSection] = useState(false);
+  const [showCoachingPurchasesSection, setShowCoachingPurchasesSection] = useState(false);
   const [showBroadcastSection, setShowBroadcastSection] = useState(false);
   const [showAnnouncementsSection, setShowAnnouncementsSection] = useState(false);
   const [showCreateAnnouncement, setShowCreateAnnouncement] = useState(false);
@@ -526,6 +527,23 @@ export default function Admin() {
   // Coupons data
   const { data: couponsData = [], refetch: refetchCoupons } = useQuery<Coupon[]>({
     queryKey: ["/api/admin/coupons"],
+  });
+
+  // Coaching purchases data
+  interface CoachingPurchase {
+    id: number;
+    userId: string | null;
+    email: string;
+    coachType: string;
+    packageType: string;
+    sessionsTotal: number;
+    amountPaid: number;
+    currency: string;
+    purchasedAt: string;
+  }
+  const { data: coachingPurchasesData = [] } = useQuery<CoachingPurchase[]>({
+    queryKey: ["/api/admin/coaching-purchases"],
+    enabled: showCoachingPurchasesSection,
   });
 
   const createCouponMutation = useMutation({
@@ -1953,6 +1971,93 @@ export default function Admin() {
                 </Card>
               )}
             </div>
+          )}
+        </div>
+
+        {/* Coaching Purchases Section */}
+        <div className="space-y-4" id="coaching-purchases-section">
+          <button
+            onClick={() => setShowCoachingPurchasesSection(!showCoachingPurchasesSection)}
+            className="flex items-center gap-3 w-full text-left"
+          >
+            <Video className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">Coaching Purchases</h2>
+            <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
+              {coachingPurchasesData.length} sales
+            </span>
+            {showCoachingPurchasesSection ? (
+              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
+            )}
+          </button>
+
+          {showCoachingPurchasesSection && (
+            <Card className="p-4 border border-slate-200">
+              {coachingPurchasesData.length === 0 ? (
+                <p className="text-slate-500 text-center py-8">No coaching purchases yet</p>
+              ) : (
+                <div className="space-y-3">
+                  {/* Summary stats */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pb-4 border-b border-slate-200">
+                    <div className="text-center p-3 bg-slate-50 rounded-lg">
+                      <p className="text-2xl font-bold text-slate-900">
+                        {coachingPurchasesData.filter(p => p.coachType === 'matt').length}
+                      </p>
+                      <p className="text-xs text-slate-500">Matt Sessions</p>
+                    </div>
+                    <div className="text-center p-3 bg-slate-50 rounded-lg">
+                      <p className="text-2xl font-bold text-slate-900">
+                        {coachingPurchasesData.filter(p => p.coachType === 'expert').length}
+                      </p>
+                      <p className="text-xs text-slate-500">Expert Sessions</p>
+                    </div>
+                    <div className="text-center p-3 bg-slate-50 rounded-lg">
+                      <p className="text-2xl font-bold text-slate-900">
+                        {coachingPurchasesData.reduce((sum, p) => sum + p.sessionsTotal, 0)}
+                      </p>
+                      <p className="text-xs text-slate-500">Total Sessions</p>
+                    </div>
+                    <div className="text-center p-3 bg-slate-50 rounded-lg">
+                      <p className="text-2xl font-bold text-primary">
+                        £{(coachingPurchasesData.filter(p => p.currency === 'gbp').reduce((sum, p) => sum + p.amountPaid, 0) / 100).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-slate-500">GBP Revenue</p>
+                    </div>
+                  </div>
+
+                  {/* Purchases list */}
+                  <div className="space-y-2">
+                    <h3 className="font-bold text-slate-900 text-sm">Recent Purchases</h3>
+                    {coachingPurchasesData.map((purchase) => (
+                      <div key={purchase.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+                            purchase.coachType === 'matt' ? 'bg-amber-500' : 'bg-blue-500'
+                          }`}>
+                            {purchase.coachType === 'matt' ? 'M' : 'J'}
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-900">{purchase.email}</p>
+                            <p className="text-xs text-slate-500">
+                              {purchase.coachType === 'matt' ? 'Matt' : 'Expert (James)'} • {purchase.sessionsTotal} session{purchase.sessionsTotal > 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-slate-900">
+                            {purchase.currency === 'gbp' ? '£' : '$'}{(purchase.amountPaid / 100).toLocaleString()}
+                          </p>
+                          <p className="text-xs text-slate-500">
+                            {new Date(purchase.purchasedAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </Card>
           )}
         </div>
 

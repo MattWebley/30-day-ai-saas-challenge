@@ -304,8 +304,8 @@ export default function Coaching() {
               </button>
 
               <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
-                <Shield className="w-4 h-4" />
-                <span>100% satisfaction guarantee</span>
+                <Users className="w-4 h-4" />
+                <span>Coach swap guarantee</span>
               </div>
               <p className="text-center text-xs text-slate-400">
                 Unlocks booking calendar immediately after purchase
@@ -332,13 +332,13 @@ export default function Coaching() {
               </ol>
             </div>
 
-            {/* Guarantee */}
-            <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-              <Shield className="w-8 h-8 text-amber-600 flex-shrink-0" />
+            {/* Coach Swap Policy */}
+            <div className="flex items-center gap-3 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+              <Users className="w-8 h-8 text-blue-600 flex-shrink-0" />
               <div>
-                <p className="font-bold text-slate-900 text-sm">Satisfaction Guarantee</p>
+                <p className="font-bold text-slate-900 text-sm">Coach Swap Guarantee</p>
                 <p className="text-xs text-slate-600">
-                  If you're not satisfied after your first session, we'll refund you in full.
+                  If you're not clicking with your coach, let me know and I'll assign you a different one for your next session.
                 </p>
               </div>
             </div>

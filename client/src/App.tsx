@@ -37,6 +37,8 @@ import Referrals from "@/pages/Referrals";
 import Congratulations from "@/pages/Congratulations";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
+import { CookieConsent } from "@/components/CookieConsent";
+import { FacebookPixel } from "@/components/FacebookPixel";
 
 function ScrollToTop() {
   const [location] = useLocation();
@@ -124,6 +126,8 @@ function App() {
           <TooltipProvider>
             <Toaster />
             <Router />
+            <CookieConsent />
+            <FacebookPixel />
           </TooltipProvider>
         </TestModeProvider>
       </BrandProvider>

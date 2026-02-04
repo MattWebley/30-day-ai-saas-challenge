@@ -1,9 +1,10 @@
 import Stripe from 'stripe';
 import { getStripeSync, getUncachableStripeClient } from './stripeClient';
 import { db } from './db';
-import { users, pendingPurchases } from '../shared/schema';
+import { users, pendingPurchases, coachingPurchases } from '../shared/schema';
 import { eq } from 'drizzle-orm';
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendCoachingPurchaseNotificationEmail, sendCritiqueNotificationEmail } from './emailService';
+import { addContactToSysteme } from './systemeService';
 
 export class WebhookHandlers {
   static async processWebhook(payload: Buffer, signature: string): Promise<void> {
@@ -130,12 +131,36 @@ export class WebhookHandlers {
     switch (productType) {
       case 'challenge':
         updateData.challengePurchased = true;
+        // Add to Systeme.io for email drip campaign
+        const [challengeUser] = await db.select().from(users).where(eq(users.id, userId));
+        addContactToSysteme({
+          email,
+          firstName: challengeUser?.firstName || undefined,
+          lastName: challengeUser?.lastName || undefined,
+          tags: ['21-Day Challenge Buyer'],
+        }).catch((err: any) => console.error('[Webhook] Systeme.io error:', err));
         break;
       case 'coaching':
       case 'coaching-single':
       case 'coaching-matt':
       case 'coaching-matt-single':
         updateData.coachingPurchased = true;
+
+        // Record the coaching purchase details
+        const isMattCoach = productType.includes('matt');
+        const isSingleSession = productType.includes('single');
+        await db.insert(coachingPurchases).values({
+          userId,
+          email,
+          coachType: isMattCoach ? 'matt' : 'expert',
+          packageType: isSingleSession ? 'single' : 'pack',
+          sessionsTotal: isSingleSession ? 1 : 4,
+          amountPaid,
+          currency: currency.toLowerCase(),
+          stripeSessionId: sessionId,
+        });
+        console.log('[Webhook] Coaching purchase recorded:', { email, coach: isMattCoach ? 'matt' : 'expert', sessions: isSingleSession ? 1 : 4 });
+
         // Send coaching emails
         const [user] = await db.select().from(users).where(eq(users.id, userId));
         const firstName = user?.firstName || 'there';
