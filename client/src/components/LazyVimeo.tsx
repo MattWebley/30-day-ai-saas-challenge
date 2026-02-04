@@ -6,9 +6,10 @@ interface LazyVimeoProps {
   hash?: string;
   title?: string;
   thumbnail?: string;
+  overlayText?: string;
 }
 
-export function LazyVimeo({ videoId, hash, title = "Video", thumbnail }: LazyVimeoProps) {
+export function LazyVimeo({ videoId, hash, title = "Video", thumbnail, overlayText }: LazyVimeoProps) {
   const [loaded, setLoaded] = useState(false);
 
   const thumbnailUrl = thumbnail || `https://vumbnail.com/${videoId}.jpg`;
@@ -40,10 +41,20 @@ export function LazyVimeo({ videoId, hash, title = "Video", thumbnail }: LazyVim
         className="w-full h-full object-cover"
         loading="lazy"
       />
-      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex flex-col items-center justify-center gap-4">
+        {overlayText && (
+          <div className="text-white text-xl md:text-2xl font-bold text-center px-4 drop-shadow-lg">
+            {overlayText}
+          </div>
+        )}
         <div className="w-20 h-20 rounded-full bg-white/90 group-hover:bg-white group-hover:scale-110 transition-all flex items-center justify-center shadow-lg">
           <Play className="w-8 h-8 text-slate-900 ml-1" fill="currentColor" />
         </div>
+        {!overlayText && (
+          <div className="text-white text-sm font-medium opacity-80">
+            Click to play
+          </div>
+        )}
       </div>
     </button>
   );

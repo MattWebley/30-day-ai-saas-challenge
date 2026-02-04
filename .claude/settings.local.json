@@ -99,7 +99,13 @@
       "Bash(git -C /home/runner/workspace commit -m \"$\\(cat <<''EOF''\nAdd Day 0 & 1 videos, switch all AI to Claude\n\n- Added Loom video for Day 0 \\(intro\\)\n- Added Loom video for Day 1 \\(idea generation\\)\n- Switched all AI calls from GPT-4o-mini to Claude\n- Simplifies to single API provider \\(ANTHROPIC_API_KEY only\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git status:*)",
       "Bash(gh auth:*)",
-      "Bash(git rm:*)"
+      "Bash(git rm:*)",
+      "Bash(__NEW_LINE_1daf5591e5398204__ echo -e \"\\\\n\\\\n3. A/B test headline:\")",
+      "Bash(__NEW_LINE_9fa39c0857f3b417__ echo -e \"\\\\n\\\\n4. Showcase endpoint:\")",
+      "Bash(__NEW_LINE_898804bbb89bcc9e__ echo -e \"\\\\n\\\\n5. Check database connection \\(days endpoint\\):\")",
+      "Bash(__NEW_LINE_89c101335eef55fa__ echo -e \"\\\\n\\\\n6. Order page:\")",
+      "Bash(sort:*)",
+      "Bash(__NEW_LINE_cacadbdd275f9fa0__ echo -e \"\\\\n\\\\n6. Static assets \\(logo\\):\")"
     ]
   }
 }

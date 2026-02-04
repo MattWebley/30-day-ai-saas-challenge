@@ -90,7 +90,7 @@ export default function Landing() {
 
               {/* Vimeo Video Embed */}
               <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-xl">
-                <LazyVimeo videoId="1158816837" hash="38a9da32e3" title="How the 21-Day Challenge works" />
+                <LazyVimeo videoId="1158816837" hash="38a9da32e3" title="How the 21-Day Challenge works" overlayText="Watch: How It Works" />
               </div>
 
               <a href="/order" className="block">
@@ -634,7 +634,7 @@ export default function Landing() {
 
             {/* Vimeo Video Testimonial */}
             <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-xl">
-              <LazyVimeo videoId="1160082444" hash="60d64115d2" title="Client testimonials" />
+              <LazyVimeo videoId="1160082444" hash="60d64115d2" title="Client testimonials" overlayText="Hear From Past Students" />
             </div>
           </div>
         </section>
