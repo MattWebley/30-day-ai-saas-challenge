@@ -1,0 +1,25 @@
+# robots.txt for 21-Day AI SaaS Challenge
+User-agent: *
+Allow: /
+Allow: /order
+Allow: /showcase
+Allow: /terms
+Allow: /privacy
+
+# Disallow authenticated/private pages
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /settings
+Disallow: /badges
+Disallow: /referrals
+Disallow: /build-log
+Disallow: /coaching
+Disallow: /critique
+Disallow: /testimonial
+Disallow: /congratulations
+Disallow: /welcome
+Disallow: /checkout
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://challenge.mattwebley.com/sitemap.xml
