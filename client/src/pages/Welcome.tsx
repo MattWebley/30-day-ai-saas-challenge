@@ -109,41 +109,55 @@ export default function Welcome() {
           <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 text-left space-y-4">
             <h2 className="font-bold text-slate-900 flex items-center gap-2">
               <Lock className="w-5 h-5 text-primary" />
-              Set Up Password Login (Optional)
+              Set Up Your Login
             </h2>
             <p className="text-slate-600 text-sm">
-              Create a password so you can log in anytime with your email ({userEmail})
+              Create a password so you can log in anytime (optional but recommended)
             </p>
             <div className="space-y-3">
-              <div className="relative">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Your Email</label>
+                <Input
+                  type="email"
+                  value={userEmail}
+                  disabled
+                  className="bg-slate-50 text-slate-600"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Create Password</label>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="At least 8 characters"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Confirm Password</label>
                 <Input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Create password (8+ characters)"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pr-10"
+                  placeholder="Type it again"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
               </div>
-              <Input
-                type={showPassword ? "text" : "password"}
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
               <Button
                 onClick={handleSetPassword}
                 disabled={isSettingPassword || !password || !confirmPassword}
                 className="w-full"
-                variant="outline"
               >
-                {isSettingPassword ? "Setting up..." : "Set Password"}
+                {isSettingPassword ? "Setting up..." : "Save My Login"}
               </Button>
             </div>
           </div>
