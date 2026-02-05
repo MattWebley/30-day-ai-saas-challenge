@@ -223,19 +223,60 @@ Interactive components MUST match lesson text styling:
 ## Pending Tasks
 - [ ] Test AI Mentor chat bot (now on Claude API)
 - [ ] Test Showcase feature end-to-end
-- [ ] Test Day 0 → Day 1 → Day 2 flow
+- [ ] Test Day 0 → Day 1 → Day 2 flow (server-side enforcement now added)
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx
 - [ ] Add coaching call booking links (Days 1-7, 19-21)
 - [ ] Audit database email templates for correct URLs (started but interrupted)
+- [ ] Build "Unlock All Days" bump offer ($29 add-on at checkout) — user deciding on price
+- [ ] Consider gating `/api/days/:day` endpoint (currently public, no auth required)
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
+- `/api/days` and `/api/days/:day` endpoints are public (no auth) — lesson text is readable by anyone, but completion is now enforced server-side
 
 ---
 
 ## Session Log
 
-### 2026-02-05 - Stripe Webhook Fix, Magic Links, Settings Page
+### 2026-02-05 (Session 2) - Admin Dashboard Redesign, Day Drip Security Fix
+- **Tasks Completed:**
+  - **Admin Dashboard Visual Redesign** — all 6 admin files restyled (styling only, zero functionality changes):
+    - KPI cards: colored left borders (blue/green/amber/emerald), matching icon backgrounds, larger numbers
+    - Needs Attention panel: amber accent border, amber count badges, AlertTriangle icon
+    - Tab navigation: active tab bg, red badge for pending content items
+    - Charts: shadow-sm, header separators
+    - Student table: semantic status badges (green=completed, blue=active, slate=inactive)
+    - User Funnel: shadow-sm, bordered key metric sub-cards
+    - AdminUsers: green/slate payment pills, blue admin badge, colored activity log categories, red top bars on delete/ban modals
+    - AdminRevenue: fixed `bg-amber-50` design violation on Grant Access box, refunded red pill badge, active/inactive coupon left borders, red top bar on refund modal
+    - AdminContent: amber/blue/green critique status badges, amber flagged indicator, green approve buttons, showcase hover shadows, blue featured testimonial border
+    - AdminMarketing: colored announcement type icons (blue/amber/green/purple), A/B test shadows, green leading trophy
+    - AdminSettings: red left border on flagged messages when present, disabled email templates get opacity + red badge
+  - **SECURITY FIX: Server-side day drip enforcement** added to `POST /api/progress/complete/:day`:
+    - Validates day number (0-21)
+    - Checks previous day is completed before allowing current day
+    - Checks time-based drip (Day 0 & 1 immediate, then 1 per calendar day since signup)
+    - Coaching purchasers and admins bypass all restrictions
+    - Previously ALL day access control was client-side only (sidebar UI) — anyone could complete any day via direct API call
+- **Files Modified:**
+  - `client/src/pages/Admin.tsx` — Overview tab visual redesign
+  - `client/src/pages/admin/AdminUsers.tsx` — Users tab visual redesign
+  - `client/src/pages/admin/AdminRevenue.tsx` — Revenue tab visual redesign
+  - `client/src/pages/admin/AdminContent.tsx` — Content tab visual redesign
+  - `client/src/pages/admin/AdminMarketing.tsx` — Marketing tab visual redesign
+  - `client/src/pages/admin/AdminSettings.tsx` — Settings tab visual redesign
+  - `server/routes.ts` — Added server-side day access enforcement
+- **Security Issues Discovered:**
+  - `/api/days` and `/api/days/:day` are public endpoints (no auth) — anyone can read lesson descriptions
+  - `/api/progress/complete/:day` had NO validation — now FIXED
+  - Day access was purely a frontend UI restriction in sidebar — now server enforces it too
+- **Notes for Next Session:**
+  - Needs REDEPLOY for server-side day drip enforcement to take effect
+  - User is considering a "Unlock All Days" bump offer at checkout (~$29 for $99 challenge)
+  - Still need to decide: gate `/api/days/:day` endpoint with auth, or leave public (lesson text only, no completion)
+  - Bump offer needs: Stripe product creation, checkout page checkbox, webhook handling
+
+### 2026-02-05 (Session 1) - Stripe Webhook Fix, Magic Links, Settings Page
 - **Tasks Completed:**
   - Fixed Stripe webhook failures (57 failures since Jan 30)
     - Created new webhook endpoint in Stripe with new secret
