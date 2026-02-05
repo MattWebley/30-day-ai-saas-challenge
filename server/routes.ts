@@ -8,7 +8,7 @@ import { promisify } from "util";
 import crypto from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail } from "./emailService";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
 import { callClaude, callClaudeForJSON, detectAbuse, checkRateLimit, logAIUsage, sendAbuseAlert } from "./aiService";
@@ -5031,6 +5031,102 @@ Example format:
   });
 
   // ========== REVENUE & PAYMENTS ==========
+
+  // Admin: View pending purchases (guests who paid but haven't logged in yet)
+  app.get("/api/admin/pending-purchases", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const pending = await db
+        .select()
+        .from(pendingPurchases)
+        .orderBy(desc(pendingPurchases.createdAt));
+
+      res.json({
+        total: pending.length,
+        unlinked: pending.filter(p => !p.linkedToUserId).length,
+        purchases: pending
+      });
+    } catch (error) {
+      console.error("Error fetching pending purchases:", error);
+      res.status(500).json({ message: "Failed to fetch pending purchases" });
+    }
+  });
+
+  // Admin: Manually link a pending purchase to a user
+  app.post("/api/admin/pending-purchases/:id/link", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { id } = req.params;
+      const { targetUserId } = req.body;
+
+      if (!targetUserId) {
+        return res.status(400).json({ message: "targetUserId required" });
+      }
+
+      // Get the pending purchase
+      const [purchase] = await db
+        .select()
+        .from(pendingPurchases)
+        .where(eq(pendingPurchases.id, parseInt(id)));
+
+      if (!purchase) {
+        return res.status(404).json({ message: "Pending purchase not found" });
+      }
+
+      // Get the target user
+      const targetUser = await storage.getUser(targetUserId);
+      if (!targetUser) {
+        return res.status(404).json({ message: "Target user not found" });
+      }
+
+      // Grant access based on product type
+      const updateData: Record<string, any> = {};
+      switch (purchase.productType) {
+        case 'challenge':
+          updateData.challengePurchased = true;
+          break;
+        case 'coaching':
+        case 'coaching-single':
+        case 'coaching-matt':
+        case 'coaching-matt-single':
+          updateData.coachingPurchased = true;
+          break;
+      }
+
+      if (purchase.stripeCustomerId) {
+        updateData.stripeCustomerId = purchase.stripeCustomerId;
+      }
+      if (purchase.currency) {
+        updateData.purchaseCurrency = purchase.currency;
+      }
+
+      // Update user
+      await db.update(users).set(updateData).where(eq(users.id, targetUserId));
+
+      // Mark purchase as linked
+      await db
+        .update(pendingPurchases)
+        .set({ linkedToUserId: targetUserId, linkedAt: new Date() })
+        .where(eq(pendingPurchases.id, parseInt(id)));
+
+      res.json({ success: true, message: `Linked purchase to user ${targetUser.email}` });
+    } catch (error) {
+      console.error("Error linking pending purchase:", error);
+      res.status(500).json({ message: "Failed to link pending purchase" });
+    }
+  });
 
   // Admin: Get revenue overview
   // IMPORTANT: Only show Stripe data from 2026-01-30 onwards (challenge launch date)

@@ -70,7 +70,8 @@ app.post(
       res.status(200).json({ received: true });
     } catch (error: any) {
       console.error('Webhook error:', error.message);
-      res.status(400).json({ error: 'Webhook processing error' });
+      console.error('Webhook error stack:', error.stack);
+      res.status(400).json({ error: 'Webhook processing error', detail: error.message });
     }
   }
 );

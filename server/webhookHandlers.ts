@@ -17,12 +17,18 @@ export class WebhookHandlers {
       );
     }
 
-    // First, process with our custom handler
+    // First, process with our custom handler (this is the important one)
     await this.handleCheckoutComplete(payload, signature);
 
     // Then let StripeSync handle it (for general Stripe data sync)
-    const sync = await getStripeSync();
-    await sync.processWebhook(payload, signature);
+    // Wrapped in try-catch so StripeSync errors don't break the whole webhook
+    try {
+      const sync = await getStripeSync();
+      await sync.processWebhook(payload, signature);
+    } catch (syncError: any) {
+      console.error('[Webhook] StripeSync error (non-fatal):', syncError.message);
+      // Don't rethrow - we still want to return 200 since our custom handler worked
+    }
   }
 
   static async handleCheckoutComplete(payload: Buffer, signature: string): Promise<void> {
