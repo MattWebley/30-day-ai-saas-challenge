@@ -131,11 +131,8 @@ export async function registerRoutes(
         expiresAt,
       });
 
-      // Send the magic link email
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN
-        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-        : 'https://challenge.mattwebley.com';
-      const magicLink = `${baseUrl}/auth/magic?token=${token}`;
+      // Send the magic link email - always use production URL
+      const magicLink = `https://challenge.mattwebley.com/api/auth/magic-link/verify?token=${token}`;
 
       console.log('[Magic Link] Sending to:', normalizedEmail);
       console.log('[Magic Link] URL:', magicLink);
@@ -3496,11 +3493,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         // Continue without AI answer
       }
 
-      // Build answer URL
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN
-        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
-        : process.env.REPLIT_DEPLOYMENT_URL || "http://localhost:5000";
-      const answerUrl = `${baseUrl}/admin/answer/${answerToken}`;
+      // Build answer URL - always use production URL
+      const answerUrl = `https://challenge.mattwebley.com/admin/answer/${answerToken}`;
 
       // Send email notification
       await sendQuestionNotificationEmail({
