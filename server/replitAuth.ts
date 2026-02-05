@@ -142,8 +142,24 @@ export async function setupAuth(app: Express) {
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
+  const session = req.session as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  // Check for magic link authentication first
+  if (session?.magicLinkAuth && session?.userId) {
+    // Create a user object that matches the Replit Auth structure
+    if (!req.user) {
+      (req as any).user = {
+        claims: {
+          sub: session.userId,
+          email: session.userEmail,
+        }
+      };
+    }
+    return next();
+  }
+
+  // Fall back to Replit Auth
+  if (!req.isAuthenticated() || !user?.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
