@@ -36,8 +36,8 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
-      {/* Sticky Header Block */}
-      <div className="sticky top-0 z-50">
+      {/* Header Block */}
+      <div>
         {/* Announcement Bar */}
         <div className="bg-amber-400 py-3 px-4 text-center">
           <p className="text-slate-900 font-bold text-sm sm:text-base">
