@@ -105,7 +105,8 @@
       "Bash(__NEW_LINE_898804bbb89bcc9e__ echo -e \"\\\\n\\\\n5. Check database connection \\(days endpoint\\):\")",
       "Bash(__NEW_LINE_89c101335eef55fa__ echo -e \"\\\\n\\\\n6. Order page:\")",
       "Bash(sort:*)",
-      "Bash(__NEW_LINE_cacadbdd275f9fa0__ echo -e \"\\\\n\\\\n6. Static assets \\(logo\\):\")"
+      "Bash(__NEW_LINE_cacadbdd275f9fa0__ echo -e \"\\\\n\\\\n6. Static assets \\(logo\\):\")",
+      "Bash(wc:*)"
     ]
   }
 }
