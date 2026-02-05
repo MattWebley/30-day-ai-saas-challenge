@@ -1483,15 +1483,7 @@ export default function Admin() {
         {/* Overview Stats - Two Column Layout */}
         <div className="grid lg:grid-cols-2 gap-4">
           {/* Students Card */}
-          <Card
-            className="p-5 border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors"
-            onClick={() => {
-              setShowUserManagement(true);
-              setTimeout(() => {
-                document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 100);
-            }}
-          >
+          <Card className="p-5 border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
@@ -1499,34 +1491,53 @@ export default function Admin() {
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">Students</h3>
               </div>
-              <span className="text-xs text-slate-400">Click to manage</span>
+              <span className="text-xs text-slate-400">Click a stat to filter</span>
             </div>
             <div className="grid grid-cols-3 gap-4">
-              <div>
+              <button
+                onClick={() => {
+                  setUserFilter('all');
+                  setShowUserManagement(true);
+                  setTimeout(() => {
+                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 150);
+                }}
+                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <p className="text-3xl font-bold text-slate-900">{stats.totalUsers}</p>
                 <p className="text-slate-600">Total</p>
-              </div>
-              <div>
+              </button>
+              <button
+                onClick={() => {
+                  setUserFilter('active');
+                  setShowUserManagement(true);
+                  setTimeout(() => {
+                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 150);
+                }}
+                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <p className="text-3xl font-bold text-primary">{stats.activeUsers}</p>
                 <p className="text-slate-600">Active (7d)</p>
-              </div>
-              <div>
+              </button>
+              <button
+                onClick={() => {
+                  setUserFilter('inactive');
+                  setShowUserManagement(true);
+                  setTimeout(() => {
+                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 150);
+                }}
+                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <p className="text-3xl font-bold text-slate-400">{stats.totalUsers - stats.activeUsers}</p>
                 <p className="text-slate-600">Inactive</p>
-              </div>
+              </button>
             </div>
           </Card>
 
           {/* Revenue Card */}
-          <Card
-            className="p-5 border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors"
-            onClick={() => {
-              setShowRevenueSection(true);
-              setTimeout(() => {
-                document.getElementById('revenue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 100);
-            }}
-          >
+          <Card className="p-5 border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
@@ -1534,40 +1545,59 @@ export default function Admin() {
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">Revenue</h3>
               </div>
-              <span className="text-xs text-slate-400">Click for details</span>
+              <span className="text-xs text-slate-400">Click a stat to filter</span>
             </div>
             <div className="grid grid-cols-3 gap-4">
-              <div>
+              <button
+                onClick={() => {
+                  setRevenueDateRange('all');
+                  setShowRevenueSection(true);
+                  setTimeout(() => {
+                    document.getElementById('revenue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 150);
+                }}
+                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <p className="text-3xl font-bold text-primary">
                   {revenueData?.totals.transactions || 0}
                 </p>
                 <p className="text-slate-600">Total Sales</p>
-              </div>
-              <div>
+              </button>
+              <button
+                onClick={() => {
+                  setRevenueDateRange('7d');
+                  setShowRevenueSection(true);
+                  setTimeout(() => {
+                    document.getElementById('revenue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 150);
+                }}
+                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <p className="text-3xl font-bold text-slate-900">
                   {revenueData?.totals.last7Days || 0}
                 </p>
                 <p className="text-slate-600">Last 7 days</p>
-              </div>
-              <div>
+              </button>
+              <button
+                onClick={() => {
+                  setRevenueDateRange('30d');
+                  setShowRevenueSection(true);
+                  setTimeout(() => {
+                    document.getElementById('revenue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 150);
+                }}
+                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <p className="text-3xl font-bold text-slate-900">
                   {revenueData?.totals.last30Days || 0}
                 </p>
                 <p className="text-slate-600">Last 30 days</p>
-              </div>
+              </button>
             </div>
           </Card>
 
           {/* Progress Card */}
-          <Card
-            className="p-5 border border-slate-200 cursor-pointer hover:border-slate-300 transition-colors"
-            onClick={() => {
-              setShowProgressSection(true);
-              setTimeout(() => {
-                document.getElementById('progress-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 100);
-            }}
-          >
+          <Card className="p-5 border border-slate-200">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
@@ -1575,23 +1605,49 @@ export default function Admin() {
                 </div>
                 <h3 className="text-lg font-bold text-slate-900">Progress</h3>
               </div>
-              <span className="text-xs text-slate-400">Click for details</span>
+              <span className="text-xs text-slate-400">Click a stat to filter</span>
             </div>
             <div className="grid grid-cols-3 gap-4">
-              <div>
+              <button
+                onClick={() => {
+                  setShowProgressSection(true);
+                  setTimeout(() => {
+                    document.getElementById('progress-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 150);
+                }}
+                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <p className="text-3xl font-bold text-slate-900">{Math.round(stats.avgProgress)}%</p>
                 <p className="text-slate-600">Avg Progress</p>
-              </div>
-              <div>
+              </button>
+              <button
+                onClick={() => {
+                  setUserFilter('completed');
+                  setShowUserManagement(true);
+                  setTimeout(() => {
+                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 150);
+                }}
+                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <p className="text-3xl font-bold text-primary">{stats.completedChallenges}</p>
                 <p className="text-slate-600">Completed</p>
-              </div>
-              <div>
+              </button>
+              <button
+                onClick={() => {
+                  setUserFilter('stuck');
+                  setShowUserManagement(true);
+                  setTimeout(() => {
+                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }, 150);
+                }}
+                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
+              >
                 <p className="text-3xl font-bold text-slate-400">
                   {stats.totalUsers > 0 ? Math.round((stats.completedChallenges / stats.totalUsers) * 100) : 0}%
                 </p>
                 <p className="text-slate-600">Completion Rate</p>
-              </div>
+              </button>
             </div>
           </Card>
 

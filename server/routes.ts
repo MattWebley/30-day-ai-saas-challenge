@@ -5557,8 +5557,8 @@ Example format:
       const totalRefunds = refunds.data.reduce((sum, r) => sum + r.amount, 0);
       const refundCount = refunds.data.length;
 
-      // Recent transactions (already filtered by cutoff)
-      const recentTransactions = charges.data.slice(0, 20).map(charge => ({
+      // Recent transactions - only show successful, non-refunded charges
+      const recentTransactions = successfulCharges.slice(0, 20).map(charge => ({
         id: charge.id,
         amount: charge.amount,
         currency: charge.currency,
