@@ -9,6 +9,8 @@ import { TestModeProvider, useTestMode } from "@/contexts/TestModeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { captureReferralCode, useReferralTracking } from "@/hooks/useReferral";
 import { useHeartbeat } from "@/hooks/useHeartbeat";
+import { initGA } from "@/lib/analytics";
+import { useAnalytics } from "@/hooks/use-analytics";
 
 // Capture referral code from URL immediately on load
 captureReferralCode();
@@ -53,6 +55,9 @@ function ScrollToTop() {
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
   const [location] = useLocation();
+
+  // Track page views for Google Analytics
+  useAnalytics();
 
   // Track referrals after authentication
   useReferralTracking();
@@ -119,6 +124,14 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
+      console.warn('Missing required Google Analytics key: VITE_GA_MEASUREMENT_ID');
+    } else {
+      initGA();
+    }
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrandProvider>
