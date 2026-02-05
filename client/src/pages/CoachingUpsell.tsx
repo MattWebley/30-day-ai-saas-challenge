@@ -13,14 +13,18 @@ export default function CoachingUpsell() {
 
   // Check for admin preview mode
   const params = new URLSearchParams(window.location.search);
-  const isPreview = params.get('preview') === 'true' && (user as any)?.isAdmin;
+  const previewParam = params.get('preview') === 'true';
+  const isPreview = previewParam && (user as any)?.isAdmin;
 
   // Check if user already has coaching - redirect to dashboard (skip in preview mode)
   useEffect(() => {
-    if ((user as any)?.coachingPurchased && !testMode && !isPreview) {
+    // Don't redirect if preview param is set (wait for user to load to confirm admin)
+    if (previewParam) return;
+
+    if ((user as any)?.coachingPurchased && !testMode) {
       window.location.href = '/dashboard';
     }
-  }, [user, testMode, isPreview]);
+  }, [user, testMode, previewParam]);
 
   // Get currency from URL params, fall back to user's purchase currency
   const currency: 'usd' | 'gbp' = useMemo(() => {
@@ -284,9 +288,9 @@ export default function CoachingUpsell() {
             {/* No Thanks */}
             <button
               onClick={handleNoThanks}
-              className="w-full text-slate-500 hover:text-slate-700 text-sm py-3 transition-colors"
+              className="w-full text-slate-600 hover:text-slate-800 hover:bg-slate-100 font-medium py-4 px-6 rounded-xl border border-slate-300 transition-colors"
             >
-              No thanks, I'll figure it out on my own
+              No thanks, continue to my dashboard
             </button>
 
             {/* Guarantee */}
