@@ -125,14 +125,23 @@ export function ChatWidget({ currentDay = 1 }: ChatWidgetProps) {
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Button - smaller on mobile */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 group"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 group"
           aria-label="Open AI Mentor"
         >
-          <div className="flex items-center gap-2 bg-white rounded-full shadow-lg border border-slate-200 pl-4 pr-2 py-2 hover:shadow-xl transition-all">
+          {/* Mobile: just the icon */}
+          <div className="sm:hidden w-12 h-12 rounded-full overflow-hidden border-2 border-primary shadow-lg bg-white">
+            <img
+              src="https://d1yei2z3i6k35z.cloudfront.net/9204972/6718ddeb1f6c8_MattCircleProfileLogo.png"
+              alt="AI Mentor"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          {/* Desktop: icon with text */}
+          <div className="hidden sm:flex items-center gap-2 bg-white rounded-full shadow-lg border border-slate-200 pl-4 pr-2 py-2 hover:shadow-xl transition-all">
             <span className="text-sm font-medium text-slate-700 group-hover:text-primary transition-colors">
               Need help?
             </span>
