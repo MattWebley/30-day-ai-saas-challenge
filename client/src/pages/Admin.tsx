@@ -448,6 +448,30 @@ export default function Admin() {
     },
   });
 
+  const grantAccessMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const res = await fetch("/api/admin/grant-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, productType: 'challenge' }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to grant access");
+      }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast.success(data.message);
+      setGrantAccessEmail('');
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to grant access");
+    },
+  });
+
   const { data: adminData, isLoading } = useQuery({
     queryKey: ["/api/admin/stats"],
     queryFn: async () => {
@@ -476,6 +500,7 @@ export default function Admin() {
   const [showDayCompletionSection, setShowDayCompletionSection] = useState(false);
   const [showRevenueSection, setShowRevenueSection] = useState(false);
   const [revenueDateRange, setRevenueDateRange] = useState<'7d' | '30d' | '90d' | '365d' | 'all'>('all');
+  const [grantAccessEmail, setGrantAccessEmail] = useState('');
   const [showActivityLogSection, setShowActivityLogSection] = useState(false);
   const [activityLogCategory, setActivityLogCategory] = useState<string>('');
   const [showFunnelSection, setShowFunnelSection] = useState(false);
@@ -1786,6 +1811,39 @@ export default function Admin() {
                   <ExternalLink className="w-3 h-3" />
                 </a>
               </div>
+
+              {/* Quick Grant Access Tool */}
+              <Card className="p-4 border border-slate-200 bg-amber-50">
+                <div className="flex items-start gap-3">
+                  <Gift className="w-5 h-5 text-amber-600 mt-0.5" />
+                  <div className="flex-1">
+                    <h3 className="font-bold text-slate-900 mb-1">Quick Grant Access</h3>
+                    <p className="text-sm text-slate-600 mb-3">
+                      Manually grant challenge access to a customer (use when webhooks fail)
+                    </p>
+                    <div className="flex gap-2">
+                      <Input
+                        type="email"
+                        placeholder="customer@email.com"
+                        value={grantAccessEmail}
+                        onChange={(e) => setGrantAccessEmail(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button
+                        onClick={() => {
+                          if (grantAccessEmail.trim()) {
+                            grantAccessMutation.mutate(grantAccessEmail.trim());
+                          }
+                        }}
+                        disabled={!grantAccessEmail.trim() || grantAccessMutation.isPending}
+                        className="whitespace-nowrap"
+                      >
+                        {grantAccessMutation.isPending ? "Granting..." : "Grant Access"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Card>
 
               {revenueLoading ? (
                 <Card className="p-8 border border-slate-200 text-center">

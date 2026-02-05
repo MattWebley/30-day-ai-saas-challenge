@@ -616,7 +616,7 @@ export async function sendBroadcastEmail(params: BroadcastEmailParams): Promise<
 export async function sendMagicLinkEmail(email: string, magicLink: string): Promise<boolean> {
   try {
     const { client, fromEmail, replyTo } = getResendClient();
-    
+
     const subject = 'Your Login Link - 21-Day AI SaaS Challenge';
     const body = `Hi there!
 
@@ -646,6 +646,46 @@ If you didn't request this, you can safely ignore this email.
     return true;
   } catch (error) {
     console.error('Failed to send magic link email:', error);
+    return false;
+  }
+}
+
+export async function sendWelcomeAccessEmail(email: string, magicLink: string): Promise<boolean> {
+  try {
+    const { client, fromEmail, replyTo } = getResendClient();
+
+    const subject = 'Your Access to the 21-Day AI SaaS Challenge';
+    const body = `Hey!
+
+Great news - your access to the 21-Day AI SaaS Challenge is ready.
+
+Click this link to get started:
+${magicLink}
+
+This will log you in and take you straight to your dashboard where you can begin Day 0.
+
+This link is valid for 30 days, but you only need to use it once. After that, you can set up a password to log in anytime.
+
+Let's build something amazing!
+
+- Matt
+
+--
+21-Day AI SaaS Challenge
+Questions? Just reply to this email.`;
+
+    await client.emails.send({
+      from: fromEmail,
+      replyTo: replyTo,
+      to: [email],
+      subject,
+      text: body,
+    });
+
+    console.log('Welcome access email sent to:', email);
+    return true;
+  } catch (error) {
+    console.error('Failed to send welcome access email:', error);
     return false;
   }
 }

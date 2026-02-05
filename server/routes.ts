@@ -5,7 +5,7 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, type User } from "@shared/schema";
 import dns from "dns";
 import { promisify } from "util";
-import crypto from "crypto";
+import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
@@ -269,11 +269,78 @@ export async function registerRoutes(
         (req.session as any).magicLinkAuth = true;
       }
 
-      // Redirect to dashboard with success indicator
-      res.redirect('/dashboard?login=success');
+      // Redirect to welcome page for new users to set up their account
+      res.redirect('/welcome');
     } catch (error) {
       console.error("Error verifying magic link:", error);
       res.redirect('/auth/error?reason=server_error');
+    }
+  });
+
+  // Set up password for current user (after magic link login)
+  app.post('/api/auth/set-password', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { password } = req.body;
+
+      if (!password || password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      // Hash the password using scrypt
+      const salt = randomBytes(16).toString('hex');
+      const hash = scryptSync(password, salt, 64).toString('hex');
+      const passwordHash = `${salt}:${hash}`;
+
+      await db.update(users)
+        .set({ passwordHash })
+        .where(eq(users.id, userId));
+
+      res.json({ success: true, message: "Password set successfully" });
+    } catch (error) {
+      console.error("Error setting password:", error);
+      res.status(500).json({ message: "Failed to set password" });
+    }
+  });
+
+  // Login with email and password
+  app.post('/api/auth/login', async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password required" });
+      }
+
+      const normalizedEmail = email.toLowerCase().trim();
+
+      // Find user by email
+      const [user] = await db.select().from(users)
+        .where(eq(users.email, normalizedEmail));
+
+      if (!user || !user.passwordHash) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      // Verify password
+      const [salt, storedHash] = user.passwordHash.split(':');
+      const hash = scryptSync(password, salt, 64).toString('hex');
+
+      if (hash !== storedHash) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      // Create session
+      if (req.session) {
+        (req.session as any).userId = user.id;
+        (req.session as any).userEmail = user.email;
+        (req.session as any).magicLinkAuth = true;
+      }
+
+      res.json({ success: true, message: "Logged in successfully" });
+    } catch (error) {
+      console.error("Error logging in:", error);
+      res.status(500).json({ message: "Failed to log in" });
     }
   });
 
@@ -5315,6 +5382,86 @@ Example format:
     } catch (error) {
       console.error("Error linking pending purchase:", error);
       res.status(500).json({ message: "Failed to link pending purchase" });
+    }
+  });
+
+  // Admin: Grant access by email (for manual fixes when webhooks fail)
+  app.post("/api/admin/grant-access", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { email, productType = 'challenge' } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const normalizedEmail = email.toLowerCase().trim();
+
+      // Check if user exists
+      const [existingUser] = await db.select().from(users).where(eq(users.email, normalizedEmail));
+
+      if (existingUser) {
+        // Grant access to existing user
+        const updateData: Record<string, any> = {};
+        if (productType === 'challenge') {
+          updateData.challengePurchased = true;
+        } else if (productType.includes('coaching')) {
+          updateData.coachingPurchased = true;
+        }
+
+        await db.update(users).set(updateData).where(eq(users.email, normalizedEmail));
+
+        // Log the action
+        await storage.logActivity({
+          userId,
+          targetUserId: existingUser.id,
+          action: 'manual_access_granted',
+          category: 'user',
+          details: { productType, method: 'admin_grant' }
+        });
+
+        return res.json({
+          success: true,
+          message: `Access granted to existing user: ${normalizedEmail}`,
+          userExists: true
+        });
+      } else {
+        // Check if already in pending purchases
+        const [existing] = await db.select().from(pendingPurchases).where(eq(pendingPurchases.email, normalizedEmail));
+
+        if (existing) {
+          return res.json({
+            success: true,
+            message: `Already has pending access: ${normalizedEmail}`,
+            alreadyPending: true
+          });
+        }
+
+        // Add to pending purchases
+        await db.insert(pendingPurchases).values({
+          email: normalizedEmail,
+          stripeCustomerId: 'manual_grant',
+          stripeSessionId: `manual_${Date.now()}`,
+          productType,
+          currency: 'usd',
+          amountPaid: 0
+        });
+
+        return res.json({
+          success: true,
+          message: `Pending access added for: ${normalizedEmail} (will activate when they sign up)`,
+          userExists: false
+        });
+      }
+    } catch (error) {
+      console.error("Error granting access:", error);
+      res.status(500).json({ message: "Failed to grant access" });
     }
   });
 

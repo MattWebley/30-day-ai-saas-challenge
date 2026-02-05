@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
-import { Check, ArrowRight, Sparkles, Calendar, BookOpen, Trophy } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Calendar, BookOpen, Trophy, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import confetti from "canvas-confetti";
+import { toast } from "sonner";
 
 export default function Welcome() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const [showContent, setShowContent] = useState(false);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSettingPassword, setIsSettingPassword] = useState(false);
+  const [passwordSet, setPasswordSet] = useState(false);
 
   useEffect(() => {
     // Trigger confetti on load
@@ -20,6 +28,40 @@ export default function Welcome() {
   }, []);
 
   const firstName = (user as any)?.firstName || "there";
+  const userEmail = (user as any)?.email || "";
+
+  const handleSetPassword = async () => {
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+    if (password !== confirmPassword) {
+      toast.error("Passwords don't match");
+      return;
+    }
+
+    setIsSettingPassword(true);
+    try {
+      const res = await fetch("/api/auth/set-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ password }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Failed to set password");
+      }
+
+      setPasswordSet(true);
+      toast.success("Password set! You can now log in with your email and password.");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to set password");
+    } finally {
+      setIsSettingPassword(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-6">
@@ -61,6 +103,66 @@ export default function Welcome() {
             ))}
           </div>
         </div>
+
+        {/* Password Setup - Optional */}
+        {isAuthenticated && !passwordSet && (
+          <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 text-left space-y-4">
+            <h2 className="font-bold text-slate-900 flex items-center gap-2">
+              <Lock className="w-5 h-5 text-primary" />
+              Set Up Password Login (Optional)
+            </h2>
+            <p className="text-slate-600 text-sm">
+              Create a password so you can log in anytime with your email ({userEmail})
+            </p>
+            <div className="space-y-3">
+              <div className="relative">
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Create password (8+ characters)"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              <Input
+                type={showPassword ? "text" : "password"}
+                placeholder="Confirm password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+              <Button
+                onClick={handleSetPassword}
+                disabled={isSettingPassword || !password || !confirmPassword}
+                className="w-full"
+                variant="outline"
+              >
+                {isSettingPassword ? "Setting up..." : "Set Password"}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Password Set Confirmation */}
+        {passwordSet && (
+          <div className="bg-green-50 rounded-2xl border-2 border-green-200 p-6 text-left">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0">
+                <Check className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <p className="font-bold text-green-800">Password set!</p>
+                <p className="text-green-700 text-sm">You can now log in with {userEmail}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* CTA */}
         <a

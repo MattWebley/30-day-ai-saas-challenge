@@ -44,6 +44,8 @@ export const users = pgTable("users", {
   referredBy: varchar("referred_by"), // Referral code of the user who referred them
   // Admin notes
   adminNotes: text("admin_notes"), // Private notes about this user (only visible to admins)
+  // Password auth (optional - users can set this up after magic link login)
+  passwordHash: varchar("password_hash"),
   // Ban system
   isBanned: boolean("is_banned").default(false),
   banReason: text("ban_reason"),
