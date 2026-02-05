@@ -99,16 +99,20 @@ export async function registerRoutes(
 
       const normalizedEmail = email.toLowerCase().trim();
       
-      // Check if this email has any pending purchases or is a registered user
+      // Check if this email has any purchases (challenge or coaching) or is a registered user
       const pendingPurchase = await db.select().from(pendingPurchases)
         .where(eq(pendingPurchases.email, normalizedEmail))
+        .limit(1);
+      
+      const coachingPurchase = await db.select().from(coachingPurchases)
+        .where(eq(coachingPurchases.email, normalizedEmail))
         .limit(1);
       
       const existingUser = await db.select().from(users)
         .where(eq(users.email, normalizedEmail))
         .limit(1);
       
-      if (pendingPurchase.length === 0 && existingUser.length === 0) {
+      if (pendingPurchase.length === 0 && coachingPurchase.length === 0 && existingUser.length === 0) {
         // Don't reveal if email exists - always say "sent"
         return res.json({ 
           success: true, 
@@ -215,7 +219,7 @@ export async function registerRoutes(
                 purchaseCurrency: purchase.currency as 'usd' | 'gbp',
               })
               .where(eq(users.id, user!.id));
-          } else if (purchase.productType === 'coaching') {
+          } else if (purchase.productType.includes('coaching')) {
             await db.update(users)
               .set({ coachingPurchased: true })
               .where(eq(users.id, user!.id));
@@ -225,6 +229,25 @@ export async function registerRoutes(
           await db.update(pendingPurchases)
             .set({ linkedToUserId: user!.id, linkedAt: new Date() })
             .where(eq(pendingPurchases.id, purchase.id));
+        }
+      }
+
+      // Also link any coaching purchases from the coaching table
+      const coachingPurchasesList = await db.select().from(coachingPurchases)
+        .where(eq(coachingPurchases.email, magicToken.email));
+
+      if (coachingPurchasesList.length > 0) {
+        // Grant coaching access and link purchases to user
+        await db.update(users)
+          .set({ coachingPurchased: true })
+          .where(eq(users.id, user!.id));
+
+        for (const coaching of coachingPurchasesList) {
+          if (!coaching.userId) {
+            await db.update(coachingPurchases)
+              .set({ userId: user!.id })
+              .where(eq(coachingPurchases.id, coaching.id));
+          }
         }
       }
 
