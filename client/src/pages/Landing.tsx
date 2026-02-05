@@ -651,7 +651,7 @@ export default function Landing() {
 
             {/* Vimeo Video Testimonial */}
             <div className="relative aspect-video bg-slate-900 rounded-xl overflow-hidden shadow-xl">
-              <LazyVimeo videoId="1160082444" hash="60d64115d2" title="Client testimonials" overlayText="Hear From Past Students" />
+              <LazyVimeo videoId="1160082444" hash="60d64115d2" title="Client testimonials" overlayText="Hear From Past Students" thumbnail="/thumbnails/video-thumbnail-testimonials.png" />
             </div>
           </div>
         </section>
