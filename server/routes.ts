@@ -132,16 +132,26 @@ export async function registerRoutes(
       });
 
       // Send the magic link email
-      const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN
         ? `https://${process.env.REPLIT_DEV_DOMAIN}`
         : 'https://challenge.mattwebley.com';
       const magicLink = `${baseUrl}/auth/magic?token=${token}`;
-      
-      await sendMagicLinkEmail(normalizedEmail, magicLink);
 
-      res.json({ 
-        success: true, 
-        message: "If you have a purchase with this email, you'll receive a login link shortly." 
+      console.log('[Magic Link] Sending to:', normalizedEmail);
+      console.log('[Magic Link] URL:', magicLink);
+
+      const emailSent = await sendMagicLinkEmail(normalizedEmail, magicLink);
+
+      if (!emailSent) {
+        console.error('[Magic Link] Email failed to send for:', normalizedEmail);
+        return res.status(500).json({ message: "Failed to send login link. Please try again." });
+      }
+
+      console.log('[Magic Link] Email sent successfully to:', normalizedEmail);
+
+      res.json({
+        success: true,
+        message: "If you have a purchase with this email, you'll receive a login link shortly."
       });
     } catch (error) {
       console.error("Error requesting magic link:", error);
