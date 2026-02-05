@@ -1,39 +1,26 @@
 import { useState } from "react";
-import { AlertCircle, RefreshCw, Mail, ArrowRight, CheckCircle, Loader2 } from "lucide-react";
+import { Mail, ArrowRight, CheckCircle, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useLocation } from "wouter";
 
 export default function AuthError() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  
+
   const params = new URLSearchParams(window.location.search);
   const reason = params.get("reason");
 
-  const getErrorMessage = () => {
+  const getMessage = () => {
     switch (reason) {
-      case "invalid_token":
-        return "This login link is invalid or has already been used.";
       case "token_used":
-        return "This login link has already been used. Please request a new one.";
+        return "This link has already been used - but no worries, just request a fresh one below.";
       case "token_expired":
-        return "This login link has expired. Please request a new one.";
-      case "server_error":
-        return "Something went wrong on our end. Please try again.";
+        return "This link has expired - let's get you a new one.";
       default:
-        return "Your browser's privacy settings interrupted the login process.";
+        return "Let's get you logged in with a fresh link.";
     }
-  };
-
-  const handleRetry = () => {
-    try {
-      sessionStorage.clear();
-    } catch (e) {
-    }
-    window.location.href = "/api/login";
   };
 
   const handleMagicLink = async (e: React.FormEvent) => {
@@ -66,32 +53,32 @@ export default function AuthError() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-xl shadow-sm border-2 border-slate-200 p-8 text-center space-y-6">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-            <CheckCircle className="w-8 h-8 text-green-600" />
+      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border-2 border-slate-200 p-8 text-center space-y-6">
+          <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto">
+            <CheckCircle className="w-8 h-8 text-white" />
           </div>
 
           <div className="space-y-2">
             <h1 className="text-2xl font-bold text-slate-900">
-              Check Your Email
+              Check Your Email!
             </h1>
             <p className="text-slate-700">
-              If you have a purchase with <strong>{email}</strong>, you'll receive a login link shortly.
+              We've sent a login link to <strong>{email}</strong>
             </p>
           </div>
 
-          <div className="bg-slate-50 p-4 rounded-lg text-left space-y-2">
-            <p className="text-slate-700 font-medium">Next steps:</p>
+          <div className="bg-slate-50 p-4 rounded-xl text-left space-y-2">
+            <p className="text-slate-700 font-medium">What to do:</p>
             <ol className="text-slate-700 list-decimal list-inside space-y-1">
               <li>Check your inbox (and spam folder)</li>
-              <li>Click the login link in the email</li>
+              <li>Click the link in the email</li>
               <li>You'll be logged in automatically</li>
             </ol>
           </div>
 
-          <p className="text-slate-600 text-sm">
-            Link expires in 15 minutes.
+          <p className="text-slate-500 text-sm">
+            The link is valid for 30 days.
           </p>
         </div>
       </div>
@@ -99,56 +86,44 @@ export default function AuthError() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-sm border-2 border-slate-200 p-8 text-center space-y-6">
-        <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
-          <AlertCircle className="w-8 h-8 text-amber-600" />
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border-2 border-slate-200 p-8 text-center space-y-6">
+        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+          <RefreshCw className="w-8 h-8 text-primary" />
         </div>
 
         <div className="space-y-2">
           <h1 className="text-2xl font-bold text-slate-900">
-            Login Issue
+            Need a New Link?
           </h1>
-          <p className="text-slate-700">
-            {getErrorMessage()}
+          <p className="text-slate-600">
+            {getMessage()}
           </p>
         </div>
 
-        <div className="space-y-3">
-          <Button onClick={handleRetry} variant="outline" className="w-full gap-2">
-            <RefreshCw className="w-4 h-4" />
-            Try Standard Login
-          </Button>
+        <div className="text-left space-y-4">
+          <p className="font-medium text-slate-900">
+            Enter your email to get a fresh login link:
+          </p>
 
-          <div className="text-slate-600 text-sm">
-            or try a different browser (Chrome works best)
-          </div>
-        </div>
-
-        <div className="pt-6 border-t border-slate-200 text-left">
-          <h2 className="font-semibold text-slate-900 mb-3">
-            Already purchased? Log in with email:
-          </h2>
-          
           <form onSubmit={handleMagicLink} className="space-y-3">
             <Input
               type="email"
-              placeholder="Enter your email"
+              placeholder="your@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              data-testid="input-magic-email"
+              className="text-base"
             />
-            
+
             {error && (
               <p className="text-red-600 text-sm">{error}</p>
             )}
 
-            <Button 
-              type="submit" 
-              className="w-full gap-2"
+            <Button
+              type="submit"
+              className="w-full gap-2 py-5 text-base"
               disabled={isLoading || !email.trim()}
-              data-testid="button-send-magic-link"
             >
               {isLoading ? (
                 <>
@@ -158,24 +133,24 @@ export default function AuthError() {
               ) : (
                 <>
                   <Mail className="w-4 h-4" />
-                  Send Login Link
+                  Send Me a Login Link
                 </>
               )}
             </Button>
           </form>
 
-          <p className="text-slate-600 text-sm mt-3">
-            We'll email you a one-time login link that works in any browser.
+          <p className="text-slate-500 text-sm text-center">
+            We'll email you a link that logs you in instantly.
           </p>
         </div>
 
         <div className="pt-4 border-t border-slate-200">
           <a
-            href="mailto:matt@mattwebley.com?subject=Login%20Issue&body=Hi%2C%20I'm%20having%20trouble%20logging%20in.%20My%20email%20is%3A%20"
-            className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+            href="mailto:matt@mattwebley.com?subject=Help%20logging%20in"
+            className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-primary font-medium"
           >
             <Mail className="w-4 h-4" />
-            Still stuck? Email support
+            Need help? Email matt@mattwebley.com
             <ArrowRight className="w-3 h-3" />
           </a>
         </div>
