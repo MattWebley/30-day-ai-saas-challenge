@@ -3959,6 +3959,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
             payment_method: sessionPaymentMethodId,
             off_session: true,
             confirm: true,
+            capture_method: 'automatic',
             description: '1:1 Vibe Coding Coaching - 4 x 1-hour sessions',
             metadata: {
               userId: userId || '',
@@ -4118,6 +4119,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           payment_method: pm.id,
           off_session: true,
           confirm: true,
+          capture_method: 'automatic',
           description: '1:1 Vibe Coding Coaching - 4 x 1-hour sessions',
           metadata: {
             userId: userId || '',
@@ -4211,6 +4213,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         payment_method: paymentMethodId as string,
         off_session: true,
         confirm: true,
+        capture_method: 'automatic',
         description: '1:1 Vibe Coding Coaching - 4 x 1-hour sessions',
         metadata: {
           userId: userId || '',
