@@ -501,6 +501,41 @@ export async function registerRoutes(
     try {
       const userId = req.user.claims.sub;
       const day = parseInt(req.params.day);
+
+      if (isNaN(day) || day < 0 || day > 21) {
+        return res.status(400).json({ message: "Invalid day number" });
+      }
+
+      // --- Server-side day access enforcement ---
+      const user = await storage.getUser(userId);
+      const hasCoaching = user?.coachingPurchased || false;
+      const isAdmin = user?.isAdmin || false;
+
+      // Coaching purchasers and admins bypass all drip restrictions
+      if (!hasCoaching && !isAdmin) {
+        // Check 1: Previous day must be completed (except Day 0)
+        if (day > 0) {
+          const allProgress = await storage.getUserProgress(userId);
+          const completedDays = new Set(allProgress.filter(p => p.completed).map(p => p.day));
+
+          if (!completedDays.has(day - 1)) {
+            return res.status(403).json({ message: `You must complete Day ${day - 1} before starting Day ${day}` });
+          }
+        }
+
+        // Check 2: Time-based drip (Day 0 & 1 available immediately, then 1 per day)
+        if (day >= 2) {
+          const userCreatedAt = user?.createdAt || new Date();
+          const daysSinceStart = Math.floor((Date.now() - new Date(userCreatedAt).getTime()) / (1000 * 60 * 60 * 24));
+          const maxAllowedDay = daysSinceStart + 1; // Day 0 & 1 on signup, then +1 per day
+
+          if (day > maxAllowedDay) {
+            return res.status(403).json({ message: "This day hasn't unlocked yet. New days unlock once per day." });
+          }
+        }
+      }
+      // --- End enforcement ---
+
       const { selectedSuggestion, microDecisionChoice, reflectionAnswer, ...componentData } = req.body;
 
       // Build userInputs from component data (customDomain, etc.)
