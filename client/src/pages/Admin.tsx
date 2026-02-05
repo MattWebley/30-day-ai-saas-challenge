@@ -1009,7 +1009,6 @@ export default function Admin() {
   });
 
   // User Management state
-  const [showUserManagement, setShowUserManagement] = useState(false);
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [userFilter, setUserFilter] = useState<'all' | 'paid' | 'unpaid' | 'active' | 'inactive' | 'stuck' | 'completed'>('all');
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
@@ -1480,232 +1479,497 @@ export default function Admin() {
           </button>
         </div>
 
-        {/* Overview Stats - Two Column Layout */}
-        <div className="grid lg:grid-cols-2 gap-4">
+        {/* Overview Stats - Simple display cards */}
+        <div className="grid md:grid-cols-3 gap-4">
           {/* Students Card */}
           <Card className="p-5 border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">Students</h3>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                <Users className="w-5 h-5 text-primary" />
               </div>
-              <span className="text-xs text-slate-400">Click a stat to filter</span>
+              <h3 className="text-lg font-bold text-slate-900">Students</h3>
             </div>
-            <div className="grid grid-cols-3 gap-4">
-              <button
-                onClick={() => {
-                  setUserFilter('all');
-                  setShowUserManagement(true);
-                  setTimeout(() => {
-                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 150);
-                }}
-                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <p className="text-3xl font-bold text-slate-900">{stats.totalUsers}</p>
-                <p className="text-slate-600">Total</p>
-              </button>
-              <button
-                onClick={() => {
-                  setUserFilter('active');
-                  setShowUserManagement(true);
-                  setTimeout(() => {
-                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 150);
-                }}
-                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <p className="text-3xl font-bold text-primary">{stats.activeUsers}</p>
-                <p className="text-slate-600">Active (7d)</p>
-              </button>
-              <button
-                onClick={() => {
-                  setUserFilter('inactive');
-                  setShowUserManagement(true);
-                  setTimeout(() => {
-                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 150);
-                }}
-                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <p className="text-3xl font-bold text-slate-400">{stats.totalUsers - stats.activeUsers}</p>
-                <p className="text-slate-600">Inactive</p>
-              </button>
+            <div className="space-y-1">
+              <p className="text-3xl font-bold text-slate-900">{stats.totalUsers} total</p>
+              <p className="text-slate-500 text-sm">{userSegments.paid} paid, {stats.activeUsers} active this week</p>
             </div>
           </Card>
 
           {/* Revenue Card */}
           <Card className="p-5 border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                  <PoundSterling className="w-5 h-5 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">Revenue</h3>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+                <PoundSterling className="w-5 h-5 text-primary" />
               </div>
-              <span className="text-xs text-slate-400">Click a stat to filter</span>
+              <h3 className="text-lg font-bold text-slate-900">Revenue</h3>
             </div>
-            <div className="grid grid-cols-3 gap-4">
-              <button
-                onClick={() => {
-                  setRevenueDateRange('all');
-                  setShowRevenueSection(true);
-                  setTimeout(() => {
-                    document.getElementById('revenue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 150);
-                }}
-                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <p className="text-3xl font-bold text-primary">
-                  {revenueData?.totals.transactions || 0}
-                </p>
-                <p className="text-slate-600">Total Sales</p>
-              </button>
-              <button
-                onClick={() => {
-                  setRevenueDateRange('7d');
-                  setShowRevenueSection(true);
-                  setTimeout(() => {
-                    document.getElementById('revenue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 150);
-                }}
-                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <p className="text-3xl font-bold text-slate-900">
-                  {revenueData?.totals.last7Days || 0}
-                </p>
-                <p className="text-slate-600">Last 7 days</p>
-              </button>
-              <button
-                onClick={() => {
-                  setRevenueDateRange('30d');
-                  setShowRevenueSection(true);
-                  setTimeout(() => {
-                    document.getElementById('revenue-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 150);
-                }}
-                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <p className="text-3xl font-bold text-slate-900">
-                  {revenueData?.totals.last30Days || 0}
-                </p>
-                <p className="text-slate-600">Last 30 days</p>
-              </button>
+            <div className="space-y-1">
+              {revenueData?.revenueByCurrency && revenueData.revenueByCurrency.length > 0 ? (
+                <div className="space-y-1">
+                  {revenueData.revenueByCurrency.map((curr) => (
+                    <p key={curr.currency} className="text-2xl font-bold text-slate-900">
+                      {formatCurrency(curr.amount, curr.currency)}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-2xl font-bold text-slate-900">£0</p>
+              )}
+              <p className="text-slate-500 text-sm">{revenueData?.totals.transactions || 0} total sales</p>
             </div>
           </Card>
 
           {/* Progress Card */}
           <Card className="p-5 border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-primary" />
-                </div>
-                <h3 className="text-lg font-bold text-slate-900">Progress</h3>
-              </div>
-              <span className="text-xs text-slate-400">Click a stat to filter</span>
-            </div>
-            <div className="grid grid-cols-3 gap-4">
-              <button
-                onClick={() => {
-                  setShowProgressSection(true);
-                  setTimeout(() => {
-                    document.getElementById('progress-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 150);
-                }}
-                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <p className="text-3xl font-bold text-slate-900">{Math.round(stats.avgProgress)}%</p>
-                <p className="text-slate-600">Avg Progress</p>
-              </button>
-              <button
-                onClick={() => {
-                  setUserFilter('completed');
-                  setShowUserManagement(true);
-                  setTimeout(() => {
-                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 150);
-                }}
-                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <p className="text-3xl font-bold text-primary">{stats.completedChallenges}</p>
-                <p className="text-slate-600">Completed</p>
-              </button>
-              <button
-                onClick={() => {
-                  setUserFilter('stuck');
-                  setShowUserManagement(true);
-                  setTimeout(() => {
-                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 150);
-                }}
-                className="text-left p-2 -m-2 rounded-lg hover:bg-slate-50 transition-colors"
-              >
-                <p className="text-3xl font-bold text-slate-400">
-                  {stats.totalUsers > 0 ? Math.round((stats.completedChallenges / stats.totalUsers) * 100) : 0}%
-                </p>
-                <p className="text-slate-600">Completion Rate</p>
-              </button>
-            </div>
-          </Card>
-
-          {/* Quick Actions Card */}
-          <Card className="p-5 border border-slate-200">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-primary" />
+                <TrendingUp className="w-5 h-5 text-primary" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900">Quick Actions</h3>
+              <h3 className="text-lg font-bold text-slate-900">Progress</h3>
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                className="justify-start"
-                onClick={() => {
-                  setShowUserManagement(true);
-                  setIsAddingUser(true);
-                  setTimeout(() => {
-                    document.getElementById('user-management-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }, 100);
-                }}
-              >
-                <UserPlus className="w-4 h-4 mr-2" />
-                Add User
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="justify-start"
-                onClick={() => setShowCommentsSection(true)}
-              >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Comments {pendingComments.length > 0 && `(${pendingComments.length})`}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="justify-start"
-                onClick={() => setShowEmailTemplatesSection(true)}
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Emails
-              </Button>
-              <a
-                href="https://dashboard.stripe.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-start gap-2 px-3 py-2 text-sm border border-slate-200 rounded-md hover:bg-slate-50"
-              >
-                <PoundSterling className="w-4 h-4" />
-                Stripe
-                <ExternalLink className="w-3 h-3 ml-auto" />
-              </a>
+            <div className="space-y-1">
+              <p className="text-3xl font-bold text-slate-900">{stats.completedChallenges} completed</p>
+              <p className="text-slate-500 text-sm">{Math.round(stats.avgProgress)}% average progress</p>
             </div>
           </Card>
         </div>
+
+        {/* Quick Actions Row */}
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setShowRevenueSection(!showRevenueSection);
+              if (!showRevenueSection) {
+                setTimeout(() => document.getElementById('revenue-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
+              }
+            }}
+            className={showRevenueSection ? 'border-primary text-primary' : ''}
+          >
+            <Receipt className="w-4 h-4 mr-2" />
+            Revenue Details
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setShowProgressSection(!showProgressSection);
+              if (!showProgressSection) {
+                setTimeout(() => document.getElementById('progress-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
+              }
+            }}
+            className={showProgressSection ? 'border-primary text-primary' : ''}
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Progress Charts
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setShowFunnelSection(!showFunnelSection);
+              if (!showFunnelSection) {
+                setTimeout(() => document.getElementById('funnel-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
+              }
+            }}
+            className={showFunnelSection ? 'border-primary text-primary' : ''}
+          >
+            <Activity className="w-4 h-4 mr-2" />
+            Funnel
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setShowLiveUsersSection(!showLiveUsersSection);
+              if (!showLiveUsersSection) {
+                setTimeout(() => document.getElementById('live-users-section')?.scrollIntoView({ behavior: 'smooth' }), 100);
+              }
+            }}
+            className={showLiveUsersSection ? 'border-primary text-primary' : ''}
+          >
+            <Radio className="w-4 h-4 mr-2" />
+            Live Users
+          </Button>
+        </div>
+
+        {/* USER LIST - Always visible, with prominent filters */}
+        <Card className="border border-slate-200 overflow-hidden" id="user-management-section">
+          <div className="p-5 border-b border-slate-200 bg-slate-50">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <Users className="w-6 h-6 text-primary" />
+                <h2 className="text-xl font-bold text-slate-900">All Users</h2>
+                <span className="px-2 py-0.5 bg-white text-slate-600 text-sm font-medium rounded-full border border-slate-200">
+                  {filteredUsers.length} shown
+                </span>
+              </div>
+              <Button onClick={() => setIsAddingUser(true)} size="sm">
+                <UserPlus className="w-4 h-4 mr-2" />
+                Add User
+              </Button>
+            </div>
+
+            {/* Search */}
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                placeholder="Search by email, name, or ID..."
+                value={userSearchQuery}
+                onChange={(e) => setUserSearchQuery(e.target.value)}
+                className="pl-10 bg-white"
+              />
+            </div>
+
+            {/* Filter Tabs - Big and obvious */}
+            <div>
+              <p className="text-sm font-medium text-slate-600 mb-2">Filter by:</p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { key: 'all', label: 'All Users', desc: 'Everyone' },
+                  { key: 'paid', label: 'Paid', desc: 'Purchased challenge' },
+                  { key: 'unpaid', label: 'Unpaid', desc: 'No purchase yet' },
+                  { key: 'active', label: 'Active', desc: 'Active in 7 days' },
+                  { key: 'inactive', label: 'Inactive', desc: 'No activity 7+ days' },
+                  { key: 'stuck', label: 'Stuck', desc: 'Started but stalled' },
+                  { key: 'completed', label: 'Completed', desc: 'Finished all 21 days' },
+                ].map(filter => (
+                  <button
+                    key={filter.key}
+                    onClick={() => setUserFilter(filter.key as typeof userFilter)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+                      userFilter === filter.key
+                        ? 'bg-primary text-white border-primary'
+                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                    }`}
+                    title={filter.desc}
+                  >
+                    {filter.label}
+                    <span className={`ml-2 ${userFilter === filter.key ? 'text-white/80' : 'text-slate-400'}`}>
+                      {userSegments[filter.key as keyof typeof userSegments]}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bulk Actions */}
+          <div className="flex items-center gap-2 px-5 py-3 border-b border-slate-100 bg-white">
+            <button
+              onClick={selectAllFiltered}
+              className="text-sm text-primary hover:underline"
+            >
+              {selectedUsers.size === filteredUsers.length && filteredUsers.length > 0
+                ? 'Deselect all'
+                : `Select all ${filteredUsers.length}`}
+            </button>
+            {selectedUsers.size > 0 && (
+              <>
+                <span className="text-slate-300">|</span>
+                <span className="text-sm text-slate-500">{selectedUsers.size} selected</span>
+                <span className="text-slate-300">|</span>
+                <button
+                  onClick={exportUsersCSV}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Export CSV
+                </button>
+                <button
+                  onClick={() => {
+                    const selectedUsersList = filteredUsers.filter(u => selectedUsers.has(u.id));
+                    selectedUsersList.forEach(u => {
+                      updateUser.mutate({ id: u.id, challengePurchased: true });
+                    });
+                    toast.success(`Granted access to ${selectedUsers.size} users`);
+                    setSelectedUsers(new Set());
+                  }}
+                  className="text-sm text-primary hover:underline"
+                >
+                  Grant Access
+                </button>
+                <button
+                  onClick={() => setSelectedUsers(new Set())}
+                  className="text-sm text-slate-400 hover:underline ml-auto"
+                >
+                  Clear
+                </button>
+              </>
+            )}
+            {selectedUsers.size === 0 && (
+              <button
+                onClick={exportUsersCSV}
+                className="text-sm text-slate-500 hover:text-primary ml-auto"
+              >
+                Export all to CSV
+              </button>
+            )}
+          </div>
+
+          {/* Add User Form */}
+          {isAddingUser && (
+            <div className="p-5 border-b border-slate-200 bg-slate-50">
+              <h3 className="font-bold text-slate-900 mb-4">Add New User</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Email *</Label>
+                  <Input
+                    type="email"
+                    value={newUserEmail}
+                    onChange={(e) => setNewUserEmail(e.target.value)}
+                    placeholder="user@example.com"
+                  />
+                </div>
+                <div>
+                  <Label>First Name</Label>
+                  <Input
+                    value={newUserFirstName}
+                    onChange={(e) => setNewUserFirstName(e.target.value)}
+                    placeholder="John"
+                  />
+                </div>
+                <div>
+                  <Label>Last Name</Label>
+                  <Input
+                    value={newUserLastName}
+                    onChange={(e) => setNewUserLastName(e.target.value)}
+                    placeholder="Doe"
+                  />
+                </div>
+                <div className="flex items-end gap-4">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={newUserIsAdmin}
+                      onChange={(e) => setNewUserIsAdmin(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm">Admin</span>
+                  </label>
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={newUserHasPurchased}
+                      onChange={(e) => setNewUserHasPurchased(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <span className="text-sm">Has Purchased</span>
+                  </label>
+                </div>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <Button
+                  onClick={() => {
+                    if (!newUserEmail) {
+                      toast.error("Email is required");
+                      return;
+                    }
+                    createUser.mutate({
+                      email: newUserEmail,
+                      firstName: newUserFirstName || undefined,
+                      lastName: newUserLastName || undefined,
+                      isAdmin: newUserIsAdmin,
+                      challengePurchased: newUserHasPurchased,
+                    });
+                  }}
+                  disabled={createUser.isPending}
+                >
+                  {createUser.isPending ? "Creating..." : "Create User"}
+                </Button>
+                <Button variant="outline" onClick={() => setIsAddingUser(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {/* User List */}
+          <div className="divide-y divide-slate-100 max-h-[600px] overflow-y-auto">
+            {filteredUsers.length === 0 ? (
+              <div className="p-8 text-center text-slate-500">
+                {userSearchQuery ? "No users found matching your search" : "No users yet"}
+              </div>
+            ) : (
+              filteredUsers.map((user) => (
+                <div
+                  key={user.id}
+                  className={`p-4 cursor-pointer transition-colors ${
+                    selectedUsers.has(user.id)
+                      ? "bg-primary/5"
+                      : selectedUser?.id === user.id
+                      ? "bg-slate-50"
+                      : "hover:bg-slate-50"
+                  }`}
+                  onClick={() => setSelectedUser(selectedUser?.id === user.id ? null : user)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.has(user.id)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          toggleUserSelection(user.id);
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary"
+                      />
+                      {user.profileImageUrl ? (
+                        <img src={user.profileImageUrl} alt="" className="w-10 h-10 rounded-full" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center">
+                          <Users className="w-5 h-5 text-slate-500" />
+                        </div>
+                      )}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-slate-900">
+                            {user.firstName || user.lastName
+                              ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
+                              : "No name"}
+                          </p>
+                          {user.isAdmin && (
+                            <span className="px-1.5 py-0.5 bg-slate-100 text-primary text-xs font-bold rounded">Admin</span>
+                          )}
+                          {user.isBanned && (
+                            <span className="px-1.5 py-0.5 bg-red-100 text-red-600 text-xs font-bold rounded">Banned</span>
+                          )}
+                        </div>
+                        <p className="text-sm text-slate-500">{user.email || "No email"}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-6 text-sm">
+                      <div className="text-right hidden md:block">
+                        <p className="text-slate-500 text-xs">Signed up</p>
+                        <p className="text-slate-700">
+                          {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "Unknown"}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-1">
+                          {user.challengePurchased ? (
+                            <span className="flex items-center gap-1 text-primary">
+                              <CreditCard className="w-4 h-4" />
+                              Paid
+                            </span>
+                          ) : (
+                            <span className="text-slate-400">No purchase</span>
+                          )}
+                        </div>
+                        <p className="text-slate-500">Day {user.stats.lastCompletedDay}/21 · {user.stats.totalXp} XP</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expanded Details */}
+                  {selectedUser?.id === user.id && (
+                    <div className="mt-4 pt-4 border-t border-slate-200 space-y-4">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <p className="text-slate-500">User ID</p>
+                          <p className="font-mono text-xs break-all">{user.id}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500">Stripe ID</p>
+                          <p className="font-mono text-xs break-all">{user.stripeCustomerId || "None"}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500">Currency</p>
+                          <p>{user.purchaseCurrency?.toUpperCase() || "Not set"}</p>
+                        </div>
+                        <div>
+                          <p className="text-slate-500">Last Active</p>
+                          <p>{user.stats.lastActivityDate ? formatDistanceToNow(new Date(user.stats.lastActivityDate), { addSuffix: true }) : "Never"}</p>
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateUser.mutate({
+                              id: user.id,
+                              challengePurchased: !user.challengePurchased,
+                            });
+                          }}
+                        >
+                          {user.challengePurchased ? "Revoke Access" : "Grant Access"}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateUser.mutate({
+                              id: user.id,
+                              isAdmin: !user.isAdmin,
+                            });
+                          }}
+                        >
+                          {user.isAdmin ? "Remove Admin" : "Make Admin"}
+                        </Button>
+                        {!user.isAdmin && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (user.isBanned) {
+                                unbanUserMutation.mutate(user.id);
+                              } else {
+                                setBanConfirmation({
+                                  isOpen: true,
+                                  userId: user.id,
+                                  userEmail: user.email || user.id,
+                                  banReason: '',
+                                  confirmText: '',
+                                  step: 1,
+                                });
+                              }
+                            }}
+                            className={user.isBanned ? "text-primary" : ""}
+                          >
+                            {user.isBanned ? "Unban" : "Ban User"}
+                          </Button>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (confirm("Reset all progress for this user? This cannot be undone.")) {
+                              resetUserProgress.mutate(user.id);
+                            }
+                          }}
+                        >
+                          <RefreshCw className="w-4 h-4 mr-1" />
+                          Reset
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteConfirmation({
+                              isOpen: true,
+                              userId: user.id,
+                              userEmail: user.email || user.id,
+                              confirmText: '',
+                              step: 1,
+                            });
+                          }}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <UserX className="w-4 h-4 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+        </Card>
+
 
         {/* Live Users Section */}
         <div className="space-y-4" id="live-users-section">
@@ -2924,482 +3188,6 @@ export default function Admin() {
                 </div>
               </div>
             </Card>
-          )}
-        </div>
-
-        {/* User Management Section */}
-        <div className="space-y-4" id="user-management-section">
-          <button
-            onClick={() => setShowUserManagement(!showUserManagement)}
-            className="flex items-center gap-3 w-full text-left"
-          >
-            <Users className="w-6 h-6 text-primary" />
-            <h2 className="text-xl font-bold text-slate-900">User Management</h2>
-            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
-              {adminUsers.length} users
-            </span>
-            {showUserManagement ? (
-              <ChevronUp className="w-5 h-5 text-slate-400 ml-auto" />
-            ) : (
-              <ChevronDown className="w-5 h-5 text-slate-400 ml-auto" />
-            )}
-          </button>
-
-          {showUserManagement && (
-            <div className="space-y-4">
-              {/* Search and Add User */}
-              <div className="flex gap-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <Input
-                    placeholder="Search by email, name, or ID..."
-                    value={userSearchQuery}
-                    onChange={(e) => setUserSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
-                <Button
-                  onClick={() => setIsAddingUser(true)}
-                  className="gap-2"
-                >
-                  <UserPlus className="w-4 h-4" />
-                  Add User
-                </Button>
-              </div>
-
-              {/* Segment Filters */}
-              <div className="flex flex-wrap gap-2">
-                {[
-                  { key: 'all', label: 'All' },
-                  { key: 'paid', label: 'Paid' },
-                  { key: 'unpaid', label: 'Unpaid' },
-                  { key: 'active', label: 'Active' },
-                  { key: 'inactive', label: 'Inactive' },
-                  { key: 'stuck', label: 'Stuck' },
-                  { key: 'completed', label: 'Completed' },
-                ].map(segment => (
-                  <button
-                    key={segment.key}
-                    onClick={() => setUserFilter(segment.key as typeof userFilter)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                      userFilter === segment.key
-                        ? 'bg-primary text-white'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    }`}
-                  >
-                    {segment.label}
-                    <span className="ml-1.5 opacity-70">
-                      {userSegments[segment.key as keyof typeof userSegments]}
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              {/* Bulk Actions */}
-              <div className="flex items-center gap-2 py-2 border-y border-slate-100">
-                <button
-                  onClick={selectAllFiltered}
-                  className="text-sm text-primary hover:underline"
-                >
-                  {selectedUsers.size === filteredUsers.length && filteredUsers.length > 0
-                    ? 'Deselect all'
-                    : `Select all ${filteredUsers.length}`}
-                </button>
-                {selectedUsers.size > 0 && (
-                  <>
-                    <span className="text-slate-300">|</span>
-                    <span className="text-sm text-slate-500">{selectedUsers.size} selected</span>
-                    <span className="text-slate-300">|</span>
-                    <button
-                      onClick={exportUsersCSV}
-                      className="text-sm text-primary hover:underline flex items-center gap-1"
-                    >
-                      Export CSV
-                    </button>
-                    <button
-                      onClick={() => {
-                        const selectedUsersList = filteredUsers.filter(u => selectedUsers.has(u.id));
-                        selectedUsersList.forEach(u => {
-                          updateUser.mutate({ id: u.id, challengePurchased: true });
-                        });
-                        toast.success(`Granted access to ${selectedUsers.size} users`);
-                        setSelectedUsers(new Set());
-                      }}
-                      className="text-sm text-primary hover:underline"
-                    >
-                      Grant Access
-                    </button>
-                    <button
-                      onClick={() => setSelectedUsers(new Set())}
-                      className="text-sm text-slate-400 hover:underline ml-auto"
-                    >
-                      Clear
-                    </button>
-                  </>
-                )}
-                {selectedUsers.size === 0 && (
-                  <button
-                    onClick={exportUsersCSV}
-                    className="text-sm text-slate-500 hover:text-primary ml-auto flex items-center gap-1"
-                  >
-                    Export all to CSV
-                  </button>
-                )}
-              </div>
-
-              {/* Add User Form */}
-              {isAddingUser && (
-                <Card className="p-4 border border-slate-200 bg-slate-50">
-                  <h3 className="font-bold text-slate-900 mb-4">Add New User</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label>Email *</Label>
-                      <Input
-                        type="email"
-                        value={newUserEmail}
-                        onChange={(e) => setNewUserEmail(e.target.value)}
-                        placeholder="user@example.com"
-                      />
-                    </div>
-                    <div>
-                      <Label>First Name</Label>
-                      <Input
-                        value={newUserFirstName}
-                        onChange={(e) => setNewUserFirstName(e.target.value)}
-                        placeholder="John"
-                      />
-                    </div>
-                    <div>
-                      <Label>Last Name</Label>
-                      <Input
-                        value={newUserLastName}
-                        onChange={(e) => setNewUserLastName(e.target.value)}
-                        placeholder="Doe"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Permissions</Label>
-                      <div className="flex gap-4">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={newUserHasPurchased}
-                            onChange={(e) => setNewUserHasPurchased(e.target.checked)}
-                            className="rounded"
-                          />
-                          <span className="text-sm">Challenge Access</span>
-                        </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={newUserIsAdmin}
-                            onChange={(e) => setNewUserIsAdmin(e.target.checked)}
-                            className="rounded"
-                          />
-                          <span className="text-sm">Admin</span>
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 mt-4">
-                    <Button
-                      onClick={() => {
-                        if (!newUserEmail) {
-                          toast.error("Email is required");
-                          return;
-                        }
-                        createUser.mutate({
-                          email: newUserEmail,
-                          firstName: newUserFirstName || undefined,
-                          lastName: newUserLastName || undefined,
-                          isAdmin: newUserIsAdmin,
-                          challengePurchased: newUserHasPurchased,
-                        });
-                      }}
-                      disabled={createUser.isPending}
-                    >
-                      {createUser.isPending ? "Creating..." : "Create User"}
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsAddingUser(false)}>
-                      Cancel
-                    </Button>
-                  </div>
-                </Card>
-              )}
-
-              {/* User List */}
-              <div className="space-y-2 max-h-[600px] overflow-y-auto">
-                {filteredUsers.length === 0 ? (
-                  <Card className="p-4 text-center text-slate-500">
-                    {userSearchQuery ? "No users found matching your search" : "No users yet"}
-                  </Card>
-                ) : (
-                  filteredUsers.map((user) => (
-                    <Card
-                      key={user.id}
-                      className={`p-4 border-2 cursor-pointer transition-colors ${
-                        selectedUsers.has(user.id)
-                          ? "border-primary bg-primary/5"
-                          : selectedUser?.id === user.id
-                          ? "border-primary bg-slate-50"
-                          : "border-slate-200 hover:border-slate-300"
-                      }`}
-                      onClick={() => setSelectedUser(selectedUser?.id === user.id ? null : user)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          {/* Bulk selection checkbox */}
-                          <input
-                            type="checkbox"
-                            checked={selectedUsers.has(user.id)}
-                            onChange={(e) => {
-                              e.stopPropagation();
-                              toggleUserSelection(user.id);
-                            }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary"
-                          />
-                          {user.profileImageUrl ? (
-                            <img
-                              src={user.profileImageUrl}
-                              alt=""
-                              className="w-10 h-10 rounded-full"
-                            />
-                          ) : (
-                            <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center">
-                              <Users className="w-5 h-5 text-slate-500" />
-                            </div>
-                          )}
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <p className="font-medium text-slate-900">
-                                {user.firstName || user.lastName
-                                  ? `${user.firstName || ""} ${user.lastName || ""}`.trim()
-                                  : "No name"}
-                              </p>
-                              {user.isAdmin && (
-                                <span className="px-1.5 py-0.5 bg-slate-100 text-primary text-xs font-bold rounded">
-                                  Admin
-                                </span>
-                              )}
-                              {user.isBanned && (
-                                <span className="px-1.5 py-0.5 bg-slate-100 text-red-600 text-xs font-bold rounded">
-                                  Banned
-                                </span>
-                              )}
-                            </div>
-                            <p className="text-sm text-slate-500">{user.email || "No email"}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-6 text-sm">
-                          <div className="text-right hidden md:block">
-                            <p className="text-slate-500 text-xs">Signed up</p>
-                            <p className="text-slate-700">
-                              {user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "Unknown"}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <div className="flex items-center gap-1">
-                              {user.challengePurchased ? (
-                                <span className="flex items-center gap-1 text-primary">
-                                  <CreditCard className="w-4 h-4" />
-                                  Paid
-                                </span>
-                              ) : (
-                                <span className="text-slate-400">No purchase</span>
-                              )}
-                            </div>
-                            <p className="text-slate-500">
-                              Day {user.stats.lastCompletedDay}/{21} · {user.stats.totalXp} XP
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Expanded Details */}
-                      {selectedUser?.id === user.id && (
-                        <div className="mt-4 pt-4 border-t border-slate-200 space-y-4">
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                            <div>
-                              <p className="text-slate-500">User ID</p>
-                              <p className="font-mono text-xs break-all">{user.id}</p>
-                            </div>
-                            <div>
-                              <p className="text-slate-500">Stripe ID</p>
-                              <p className="font-mono text-xs break-all">{user.stripeCustomerId || "None"}</p>
-                            </div>
-                            <div>
-                              <p className="text-slate-500">Currency</p>
-                              <p>{user.purchaseCurrency?.toUpperCase() || "Not set"}</p>
-                            </div>
-                            <div>
-                              <p className="text-slate-500">Referral Code</p>
-                              <p className="font-mono text-xs">{user.referralCode || "None"}</p>
-                            </div>
-                            <div>
-                              <p className="text-slate-500">Signed Up</p>
-                              <p>{user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : "Unknown"}</p>
-                              <p className="text-xs text-slate-400">{user.createdAt ? formatDistanceToNow(new Date(user.createdAt), { addSuffix: true }) : ""}</p>
-                            </div>
-                            <div>
-                              <p className="text-slate-500">Last Active</p>
-                              <p>{user.stats.lastActivityDate ? formatDistanceToNow(new Date(user.stats.lastActivityDate), { addSuffix: true }) : "Never"}</p>
-                            </div>
-                            <div>
-                              <p className="text-slate-500">Current Streak</p>
-                              <p>{user.stats.currentStreak} days</p>
-                            </div>
-                            <div>
-                              <p className="text-slate-500">Days Completed</p>
-                              <p>{user.completedDays} of 21</p>
-                            </div>
-                          </div>
-
-                          {/* Admin Notes */}
-                          <div className="pt-3 border-t border-slate-200">
-                            <div className="flex items-center justify-between mb-2">
-                              <p className="text-sm font-medium text-slate-700">Admin Notes</p>
-                              {editingNotesFor !== user.id && (
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditingNotesFor(user.id);
-                                    setNotesText(user.adminNotes || '');
-                                  }}
-                                  className="text-xs text-primary hover:underline"
-                                >
-                                  {user.adminNotes ? 'Edit' : 'Add note'}
-                                </button>
-                              )}
-                            </div>
-                            {editingNotesFor === user.id ? (
-                              <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
-                                <Textarea
-                                  value={notesText}
-                                  onChange={(e) => setNotesText(e.target.value)}
-                                  placeholder="Add private notes about this user..."
-                                  className="text-sm min-h-[80px]"
-                                />
-                                <div className="flex gap-2">
-                                  <Button
-                                    size="sm"
-                                    onClick={() => {
-                                      updateUser.mutate({ id: user.id, adminNotes: notesText });
-                                      setEditingNotesFor(null);
-                                    }}
-                                  >
-                                    Save
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => setEditingNotesFor(null)}
-                                  >
-                                    Cancel
-                                  </Button>
-                                </div>
-                              </div>
-                            ) : user.adminNotes ? (
-                              <p className="text-sm text-slate-600 bg-slate-50 p-2 rounded whitespace-pre-wrap">
-                                {user.adminNotes}
-                              </p>
-                            ) : (
-                              <p className="text-sm text-slate-400 italic">No notes yet</p>
-                            )}
-                          </div>
-
-                          {/* Quick Actions */}
-                          <div className="flex flex-wrap gap-2 pt-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                updateUser.mutate({
-                                  id: user.id,
-                                  challengePurchased: !user.challengePurchased,
-                                });
-                              }}
-                            >
-                              {user.challengePurchased ? "Revoke Access" : "Grant Access"}
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                updateUser.mutate({
-                                  id: user.id,
-                                  isAdmin: !user.isAdmin,
-                                });
-                              }}
-                            >
-                              {user.isAdmin ? "Remove Admin" : "Make Admin"}
-                            </Button>
-                            {!user.isAdmin && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  if (user.isBanned) {
-                                    unbanUserMutation.mutate(user.id);
-                                  } else {
-                                    setBanConfirmation({
-                                      isOpen: true,
-                                      userId: user.id,
-                                      userEmail: user.email || user.id,
-                                      banReason: '',
-                                      confirmText: '',
-                                      step: 1,
-                                    });
-                                  }
-                                }}
-                                className={user.isBanned ? "text-primary hover:text-primary/80" : "text-slate-600 hover:text-slate-700"}
-                              >
-                                {user.isBanned ? "Unban User" : "Ban User"}
-                              </Button>
-                            )}
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (confirm("Reset all progress for this user? This cannot be undone.")) {
-                                  resetUserProgress.mutate(user.id);
-                                }
-                              }}
-                              className="text-slate-600 hover:text-slate-700"
-                            >
-                              <RefreshCw className="w-4 h-4 mr-1" />
-                              Reset Progress
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setDeleteConfirmation({
-                                  isOpen: true,
-                                  userId: user.id,
-                                  userEmail: user.email || user.id,
-                                  confirmText: '',
-                                  step: 1,
-                                });
-                              }}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              <UserX className="w-4 h-4 mr-1" />
-                              Delete User
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </Card>
-                  ))
-                )}
-              </div>
-            </div>
           )}
         </div>
 
