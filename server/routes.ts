@@ -9,7 +9,8 @@ import crypto from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail } from "./emailService";
+import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
 import { callClaude, callClaudeForJSON, detectAbuse, checkRateLimit, logAIUsage, sendAbuseAlert } from "./aiService";
 
@@ -84,6 +85,162 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Magic link login - request a magic link
+  app.post('/api/auth/magic-link', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email || typeof email !== 'string') {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const normalizedEmail = email.toLowerCase().trim();
+      
+      // Check if this email has any pending purchases or is a registered user
+      const pendingPurchase = await db.select().from(pendingPurchases)
+        .where(eq(pendingPurchases.email, normalizedEmail))
+        .limit(1);
+      
+      const existingUser = await db.select().from(users)
+        .where(eq(users.email, normalizedEmail))
+        .limit(1);
+      
+      if (pendingPurchase.length === 0 && existingUser.length === 0) {
+        // Don't reveal if email exists - always say "sent"
+        return res.json({ 
+          success: true, 
+          message: "If you have a purchase with this email, you'll receive a login link shortly." 
+        });
+      }
+
+      // Generate a secure token
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+
+      // Store the token
+      await db.insert(magicTokens).values({
+        email: normalizedEmail,
+        token,
+        expiresAt,
+      });
+
+      // Send the magic link email
+      const baseUrl = process.env.REPLIT_DEV_DOMAIN 
+        ? `https://${process.env.REPLIT_DEV_DOMAIN}`
+        : 'https://challenge.mattwebley.com';
+      const magicLink = `${baseUrl}/auth/magic?token=${token}`;
+      
+      await sendMagicLinkEmail(normalizedEmail, magicLink);
+
+      res.json({ 
+        success: true, 
+        message: "If you have a purchase with this email, you'll receive a login link shortly." 
+      });
+    } catch (error) {
+      console.error("Error requesting magic link:", error);
+      res.status(500).json({ message: "Failed to send login link" });
+    }
+  });
+
+  // Magic link login - verify token and create session
+  app.get('/api/auth/magic-link/verify', async (req, res) => {
+    try {
+      const { token } = req.query;
+      
+      if (!token || typeof token !== 'string') {
+        return res.redirect('/auth/error?reason=invalid_token');
+      }
+
+      // Find the token
+      const tokenRecord = await db.select().from(magicTokens)
+        .where(eq(magicTokens.token, token))
+        .limit(1);
+
+      if (tokenRecord.length === 0) {
+        return res.redirect('/auth/error?reason=invalid_token');
+      }
+
+      const magicToken = tokenRecord[0];
+
+      // Check if already used
+      if (magicToken.usedAt) {
+        return res.redirect('/auth/error?reason=token_used');
+      }
+
+      // Check if expired
+      if (new Date() > magicToken.expiresAt) {
+        return res.redirect('/auth/error?reason=token_expired');
+      }
+
+      // Mark token as used
+      await db.update(magicTokens)
+        .set({ usedAt: new Date() })
+        .where(eq(magicTokens.token, token));
+
+      // Find or create user by email
+      let user = await db.select().from(users)
+        .where(eq(users.email, magicToken.email))
+        .limit(1)
+        .then(rows => rows[0]);
+
+      if (!user) {
+        // Create a new user
+        const newUserId = crypto.randomUUID();
+        await db.insert(users).values({
+          id: newUserId,
+          email: magicToken.email,
+        });
+        const newUser = await storage.getUser(newUserId);
+        if (!newUser) {
+          return res.redirect('/auth/error?reason=server_error');
+        }
+        user = newUser;
+      }
+
+      // Link any pending purchases to this user
+      const pending = await db.select().from(pendingPurchases)
+        .where(eq(pendingPurchases.email, magicToken.email));
+
+      for (const purchase of pending) {
+        if (!purchase.linkedToUserId) {
+          // Grant the purchase to the user
+          if (purchase.productType === 'challenge') {
+            await db.update(users)
+              .set({ 
+                challengePurchased: true,
+                stripeCustomerId: purchase.stripeCustomerId,
+                purchaseCurrency: purchase.currency as 'usd' | 'gbp',
+              })
+              .where(eq(users.id, user!.id));
+          } else if (purchase.productType === 'coaching') {
+            await db.update(users)
+              .set({ coachingPurchased: true })
+              .where(eq(users.id, user!.id));
+          }
+          
+          // Mark purchase as linked
+          await db.update(pendingPurchases)
+            .set({ linkedToUserId: user!.id, linkedAt: new Date() })
+            .where(eq(pendingPurchases.id, purchase.id));
+        }
+      }
+
+      // Create a session for the user
+      // Store user info in session
+      if (req.session) {
+        (req.session as any).userId = user!.id;
+        (req.session as any).userEmail = magicToken.email;
+        (req.session as any).magicLinkAuth = true;
+      }
+
+      // Redirect to dashboard with success indicator
+      res.redirect('/dashboard?login=success');
+    } catch (error) {
+      console.error("Error verifying magic link:", error);
+      res.redirect('/auth/error?reason=server_error');
     }
   });
 
