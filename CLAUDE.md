@@ -224,17 +224,54 @@ Interactive components MUST match lesson text styling:
 - [ ] Test AI Mentor chat bot (now on Claude API)
 - [ ] Test Showcase feature end-to-end
 - [ ] Test Day 0 → Day 1 → Day 2 flow
-- [ ] Test email delivery (use admin test endpoint)
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx
 - [ ] Add coaching call booking links (Days 1-7, 19-21)
+- [ ] Audit database email templates for correct URLs (started but interrupted)
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
-- AI Mentor chat bot reported not working - improved error handling added
 
 ---
 
 ## Session Log
+
+### 2026-02-05 - Stripe Webhook Fix, Magic Links, Settings Page
+- **Tasks Completed:**
+  - Fixed Stripe webhook failures (57 failures since Jan 30)
+    - Created new webhook endpoint in Stripe with new secret
+    - Webhook now returns 200 successfully
+  - Fixed magic link URLs using wrong domain (Replit dev URL instead of production)
+    - `server/routes.ts` - Magic link endpoint now hardcodes production URL
+    - `server/routes.ts` - Admin answer URL now hardcodes production URL
+  - Created admin tool to manually grant access to customers
+  - Implemented magic link authentication flow for new customers:
+    - 30-day token validity (not 15 minutes)
+    - `sendWelcomeAccessEmail` function for welcome emails
+    - Welcome page handles both authenticated and non-authenticated users
+  - Added password setup functionality on Welcome page
+  - Updated AuthError.tsx to show email/password login as default
+  - Fixed coaching upsell "No thanks" button (was tiny text, now proper button)
+  - Made chat widget smaller on mobile (just icon, no text)
+  - Fixed Settings page - now shows real user data and saves changes
+    - Added `PUT /api/auth/user` endpoint for profile updates
+    - Settings page fetches real user data
+    - Users can update first name and last name
+- **Files Modified:**
+  - `server/routes.ts` - Magic link fix, profile update endpoint
+  - `server/webhookHandlers.ts` - Magic link generation for guest purchases
+  - `server/emailService.ts` - Added `sendWelcomeAccessEmail` function
+  - `client/src/pages/Welcome.tsx` - Password setup, non-auth handling
+  - `client/src/pages/AuthError.tsx` - Email/password login form
+  - `client/src/pages/CoachingUpsell.tsx` - Fixed No thanks button
+  - `client/src/pages/Settings.tsx` - Made functional with real data
+  - `client/src/components/ChatWidget.tsx` - Mobile size fix
+- **Emails Sent:**
+  - Sent welcome emails to 5 customers who paid today
+  - Sent apology emails with fresh magic links to same 5 customers
+- **Notes for Next Session:**
+  - User needs to REDEPLOY for magic link URL fix to take effect
+  - Test the full purchase flow after redeploy
+  - Audit remaining database email templates for correct URLs
 
 ### 2026-02-03 (Session 2) - Videos Complete, Day 20 Styling Fix
 - **Tasks Completed:**

@@ -88,6 +88,29 @@ export async function registerRoutes(
     }
   });
 
+  // Update user profile
+  app.put('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { firstName, lastName } = req.body;
+
+      // Update user in database
+      await db.update(users)
+        .set({
+          firstName: firstName?.trim() || null,
+          lastName: lastName?.trim() || null,
+        })
+        .where(eq(users.id, userId));
+
+      // Fetch updated user
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
   // Magic link login - request a magic link
   app.post('/api/auth/magic-link', async (req, res) => {
     try {

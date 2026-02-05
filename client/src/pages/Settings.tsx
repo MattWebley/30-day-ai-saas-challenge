@@ -1,13 +1,13 @@
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "sonner";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Loader2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,6 +22,41 @@ import {
 
 export default function Settings() {
   const queryClient = useQueryClient();
+
+  // Fetch user data
+  const { data: user, isLoading } = useQuery<any>({
+    queryKey: ["/api/auth/user"],
+  });
+
+  // Local state for form
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  // Update local state when user data loads
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName || "");
+      setLastName(user.lastName || "");
+    }
+  }, [user]);
+
+  // Save profile mutation
+  const saveProfile = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("PUT", "/api/auth/user", {
+        firstName,
+        lastName,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      toast.success("Profile updated!");
+    },
+    onError: () => {
+      toast.error("Failed to save changes. Try again.");
+    },
+  });
 
   const resetAllProgress = useMutation({
     mutationFn: async () => {
@@ -39,6 +74,22 @@ export default function Settings() {
     },
   });
 
+  // Check if form has changes
+  const hasChanges = user && (
+    firstName !== (user.firstName || "") ||
+    lastName !== (user.lastName || "")
+  );
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="space-y-8 max-w-2xl">
@@ -53,35 +104,52 @@ export default function Settings() {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Profile</h2>
             <div className="grid gap-2">
-              <Label htmlFor="name">Display Name</Label>
-              <Input id="name" placeholder="Enter your name" defaultValue="Builder" />
+              <Label htmlFor="firstName">First Name</Label>
+              <Input
+                id="firstName"
+                placeholder="Enter your first name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                placeholder="Enter your last name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email Address</Label>
-              <Input id="email" type="email" placeholder="hello@example.com" />
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Notifications</h2>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Daily Reminders</Label>
-                <p className="text-sm text-muted-foreground">Receive an email every morning.</p>
-              </div>
-              <Switch defaultChecked />
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label>Streak Alerts</Label>
-                <p className="text-sm text-muted-foreground">Get notified if you're about to lose your streak.</p>
-              </div>
-              <Switch defaultChecked />
+              <Input
+                id="email"
+                type="email"
+                value={user?.email || ""}
+                disabled
+                className="bg-slate-50 text-slate-600"
+              />
+              <p className="text-sm text-muted-foreground">
+                Email cannot be changed.
+              </p>
             </div>
           </div>
 
           <div className="pt-4 flex justify-end">
-            <Button>Save Changes</Button>
+            <Button
+              onClick={() => saveProfile.mutate()}
+              disabled={!hasChanges || saveProfile.isPending}
+            >
+              {saveProfile.isPending ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
           </div>
         </Card>
 
@@ -92,7 +160,7 @@ export default function Settings() {
               Reset all your challenge progress and start fresh from Day 1.
             </p>
           </div>
-          
+
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
