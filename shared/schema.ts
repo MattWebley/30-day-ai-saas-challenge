@@ -677,3 +677,18 @@ export const announcementDismissals = pgTable("announcement_dismissals", {
 
 export type AnnouncementDismissal = typeof announcementDismissals.$inferSelect;
 export type InsertAnnouncementDismissal = typeof announcementDismissals.$inferInsert;
+
+// Magic link tokens for email-based login fallback
+export const magicTokens = pgTable("magic_tokens", {
+  id: serial("id").primaryKey(),
+  email: varchar("email").notNull(),
+  token: varchar("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  usedAt: timestamp("used_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("magic_tokens_email_idx").on(table.email),
+  index("magic_tokens_token_idx").on(table.token),
+]);
+
+export type MagicToken = typeof magicTokens.$inferSelect;

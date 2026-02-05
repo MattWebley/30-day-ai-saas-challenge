@@ -611,3 +611,41 @@ export async function sendBroadcastEmail(params: BroadcastEmailParams): Promise<
     return false;
   }
 }
+
+// Magic link login email
+export async function sendMagicLinkEmail(email: string, magicLink: string): Promise<boolean> {
+  try {
+    const { client, fromEmail, replyTo } = getResendClient();
+    
+    const subject = 'Your Login Link - 21-Day AI SaaS Challenge';
+    const body = `Hi there!
+
+You requested a login link for the 21-Day AI SaaS Challenge.
+
+Click here to log in:
+${magicLink}
+
+This link expires in 15 minutes and can only be used once.
+
+If you didn't request this, you can safely ignore this email.
+
+- Matt
+
+--
+21-Day AI SaaS Challenge`;
+
+    await client.emails.send({
+      from: fromEmail,
+      replyTo: replyTo,
+      to: [email],
+      subject,
+      text: body,
+    });
+
+    console.log('Magic link email sent to:', email);
+    return true;
+  } catch (error) {
+    console.error('Failed to send magic link email:', error);
+    return false;
+  }
+}
