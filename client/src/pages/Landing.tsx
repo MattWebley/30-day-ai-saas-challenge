@@ -6,7 +6,7 @@ import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, Tre
 import { ds } from "@/lib/design-system";
 import { LazyVimeo } from "@/components/LazyVimeo";
 
-const DEFAULT_HEADLINE = "How to Build Your Own Software Product in the Next 21 Days Without Writing a Single Line of Code...";
+const DEFAULT_HEADLINE = "How To Build Your Own AI SaaS Product in the Next 21 Days Without Writing a Single Line of Code...";
 
 export default function Landing() {
   const [headline, setHeadline] = useState(DEFAULT_HEADLINE);
@@ -36,8 +36,17 @@ export default function Landing() {
 
   return (
     <div className="min-h-screen bg-white font-sans text-slate-900">
-      {/* Sticky Header */}
-      <header className="border-b border-slate-100 bg-white sticky top-0 z-50">
+      {/* Sticky Header Block */}
+      <div className="sticky top-0 z-50">
+        {/* Announcement Bar */}
+        <div className="bg-amber-400 py-3 px-4 text-center">
+          <p className="text-slate-900 font-bold text-sm sm:text-base">
+            🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
+          </p>
+        </div>
+
+        {/* Header */}
+        <header className="border-b border-slate-100 bg-white">
         <div className="max-w-4xl mx-auto px-6 py-3 flex items-center justify-center relative">
           <div className="flex flex-col items-center">
             <img
@@ -57,7 +66,8 @@ export default function Landing() {
             </a>
           </div>
         </div>
-      </header>
+        </header>
+      </div>
 
       <main className="max-w-3xl mx-auto px-6">
 
@@ -81,8 +91,15 @@ export default function Landing() {
             </p>
 
             <h2 className="text-2xl md:text-3xl font-bold text-slate-900">
-              No Tech Skills. No $50K Developers. Just AI and Daily Micro-Tasks.
+              No Tech Skills. No $50K Developers.<br />
+              Just AI and Daily Micro-Tasks.
             </h2>
+
+            <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4 text-left">
+              <p className="text-slate-700">
+                <span className="font-bold text-slate-900">What's a SaaS product?</span> Software people access online and pay a subscription to use. Think Shopify, Canva, or Slack. You're going to build one.
+              </p>
+            </div>
 
             {/* VSL - VIDEO SALES LETTER */}
             <div className="mt-10 space-y-4">
@@ -1054,6 +1071,12 @@ export default function Landing() {
                 </p>
               </div>
 
+              {/* Coupon Code */}
+              <div className="bg-amber-400 rounded-lg p-4 text-center">
+                <p className="text-slate-900 font-bold">
+                  🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
+                </p>
+              </div>
 
               <a href="/order" className="block">
                 <Button size="lg" className="w-full h-16 text-xl font-bold gap-3">

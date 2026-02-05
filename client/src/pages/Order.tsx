@@ -58,6 +58,13 @@ export default function Order() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Announcement Bar */}
+      <div className="bg-amber-400 py-3 px-4 text-center">
+        <p className="text-slate-900 font-bold text-sm sm:text-base">
+          🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
+        </p>
+      </div>
+
       {/* Header */}
       <header className="border-b border-slate-100 bg-white">
         <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -152,6 +159,16 @@ export default function Order() {
               </div>
               <p className="text-sm text-slate-500 text-center">
                 One-time payment. 6 months access. No subscriptions.
+              </p>
+            </div>
+
+            {/* Coupon Code */}
+            <div className="bg-amber-400 rounded-lg p-4 text-center space-y-1">
+              <p className="text-slate-900 font-bold">
+                🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> for 75% off
+              </p>
+              <p className="text-slate-800 text-sm">
+                Enter the code on the next screen
               </p>
             </div>
 
