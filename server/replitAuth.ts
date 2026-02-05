@@ -117,8 +117,15 @@ export async function setupAuth(app: Express) {
     ensureStrategy(req.hostname);
     passport.authenticate(`replitauth:${req.hostname}`, {
       successReturnToOrRedirect: "/",
-      failureRedirect: "/api/login",
-    })(req, res, next);
+      failureRedirect: "/auth-error",
+    })(req, res, (err: any) => {
+      if (err) {
+        console.error("[Auth] Callback error:", err.message);
+        // Redirect to friendly error page instead of showing cryptic error
+        return res.redirect("/auth-error");
+      }
+      next();
+    });
   });
 
   app.get("/api/logout", (req, res) => {

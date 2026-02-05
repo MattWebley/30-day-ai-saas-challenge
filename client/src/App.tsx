@@ -39,6 +39,7 @@ import Referrals from "@/pages/Referrals";
 import Congratulations from "@/pages/Congratulations";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
+import AuthError from "@/pages/AuthError";
 import { CookieConsent } from "@/components/CookieConsent";
 import { FacebookPixel } from "@/components/FacebookPixel";
 
@@ -97,6 +98,7 @@ function Router() {
         <Route path="/welcome" component={Welcome} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/auth-error" component={AuthError} />
         {!isAuthenticated ? (
           <Route path="/" component={Landing} />
         ) : (

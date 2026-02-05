@@ -7,15 +7,17 @@ interface LazyVimeoProps {
   title?: string;
   thumbnail?: string;
   overlayText?: string;
+  autoplay?: boolean;
 }
 
-export function LazyVimeo({ videoId, hash, title = "Video", thumbnail, overlayText }: LazyVimeoProps) {
-  const [loaded, setLoaded] = useState(false);
+export function LazyVimeo({ videoId, hash, title = "Video", thumbnail, overlayText, autoplay = false }: LazyVimeoProps) {
+  const [loaded, setLoaded] = useState(autoplay);
 
   const thumbnailUrl = thumbnail || `https://vumbnail.com/${videoId}.jpg`;
+  // Note: muted=0 attempts unmuted playback, but browsers may still enforce muting for autoplay
   const embedUrl = hash
-    ? `https://player.vimeo.com/video/${videoId}?h=${hash}&autoplay=1&title=0&byline=0&portrait=0`
-    : `https://player.vimeo.com/video/${videoId}?autoplay=1&title=0&byline=0&portrait=0`;
+    ? `https://player.vimeo.com/video/${videoId}?h=${hash}&autoplay=1&muted=0&title=0&byline=0&portrait=0`
+    : `https://player.vimeo.com/video/${videoId}?autoplay=1&muted=0&title=0&byline=0&portrait=0`;
 
   if (loaded) {
     return (
