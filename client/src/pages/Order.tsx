@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft, FastForward } from "lucide-react";
+import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft, FastForward, Copy } from "lucide-react";
 import { useTestMode } from "@/contexts/TestModeContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,13 @@ export default function Order() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const { testMode } = useTestMode();
   const [selectedCurrency, setSelectedCurrency] = useState<'usd' | 'gbp'>('usd');
+  const [copiedCode, setCopiedCode] = useState(false);
+
+  const copyPromoCode = async () => {
+    await navigator.clipboard.writeText('LAUNCHOFFER');
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
 
   const pricing = {
     usd: { symbol: '$', amount: 399, code: 'USD' },
@@ -61,7 +68,7 @@ export default function Order() {
       {/* Announcement Bar */}
       <div className="bg-amber-400 py-3 px-4 text-center">
         <p className="text-slate-900 font-bold text-sm sm:text-base">
-          🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
+          🚀 Use code <button onClick={copyPromoCode} className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1 hover:bg-slate-800 transition-colors cursor-pointer inline-flex items-center gap-1">{copiedCode ? <><Check className="w-3 h-3" /> Copied!</> : 'LAUNCHOFFER'}</button> at checkout for 75% off
         </p>
       </div>
 
@@ -165,7 +172,7 @@ export default function Order() {
             {/* Coupon Code */}
             <div className="bg-amber-400 rounded-lg p-4 text-center space-y-1">
               <p className="text-slate-900 font-bold">
-                🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> for 75% off
+                🚀 Use code <button onClick={copyPromoCode} className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1 hover:bg-slate-800 transition-colors cursor-pointer inline-flex items-center gap-1">{copiedCode ? <><Check className="w-3 h-3" /> Copied!</> : 'LAUNCHOFFER'}</button> for 75% off
               </p>
               <p className="text-slate-800 text-sm">
                 Enter the code on the next screen
