@@ -3405,6 +3405,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         customer_creation: 'always',
         payment_intent_data: {
           setup_future_usage: 'off_session',
+          capture_method: 'automatic',
         },
         metadata: {
           currency: currency,
@@ -3460,6 +3461,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         allow_promotion_codes: true,
         success_url: `${protocol}://${host}/coaching/success?type=expert`,
         cancel_url: `${protocol}://${host}/coaching/upsell?currency=${currency}`,
+        payment_intent_data: {
+          capture_method: 'automatic',
+        },
         metadata: {
           productType: 'coaching',
           currency: currency
@@ -3498,6 +3502,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         allow_promotion_codes: true,
         success_url: `${protocol}://${host}/coaching/success?type=expert-single`,
         cancel_url: `${protocol}://${host}/coaching`,
+        payment_intent_data: {
+          capture_method: 'automatic',
+        },
         metadata: {
           productType: 'coaching-single',
           currency: currency
@@ -3536,6 +3543,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         allow_promotion_codes: true,
         success_url: `${protocol}://${host}/coaching/success?type=matt-single`,
         cancel_url: `${protocol}://${host}/coaching`,
+        payment_intent_data: {
+          capture_method: 'automatic',
+        },
         metadata: {
           productType: 'coaching-matt-single',
           currency: currency
@@ -3574,6 +3584,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         allow_promotion_codes: true,
         success_url: `${protocol}://${host}/coaching/success?type=matt`,
         cancel_url: `${protocol}://${host}/coaching`,
+        payment_intent_data: {
+          capture_method: 'automatic',
+        },
         metadata: {
           productType: 'coaching-matt',
           currency: currency
@@ -3613,6 +3626,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         allow_promotion_codes: true,
         success_url: `${protocol}://${host}/critique/success`,
         cancel_url: `${protocol}://${host}/critique`,
+        payment_intent_data: {
+          capture_method: 'automatic',
+        },
         metadata: {
           productType: 'critique',
           currency: currency
