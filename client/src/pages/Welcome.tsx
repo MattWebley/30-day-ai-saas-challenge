@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Check, ArrowRight, Sparkles, Calendar, BookOpen, Trophy, Lock, Eye, EyeOff } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Calendar, BookOpen, Trophy, Lock, Eye, EyeOff, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,16 +16,18 @@ export default function Welcome() {
   const [passwordSet, setPasswordSet] = useState(false);
 
   useEffect(() => {
-    // Trigger confetti on load
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
+    // Trigger confetti on load (only if authenticated)
+    if (isAuthenticated) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+    }
 
     // Show content after a brief delay
     setTimeout(() => setShowContent(true), 300);
-  }, []);
+  }, [isAuthenticated]);
 
   const firstName = (user as any)?.firstName || "there";
   const userEmail = (user as any)?.email || "";
@@ -63,6 +65,81 @@ export default function Welcome() {
     }
   };
 
+  // Show "check your email" for non-authenticated users
+  if (!isLoading && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-6">
+        <div className={`max-w-lg w-full text-center space-y-8 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+
+          {/* Success Icon */}
+          <div className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center mx-auto shadow-lg">
+            <Check className="w-10 h-10 text-white" strokeWidth={3} />
+          </div>
+
+          {/* Headline */}
+          <div className="space-y-3">
+            <h1 className="text-4xl font-extrabold text-slate-900">
+              Payment Received!
+            </h1>
+            <p className="text-xl text-slate-600">
+              Welcome to the 21-Day AI SaaS Challenge
+            </p>
+          </div>
+
+          {/* Check Email Box */}
+          <div className="bg-white rounded-2xl border-2 border-slate-200 p-6 text-left space-y-4">
+            <h2 className="font-bold text-slate-900 flex items-center gap-2">
+              <Mail className="w-5 h-5 text-primary" />
+              Check Your Email
+            </h2>
+            <p className="text-slate-600">
+              We've sent you an email with a link to access your challenge. Click the link to:
+            </p>
+            <div className="space-y-2">
+              {[
+                "Log in automatically",
+                "Set up your password",
+                "Start Day 0"
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-green-600" />
+                  </div>
+                  <span className="text-slate-700">{item}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Already have password? */}
+          <div className="text-center">
+            <a
+              href="/auth/error"
+              className="text-primary hover:text-primary/80 font-medium"
+            >
+              Already have a password? Log in here
+            </a>
+          </div>
+
+          {/* Support Note */}
+          <p className="text-sm text-slate-500">
+            Didn't get the email? Check spam or contact matt@mattwebley.com
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-6">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  // Authenticated user view
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-6">
       <div className={`max-w-lg w-full text-center space-y-8 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
@@ -180,21 +257,11 @@ export default function Welcome() {
 
         {/* CTA */}
         <a
-          href={isLoading ? "#" : (isAuthenticated ? "/dashboard" : "/api/login")}
-          className={`inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-xl py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 w-full ${isLoading ? 'opacity-75 cursor-wait' : ''}`}
-          onClick={(e) => isLoading && e.preventDefault()}
+          href="/dashboard"
+          className="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-xl py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 w-full"
         >
-          {isLoading ? (
-            <>
-              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Loading...
-            </>
-          ) : (
-            <>
-              Start Day 0
-              <ArrowRight className="w-6 h-6" />
-            </>
-          )}
+          Start Day 0
+          <ArrowRight className="w-6 h-6" />
         </a>
 
         {/* Support Note */}

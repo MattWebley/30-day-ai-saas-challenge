@@ -1,9 +1,10 @@
 import Stripe from 'stripe';
+import crypto from 'crypto';
 import { getStripeSync, getUncachableStripeClient } from './stripeClient';
 import { db } from './db';
-import { users, pendingPurchases, coachingPurchases } from '../shared/schema';
+import { users, pendingPurchases, coachingPurchases, magicTokens } from '../shared/schema';
 import { eq } from 'drizzle-orm';
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendCoachingPurchaseNotificationEmail, sendCritiqueNotificationEmail } from './emailService';
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendCoachingPurchaseNotificationEmail, sendCritiqueNotificationEmail, sendWelcomeAccessEmail } from './emailService';
 import { addContactToSysteme } from './systemeService';
 
 export class WebhookHandlers {
@@ -109,22 +110,32 @@ export class WebhookHandlers {
         amountPaid
       }).onConflictDoNothing();
 
-      // Send purchase confirmation email with login instructions
-      const firstName = session.customer_details?.name?.split(' ')[0] || 'there';
-      const lastName = session.customer_details?.name?.split(' ').slice(1).join(' ') || undefined;
+      // Generate magic link for instant access
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
-      await sendPurchaseConfirmationEmail({
-        to: email,
-        firstName,
-        currency: (currency as 'usd' | 'gbp') || 'usd',
-        total: amountPaid / 100
-      }).catch((err: any) => console.error('[Webhook] Purchase email error:', err));
+      await db.insert(magicTokens).values({
+        email,
+        token,
+        expiresAt,
+      });
+
+      const magicLink = `https://challenge.mattwebley.com/api/auth/magic-link/verify?token=${token}`;
+
+      // Send welcome email with magic link
+      await sendWelcomeAccessEmail(email, magicLink)
+        .catch((err: any) => console.error('[Webhook] Welcome email error:', err));
+
+      console.log('[Webhook] Sent welcome email with magic link to:', email);
 
       // Add guest purchaser to Systeme.io immediately (don't wait for account creation)
+      const firstName = session.customer_details?.name?.split(' ')[0] || undefined;
+      const lastName = session.customer_details?.name?.split(' ').slice(1).join(' ') || undefined;
+
       if (productType === 'challenge') {
         addContactToSysteme({
           email,
-          firstName: firstName !== 'there' ? firstName : undefined,
+          firstName,
           lastName,
           tags: ['21-Day Challenge Buyer'],
         }).catch((err: any) => console.error('[Webhook] Systeme.io guest error:', err));
