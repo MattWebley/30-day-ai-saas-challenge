@@ -1434,6 +1434,87 @@ export async function registerRoutes(
     }
   });
 
+  // Create a user account from a pending purchase
+  app.post("/api/admin/create-from-pending", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { pendingId } = req.body;
+
+      if (!pendingId) {
+        return res.status(400).json({ message: "pendingId is required" });
+      }
+
+      // Get the pending purchase
+      const [pending] = await db.select().from(pendingPurchases)
+        .where(eq(pendingPurchases.id, pendingId));
+
+      if (!pending) {
+        return res.status(404).json({ message: "Pending purchase not found" });
+      }
+
+      if (pending.linkedToUserId) {
+        return res.status(400).json({ message: "This purchase is already linked to a user" });
+      }
+
+      // Check if a user with this email already exists
+      const normalizedEmail = pending.email.toLowerCase().trim();
+      const [existing] = await db.select().from(users)
+        .where(sql`lower(${users.email}) = ${normalizedEmail}`);
+
+      if (existing) {
+        return res.status(409).json({ message: `A user with email ${pending.email} already exists. Use "Link Account" instead.` });
+      }
+
+      // Create the user account
+      const newUserId = crypto.randomUUID();
+      const hasUnlock = (pending.productType || "").includes("+unlock");
+
+      await db.insert(users).values({
+        id: newUserId,
+        email: normalizedEmail,
+        firstName: pending.firstName || null,
+        lastName: pending.lastName || null,
+        challengePurchased: pending.productType.startsWith("challenge"),
+        coachingPurchased: pending.productType.includes("coaching"),
+        allDaysUnlocked: hasUnlock,
+        stripeCustomerId: pending.stripeCustomerId,
+        purchaseCurrency: pending.currency as "usd" | "gbp",
+      });
+
+      // Mark purchase as linked
+      await db.update(pendingPurchases)
+        .set({ linkedToUserId: newUserId, linkedAt: new Date() })
+        .where(eq(pendingPurchases.id, pendingId));
+
+      // Also link coaching purchases by email
+      const coachingByEmail = await db.select().from(coachingPurchases)
+        .where(sql`lower(${coachingPurchases.email}) = ${normalizedEmail}`);
+
+      if (coachingByEmail.length > 0) {
+        await db.update(users)
+          .set({ coachingPurchased: true })
+          .where(eq(users.id, newUserId));
+
+        for (const coaching of coachingByEmail) {
+          if (!coaching.userId) {
+            await db.update(coachingPurchases)
+              .set({ userId: newUserId })
+              .where(eq(coachingPurchases.id, coaching.id));
+          }
+        }
+      }
+
+      res.json({ success: true, message: `Account created for ${pending.email}. They can use "Forgot Password" to set a password and log in.` });
+    } catch (error) {
+      console.error("Error creating user from pending:", error);
+      res.status(500).json({ message: "Failed to create account" });
+    }
+  });
+
   // Create new user
   app.post("/api/admin/users", isAuthenticated, async (req: any, res) => {
     try {

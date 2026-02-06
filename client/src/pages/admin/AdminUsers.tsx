@@ -996,6 +996,22 @@ export default function AdminUsers() {
     },
   });
 
+  const createFromPending = useMutation({
+    mutationFn: async (pendingId: number) => {
+      const res = await apiRequest("POST", "/api/admin/create-from-pending", { pendingId });
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      setSelectedUser(null);
+      toast.success(data.message || "Account created successfully");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create account");
+    },
+  });
+
   return (
     <div className="space-y-8">
       {/* User List */}
@@ -1260,24 +1276,12 @@ export default function AdminUsers() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center justify-end gap-1">
                         {user.isPending ? (
-                          <>
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
-                              <CreditCard className="w-3 h-3" />
-                              Paid - No account
-                            </span>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedUser(selectedUser?.id === user.id ? null : user);
-                              }}
-                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold hover:bg-blue-200 transition-colors"
-                            >
-                              <Link className="w-3 h-3" />
-                              Link Account
-                            </button>
-                          </>
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                            <CreditCard className="w-3 h-3" />
+                            Paid - No account
+                          </span>
                         ) : user.challengePurchased ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
                             <CreditCard className="w-3 h-3" />
@@ -1292,9 +1296,37 @@ export default function AdminUsers() {
                           </span>
                         )}
                       </div>
-                      <p className="text-slate-500">
-                        Day {user.stats.lastCompletedDay}/21 · {user.stats.totalXp} XP
-                      </p>
+                      {user.isPending ? (
+                        <div className="flex items-center justify-end gap-2 mt-1.5">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const pendingId = parseInt(user.id.replace("pending_", ""));
+                              if (confirm(`Create an account for ${user.email}? They'll use "Forgot Password" to set a password.`)) {
+                                createFromPending.mutate(pendingId);
+                              }
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-green-600 text-white text-xs font-semibold hover:bg-green-700 shadow-sm transition-colors"
+                          >
+                            <UserPlus className="w-3.5 h-3.5" />
+                            Create Account
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedUser(selectedUser?.id === user.id ? null : user);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-md border border-slate-200 bg-white text-slate-600 text-xs font-medium hover:bg-slate-50 shadow-sm transition-colors"
+                          >
+                            <Link className="w-3.5 h-3.5" />
+                            Link
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="text-slate-500">
+                          Day {user.stats.lastCompletedDay}/21 · {user.stats.totalXp} XP
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
