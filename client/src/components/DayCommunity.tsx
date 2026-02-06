@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getServerErrorMessage } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
 
 interface DayCommunityProps {
@@ -91,8 +91,8 @@ function QASection({ day }: { day: number }) {
       setQuestionText("");
       setShowForm(false);
     },
-    onError: () => {
-      toast.error("Failed to submit question");
+    onError: (error: Error) => {
+      toast.error(getServerErrorMessage(error, "Failed to submit question"));
     }
   });
 

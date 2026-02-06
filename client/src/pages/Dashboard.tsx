@@ -372,7 +372,7 @@ export default function Dashboard() {
       setShowCompletionModal(true);
     } catch (error) {
       console.error("[Dashboard] Failed to complete day:", error);
-      toast.error("Failed to complete day");
+      // Error toast is shown by useCompleteDay's onError handler — don't show a duplicate
     }
   };
 

@@ -7,6 +7,19 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+// Extract the actual error message from API errors (format: "STATUS: {json}")
+export function getServerErrorMessage(error: Error, fallback: string): string {
+  const msg = error.message;
+  const colonIdx = msg.indexOf(': ');
+  if (colonIdx > 0) {
+    try {
+      const parsed = JSON.parse(msg.substring(colonIdx + 2));
+      if (parsed.message) return parsed.message;
+    } catch {}
+  }
+  return fallback;
+}
+
 export async function apiRequest(
   method: string,
   url: string,

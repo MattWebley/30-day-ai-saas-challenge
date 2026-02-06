@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getServerErrorMessage } from "@/lib/queryClient";
 import { toast } from "sonner";
 import { RotateCcw, Loader2, Camera, X } from "lucide-react";
 import {
@@ -104,8 +104,8 @@ export default function Settings() {
       setPhotoChanged(false);
       toast.success("Profile updated!");
     },
-    onError: () => {
-      toast.error("Failed to save changes. Try again.");
+    onError: (error: Error) => {
+      toast.error(getServerErrorMessage(error, "Failed to save changes. Try again."));
     },
   });
 
@@ -120,8 +120,8 @@ export default function Settings() {
       toast.success("All progress has been reset. Starting fresh!");
       window.location.href = "/dashboard/1";
     },
-    onError: () => {
-      toast.error("Failed to reset progress. Try again.");
+    onError: (error: Error) => {
+      toast.error(getServerErrorMessage(error, "Failed to reset progress. Try again."));
     },
   });
 

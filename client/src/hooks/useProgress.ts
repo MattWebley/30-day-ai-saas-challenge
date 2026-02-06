@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getServerErrorMessage } from "@/lib/queryClient";
 import { toast } from "sonner";
 import { isUnauthorizedError } from "@/lib/authUtils";
 
@@ -47,7 +47,7 @@ export function useCompleteDay() {
         }, 500);
         return;
       }
-      toast.error("Failed to complete day. Please try again.");
+      toast.error(getServerErrorMessage(error, "Failed to complete day. Please try again."));
     },
   });
 }

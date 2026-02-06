@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserStats } from "@/hooks/useStats";
+import { toast } from "sonner";
 
 export default function Critique() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -49,6 +50,7 @@ export default function Critique() {
       }
     } catch (error) {
       console.error('Checkout error:', error);
+      toast.error("Checkout failed. Please try again.");
       setIsProcessing(false);
     }
   };

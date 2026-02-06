@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ds } from "@/lib/design-system";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getServerErrorMessage } from "@/lib/queryClient";
 import {
   MessageSquare,
   Video,
@@ -41,8 +41,8 @@ export default function Testimonial() {
       });
       setSubmitted(true);
     },
-    onError: () => {
-      toast.error("Something went wrong. Please try again.");
+    onError: (error: Error) => {
+      toast.error(getServerErrorMessage(error, "Something went wrong. Please try again."));
     },
   });
 

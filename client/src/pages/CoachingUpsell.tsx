@@ -139,6 +139,7 @@ export default function CoachingUpsell() {
       setIsProcessing(false);
     } catch (error) {
       console.error('Checkout error:', error);
+      alert("Something went wrong. Please try again.");
       setButtonText("Yes! Add Coaching to My Order");
       setIsProcessing(false);
     }
