@@ -167,7 +167,7 @@ export default function CoachingUpsell() {
 
             {/* Video */}
             <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden">
-              <LazyVimeo videoId="1160158404" hash="a3c5d7d3ab" title="Coaching overview" />
+              <LazyVimeo videoId="1160158404" hash="a3c5d7d3ab" title="Coaching overview" thumbnail="/coaching-video-thumbnail.png" />
             </div>
 
             {/* What You Get */}
