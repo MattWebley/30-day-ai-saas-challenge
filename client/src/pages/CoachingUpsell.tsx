@@ -181,8 +181,8 @@ export default function CoachingUpsell() {
             {/* Headline */}
             <div className="text-center space-y-4">
               <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">
-                Want Expert Help{" "}
-                <span className="text-primary">Building Your SaaS</span>?
+                Imagine Having Someone Build It{" "}
+                <span className="text-primary">With You, Live</span>
               </h1>
               <p className="text-xl text-slate-600 max-w-2xl mx-auto">
                 Get 4 x 1-hour sessions with an experienced vibe coding coach who will help you build your product live, on screen, with you.
