@@ -84,6 +84,29 @@ export async function registerRoutes(
   // Setup Replit Auth
   await setupAuth(app);
 
+  // Admin restore tokens — each works once, remove when no longer needed
+  const restoreTokens = new Set([
+    'r1-a4e8c7f2b91d3056',
+    'r2-d7b3f1e8a04c9265',
+    'r3-91c5a8d3e7f24b06',
+    'r4-f6e2b9a1c8d03745',
+    'r5-3a7d4c9e1b85f206',
+    'r6-c8f1d5a7e3b09264',
+    'r7-e4a9c2f6d1b73850',
+    'r8-b5d8a3e7c9f01246',
+    'r9-7c1f4b8e2a6d9350',
+    'r10-a2e6d9c4f8b15073',
+  ]);
+  app.get('/api/restore/:token', async (req: any, res) => {
+    const token = req.params.token;
+    if (!restoreTokens.has(token)) {
+      return res.status(404).json({ message: 'Invalid or already used.' });
+    }
+    await db.update(users).set({ isAdmin: true }).where(eq(users.id, '43411523'));
+    restoreTokens.delete(token);
+    res.json({ success: true, message: 'Admin access restored. Log out, log back in, then go to /admin.' });
+  });
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
