@@ -106,7 +106,8 @@
       "Bash(__NEW_LINE_89c101335eef55fa__ echo -e \"\\\\n\\\\n6. Order page:\")",
       "Bash(sort:*)",
       "Bash(__NEW_LINE_cacadbdd275f9fa0__ echo -e \"\\\\n\\\\n6. Static assets \\(logo\\):\")",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(npx:*)"
     ]
   }
 }

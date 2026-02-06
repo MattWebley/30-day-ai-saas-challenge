@@ -8,9 +8,10 @@ interface LazyVimeoProps {
   thumbnail?: string;
   overlayText?: string;
   autoplay?: boolean;
+  eager?: boolean;
 }
 
-export function LazyVimeo({ videoId, hash, title = "Video", thumbnail, overlayText, autoplay = false }: LazyVimeoProps) {
+export function LazyVimeo({ videoId, hash, title = "Video", thumbnail, overlayText, autoplay = false, eager = false }: LazyVimeoProps) {
   const [loaded, setLoaded] = useState(autoplay);
 
   const thumbnailUrl = thumbnail || `https://vumbnail.com/${videoId}.jpg`;
@@ -41,7 +42,7 @@ export function LazyVimeo({ videoId, hash, title = "Video", thumbnail, overlayTe
         src={thumbnailUrl}
         alt={title}
         className="w-full h-full object-cover"
-        loading="lazy"
+        loading={eager ? "eager" : "lazy"}
       />
       <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors flex flex-col items-center justify-center gap-4">
         {overlayText && (

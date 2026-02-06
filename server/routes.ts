@@ -3753,17 +3753,23 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const host = req.get('host');
       const protocol = req.protocol;
 
-      // Price IDs for Expert Coaching 4-Pack by currency
-      const coachingPriceIds: Record<string, string> = {
-        usd: 'price_1SuRsULcRVtxg5yVjLeczvqS', // $1,195
-        gbp: 'price_1SuRt9LcRVtxg5yVeKgcqQfh'  // £995
+      // 50% off pricing for upsell timer offer
+      const coachingAmounts: Record<string, number> = {
+        usd: 59900, // $599
+        gbp: 49900  // £499
       };
-      const coachingPriceId = coachingPriceIds[currency.toLowerCase()] || coachingPriceIds.usd;
+      const amount = coachingAmounts[currency.toLowerCase()] || coachingAmounts.usd;
 
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [{
-          price: coachingPriceId,
+          price_data: {
+            currency: currency.toLowerCase(),
+            product_data: {
+              name: '1:1 Vibe Coding Coaching — 4 x 1-Hour Sessions (50% Off)',
+            },
+            unit_amount: amount,
+          },
           quantity: 1
         }],
         mode: 'payment',
@@ -4239,8 +4245,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       // Pricing based on currency (amount in smallest unit - cents/pence)
       const coachingPricing: Record<string, { amount: number; currency: string }> = {
-        usd: { amount: 119500, currency: 'usd' }, // $1,195
-        gbp: { amount: 99500, currency: 'gbp' }   // £995
+        usd: { amount: 59900, currency: 'usd' }, // $599 (50% off)
+        gbp: { amount: 49900, currency: 'gbp' }  // £499 (50% off)
       };
       const priceConfig = coachingPricing[currency.toLowerCase()] || coachingPricing.usd;
 

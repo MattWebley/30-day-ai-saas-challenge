@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { ArrowRight, Check, Video, Calendar, Clock, Users, Zap, Shield, Eye, CheckCircle } from "lucide-react";
+import { ArrowRight, Check, Video, Calendar, Clock, Users, Zap, Shield, Eye, CheckCircle, AlertTriangle } from "lucide-react";
 import { useTestMode } from "@/contexts/TestModeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { LazyVimeo } from "@/components/LazyVimeo";
@@ -8,8 +8,23 @@ export default function CoachingUpsell() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [buttonText, setButtonText] = useState("Yes! Add Coaching to My Order");
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+  const timerExpired = timeLeft <= 0;
   const { testMode } = useTestMode();
   const { user } = useAuth();
+
+  // Countdown timer
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [timeLeft]);
+
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  const timerDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
   // Check for admin preview mode
   const params = new URLSearchParams(window.location.search);
@@ -43,8 +58,8 @@ export default function CoachingUpsell() {
 
   // Pricing based on currency
   const pricing = {
-    usd: { symbol: '$', amount: 1195, originalAmount: 1500, hourlyValue: 299 },
-    gbp: { symbol: '£', amount: 995, originalAmount: 1200, hourlyValue: 249 }
+    usd: { symbol: '$', amount: 599, originalAmount: 1195, hourlyValue: 150 },
+    gbp: { symbol: '£', amount: 499, originalAmount: 995, hourlyValue: 125 }
   };
 
   const price = pricing[currency];
@@ -167,7 +182,7 @@ export default function CoachingUpsell() {
 
             {/* Video */}
             <div className="aspect-video bg-slate-900 rounded-xl overflow-hidden">
-              <LazyVimeo videoId="1160158404" hash="a3c5d7d3ab" title="Coaching overview" thumbnail="/coaching-video-thumbnail.png" />
+              <LazyVimeo videoId="1160158404" hash="a3c5d7d3ab" title="Coaching overview" thumbnail="/coaching-video-thumbnail.webp" eager />
             </div>
 
             {/* What You Get */}
@@ -243,31 +258,59 @@ export default function CoachingUpsell() {
               </div>
             </div>
 
-            {/* Price Section */}
-            <div className="text-center space-y-4 py-4">
-              <div>
-                <p className="text-slate-500 mb-2">Special One-Time Offer</p>
-                <div className="flex items-center justify-center gap-3">
-                  <span className="text-2xl text-slate-400 line-through">{price.symbol}{price.originalAmount.toLocaleString()}</span>
-                  <span className="text-5xl font-extrabold text-slate-900">{price.symbol}{price.amount.toLocaleString()}</span>
+            {/* Countdown Timer + Price Section */}
+            {!timerExpired ? (
+              <div className="bg-gradient-to-b from-red-600 to-red-700 rounded-2xl p-6 md:p-8 text-white text-center space-y-4">
+                <p className="text-red-200 font-semibold uppercase tracking-wide text-sm">This offer rewards action takers</p>
+                <p className="text-2xl md:text-3xl font-extrabold">50% Off — One-Time Only</p>
+
+                {/* Big Timer */}
+                <div className="flex items-center justify-center gap-3 py-4">
+                  <div className="bg-white/15 backdrop-blur rounded-xl px-5 py-3 min-w-[80px]">
+                    <p className="text-4xl md:text-6xl font-mono font-extrabold tabular-nums">{minutes}</p>
+                    <p className="text-red-200 text-xs uppercase tracking-wider mt-1">Min</p>
+                  </div>
+                  <span className="text-4xl md:text-6xl font-extrabold animate-pulse">:</span>
+                  <div className="bg-white/15 backdrop-blur rounded-xl px-5 py-3 min-w-[80px]">
+                    <p className="text-4xl md:text-6xl font-mono font-extrabold tabular-nums">{seconds.toString().padStart(2, '0')}</p>
+                    <p className="text-red-200 text-xs uppercase tracking-wider mt-1">Sec</p>
+                  </div>
                 </div>
-                <p className="text-slate-500 mt-2">4 hours of dedicated 1:1 coaching</p>
+
+                {/* Price */}
+                <div>
+                  <div className="flex items-center justify-center gap-3">
+                    <span className="text-2xl text-red-300 line-through">{price.symbol}{price.originalAmount.toLocaleString()}</span>
+                    <span className="text-5xl md:text-6xl font-extrabold">{price.symbol}{price.amount.toLocaleString()}</span>
+                  </div>
+                  <p className="text-red-200 mt-2">4 hours of dedicated 1:1 coaching — half price for fast decision makers</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="bg-slate-100 rounded-2xl p-6 md:p-8 text-center space-y-3 border-2 border-slate-300">
+                <AlertTriangle className="w-10 h-10 text-slate-400 mx-auto" />
+                <p className="text-2xl font-extrabold text-slate-400">Offer Expired</p>
+                <p className="text-slate-500">The 50% discount has ended. This one-time offer is no longer available.</p>
+              </div>
+            )}
 
             {/* CTA */}
             <button
               onClick={handleAddToOrder}
-              disabled={isProcessing || purchaseSuccess || isPreview}
+              disabled={isProcessing || purchaseSuccess || isPreview || timerExpired}
               className={`w-full font-bold text-xl py-5 px-8 rounded-xl shadow-lg transition-all duration-200 ${
-                purchaseSuccess
+                timerExpired
+                  ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                  : purchaseSuccess
                   ? 'bg-green-600 text-white cursor-default'
                   : isPreview
                   ? 'bg-slate-400 text-white cursor-not-allowed'
                   : 'bg-green-500 hover:bg-green-600 disabled:bg-green-400 text-white hover:shadow-xl transform hover:-translate-y-0.5'
               }`}
             >
-              {purchaseSuccess ? (
+              {timerExpired ? (
+                "Offer Expired"
+              ) : purchaseSuccess ? (
                 <span className="flex items-center justify-center gap-2">
                   <CheckCircle className="w-6 h-6" />
                   {buttonText}
@@ -279,7 +322,7 @@ export default function CoachingUpsell() {
                 </span>
               ) : (
                 <>
-                  {buttonText}
+                  {buttonText} — {price.symbol}{price.amount} (50% Off)
                   <ArrowRight className="w-6 h-6 inline ml-2" />
                 </>
               )}
@@ -294,21 +337,25 @@ export default function CoachingUpsell() {
             </button>
 
             {/* Guarantee */}
-            <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-              <Shield className="w-10 h-10 text-amber-600 flex-shrink-0" />
-              <div>
-                <p className="font-bold text-slate-900">100% Satisfaction Guarantee</p>
-                <p className="text-sm text-slate-600">
-                  If you're not completely satisfied after your first session, we'll refund you in full. No questions asked.
-                </p>
+            {!timerExpired && (
+              <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                <Shield className="w-10 h-10 text-amber-600 flex-shrink-0" />
+                <div>
+                  <p className="font-bold text-slate-900">100% Satisfaction Guarantee</p>
+                  <p className="text-sm text-slate-600">
+                    If you're not completely satisfied after your first session, we'll refund you in full. No questions asked.
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Trust */}
-            <div className="flex items-center justify-center gap-2 text-slate-400 pt-2">
-              <Clock className="w-4 h-4" />
-              <span className="text-sm">This offer expires when you leave this page</span>
-            </div>
+            {!timerExpired && (
+              <div className="flex items-center justify-center gap-2 text-red-500 pt-2">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm font-medium">This 50% discount expires when the timer hits zero</span>
+              </div>
+            )}
 
           </div>
         </div>
