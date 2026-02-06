@@ -32,12 +32,40 @@ import type {
 } from "./adminTypes";
 import { FONT_OPTIONS } from "./adminTypes";
 
+type AdminDiagnostics = {
+  serverTime: string;
+  host: string;
+  nodeEnv: string;
+  databaseUrlSet: boolean;
+  stripeWebhookSecretSet: boolean;
+  counts: {
+    users: number;
+    pendingPurchases: number;
+    coachingPurchases: number;
+  };
+  lastActivity: {
+    userCreatedAt: string | null;
+    pendingPurchaseAt: string | null;
+    coachingPurchaseAt: string | null;
+    webhookAt: string | null;
+    webhookType: string | null;
+  };
+};
+
 export default function AdminSettings() {
   const queryClient = useQueryClient();
 
   // Brand state
   const { data: brandSettings } = useQuery<BrandSettings>({
     queryKey: ["/api/brand-settings"],
+  });
+
+  const {
+    data: diagnostics,
+    refetch: refetchDiagnostics,
+    isFetching: diagnosticsLoading,
+  } = useQuery<AdminDiagnostics>({
+    queryKey: ["/api/admin/diagnostics"],
   });
 
   const [brand, setBrand] = useState<BrandSettings>({
@@ -246,6 +274,101 @@ export default function AdminSettings() {
 
   return (
     <div className="space-y-8">
+      {/* Diagnostics */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <BarChart3 className="w-6 h-6 text-primary" />
+            <h2 className="text-xl font-bold text-slate-900">Diagnostics</h2>
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetchDiagnostics()}
+            disabled={diagnosticsLoading}
+          >
+            {diagnosticsLoading ? "Refreshing..." : "Refresh"}
+          </Button>
+        </div>
+
+        <Card className="p-6 border border-slate-200 shadow-sm">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+            <div>
+              <p className="text-slate-500">Server Time</p>
+              <p className="font-medium text-slate-900">{diagnostics?.serverTime || "Unknown"}</p>
+            </div>
+            <div>
+              <p className="text-slate-500">Host</p>
+              <p className="font-medium text-slate-900">{diagnostics?.host || "Unknown"}</p>
+            </div>
+            <div>
+              <p className="text-slate-500">Environment</p>
+              <p className="font-medium text-slate-900">{diagnostics?.nodeEnv || "Unknown"}</p>
+            </div>
+            <div>
+              <p className="text-slate-500">DATABASE_URL</p>
+              <p className="font-medium text-slate-900">
+                {diagnostics?.databaseUrlSet ? "Set" : "Missing"}
+              </p>
+            </div>
+            <div>
+              <p className="text-slate-500">STRIPE_WEBHOOK_SECRET</p>
+              <p className="font-medium text-slate-900">
+                {diagnostics?.stripeWebhookSecretSet ? "Set" : "Missing"}
+              </p>
+            </div>
+            <div>
+              <p className="text-slate-500">Last Webhook</p>
+              <p className="font-medium text-slate-900">
+                {diagnostics?.lastActivity?.webhookAt
+                  ? formatDistanceToNow(new Date(diagnostics.lastActivity.webhookAt), { addSuffix: true })
+                  : "Never"}
+              </p>
+              {diagnostics?.lastActivity?.webhookType && (
+                <p className="text-xs text-slate-500">{diagnostics.lastActivity.webhookType}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-6 grid md:grid-cols-3 gap-4 text-sm">
+            <div className="rounded-lg border border-slate-200 p-4">
+              <p className="text-slate-500">Users</p>
+              <p className="text-lg font-bold text-slate-900">{diagnostics?.counts?.users ?? 0}</p>
+              <p className="text-xs text-slate-500">
+                Last created{" "}
+                {diagnostics?.lastActivity?.userCreatedAt
+                  ? formatDistanceToNow(new Date(diagnostics.lastActivity.userCreatedAt), { addSuffix: true })
+                  : "Never"}
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-200 p-4">
+              <p className="text-slate-500">Pending Purchases</p>
+              <p className="text-lg font-bold text-slate-900">
+                {diagnostics?.counts?.pendingPurchases ?? 0}
+              </p>
+              <p className="text-xs text-slate-500">
+                Last purchase{" "}
+                {diagnostics?.lastActivity?.pendingPurchaseAt
+                  ? formatDistanceToNow(new Date(diagnostics.lastActivity.pendingPurchaseAt), { addSuffix: true })
+                  : "Never"}
+              </p>
+            </div>
+            <div className="rounded-lg border border-slate-200 p-4">
+              <p className="text-slate-500">Coaching Purchases</p>
+              <p className="text-lg font-bold text-slate-900">
+                {diagnostics?.counts?.coachingPurchases ?? 0}
+              </p>
+              <p className="text-xs text-slate-500">
+                Last purchase{" "}
+                {diagnostics?.lastActivity?.coachingPurchaseAt
+                  ? formatDistanceToNow(new Date(diagnostics.lastActivity.coachingPurchaseAt), { addSuffix: true })
+                  : "Never"}
+              </p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
       {/* Brand Pack */}
       <div className="space-y-4">
         <div className="flex items-center gap-3">

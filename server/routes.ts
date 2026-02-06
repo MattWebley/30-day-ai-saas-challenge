@@ -7,8 +7,9 @@ import dns from "dns";
 import { promisify } from "util";
 import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
+import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
-import { eq, desc, isNull } from "drizzle-orm";
+import { eq, desc, isNull, sql } from "drizzle-orm";
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail } from "./emailService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -207,15 +208,15 @@ export async function registerRoutes(
 
       // Check if this email has any purchases - only send magic links to paying customers
       const pendingPurchase = await db.select().from(pendingPurchases)
-        .where(eq(pendingPurchases.email, normalizedEmail))
+        .where(sql`lower(${pendingPurchases.email}) = ${normalizedEmail}`)
         .limit(1);
 
       const coachingPurchase = await db.select().from(coachingPurchases)
-        .where(eq(coachingPurchases.email, normalizedEmail))
+        .where(sql`lower(${coachingPurchases.email}) = ${normalizedEmail}`)
         .limit(1);
 
       const existingUser = await db.select().from(users)
-        .where(eq(users.email, normalizedEmail))
+        .where(sql`lower(${users.email}) = ${normalizedEmail}`)
         .limit(1);
 
       // Only send magic links if they have a purchase (pending or completed) or are an existing paying user
@@ -302,8 +303,9 @@ export async function registerRoutes(
         .where(eq(magicTokens.token, token));
 
       // Find or create user by email
+      const tokenEmail = magicToken.email.toLowerCase().trim();
       let user = await db.select().from(users)
-        .where(eq(users.email, magicToken.email))
+        .where(sql`lower(${users.email}) = ${tokenEmail}`)
         .limit(1)
         .then(rows => rows[0]);
 
@@ -323,7 +325,7 @@ export async function registerRoutes(
 
       // Link any pending purchases to this user
       const pending = await db.select().from(pendingPurchases)
-        .where(eq(pendingPurchases.email, magicToken.email));
+        .where(sql`lower(${pendingPurchases.email}) = ${tokenEmail}`);
 
       for (const purchase of pending) {
         if (!purchase.linkedToUserId) {
@@ -353,7 +355,7 @@ export async function registerRoutes(
 
       // Also link any coaching purchases from the coaching table
       const coachingPurchasesList = await db.select().from(coachingPurchases)
-        .where(eq(coachingPurchases.email, magicToken.email));
+        .where(sql`lower(${coachingPurchases.email}) = ${tokenEmail}`);
 
       if (coachingPurchasesList.length > 0) {
         // Grant coaching access and link purchases to user
@@ -430,7 +432,7 @@ export async function registerRoutes(
 
       // Find user by email
       const [user] = await db.select().from(users)
-        .where(eq(users.email, normalizedEmail));
+        .where(sql`lower(${users.email}) = ${normalizedEmail}`);
 
       if (!user || !user.passwordHash) {
         return res.status(401).json({ message: "Invalid email or password" });
@@ -831,6 +833,60 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error fetching admin stats:", error);
       res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  // Admin diagnostics (quick sanity checks for live data)
+  app.get("/api/admin/diagnostics", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const [usersCountRow] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(users);
+      const [pendingCountRow] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(pendingPurchases);
+      const [coachingCountRow] = await db
+        .select({ count: sql<number>`count(*)` })
+        .from(coachingPurchases);
+
+      const [lastUserRow] = await db
+        .select({ last: sql<Date | null>`max(${users.createdAt})` })
+        .from(users);
+      const [lastPendingRow] = await db
+        .select({ last: sql<Date | null>`max(${pendingPurchases.createdAt})` })
+        .from(pendingPurchases);
+      const [lastCoachingRow] = await db
+        .select({ last: sql<Date | null>`max(${coachingPurchases.purchasedAt})` })
+        .from(coachingPurchases);
+
+      res.json({
+        serverTime: new Date().toISOString(),
+        host: req.hostname,
+        nodeEnv: process.env.NODE_ENV || "unknown",
+        databaseUrlSet: !!process.env.DATABASE_URL,
+        stripeWebhookSecretSet: !!process.env.STRIPE_WEBHOOK_SECRET,
+        counts: {
+          users: Number(usersCountRow?.count || 0),
+          pendingPurchases: Number(pendingCountRow?.count || 0),
+          coachingPurchases: Number(coachingCountRow?.count || 0),
+        },
+        lastActivity: {
+          userCreatedAt: lastUserRow?.last || null,
+          pendingPurchaseAt: lastPendingRow?.last || null,
+          coachingPurchaseAt: lastCoachingRow?.last || null,
+          webhookAt: WebhookHandlers.lastWebhookAt,
+          webhookType: WebhookHandlers.lastWebhookType,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching diagnostics:", error);
+      res.status(500).json({ message: "Failed to fetch diagnostics" });
     }
   });
 
@@ -4733,8 +4789,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
                 }).catch(err => console.error('Coaching notification error:', err));
               }
             } else if (customerEmail) {
+              const normalizedEmail = customerEmail.toLowerCase().trim();
               await db.insert(pendingPurchases).values({
-                email: customerEmail,
+                email: normalizedEmail,
                 stripeCustomerId,
                 stripeSessionId: `pi_${paymentIntent.id}`,
                 productType: 'coaching',
@@ -4743,15 +4800,15 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
               }).onConflictDoNothing();
 
               sendCoachingConfirmationEmail({
-                to: customerEmail,
+                to: normalizedEmail,
                 firstName: 'there',
                 currency: currency.toLowerCase() as 'usd' | 'gbp',
                 amount: priceConfig.amount / 100
               }).catch(err => console.error('Email send error:', err));
 
               sendCoachingPurchaseNotificationEmail({
-                userEmail: customerEmail,
-                userName: customerEmail,
+                userEmail: normalizedEmail,
+                userName: normalizedEmail,
                 coachingType: '4 x 1-hour coaching sessions (guest)',
                 currency: currency.toLowerCase() as 'usd' | 'gbp',
                 amount: priceConfig.amount / 100
@@ -4896,8 +4953,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
             }
           } else if (customerEmail) {
             // Guest - save as pending purchase (will be linked when they log in)
+            const normalizedEmail = customerEmail.toLowerCase().trim();
             await db.insert(pendingPurchases).values({
-              email: customerEmail,
+              email: normalizedEmail,
               stripeCustomerId,
               stripeSessionId: `pi_${paymentIntent.id}`, // Use payment intent ID as unique identifier
               productType: 'coaching',
@@ -4907,15 +4965,15 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
             // Send emails using customer email
             sendCoachingConfirmationEmail({
-              to: customerEmail,
+              to: normalizedEmail,
               firstName: 'there',
               currency: currency.toLowerCase() as 'usd' | 'gbp',
               amount: priceConfig.amount / 100
             }).catch(err => console.error('Email send error:', err));
 
             sendCoachingPurchaseNotificationEmail({
-              userEmail: customerEmail,
-              userName: customerEmail,
+              userEmail: normalizedEmail,
+              userName: normalizedEmail,
               coachingType: '4 x 1-hour coaching sessions (guest)',
               currency: currency.toLowerCase() as 'usd' | 'gbp',
               amount: priceConfig.amount / 100
@@ -4989,8 +5047,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           }
         } else if (customerEmail) {
           // Guest - save as pending purchase
+          const normalizedEmail = customerEmail.toLowerCase().trim();
           await db.insert(pendingPurchases).values({
-            email: customerEmail,
+            email: normalizedEmail,
             stripeCustomerId,
             stripeSessionId: `pi_${paymentIntent.id}`,
             productType: 'coaching',
@@ -4999,15 +5058,15 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           }).onConflictDoNothing();
 
           sendCoachingConfirmationEmail({
-            to: customerEmail,
+            to: normalizedEmail,
             firstName: 'there',
             currency: currency.toLowerCase() as 'usd' | 'gbp',
             amount: priceConfig.amount / 100
           }).catch(err => console.error('Email send error:', err));
 
           sendCoachingPurchaseNotificationEmail({
-            userEmail: customerEmail,
-            userName: customerEmail,
+            userEmail: normalizedEmail,
+            userName: normalizedEmail,
             coachingType: '4 x 1-hour coaching sessions (guest)',
             currency: currency.toLowerCase() as 'usd' | 'gbp',
             amount: priceConfig.amount / 100
@@ -5885,7 +5944,10 @@ Example format:
       const normalizedEmail = email.toLowerCase().trim();
 
       // Check if user exists
-      const [existingUser] = await db.select().from(users).where(eq(users.email, normalizedEmail));
+      const [existingUser] = await db
+        .select()
+        .from(users)
+        .where(sql`lower(${users.email}) = ${normalizedEmail}`);
 
       if (existingUser) {
         // Grant access to existing user
@@ -5896,7 +5958,10 @@ Example format:
           updateData.coachingPurchased = true;
         }
 
-        await db.update(users).set(updateData).where(eq(users.email, normalizedEmail));
+        await db
+          .update(users)
+          .set(updateData)
+          .where(sql`lower(${users.email}) = ${normalizedEmail}`);
 
         // Log the action
         await storage.logActivity({
@@ -5914,7 +5979,10 @@ Example format:
         });
       } else {
         // Check if already in pending purchases
-        const [existing] = await db.select().from(pendingPurchases).where(eq(pendingPurchases.email, normalizedEmail));
+        const [existing] = await db
+          .select()
+          .from(pendingPurchases)
+          .where(sql`lower(${pendingPurchases.email}) = ${normalizedEmail}`);
 
         if (existing) {
           return res.json({

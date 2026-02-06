@@ -71,7 +71,7 @@ import {
   type PendingPurchase,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, isNotNull, isNull } from "drizzle-orm";
+import { eq, and, desc, isNotNull, isNull, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -233,13 +233,14 @@ export class DatabaseStorage implements IStorage {
 
   async linkPendingPurchases(userId: string, email: string): Promise<void> {
     try {
+      const normalizedEmail = email.toLowerCase().trim();
       // Find unlinked purchases for this email
       const pending = await db
         .select()
         .from(pendingPurchases)
         .where(
           and(
-            eq(pendingPurchases.email, email),
+            sql`lower(${pendingPurchases.email}) = ${normalizedEmail}`,
             isNull(pendingPurchases.linkedToUserId)
           )
         );
@@ -325,7 +326,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
+    const normalizedEmail = email.toLowerCase().trim();
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(sql`lower(${users.email}) = ${normalizedEmail}`);
     return user;
   }
 

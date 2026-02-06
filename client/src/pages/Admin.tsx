@@ -56,9 +56,9 @@ export default function Admin() {
 
   // Check if user is admin
   const { data: currentUser } = useQuery({
-    queryKey: ["/api/user"],
+    queryKey: ["/api/auth/user"],
     queryFn: async () => {
-      const res = await fetch("/api/user", { credentials: "include" });
+      const res = await fetch("/api/auth/user", { credentials: "include" });
       if (!res.ok) return null;
       return res.json();
     },

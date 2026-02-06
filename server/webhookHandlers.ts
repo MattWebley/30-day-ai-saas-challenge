@@ -3,11 +3,13 @@ import crypto from 'crypto';
 import { getStripeSync, getUncachableStripeClient } from './stripeClient';
 import { db } from './db';
 import { users, pendingPurchases, coachingPurchases, magicTokens } from '../shared/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendCoachingPurchaseNotificationEmail, sendCritiqueNotificationEmail, sendWelcomeAccessEmail } from './emailService';
 import { addContactToSysteme } from './systemeService';
 
 export class WebhookHandlers {
+  static lastWebhookAt: Date | null = null;
+  static lastWebhookType: string | null = null;
   static async processWebhook(payload: Buffer, signature: string): Promise<void> {
     if (!Buffer.isBuffer(payload)) {
       throw new Error(
@@ -45,6 +47,8 @@ export class WebhookHandlers {
       throw new Error('[Webhook] Signature verification failed: ' + err.message);
     }
 
+    WebhookHandlers.lastWebhookAt = new Date();
+    WebhookHandlers.lastWebhookType = event.type;
     console.log('[Webhook] Verified event:', event.type);
 
     if (event.type === 'checkout.session.completed') {
@@ -55,7 +59,8 @@ export class WebhookHandlers {
   }
 
   static async processCompletedCheckout(session: Stripe.Checkout.Session): Promise<void> {
-    const email = session.customer_email || session.customer_details?.email;
+    const rawEmail = session.customer_email || session.customer_details?.email;
+    const email = rawEmail?.toLowerCase().trim();
     const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id;
     const productType = session.metadata?.productType || 'challenge';
     const currency = session.metadata?.currency || 'usd';
@@ -83,7 +88,10 @@ export class WebhookHandlers {
       user = foundUser;
     }
     if (!user) {
-      const [foundUser] = await db.select().from(users).where(eq(users.email, email));
+      const [foundUser] = await db
+        .select()
+        .from(users)
+        .where(sql`lower(${users.email}) = ${email}`);
       user = foundUser;
     }
 
