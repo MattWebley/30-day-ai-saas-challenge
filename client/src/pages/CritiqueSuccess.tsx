@@ -93,7 +93,7 @@ export default function CritiqueSuccess() {
             Keep an eye on your inbox. I'll email you when it's ready.
           </p>
 
-          <a href={isLoading ? "#" : (isAuthenticated ? "/dashboard" : "/api/login")} onClick={(e) => isLoading && e.preventDefault()}>
+          <a href={isLoading ? "#" : (isAuthenticated ? "/dashboard" : "/login")} onClick={(e) => isLoading && e.preventDefault()}>
             <Button className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>

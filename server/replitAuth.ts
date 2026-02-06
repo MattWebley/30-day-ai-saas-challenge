@@ -105,34 +105,40 @@ export async function setupAuth(app: Express) {
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
-  // Replit OAuth login disabled - users must purchase and use magic link or email/password
+  // Redirect /api/login to the login page (Replit OAuth disabled)
   app.get("/api/login", (req, res) => {
-    res.redirect("/auth-error");
+    res.redirect("/login");
   });
 
   app.get("/api/callback", (req, res, next) => {
     ensureStrategy(req.hostname);
     passport.authenticate(`replitauth:${req.hostname}`, {
-      successReturnToOrRedirect: "/",
       failureRedirect: "/auth-error",
-    })(req, res, (err: any) => {
+    })(req, res, async (err: any) => {
       if (err) {
         console.error("[Auth] Callback error:", err.message);
-        // Redirect to friendly error page instead of showing cryptic error
         return res.redirect("/auth-error");
       }
-      next();
+      // Check if user has purchased — if not, send to order page
+      try {
+        const userId = (req.user as any)?.claims?.sub;
+        if (userId) {
+          const user = await storage.getUser(userId);
+          if (user && !user.challengePurchased && !user.isAdmin) {
+            return res.redirect("/order");
+          }
+        }
+      } catch (e) {
+        console.error("[Auth] Post-login check error:", e);
+      }
+      return res.redirect("/");
     });
   });
 
   app.get("/api/logout", (req, res) => {
-    req.logout(() => {
-      res.redirect(
-        client.buildEndSessionUrl(config, {
-          client_id: process.env.REPL_ID!,
-          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`,
-        }).href
-      );
+    req.session.destroy((err: any) => {
+      if (err) console.error("Error destroying session:", err);
+      res.redirect("/login");
     });
   });
 }

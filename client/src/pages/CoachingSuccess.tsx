@@ -118,7 +118,7 @@ export default function CoachingSuccess() {
           </>
         )}
 
-        <a href={isLoading ? "#" : (isAuthenticated ? "/dashboard" : "/api/login")} onClick={(e) => isLoading && e.preventDefault()}>
+        <a href={isLoading ? "#" : (isAuthenticated ? "/dashboard" : "/login")} onClick={(e) => isLoading && e.preventDefault()}>
           <Button className="w-full" disabled={isLoading}>
             {isLoading ? (
               <>

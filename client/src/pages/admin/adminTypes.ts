@@ -167,6 +167,7 @@ export interface AdminUser {
   isAdmin: boolean | null;
   challengePurchased: boolean | null;
   coachingPurchased: boolean | null;
+  allDaysUnlocked?: boolean | null;
   stripeCustomerId: string | null;
   purchaseCurrency: string | null;
   referralCode: string | null;

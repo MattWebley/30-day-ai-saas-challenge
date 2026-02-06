@@ -43,7 +43,7 @@ export function useCompleteDay() {
       if (isUnauthorizedError(error)) {
         toast.error("You are logged out. Logging in again...");
         setTimeout(() => {
-          window.location.href = "/api/login";
+          window.location.href = "/login";
         }, 500);
         return;
       }

@@ -10,7 +10,7 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
 import { eq, desc, isNull, sql } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail } from "./emailService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
 import { callClaude, callClaudeForJSON, detectAbuse, checkRateLimit, logAIUsage, sendAbuseAlert } from "./aiService";
@@ -470,6 +470,218 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error logging in:", error);
       res.status(500).json({ message: "Failed to log in" });
+    }
+  });
+
+  // Register with email and password
+  app.post('/api/auth/register', async (req, res) => {
+    try {
+      const { email, password, firstName } = req.body;
+
+      if (!email || !password || !firstName) {
+        return res.status(400).json({ message: "Email, password, and first name are required" });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      const normalizedEmail = email.toLowerCase().trim();
+
+      // Rate limit: 3 registration attempts per email per hour
+      if (isRateLimited(`register:${normalizedEmail}`, 3, 60 * 60 * 1000)) {
+        return res.status(429).json({ message: "Too many attempts. Please try again later." });
+      }
+
+      // Check if email already exists
+      const [existing] = await db.select().from(users)
+        .where(sql`lower(${users.email}) = ${normalizedEmail}`);
+
+      if (existing) {
+        return res.status(409).json({ message: "An account with this email already exists. Try logging in instead." });
+      }
+
+      // Hash password
+      const salt = randomBytes(16).toString('hex');
+      const hash = scryptSync(password, salt, 64).toString('hex');
+      const passwordHash = `${salt}:${hash}`;
+
+      // Create user
+      const newUserId = crypto.randomUUID();
+      await db.insert(users).values({
+        id: newUserId,
+        email: normalizedEmail,
+        firstName: firstName.trim(),
+        passwordHash,
+      });
+
+      const newUser = await storage.getUser(newUserId);
+      if (!newUser) {
+        return res.status(500).json({ message: "Failed to create account" });
+      }
+
+      // Link any pending purchases to this user
+      const tokenEmail = normalizedEmail;
+      const pending = await db.select().from(pendingPurchases)
+        .where(sql`lower(${pendingPurchases.email}) = ${tokenEmail}`);
+
+      for (const purchase of pending) {
+        if (!purchase.linkedToUserId) {
+          if (purchase.productType.startsWith('challenge')) {
+            const hasUnlock = purchase.productType.includes('+unlock');
+            await db.update(users)
+              .set({
+                challengePurchased: true,
+                ...(hasUnlock ? { allDaysUnlocked: true } : {}),
+                stripeCustomerId: purchase.stripeCustomerId,
+                purchaseCurrency: purchase.currency as 'usd' | 'gbp',
+              })
+              .where(eq(users.id, newUserId));
+          } else if (purchase.productType.includes('coaching')) {
+            await db.update(users)
+              .set({ coachingPurchased: true })
+              .where(eq(users.id, newUserId));
+          }
+          if (!newUser.lastName && purchase.lastName) {
+            await db.update(users)
+              .set({ lastName: purchase.lastName })
+              .where(eq(users.id, newUserId));
+          }
+          await db.update(pendingPurchases)
+            .set({ linkedToUserId: newUserId, linkedAt: new Date() })
+            .where(eq(pendingPurchases.id, purchase.id));
+        }
+      }
+
+      // Also link coaching purchases
+      const coachingPurchasesList = await db.select().from(coachingPurchases)
+        .where(sql`lower(${coachingPurchases.email}) = ${tokenEmail}`);
+
+      if (coachingPurchasesList.length > 0) {
+        await db.update(users)
+          .set({ coachingPurchased: true })
+          .where(eq(users.id, newUserId));
+
+        for (const coaching of coachingPurchasesList) {
+          if (!coaching.userId) {
+            await db.update(coachingPurchases)
+              .set({ userId: newUserId })
+              .where(eq(coachingPurchases.id, coaching.id));
+          }
+        }
+      }
+
+      // Create session
+      if (req.session) {
+        (req.session as any).userId = newUserId;
+        (req.session as any).userEmail = normalizedEmail;
+        (req.session as any).magicLinkAuth = true;
+      }
+
+      res.json({ success: true, message: "Account created successfully" });
+    } catch (error) {
+      console.error("Error registering:", error);
+      res.status(500).json({ message: "Failed to create account" });
+    }
+  });
+
+  // Forgot password - send reset email
+  app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const normalizedEmail = email.toLowerCase().trim();
+
+      // Rate limit: 3 per email per hour
+      if (isRateLimited(`forgot:${normalizedEmail}`, 3, 60 * 60 * 1000)) {
+        // Still return success to not reveal if email exists
+        return res.json({ success: true, message: "If an account exists with that email, we've sent a password reset link." });
+      }
+
+      // Always return success (don't reveal if email exists)
+      const [user] = await db.select().from(users)
+        .where(sql`lower(${users.email}) = ${normalizedEmail}`);
+
+      if (user) {
+        // Generate reset token and store in magicTokens table
+        const token = crypto.randomUUID();
+        await db.insert(magicTokens).values({
+          email: normalizedEmail,
+          token,
+          expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+        });
+
+        const resetLink = `https://challenge.mattwebley.com/reset-password?token=${token}`;
+        await sendPasswordResetEmail(normalizedEmail, resetLink);
+      }
+
+      res.json({ success: true, message: "If an account exists with that email, we've sent a password reset link." });
+    } catch (error) {
+      console.error("Error sending reset email:", error);
+      res.status(500).json({ message: "Something went wrong. Please try again." });
+    }
+  });
+
+  // Reset password with token
+  app.post('/api/auth/reset-password', async (req, res) => {
+    try {
+      const { token, password } = req.body;
+
+      if (!token || !password) {
+        return res.status(400).json({ message: "Token and password are required" });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      // Look up token
+      const [resetToken] = await db.select().from(magicTokens)
+        .where(eq(magicTokens.token, token));
+
+      if (!resetToken) {
+        return res.status(400).json({ message: "Invalid or expired reset link. Please request a new one." });
+      }
+
+      if (resetToken.usedAt) {
+        return res.status(400).json({ message: "This reset link has already been used. Please request a new one." });
+      }
+
+      if (new Date() > resetToken.expiresAt) {
+        return res.status(400).json({ message: "This reset link has expired. Please request a new one." });
+      }
+
+      // Mark token as used
+      await db.update(magicTokens)
+        .set({ usedAt: new Date() })
+        .where(eq(magicTokens.id, resetToken.id));
+
+      // Find user and update password
+      const tokenEmail = resetToken.email.toLowerCase().trim();
+      const [user] = await db.select().from(users)
+        .where(sql`lower(${users.email}) = ${tokenEmail}`);
+
+      if (!user) {
+        return res.status(400).json({ message: "No account found for this email." });
+      }
+
+      // Hash new password
+      const salt = randomBytes(16).toString('hex');
+      const hash = scryptSync(password, salt, 64).toString('hex');
+      const passwordHash = `${salt}:${hash}`;
+
+      await db.update(users)
+        .set({ passwordHash })
+        .where(eq(users.id, user.id));
+
+      res.json({ success: true, message: "Password updated successfully. You can now log in." });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({ message: "Failed to reset password" });
     }
   });
 
@@ -981,6 +1193,7 @@ export async function registerRoutes(
           isAdmin: false,
           challengePurchased: true,
           coachingPurchased: false,
+          allDaysUnlocked: (p.productType || "").includes("unlock"),
           stripeCustomerId: p.stripeCustomerId,
           purchaseCurrency: p.currency,
           referralCode: null,
@@ -1037,6 +1250,7 @@ export async function registerRoutes(
           currency: pending.currency,
           amountPaid: pending.amountPaid,
           productType: pending.productType,
+          allDaysUnlocked: (pending.productType || "").includes("unlock"),
           purchasedAt: pending.createdAt,
           magicLinks: tokens.map(t => ({
             sentAt: t.createdAt,
@@ -1196,6 +1410,7 @@ export async function registerRoutes(
         isAdmin,
         challengePurchased,
         coachingPurchased,
+        allDaysUnlocked,
         stripeCustomerId,
         purchaseCurrency,
         adminNotes
@@ -1227,6 +1442,7 @@ export async function registerRoutes(
         isAdmin: isAdmin !== undefined ? isAdmin : user.isAdmin,
         challengePurchased: challengePurchased !== undefined ? challengePurchased : user.challengePurchased,
         coachingPurchased: coachingPurchased !== undefined ? coachingPurchased : user.coachingPurchased,
+        allDaysUnlocked: allDaysUnlocked !== undefined ? allDaysUnlocked : user.allDaysUnlocked,
         stripeCustomerId: stripeCustomerId !== undefined ? stripeCustomerId : user.stripeCustomerId,
         purchaseCurrency: purchaseCurrency !== undefined ? purchaseCurrency : user.purchaseCurrency,
         adminNotes: adminNotes !== undefined ? adminNotes : user.adminNotes,
@@ -1240,6 +1456,9 @@ export async function registerRoutes(
       }
       if (coachingPurchased !== undefined && coachingPurchased !== user.coachingPurchased) {
         changes.coachingPurchased = { from: user.coachingPurchased, to: coachingPurchased };
+      }
+      if (allDaysUnlocked !== undefined && allDaysUnlocked !== user.allDaysUnlocked) {
+        changes.allDaysUnlocked = { from: user.allDaysUnlocked, to: allDaysUnlocked };
       }
       if (isAdmin !== undefined && isAdmin !== user.isAdmin) {
         changes.isAdmin = { from: user.isAdmin, to: isAdmin };

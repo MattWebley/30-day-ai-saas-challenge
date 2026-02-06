@@ -45,12 +45,12 @@ export default function Showcase() {
             </a>
           </Link>
           <div className="flex gap-4 items-center">
-            <a href="/api/login">
+            <a href="/login">
               <Button variant="ghost" className="font-medium text-slate-900 hover:text-primary hover:bg-blue-50">
                 Login
               </Button>
             </a>
-            <a href="/api/login">
+            <a href="/login">
               <Button className="rounded-lg px-6 font-semibold shadow-none">Join Challenge</Button>
             </a>
           </div>
@@ -82,7 +82,7 @@ export default function Showcase() {
             </p>
 
             <div className="pt-4">
-              <a href="/api/login">
+              <a href="/login">
                 <Button size="lg" className="h-14 px-8 text-lg rounded-xl font-bold gap-3 shadow-lg shadow-primary/20">
                   Build Your Own <ArrowRight className="w-5 h-5" />
                 </Button>
@@ -108,7 +108,7 @@ export default function Showcase() {
                 <p className="text-slate-500 max-w-md mx-auto">
                   Be the first to complete the 21-Day Challenge and get featured here!
                 </p>
-                <a href="/api/login" className="mt-6 inline-block">
+                <a href="/login" className="mt-6 inline-block">
                   <Button className="gap-2">
                     Start the Challenge <ArrowRight className="w-4 h-4" />
                   </Button>
@@ -157,7 +157,7 @@ export default function Showcase() {
               Join the challenge and go from idea to launch-ready AI SaaS in just 21 days.
               Your app could be featured here next.
             </p>
-            <a href="/api/login">
+            <a href="/login">
               <Button
                 size="lg"
                 className="h-16 px-10 text-lg rounded-xl font-bold gap-3 bg-white text-slate-900 hover:bg-slate-100"

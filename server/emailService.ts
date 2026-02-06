@@ -648,6 +648,36 @@ Questions? Just reply to this email.`;
   }
 }
 
+// Password reset email
+export async function sendPasswordResetEmail(email: string, resetLink: string): Promise<boolean> {
+  try {
+    const subject = 'Reset Your Password - 21-Day AI SaaS Challenge';
+    const body = `Hi there!
+
+You requested a password reset for the 21-Day AI SaaS Challenge.
+
+Click here to reset your password:
+${resetLink}
+
+This link expires in 1 hour and can only be used once.
+
+If you didn't request this, you can safely ignore this email — your password won't be changed.
+
+- Matt
+
+--
+21-Day AI SaaS Challenge`;
+
+    await sendAndLog({ to: email, subject, text: body, templateKey: 'password_reset' });
+
+    console.log('Password reset email sent to:', email);
+    return true;
+  } catch (error) {
+    console.error('Failed to send password reset email:', error);
+    return false;
+  }
+}
+
 export interface QuestionAnsweredEmailParams {
   to: string;
   firstName: string;

@@ -42,6 +42,10 @@ import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import AuthError from "@/pages/AuthError";
 import MagicVerify from "@/pages/MagicVerify";
+import Login from "@/pages/Login";
+import Register from "@/pages/Register";
+import ForgotPassword from "@/pages/ForgotPassword";
+import ResetPassword from "@/pages/ResetPassword";
 import { CookieConsent } from "@/components/CookieConsent";
 import { FacebookPixel } from "@/components/FacebookPixel";
 
@@ -78,7 +82,7 @@ function Router() {
   }
 
   // Public routes that don't need auth check
-  const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic'];
+  const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password'];
   const isPublicRoute = publicPaths.some(path => location.startsWith(path)) || location === '/';
 
   // Only show loading spinner for protected routes
@@ -109,6 +113,10 @@ function Router() {
         <Route path="/welcome" component={Welcome} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+        <Route path="/forgot-password" component={ForgotPassword} />
+        <Route path="/reset-password" component={ResetPassword} />
         <Route path="/auth-error" component={AuthError} />
         <Route path="/auth/error" component={AuthError} />
         <Route path="/auth/magic" component={MagicVerify} />

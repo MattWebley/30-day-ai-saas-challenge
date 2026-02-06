@@ -64,7 +64,7 @@ export default function CheckoutSuccess() {
         setLocation(`/coaching/upsell?currency=${currency}`);
       } else {
         // Otherwise redirect to dashboard (or login if not authenticated)
-        setLocation(isAuthenticated ? '/dashboard' : '/api/login');
+        setLocation(isAuthenticated ? '/dashboard' : '/login');
       }
     };
 

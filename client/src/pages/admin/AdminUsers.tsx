@@ -174,6 +174,26 @@ function UserDetailPanel({
           </Button>
         )}
 
+        {!user.allDaysUnlocked ? (
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+            onClick={() => updateUser.mutate({ id: user.id, allDaysUnlocked: true })}
+          >
+            <Check className="w-3 h-3 mr-1" /> Unlock All Days
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-red-600 border-red-200 hover:bg-red-50"
+            onClick={() => updateUser.mutate({ id: user.id, allDaysUnlocked: false })}
+          >
+            <X className="w-3 h-3 mr-1" /> Revoke All Days
+          </Button>
+        )}
+
         {user.isBanned ? (
           <Button
             size="sm"
@@ -1152,6 +1172,11 @@ export default function AdminUsers() {
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-xs font-semibold">No purchase</span>
+                        )}
+                        {user.allDaysUnlocked && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+                            All Days
+                          </span>
                         )}
                       </div>
                       <p className="text-slate-500">
