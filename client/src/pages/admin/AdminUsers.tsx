@@ -80,6 +80,7 @@ export default function AdminUsers() {
   // Data queries
   const { data: adminUsers = [], refetch: refetchUsers } = useQuery<AdminUser[]>({
     queryKey: ["/api/admin/users"],
+    staleTime: 30_000,
   });
 
   const { data: liveUsersData, refetch: refetchLiveUsers } = useQuery<{

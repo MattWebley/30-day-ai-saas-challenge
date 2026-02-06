@@ -68,6 +68,7 @@ export default function AdminMarketing() {
   // Data queries
   const { data: adminUsers = [] } = useQuery<AdminUser[]>({
     queryKey: ["/api/admin/users"],
+    staleTime: 30_000,
   });
 
   const { data: announcementsData = [], refetch: refetchAnnouncements } = useQuery<Announcement[]>({

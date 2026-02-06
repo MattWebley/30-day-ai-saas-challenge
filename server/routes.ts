@@ -16,6 +16,28 @@ import { callClaude, callClaudeForJSON, detectAbuse, checkRateLimit, logAIUsage,
 
 const dnsResolve = promisify(dns.resolve);
 
+// Simple in-memory rate limiter for auth endpoints
+const authAttempts = new Map<string, { count: number; resetAt: number }>();
+
+function isRateLimited(key: string, maxAttempts: number, windowMs: number): boolean {
+  const now = Date.now();
+  const entry = authAttempts.get(key);
+  if (!entry || now > entry.resetAt) {
+    authAttempts.set(key, { count: 1, resetAt: now + windowMs });
+    return false;
+  }
+  entry.count++;
+  return entry.count > maxAttempts;
+}
+
+// Clean up stale rate limit entries every 10 minutes
+setInterval(() => {
+  const now = Date.now();
+  authAttempts.forEach((entry, key) => {
+    if (now > entry.resetAt) authAttempts.delete(key);
+  });
+}, 10 * 60 * 1000);
+
 // In-memory tracking for live users (no DB overhead)
 interface LiveUserActivity {
   userId: string;
@@ -81,7 +103,13 @@ export async function registerRoutes(
         trackUserActivity(user, 'dashboard');
       }
 
-      res.json(user);
+      // Strip sensitive fields before sending to client
+      if (user) {
+        const { passwordHash, adminNotes, stripeCustomerId, ...safeUser } = user;
+        res.json(safeUser);
+      } else {
+        res.json(user);
+      }
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
@@ -165,13 +193,18 @@ export async function registerRoutes(
   app.post('/api/auth/magic-link', async (req, res) => {
     try {
       const { email } = req.body;
-      
+
       if (!email || typeof email !== 'string') {
         return res.status(400).json({ message: "Email is required" });
       }
 
       const normalizedEmail = email.toLowerCase().trim();
-      
+
+      // Rate limit: 3 requests per email per hour
+      if (isRateLimited(`magic:${normalizedEmail}`, 3, 60 * 60 * 1000)) {
+        return res.status(429).json({ message: "Too many requests. Please try again later." });
+      }
+
       // Check if this email has any purchases (challenge or coaching) or is a registered user
       const pendingPurchase = await db.select().from(pendingPurchases)
         .where(eq(pendingPurchases.email, normalizedEmail))
@@ -386,6 +419,11 @@ export async function registerRoutes(
 
       const normalizedEmail = email.toLowerCase().trim();
 
+      // Rate limit: 5 attempts per email per 15 minutes
+      if (isRateLimited(`login:${normalizedEmail}`, 5, 15 * 60 * 1000)) {
+        return res.status(429).json({ message: "Too many login attempts. Please try again in 15 minutes." });
+      }
+
       // Find user by email
       const [user] = await db.select().from(users)
         .where(eq(users.email, normalizedEmail));
@@ -394,11 +432,11 @@ export async function registerRoutes(
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      // Verify password
+      // Verify password (timing-safe comparison)
       const [salt, storedHash] = user.passwordHash.split(':');
       const hash = scryptSync(password, salt, 64).toString('hex');
 
-      if (hash !== storedHash) {
+      if (!timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(storedHash, 'hex'))) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
@@ -462,9 +500,13 @@ export async function registerRoutes(
     }
   });
 
-  // Day content routes
-  app.get("/api/days", async (req, res) => {
+  // Day content routes (require auth + purchase)
+  app.get("/api/days", isAuthenticated, async (req: any, res) => {
     try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.challengePurchased && !user?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const days = await storage.getAllDayContent();
       res.json(days);
     } catch (error) {
@@ -473,8 +515,12 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/days/:day", async (req, res) => {
+  app.get("/api/days/:day", isAuthenticated, async (req: any, res) => {
     try {
+      const user = await storage.getUser(req.user.claims.sub);
+      if (!user?.challengePurchased && !user?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const day = parseInt(req.params.day);
       const content = await storage.getDayContent(day);
       if (!content) {
@@ -1018,7 +1064,7 @@ export async function registerRoutes(
       }
 
       // Prevent deleting yourself
-      if (req.user && req.user.id === id) {
+      if (req.user?.claims?.sub === id) {
         return res.status(400).json({ message: "Cannot delete your own account" });
       }
 
@@ -1668,6 +1714,10 @@ export async function registerRoutes(
   app.post("/api/generate-ideas", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const aiUser = await storage.getUser(userId);
+      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { knowledge, skills, interests, experience } = req.body;
 
       console.log(`[generate-ideas] Starting for user ${userId}`);
@@ -1945,6 +1995,10 @@ Format: { "ideas": [...] }`;
   app.post("/api/ai-prompt", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const aiUser = await storage.getUser(userId);
+      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { prompt } = req.body;
 
       const result = await callClaude({
@@ -1974,6 +2028,10 @@ Format: { "ideas": [...] }`;
   app.post("/api/analyze-design", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const aiUser = await storage.getUser(userId);
+      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { url } = req.body;
 
       if (!url || typeof url !== 'string') {
@@ -2089,6 +2147,10 @@ Be creative and specific. Focus on what would make this design FEEL professional
   app.post("/api/research-competitors", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const aiUser = await storage.getUser(userId);
+      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { ideaTitle, ideaDescription, targetCustomer } = req.body;
 
       const competitorResult = await callClaudeForJSON<{ competitors: any[] }>({
@@ -2214,6 +2276,10 @@ Keep each description and why statement under 120 characters.`,
   app.post("/api/generate-usp-features", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const aiUser = await storage.getUser(userId);
+      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { ideaTitle, ideaDescription, userSkills, sharedFeatures, competitors } = req.body;
 
       const competitorInfo = competitors.map((c: any) =>
@@ -2267,6 +2333,10 @@ List only the features, one per line, each under 10 words. No numbering or bulle
   app.post("/api/ai/generate-features", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const aiUser = await storage.getUser(userId);
+      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { idea, painPoints } = req.body;
 
       // Step 1: Generate core features based on idea and pain points
@@ -2424,6 +2494,10 @@ Respond in this exact JSON format:
   app.post("/api/ai/generate-mvp-roadmap", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const aiUser = await storage.getUser(userId);
+      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { idea, features } = req.body;
 
       const result = await callClaudeForJSON<{ mvpFeatures: any[]; postMvpFeatures: any[] }>({
@@ -2496,6 +2570,10 @@ Keep MVP scope tight - aim for 4-6 weeks total build time for MVP features.`,
   app.post("/api/ai/generate-prd", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const aiUser = await storage.getUser(userId);
+      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { idea, painPoints, features, mvpFeatures, appName, iHelpStatement, uspFeatures, brandVibe, customerAvatar, lookAndFeel } = req.body;
 
       // Generate summary
@@ -2620,7 +2698,7 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
   });
 
   // Chat/Comments routes
-  app.get("/api/comments/:day", async (req, res) => {
+  app.get("/api/comments/:day", isAuthenticated, async (req: any, res) => {
     try {
       const day = parseInt(req.params.day);
       const comments = await storage.getDayComments(day);
@@ -2635,6 +2713,10 @@ NO generic advice. NO "consider accessibility". NO "ensure security best practic
   app.post("/api/ai/generate-prd-details", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const aiUser = await storage.getUser(userId);
+      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { type, idea, painPoints, iHelpStatement, brandVibe, appName } = req.body;
 
       if (type === "avatar") {
@@ -2797,8 +2879,12 @@ Just output the look & feel description, nothing else.`,
   app.post("/api/comments", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const commenter = await storage.getUser(userId);
+      if (!commenter?.challengePurchased && !commenter?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { day, content } = req.body;
-      
+
       if (!content || content.trim().length === 0) {
         return res.status(400).json({ message: "Comment cannot be empty" });
       }
@@ -2867,6 +2953,8 @@ Just output the look & feel description, nothing else.`,
   // Admin: Get pending comments
   app.get("/api/admin/pending-comments", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const comments = await storage.getPendingComments();
       res.json(comments);
     } catch (error) {
@@ -2878,6 +2966,8 @@ Just output the look & feel description, nothing else.`,
   // Admin: Approve/reject comment
   app.post("/api/admin/comments/:id/status", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const id = parseInt(req.params.id);
       const { status } = req.body; // 'approved' or 'rejected'
 
@@ -2930,6 +3020,8 @@ Just output the look & feel description, nothing else.`,
   // Admin: Update brand settings
   app.post("/api/admin/brand-settings", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const settings = req.body;
       const updated = await storage.updateBrandSettings(settings);
       res.json(updated);
@@ -2942,6 +3034,11 @@ Just output the look & feel description, nothing else.`,
   // AI Build Coach chat endpoint
   app.post("/api/chat", isAuthenticated, async (req: any, res) => {
     try {
+      // Purchase check - AI chat costs money per call
+      const chatUser = req.user?.claims?.sub ? await storage.getUser(req.user.claims.sub) : null;
+      if (!chatUser?.challengePurchased && !chatUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required to use AI Mentor" });
+      }
       // Debug: Log user object to diagnose auth issues
       if (!req.user) {
         console.error("Chat error: req.user is undefined");
@@ -3118,6 +3215,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Get chatbot settings
   app.get("/api/admin/chatbot/settings", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const settings = await storage.getChatbotSettings();
       res.json(settings || { customRules: "", dailyLimit: 20, hourlyLimit: 10 });
     } catch (error: any) {
@@ -3129,6 +3228,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Update chatbot settings
   app.post("/api/admin/chatbot/settings", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const { customRules, dailyLimit, hourlyLimit } = req.body;
       const updated = await storage.updateChatbotSettings({ customRules, dailyLimit, hourlyLimit });
       res.json(updated);
@@ -3141,6 +3242,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Get all chat messages
   app.get("/api/admin/chatbot/messages", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const messages = await storage.getAllChatMessages();
       res.json(messages);
     } catch (error: any) {
@@ -3152,6 +3255,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Get flagged messages
   app.get("/api/admin/chatbot/flagged", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const flagged = await storage.getFlaggedMessages();
       res.json(flagged);
     } catch (error: any) {
@@ -3163,6 +3268,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Get chat summary by user
   app.get("/api/admin/chatbot/users", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const summary = await storage.getUserChatSummary();
       res.json(summary);
     } catch (error: any) {
@@ -3174,6 +3281,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Get specific user's chat history
   app.get("/api/admin/chatbot/user/:userId", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const messages = await storage.getChatMessages(req.params.userId);
       res.json(messages);
     } catch (error: any) {
@@ -3185,6 +3294,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Mark message as reviewed
   app.post("/api/admin/chatbot/review/:id", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const id = parseInt(req.params.id);
       const updated = await storage.markMessageReviewed(id);
       res.json(updated);
@@ -3197,6 +3308,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // Admin: Manually flag a message
   app.post("/api/admin/chatbot/flag/:id", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
       const id = parseInt(req.params.id);
       const { reason } = req.body;
       const updated = await storage.flagMessage(id, reason || "Flagged by admin");
@@ -3212,6 +3325,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   app.post("/api/showcase", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const showcaseUser = await storage.getUser(userId);
+      if (!showcaseUser?.challengePurchased && !showcaseUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { appName, description, screenshotUrl, liveUrl, testimonial, videoUrl } = req.body;
 
       if (!appName || !description) {
@@ -3259,6 +3376,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
+      if (!user?.challengePurchased && !user?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { testimonial, videoUrl, appName, appUrl } = req.body;
 
       if (!testimonial && !videoUrl) {
@@ -3579,6 +3699,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   app.post("/api/questions", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
+      const qUser = await storage.getUser(userId);
+      if (!qUser?.challengePurchased && !qUser?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
       const { day, question } = req.body;
 
       if (!day || !question) {
@@ -3665,8 +3789,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     }
   });
 
-  // Get answered questions for a day (public)
-  app.get("/api/questions/day/:day", async (req, res) => {
+  // Get answered questions for a day (requires auth)
+  app.get("/api/questions/day/:day", isAuthenticated, async (req: any, res) => {
     try {
       const day = parseInt(req.params.day);
       const questions = await storage.getAnsweredQuestionsByDay(day);
@@ -5195,6 +5319,10 @@ Example format:
     try {
       const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
+
+      if (!user?.challengePurchased && !user?.isAdmin) {
+        return res.status(403).json({ message: "Purchase required" });
+      }
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });

@@ -41,10 +41,7 @@ export class WebhookHandlers {
       return;
     }
 
-    // Debug: Log webhook secret info (first/last 4 chars only for security)
-    console.log('[Webhook] Secret configured:', webhookSecret.substring(0, 8) + '...' + webhookSecret.substring(webhookSecret.length - 4));
-    console.log('[Webhook] Secret length:', webhookSecret.length);
-    console.log('[Webhook] Signature received:', signature?.substring(0, 50) + '...');
+    // Webhook secret is configured (don't log details in production)
 
     let event: Stripe.Event;
     try {

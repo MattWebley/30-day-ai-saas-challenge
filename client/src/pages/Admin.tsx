@@ -95,6 +95,7 @@ export default function Admin() {
 
   const { data: adminUsers = [] } = useQuery<AdminUser[]>({
     queryKey: ["/api/admin/users"],
+    staleTime: 30_000, // Refetch admin data after 30 seconds (not Infinity)
   });
 
   const { data: revenueData } = useQuery<RevenueData>({
