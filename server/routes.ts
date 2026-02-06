@@ -3709,6 +3709,78 @@ Just output the look & feel description, nothing else.`,
     }
   });
 
+  // Admin: Get ALL comments (approved + pending + rejected)
+  app.get("/api/admin/comments", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+      const comments = await storage.getAllComments();
+      res.json(comments);
+    } catch (error) {
+      console.error("Error fetching all comments:", error);
+      res.status(500).json({ message: "Failed to fetch comments" });
+    }
+  });
+
+  // Admin: Get ALL questions (pending + answered + hidden)
+  app.get("/api/admin/questions", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+      const questions = await storage.getAllQuestions();
+      res.json(questions);
+    } catch (error) {
+      console.error("Error fetching all questions:", error);
+      res.status(500).json({ message: "Failed to fetch questions" });
+    }
+  });
+
+  // Admin: Answer a question by ID (same logic as token-based, but admin-authenticated)
+  app.post("/api/admin/questions/:id/answer", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const id = parseInt(req.params.id);
+      const { answer } = req.body;
+
+      if (!answer) {
+        return res.status(400).json({ message: "Answer is required" });
+      }
+      if (answer.length > 10000) {
+        return res.status(400).json({ message: "Answer too long (max 10000 characters)" });
+      }
+
+      const sanitizedAnswer = sanitizeContent(answer.trim());
+      const updated = await storage.answerQuestion(id, sanitizedAnswer);
+
+      if (!updated) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      // Send email notification to the student
+      try {
+        const student = await storage.getUser(updated.userId);
+        if (student?.email) {
+          await sendQuestionAnsweredEmail({
+            to: student.email,
+            firstName: student.firstName || 'there',
+            day: updated.day,
+            question: updated.question,
+            answer: sanitizedAnswer,
+          });
+        }
+      } catch (emailError) {
+        console.error('[Admin Answer] Failed to send notification email:', emailError);
+      }
+
+      res.json({ success: true, question: updated });
+    } catch (error: any) {
+      console.error("Error answering question:", error);
+      res.status(500).json({ message: error.message || "Failed to answer question" });
+    }
+  });
+
   // Brand settings - public endpoint (for applying theme)
   app.get("/api/brand-settings", async (req, res) => {
     try {

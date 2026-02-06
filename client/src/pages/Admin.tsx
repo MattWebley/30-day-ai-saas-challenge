@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   Eye,
   ArrowRight,
+  KeyRound,
 } from "lucide-react";
 import {
   LineChart,
@@ -473,6 +474,40 @@ export default function Admin() {
               </Card>
             </div>
 
+            {/* Emergency Admin Restore Links */}
+            <Card className="p-5 border border-slate-200 border-l-4 border-l-red-400 shadow-sm">
+              <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-200">
+                <KeyRound className="w-5 h-5 text-red-500" />
+                <h3 className="text-lg font-bold text-slate-900">Emergency Admin Restore</h3>
+              </div>
+              <p className="text-slate-600 mb-3">
+                If you ever lose admin access, paste one of these URLs into your browser. Each link works <strong>once</strong> then expires. After clicking, <strong>log out and log back in</strong> to see admin again.
+              </p>
+              <div className="space-y-2">
+                {[
+                  "https://challenge.mattwebley.com/api/restore/r1-a4e8c7f2b91d3056",
+                  "https://challenge.mattwebley.com/api/restore/r2-d7b3f1e8a04c9265",
+                  "https://challenge.mattwebley.com/api/restore/r3-91c5a8d3e7f24b06",
+                ].map((url, i) => (
+                  <div key={i} className="flex items-center gap-2 bg-slate-50 rounded-lg p-3 border border-slate-200">
+                    <span className="text-xs font-bold text-slate-400 w-5">#{i + 1}</span>
+                    <code className="text-xs text-slate-700 break-all flex-1">{url}</code>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(url);
+                      }}
+                      className="text-xs text-primary hover:underline flex-shrink-0"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-slate-400 mt-3">
+                These reset on every server restart, so all 3 are always available after a redeploy.
+              </p>
+            </Card>
+
             {/* Needs Attention Panel */}
             <Card className={`p-5 border border-slate-200 shadow-sm ${totalAttention > 0 ? "border-l-4 border-l-amber-500" : ""}`}>
               <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
@@ -610,7 +645,7 @@ export default function Admin() {
                 <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
                   <Eye className="w-5 h-5 text-blue-500" />
                   <h3 className="text-lg font-bold text-slate-900">Traffic & Conversions</h3>
-                  <span className="text-sm text-slate-400 ml-auto">Last 30 days</span>
+                  <span className="text-xs text-slate-400 ml-auto">Tracking started 6 Feb 2026 · Last 30 days</span>
                 </div>
 
                 {/* Conversion funnel */}

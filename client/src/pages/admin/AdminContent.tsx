@@ -15,11 +15,19 @@ import {
   AlertTriangle,
   Pencil,
   Trash2,
+  HelpCircle,
+  Send,
+  ChevronDown,
+  ChevronUp,
+  EyeOff,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import type {
   PendingComment,
+  AdminComment,
+  AdminQuestion,
   CritiqueRequest,
   ShowcaseEntry,
   TestimonialEntry,
@@ -28,10 +36,23 @@ import type {
 export default function AdminContent() {
   const queryClient = useQueryClient();
   const [critiqueTab, setCritiqueTab] = useState<"pending" | "completed">("pending");
+  const [showAnswered, setShowAnswered] = useState(false);
+  const [showAllComments, setShowAllComments] = useState(false);
+  const [answerDrafts, setAnswerDrafts] = useState<Record<number, string>>({});
 
   // Data queries
   const { data: pendingComments = [] } = useQuery<PendingComment[]>({
     queryKey: ["/api/admin/pending-comments"],
+  });
+
+  const { data: allComments = [] } = useQuery<AdminComment[]>({
+    queryKey: ["/api/admin/comments"],
+    staleTime: 30_000,
+  });
+
+  const { data: allQuestions = [] } = useQuery<AdminQuestion[]>({
+    queryKey: ["/api/admin/questions"],
+    staleTime: 30_000,
   });
 
   const { data: critiqueRequests = [] } = useQuery<CritiqueRequest[]>({
@@ -45,6 +66,10 @@ export default function AdminContent() {
   const { data: testimonials = [] } = useQuery<TestimonialEntry[]>({
     queryKey: ["/api/admin/testimonials"],
   });
+
+  const pendingQuestions = allQuestions.filter((q) => q.status === "pending");
+  const answeredQuestions = allQuestions.filter((q) => q.status === "answered");
+  const approvedComments = allComments.filter((c) => c.status === "approved");
 
   const pendingCritiques = critiqueRequests.filter(
     (c) => c.status === "pending" || c.status === "in_progress"
@@ -61,10 +86,59 @@ export default function AdminContent() {
     },
     onSuccess: (_, { status }) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-comments"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/comments"] });
       toast.success(status === "approved" ? "Comment approved" : "Comment rejected");
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to update comment");
+    },
+  });
+
+  const deleteComment = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("DELETE", `/api/comments/${id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-comments"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/comments"] });
+      toast.success("Comment deleted");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to delete comment");
+    },
+  });
+
+  const answerQuestion = useMutation({
+    mutationFn: async ({ id, answer }: { id: number; answer: string }) => {
+      const res = await apiRequest("POST", `/api/admin/questions/${id}/answer`, { answer });
+      return res.json();
+    },
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/questions"] });
+      setAnswerDrafts((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      toast.success("Answer sent! Student will receive an email notification.");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to send answer");
+    },
+  });
+
+  const hideQuestion = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("POST", `/api/admin/questions/${id}/hide`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/questions"] });
+      toast.success("Question hidden");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to hide question");
     },
   });
 
@@ -140,22 +214,186 @@ export default function AdminContent() {
 
   return (
     <div className="space-y-8">
+      {/* Student Questions */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <HelpCircle className="w-6 h-6 text-primary" />
+          <h2 className="text-xl font-bold text-slate-900">Student Questions</h2>
+          {pendingQuestions.length > 0 && (
+            <span className="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">
+              {pendingQuestions.length} unanswered
+            </span>
+          )}
+          {answeredQuestions.length > 0 && (
+            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+              {answeredQuestions.length} answered
+            </span>
+          )}
+        </div>
+
+        {/* Pending questions */}
+        {pendingQuestions.length === 0 && answeredQuestions.length === 0 ? (
+          <Card className="p-8 border border-slate-200 text-center">
+            <HelpCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+            <p className="text-slate-500">No student questions yet</p>
+          </Card>
+        ) : (
+          <>
+            {pendingQuestions.length > 0 && (
+              <div className="space-y-3">
+                {pendingQuestions.map((q) => (
+                  <Card key={q.id} className="p-4 border border-slate-200 border-l-4 border-l-amber-400">
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-slate-900 text-sm">
+                            {q.user?.firstName || "Anonymous"} {q.user?.lastName || ""}
+                          </span>
+                          <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
+                            Day {q.day}
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            {formatDistanceToNow(new Date(q.createdAt), { addSuffix: true })}
+                          </span>
+                        </div>
+                        {q.user?.email && (
+                          <p className="text-xs text-slate-400 mb-2">{q.user.email}</p>
+                        )}
+                        <p className="text-slate-700 whitespace-pre-wrap break-words">{q.question}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-slate-400 hover:text-slate-600 border-slate-200 flex-shrink-0"
+                        onClick={() => {
+                          if (confirm("Hide this question? It won't be visible to students.")) {
+                            hideQuestion.mutate(q.id);
+                          }
+                        }}
+                        disabled={hideQuestion.isPending}
+                      >
+                        <EyeOff className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    {/* AI suggestion hint */}
+                    {q.aiSuggestedAnswer && (
+                      <div className="mb-3 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <Sparkles className="w-3.5 h-3.5 text-slate-400" />
+                          <span className="text-xs font-medium text-slate-500">AI Suggested Answer</span>
+                        </div>
+                        <p className="text-sm text-slate-600 whitespace-pre-wrap">{q.aiSuggestedAnswer}</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="mt-2 text-xs border-slate-200 text-slate-600"
+                          onClick={() => setAnswerDrafts((prev) => ({ ...prev, [q.id]: q.aiSuggestedAnswer! }))}
+                        >
+                          Use as starting point
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Answer form */}
+                    <div className="space-y-2">
+                      <textarea
+                        className="w-full border border-slate-200 rounded-lg p-3 text-sm text-slate-700 resize-y min-h-[80px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                        placeholder="Type your answer..."
+                        value={answerDrafts[q.id] || ""}
+                        onChange={(e) => setAnswerDrafts((prev) => ({ ...prev, [q.id]: e.target.value }))}
+                      />
+                      <div className="flex justify-end">
+                        <Button
+                          size="sm"
+                          className="gap-1.5"
+                          onClick={() => {
+                            const answer = answerDrafts[q.id]?.trim();
+                            if (!answer) {
+                              toast.error("Please type an answer first");
+                              return;
+                            }
+                            answerQuestion.mutate({ id: q.id, answer });
+                          }}
+                          disabled={answerQuestion.isPending || !answerDrafts[q.id]?.trim()}
+                        >
+                          <Send className="w-4 h-4" />
+                          Send Answer
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {/* Answered questions (collapsible) */}
+            {answeredQuestions.length > 0 && (
+              <div>
+                <button
+                  onClick={() => setShowAnswered(!showAnswered)}
+                  className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+                >
+                  {showAnswered ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  {answeredQuestions.length} answered question{answeredQuestions.length !== 1 ? "s" : ""}
+                </button>
+
+                {showAnswered && (
+                  <div className="mt-3 space-y-3 max-h-[600px] overflow-y-auto">
+                    {answeredQuestions.map((q) => (
+                      <Card key={q.id} className="p-4 border border-slate-200 border-l-4 border-l-green-400">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold text-slate-900 text-sm">
+                            {q.user?.firstName || "Anonymous"} {q.user?.lastName || ""}
+                          </span>
+                          <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
+                            Day {q.day}
+                          </span>
+                          <span className="text-xs text-slate-400">
+                            {formatDistanceToNow(new Date(q.createdAt), { addSuffix: true })}
+                          </span>
+                        </div>
+                        <p className="text-slate-700 whitespace-pre-wrap break-words mb-3">{q.question}</p>
+                        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                          <p className="text-xs font-medium text-slate-500 mb-1">Your answer:</p>
+                          <p className="text-sm text-slate-700 whitespace-pre-wrap">{q.answer}</p>
+                          {q.answeredAt && (
+                            <p className="text-xs text-slate-400 mt-2">
+                              Answered {formatDistanceToNow(new Date(q.answeredAt), { addSuffix: true })}
+                            </p>
+                          )}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
       {/* Comment Approval Queue */}
       <div className="space-y-4">
         <div className="flex items-center gap-3">
           <MessageSquare className="w-6 h-6 text-primary" />
-          <h2 className="text-xl font-bold text-slate-900">Comment Approval Queue</h2>
+          <h2 className="text-xl font-bold text-slate-900">Comments</h2>
           {pendingComments.length > 0 && (
             <span className="px-2 py-0.5 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">
               {pendingComments.length} pending
             </span>
           )}
+          {approvedComments.length > 0 && (
+            <span className="px-2 py-0.5 bg-slate-100 text-slate-700 text-xs font-bold rounded-full">
+              {approvedComments.length} approved
+            </span>
+          )}
         </div>
 
+        {/* Pending comments */}
         {pendingComments.length === 0 ? (
-          <Card className="p-8 border border-slate-200 text-center">
-            <MessageSquare className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500">No comments pending approval</p>
+          <Card className="p-6 border border-slate-200 text-center">
+            <p className="text-slate-500 text-sm">No comments pending approval</p>
           </Card>
         ) : (
           <Card className="border border-slate-200 divide-y divide-slate-100">
@@ -206,6 +444,61 @@ export default function AdminContent() {
               </div>
             ))}
           </Card>
+        )}
+
+        {/* All approved comments (collapsible) */}
+        {approvedComments.length > 0 && (
+          <div>
+            <button
+              onClick={() => setShowAllComments(!showAllComments)}
+              className="flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              {showAllComments ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              {approvedComments.length} approved comment{approvedComments.length !== 1 ? "s" : ""}
+            </button>
+
+            {showAllComments && (
+              <div className="mt-3 max-h-[600px] overflow-y-auto">
+                <Card className="border border-slate-200 divide-y divide-slate-100">
+                  {approvedComments.map((comment) => (
+                    <div key={comment.id} className="p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-slate-900 text-sm">
+                              {comment.user?.firstName || "Anonymous"} {comment.user?.lastName || ""}
+                            </span>
+                            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
+                              Day {comment.day}
+                            </span>
+                            <span className="text-xs text-slate-400">
+                              {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                            </span>
+                          </div>
+                          <p className="text-slate-600 text-sm whitespace-pre-wrap break-words">
+                            {comment.content}
+                          </p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-slate-400 hover:text-red-600 border-slate-200 flex-shrink-0"
+                          onClick={() => {
+                            if (confirm("Delete this comment permanently?")) {
+                              deleteComment.mutate(comment.id);
+                            }
+                          }}
+                          disabled={deleteComment.isPending}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </Card>
+              </div>
+            )}
+          </div>
         )}
       </div>
 

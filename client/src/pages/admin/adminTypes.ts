@@ -12,6 +12,39 @@ export interface PendingComment {
   };
 }
 
+export interface AdminComment {
+  id: number;
+  day: number;
+  content: string;
+  status: string | null;
+  flagReason: string | null;
+  createdAt: string;
+  user: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+  };
+}
+
+export interface AdminQuestion {
+  id: number;
+  day: number;
+  question: string;
+  answer: string | null;
+  aiSuggestedAnswer: string | null;
+  status: string | null;
+  helpful: number | null;
+  createdAt: string;
+  answeredAt: string | null;
+  user: {
+    id: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string | null;
+  };
+}
+
 export interface BrandSettings {
   primaryColor: string;
   textColor: string;

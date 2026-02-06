@@ -124,6 +124,7 @@ export interface IStorage {
   createDayComment(comment: InsertDayComment): Promise<DayComment>;
   updateCommentStatus(id: number, status: string): Promise<DayComment | undefined>;
   getPendingComments(): Promise<(DayComment & { user: User })[]>;
+  getAllComments(): Promise<(DayComment & { user: User })[]>;
   deleteComment(id: number): Promise<void>;
   
   // Spam status operations
@@ -164,6 +165,7 @@ export interface IStorage {
   getQuestionsByDay(day: number): Promise<(DayQuestion & { user: User })[]>;
   getAnsweredQuestionsByDay(day: number): Promise<(DayQuestion & { user: User })[]>;
   getPendingQuestions(): Promise<(DayQuestion & { user: User })[]>;
+  getAllQuestions(): Promise<(DayQuestion & { user: User })[]>;
   getQuestionByToken(token: string): Promise<DayQuestion | undefined>;
   answerQuestion(id: number, answer: string): Promise<DayQuestion | undefined>;
   setAiSuggestedAnswer(id: number, aiAnswer: string): Promise<DayQuestion | undefined>;
@@ -544,6 +546,15 @@ export class DatabaseStorage implements IStorage {
     return commentsWithUsers;
   }
 
+  async getAllComments(): Promise<(DayComment & { user: User })[]> {
+    const comments = await db
+      .select()
+      .from(dayComments)
+      .innerJoin(users, eq(dayComments.userId, users.id))
+      .orderBy(desc(dayComments.createdAt));
+    return comments.map(c => ({ ...c.day_comments, user: c.users }));
+  }
+
   async deleteComment(id: number): Promise<void> {
     await db.delete(dayComments).where(eq(dayComments.id, id));
   }
@@ -920,6 +931,15 @@ export class DatabaseStorage implements IStorage {
       .from(dayQuestions)
       .innerJoin(users, eq(dayQuestions.userId, users.id))
       .where(eq(dayQuestions.status, "pending"))
+      .orderBy(desc(dayQuestions.createdAt));
+    return questions.map(q => ({ ...q.day_questions, user: q.users }));
+  }
+
+  async getAllQuestions(): Promise<(DayQuestion & { user: User })[]> {
+    const questions = await db
+      .select()
+      .from(dayQuestions)
+      .innerJoin(users, eq(dayQuestions.userId, users.id))
       .orderBy(desc(dayQuestions.createdAt));
     return questions.map(q => ({ ...q.day_questions, user: q.users }));
   }
