@@ -23,6 +23,7 @@ import {
   Trash2,
   Award,
   ExternalLink,
+  Link,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -36,6 +37,7 @@ function UserDetailPanel({
   setBanConfirmation,
   resetUserProgress,
   setDeleteConfirmation,
+  allUsers,
 }: {
   user: AdminUser;
   updateUser: any;
@@ -43,7 +45,29 @@ function UserDetailPanel({
   setBanConfirmation: any;
   resetUserProgress: any;
   setDeleteConfirmation: any;
+  allUsers: AdminUser[];
 }) {
+  const queryClient = useQueryClient();
+  const [linkSearch, setLinkSearch] = useState("");
+  const [showLinkDropdown, setShowLinkDropdown] = useState(false);
+
+  const linkPendingMutation = useMutation({
+    mutationFn: async ({ pendingId, userId }: { pendingId: number; userId: string }) => {
+      const res = await apiRequest("POST", "/api/admin/link-pending", { pendingId, userId });
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
+      toast.success(data.message || "Purchase linked successfully");
+      setLinkSearch("");
+      setShowLinkDropdown(false);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to link purchase");
+    },
+  });
+
   const { data: details, isLoading } = useQuery<any>({
     queryKey: [`/api/admin/users/${user.id}`],
     staleTime: 30_000,
@@ -118,6 +142,83 @@ function UserDetailPanel({
             </div>
           </div>
         )}
+
+        {/* Link to Account */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <p className="text-sm font-medium text-blue-800 mb-2 flex items-center gap-2">
+            <Link className="w-4 h-4" />
+            Link to Existing Account
+          </p>
+          <p className="text-xs text-blue-600 mb-3">
+            Search for the user's real account and link this purchase to it.
+          </p>
+          <div className="relative">
+            <Input
+              placeholder="Search by name or email..."
+              value={linkSearch}
+              onChange={(e) => {
+                setLinkSearch(e.target.value);
+                setShowLinkDropdown(e.target.value.length > 0);
+              }}
+              onFocus={() => linkSearch.length > 0 && setShowLinkDropdown(true)}
+              className="text-sm bg-white"
+            />
+            {showLinkDropdown && linkSearch.length > 0 && (
+              <div className="absolute z-10 mt-1 w-full bg-white border border-slate-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                {allUsers
+                  .filter((u) => !u.isPending)
+                  .filter((u) => {
+                    const q = linkSearch.toLowerCase();
+                    return (
+                      u.email?.toLowerCase().includes(q) ||
+                      u.firstName?.toLowerCase().includes(q) ||
+                      u.lastName?.toLowerCase().includes(q)
+                    );
+                  })
+                  .slice(0, 8)
+                  .map((u) => (
+                    <button
+                      key={u.id}
+                      className="w-full text-left px-3 py-2 hover:bg-blue-50 flex items-center justify-between text-sm border-b border-slate-100 last:border-0"
+                      onClick={() => {
+                        const pendingId = parseInt(user.id.replace("pending_", ""));
+                        if (confirm(`Link this purchase to ${u.firstName || ''} ${u.lastName || ''} (${u.email})? This will grant them access.`)) {
+                          linkPendingMutation.mutate({ pendingId, userId: u.id });
+                        }
+                      }}
+                    >
+                      <div>
+                        <span className="font-medium text-slate-900">
+                          {u.firstName || u.lastName
+                            ? `${u.firstName || ""} ${u.lastName || ""}`.trim()
+                            : "No name"}
+                        </span>
+                        <span className="text-slate-500 ml-2">{u.email}</span>
+                      </div>
+                      <span className="text-xs text-slate-400">
+                        Day {u.stats.lastCompletedDay}
+                      </span>
+                    </button>
+                  ))}
+                {allUsers
+                  .filter((u) => !u.isPending)
+                  .filter((u) => {
+                    const q = linkSearch.toLowerCase();
+                    return (
+                      u.email?.toLowerCase().includes(q) ||
+                      u.firstName?.toLowerCase().includes(q) ||
+                      u.lastName?.toLowerCase().includes(q)
+                    );
+                  }).length === 0 && (
+                  <p className="px-3 py-2 text-sm text-slate-500">No matching users found</p>
+                )}
+              </div>
+            )}
+          </div>
+          {linkPendingMutation.isPending && (
+            <p className="text-xs text-blue-600 mt-2">Linking purchase...</p>
+          )}
+        </div>
 
         {details.stripeCustomerId && (
           <p className="text-xs text-slate-400">
@@ -1161,10 +1262,22 @@ export default function AdminUsers() {
                     <div className="text-right">
                       <div className="flex items-center gap-1">
                         {user.isPending ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
-                            <CreditCard className="w-3 h-3" />
-                            Paid - No account
-                          </span>
+                          <>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                              <CreditCard className="w-3 h-3" />
+                              Paid - No account
+                            </span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedUser(selectedUser?.id === user.id ? null : user);
+                              }}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold hover:bg-blue-200 transition-colors"
+                            >
+                              <Link className="w-3 h-3" />
+                              Link Account
+                            </button>
+                          </>
                         ) : user.challengePurchased ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
                             <CreditCard className="w-3 h-3" />
@@ -1188,7 +1301,7 @@ export default function AdminUsers() {
 
                 {/* Expanded Details */}
                 {selectedUser?.id === user.id && (
-                  <UserDetailPanel user={user} updateUser={updateUser} unbanUserMutation={unbanUserMutation} setBanConfirmation={setBanConfirmation} resetUserProgress={resetUserProgress} setDeleteConfirmation={setDeleteConfirmation} />
+                  <UserDetailPanel user={user} updateUser={updateUser} unbanUserMutation={unbanUserMutation} setBanConfirmation={setBanConfirmation} resetUserProgress={resetUserProgress} setDeleteConfirmation={setDeleteConfirmation} allUsers={adminUsers} />
                 )}
               </div>
             ))

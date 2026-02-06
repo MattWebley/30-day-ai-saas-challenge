@@ -1343,6 +1343,97 @@ export async function registerRoutes(
     }
   });
 
+  // Link a pending purchase to an existing user account
+  app.post("/api/admin/link-pending", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { pendingId, userId } = req.body;
+
+      if (!pendingId || !userId) {
+        return res.status(400).json({ message: "pendingId and userId are required" });
+      }
+
+      // Get the pending purchase
+      const [pending] = await db.select().from(pendingPurchases)
+        .where(eq(pendingPurchases.id, pendingId));
+
+      if (!pending) {
+        return res.status(404).json({ message: "Pending purchase not found" });
+      }
+
+      if (pending.linkedToUserId) {
+        return res.status(400).json({ message: "This purchase is already linked to a user" });
+      }
+
+      // Get the target user
+      const targetUser = await storage.getUser(userId);
+      if (!targetUser) {
+        return res.status(404).json({ message: "Target user not found" });
+      }
+
+      // Grant the purchase to the user
+      if (pending.productType.startsWith('challenge')) {
+        const hasUnlock = pending.productType.includes('+unlock');
+        await db.update(users)
+          .set({
+            challengePurchased: true,
+            ...(hasUnlock ? { allDaysUnlocked: true } : {}),
+            stripeCustomerId: pending.stripeCustomerId,
+            purchaseCurrency: pending.currency as 'usd' | 'gbp',
+          })
+          .where(eq(users.id, userId));
+      } else if (pending.productType.includes('coaching')) {
+        await db.update(users)
+          .set({ coachingPurchased: true })
+          .where(eq(users.id, userId));
+      }
+
+      // Populate missing name from pending purchase
+      if (!targetUser.firstName && pending.firstName) {
+        await db.update(users)
+          .set({ firstName: pending.firstName })
+          .where(eq(users.id, userId));
+      }
+      if (!targetUser.lastName && pending.lastName) {
+        await db.update(users)
+          .set({ lastName: pending.lastName })
+          .where(eq(users.id, userId));
+      }
+
+      // Mark purchase as linked
+      await db.update(pendingPurchases)
+        .set({ linkedToUserId: userId, linkedAt: new Date() })
+        .where(eq(pendingPurchases.id, pendingId));
+
+      // Also link coaching purchases by email
+      const coachingByEmail = await db.select().from(coachingPurchases)
+        .where(sql`lower(${coachingPurchases.email}) = ${pending.email.toLowerCase()}`);
+
+      if (coachingByEmail.length > 0) {
+        await db.update(users)
+          .set({ coachingPurchased: true })
+          .where(eq(users.id, userId));
+
+        for (const coaching of coachingByEmail) {
+          if (!coaching.userId) {
+            await db.update(coachingPurchases)
+              .set({ userId })
+              .where(eq(coachingPurchases.id, coaching.id));
+          }
+        }
+      }
+
+      res.json({ success: true, message: `Purchase linked to ${targetUser.email || targetUser.firstName || userId}` });
+    } catch (error) {
+      console.error("Error linking pending purchase:", error);
+      res.status(500).json({ message: "Failed to link purchase" });
+    }
+  });
+
   // Create new user
   app.post("/api/admin/users", isAuthenticated, async (req: any, res) => {
     try {
