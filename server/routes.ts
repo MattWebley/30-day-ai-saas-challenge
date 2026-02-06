@@ -762,7 +762,14 @@ export async function registerRoutes(
       const allUsers = await storage.getAllUsers();
       const allStats = await storage.getAllUserStats();
       const allProgress = await storage.getAllUserProgress();
-      
+
+      // Count pending purchasers who haven't created accounts
+      const allPending = await db.select().from(pendingPurchases).where(
+        isNull(pendingPurchases.linkedToUserId)
+      );
+      const registeredEmails = new Set(allUsers.map((u: any) => u.email?.toLowerCase()));
+      const pendingCount = allPending.filter(p => !registeredEmails.has(p.email.toLowerCase())).length;
+
       // Calculate metrics
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -814,7 +821,7 @@ export async function registerRoutes(
       }));
       
       res.json({
-        totalUsers: allUsers.length,
+        totalUsers: allUsers.length + pendingCount,
         activeUsers,
         completedChallenges,
         avgProgress,
@@ -887,8 +894,8 @@ export async function registerRoutes(
         .map(p => ({
           id: `pending_${p.id}`,
           email: p.email,
-          firstName: null,
-          lastName: null,
+          firstName: p.firstName || null,
+          lastName: p.lastName || null,
           profileImageUrl: null,
           isAdmin: false,
           challengePurchased: true,

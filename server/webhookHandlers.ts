@@ -99,8 +99,12 @@ export class WebhookHandlers {
       // No user found - save as pending purchase
       console.log('[Webhook] No user found, saving pending purchase for:', email);
       const storedProductType = unlockAllDays ? `${productType}+unlock` : productType;
+      const custFirstName = session.customer_details?.name?.split(' ')[0] || null;
+      const custLastName = session.customer_details?.name?.split(' ').slice(1).join(' ') || null;
       await db.insert(pendingPurchases).values({
         email,
+        firstName: custFirstName,
+        lastName: custLastName,
         stripeCustomerId: customerId,
         stripeSessionId: session.id,
         productType: storedProductType,

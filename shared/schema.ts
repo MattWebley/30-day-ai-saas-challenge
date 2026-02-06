@@ -63,6 +63,8 @@ export type User = typeof users.$inferSelect;
 export const pendingPurchases = pgTable("pending_purchases", {
   id: serial("id").primaryKey(),
   email: varchar("email").notNull(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
   stripeCustomerId: varchar("stripe_customer_id").notNull(),
   stripeSessionId: varchar("stripe_session_id").notNull().unique(),
   productType: varchar("product_type").notNull(), // 'challenge', 'coaching', 'critique', etc.
