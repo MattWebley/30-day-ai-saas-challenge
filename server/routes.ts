@@ -84,6 +84,20 @@ export async function registerRoutes(
   // Setup Replit Auth
   await setupAuth(app);
 
+  // TEMPORARY — fix admin access, remove after use
+  app.post('/api/auth/fix-admin', async (req: any, res) => {
+    const session = req.session as any;
+    if (!session?.userId) {
+      return res.status(401).json({ message: "Not logged in" });
+    }
+    // Only allow for the known admin account
+    if (session.userId !== '43411523') {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+    await db.update(users).set({ isAdmin: true }).where(eq(users.id, session.userId));
+    res.json({ success: true, message: "Admin access restored" });
+  });
+
   // Debug endpoint — TEMPORARY, remove after fixing admin access
   app.get('/api/auth/debug', async (req: any, res) => {
     const session = req.session as any;
