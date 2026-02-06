@@ -17,10 +17,542 @@ import {
   Filter,
   Radio,
   Ban,
+  Shield,
+  Check,
+  X,
+  Trash2,
+  Award,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import type { AdminUser, LiveUser, ActivityLogResponse } from "./adminTypes";
+import { formatCurrency } from "./adminTypes";
+
+function UserDetailPanel({
+  user,
+  updateUser,
+  unbanUserMutation,
+  setBanConfirmation,
+  resetUserProgress,
+  setDeleteConfirmation,
+}: {
+  user: AdminUser;
+  updateUser: any;
+  unbanUserMutation: any;
+  setBanConfirmation: any;
+  resetUserProgress: any;
+  setDeleteConfirmation: any;
+}) {
+  const { data: details, isLoading } = useQuery<any>({
+    queryKey: [`/api/admin/users/${user.id}`],
+    staleTime: 30_000,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="mt-4 pt-4 border-t border-slate-200 text-center text-slate-500 py-6">
+        Loading user details...
+      </div>
+    );
+  }
+
+  if (!details) {
+    return (
+      <div className="mt-4 pt-4 border-t border-slate-200 text-center text-slate-500 py-6">
+        Failed to load user details
+      </div>
+    );
+  }
+
+  // Pending users - limited info
+  if (user.isPending || details.isPending) {
+    return (
+      <div
+        className="mt-4 border-t border-slate-200 pt-4 space-y-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+            <p className="text-xs font-medium text-amber-600 mb-1">Payment Status</p>
+            <p className="font-bold text-amber-800">Paid - No account created</p>
+            {details.amountPaid != null && (
+              <p className="text-sm text-amber-700 mt-1">
+                {formatCurrency(details.amountPaid, details.currency || 'gbp')}
+              </p>
+            )}
+            {details.productType && (
+              <p className="text-xs text-amber-600 mt-1">Product: {details.productType}</p>
+            )}
+          </div>
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+            <p className="text-xs font-medium text-slate-500 mb-1">Magic Links Sent</p>
+            <p className="text-lg font-bold text-slate-900">{details.magicLinks?.length || 0}</p>
+            {details.magicLinks?.some((ml: any) => ml.clicked) ? (
+              <p className="text-xs text-green-600 font-medium">At least one clicked</p>
+            ) : (
+              <p className="text-xs text-amber-600">None clicked yet</p>
+            )}
+          </div>
+        </div>
+
+        {details.magicLinks && details.magicLinks.length > 0 && (
+          <div>
+            <p className="text-sm font-medium text-slate-700 mb-2">Magic Link History</p>
+            <div className="space-y-1">
+              {details.magicLinks.map((ml: any, i: number) => (
+                <div
+                  key={i}
+                  className="flex items-center justify-between text-sm bg-white border border-slate-200 rounded px-3 py-2"
+                >
+                  <span className="text-slate-600">
+                    Sent {formatDistanceToNow(new Date(ml.sentAt), { addSuffix: true })}
+                  </span>
+                  <span className={ml.clicked ? "text-green-600 font-medium" : "text-slate-400"}>
+                    {ml.clicked
+                      ? `Clicked${ml.clickedAt ? ` ${formatDistanceToNow(new Date(ml.clickedAt), { addSuffix: true })}` : ""}`
+                      : "Not clicked"}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {details.stripeCustomerId && (
+          <p className="text-xs text-slate-400">
+            Stripe: <span className="font-mono">{details.stripeCustomerId}</span>
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  // Full user details for registered users
+  return (
+    <div
+      className="mt-4 border-t border-slate-200 pt-4 space-y-4"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* Quick Actions */}
+      <div className="flex flex-wrap gap-2">
+        {!user.challengePurchased ? (
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-green-600 border-green-200 hover:bg-green-50"
+            onClick={() => updateUser.mutate({ id: user.id, challengePurchased: true })}
+          >
+            <Check className="w-3 h-3 mr-1" /> Grant Access
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-red-600 border-red-200 hover:bg-red-50"
+            onClick={() => updateUser.mutate({ id: user.id, challengePurchased: false })}
+          >
+            <X className="w-3 h-3 mr-1" /> Revoke Access
+          </Button>
+        )}
+
+        {!user.isAdmin ? (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => updateUser.mutate({ id: user.id, isAdmin: true })}
+          >
+            <Shield className="w-3 h-3 mr-1" /> Make Admin
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => updateUser.mutate({ id: user.id, isAdmin: false })}
+          >
+            <Shield className="w-3 h-3 mr-1" /> Remove Admin
+          </Button>
+        )}
+
+        {user.isBanned ? (
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-green-600 border-green-200 hover:bg-green-50"
+            onClick={() => unbanUserMutation.mutate(user.id)}
+          >
+            Unban
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-red-600 border-red-200 hover:bg-red-50"
+            onClick={() =>
+              setBanConfirmation({
+                isOpen: true,
+                userId: user.id,
+                userEmail: user.email || "",
+                banReason: "",
+                confirmText: "",
+                step: 1,
+              })
+            }
+          >
+            <Ban className="w-3 h-3 mr-1" /> Ban
+          </Button>
+        )}
+
+        <Button
+          size="sm"
+          variant="outline"
+          className="text-amber-600 border-amber-200 hover:bg-amber-50"
+          onClick={() => resetUserProgress.mutate(user.id)}
+        >
+          <RefreshCw className="w-3 h-3 mr-1" /> Reset Progress
+        </Button>
+
+        <Button
+          size="sm"
+          variant="outline"
+          className="text-red-600 border-red-200 hover:bg-red-50"
+          onClick={() =>
+            setDeleteConfirmation({
+              isOpen: true,
+              userId: user.id,
+              userEmail: user.email || "",
+              confirmText: "",
+              step: 1,
+            })
+          }
+        >
+          <Trash2 className="w-3 h-3 mr-1" /> Delete
+        </Button>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+          <p className="text-xs font-medium text-slate-500">Progress</p>
+          <p className="text-lg font-bold text-slate-900">
+            Day {user.stats.lastCompletedDay}/21
+          </p>
+          <p className="text-xs text-slate-500">{user.stats.totalXp} XP</p>
+        </div>
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+          <p className="text-xs font-medium text-slate-500">Streak</p>
+          <p className="text-lg font-bold text-slate-900">{user.stats.currentStreak} days</p>
+          <p className="text-xs text-slate-500">
+            {user.stats.lastActivityDate
+              ? `Last active ${formatDistanceToNow(new Date(user.stats.lastActivityDate), { addSuffix: true })}`
+              : "Never active"}
+          </p>
+        </div>
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+          <p className="text-xs font-medium text-slate-500">Chat Messages</p>
+          <p className="text-lg font-bold text-slate-900">{details.chatMessageCount || 0}</p>
+        </div>
+        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+          <p className="text-xs font-medium text-slate-500">AI Usage</p>
+          <p className="text-lg font-bold text-slate-900">
+            {details.aiUsage?.totalRequests || 0} calls
+          </p>
+          <p className="text-xs text-slate-500">
+            {((details.aiUsage?.totalTokens || 0) / 1000).toFixed(1)}k tokens
+          </p>
+        </div>
+      </div>
+
+      {/* Account & Payment Details */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="bg-white border border-slate-200 rounded-lg p-3">
+          <p className="text-sm font-medium text-slate-700 mb-2">Account Details</p>
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span className="text-slate-500">ID:</span>
+              <span className="text-slate-700 font-mono text-xs">{user.id.slice(0, 20)}...</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Email:</span>
+              <span className="text-slate-700">{user.email || "None"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Referral Code:</span>
+              <span className="text-slate-700">{user.referralCode || "None"}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Signed Up:</span>
+              <span className="text-slate-700">
+                {user.createdAt
+                  ? new Date(user.createdAt).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
+                  : "Unknown"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-lg p-3">
+          <p className="text-sm font-medium text-slate-700 mb-2">Payment Details</p>
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Challenge:</span>
+              <span
+                className={
+                  user.challengePurchased ? "text-green-600 font-medium" : "text-slate-400"
+                }
+              >
+                {user.challengePurchased ? "Purchased" : "Not purchased"}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Coaching:</span>
+              <span
+                className={
+                  user.coachingPurchased ? "text-green-600 font-medium" : "text-slate-400"
+                }
+              >
+                {user.coachingPurchased ? "Purchased" : "Not purchased"}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Currency:</span>
+              <span className="text-slate-700">
+                {user.purchaseCurrency?.toUpperCase() || "N/A"}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Stripe ID:</span>
+              <span className="text-slate-700 font-mono text-xs">
+                {user.stripeCustomerId || "None"}
+              </span>
+            </div>
+            {details.allDaysUnlocked && (
+              <div className="flex justify-between">
+                <span className="text-slate-500">All Days Unlocked:</span>
+                <span className="text-green-600 font-medium">Yes</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Day Completion Timeline */}
+      <div>
+        <p className="text-sm font-medium text-slate-700 mb-2">Day Completion Timeline</p>
+        <div className="flex flex-wrap gap-1">
+          {Array.from({ length: 22 }, (_, i) => {
+            const dayProgress = details.progress?.find((p: any) => p.day === i);
+            const isCompleted = dayProgress?.completed;
+            return (
+              <div
+                key={i}
+                className={`w-8 h-8 rounded flex items-center justify-center text-xs font-medium border ${
+                  isCompleted
+                    ? "bg-green-100 border-green-300 text-green-700"
+                    : "bg-slate-50 border-slate-200 text-slate-400"
+                }`}
+                title={
+                  isCompleted && dayProgress?.completedAt
+                    ? `Day ${i}: ${new Date(dayProgress.completedAt).toLocaleDateString("en-GB")}`
+                    : `Day ${i}: Not completed`
+                }
+              >
+                {i}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Comments */}
+      {details.comments && details.comments.length > 0 && (
+        <div>
+          <p className="text-sm font-medium text-slate-700 mb-2">
+            Comments ({details.comments.length})
+          </p>
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {details.comments.slice(0, 10).map((c: any) => (
+              <div
+                key={c.id}
+                className="text-sm bg-white border border-slate-200 rounded px-3 py-2"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-medium text-slate-700">Day {c.day}</span>
+                  <span className="text-xs text-slate-400">
+                    {formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}
+                  </span>
+                </div>
+                <p className="text-slate-600 line-clamp-2">{c.content}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Questions */}
+      {details.questions && details.questions.length > 0 && (
+        <div>
+          <p className="text-sm font-medium text-slate-700 mb-2">
+            Questions ({details.questions.length})
+          </p>
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {details.questions.slice(0, 10).map((q: any) => (
+              <div
+                key={q.id}
+                className="text-sm bg-white border border-slate-200 rounded px-3 py-2"
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <span className="font-medium text-slate-700">Day {q.day}</span>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`text-xs px-1.5 py-0.5 rounded ${
+                        q.status === "answered"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      {q.status}
+                    </span>
+                    <span className="text-xs text-slate-400">
+                      {formatDistanceToNow(new Date(q.createdAt), { addSuffix: true })}
+                    </span>
+                  </div>
+                </div>
+                <p className="text-slate-600 line-clamp-2">{q.question}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Badges */}
+      {details.badgesEarned && details.badgesEarned.length > 0 && (
+        <div>
+          <p className="text-sm font-medium text-slate-700 mb-2">
+            Badges Earned ({details.badgesEarned.length})
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {details.badgesEarned.map((b: any, i: number) => (
+              <span
+                key={i}
+                className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 border border-amber-200 rounded-full text-xs font-medium text-amber-700"
+              >
+                <Award className="w-3 h-3" /> {b.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Coaching Purchases */}
+      {details.coachingPurchases && details.coachingPurchases.length > 0 && (
+        <div>
+          <p className="text-sm font-medium text-slate-700 mb-2">Coaching Purchases</p>
+          <div className="space-y-2">
+            {details.coachingPurchases.map((cp: any, i: number) => (
+              <div
+                key={i}
+                className="text-sm bg-white border border-slate-200 rounded px-3 py-2 flex justify-between"
+              >
+                <span className="text-slate-700">
+                  {cp.coachType === "matt" ? "Sessions with Matt" : "Expert Coaching"} -{" "}
+                  {cp.packageType === "single" ? "1 session" : "4 sessions"}
+                </span>
+                <span className="font-medium text-slate-900">
+                  {formatCurrency(cp.amountPaid, cp.currency)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Showcase Entries */}
+      {details.showcaseEntries && details.showcaseEntries.length > 0 && (
+        <div>
+          <p className="text-sm font-medium text-slate-700 mb-2">Showcase Entries</p>
+          {details.showcaseEntries.map((s: any, i: number) => (
+            <div
+              key={i}
+              className="text-sm bg-white border border-slate-200 rounded px-3 py-2"
+            >
+              <p className="font-medium text-slate-900">{s.appName}</p>
+              <p className="text-slate-500 line-clamp-1">{s.description}</p>
+              {s.liveUrl && (
+                <a
+                  href={s.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary text-xs hover:underline inline-flex items-center gap-1 mt-1"
+                >
+                  <ExternalLink className="w-3 h-3" /> {s.liveUrl}
+                </a>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Testimonial */}
+      {details.testimonial && (
+        <div>
+          <p className="text-sm font-medium text-slate-700 mb-2">Testimonial</p>
+          <div className="text-sm bg-white border border-slate-200 rounded px-3 py-2">
+            {details.testimonial.testimonial && (
+              <p className="text-slate-600 italic">"{details.testimonial.testimonial}"</p>
+            )}
+            {details.testimonial.videoUrl && (
+              <a
+                href={details.testimonial.videoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary text-xs hover:underline inline-flex items-center gap-1 mt-1"
+              >
+                <ExternalLink className="w-3 h-3" /> Video testimonial
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Magic Links */}
+      {details.magicLinks && details.magicLinks.length > 0 && (
+        <div>
+          <p className="text-sm font-medium text-slate-700 mb-2">Magic Link History</p>
+          <div className="space-y-1 max-h-32 overflow-y-auto">
+            {details.magicLinks.map((ml: any, i: number) => (
+              <div
+                key={i}
+                className="flex items-center justify-between text-sm bg-white border border-slate-200 rounded px-3 py-2"
+              >
+                <span className="text-slate-600">
+                  Sent {formatDistanceToNow(new Date(ml.sentAt), { addSuffix: true })}
+                </span>
+                <span className={ml.clicked ? "text-green-600 font-medium" : "text-slate-400"}>
+                  {ml.clicked ? "Clicked" : "Not clicked"}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Admin Notes */}
+      {user.adminNotes && (
+        <div>
+          <p className="text-sm font-medium text-slate-700 mb-1">Admin Notes</p>
+          <p className="text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded p-2">
+            {user.adminNotes}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AdminUsers() {
   const queryClient = useQueryClient();
@@ -28,7 +560,7 @@ export default function AdminUsers() {
   // User management state
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [userFilter, setUserFilter] = useState<
-    "all" | "paid" | "unpaid" | "active" | "inactive" | "stuck" | "completed"
+    "all" | "paid" | "unpaid" | "pending" | "active" | "inactive" | "stuck" | "completed"
   >("all");
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
@@ -104,16 +636,18 @@ export default function AdminUsers() {
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
   const userSegments = {
     all: adminUsers.length,
-    paid: adminUsers.filter((u) => u.challengePurchased).length,
-    unpaid: adminUsers.filter((u) => !u.challengePurchased).length,
+    paid: adminUsers.filter((u) => u.challengePurchased && !u.isPending).length,
+    unpaid: adminUsers.filter((u) => !u.challengePurchased && !u.isPending).length,
+    pending: adminUsers.filter((u) => u.isPending).length,
     active: adminUsers.filter(
-      (u) => u.stats.lastActivityDate && new Date(u.stats.lastActivityDate) > sevenDaysAgo
+      (u) => !u.isPending && u.stats.lastActivityDate && new Date(u.stats.lastActivityDate) > sevenDaysAgo
     ).length,
     inactive: adminUsers.filter(
-      (u) => !u.stats.lastActivityDate || new Date(u.stats.lastActivityDate) <= sevenDaysAgo
+      (u) => !u.isPending && (!u.stats.lastActivityDate || new Date(u.stats.lastActivityDate) <= sevenDaysAgo)
     ).length,
     stuck: adminUsers.filter(
       (u) =>
+        !u.isPending &&
         u.stats.lastCompletedDay > 0 &&
         u.stats.lastCompletedDay < 21 &&
         (!u.stats.lastActivityDate || new Date(u.stats.lastActivityDate) <= sevenDaysAgo)
@@ -131,10 +665,13 @@ export default function AdminUsers() {
 
       switch (userFilter) {
         case "paid":
-          if (!user.challengePurchased) return false;
+          if (!user.challengePurchased || user.isPending) return false;
           break;
         case "unpaid":
-          if (user.challengePurchased) return false;
+          if (user.challengePurchased || user.isPending) return false;
+          break;
+        case "pending":
+          if (!user.isPending) return false;
           break;
         case "active":
           if (!isActive) return false;
@@ -375,6 +912,7 @@ export default function AdminUsers() {
               {[
                 { key: "all", label: "All Users", desc: "Everyone" },
                 { key: "paid", label: "Paid", desc: "Purchased challenge" },
+                { key: "pending", label: "Pending", desc: "Paid but no account yet" },
                 { key: "unpaid", label: "Unpaid", desc: "No purchase yet" },
                 { key: "active", label: "Active", desc: "Active in 7 days" },
                 { key: "inactive", label: "Inactive", desc: "No activity 7+ days" },
@@ -602,7 +1140,12 @@ export default function AdminUsers() {
                     </div>
                     <div className="text-right">
                       <div className="flex items-center gap-1">
-                        {user.challengePurchased ? (
+                        {user.isPending ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                            <CreditCard className="w-3 h-3" />
+                            Paid - No account
+                          </span>
+                        ) : user.challengePurchased ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
                             <CreditCard className="w-3 h-3" />
                             Paid
@@ -620,119 +1163,7 @@ export default function AdminUsers() {
 
                 {/* Expanded Details */}
                 {selectedUser?.id === user.id && (
-                  <div className="mt-4 pt-4 border-t border-slate-200 space-y-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <p className="text-slate-500">User ID</p>
-                        <p className="font-mono text-xs break-all">{user.id}</p>
-                      </div>
-                      <div>
-                        <p className="text-slate-500">Stripe ID</p>
-                        <p className="font-mono text-xs break-all">
-                          {user.stripeCustomerId || "None"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-slate-500">Currency</p>
-                        <p>{user.purchaseCurrency?.toUpperCase() || "Not set"}</p>
-                      </div>
-                      <div>
-                        <p className="text-slate-500">Last Active</p>
-                        <p>
-                          {user.stats.lastActivityDate
-                            ? formatDistanceToNow(new Date(user.stats.lastActivityDate), {
-                                addSuffix: true,
-                              })
-                            : "Never"}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          updateUser.mutate({
-                            id: user.id,
-                            challengePurchased: !user.challengePurchased,
-                          });
-                        }}
-                      >
-                        {user.challengePurchased ? "Revoke Access" : "Grant Access"}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          updateUser.mutate({
-                            id: user.id,
-                            isAdmin: !user.isAdmin,
-                          });
-                        }}
-                      >
-                        {user.isAdmin ? "Remove Admin" : "Make Admin"}
-                      </Button>
-                      {!user.isAdmin && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (user.isBanned) {
-                              unbanUserMutation.mutate(user.id);
-                            } else {
-                              setBanConfirmation({
-                                isOpen: true,
-                                userId: user.id,
-                                userEmail: user.email || user.id,
-                                banReason: "",
-                                confirmText: "",
-                                step: 1,
-                              });
-                            }
-                          }}
-                          className={user.isBanned ? "text-primary" : ""}
-                        >
-                          {user.isBanned ? "Unban" : "Ban User"}
-                        </Button>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (
-                            confirm("Reset all progress for this user? This cannot be undone.")
-                          ) {
-                            resetUserProgress.mutate(user.id);
-                          }
-                        }}
-                      >
-                        <RefreshCw className="w-4 h-4 mr-1" />
-                        Reset
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setDeleteConfirmation({
-                            isOpen: true,
-                            userId: user.id,
-                            userEmail: user.email || user.id,
-                            confirmText: "",
-                            step: 1,
-                          });
-                        }}
-                        className="text-red-600 hover:text-red-700 border-red-200"
-                      >
-                        <UserX className="w-4 h-4 mr-1" />
-                        Delete
-                      </Button>
-                    </div>
-                  </div>
+                  <UserDetailPanel user={user} updateUser={updateUser} unbanUserMutation={unbanUserMutation} setBanConfirmation={setBanConfirmation} resetUserProgress={resetUserProgress} setDeleteConfirmation={setDeleteConfirmation} />
                 )}
               </div>
             ))

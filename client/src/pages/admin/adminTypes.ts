@@ -163,6 +163,8 @@ export interface AdminUser {
   banReason: string | null;
   bannedAt: string | null;
   createdAt: string;
+  isPending?: boolean;
+  amountPaid?: number;
   stats: {
     lastCompletedDay: number;
     totalXp: number;

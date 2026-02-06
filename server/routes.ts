@@ -2,13 +2,13 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, type User } from "@shared/schema";
+import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, type User, userProgress, chatMessages, dayComments, dayQuestions, userBadges, aiUsageLogs, showcase, testimonials, badges } from "@shared/schema";
 import dns from "dns";
 import { promisify } from "util";
 import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, isNull } from "drizzle-orm";
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail } from "./emailService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -876,7 +876,43 @@ export async function registerRoutes(
         };
       }));
 
-      res.json(usersWithDetails);
+      // Include pending purchasers who haven't created accounts yet
+      const allPending = await db.select().from(pendingPurchases).where(
+        isNull(pendingPurchases.linkedToUserId)
+      );
+      const registeredEmails = new Set(allUsers.map((u: any) => u.email?.toLowerCase()));
+
+      const pendingUsers = allPending
+        .filter(p => !registeredEmails.has(p.email.toLowerCase()))
+        .map(p => ({
+          id: `pending_${p.id}`,
+          email: p.email,
+          firstName: null,
+          lastName: null,
+          profileImageUrl: null,
+          isAdmin: false,
+          challengePurchased: true,
+          coachingPurchased: false,
+          stripeCustomerId: p.stripeCustomerId,
+          purchaseCurrency: p.currency,
+          referralCode: null,
+          adminNotes: null,
+          isBanned: false,
+          banReason: null,
+          bannedAt: null,
+          createdAt: p.createdAt,
+          isPending: true,
+          amountPaid: p.amountPaid,
+          stats: {
+            lastCompletedDay: 0,
+            totalXp: 0,
+            currentStreak: 0,
+            lastActivityDate: null,
+          },
+          completedDays: 0,
+        }));
+
+      res.json([...usersWithDetails, ...pendingUsers]);
     } catch (error) {
       console.error("Error fetching users:", error);
       res.status(500).json({ message: "Failed to fetch users" });
@@ -892,21 +928,112 @@ export async function registerRoutes(
       }
 
       const { id } = req.params;
-      const user = await storage.getUser(id);
 
+      // Handle pending users (id starts with "pending_")
+      if (id.startsWith('pending_')) {
+        const pendingId = parseInt(id.replace('pending_', ''));
+        const [pending] = await db.select().from(pendingPurchases).where(eq(pendingPurchases.id, pendingId));
+        if (!pending) {
+          return res.status(404).json({ message: "Pending purchase not found" });
+        }
+
+        // Check magic token usage for this email
+        const tokens = await db.select().from(magicTokens)
+          .where(eq(magicTokens.email, pending.email))
+          .orderBy(desc(magicTokens.createdAt));
+
+        return res.json({
+          isPending: true,
+          email: pending.email,
+          stripeCustomerId: pending.stripeCustomerId,
+          currency: pending.currency,
+          amountPaid: pending.amountPaid,
+          productType: pending.productType,
+          purchasedAt: pending.createdAt,
+          magicLinks: tokens.map(t => ({
+            sentAt: t.createdAt,
+            expiresAt: t.expiresAt,
+            clicked: !!t.usedAt,
+            clickedAt: t.usedAt,
+          })),
+          progress: [],
+          comments: [],
+          questions: [],
+          chatMessageCount: 0,
+          aiUsageCount: 0,
+          badgesEarned: [],
+          showcaseEntries: [],
+          testimonial: null,
+        });
+      }
+
+      const user = await storage.getUser(id);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const stats = await storage.getUserStats(id);
-      const progress = await storage.getUserProgress(id);
-      const badges = await storage.getUserBadges(id);
+      // Fetch everything about this user in parallel
+      const [
+        stats,
+        progressData,
+        userBadgeData,
+        commentsData,
+        questionsData,
+        chatCount,
+        aiUsageData,
+        showcaseData,
+        testimonialData,
+        coachingData,
+        tokenData,
+      ] = await Promise.all([
+        storage.getUserStats(id),
+        db.select().from(userProgress).where(eq(userProgress.userId, id)).orderBy(userProgress.day),
+        db.select({ badgeId: userBadges.badgeId, earnedAt: userBadges.earnedAt }).from(userBadges).where(eq(userBadges.userId, id)),
+        db.select({ id: dayComments.id, day: dayComments.day, content: dayComments.content, status: dayComments.status, createdAt: dayComments.createdAt }).from(dayComments).where(eq(dayComments.userId, id)).orderBy(desc(dayComments.createdAt)),
+        db.select({ id: dayQuestions.id, day: dayQuestions.day, question: dayQuestions.question, status: dayQuestions.status, createdAt: dayQuestions.createdAt }).from(dayQuestions).where(eq(dayQuestions.userId, id)).orderBy(desc(dayQuestions.createdAt)),
+        db.select().from(chatMessages).where(eq(chatMessages.userId, id)),
+        db.select({ id: aiUsageLogs.id, endpoint: aiUsageLogs.endpoint, tokensUsed: aiUsageLogs.tokensUsed, createdAt: aiUsageLogs.createdAt }).from(aiUsageLogs).where(eq(aiUsageLogs.userId, id)),
+        db.select().from(showcase).where(eq(showcase.userId, id)),
+        db.select().from(testimonials).where(eq(testimonials.userId, id)),
+        db.select().from(coachingPurchases).where(eq(coachingPurchases.userId, id)),
+        db.select().from(magicTokens).where(eq(magicTokens.email, user.email!)).orderBy(desc(magicTokens.createdAt)),
+      ]);
+
+      // Get badge names
+      const allBadges = await db.select().from(badges);
+      const badgesEarned = userBadgeData.map(ub => {
+        const badge = allBadges.find(b => b.id === ub.badgeId);
+        return { name: badge?.name || 'Unknown', earnedAt: ub.earnedAt };
+      });
+
+      // Calculate AI token total
+      const totalAiTokens = aiUsageData.reduce((sum, log) => sum + (log.tokensUsed || 0), 0);
 
       res.json({
         ...user,
         stats,
-        progress,
-        badges,
+        progress: progressData.map(p => ({
+          day: p.day,
+          completed: p.completed,
+          completedAt: p.completedAt,
+        })),
+        comments: commentsData,
+        questions: questionsData,
+        chatMessageCount: chatCount.length,
+        aiUsage: {
+          totalRequests: aiUsageData.length,
+          totalTokens: totalAiTokens,
+        },
+        badgesEarned,
+        showcaseEntries: showcaseData,
+        testimonial: testimonialData[0] || null,
+        coachingPurchases: coachingData,
+        magicLinks: tokenData.map(t => ({
+          sentAt: t.createdAt,
+          expiresAt: t.expiresAt,
+          clicked: !!t.usedAt,
+          clickedAt: t.usedAt,
+        })),
       });
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -4428,7 +4555,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         }
       }
 
-      // Send purchase confirmation email (only if logged in)
+      // Send purchase confirmation email only for logged-in users (they already have an account)
+      // Guest checkouts get a welcome email with magic link from the webhook instead
       if (isLoggedIn && req.user) {
         const user = req.user as any;
         const userEmail = user.email;
@@ -4440,20 +4568,6 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           sendPurchaseConfirmationEmail({
             to: userEmail,
             firstName,
-            currency,
-            total
-          }).catch(err => console.error('Email send error:', err));
-        }
-      } else if (session.customer_email || session.customer_details?.email) {
-        // Guest checkout - send email to customer email from session
-        const guestEmail = session.customer_email || session.customer_details?.email;
-        const currency = (session.metadata?.currency || 'usd').toLowerCase() as 'usd' | 'gbp';
-        const total = session.amount_total ? session.amount_total / 100 : 399;
-
-        if (guestEmail) {
-          sendPurchaseConfirmationEmail({
-            to: guestEmail,
-            firstName: 'there',
             currency,
             total
           }).catch(err => console.error('Email send error:', err));
