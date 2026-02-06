@@ -1,8 +1,11 @@
 import { useState } from "react";
-import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft, FastForward, Copy } from "lucide-react";
+import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft, FastForward, Copy, Clock } from "lucide-react";
 import { useTestMode } from "@/contexts/TestModeContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
+// ⬇️ SET TO false TO RE-ENABLE PURCHASES ⬇️
+const SALES_PAUSED = true;
 
 export default function Order() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
@@ -68,6 +71,25 @@ export default function Order() {
       setIsCheckingOut(false);
     }
   };
+
+  if (SALES_PAUSED) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border-2 border-slate-200 p-8 text-center space-y-4">
+          <div className="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto">
+            <Clock className="w-8 h-8 text-amber-600" />
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900">We'll Be Back Soon</h1>
+          <p className="text-slate-600">
+            The 21-Day AI SaaS Challenge is temporarily closed for new enrolments. We're making some improvements and will reopen shortly.
+          </p>
+          <p className="text-slate-500 text-sm">
+            Questions? Email <a href="mailto:matt@mattwebley.com" className="text-primary hover:underline">matt@mattwebley.com</a>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white">

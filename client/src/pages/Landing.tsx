@@ -6,6 +6,9 @@ import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, Tre
 import { ds } from "@/lib/design-system";
 import { LazyVimeo } from "@/components/LazyVimeo";
 
+// ⬇️ SET TO false TO RE-ENABLE PURCHASES ⬇️
+const SALES_PAUSED = true;
+
 const DEFAULT_HEADLINE = "How To Build Your Own AI SaaS Product in the Next 21 Days Without Writing a Single Line of Code...";
 
 export default function Landing() {
@@ -39,11 +42,13 @@ export default function Landing() {
       {/* Header Block */}
       <div>
         {/* Announcement Bar */}
-        <div className="bg-amber-400 py-3 px-4 text-center">
-          <p className="text-slate-900 font-bold text-sm sm:text-base">
-            🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
-          </p>
-        </div>
+        {!SALES_PAUSED && (
+          <div className="bg-amber-400 py-3 px-4 text-center">
+            <p className="text-slate-900 font-bold text-sm sm:text-base">
+              🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
+            </p>
+          </div>
+        )}
 
         {/* Header */}
         <header className="border-b border-slate-100 bg-white">
@@ -61,9 +66,11 @@ export default function Landing() {
             <a href="/login">
               <Button variant="ghost" size="sm">Login</Button>
             </a>
-            <a href="/order" className="hidden sm:block">
-              <Button size="sm">Start the Challenge</Button>
-            </a>
+            {!SALES_PAUSED && (
+              <a href="/order" className="hidden sm:block">
+                <Button size="sm">Start the Challenge</Button>
+              </a>
+            )}
           </div>
         </div>
         </header>
@@ -1072,17 +1079,21 @@ export default function Landing() {
               </div>
 
               {/* Coupon Code */}
-              <div className="bg-amber-400 rounded-lg p-4 text-center">
-                <p className="text-slate-900 font-bold">
-                  🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
-                </p>
-              </div>
+              {!SALES_PAUSED && (
+                <div className="bg-amber-400 rounded-lg p-4 text-center">
+                  <p className="text-slate-900 font-bold">
+                    🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
+                  </p>
+                </div>
+              )}
 
-              <a href="/order" className="block">
-                <Button size="lg" className="w-full h-16 text-xl font-bold gap-3">
-                  Start the Challenge <ArrowRight className="w-6 h-6" />
-                </Button>
-              </a>
+              {!SALES_PAUSED && (
+                <a href="/order" className="block">
+                  <Button size="lg" className="w-full h-16 text-xl font-bold gap-3">
+                    Start the Challenge <ArrowRight className="w-6 h-6" />
+                  </Button>
+                </a>
+              )}
 
               <p className="text-center text-slate-500 text-sm">
                 Instant access. Start Day 1 IMMEDIATELY.

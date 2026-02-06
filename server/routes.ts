@@ -84,41 +84,6 @@ export async function registerRoutes(
   // Setup Replit Auth
   await setupAuth(app);
 
-  // TEMPORARY — fix admin access, remove after use
-  app.post('/api/auth/fix-admin', async (req: any, res) => {
-    const session = req.session as any;
-    if (!session?.userId) {
-      return res.status(401).json({ message: "Not logged in" });
-    }
-    // Only allow for the known admin account
-    if (session.userId !== '43411523') {
-      return res.status(403).json({ message: "Not authorized" });
-    }
-    await db.update(users).set({ isAdmin: true }).where(eq(users.id, session.userId));
-    res.json({ success: true, message: "Admin access restored" });
-  });
-
-  // Debug endpoint — TEMPORARY, remove after fixing admin access
-  app.get('/api/auth/debug', async (req: any, res) => {
-    const session = req.session as any;
-    const sessionInfo = {
-      magicLinkAuth: session?.magicLinkAuth,
-      userId: session?.userId,
-      userEmail: session?.userEmail,
-      hasPassportUser: !!req.user,
-    };
-
-    if (session?.userId) {
-      const user = await storage.getUser(session.userId);
-      return res.json({
-        session: sessionInfo,
-        user: user ? { id: user.id, email: user.email, isAdmin: user.isAdmin, challengePurchased: user.challengePurchased } : 'NOT FOUND',
-      });
-    }
-
-    res.json({ session: sessionInfo, user: 'NO SESSION USER ID' });
-  });
-
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
