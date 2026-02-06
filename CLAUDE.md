@@ -223,20 +223,81 @@ Interactive components MUST match lesson text styling:
 ## Pending Tasks
 - [ ] Test AI Mentor chat bot (now on Claude API)
 - [ ] Test Showcase feature end-to-end
-- [ ] Test Day 0 → Day 1 → Day 2 flow (server-side enforcement now added)
+- [ ] Test Day 0 -> Day 1 -> Day 2 flow (server-side enforcement now added)
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx
 - [ ] Add coaching call booking links (Days 1-7, 19-21)
 - [ ] Audit database email templates for correct URLs (started but interrupted)
-- [ ] Build "Unlock All Days" bump offer ($29 add-on at checkout) — user deciding on price
-- [ ] Consider gating `/api/days/:day` endpoint (currently public, no auth required)
+- [ ] Investigate production admin panel user count (dev DB is separate from production DB)
+- [ ] Consider adding "Pending Customers" section to admin panel (5 customers in pendingPurchases table never created accounts)
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
-- `/api/days` and `/api/days/:day` endpoints are public (no auth) — lesson text is readable by anyone, but completion is now enforced server-side
+- Dev environment database is SEPARATE from production database (challenge.mattwebley.com) - can't query production DB from dev
+- 5 paying customers in `pendingPurchases` table have never used their magic links to create accounts
 
 ---
 
 ## Session Log
+
+### 2026-02-06 (Session 3) - Major Security Audit, Bump Offer, Focus Button Fix
+- **Tasks Completed:**
+  - **Bump Offer ("Unlock All Days")** - fully implemented:
+    - Created Stripe product `prod_TvYOg7olMygIHU` with USD $29 / GBP £19 prices
+    - Bump now appears as visible line item in Stripe Checkout (not charged secretly via webhook)
+    - LAUNCHOFFER coupon restricted to challenge product only (won't discount the bump)
+    - Old unrestricted LAUNCHOFFER promo code deactivated, new product-scoped one created
+    - Removed separate webhook bump charge (was confusing customers - they didn't see it at checkout)
+    - Updated Order.tsx note: "Promo codes apply to the challenge only, not this add-on"
+  - **Focus Button mobile fix** - dropdown was cut off on mobile:
+    - Changed dropdown from `left-0` to `right-0` so it opens leftward (stays on screen)
+    - Moved FocusButton from Dashboard content into Layout mobile header (replaces Bug icon)
+    - Bug/Report Problem icon moved back to bottom of page (was already there, just removed from mobile header)
+    - Dashboard FocusButton hidden on mobile (`hidden lg:block`) to avoid duplicate
+  - **MAJOR SECURITY AUDIT AND FIXES:**
+    - **Disabled Replit OAuth login** - `/api/login` now redirects to `/auth-error` login page
+    - **11 admin endpoints secured with `isAdmin` checks** (were only checking `isAuthenticated`):
+      - pending-comments, comments status, brand-settings
+      - All 7 chatbot admin endpoints (settings GET/POST, messages, flagged, users, user history, review, flag)
+    - **10 AI endpoints secured with `challengePurchased` check** (prevent unpaid users burning Claude API credits):
+      - generate-ideas, ai-prompt, analyze-design, research-competitors, generate-usp-features
+      - ai/generate-features, ai/generate-mvp-roadmap, ai/generate-prd, ai/generate-prd-details, chat
+    - **6 content creation endpoints secured with `challengePurchased` check**:
+      - comments, showcase, testimonial, questions, critique/submit
+    - **Day completion endpoint** now checks `challengePurchased` before allowing any day
+    - **Client-side payment gate** in App.tsx: authenticated non-paying users redirected to /order
+    - **Password login** now uses `timingSafeEqual` (was imported but using `!==`)
+    - **`/api/auth/user`** now strips `passwordHash`, `adminNotes`, `stripeCustomerId` from response
+    - **Rate limiting** added to login (5 attempts/email/15min) and magic-link (3 requests/email/hour)
+    - **Day content endpoints** (`/api/days`, `/api/days/:day`) now require auth + purchase check
+    - **Comments and questions endpoints** now require authentication
+    - **Self-delete guard** fixed: `req.user.id` changed to `req.user.claims.sub`
+    - **Webhook secret** debug logging removed from production
+  - **Admin panel caching fix** - `staleTime: 30_000` added to admin users queries in Admin.tsx, AdminUsers.tsx, AdminMarketing.tsx (was `Infinity`, data never refreshed)
+- **Stripe Changes:**
+  - New product: "Unlock All 21 Days" (`prod_TvYOg7olMygIHU`)
+  - New prices: `price_1SxhHpLcRVtxg5yVD93NYLz6` (USD $29), `price_1SxhHpLcRVtxg5yVeJC8rNlY` (GBP £19)
+  - New coupon `7oDvtMnK` (75% off, restricted to challenge product only)
+  - New promo code `promo_1SxhIbLcRVtxg5yVmC7w3U8l` (LAUNCHOFFER, linked to new restricted coupon)
+  - Old promo code `promo_1SxIpPLcRVtxg5yVQpiewygH` deactivated
+- **Files Modified:**
+  - `server/routes.ts` - Security fixes (admin checks, purchase checks, rate limiting, auth on public endpoints, password timing-safe, user data stripping)
+  - `server/webhookHandlers.ts` - Removed separate bump charge, removed webhook secret logging
+  - `server/replitAuth.ts` - Disabled Replit OAuth login
+  - `client/src/App.tsx` - Client-side payment gate for non-paying users
+  - `client/src/pages/Order.tsx` - Updated bump offer note text
+  - `client/src/pages/Dashboard.tsx` - Hidden FocusButton on mobile
+  - `client/src/pages/Admin.tsx` - Added staleTime: 30_000 to users query
+  - `client/src/pages/admin/AdminUsers.tsx` - Added staleTime: 30_000 to users query
+  - `client/src/pages/admin/AdminMarketing.tsx` - Added staleTime: 30_000 to users query
+  - `client/src/components/FocusButton.tsx` - Fixed dropdown positioning (right-0)
+  - `client/src/components/layout/Layout.tsx` - Moved FocusButton to mobile header
+- **Notes for Next Session:**
+  - NEEDS REDEPLOY for all security fixes to take effect
+  - Dev database is separate from production - only 1 user in dev, production has real customers
+  - 5 pending purchases never created accounts (magic links unused)
+  - Consider adding pending customers view to admin panel
+  - No CSRF protection on the app (low priority, mitigated by sameSite: lax)
+  - XSS risk in badge share pages (badge name/description injected into HTML unescaped)
 
 ### 2026-02-05 (Session 2) - Admin Dashboard Redesign, Day Drip Security Fix
 - **Tasks Completed:**
