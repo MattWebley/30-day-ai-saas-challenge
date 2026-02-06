@@ -345,7 +345,20 @@ export async function registerRoutes(
               .set({ coachingPurchased: true })
               .where(eq(users.id, user!.id));
           }
-          
+          // If user missing name, populate from pending purchase
+          if (!user!.firstName && purchase.firstName) {
+            await db.update(users)
+              .set({ firstName: purchase.firstName })
+              .where(eq(users.id, user!.id));
+            user!.firstName = purchase.firstName;
+          }
+          if (!user!.lastName && purchase.lastName) {
+            await db.update(users)
+              .set({ lastName: purchase.lastName })
+              .where(eq(users.id, user!.id));
+            user!.lastName = purchase.lastName;
+          }
+
           // Mark purchase as linked
           await db.update(pendingPurchases)
             .set({ linkedToUserId: user!.id, linkedAt: new Date() })

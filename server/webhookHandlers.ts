@@ -102,6 +102,18 @@ export class WebhookHandlers {
     if (user) {
       // User exists - grant access directly
       console.log('[Webhook] User found, granting access:', user.id);
+      // If user is missing name, try to set from Stripe customer details
+      const fullName = session.customer_details?.name?.trim();
+      if ((!user.firstName || !user.lastName) && fullName) {
+        const [firstName, ...rest] = fullName.split(' ');
+        const lastName = rest.join(' ') || null;
+        await db.update(users)
+          .set({
+            firstName: user.firstName || firstName || null,
+            lastName: user.lastName || lastName,
+          })
+          .where(eq(users.id, user.id));
+      }
       await this.grantAccessToUser(user.id, productType, customerId, currency, email, amountPaid, unlockAllDays);
     } else {
       // No user found - save as pending purchase

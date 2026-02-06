@@ -253,10 +253,14 @@ export class DatabaseStorage implements IStorage {
       const updateData: Partial<UpsertUser> = {};
       let stripeCustomerId = '';
       let purchaseCurrency = '';
+      let firstName: string | undefined;
+      let lastName: string | undefined;
 
       for (const purchase of pending) {
         stripeCustomerId = purchase.stripeCustomerId;
         purchaseCurrency = purchase.currency;
+        if (!firstName && purchase.firstName) firstName = purchase.firstName;
+        if (!lastName && purchase.lastName) lastName = purchase.lastName;
 
         switch (purchase.productType) {
           case 'challenge':
@@ -281,11 +285,14 @@ export class DatabaseStorage implements IStorage {
       }
 
       // Update user with purchases and Stripe customer ID
-      if (Object.keys(updateData).length > 0 || stripeCustomerId) {
+      const shouldUpdateName = !!firstName || !!lastName;
+      if (Object.keys(updateData).length > 0 || stripeCustomerId || shouldUpdateName) {
         await db
           .update(users)
           .set({
             ...updateData,
+            ...(firstName ? { firstName: sql`coalesce(${users.firstName}, ${firstName})` } : {}),
+            ...(lastName ? { lastName: sql`coalesce(${users.lastName}, ${lastName})` } : {}),
             stripeCustomerId: stripeCustomerId || undefined,
             purchaseCurrency: purchaseCurrency || undefined,
             updatedAt: new Date()
