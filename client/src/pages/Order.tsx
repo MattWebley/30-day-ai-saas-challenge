@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Order() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [unlockAllDays, setUnlockAllDays] = useState(false);
   const { testMode } = useTestMode();
   const [selectedCurrency, setSelectedCurrency] = useState<'usd' | 'gbp'>('usd');
   const [copiedCode, setCopiedCode] = useState(false);
@@ -19,6 +20,11 @@ export default function Order() {
   const pricing = {
     usd: { symbol: '$', amount: 399, code: 'USD' },
     gbp: { symbol: '£', amount: 295, code: 'GBP' }
+  };
+
+  const bumpPricing = {
+    usd: { symbol: '$', amount: 29 },
+    gbp: { symbol: '£', amount: 19 }
   };
 
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
@@ -35,7 +41,7 @@ export default function Order() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ currency: selectedCurrency }),
+        body: JSON.stringify({ currency: selectedCurrency, unlockAllDays }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
@@ -150,6 +156,33 @@ export default function Order() {
               </div>
             </div>
 
+            {/* Bump Offer */}
+            <button
+              onClick={() => setUnlockAllDays(!unlockAllDays)}
+              className={`w-full text-left rounded-xl p-5 border-2 transition-all ${
+                unlockAllDays
+                  ? 'border-primary bg-primary/5'
+                  : 'border-amber-300 bg-amber-50'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <div className={`w-5 h-5 rounded border-2 flex-shrink-0 mt-0.5 flex items-center justify-center transition-all ${
+                  unlockAllDays ? 'bg-primary border-primary' : 'border-slate-300 bg-white'
+                }`}>
+                  {unlockAllDays && <Check className="w-3 h-3 text-white" />}
+                </div>
+                <div className="space-y-1">
+                  <p className="font-bold text-slate-900">
+                    YES! Unlock all 21 days instantly{' '}
+                    <span className="text-primary">+{bumpPricing[selectedCurrency].symbol}{bumpPricing[selectedCurrency].amount}</span>
+                  </p>
+                  <p className="text-sm text-slate-600">
+                    Skip the daily drip and work through the entire challenge at your own pace. Perfect if you want to move fast.
+                  </p>
+                </div>
+              </div>
+            </button>
+
             {/* Order Summary */}
             <div className="bg-slate-50 border-2 border-slate-200 rounded-xl p-5 space-y-4">
               <div className="flex items-center justify-between">
@@ -158,10 +191,18 @@ export default function Order() {
                   {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].amount}
                 </span>
               </div>
+              {unlockAllDays && (
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-700 font-medium">Unlock All Days</span>
+                  <span className="font-bold text-slate-900">
+                    {bumpPricing[selectedCurrency].symbol}{bumpPricing[selectedCurrency].amount}
+                  </span>
+                </div>
+              )}
               <div className="border-t border-slate-200 pt-4 flex items-center justify-between">
                 <span className="font-bold text-slate-900 text-lg">Total</span>
                 <span className="text-3xl font-black text-slate-900">
-                  {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].amount}
+                  {pricing[selectedCurrency].symbol}{pricing[selectedCurrency].amount + (unlockAllDays ? bumpPricing[selectedCurrency].amount : 0)}
                 </span>
               </div>
               <p className="text-sm text-slate-500 text-center">
