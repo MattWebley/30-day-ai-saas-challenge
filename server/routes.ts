@@ -3766,7 +3766,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           price_data: {
             currency: currency.toLowerCase(),
             product_data: {
-              name: '1:1 Vibe Coding Coaching — 4 x 1-Hour Sessions (50% Off)',
+              name: '1:1 Vibe Coding Coaching - 4 x 1-Hour Sessions (50% Off)',
             },
             unit_amount: amount,
           },

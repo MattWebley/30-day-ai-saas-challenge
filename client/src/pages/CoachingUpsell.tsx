@@ -156,13 +156,22 @@ export default function CoachingUpsell() {
         </div>
       )}
 
-      {/* Header */}
+      {/* Header with timer */}
       <header className="bg-white border-b border-slate-200">
         <div className="max-w-3xl mx-auto px-4 py-4 text-center">
           <span className="inline-block px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
             Order Complete - One More Thing...
           </span>
         </div>
+        {!timerExpired && (
+          <div className="bg-red-600 text-white py-2 px-4">
+            <div className="max-w-3xl mx-auto flex items-center justify-center gap-3 text-sm font-medium">
+              <Clock className="w-4 h-4" />
+              <span>One-time offer: 50% off for the next</span>
+              <span className="font-mono font-bold text-base tabular-nums bg-white/20 rounded px-2 py-0.5">{timerDisplay}</span>
+            </div>
+          </div>
+        )}
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-8">
@@ -258,33 +267,15 @@ export default function CoachingUpsell() {
               </div>
             </div>
 
-            {/* Countdown Timer + Price Section */}
+            {/* Price Section */}
             {!timerExpired ? (
-              <div className="bg-gradient-to-b from-red-600 to-red-700 rounded-2xl p-6 md:p-8 text-white text-center space-y-4">
-                <p className="text-red-200 font-semibold uppercase tracking-wide text-sm">This offer rewards action takers</p>
-                <p className="text-2xl md:text-3xl font-extrabold">50% Off — One-Time Only</p>
-
-                {/* Big Timer */}
-                <div className="flex items-center justify-center gap-3 py-4">
-                  <div className="bg-white/15 backdrop-blur rounded-xl px-5 py-3 min-w-[80px]">
-                    <p className="text-4xl md:text-6xl font-mono font-extrabold tabular-nums">{minutes}</p>
-                    <p className="text-red-200 text-xs uppercase tracking-wider mt-1">Min</p>
-                  </div>
-                  <span className="text-4xl md:text-6xl font-extrabold animate-pulse">:</span>
-                  <div className="bg-white/15 backdrop-blur rounded-xl px-5 py-3 min-w-[80px]">
-                    <p className="text-4xl md:text-6xl font-mono font-extrabold tabular-nums">{seconds.toString().padStart(2, '0')}</p>
-                    <p className="text-red-200 text-xs uppercase tracking-wider mt-1">Sec</p>
-                  </div>
+              <div className="text-center space-y-4 py-4">
+                <p className="text-sm font-semibold uppercase tracking-wide text-red-600">One-time 50% off offer</p>
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-2xl text-slate-400 line-through">{price.symbol}{price.originalAmount.toLocaleString()}</span>
+                  <span className="text-5xl font-extrabold text-slate-900">{price.symbol}{price.amount.toLocaleString()}</span>
                 </div>
-
-                {/* Price */}
-                <div>
-                  <div className="flex items-center justify-center gap-3">
-                    <span className="text-2xl text-red-300 line-through">{price.symbol}{price.originalAmount.toLocaleString()}</span>
-                    <span className="text-5xl md:text-6xl font-extrabold">{price.symbol}{price.amount.toLocaleString()}</span>
-                  </div>
-                  <p className="text-red-200 mt-2">4 hours of dedicated 1:1 coaching — half price for fast decision makers</p>
-                </div>
+                <p className="text-slate-500">4 hours of dedicated 1:1 coaching. Half price for action takers.</p>
               </div>
             ) : (
               <div className="bg-slate-100 rounded-2xl p-6 md:p-8 text-center space-y-3 border-2 border-slate-300">
@@ -322,7 +313,7 @@ export default function CoachingUpsell() {
                 </span>
               ) : (
                 <>
-                  {buttonText} — {price.symbol}{price.amount} (50% Off)
+                  {buttonText} - {price.symbol}{price.amount} (50% Off)
                   <ArrowRight className="w-6 h-6 inline ml-2" />
                 </>
               )}
@@ -351,9 +342,9 @@ export default function CoachingUpsell() {
 
             {/* Trust */}
             {!timerExpired && (
-              <div className="flex items-center justify-center gap-2 text-red-500 pt-2">
+              <div className="flex items-center justify-center gap-2 text-slate-400 pt-2">
                 <Clock className="w-4 h-4" />
-                <span className="text-sm font-medium">This 50% discount expires when the timer hits zero</span>
+                <span className="text-sm">This offer expires when the timer hits zero</span>
               </div>
             )}
 
