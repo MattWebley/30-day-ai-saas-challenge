@@ -8,23 +8,34 @@ export default function CoachingUpsell() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [purchaseSuccess, setPurchaseSuccess] = useState(false);
   const [buttonText, setButtonText] = useState("Yes! Add Coaching to My Order");
-  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
-  const timerExpired = timeLeft <= 0;
+  // Persist timer across refreshes using localStorage
+  const [timeLeftMs, setTimeLeftMs] = useState(() => {
+    const stored = localStorage.getItem('coaching_upsell_start');
+    if (stored) {
+      const elapsed = Date.now() - parseInt(stored, 10);
+      return Math.max(0, 600000 - elapsed);
+    }
+    localStorage.setItem('coaching_upsell_start', Date.now().toString());
+    return 600000;
+  });
+  const timerExpired = timeLeftMs <= 0;
   const { testMode } = useTestMode();
   const { user } = useAuth();
 
-  // Countdown timer
+  // Countdown timer (updates every 50ms for smooth milliseconds)
   useEffect(() => {
-    if (timeLeft <= 0) return;
+    if (timeLeftMs <= 0) return;
+    const start = parseInt(localStorage.getItem('coaching_upsell_start') || '0', 10);
     const interval = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
+      const remaining = Math.max(0, 600000 - (Date.now() - start));
+      setTimeLeftMs(remaining);
+    }, 50);
     return () => clearInterval(interval);
-  }, [timeLeft]);
+  }, [timeLeftMs <= 0]);
 
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-  const timerDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  const minutes = Math.floor(timeLeftMs / 60000);
+  const seconds = Math.floor((timeLeftMs % 60000) / 1000);
+  const milliseconds = Math.floor((timeLeftMs % 1000) / 10);
 
   // Check for admin preview mode
   const params = new URLSearchParams(window.location.search);
@@ -157,18 +168,34 @@ export default function CoachingUpsell() {
       )}
 
       {/* Header with timer */}
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-3xl mx-auto px-4 py-4 text-center">
-          <span className="inline-block px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
-            Order Complete - One More Thing...
-          </span>
+      <header>
+        <div className="bg-white border-b border-slate-200">
+          <div className="max-w-3xl mx-auto px-4 py-4 text-center">
+            <span className="inline-block px-3 py-1 bg-green-100 text-green-700 text-sm font-medium rounded-full">
+              Order Complete - One More Thing...
+            </span>
+          </div>
         </div>
         {!timerExpired && (
-          <div className="bg-red-600 text-white py-2 px-4">
-            <div className="max-w-3xl mx-auto flex items-center justify-center gap-3 text-sm font-medium">
-              <Clock className="w-4 h-4" />
-              <span>One-time offer: 50% off for the next</span>
-              <span className="font-mono font-bold text-base tabular-nums bg-white/20 rounded px-2 py-0.5">{timerDisplay}</span>
+          <div className="bg-slate-900 text-white py-4 px-4">
+            <div className="max-w-3xl mx-auto text-center space-y-2">
+              <p className="text-xs uppercase tracking-widest text-slate-400 font-medium">One-time offer - 50% off expires in</p>
+              <div className="flex items-center justify-center gap-2">
+                <div className="bg-white/10 rounded-lg px-3 py-2 min-w-[52px]">
+                  <p className="text-2xl md:text-3xl font-mono font-bold tabular-nums leading-none">{minutes.toString().padStart(2, '0')}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-slate-400 mt-1">Min</p>
+                </div>
+                <span className="text-xl font-bold text-slate-500">:</span>
+                <div className="bg-white/10 rounded-lg px-3 py-2 min-w-[52px]">
+                  <p className="text-2xl md:text-3xl font-mono font-bold tabular-nums leading-none">{seconds.toString().padStart(2, '0')}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-slate-400 mt-1">Sec</p>
+                </div>
+                <span className="text-xl font-bold text-slate-500">:</span>
+                <div className="bg-white/10 rounded-lg px-3 py-2 min-w-[52px]">
+                  <p className="text-2xl md:text-3xl font-mono font-bold tabular-nums leading-none text-red-400">{milliseconds.toString().padStart(2, '0')}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-slate-400 mt-1">Ms</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -282,6 +309,15 @@ export default function CoachingUpsell() {
                 <AlertTriangle className="w-10 h-10 text-slate-400 mx-auto" />
                 <p className="text-2xl font-extrabold text-slate-400">Offer Expired</p>
                 <p className="text-slate-500">The 50% discount has ended. This one-time offer is no longer available.</p>
+              </div>
+            )}
+
+            {/* Mini timer above CTA */}
+            {!timerExpired && (
+              <div className="flex items-center justify-center gap-2 text-red-600">
+                <Clock className="w-4 h-4" />
+                <span className="text-sm font-medium">Offer disappears in</span>
+                <span className="font-mono font-bold tabular-nums text-sm">{minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}</span>
               </div>
             )}
 
