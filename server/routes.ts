@@ -84,6 +84,27 @@ export async function registerRoutes(
   // Setup Replit Auth
   await setupAuth(app);
 
+  // Debug endpoint — TEMPORARY, remove after fixing admin access
+  app.get('/api/auth/debug', async (req: any, res) => {
+    const session = req.session as any;
+    const sessionInfo = {
+      magicLinkAuth: session?.magicLinkAuth,
+      userId: session?.userId,
+      userEmail: session?.userEmail,
+      hasPassportUser: !!req.user,
+    };
+
+    if (session?.userId) {
+      const user = await storage.getUser(session.userId);
+      return res.json({
+        session: sessionInfo,
+        user: user ? { id: user.id, email: user.email, isAdmin: user.isAdmin, challengePurchased: user.challengePurchased } : 'NOT FOUND',
+      });
+    }
+
+    res.json({ session: sessionInfo, user: 'NO SESSION USER ID' });
+  });
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
