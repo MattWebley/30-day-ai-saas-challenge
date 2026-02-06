@@ -77,7 +77,7 @@ function Router() {
   }
 
   // Public routes that don't need auth check
-  const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic'];
+  const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic'];
   const isPublicRoute = publicPaths.some(path => location.startsWith(path)) || location === '/';
 
   // Only show loading spinner for protected routes
@@ -111,6 +111,8 @@ function Router() {
         <Route path="/auth-error" component={AuthError} />
         <Route path="/auth/error" component={AuthError} />
         <Route path="/auth/magic" component={MagicVerify} />
+        {/* Admin route - available to any authenticated user (component checks isAdmin) */}
+        {isAuthenticated && <Route path="/admin" component={Admin} />}
         {!isAuthenticated ? (
           <Route path="/" component={Landing} />
         ) : !hasPurchased ? (
@@ -125,7 +127,6 @@ function Router() {
             <Route path="/build-log" component={BuildLog} />
             <Route path="/claude-code" component={ClaudeCodeGuide} />
             <Route path="/settings" component={Settings} />
-            <Route path="/admin" component={Admin} />
             <Route path="/design-preview" component={DesignPreview} />
             <Route path="/coaching" component={Coaching} />
             <Route path="/critique" component={Critique} />
