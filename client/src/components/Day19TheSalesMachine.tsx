@@ -34,6 +34,7 @@ interface Day19TheSalesMachineProps {
   aiFeature?: string;
   brandColor?: string;
   daysSinceStart?: number;
+  savedInputs?: Record<string, any>;
   onComplete: (data: { salesPageBuilt: boolean; headline: string; showcaseSubmitted?: boolean }) => void;
 }
 
@@ -56,10 +57,11 @@ export function Day19TheSalesMachine({
   aiFeature = "",
   brandColor = "",
   daysSinceStart = 0,
+  savedInputs,
   onComplete
 }: Day19TheSalesMachineProps) {
   const [step, setStep, containerRef] = useStepWithScroll<"intro" | "structure" | "prompts" | "build" | "critique" | "showcase" | "complete">("intro");
-  const [headline, setHeadline] = useState("");
+  const [headline, setHeadline] = useState(savedInputs?.headline ?? "");
 
   // Showcase state
   const [appUrl, setAppUrl] = useState("");

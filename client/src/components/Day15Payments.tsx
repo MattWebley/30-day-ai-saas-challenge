@@ -20,19 +20,20 @@ import { Link } from "wouter";
 
 interface Day15PaymentsProps {
   appName: string;
-  onComplete: (data: { paymentsSetup: boolean }) => void;
+  savedInputs?: Record<string, any>;
+  onComplete: (data: { paymentsSetup: boolean; signupDone: boolean; keysDone: boolean; secretsDone: boolean; builtCheckout: boolean; paymentWorked: boolean }) => void;
 }
 
-export function Day15Payments({ appName, onComplete }: Day15PaymentsProps) {
+export function Day15Payments({ appName, savedInputs, onComplete }: Day15PaymentsProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
     "intro" | "signup" | "keys" | "secrets" | "build" | "test" | "done"
   >("intro");
 
-  const [signupDone, setSignupDone] = useState(false);
-  const [keysDone, setKeysDone] = useState(false);
-  const [secretsDone, setSecretsDone] = useState(false);
-  const [builtCheckout, setBuiltCheckout] = useState(false);
-  const [paymentWorked, setPaymentWorked] = useState(false);
+  const [signupDone, setSignupDone] = useState(savedInputs?.signupDone ?? false);
+  const [keysDone, setKeysDone] = useState(savedInputs?.keysDone ?? false);
+  const [secretsDone, setSecretsDone] = useState(savedInputs?.secretsDone ?? false);
+  const [builtCheckout, setBuiltCheckout] = useState(savedInputs?.builtCheckout ?? false);
+  const [paymentWorked, setPaymentWorked] = useState(savedInputs?.paymentWorked ?? false);
   const { toast } = useToast();
 
   const copyToClipboard = (text: string, label: string) => {
@@ -468,7 +469,7 @@ STRIPE_PUBLISHABLE_KEY = [paste your pk_test_ key]`}
           <div className="flex justify-end">
             <Button
               size="lg"
-              onClick={() => onComplete({ paymentsSetup: true })}
+              onClick={() => onComplete({ paymentsSetup: true, signupDone, keysDone, secretsDone, builtCheckout, paymentWorked })}
               className="gap-2"
             >
               Complete Day <ArrowRight className="w-5 h-5" />

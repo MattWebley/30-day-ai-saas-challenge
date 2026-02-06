@@ -47,33 +47,35 @@ interface Day2Props {
   onComplete: (data: {
     chosenIdea: string;
     chosenIdeaTitle: string;
+    selectedIdeaIndex: number | null;
     selectedPainPoints: string[];
     competitors: Competitor[];
     validationInsights: ValidationInsight;
     iHelpStatement: string;
   }) => void;
+  savedInputs?: Record<string, any>;
 }
 
-export function Day2IdeaValidator({ onComplete }: Day2Props) {
+export function Day2IdeaValidator({ onComplete, savedInputs }: Day2Props) {
   const queryClient = useQueryClient();
-  const [step, setStep, containerRef] = useStepWithScroll<'shortlist' | 'competitors' | 'pain' | 'done'>('shortlist');
-  const [selectedIdeaIndex, setSelectedIdeaIndex] = useState<number | null>(null);
-  const [validationInsights, setValidationInsights] = useState<Record<number, ValidationInsight>>({});
+  const [step, setStep, containerRef] = useStepWithScroll<'shortlist' | 'competitors' | 'pain' | 'done'>(savedInputs ? 'done' : 'shortlist');
+  const [selectedIdeaIndex, setSelectedIdeaIndex] = useState<number | null>(savedInputs?.selectedIdeaIndex ?? null);
+  const [validationInsights, setValidationInsights] = useState<Record<number, ValidationInsight>>(savedInputs?.validationInsights || {});
   const [loadingValidation, setLoadingValidation] = useState<number | null>(null);
-  const [painPoints, setPainPoints] = useState<string[]>([]);
-  const [selectedPainPoints, setSelectedPainPoints] = useState<string[]>([]);
+  const [painPoints, setPainPoints] = useState<string[]>(savedInputs?.selectedPainPoints || []);
+  const [selectedPainPoints, setSelectedPainPoints] = useState<string[]>(savedInputs?.selectedPainPoints || []);
   const [loadingPainPoints, setLoadingPainPoints] = useState(false);
   const [customPainInput, setCustomPainInput] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
 
   // Competitor research state
-  const [competitors, setCompetitors] = useState<Competitor[]>([]);
+  const [competitors, setCompetitors] = useState<Competitor[]>(savedInputs?.competitors || []);
   const [newCompetitor, setNewCompetitor] = useState({ name: '', url: '', notes: '' });
   const [loadingCompetitors, setLoadingCompetitors] = useState(false);
   const [showManualAdd, setShowManualAdd] = useState(false);
 
   // I Help statement
-  const [iHelpStatement, setIHelpStatement] = useState("");
+  const [iHelpStatement, setIHelpStatement] = useState(savedInputs?.iHelpStatement || "");
 
   // AI usage limits (silent until close to limit)
   const [painPointAttempts, setPainPointAttempts] = useState(0);
@@ -530,6 +532,7 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
               onComplete({
                 chosenIdea: `${idea.title} - ${idea.desc}`,
                 chosenIdeaTitle: idea.title,
+                selectedIdeaIndex,
                 selectedPainPoints,
                 competitors,
                 validationInsights: validationInsights[selectedIdeaIndex] || {

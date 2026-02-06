@@ -16,7 +16,8 @@ import { ds } from "@/lib/design-system";
 
 interface Day8ClaudeCodeProps {
   userIdea: string;
-  onComplete: (data: { setupComplete: boolean }) => void;
+  onComplete: (data: { setupComplete: boolean; githubDone: boolean; claudeInstalled: boolean; claudeMdCreated: boolean; testDone: boolean }) => void;
+  savedInputs?: Record<string, any>;
 }
 
 const INSTALL_COMMAND = `curl -fsSL https://claude.ai/install.sh | bash && source ~/.bashrc && claude`;
@@ -161,12 +162,12 @@ const START_PROMPT = `Read CLAUDE.md, run git pull, and tell me where we left of
 
 const END_PROMPT = `Commit everything, update CLAUDE.md with what we did today, and push to GitHub.`;
 
-export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
+export function Day8ClaudeCode({ userIdea, onComplete, savedInputs }: Day8ClaudeCodeProps) {
   const [step, setStep, containerRef] = useStepWithScroll<"github" | "claude" | "claudemd" | "test" | "done">("github");
-  const [githubDone, setGithubDone] = useState(false);
-  const [claudeInstalled, setClaudeInstalled] = useState(false);
-  const [claudeMdCreated, setClaudeMdCreated] = useState(false);
-  const [testDone, setTestDone] = useState(false);
+  const [githubDone, setGithubDone] = useState(savedInputs?.githubDone || false);
+  const [claudeInstalled, setClaudeInstalled] = useState(savedInputs?.claudeInstalled || false);
+  const [claudeMdCreated, setClaudeMdCreated] = useState(savedInputs?.claudeMdCreated || false);
+  const [testDone, setTestDone] = useState(savedInputs?.testDone || false);
   const { toast } = useToast();
 
   const copyToClipboard = (text: string, label: string) => {
@@ -579,7 +580,7 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
           <Button
             size="lg"
             className="w-full h-14 text-lg font-bold"
-            onClick={() => onComplete({ setupComplete: true })}
+            onClick={() => onComplete({ setupComplete: true, githubDone, claudeInstalled, claudeMdCreated, testDone })}
           >
             Complete Day 8
           </Button>

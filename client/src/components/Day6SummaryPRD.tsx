@@ -18,7 +18,8 @@ interface Day6SummaryPRDProps {
   iHelpStatement: string;
   uspFeatures: string[];
   brandVibe: string;
-  onComplete: (data: { prd: string; summary: string }) => void;
+  onComplete: (data: { prd: string; summary: string; customerAvatar: string; lookAndFeel: string }) => void;
+  savedInputs?: Record<string, any>;
 }
 
 export function Day6SummaryPRD({
@@ -32,10 +33,11 @@ export function Day6SummaryPRD({
   uspFeatures,
   brandVibe,
   onComplete,
+  savedInputs,
 }: Day6SummaryPRDProps) {
   const [step, setStep, containerRef] = useStepWithScroll<"generate" | "review" | "edit">("generate");
-  const [customerAvatar, setCustomerAvatar] = useState("");
-  const [lookAndFeel, setLookAndFeel] = useState("");
+  const [customerAvatar, setCustomerAvatar] = useState(savedInputs?.customerAvatar || "");
+  const [lookAndFeel, setLookAndFeel] = useState(savedInputs?.lookAndFeel || "");
   const { toast } = useToast();
 
   // AI usage limits
@@ -44,8 +46,8 @@ export function Day6SummaryPRD({
   const [lookFeelAttempts, setLookFeelAttempts] = useState(0);
   const MAX_PRD_ATTEMPTS = 5;
   const MAX_DETAIL_ATTEMPTS = 5;
-  const [summary, setSummary] = useState("");
-  const [prd, setPrd] = useState("");
+  const [summary, setSummary] = useState(savedInputs?.summary || "");
+  const [prd, setPrd] = useState(savedInputs?.prd || "");
   const [editedPrd, setEditedPrd] = useState("");
   const [originalPrd, setOriginalPrd] = useState(""); // Store original for revert
 
@@ -183,6 +185,8 @@ export function Day6SummaryPRD({
     onComplete({
       prd,
       summary,
+      customerAvatar,
+      lookAndFeel,
     });
   };
 

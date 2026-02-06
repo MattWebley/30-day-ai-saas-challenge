@@ -12,7 +12,11 @@ interface Day11BrandProps {
     primaryColorName: string;
     designPersonality: string;
     brandVibe: string;
+    method: string;
+    selectedPersonality: string | null;
+    selectedColor: string | null;
   }) => void;
+  savedInputs?: Record<string, any>;
 }
 
 const COLOR_OPTIONS = [
@@ -164,13 +168,13 @@ const DESIGN_PERSONALITIES = [
 
 type StepType = "choose-method" | "personality" | "url-input" | "url-result" | "color" | "apply" | "done";
 
-export function Day11Brand({ appName, onComplete }: Day11BrandProps) {
+export function Day11Brand({ appName, onComplete, savedInputs }: Day11BrandProps) {
   const [step, setStep, containerRef] = useStepWithScroll<StepType>("choose-method");
-  const [method, setMethod] = useState<"personality" | "url" | null>(null);
-  const [selectedPersonality, setSelectedPersonality] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [customColor, setCustomColor] = useState("");
-  const [hasApplied, setHasApplied] = useState(false);
+  const [method, setMethod] = useState<"personality" | "url" | null>(savedInputs?.method || null);
+  const [selectedPersonality, setSelectedPersonality] = useState<string | null>(savedInputs?.selectedPersonality || null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(savedInputs?.selectedColor || null);
+  const [customColor, setCustomColor] = useState(savedInputs?.customColor || "");
+  const [hasApplied, setHasApplied] = useState(savedInputs?.hasApplied || false);
   const [copied, setCopied] = useState(false);
 
   // URL inspiration state
@@ -742,6 +746,9 @@ The app is called "${appName || 'my app'}". Make it look like it belongs in the 
                 primaryColorName: currentColor?.name || "Custom",
                 designPersonality: method === "url" ? "URL-Inspired" : (currentPersonality?.name || ""),
                 brandVibe: method === "url" ? "Custom" : (currentPersonality?.tagline || ""),
+                method: method || "",
+                selectedPersonality,
+                selectedColor,
               })}
             >
               Complete Day 11 <CheckCircle2 className="w-5 h-5" />

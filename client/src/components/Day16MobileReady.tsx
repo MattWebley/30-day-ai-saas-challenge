@@ -17,7 +17,8 @@ import { ds } from "@/lib/design-system";
 
 interface Day16MobileReadyProps {
   appName: string;
-  onComplete: (data: { testedOnPhone: boolean; mobileIssues: string }) => void;
+  savedInputs?: Record<string, any>;
+  onComplete: (data: { testedOnPhone: boolean; mobileIssues: string; testResults: Record<string, boolean>; perfResults: Record<string, boolean> }) => void;
 }
 
 const MOBILE_TESTS = [
@@ -98,11 +99,11 @@ const PERFORMANCE_TESTS = [
   },
 ];
 
-export function Day16MobileReady({ appName, onComplete }: Day16MobileReadyProps) {
+export function Day16MobileReady({ appName, savedInputs, onComplete }: Day16MobileReadyProps) {
   const [step, setStep, containerRef] = useStepWithScroll<"test" | "performance" | "fix" | "done">("test");
-  const [testResults, setTestResults] = useState<Map<string, boolean>>(new Map());
-  const [perfResults, setPerfResults] = useState<Map<string, boolean>>(new Map());
-  const [mobileIssues, setMobileIssues] = useState("");
+  const [testResults, setTestResults] = useState<Map<string, boolean>>(new Map(Object.entries(savedInputs?.testResults || {})));
+  const [perfResults, setPerfResults] = useState<Map<string, boolean>>(new Map(Object.entries(savedInputs?.perfResults || {})));
+  const [mobileIssues, setMobileIssues] = useState(savedInputs?.mobileIssues ?? "");
   const { toast } = useToast();
 
   const copyToClipboard = (text: string) => {
@@ -514,7 +515,9 @@ First load should be under 3 seconds.`}
                 className="flex-1 h-14 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
                 onClick={() => onComplete({
                   testedOnPhone: true,
-                  mobileIssues: mobileIssues || "No major issues found"
+                  mobileIssues: mobileIssues || "No major issues found",
+                  testResults: Object.fromEntries(testResults),
+                  perfResults: Object.fromEntries(perfResults),
                 })}
               >
                 Complete Day <CheckCircle2 className="w-5 h-5" />

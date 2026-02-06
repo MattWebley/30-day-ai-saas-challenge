@@ -16,6 +16,7 @@ import { ds } from "@/lib/design-system";
 
 interface Day20GetFoundProps {
   appName: string;
+  savedInputs?: Record<string, any>;
   onComplete: (data: {
     seoOptimized: boolean;
     submittedToGoogle: boolean;
@@ -36,15 +37,15 @@ const DIRECTORIES = [
   { name: "Capterra", url: "https://www.capterra.com/vendors/sign-up", priority: false, description: "Business software directory" }
 ];
 
-export function Day20GetFound({ appName, onComplete }: Day20GetFoundProps) {
+export function Day20GetFound({ appName, savedInputs, onComplete }: Day20GetFoundProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
     "intro" | "optimize" | "submit" | "directories" | "complete"
   >("intro");
 
   const [promptCopied, setPromptCopied] = useState(false);
-  const [seoOptimized, setSeoOptimized] = useState(false);
-  const [submittedToGoogle, setSubmittedToGoogle] = useState(false);
-  const [submittedDirectories, setSubmittedDirectories] = useState<string[]>([]);
+  const [seoOptimized, setSeoOptimized] = useState(savedInputs?.seoOptimized ?? false);
+  const [submittedToGoogle, setSubmittedToGoogle] = useState(savedInputs?.submittedToGoogle ?? false);
+  const [submittedDirectories, setSubmittedDirectories] = useState<string[]>(savedInputs?.directoriesSubmitted ?? []);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);

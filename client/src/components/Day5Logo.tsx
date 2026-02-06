@@ -9,6 +9,7 @@ import { ds } from "@/lib/design-system";
 interface Day5LogoProps {
   appName: string;
   userIdea?: string;
+  savedInputs?: Record<string, any>;
   onComplete: (data: {
     logoType: string;
     logoDescription: string;
@@ -43,15 +44,15 @@ const COLOR_PREFERENCES = [
 
 // No specific AI tools listed - they change too fast
 
-export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
-  const [step, setStep, containerRef] = useStepWithScroll<"customize" | "create" | "confirm">("customize");
-  const [brandVibe, setBrandVibe] = useState<string | null>(null);
-  const [colorPreference, setColorPreference] = useState<string | null>(null);
-  const [customColors, setCustomColors] = useState<string>("");
-  const [generatedPrompt, setGeneratedPrompt] = useState<string>("");
-  const [toolUsed, setToolUsed] = useState<string | null>(null);
-  const [logoDescription, setLogoDescription] = useState("");
-  const [hasCreated, setHasCreated] = useState(false);
+export function Day5Logo({ appName, userIdea, savedInputs, onComplete }: Day5LogoProps) {
+  const [step, setStep, containerRef] = useStepWithScroll<"customize" | "create" | "confirm">(savedInputs ? "confirm" : "customize");
+  const [brandVibe, setBrandVibe] = useState<string | null>(savedInputs?.brandVibe || null);
+  const [colorPreference, setColorPreference] = useState<string | null>(savedInputs?.colorPreference || null);
+  const [customColors, setCustomColors] = useState<string>(savedInputs?.customColors || "");
+  const [generatedPrompt, setGeneratedPrompt] = useState<string>(savedInputs?.generatedPrompt || "");
+  const [toolUsed, setToolUsed] = useState<string | null>(savedInputs?.toolUsed || null);
+  const [logoDescription, setLogoDescription] = useState(savedInputs?.logoDescription || "");
+  const [hasCreated, setHasCreated] = useState(!!savedInputs);
   const [copied, setCopied] = useState(false);
   const [showCanvaGuide, setShowCanvaGuide] = useState(false);
 
@@ -495,7 +496,10 @@ export function Day5Logo({ appName, userIdea, onComplete }: Day5LogoProps) {
                 logoDescription,
                 toolUsed: toolUsed || "other",
                 brandVibe: brandVibe || undefined,
-              })}
+                colorPreference: colorPreference || undefined,
+                customColors: customColors || undefined,
+                generatedPrompt: generatedPrompt || undefined,
+              } as any)}
             >
               Complete Day 5 <CheckCircle2 className="w-5 h-5" />
             </Button>

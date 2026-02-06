@@ -24,7 +24,8 @@ import { Link } from "wouter";
 
 interface Day9ClaudeCodeMasteryProps {
   userIdea: string;
-  onComplete: (data: { masteryComplete: boolean }) => void;
+  onComplete: (data: { masteryComplete: boolean; specificDone: boolean; reverseDone: boolean; errorsDone: boolean; breakdownDone: boolean; commitDone: boolean; optionsDone: boolean; vibeDone: boolean; askWhyDone: boolean }) => void;
+  savedInputs?: Record<string, any>;
 }
 
 const GOOD_VS_BAD_PROMPTS = [
@@ -52,18 +53,18 @@ const BIG_TASK_EXAMPLE = {
   ],
 };
 
-export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMasteryProps) {
+export function Day9ClaudeCodeMastery({ userIdea, onComplete, savedInputs }: Day9ClaudeCodeMasteryProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
     "specific" | "reverse" | "errors" | "breakdown" | "commit" | "options" | "vibe" | "askwhy" | "done"
   >("specific");
-  const [specificDone, setSpecificDone] = useState(false);
-  const [reverseDone, setReverseDone] = useState(false);
-  const [errorsDone, setErrorsDone] = useState(false);
-  const [breakdownDone, setBreakdownDone] = useState(false);
-  const [commitDone, setCommitDone] = useState(false);
-  const [optionsDone, setOptionsDone] = useState(false);
-  const [vibeDone, setVibeDone] = useState(false);
-  const [askWhyDone, setAskWhyDone] = useState(false);
+  const [specificDone, setSpecificDone] = useState(savedInputs?.specificDone || false);
+  const [reverseDone, setReverseDone] = useState(savedInputs?.reverseDone || false);
+  const [errorsDone, setErrorsDone] = useState(savedInputs?.errorsDone || false);
+  const [breakdownDone, setBreakdownDone] = useState(savedInputs?.breakdownDone || false);
+  const [commitDone, setCommitDone] = useState(savedInputs?.commitDone || false);
+  const [optionsDone, setOptionsDone] = useState(savedInputs?.optionsDone || false);
+  const [vibeDone, setVibeDone] = useState(savedInputs?.vibeDone || false);
+  const [askWhyDone, setAskWhyDone] = useState(savedInputs?.askWhyDone || false);
   const { toast } = useToast();
 
   const copyToClipboard = (text: string, label: string) => {
@@ -720,7 +721,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
           <Button
             size="lg"
             className="w-full h-14 text-lg font-bold"
-            onClick={() => onComplete({ masteryComplete: true })}
+            onClick={() => onComplete({ masteryComplete: true, specificDone, reverseDone, errorsDone, breakdownDone, commitDone, optionsDone, vibeDone, askWhyDone })}
           >
             Complete Day 9
           </Button>

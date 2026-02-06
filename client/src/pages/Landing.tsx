@@ -6,8 +6,8 @@ import { ArrowRight, Check, ChevronRight, AlertTriangle, Clock, Zap, Target, Tre
 import { ds } from "@/lib/design-system";
 import { LazyVimeo } from "@/components/LazyVimeo";
 
-// ⬇️ SET TO false TO RE-ENABLE PURCHASES ⬇️
-const SALES_PAUSED = true;
+// ⬇️ SET TO true TO PAUSE PURCHASES ⬇️
+const SALES_PAUSED = false;
 
 const DEFAULT_HEADLINE = "How To Build Your Own AI SaaS Product in the Next 21 Days Without Writing a Single Line of Code...";
 

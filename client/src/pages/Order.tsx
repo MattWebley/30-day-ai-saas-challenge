@@ -4,8 +4,8 @@ import { useTestMode } from "@/contexts/TestModeContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-// ⬇️ SET TO false TO RE-ENABLE PURCHASES ⬇️
-const SALES_PAUSED = true;
+// ⬇️ SET TO true TO PAUSE PURCHASES ⬇️
+const SALES_PAUSED = false;
 
 export default function Order() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);

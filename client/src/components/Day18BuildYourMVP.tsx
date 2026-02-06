@@ -17,7 +17,8 @@ import { ds } from "@/lib/design-system";
 interface Day18BuildYourMVPProps {
   appName: string;
   daysSinceStart: number;
-  onComplete: () => void;
+  savedInputs?: Record<string, any>;
+  onComplete: (data?: { checksComplete: string[] }) => void;
 }
 
 interface ShowcaseStats {
@@ -53,8 +54,8 @@ const PAUSE_QUOTES = [
   "Your future self is watching you right now through memories. Make them proud.",
 ];
 
-export function Day18BuildYourMVP({ appName, daysSinceStart, onComplete }: Day18BuildYourMVPProps) {
-  const [checksComplete, setChecksComplete] = useState<Set<string>>(new Set());
+export function Day18BuildYourMVP({ appName, daysSinceStart, savedInputs, onComplete }: Day18BuildYourMVPProps) {
+  const [checksComplete, setChecksComplete] = useState<Set<string>>(new Set(savedInputs?.checksComplete || []));
   const [pausePressed, setPausePressed] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [pauseQuote, setPauseQuote] = useState<string>("");
@@ -220,7 +221,7 @@ export function Day18BuildYourMVP({ appName, daysSinceStart, onComplete }: Day18
               <Button
                 size="lg"
                 className="w-full h-12 text-lg font-bold gap-2 bg-green-600 hover:bg-green-700"
-                onClick={() => onComplete()}
+                onClick={() => onComplete({ checksComplete: Array.from(checksComplete) })}
               >
                 Continue to Day 19: Sales Page <ChevronRight className="w-5 h-5" />
               </Button>

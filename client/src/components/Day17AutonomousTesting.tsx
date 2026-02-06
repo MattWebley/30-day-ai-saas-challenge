@@ -23,7 +23,8 @@ import { Link } from "wouter";
 
 interface Day17AutonomousTestingProps {
   appName: string;
-  onComplete: (data: { testingComplete: boolean; published: boolean; customDomain: string }) => void;
+  savedInputs?: Record<string, any>;
+  onComplete: (data: { testingComplete: boolean; published: boolean; customDomain: string; testedAreas: string[]; publishSteps: string[]; domainSteps: string[] }) => void;
 }
 
 const TEST_AREAS = [
@@ -48,15 +49,15 @@ const DOMAIN_STEPS = [
   { id: "verify", label: "Verify connection", description: "Wait a few minutes, then Replit will confirm it's connected" },
 ];
 
-export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousTestingProps) {
+export function Day17AutonomousTesting({ appName, savedInputs, onComplete }: Day17AutonomousTestingProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
     "intro" | "methods" | "test" | "publish" | "domain" | "done"
   >("intro");
 
-  const [testedAreas, setTestedAreas] = useState<Set<string>>(new Set());
-  const [publishSteps, setPublishSteps] = useState<Set<string>>(new Set());
-  const [domainSteps, setDomainSteps] = useState<Set<string>>(new Set());
-  const [customDomain, setCustomDomain] = useState("");
+  const [testedAreas, setTestedAreas] = useState<Set<string>>(new Set(savedInputs?.testedAreas || []));
+  const [publishSteps, setPublishSteps] = useState<Set<string>>(new Set(savedInputs?.publishSteps || []));
+  const [domainSteps, setDomainSteps] = useState<Set<string>>(new Set(savedInputs?.domainSteps || []));
+  const [customDomain, setCustomDomain] = useState(savedInputs?.customDomain ?? "");
 
   const toggleArea = (id: string) => {
     const newSet = new Set(testedAreas);
@@ -548,7 +549,7 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
             </Button>
             <Button
               size="lg"
-              onClick={() => onComplete({ testingComplete: true, published: true, customDomain: customDomain.trim() })}
+              onClick={() => onComplete({ testingComplete: true, published: true, customDomain: customDomain.trim(), testedAreas: Array.from(testedAreas), publishSteps: Array.from(publishSteps), domainSteps: Array.from(domainSteps) })}
               className="gap-2 bg-green-600 hover:bg-green-700"
             >
               Complete Day <CheckCircle2 className="w-5 h-5" />

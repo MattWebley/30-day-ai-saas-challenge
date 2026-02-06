@@ -17,6 +17,7 @@ interface Tool {
 interface Day5TechStackProps {
   dayId: number;
   onComplete: (data: { completedSetup: string[] }) => void;
+  savedInputs?: Record<string, any>;
 }
 
 const REQUIRED_TOOLS: Tool[] = [
@@ -56,8 +57,10 @@ const OPTIONAL_TOOLS: Tool[] = [
   },
 ];
 
-export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
-  const [completedTools, setCompletedTools] = useState<Set<string>>(new Set());
+export function Day5TechStack({ dayId, onComplete, savedInputs }: Day5TechStackProps) {
+  const [completedTools, setCompletedTools] = useState<Set<string>>(
+    new Set(savedInputs?.completedSetup || [])
+  );
   const [copiedPrompt, setCopiedPrompt] = useState<string | null>(null);
 
   const copyPrompt = (id: string, text: string) => {

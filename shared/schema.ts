@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import {
   index,
+  uniqueIndex,
   jsonb,
   pgTable,
   timestamp,
@@ -150,6 +151,7 @@ export const userProgress = pgTable("user_progress", {
 }, (table) => [
   index("user_progress_user_id_idx").on(table.userId),
   index("user_progress_day_idx").on(table.day),
+  uniqueIndex("user_progress_user_day_uniq").on(table.userId, table.day),
 ]);
 
 export const userProgressRelations = relations(userProgress, ({ one }) => ({

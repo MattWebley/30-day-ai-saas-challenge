@@ -524,7 +524,7 @@ export default function Dashboard() {
                     <VideoPlaceholder day={0} title="Start Here" />
                   )}
                 </div>
-                <Day0StartHere onComplete={handleComplete} />
+                <Day0StartHere onComplete={handleComplete} savedInputs={dayProgress?.userInputs} />
                 {!(stats as any)?.hasCoaching && !(stats as any)?.allDaysUnlocked && currentDay <= 4 && (
                   <Card
                     className="p-4 border-2 border-amber-300 bg-amber-50 hover:bg-amber-100 cursor-pointer transition-colors"
@@ -699,7 +699,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Validate & Choose Your Idea</h2>
                   </div>
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                    <Day2IdeaValidator onComplete={handleComplete} />
+                    <Day2IdeaValidator onComplete={handleComplete} savedInputs={dayProgress?.userInputs} />
                   </Card>
                 </div>
               </>
@@ -829,6 +829,7 @@ export default function Dashboard() {
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedIdea || ""}
                     painPoints={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.selectedPainPoints || (Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.selectedPainPoints || []}
                     features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.selectedFeatures || (Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.selectedFeatures || []}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -882,6 +883,7 @@ export default function Dashboard() {
                   <Day5Logo
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || ""}
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -935,6 +937,7 @@ export default function Dashboard() {
                   <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
                     <Day5TechStack
                       dayId={currentDay}
+                      savedInputs={dayProgress?.userInputs}
                       onComplete={handleComplete}
                     />
                   </Card>
@@ -990,6 +993,7 @@ export default function Dashboard() {
                       iHelpStatement={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.iHelpStatement || ""}
                       uspFeatures={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.uspFeatures?.map((f: any) => typeof f === 'string' ? f : f.name) || []}
                       brandVibe={(Array.isArray(progress) ? progress.find((p: any) => p.day === 5) : null)?.userInputs?.brandVibe || ""}
+                      savedInputs={dayProgress?.userInputs}
                       onComplete={handleComplete}
                     />
                   </Card>
@@ -1046,6 +1050,7 @@ export default function Dashboard() {
                   </div>
                   <Day8ClaudeCode
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1091,6 +1096,7 @@ export default function Dashboard() {
                   </div>
                   <Day9ClaudeCodeMastery
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1134,7 +1140,7 @@ export default function Dashboard() {
                     <div className="w-8 h-8 rounded-lg bg-primary text-white flex items-center justify-center font-bold">2</div>
                     <h2 className="font-bold text-xl text-slate-900">Practice The Loop</h2>
                   </div>
-                  <Day10BuildLoop onComplete={handleComplete} />
+                  <Day10BuildLoop onComplete={handleComplete} savedInputs={dayProgress?.userInputs} />
                 </div>
               </>
             ) : currentDay === 11 ? (
@@ -1178,6 +1184,7 @@ export default function Dashboard() {
                   </div>
                   <Day11Brand
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || ""}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1223,6 +1230,7 @@ export default function Dashboard() {
                   </div>
                   <Day10AIBrain
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1268,6 +1276,7 @@ export default function Dashboard() {
                   </div>
                   <Day13ExternalAPIs
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "your app"}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1312,6 +1321,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Set Up Authentication</h2>
                   </div>
                   <Day12LetUsersIn
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1357,6 +1367,7 @@ export default function Dashboard() {
                   </div>
                   <Day15Payments
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1402,6 +1413,7 @@ export default function Dashboard() {
                   </div>
                   <Day16MobileReady
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1447,6 +1459,7 @@ export default function Dashboard() {
                   </div>
                   <Day17AutonomousTesting
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1493,6 +1506,7 @@ export default function Dashboard() {
                   <Day18BuildYourMVP
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     daysSinceStart={(stats as any)?.daysSinceStart || 0}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1543,6 +1557,7 @@ export default function Dashboard() {
                     features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.selectedFeatures || []}
                     aiFeature={(Array.isArray(progress) ? progress.find((p: any) => p.day === 10) : null)?.userInputs?.aiFeature || ""}
                     brandColor={(Array.isArray(progress) ? progress.find((p: any) => p.day === 11) : null)?.userInputs?.primaryColor || ""}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1588,6 +1603,7 @@ export default function Dashboard() {
                   </div>
                   <Day20GetFound
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1633,6 +1649,7 @@ export default function Dashboard() {
                   </div>
                   <Day21LaunchDay
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
+                    savedInputs={dayProgress?.userInputs}
                     onComplete={handleComplete}
                   />
                 </div>

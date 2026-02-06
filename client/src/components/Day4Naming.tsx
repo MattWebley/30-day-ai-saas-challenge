@@ -26,7 +26,8 @@ interface Day4NamingProps {
   userIdea: string;
   painPoints: string[];
   features: string[];
-  onComplete: () => void;
+  savedInputs?: Record<string, any>;
+  onComplete: (data?: any) => void;
 }
 
 // Social platforms to register - with direct signup URLs
@@ -96,10 +97,10 @@ const SOCIAL_PLATFORMS = [
   },
 ];
 
-export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }: Day4NamingProps) {
+export function Day4Naming({ dayId, userIdea, painPoints, features, savedInputs, onComplete }: Day4NamingProps) {
   const queryClient = useQueryClient();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [currentStep, setCurrentStepInternal] = useState<"generate" | "confirm" | "complete">("generate");
+  const [currentStep, setCurrentStepInternal] = useState<"generate" | "confirm" | "complete">(savedInputs?.finalName ? "complete" : "generate");
 
   const setCurrentStep = useCallback((step: "generate" | "confirm" | "complete") => {
     setCurrentStepInternal(step);
@@ -114,12 +115,12 @@ export function Day4Naming({ dayId, userIdea, painPoints, features, onComplete }
   const [aiAttempts, setAiAttempts] = useState(0);
   const MAX_AI_ATTEMPTS = 5;
 
-  const [nameSuggestions, setNameSuggestions] = useState<NameSuggestion[]>([]);
+  const [nameSuggestions, setNameSuggestions] = useState<NameSuggestion[]>(savedInputs?.allSuggestions || []);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [customName, setCustomName] = useState("");
-  const [finalName, setFinalName] = useState("");
-  const [finalDomain, setFinalDomain] = useState("");
-  const [registeredItems, setRegisteredItems] = useState<Set<string>>(new Set());
+  const [finalName, setFinalName] = useState(savedInputs?.finalName || "");
+  const [finalDomain, setFinalDomain] = useState(savedInputs?.finalDomain || "");
+  const [registeredItems, setRegisteredItems] = useState<Set<string>>(new Set(savedInputs?.registeredItems || []));
 
   // Helper: get clean base name without any domain extensions (for variations)
   const baseName = finalName
@@ -810,7 +811,12 @@ Return ONLY this JSON:
                     onClick={() => {
                       console.log('[Day4] Complete button clicked, calling onComplete');
                       try {
-                        onComplete();
+                        onComplete({
+                          finalName,
+                          finalDomain,
+                          allSuggestions: nameSuggestions,
+                          registeredItems: Array.from(registeredItems),
+                        });
                         console.log('[Day4] onComplete called successfully');
                       } catch (error) {
                         console.error('[Day4] Error calling onComplete:', error);

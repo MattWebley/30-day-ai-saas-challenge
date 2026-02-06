@@ -21,20 +21,21 @@ import { Link } from "wouter";
 
 interface Day10AIBrainProps {
   userIdea: string;
-  onComplete: (data: { aiFeature: string; aiTestResult: string; aiWow: string }) => void;
+  savedInputs?: Record<string, any>;
+  onComplete: (data: { aiFeature: string; aiTestResult: string; aiWow: string; accountDone: boolean; apiKeyDone: boolean; secretsDone: boolean; aiWorking: boolean }) => void;
 }
 
-export function Day10AIBrain({ userIdea, onComplete }: Day10AIBrainProps) {
+export function Day10AIBrain({ userIdea, savedInputs, onComplete }: Day10AIBrainProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
     "account" | "apikey" | "secrets" | "describe" | "build" | "test"
   >("account");
 
-  const [accountDone, setAccountDone] = useState(false);
-  const [apiKeyDone, setApiKeyDone] = useState(false);
-  const [secretsDone, setSecretsDone] = useState(false);
-  const [aiFeature, setAiFeature] = useState("");
-  const [aiWorking, setAiWorking] = useState(false);
-  const [aiNotes, setAiNotes] = useState("");
+  const [accountDone, setAccountDone] = useState(savedInputs?.accountDone ?? false);
+  const [apiKeyDone, setApiKeyDone] = useState(savedInputs?.apiKeyDone ?? false);
+  const [secretsDone, setSecretsDone] = useState(savedInputs?.secretsDone ?? false);
+  const [aiFeature, setAiFeature] = useState(savedInputs?.aiFeature ?? "");
+  const [aiWorking, setAiWorking] = useState(savedInputs?.aiWorking ?? false);
+  const [aiNotes, setAiNotes] = useState(savedInputs?.aiTestResult ?? "");
   const { toast } = useToast();
 
   const copyToClipboard = (text: string, label: string) => {
@@ -438,7 +439,7 @@ Use the OpenAI API. The API key is already stored in Replit Secrets as OPENAI_AP
             </Button>
             <Button
               size="lg"
-              onClick={() => onComplete({ aiFeature, aiTestResult: aiNotes, aiWow: aiWorking ? "Working" : "Not working" })}
+              onClick={() => onComplete({ aiFeature, aiTestResult: aiNotes, aiWow: aiWorking ? "Working" : "Not working", accountDone, apiKeyDone, secretsDone, aiWorking })}
               disabled={!aiWorking}
               className="gap-2"
             >

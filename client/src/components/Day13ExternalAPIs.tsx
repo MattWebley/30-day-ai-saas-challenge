@@ -20,20 +20,21 @@ import { Link } from "wouter";
 
 interface Day13ExternalAPIsProps {
   appName: string;
-  onComplete: (data: { emailFeature: string; apiSetup: boolean }) => void;
+  savedInputs?: Record<string, any>;
+  onComplete: (data: { emailFeature: string; apiSetup: boolean; needsEmail: boolean | null; signupDone: boolean; apiKeyDone: boolean; secretsDone: boolean; testEmail: string; emailReceived: boolean }) => void;
 }
 
-export function Day13ExternalAPIs({ appName, onComplete }: Day13ExternalAPIsProps) {
+export function Day13ExternalAPIs({ appName, savedInputs, onComplete }: Day13ExternalAPIsProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
     "intro" | "signup" | "apikey" | "secrets" | "describe" | "build" | "done"
   >("intro");
 
-  const [needsEmail, setNeedsEmail] = useState<boolean | null>(null);
-  const [signupDone, setSignupDone] = useState(false);
-  const [apiKeyDone, setApiKeyDone] = useState(false);
-  const [secretsDone, setSecretsDone] = useState(false);
-  const [testEmail, setTestEmail] = useState("");
-  const [emailReceived, setEmailReceived] = useState(false);
+  const [needsEmail, setNeedsEmail] = useState<boolean | null>(savedInputs?.needsEmail ?? null);
+  const [signupDone, setSignupDone] = useState(savedInputs?.signupDone ?? false);
+  const [apiKeyDone, setApiKeyDone] = useState(savedInputs?.apiKeyDone ?? false);
+  const [secretsDone, setSecretsDone] = useState(savedInputs?.secretsDone ?? false);
+  const [testEmail, setTestEmail] = useState(savedInputs?.testEmail ?? "");
+  const [emailReceived, setEmailReceived] = useState(savedInputs?.emailReceived ?? false);
   const { toast } = useToast();
 
   const copyToClipboard = (text: string, label: string) => {
@@ -121,7 +122,7 @@ export function Day13ExternalAPIs({ appName, onComplete }: Day13ExternalAPIsProp
               </Button>
             )}
             {needsEmail === false && (
-              <Button size="lg" onClick={() => onComplete({ emailFeature: "", apiSetup: false })} className="gap-2">
+              <Button size="lg" onClick={() => onComplete({ emailFeature: "", apiSetup: false, needsEmail, signupDone, apiKeyDone, secretsDone, testEmail, emailReceived })} className="gap-2">
                 Skip & Complete Day <ArrowRight className="w-5 h-5" />
               </Button>
             )}
@@ -479,7 +480,7 @@ Send from: onboarding@resend.dev`}
                     Still stuck? The most common issue is the API key not being copied correctly. Try deleting the secret and adding it again.
                   </p>
                   <button
-                    onClick={() => onComplete({ emailFeature: "Skipped - will return later", apiSetup: false })}
+                    onClick={() => onComplete({ emailFeature: "Skipped - will return later", apiSetup: false, needsEmail, signupDone, apiKeyDone, secretsDone, testEmail, emailReceived })}
                     className="mt-4 text-slate-500 hover:text-slate-700 underline text-sm"
                   >
                     Skip for now - I'll come back to this later
@@ -495,7 +496,7 @@ Send from: onboarding@resend.dev`}
             </Button>
             <Button
               size="lg"
-              onClick={() => onComplete({ emailFeature: `Test email sent to ${testEmail}`, apiSetup: true })}
+              onClick={() => onComplete({ emailFeature: `Test email sent to ${testEmail}`, apiSetup: true, needsEmail, signupDone, apiKeyDone, secretsDone, testEmail, emailReceived })}
               disabled={!emailReceived}
               className="gap-2"
             >

@@ -58,6 +58,7 @@ import { ds } from "@/lib/design-system";
 
 interface Day21LaunchDayProps {
   appName: string;
+  savedInputs?: Record<string, any>;
   onComplete: (data: { monthlyGoal: number; pricePoint: number; customersNeeded: number; commitmentStatement: string }) => void;
 }
 
@@ -122,13 +123,13 @@ const ACTIVE_STRATEGIES = [
   { icon: Crosshair, title: "Lookalike Audiences", tagline: "Find more people just like your best customers" }
 ];
 
-export function Day21LaunchDay({ appName, onComplete }: Day21LaunchDayProps) {
+export function Day21LaunchDay({ appName, savedInputs, onComplete }: Day21LaunchDayProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
     "intro" | "calculator" | "strategies-intro" | "passive" | "active" | "more" | "commitment" | "complete"
   >("intro");
-  const [selectedPrice, setSelectedPrice] = useState(29);
-  const [targetIncome, setTargetIncome] = useState(5000);
-  const [commitmentStatement, setCommitmentStatement] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState(savedInputs?.pricePoint ?? 29);
+  const [targetIncome, setTargetIncome] = useState(savedInputs?.monthlyGoal ?? 5000);
+  const [commitmentStatement, setCommitmentStatement] = useState(savedInputs?.commitmentStatement ?? "");
 
   const customersNeeded = Math.ceil(targetIncome / selectedPrice);
   const yearlyIncome = targetIncome * 12;

@@ -10,23 +10,24 @@ import { toast } from "sonner";
 
 interface Day0StartHereProps {
   onComplete: (data?: any) => void;
+  savedInputs?: Record<string, any>;
 }
 
-export function Day0StartHere({ onComplete }: Day0StartHereProps) {
-  const [commitments, setCommitments] = useState<Set<number>>(new Set());
-  const [selectedWhys, setSelectedWhys] = useState<Set<number>>(new Set());
-  const [customWhy, setCustomWhy] = useState("");
-  const [selectedIncome, setSelectedIncome] = useState<number | null>(null);
-  const [customIncome, setCustomIncome] = useState("");
-  const [accountabilityMessage, setAccountabilityMessage] = useState("");
+export function Day0StartHere({ onComplete, savedInputs }: Day0StartHereProps) {
+  const [commitments, setCommitments] = useState<Set<number>>(new Set(savedInputs?.commitmentIndices || []));
+  const [selectedWhys, setSelectedWhys] = useState<Set<number>>(new Set(savedInputs?.whyIndices || []));
+  const [customWhy, setCustomWhy] = useState(savedInputs?.customWhy || "");
+  const [selectedIncome, setSelectedIncome] = useState<number | null>(savedInputs?.incomeGoal ?? null);
+  const [customIncome, setCustomIncome] = useState(savedInputs?.customIncome || "");
+  const [accountabilityMessage, setAccountabilityMessage] = useState(savedInputs?.accountabilityMessage || "");
   const [shareToDiscussion, setShareToDiscussion] = useState(true);
-  const [isReady, setIsReady] = useState(false);
+  const [isReady, setIsReady] = useState(!!savedInputs);
   const [showChoice, setShowChoice] = useState(false);
 
   // Build in Public state
   const [buildInPublicExpanded, setBuildInPublicExpanded] = useState(false);
-  const [publicPostLink, setPublicPostLink] = useState("");
-  const [publicPostClaimed, setPublicPostClaimed] = useState(false);
+  const [publicPostLink, setPublicPostLink] = useState(savedInputs?.buildInPublic || "");
+  const [publicPostClaimed, setPublicPostClaimed] = useState(!!savedInputs?.buildInPublic);
 
   const minMessageLength = 20;
 
@@ -143,8 +144,11 @@ export function Day0StartHere({ onComplete }: Day0StartHereProps) {
     const incomeGoal = selectedIncome || (customIncome.trim() ? customIncome.trim() : null);
     return {
       commitmentsMade: true,
+      commitmentIndices: Array.from(commitments),
       whyReasons: selectedWhyLabels,
+      whyIndices: Array.from(selectedWhys),
       customWhy: customWhy.trim() || null,
+      customIncome: customIncome.trim() || null,
       incomeGoal,
       accountabilityMessage: accountabilityMessage.trim(),
       shareToDiscussion,

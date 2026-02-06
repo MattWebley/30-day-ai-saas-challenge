@@ -407,33 +407,26 @@ export class DatabaseStorage implements IStorage {
     reflectionAnswer?: string;
     userInputs?: Record<string, unknown>;
   }): Promise<UserProgress> {
-    // Check if progress already exists
-    const existing = await this.getUserProgressForDay(userId, day);
-    
-    if (existing) {
-      const [updated] = await db
-        .update(userProgress)
-        .set({
+    // Atomic upsert — prevents duplicate rows if two requests arrive simultaneously
+    const [result] = await db
+      .insert(userProgress)
+      .values({
+        userId,
+        day,
+        completed: true,
+        completedAt: new Date(),
+        ...data,
+      })
+      .onConflictDoUpdate({
+        target: [userProgress.userId, userProgress.day],
+        set: {
           completed: true,
           completedAt: new Date(),
           ...data,
-        })
-        .where(eq(userProgress.id, existing.id))
-        .returning();
-      return updated;
-    } else {
-      const [created] = await db
-        .insert(userProgress)
-        .values({
-          userId,
-          day,
-          completed: true,
-          completedAt: new Date(),
-          ...data,
-        })
-        .returning();
-      return created;
-    }
+        },
+      })
+      .returning();
+    return result;
   }
 
   async getAllUserProgress(): Promise<UserProgress[]> {

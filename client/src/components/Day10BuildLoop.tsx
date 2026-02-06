@@ -19,20 +19,21 @@ import { ds } from "@/lib/design-system";
 import { Link } from "wouter";
 
 interface Day10BuildLoopProps {
-  onComplete: (data: { loopComplete: boolean; loopType: string; whatTheyDid: string; iterations: number }) => void;
+  onComplete: (data: { loopComplete: boolean; loopType: string; whatTheyDid: string; iterations: number; taskDescription: string; replitOpen: boolean; claudeOpen: boolean; askedClaude: boolean }) => void;
+  savedInputs?: Record<string, any>;
 }
 
-export function Day10BuildLoop({ onComplete }: Day10BuildLoopProps) {
+export function Day10BuildLoop({ onComplete, savedInputs }: Day10BuildLoopProps) {
   const [step, setStep, containerRef] = useStepWithScroll<
     "setup" | "choose" | "describe" | "build" | "test" | "fix" | "done"
   >("setup");
-  const [replitOpen, setReplitOpen] = useState(false);
-  const [claudeOpen, setClaudeOpen] = useState(false);
-  const [loopType, setLoopType] = useState<"build" | "fix" | null>(null);
-  const [taskDescription, setTaskDescription] = useState("");
-  const [askedClaude, setAskedClaude] = useState(false);
-  const [iterations, setIterations] = useState(1);
-  const [whatTheyDid, setWhatTheyDid] = useState("");
+  const [replitOpen, setReplitOpen] = useState(savedInputs?.replitOpen || false);
+  const [claudeOpen, setClaudeOpen] = useState(savedInputs?.claudeOpen || false);
+  const [loopType, setLoopType] = useState<"build" | "fix" | null>(savedInputs?.loopType || null);
+  const [taskDescription, setTaskDescription] = useState(savedInputs?.taskDescription || "");
+  const [askedClaude, setAskedClaude] = useState(savedInputs?.askedClaude || false);
+  const [iterations, setIterations] = useState(savedInputs?.iterations || 1);
+  const [whatTheyDid, setWhatTheyDid] = useState(savedInputs?.whatTheyDid || "");
 
   const setupComplete = replitOpen && claudeOpen;
 
@@ -49,7 +50,7 @@ export function Day10BuildLoop({ onComplete }: Day10BuildLoopProps) {
 
   const handleFixDone = () => {
     // After fixing, go back to test and increment iteration count
-    setIterations(prev => prev + 1);
+    setIterations((prev: number) => prev + 1);
     setStep("test");
   };
 
@@ -497,7 +498,11 @@ export function Day10BuildLoop({ onComplete }: Day10BuildLoopProps) {
                 loopComplete: true,
                 loopType: loopType || "build",
                 whatTheyDid,
-                iterations
+                iterations,
+                taskDescription,
+                replitOpen,
+                claudeOpen,
+                askedClaude,
               })}
             >
               Complete Day 10

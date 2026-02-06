@@ -30,31 +30,41 @@ import { Link } from "wouter";
 import { ds } from "@/lib/design-system";
 
 interface Day12LetUsersInProps {
+  savedInputs?: Record<string, any>;
   onComplete: (data: {
     hasAuth: boolean;
     authAdded: boolean;
     testPassed: boolean;
     adminDashboard: boolean;
+    mainAction: string;
+    secondaryActions: string;
+    businessModel: string;
+    selectedMetrics: string[];
+    selectedInsights: string[];
+    wantsCharts: boolean;
+    wantsExport: boolean;
+    wantsAlerts: boolean;
+    adminBuilt: boolean;
   }) => void;
 }
 
-export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
+export function Day12LetUsersIn({ savedInputs, onComplete }: Day12LetUsersInProps) {
   const [step, setStep, containerRef] = useStepWithScroll<"check" | "add" | "test" | "admin" | "admin-questions" | "admin-prompt" | "admin-learn" | "done">("check");
-  const [hasAuth, setHasAuth] = useState<boolean | null>(null);
+  const [hasAuth, setHasAuth] = useState<boolean | null>(savedInputs?.hasAuth ?? null);
   const [copied, setCopied] = useState(false);
-  const [testPassed, setTestPassed] = useState(false);
-  const [adminBuilt, setAdminBuilt] = useState(false);
+  const [testPassed, setTestPassed] = useState(savedInputs?.testPassed ?? false);
+  const [adminBuilt, setAdminBuilt] = useState(savedInputs?.adminBuilt ?? false);
   const { toast: toastHook } = useToast();
 
   // Admin dashboard questionnaire state
-  const [mainAction, setMainAction] = useState("");
-  const [secondaryActions, setSecondaryActions] = useState("");
-  const [businessModel, setBusinessModel] = useState<"free" | "paid" | "freemium" | "">("");
-  const [selectedMetrics, setSelectedMetrics] = useState<string[]>([]);
-  const [selectedInsights, setSelectedInsights] = useState<string[]>([]);
-  const [wantsCharts, setWantsCharts] = useState(true);
-  const [wantsExport, setWantsExport] = useState(false);
-  const [wantsAlerts, setWantsAlerts] = useState(false);
+  const [mainAction, setMainAction] = useState(savedInputs?.mainAction ?? "");
+  const [secondaryActions, setSecondaryActions] = useState(savedInputs?.secondaryActions ?? "");
+  const [businessModel, setBusinessModel] = useState<"free" | "paid" | "freemium" | "">(savedInputs?.businessModel ?? "");
+  const [selectedMetrics, setSelectedMetrics] = useState<string[]>(savedInputs?.selectedMetrics ?? []);
+  const [selectedInsights, setSelectedInsights] = useState<string[]>(savedInputs?.selectedInsights ?? []);
+  const [wantsCharts, setWantsCharts] = useState(savedInputs?.wantsCharts ?? true);
+  const [wantsExport, setWantsExport] = useState(savedInputs?.wantsExport ?? false);
+  const [wantsAlerts, setWantsAlerts] = useState(savedInputs?.wantsAlerts ?? false);
 
   const authPrompt = `Add user authentication. I need:
 - Login/signup button in the header
@@ -851,6 +861,15 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
                 authAdded: hasAuth === false,
                 testPassed: true,
                 adminDashboard: true,
+                mainAction,
+                secondaryActions,
+                businessModel,
+                selectedMetrics,
+                selectedInsights,
+                wantsCharts,
+                wantsExport,
+                wantsAlerts,
+                adminBuilt,
               })}
             >
               Complete Day <CheckCircle2 className="w-5 h-5" />
