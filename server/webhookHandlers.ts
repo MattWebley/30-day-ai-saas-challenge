@@ -69,6 +69,7 @@ export class WebhookHandlers {
     const currency = session.metadata?.currency || 'usd';
     const userId = session.metadata?.userId;
     const amountPaid = session.amount_total || 0;
+    const unlockAllDays = session.metadata?.unlockAllDays === 'true';
 
     console.log('[Webhook] Processing checkout:', {
       email,
@@ -97,15 +98,16 @@ export class WebhookHandlers {
     if (user) {
       // User exists - grant access directly
       console.log('[Webhook] User found, granting access:', user.id);
-      await this.grantAccessToUser(user.id, productType, customerId, currency, email, amountPaid);
+      await this.grantAccessToUser(user.id, productType, customerId, currency, email, amountPaid, unlockAllDays);
     } else {
       // No user found - save as pending purchase
       console.log('[Webhook] No user found, saving pending purchase for:', email);
+      const storedProductType = unlockAllDays ? `${productType}+unlock` : productType;
       await db.insert(pendingPurchases).values({
         email,
         stripeCustomerId: customerId,
         stripeSessionId: session.id,
-        productType,
+        productType: storedProductType,
         currency,
         amountPaid
       }).onConflictDoNothing();
@@ -149,7 +151,8 @@ export class WebhookHandlers {
     customerId: string,
     currency: string,
     email: string,
-    amountPaid: number
+    amountPaid: number,
+    unlockAllDays: boolean = false
   ): Promise<void> {
     const updateData: Record<string, any> = {
       stripeCustomerId: customerId,
@@ -160,6 +163,10 @@ export class WebhookHandlers {
     switch (productType) {
       case 'challenge':
         updateData.challengePurchased = true;
+        if (unlockAllDays) {
+          updateData.allDaysUnlocked = true;
+          console.log('[Webhook] Unlock All Days bump purchased for:', email);
+        }
         // Add to Systeme.io for email drip campaign
         const [challengeUser] = await db.select().from(users).where(eq(users.id, userId));
         addContactToSysteme({

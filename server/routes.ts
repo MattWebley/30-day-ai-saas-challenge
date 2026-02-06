@@ -241,10 +241,12 @@ export async function registerRoutes(
       for (const purchase of pending) {
         if (!purchase.linkedToUserId) {
           // Grant the purchase to the user
-          if (purchase.productType === 'challenge') {
+          if (purchase.productType.startsWith('challenge')) {
+            const hasUnlock = purchase.productType.includes('+unlock');
             await db.update(users)
-              .set({ 
+              .set({
                 challengePurchased: true,
+                ...(hasUnlock ? { allDaysUnlocked: true } : {}),
                 stripeCustomerId: purchase.stripeCustomerId,
                 purchaseCurrency: purchase.currency as 'usd' | 'gbp',
               })
@@ -509,10 +511,11 @@ export async function registerRoutes(
       // --- Server-side day access enforcement ---
       const user = await storage.getUser(userId);
       const hasCoaching = user?.coachingPurchased || false;
+      const hasUnlockedAll = user?.allDaysUnlocked || false;
       const isAdmin = user?.isAdmin || false;
 
-      // Coaching purchasers and admins bypass all drip restrictions
-      if (!hasCoaching && !isAdmin) {
+      // Coaching purchasers, unlock-all buyers, and admins bypass all drip restrictions
+      if (!hasCoaching && !hasUnlockedAll && !isAdmin) {
         // Check 1: Previous day must be completed (except Day 0)
         if (day > 0) {
           const allProgress = await storage.getUserProgress(userId);
@@ -624,15 +627,16 @@ export async function registerRoutes(
         stats = await storage.createUserStats({ userId });
       }
 
-      // Include user's coaching purchase status for unlock-all feature
+      // Include user's coaching/unlock status for unlock-all feature
       const user = await storage.getUser(userId);
       const hasCoaching = user?.coachingPurchased || false;
+      const allDaysUnlocked = user?.allDaysUnlocked || false;
 
       // Calculate days since user started
       const userCreatedAt = user?.createdAt || new Date();
       const daysSinceStart = Math.floor((Date.now() - new Date(userCreatedAt).getTime()) / (1000 * 60 * 60 * 24));
 
-      res.json({ ...stats, hasCoaching, daysSinceStart });
+      res.json({ ...stats, hasCoaching, allDaysUnlocked, daysSinceStart });
     } catch (error) {
       console.error("Error fetching user stats:", error);
       res.status(500).json({ message: "Failed to fetch user stats" });
@@ -3684,7 +3688,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // No auth required - users can buy as guests, access granted via webhook
   app.post("/api/checkout", async (req, res) => {
     try {
-      const { currency = 'usd' } = req.body;
+      const { currency = 'usd', unlockAllDays = false } = req.body;
       const userEmail = req.isAuthenticated() && req.user ? (req.user as any).email : null;
       const stripe = await getUncachableStripeClient();
 
@@ -3700,12 +3704,32 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       const userId = req.isAuthenticated() && req.user ? (req.user as User).id : null;
 
+      // Build line items - challenge + optional bump offer
+      const lineItems: any[] = [{
+        price: priceId,
+        quantity: 1
+      }];
+
+      if (unlockAllDays) {
+        const bumpAmounts: Record<string, number> = {
+          usd: 2900, // $29
+          gbp: 1900  // £19
+        };
+        lineItems.push({
+          price_data: {
+            currency: currency.toLowerCase(),
+            product_data: {
+              name: 'Unlock All 21 Days Instantly',
+            },
+            unit_amount: bumpAmounts[currency.toLowerCase()] || bumpAmounts.usd,
+          },
+          quantity: 1
+        });
+      }
+
       const sessionConfig: any = {
         payment_method_types: ['card'],
-        line_items: [{
-          price: priceId,
-          quantity: 1
-        }],
+        line_items: lineItems,
         mode: 'payment',
         allow_promotion_codes: true,
         success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}&currency=${currency}`,
@@ -3719,6 +3743,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         metadata: {
           currency: currency,
           productType: 'challenge',
+          unlockAllDays: unlockAllDays ? 'true' : 'false',
           userId: userId || ''
         }
       };

@@ -431,10 +431,11 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                     // Test mode OR coaching purchase bypasses all locking
                     const hasCompletedDay0 = completedDays.has(0);
                     const hasCoaching = (stats as any)?.hasCoaching || false;
+                    const allDaysUnlocked = (stats as any)?.allDaysUnlocked || false;
                     const previousDayCompleted = day.day === 0 || completedDays.has(day.day - 1);
                     const timeUnlocked = day.day <= daysSinceStart + 1; // Day 0 & 1 on signup, then one more each day
 
-                    const isLocked = (testMode || hasCoaching)
+                    const isLocked = (testMode || hasCoaching || allDaysUnlocked)
                       ? false
                       : day.day === 0
                         ? false

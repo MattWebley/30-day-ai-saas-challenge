@@ -496,7 +496,7 @@ export default function Dashboard() {
                   )}
                 </div>
                 <Day0StartHere onComplete={handleComplete} />
-                {!(stats as any)?.hasCoaching && (
+                {!(stats as any)?.hasCoaching && !(stats as any)?.allDaysUnlocked && (
                   <Link href="/coaching">
                     <Card className="p-4 border border-slate-200 bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
                       <div className="flex items-center gap-3">
@@ -567,7 +567,7 @@ export default function Dashboard() {
                     />
                   </Card>
                 </div>
-                {!(stats as any)?.hasCoaching && (
+                {!(stats as any)?.hasCoaching && !(stats as any)?.allDaysUnlocked && (
                   <Link href="/coaching">
                     <Card className="p-4 border border-slate-200 bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
                       <div className="flex items-center gap-3">
