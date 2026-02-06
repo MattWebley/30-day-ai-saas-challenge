@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
@@ -17,19 +17,23 @@ import {
   Video,
   Flag,
   CheckCircle2,
+  Eye,
+  ArrowRight,
 } from "lucide-react";
 import {
   LineChart,
   Line,
   BarChart,
   Bar,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { AdminUser, RevenueData, PendingComment, ShowcaseEntry, CritiqueRequest, ChatMessage } from "./admin/adminTypes";
+import type { AdminUser, RevenueData, PendingComment, ShowcaseEntry, CritiqueRequest, ChatMessage, AnalyticsData } from "./admin/adminTypes";
 import { formatCurrency } from "./admin/adminTypes";
 
 // Tab components
@@ -51,6 +55,90 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "emails", label: "Emails" },
   { key: "settings", label: "Settings" },
 ];
+
+function FunnelBar({
+  stage,
+  count,
+  color,
+  widthPercent,
+  conversionRate,
+  overallRate,
+  users,
+}: {
+  stage: string;
+  count: number;
+  color: string;
+  widthPercent: number;
+  conversionRate: string | null;
+  overallRate: string;
+  users: AdminUser[];
+}) {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
+
+  const userName = (u: AdminUser) =>
+    u.firstName || u.lastName
+      ? `${u.firstName || ""} ${u.lastName || ""}`.trim()
+      : u.email || "Unknown";
+
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center gap-2">
+          <span className="font-medium text-slate-900">{stage}</span>
+          {conversionRate && (
+            <span className="text-xs text-slate-400">
+              ({conversionRate}% from previous)
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-slate-400">{overallRate}%</span>
+          <span className="font-bold text-slate-900 w-12 text-right">
+            {count}
+          </span>
+        </div>
+      </div>
+      <div
+        className="relative"
+        ref={barRef}
+        onMouseEnter={() => setShowTooltip(true)}
+        onMouseLeave={() => setShowTooltip(false)}
+      >
+        <div className="h-8 bg-slate-100 rounded-lg overflow-hidden cursor-pointer">
+          <div
+            className={`h-full ${color} transition-all duration-500 rounded-lg flex items-center justify-end pr-2`}
+            style={{ width: `${Math.max(widthPercent, 2)}%` }}
+          >
+            {widthPercent > 15 && (
+              <span className="text-xs text-white font-medium">{count}</span>
+            )}
+          </div>
+        </div>
+        {showTooltip && count > 0 && (
+          <div className="absolute z-50 top-full mt-1 left-0 bg-slate-900 text-white rounded-lg shadow-xl p-3 min-w-[220px] max-w-[320px]">
+            <p className="text-xs font-bold text-slate-300 mb-2">
+              {stage} ({count} user{count !== 1 ? "s" : ""})
+            </p>
+            <div className="space-y-1 max-h-[200px] overflow-y-auto">
+              {users.slice(0, 20).map((u) => (
+                <div key={u.id} className="flex items-center justify-between gap-3 text-xs">
+                  <span className="text-white truncate">{userName(u)}</span>
+                  <span className="text-slate-400 flex-shrink-0">Day {u.stats.lastCompletedDay}</span>
+                </div>
+              ))}
+              {users.length > 20 && (
+                <p className="text-xs text-slate-400 pt-1">
+                  + {users.length - 20} more...
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function Admin() {
   const { testMode, setTestMode } = useTestMode();
@@ -121,6 +209,11 @@ export default function Admin() {
   });
   const { data: flaggedMessages = [] } = useQuery<ChatMessage[]>({
     queryKey: ["/api/admin/chatbot/flagged"],
+  });
+
+  const { data: analyticsData } = useQuery<AnalyticsData>({
+    queryKey: ["/api/admin/analytics"],
+    staleTime: 30_000,
   });
 
   if (isLoading) {
@@ -194,30 +287,32 @@ export default function Admin() {
 
   const totalAttention = attentionItems.reduce((sum, item) => sum + item.count, 0);
 
-  // Chart data: Revenue trend (last 30 days)
+  // Chart data: Revenue trend (last 30 days) — split by product type
   const revenueTrendData = (() => {
     if (!revenueData?.recentTransactions?.length) return [];
-    const dayMap: Record<string, number> = {};
+    const dayMap: Record<string, { challenge: number; coaching: number }> = {};
     const now = new Date();
     // Initialize last 30 days
     for (let i = 29; i >= 0; i--) {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
       const key = d.toISOString().split("T")[0];
-      dayMap[key] = 0;
+      dayMap[key] = { challenge: 0, coaching: 0 };
     }
-    // Sum transactions by day
+    // Sum transactions by day and product type
     revenueData.recentTransactions.forEach((tx) => {
       if (tx.status === "succeeded" && !tx.refunded) {
         const d = new Date(tx.created * 1000).toISOString().split("T")[0];
         if (dayMap[d] !== undefined) {
-          dayMap[d] += tx.amount / 100;
+          const bucket = tx.productType === "coaching" ? "coaching" : "challenge";
+          dayMap[d][bucket] += tx.amount / 100;
         }
       }
     });
-    return Object.entries(dayMap).map(([date, amount]) => ({
+    return Object.entries(dayMap).map(([date, amounts]) => ({
       date: new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
-      amount: Math.round(amount * 100) / 100,
+      challenge: Math.round(amounts.challenge * 100) / 100,
+      coaching: Math.round(amounts.coaching * 100) / 100,
     }));
   })();
 
@@ -227,46 +322,21 @@ export default function Admin() {
     completions: stats.dayCompletions?.[i] || 0,
   }));
 
-  // Funnel data
-  const funnelData = [
-    { stage: "Signed Up", count: adminUsers.length, color: "bg-slate-400" },
-    {
-      stage: "Purchased",
-      count: adminUsers.filter((u) => u.challengePurchased).length,
-      color: "bg-blue-500",
-    },
-    {
-      stage: "Started (Day 0)",
-      count: adminUsers.filter((u) => u.stats.lastCompletedDay >= 0 && u.challengePurchased)
-        .length,
-      color: "bg-cyan-500",
-    },
-    {
-      stage: "Idea Phase (1-4)",
-      count: adminUsers.filter((u) => u.stats.lastCompletedDay >= 1).length,
-      color: "bg-teal-500",
-    },
-    {
-      stage: "Prepare (5-9)",
-      count: adminUsers.filter((u) => u.stats.lastCompletedDay >= 5).length,
-      color: "bg-green-500",
-    },
-    {
-      stage: "Build (10-18)",
-      count: adminUsers.filter((u) => u.stats.lastCompletedDay >= 10).length,
-      color: "bg-amber-500",
-    },
-    {
-      stage: "Launch (19-21)",
-      count: adminUsers.filter((u) => u.stats.lastCompletedDay >= 19).length,
-      color: "bg-orange-500",
-    },
-    {
-      stage: "Completed",
-      count: adminUsers.filter((u) => u.stats.lastCompletedDay >= 21).length,
-      color: "bg-emerald-600",
-    },
+  // Funnel data (with user lists for hover tooltips)
+  const funnelFilters: Array<{ stage: string; color: string; filter: (u: AdminUser) => boolean }> = [
+    { stage: "Signed Up", color: "bg-slate-400", filter: () => true },
+    { stage: "Purchased", color: "bg-blue-500", filter: (u) => !!u.challengePurchased },
+    { stage: "Started (Day 0)", color: "bg-cyan-500", filter: (u) => u.stats.lastCompletedDay >= 0 && !!u.challengePurchased },
+    { stage: "Idea Phase (1-4)", color: "bg-teal-500", filter: (u) => u.stats.lastCompletedDay >= 1 },
+    { stage: "Prepare (5-9)", color: "bg-green-500", filter: (u) => u.stats.lastCompletedDay >= 5 },
+    { stage: "Build (10-18)", color: "bg-amber-500", filter: (u) => u.stats.lastCompletedDay >= 10 },
+    { stage: "Launch (19-21)", color: "bg-orange-500", filter: (u) => u.stats.lastCompletedDay >= 19 },
+    { stage: "Completed", color: "bg-emerald-600", filter: (u) => u.stats.lastCompletedDay >= 21 },
   ];
+  const funnelData = funnelFilters.map((f) => {
+    const matchingUsers = adminUsers.filter(f.filter);
+    return { ...f, count: matchingUsers.length, users: matchingUsers };
+  });
   const maxFunnelCount = Math.max(...funnelData.map((d) => d.count), 1);
 
   return (
@@ -443,34 +513,56 @@ export default function Admin() {
               <Card className="p-5 border border-slate-200 shadow-sm">
                 <h3 className="text-lg font-bold text-slate-900 mb-4 pb-3 border-b border-slate-200">Revenue Trend (30 days)</h3>
                 {revenueTrendData.length > 0 ? (
-                  <div className="h-64">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={revenueTrendData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                        <XAxis
-                          dataKey="date"
-                          tick={{ fontSize: 11, fill: "#94a3b8" }}
-                          interval="preserveStartEnd"
-                        />
-                        <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} />
-                        <Tooltip
-                          contentStyle={{
-                            border: "1px solid #e2e8f0",
-                            borderRadius: "8px",
-                            fontSize: "13px",
-                          }}
-                          formatter={(value: number) => [`£${value.toFixed(2)}`, "Revenue"]}
-                        />
-                        <Line
-                          type="monotone"
-                          dataKey="amount"
-                          stroke="hsl(var(--primary))"
-                          strokeWidth={2}
-                          dot={false}
-                        />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
+                  <>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={revenueTrendData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                          <XAxis
+                            dataKey="date"
+                            tick={{ fontSize: 11, fill: "#94a3b8" }}
+                            interval="preserveStartEnd"
+                          />
+                          <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} />
+                          <Tooltip
+                            contentStyle={{
+                              border: "1px solid #e2e8f0",
+                              borderRadius: "8px",
+                              fontSize: "13px",
+                            }}
+                            formatter={(value: number, name: string) => [
+                              `£${value.toFixed(2)}`,
+                              name === "challenge" ? "Challenge" : "Coaching",
+                            ]}
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="challenge"
+                            stroke="#3b82f6"
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                          <Line
+                            type="monotone"
+                            dataKey="coaching"
+                            stroke="#f59e0b"
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="flex items-center justify-center gap-6 mt-2 text-sm">
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-full bg-blue-500" />
+                        <span className="text-slate-600">Challenge</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-full bg-amber-500" />
+                        <span className="text-slate-600">Coaching</span>
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   <div className="h-64 flex items-center justify-center text-slate-400">
                     No revenue data yet
@@ -512,6 +604,86 @@ export default function Admin() {
               </Card>
             </div>
 
+            {/* Traffic & Conversions */}
+            {analyticsData && (
+              <Card className="p-5 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+                  <Eye className="w-5 h-5 text-blue-500" />
+                  <h3 className="text-lg font-bold text-slate-900">Traffic & Conversions</h3>
+                  <span className="text-sm text-slate-400 ml-auto">Last 30 days</span>
+                </div>
+
+                {/* Conversion funnel */}
+                <div className="grid sm:grid-cols-4 gap-3 mb-6">
+                  {[
+                    { label: "Total Visitors", value: analyticsData.funnel.totalVisitors, color: "blue" },
+                    { label: "Landing Page", value: analyticsData.funnel.landingVisitors, color: "cyan" },
+                    { label: "Order Page", value: analyticsData.funnel.orderVisitors, color: "amber" },
+                    { label: "Purchases", value: analyticsData.funnel.purchases, color: "green" },
+                  ].map((step, i, arr) => (
+                    <div key={step.label} className="relative">
+                      <div className={`bg-slate-50 rounded-lg p-3 border border-slate-200`}>
+                        <p className="text-xs text-slate-500">{step.label}</p>
+                        <p className="text-2xl font-extrabold text-slate-900">{step.value}</p>
+                        {i > 0 && arr[i - 1].value > 0 && (
+                          <p className="text-xs text-slate-400">
+                            {((step.value / arr[i - 1].value) * 100).toFixed(1)}% conv.
+                          </p>
+                        )}
+                      </div>
+                      {i < arr.length - 1 && (
+                        <ArrowRight className="hidden sm:block absolute -right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 z-10" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Daily visitors chart */}
+                {analyticsData.dailyVisitors.length > 0 && (
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={analyticsData.dailyVisitors.map(d => ({
+                        date: new Date(d.date).toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+                        visitors: Number(d.uniqueVisitors),
+                        views: Number(d.totalViews),
+                      }))}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                        <XAxis dataKey="date" tick={{ fontSize: 11, fill: "#94a3b8" }} interval="preserveStartEnd" />
+                        <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} />
+                        <Tooltip
+                          contentStyle={{ border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "13px" }}
+                          formatter={(value: number, name: string) => [
+                            value,
+                            name === "visitors" ? "Unique Visitors" : "Total Views",
+                          ]}
+                        />
+                        <Area type="monotone" dataKey="visitors" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.1} strokeWidth={2} />
+                        <Area type="monotone" dataKey="views" stroke="#94a3b8" fill="#94a3b8" fillOpacity={0.05} strokeWidth={1} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+
+                {/* Top pages */}
+                {analyticsData.topPages.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-slate-100">
+                    <h4 className="text-sm font-bold text-slate-900 mb-2">Top Pages</h4>
+                    <div className="space-y-1">
+                      {analyticsData.topPages.slice(0, 5).map((page) => (
+                        <div key={page.path} className="flex items-center justify-between text-sm py-1">
+                          <span className="text-slate-700 font-medium font-mono text-xs">{page.path}</span>
+                          <div className="flex items-center gap-4 text-slate-500">
+                            <span>{Number(page.uniqueVisitors)} visitors</span>
+                            <span>{Number(page.totalViews)} views</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </Card>
+            )}
+
             {/* User Funnel */}
             <Card className="p-6 border border-slate-200 shadow-sm">
               <div className="flex items-center gap-3 mb-4">
@@ -531,34 +703,16 @@ export default function Admin() {
                       : "0";
 
                   return (
-                    <div key={stage.stage} className="space-y-1">
-                      <div className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-slate-900">{stage.stage}</span>
-                          {conversionRate && (
-                            <span className="text-xs text-slate-400">
-                              ({conversionRate}% from previous)
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-xs text-slate-400">{overallRate}%</span>
-                          <span className="font-bold text-slate-900 w-12 text-right">
-                            {stage.count}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="h-8 bg-slate-100 rounded-lg overflow-hidden">
-                        <div
-                          className={`h-full ${stage.color} transition-all duration-500 rounded-lg flex items-center justify-end pr-2`}
-                          style={{ width: `${Math.max(widthPercent, 2)}%` }}
-                        >
-                          {widthPercent > 15 && (
-                            <span className="text-xs text-white font-medium">{stage.count}</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    <FunnelBar
+                      key={stage.stage}
+                      stage={stage.stage}
+                      count={stage.count}
+                      color={stage.color}
+                      widthPercent={widthPercent}
+                      conversionRate={conversionRate}
+                      overallRate={overallRate}
+                      users={stage.users}
+                    />
                   );
                 })}
 

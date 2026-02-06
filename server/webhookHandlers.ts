@@ -201,6 +201,7 @@ export class WebhookHandlers {
       case 'coaching-matt':
       case 'coaching-matt-single':
         updateData.coachingPurchased = true;
+        updateData.allDaysUnlocked = true;
 
         // Record the coaching purchase details
         const isMattCoach = productType.includes('matt');

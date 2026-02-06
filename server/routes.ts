@@ -2,14 +2,14 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, type User, userProgress, chatMessages, dayComments, dayQuestions, userBadges, aiUsageLogs, showcase, testimonials, badges } from "@shared/schema";
+import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, type User, userProgress, chatMessages, dayComments, dayQuestions, userBadges, aiUsageLogs, showcase, testimonials, badges, pageViews } from "@shared/schema";
 import dns from "dns";
 import { promisify } from "util";
 import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
-import { eq, desc, isNull, sql } from "drizzle-orm";
+import { eq, desc, isNull, sql, and, gte, count, countDistinct } from "drizzle-orm";
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail } from "./emailService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -365,7 +365,7 @@ export async function registerRoutes(
               .where(eq(users.id, user!.id));
           } else if (purchase.productType.includes('coaching')) {
             await db.update(users)
-              .set({ coachingPurchased: true })
+              .set({ coachingPurchased: true, allDaysUnlocked: true })
               .where(eq(users.id, user!.id));
           }
           // If user missing name, populate from pending purchase
@@ -396,7 +396,7 @@ export async function registerRoutes(
       if (coachingPurchasesList.length > 0) {
         // Grant coaching access and link purchases to user
         await db.update(users)
-          .set({ coachingPurchased: true })
+          .set({ coachingPurchased: true, allDaysUnlocked: true })
           .where(eq(users.id, user!.id));
 
         for (const coaching of coachingPurchasesList) {
@@ -407,6 +407,11 @@ export async function registerRoutes(
           }
         }
       }
+
+      // Track login
+      await db.update(users)
+        .set({ lastLoginAt: new Date(), loginCount: (user!.loginCount || 0) + 1 })
+        .where(eq(users.id, user!.id));
 
       // Create a session for the user
       // Store user info in session
@@ -489,6 +494,11 @@ export async function registerRoutes(
         (req.session as any).magicLinkAuth = true;
       }
 
+      // Track login
+      await db.update(users)
+        .set({ lastLoginAt: new Date(), loginCount: (user.loginCount || 0) + 1 })
+        .where(eq(users.id, user.id));
+
       res.json({ success: true, message: "Logged in successfully" });
     } catch (error) {
       console.error("Error logging in:", error);
@@ -562,7 +572,7 @@ export async function registerRoutes(
               .where(eq(users.id, newUserId));
           } else if (purchase.productType.includes('coaching')) {
             await db.update(users)
-              .set({ coachingPurchased: true })
+              .set({ coachingPurchased: true, allDaysUnlocked: true })
               .where(eq(users.id, newUserId));
           }
           if (!newUser.lastName && purchase.lastName) {
@@ -582,7 +592,7 @@ export async function registerRoutes(
 
       if (coachingPurchasesList.length > 0) {
         await db.update(users)
-          .set({ coachingPurchased: true })
+          .set({ coachingPurchased: true, allDaysUnlocked: true })
           .where(eq(users.id, newUserId));
 
         for (const coaching of coachingPurchasesList) {
@@ -593,6 +603,11 @@ export async function registerRoutes(
           }
         }
       }
+
+      // Track first login
+      await db.update(users)
+        .set({ lastLoginAt: new Date(), loginCount: 1 })
+        .where(eq(users.id, newUserId));
 
       // Create session
       if (req.session) {
@@ -1160,7 +1175,31 @@ export async function registerRoutes(
       }
 
       const purchases = await db.select().from(coachingPurchases).orderBy(coachingPurchases.purchasedAt);
-      res.json(purchases.reverse()); // Most recent first
+      const purchaseList = purchases.reverse(); // Most recent first
+
+      // Also find users with coachingPurchased=true who don't have a coachingPurchases record
+      // (e.g. manually granted via admin panel)
+      const coachingUsers = await db.select().from(users).where(eq(users.coachingPurchased, true));
+      const purchaseEmails = new Set(purchaseList.map(p => p.email.toLowerCase()));
+
+      for (const cu of coachingUsers) {
+        if (cu.email && !purchaseEmails.has(cu.email.toLowerCase())) {
+          purchaseList.push({
+            id: 0,
+            userId: cu.id,
+            email: cu.email,
+            coachType: 'unknown',
+            packageType: 'unknown',
+            sessionsTotal: 0,
+            amountPaid: 0,
+            currency: cu.purchaseCurrency || 'gbp',
+            stripeSessionId: null as any,
+            purchasedAt: cu.createdAt as any,
+          });
+        }
+      }
+
+      res.json(purchaseList);
     } catch (error) {
       console.error("Error fetching coaching purchases:", error);
       res.status(500).json({ message: "Failed to fetch coaching purchases" });
@@ -1227,6 +1266,8 @@ export async function registerRoutes(
           createdAt: p.createdAt,
           isPending: true,
           amountPaid: p.amountPaid,
+          lastLoginAt: null,
+          loginCount: 0,
           stats: {
             lastCompletedDay: 0,
             totalXp: 0,
@@ -1411,7 +1452,7 @@ export async function registerRoutes(
           .where(eq(users.id, userId));
       } else if (pending.productType.includes('coaching')) {
         await db.update(users)
-          .set({ coachingPurchased: true })
+          .set({ coachingPurchased: true, allDaysUnlocked: true })
           .where(eq(users.id, userId));
       }
 
@@ -1438,7 +1479,7 @@ export async function registerRoutes(
 
       if (coachingByEmail.length > 0) {
         await db.update(users)
-          .set({ coachingPurchased: true })
+          .set({ coachingPurchased: true, allDaysUnlocked: true })
           .where(eq(users.id, userId));
 
         for (const coaching of coachingByEmail) {
@@ -1519,7 +1560,7 @@ export async function registerRoutes(
 
       if (coachingByEmail.length > 0) {
         await db.update(users)
-          .set({ coachingPurchased: true })
+          .set({ coachingPurchased: true, allDaysUnlocked: true })
           .where(eq(users.id, newUserId));
 
         for (const coaching of coachingByEmail) {
@@ -1535,6 +1576,43 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error creating user from pending:", error);
       res.status(500).json({ message: "Failed to create account" });
+    }
+  });
+
+  // Backfill user names from pending purchases
+  app.post("/api/admin/backfill-names", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Find users missing first or last names
+      const allUsers = await db.select().from(users);
+      let updated = 0;
+
+      for (const user of allUsers) {
+        if (!user.firstName && !user.lastName && user.email) {
+          // Check pending purchases for name data
+          const [pending] = await db.select().from(pendingPurchases)
+            .where(sql`lower(${pendingPurchases.email}) = ${user.email.toLowerCase()}`);
+
+          if (pending && (pending.firstName || pending.lastName)) {
+            await db.update(users)
+              .set({
+                firstName: pending.firstName || user.firstName,
+                lastName: pending.lastName || user.lastName,
+              })
+              .where(eq(users.id, user.id));
+            updated++;
+          }
+        }
+      }
+
+      res.json({ success: true, message: `Updated names for ${updated} user(s)` });
+    } catch (error) {
+      console.error("Error backfilling names:", error);
+      res.status(500).json({ message: "Failed to backfill names" });
     }
   });
 
@@ -5262,7 +5340,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
             if (userId) {
               await db.update(users)
-                .set({ coachingPurchased: true })
+                .set({ coachingPurchased: true, allDaysUnlocked: true })
                 .where(eq(users.id, userId));
 
               const user = req.user as any;
@@ -5424,7 +5502,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           if (userId) {
             // Logged-in user - update their record directly
             await db.update(users)
-              .set({ coachingPurchased: true })
+              .set({ coachingPurchased: true, allDaysUnlocked: true })
               .where(eq(users.id, userId));
 
             // Send coaching confirmation email to customer
@@ -5519,7 +5597,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         if (userId) {
           // Logged-in user - update their record directly
           await db.update(users)
-            .set({ coachingPurchased: true })
+            .set({ coachingPurchased: true, allDaysUnlocked: true })
             .where(eq(users.id, userId));
 
           const user = req.user as any;
@@ -6587,17 +6665,22 @@ Example format:
       const refundCount = refunds.data.length;
 
       // Recent transactions - only show successful, non-refunded charges
-      const recentTransactions = successfulCharges.slice(0, 20).map(charge => ({
-        id: charge.id,
-        amount: charge.amount,
-        currency: charge.currency,
-        status: charge.status,
-        refunded: charge.refunded,
-        customerEmail: (charge.customer as any)?.email || charge.billing_details?.email || 'Unknown',
-        customerName: charge.billing_details?.name || 'Unknown',
-        description: charge.description || 'Challenge Purchase',
-        created: charge.created,
-      }));
+      const recentTransactions = successfulCharges.slice(0, 20).map(charge => {
+        const desc = (charge.description || '').toLowerCase();
+        const productType = desc.includes('coaching') ? 'coaching' : 'challenge';
+        return {
+          id: charge.id,
+          amount: charge.amount,
+          currency: charge.currency,
+          status: charge.status,
+          refunded: charge.refunded,
+          customerEmail: (charge.customer as any)?.email || charge.billing_details?.email || 'Unknown',
+          customerName: charge.billing_details?.name || 'Unknown',
+          description: charge.description || 'Challenge Purchase',
+          created: charge.created,
+          productType,
+        };
+      });
 
       // Revenue by product (from metadata or description)
       const revenueByProduct: Record<string, { amount: number; count: number; currency: string }> = {};
@@ -7246,6 +7329,140 @@ Example format:
     } catch (error) {
       console.error("Error dismissing announcement:", error);
       res.status(500).json({ message: "Failed to dismiss announcement" });
+    }
+  });
+
+  // ===== PAGE VIEW TRACKING =====
+
+  // In-memory rate limiter for page views: sessionId:path -> last tracked timestamp
+  const pageViewRateLimit = new Map<string, number>();
+
+  // Clean up old entries every 10 minutes
+  setInterval(() => {
+    const cutoff = Date.now() - 5 * 60 * 1000;
+    pageViewRateLimit.forEach((timestamp, key) => {
+      if (timestamp < cutoff) pageViewRateLimit.delete(key);
+    });
+  }, 10 * 60 * 1000);
+
+  app.post("/api/track/page-view", async (req: any, res) => {
+    try {
+      const { path, referrer } = req.body;
+      if (!path || typeof path !== "string") {
+        return res.status(400).json({ message: "path is required" });
+      }
+
+      // Get or set visitor session cookie
+      let sessionId = req.cookies?.visitor_session;
+      if (!sessionId) {
+        sessionId = crypto.randomUUID();
+        res.cookie("visitor_session", sessionId, {
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+          httpOnly: true,
+          sameSite: "lax",
+          secure: process.env.NODE_ENV === "production",
+        });
+      }
+
+      // Rate limit: 1 per path per session per 5 minutes
+      const rateKey = `${sessionId}:${path}`;
+      const lastTracked = pageViewRateLimit.get(rateKey);
+      if (lastTracked && Date.now() - lastTracked < 5 * 60 * 1000) {
+        return res.json({ ok: true });
+      }
+      pageViewRateLimit.set(rateKey, Date.now());
+
+      // Get userId if authenticated
+      const userId = req.user?.claims?.sub || null;
+
+      await db.insert(pageViews).values({
+        sessionId,
+        userId,
+        path: path.substring(0, 500), // Limit path length
+        referrer: referrer ? String(referrer).substring(0, 1000) : null,
+      });
+
+      res.json({ ok: true });
+    } catch (error) {
+      console.error("Error tracking page view:", error);
+      res.status(500).json({ message: "Failed to track" });
+    }
+  });
+
+  // Admin: Analytics / Traffic data
+  app.get("/api/admin/analytics", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+      // Daily unique visitors (last 30 days)
+      const dailyVisitors = await db
+        .select({
+          date: sql<string>`DATE(${pageViews.createdAt})`.as("date"),
+          uniqueVisitors: countDistinct(pageViews.sessionId).as("unique_visitors"),
+          totalViews: count().as("total_views"),
+        })
+        .from(pageViews)
+        .where(gte(pageViews.createdAt, thirtyDaysAgo))
+        .groupBy(sql`DATE(${pageViews.createdAt})`)
+        .orderBy(sql`DATE(${pageViews.createdAt})`);
+
+      // Top pages (last 30 days)
+      const topPages = await db
+        .select({
+          path: pageViews.path,
+          uniqueVisitors: countDistinct(pageViews.sessionId).as("unique_visitors"),
+          totalViews: count().as("total_views"),
+        })
+        .from(pageViews)
+        .where(gte(pageViews.createdAt, thirtyDaysAgo))
+        .groupBy(pageViews.path)
+        .orderBy(sql`count(*) DESC`)
+        .limit(10);
+
+      // Conversion funnel counts (last 30 days)
+      // Landing page visitors (path = "/")
+      const [landingResult] = await db
+        .select({ cnt: countDistinct(pageViews.sessionId) })
+        .from(pageViews)
+        .where(and(gte(pageViews.createdAt, thirtyDaysAgo), eq(pageViews.path, "/")));
+
+      // Order page visitors (path = "/order")
+      const [orderResult] = await db
+        .select({ cnt: countDistinct(pageViews.sessionId) })
+        .from(pageViews)
+        .where(and(gte(pageViews.createdAt, thirtyDaysAgo), eq(pageViews.path, "/order")));
+
+      // Total unique visitors across all pages
+      const [totalResult] = await db
+        .select({ cnt: countDistinct(pageViews.sessionId) })
+        .from(pageViews)
+        .where(gte(pageViews.createdAt, thirtyDaysAgo));
+
+      // Purchases in last 30 days (from users table)
+      const recentPurchases = await db
+        .select({ cnt: count() })
+        .from(users)
+        .where(and(eq(users.challengePurchased, true), gte(users.createdAt, thirtyDaysAgo)));
+
+      res.json({
+        dailyVisitors,
+        topPages,
+        funnel: {
+          totalVisitors: totalResult?.cnt || 0,
+          landingVisitors: landingResult?.cnt || 0,
+          orderVisitors: orderResult?.cnt || 0,
+          purchases: recentPurchases[0]?.cnt || 0,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      res.status(500).json({ message: "Failed to fetch analytics" });
     }
   });
 

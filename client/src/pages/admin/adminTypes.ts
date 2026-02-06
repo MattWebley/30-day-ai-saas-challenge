@@ -175,6 +175,8 @@ export interface AdminUser {
   isBanned: boolean | null;
   banReason: string | null;
   bannedAt: string | null;
+  lastLoginAt: string | null;
+  loginCount: number;
   createdAt: string;
   isPending?: boolean;
   amountPaid?: number;
@@ -222,6 +224,7 @@ export interface RevenueData {
     customerName: string;
     description: string;
     created: number;
+    productType: 'challenge' | 'coaching';
   }[];
   revenueByProduct: {
     name: string;
@@ -328,6 +331,25 @@ export const formatCurrency = (amount: number, currency: string = 'gbp') => {
     return `${currency.toUpperCase()} ${(amount / 100).toFixed(2)}`;
   }
 };
+
+export interface AnalyticsData {
+  dailyVisitors: {
+    date: string;
+    uniqueVisitors: number;
+    totalViews: number;
+  }[];
+  topPages: {
+    path: string;
+    uniqueVisitors: number;
+    totalViews: number;
+  }[];
+  funnel: {
+    totalVisitors: number;
+    landingVisitors: number;
+    orderVisitors: number;
+    purchases: number;
+  };
+}
 
 export const FONT_OPTIONS = [
   "Poppins",

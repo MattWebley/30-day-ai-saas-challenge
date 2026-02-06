@@ -10,6 +10,7 @@ import { TestModeProvider, useTestMode } from "@/contexts/TestModeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { captureReferralCode, useReferralTracking } from "@/hooks/useReferral";
 import { useHeartbeat } from "@/hooks/useHeartbeat";
+import { usePageTracking } from "@/hooks/usePageTracking";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
@@ -71,6 +72,9 @@ function Router() {
 
   // Send heartbeat for live user tracking (lightweight, in-memory only)
   useHeartbeat(isAuthenticated);
+
+  // Track page views for admin analytics
+  usePageTracking();
 
   // Redirect authenticated but non-paying users to order page
   const hasPurchased = (user as any)?.challengePurchased || (user as any)?.coachingPurchased || (user as any)?.isAdmin;

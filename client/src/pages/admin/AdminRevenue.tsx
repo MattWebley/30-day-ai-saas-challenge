@@ -533,16 +533,18 @@ export default function AdminRevenue() {
                     <div className="flex items-center gap-3">
                       <div
                         className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
-                          purchase.coachType === "matt" ? "bg-amber-500" : "bg-blue-500"
+                          purchase.coachType === "matt" ? "bg-amber-500" : purchase.coachType === "unknown" ? "bg-slate-400" : "bg-blue-500"
                         }`}
                       >
-                        {purchase.coachType === "matt" ? "M" : "J"}
+                        {purchase.coachType === "matt" ? "M" : purchase.coachType === "unknown" ? "?" : "J"}
                       </div>
                       <div>
                         <p className="font-medium text-slate-900">{purchase.email}</p>
                         <p className="text-xs text-slate-500">
-                          {purchase.coachType === "matt" ? "Matt" : "Expert (James)"} ·{" "}
-                          {purchase.sessionsTotal} session{purchase.sessionsTotal > 1 ? "s" : ""}
+                          {purchase.coachType === "matt" ? "Matt" : purchase.coachType === "unknown" ? "Manually granted" : "Expert (James)"}
+                          {purchase.coachType !== "unknown" && (
+                            <> · {purchase.sessionsTotal} session{purchase.sessionsTotal > 1 ? "s" : ""}</>
+                          )}
                         </p>
                       </div>
                     </div>

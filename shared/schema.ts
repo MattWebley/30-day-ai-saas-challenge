@@ -47,6 +47,9 @@ export const users = pgTable("users", {
   adminNotes: text("admin_notes"), // Private notes about this user (only visible to admins)
   // Password auth (optional - users can set this up after magic link login)
   passwordHash: varchar("password_hash"),
+  // Login tracking
+  lastLoginAt: timestamp("last_login_at"),
+  loginCount: integer("login_count").default(0),
   // Ban system
   isBanned: boolean("is_banned").default(false),
   banReason: text("ban_reason"),
@@ -716,3 +719,20 @@ export const emailLogs = pgTable("email_logs", {
 
 export type EmailLog = typeof emailLogs.$inferSelect;
 export type InsertEmailLog = typeof emailLogs.$inferInsert;
+
+// Page view tracking - anonymous visitor analytics
+export const pageViews = pgTable("page_views", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull(),
+  userId: varchar("user_id"),
+  path: text("path").notNull(),
+  referrer: text("referrer"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("page_views_session_id_idx").on(table.sessionId),
+  index("page_views_path_idx").on(table.path),
+  index("page_views_created_at_idx").on(table.createdAt),
+]);
+
+export type PageView = typeof pageViews.$inferSelect;
+export type InsertPageView = typeof pageViews.$inferInsert;

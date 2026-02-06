@@ -413,6 +413,18 @@ function UserDetailPanel({
                   : "Unknown"}
               </span>
             </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Last Login:</span>
+              <span className="text-slate-700">
+                {user.lastLoginAt
+                  ? formatDistanceToNow(new Date(user.lastLoginAt), { addSuffix: true })
+                  : "Never"}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Login Count:</span>
+              <span className="text-slate-700">{user.loginCount || 0}</span>
+            </div>
           </div>
         </div>
 
@@ -853,6 +865,8 @@ export default function AdminUsers() {
       "XP",
       "Signed Up",
       "Last Active",
+      "Last Login",
+      "Login Count",
     ];
     const rows = usersToExport.map((u) => [
       u.email || "",
@@ -863,6 +877,8 @@ export default function AdminUsers() {
       u.stats.totalXp.toString(),
       u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "",
       u.stats.lastActivityDate ? new Date(u.stats.lastActivityDate).toLocaleDateString() : "",
+      u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleDateString() : "",
+      (u.loginCount || 0).toString(),
     ]);
 
     const csv = [headers, ...rows]
@@ -1264,16 +1280,15 @@ export default function AdminUsers() {
                   </div>
                   <div className="flex items-center gap-6 text-sm">
                     <div className="text-right hidden md:block">
-                      <p className="text-slate-500 text-xs">Signed up</p>
+                      <p className="text-slate-500 text-xs">Last login</p>
                       <p className="text-slate-700">
-                        {user.createdAt
-                          ? new Date(user.createdAt).toLocaleDateString("en-GB", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : "Unknown"}
+                        {user.lastLoginAt
+                          ? formatDistanceToNow(new Date(user.lastLoginAt), { addSuffix: true })
+                          : "Never"}
                       </p>
+                      {user.loginCount > 0 && (
+                        <p className="text-slate-400 text-xs">{user.loginCount} logins</p>
+                      )}
                     </div>
                     <div className="text-right">
                       <div className="flex items-center justify-end gap-1">
