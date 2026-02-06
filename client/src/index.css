@@ -128,4 +128,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  /* All buttons should show pointer cursor */
+  button, [role="button"] {
+    cursor: pointer;
+  }
 }

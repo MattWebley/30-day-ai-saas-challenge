@@ -697,3 +697,22 @@ export const magicTokens = pgTable("magic_tokens", {
 ]);
 
 export type MagicToken = typeof magicTokens.$inferSelect;
+
+// Email send logs - tracks every email sent through the system
+export const emailLogs = pgTable("email_logs", {
+  id: serial("id").primaryKey(),
+  recipientEmail: varchar("recipient_email").notNull(),
+  recipientName: varchar("recipient_name"),
+  subject: text("subject").notNull(),
+  templateKey: varchar("template_key"), // null for broadcasts/non-template emails
+  status: varchar("status").notNull(), // 'sent' or 'failed'
+  resendId: varchar("resend_id"), // Resend API message ID
+  error: text("error"), // error message if failed
+  sentAt: timestamp("sent_at").defaultNow(),
+}, (table) => [
+  index("email_logs_recipient_idx").on(table.recipientEmail),
+  index("email_logs_sent_at_idx").on(table.sentAt),
+]);
+
+export type EmailLog = typeof emailLogs.$inferSelect;
+export type InsertEmailLog = typeof emailLogs.$inferInsert;

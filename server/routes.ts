@@ -3799,6 +3799,43 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     }
   });
 
+  // Create email template (admin)
+  app.post("/api/admin/email-templates", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { templateKey, name, subject, body, description, variables } = req.body;
+      if (!templateKey || !name || !subject || !body) {
+        return res.status(400).json({ message: "Template key, name, subject, and body are required" });
+      }
+
+      // Check for duplicate key
+      const existing = await storage.getEmailTemplate(templateKey);
+      if (existing) {
+        return res.status(409).json({ message: "A template with that key already exists" });
+      }
+
+      const created = await storage.createEmailTemplate({
+        templateKey,
+        name,
+        subject,
+        body,
+        description: description || null,
+        variables: variables || null,
+        isActive: true,
+      });
+
+      res.json(created);
+    } catch (error: any) {
+      console.error("Error creating email template:", error);
+      res.status(500).json({ message: "Failed to create email template" });
+    }
+  });
+
   // Update email template (admin)
   app.patch("/api/admin/email-templates/:templateKey", isAuthenticated, async (req: any, res) => {
     try {
@@ -3895,6 +3932,27 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     } catch (error: any) {
       console.error("Error sending test email:", error);
       res.status(500).json({ message: "Failed to send test email" });
+    }
+  });
+
+  // Get email send logs (admin)
+  app.get("/api/admin/email-logs", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
+      const offset = (page - 1) * limit;
+
+      const logs = await storage.getEmailLogs(limit, offset);
+      res.json(logs);
+    } catch (error: any) {
+      console.error("Error fetching email logs:", error);
+      res.status(500).json({ message: "Failed to fetch email logs" });
     }
   });
 

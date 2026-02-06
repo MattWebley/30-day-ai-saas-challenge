@@ -69,6 +69,9 @@ import {
   type InsertAnnouncementDismissal,
   pendingPurchases,
   type PendingPurchase,
+  emailLogs,
+  type EmailLog,
+  type InsertEmailLog,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, isNotNull, isNull, sql } from "drizzle-orm";
@@ -1447,6 +1450,21 @@ export class DatabaseStorage implements IStorage {
       .insert(announcementDismissals)
       .values({ announcementId, userId })
       .onConflictDoNothing();
+  }
+
+  // Email log operations
+  async logEmail(data: InsertEmailLog): Promise<EmailLog> {
+    const [created] = await db.insert(emailLogs).values(data).returning();
+    return created;
+  }
+
+  async getEmailLogs(limit: number = 50, offset: number = 0): Promise<EmailLog[]> {
+    return await db
+      .select()
+      .from(emailLogs)
+      .orderBy(desc(emailLogs.sentAt))
+      .limit(limit)
+      .offset(offset);
   }
 }
 

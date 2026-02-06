@@ -419,7 +419,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
           >
             <Checkbox
               checked={shareToDiscussion}
-              onCheckedChange={(checked) => setShareToDiscussion(checked === true)}
+              onCheckedChange={() => {}}
             />
             <div className="flex-1">
               <span className={ds.muted}>

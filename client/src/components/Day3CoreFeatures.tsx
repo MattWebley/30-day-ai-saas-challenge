@@ -277,7 +277,7 @@ export function Day3CoreFeatures({
                   <div className="flex items-start gap-3">
                     <Checkbox
                       checked={selectedFeatures.has(feature.name)}
-                      onCheckedChange={() => toggleFeature(feature.name)}
+                      onCheckedChange={() => {}}
                       className="mt-1"
                     />
                     <div>
@@ -308,7 +308,7 @@ export function Day3CoreFeatures({
                   <div className="flex items-start gap-3">
                     <Checkbox
                       checked={selectedFeatures.has(feature.name)}
-                      onCheckedChange={() => toggleFeature(feature.name)}
+                      onCheckedChange={() => {}}
                       className="mt-1"
                     />
                     <div>
@@ -339,7 +339,7 @@ export function Day3CoreFeatures({
                   <div className="flex items-start gap-3">
                     <Checkbox
                       checked={selectedFeatures.has(feature.name)}
-                      onCheckedChange={() => toggleFeature(feature.name)}
+                      onCheckedChange={() => {}}
                       className="mt-1"
                     />
                     <div>
@@ -371,7 +371,7 @@ export function Day3CoreFeatures({
                     <div className="flex items-start gap-3" onClick={() => toggleFeature(feature.name)}>
                       <Checkbox
                         checked={selectedFeatures.has(feature.name)}
-                        onCheckedChange={() => toggleFeature(feature.name)}
+                        onCheckedChange={() => {}}
                         className="mt-1"
                       />
                       <div>

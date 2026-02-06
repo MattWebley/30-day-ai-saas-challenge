@@ -146,6 +146,18 @@ export interface EmailTemplate {
   updatedAt: string;
 }
 
+export interface EmailLog {
+  id: number;
+  recipientEmail: string;
+  recipientName: string | null;
+  subject: string;
+  templateKey: string | null;
+  status: string;
+  resendId: string | null;
+  error: string | null;
+  sentAt: string;
+}
+
 export interface AdminUser {
   id: string;
   email: string | null;

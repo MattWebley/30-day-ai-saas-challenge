@@ -265,7 +265,7 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
                   <div className="flex items-start gap-3">
                     <Checkbox
                       checked={testedAreas.has(area.id)}
-                      onCheckedChange={() => toggleArea(area.id)}
+                      onCheckedChange={() => {}}
                       className="mt-0.5"
                     />
                     <div>

@@ -197,7 +197,7 @@ export function Day18BuildYourMVP({ appName, daysSinceStart, onComplete }: Day18
                   <div className="flex items-center gap-3">
                     <Checkbox
                       checked={checksComplete.has(check.id)}
-                      onCheckedChange={() => toggleCheck(check.id)}
+                      onCheckedChange={() => {}}
                     />
                     <span className={ds.body}>{check.text}</span>
                   </div>

@@ -38,8 +38,9 @@ import AdminRevenue from "./admin/AdminRevenue";
 import AdminContent from "./admin/AdminContent";
 import AdminMarketing from "./admin/AdminMarketing";
 import AdminSettings from "./admin/AdminSettings";
+import AdminEmails from "./admin/AdminEmails";
 
-type TabKey = "overview" | "users" | "revenue" | "content" | "marketing" | "settings";
+type TabKey = "overview" | "users" | "revenue" | "content" | "marketing" | "emails" | "settings";
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "overview", label: "Overview" },
@@ -47,6 +48,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "revenue", label: "Revenue" },
   { key: "content", label: "Content" },
   { key: "marketing", label: "Marketing" },
+  { key: "emails", label: "Emails" },
   { key: "settings", label: "Settings" },
 ];
 
@@ -733,6 +735,7 @@ export default function Admin() {
         {activeTab === "revenue" && <AdminRevenue />}
         {activeTab === "content" && <AdminContent />}
         {activeTab === "marketing" && <AdminMarketing />}
+        {activeTab === "emails" && <AdminEmails />}
         {activeTab === "settings" && <AdminSettings />}
       </div>
     </Layout>

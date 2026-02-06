@@ -9,17 +9,12 @@ import { apiRequest } from "@/lib/queryClient";
 import {
   Palette,
   Bot,
-  Mail,
   BarChart3,
   Save,
   Flag,
   Eye,
   AlertTriangle,
   MessageCircle,
-  Pencil,
-  Send,
-  ToggleLeft,
-  ToggleRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -28,7 +23,6 @@ import type {
   ChatbotSettings,
   ChatMessage,
   UserChatSummary,
-  EmailTemplate,
 } from "./adminTypes";
 import { FONT_OPTIONS } from "./adminTypes";
 
@@ -195,68 +189,6 @@ export default function AdminSettings() {
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to flag message");
-    },
-  });
-
-  // Email templates
-  const [editingTemplate, setEditingTemplate] = useState<string | null>(null);
-  const [editedSubject, setEditedSubject] = useState("");
-  const [editedBody, setEditedBody] = useState("");
-  const [testEmailAddress, setTestEmailAddress] = useState(() => {
-    return localStorage.getItem("adminTestEmailAddress") || "";
-  });
-
-  useEffect(() => {
-    if (testEmailAddress) {
-      localStorage.setItem("adminTestEmailAddress", testEmailAddress);
-    }
-  }, [testEmailAddress]);
-
-  const { data: emailTemplates = [] } = useQuery<EmailTemplate[]>({
-    queryKey: ["/api/admin/email-templates"],
-  });
-
-  const updateEmailTemplate = useMutation({
-    mutationFn: async ({
-      templateKey,
-      subject,
-      body,
-      isActive,
-    }: {
-      templateKey: string;
-      subject?: string;
-      body?: string;
-      isActive?: boolean;
-    }) => {
-      const res = await apiRequest("PATCH", `/api/admin/email-templates/${templateKey}`, {
-        subject,
-        body,
-        isActive,
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/email-templates"] });
-      toast.success("Email template updated");
-      setEditingTemplate(null);
-    },
-    onError: () => {
-      toast.error("Failed to update email template");
-    },
-  });
-
-  const sendTestEmail = useMutation({
-    mutationFn: async ({ templateKey, testEmail }: { templateKey: string; testEmail: string }) => {
-      const res = await apiRequest("POST", `/api/admin/email-templates/${templateKey}/test`, {
-        testEmail,
-      });
-      return res.json();
-    },
-    onSuccess: (data) => {
-      toast.success(data.message || "Test email sent");
-    },
-    onError: () => {
-      toast.error("Failed to send test email");
     },
   });
 
@@ -808,193 +740,6 @@ export default function AdminSettings() {
         </Card>
       </div>
 
-      {/* Email Templates */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <Mail className="w-6 h-6 text-primary" />
-          <h2 className="text-xl font-bold text-slate-900">Email Templates</h2>
-          <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
-            {emailTemplates.length} templates
-          </span>
-        </div>
-
-        {/* Test Email Address Config */}
-        <Card className="p-4 border border-slate-200 bg-slate-50">
-          <div className="flex items-center gap-3">
-            <Label className="text-slate-700 font-medium whitespace-nowrap">Test Email Address:</Label>
-            <Input
-              type="email"
-              placeholder="your@email.com"
-              value={testEmailAddress}
-              onChange={(e) => setTestEmailAddress(e.target.value)}
-              className="flex-1 max-w-xs"
-            />
-            <span className="text-sm text-slate-500">All test emails will be sent here</span>
-          </div>
-        </Card>
-
-        {emailTemplates.length === 0 ? (
-          <Card className="p-8 border border-slate-200 text-center">
-            <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500">
-              No email templates found. Run the seed script to create default templates.
-            </p>
-          </Card>
-        ) : (
-          <div className="space-y-3">
-            {emailTemplates.map((template) => (
-              <Card
-                key={template.templateKey}
-                className={`p-4 border shadow-sm ${
-                  template.isActive ? "border-slate-200" : "border-slate-300 bg-slate-50 opacity-75"
-                }`}
-              >
-                <div className="flex items-start justify-between gap-4 mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-slate-900">{template.name}</h3>
-                      {!template.isActive && (
-                        <span className="px-2 py-0.5 bg-red-100 text-red-600 text-xs font-bold rounded-full">
-                          Disabled
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-slate-500 mt-1">{template.description}</p>
-                    {template.variables && (
-                      <p className="text-xs text-slate-400 mt-1">
-                        Variables:{" "}
-                        {template.variables
-                          .split(",")
-                          .map((v) => `{{${v.trim()}}}`)
-                          .join(", ")}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        updateEmailTemplate.mutate({
-                          templateKey: template.templateKey,
-                          isActive: !template.isActive,
-                        });
-                      }}
-                    >
-                      {template.isActive ? (
-                        <ToggleRight className="w-4 h-4 text-primary" />
-                      ) : (
-                        <ToggleLeft className="w-4 h-4 text-slate-400" />
-                      )}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        if (editingTemplate === template.templateKey) {
-                          setEditingTemplate(null);
-                        } else {
-                          setEditingTemplate(template.templateKey);
-                          setEditedSubject(template.subject);
-                          setEditedBody(template.body);
-                        }
-                      }}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        if (!testEmailAddress) {
-                          toast.error("Set a test email address above first");
-                          return;
-                        }
-                        sendTestEmail.mutate({
-                          templateKey: template.templateKey,
-                          testEmail: testEmailAddress,
-                        });
-                      }}
-                      disabled={sendTestEmail.isPending}
-                      title={
-                        testEmailAddress
-                          ? `Send test to ${testEmailAddress}`
-                          : "Set test email address first"
-                      }
-                    >
-                      <Send className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {editingTemplate === template.templateKey && (
-                  <div className="space-y-4 pt-4 border-t border-slate-200">
-                    <div>
-                      <Label>Subject</Label>
-                      <Input
-                        value={editedSubject}
-                        onChange={(e) => setEditedSubject(e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label>Body (use {"{{variable}}"} for placeholders)</Label>
-                      <Textarea
-                        value={editedBody}
-                        onChange={(e) => setEditedBody(e.target.value)}
-                        className="mt-1 font-mono text-sm min-h-[300px]"
-                      />
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Button
-                        onClick={() => {
-                          updateEmailTemplate.mutate({
-                            templateKey: template.templateKey,
-                            subject: editedSubject,
-                            body: editedBody,
-                          });
-                        }}
-                        disabled={updateEmailTemplate.isPending}
-                      >
-                        <Save className="w-4 h-4 mr-1" />
-                        Save Changes
-                      </Button>
-                      <Button variant="outline" onClick={() => setEditingTemplate(null)}>
-                        Cancel
-                      </Button>
-                      <div className="flex-1" />
-                      <div className="flex items-center gap-2">
-                        <Input
-                          placeholder="Test email address"
-                          value={testEmailAddress}
-                          onChange={(e) => setTestEmailAddress(e.target.value)}
-                          className="w-48"
-                        />
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            if (!testEmailAddress) {
-                              toast.error("Enter an email address first");
-                              return;
-                            }
-                            sendTestEmail.mutate({
-                              templateKey: template.templateKey,
-                              testEmail: testEmailAddress,
-                            });
-                          }}
-                          disabled={sendTestEmail.isPending}
-                        >
-                          Send Test
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </Card>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 }

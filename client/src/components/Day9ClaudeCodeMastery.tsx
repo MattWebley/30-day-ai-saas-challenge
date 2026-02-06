@@ -165,7 +165,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setSpecificDone(!specificDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={specificDone} onCheckedChange={() => setSpecificDone(!specificDone)} />
+                  <Checkbox checked={specificDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -234,7 +234,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setReverseDone(!reverseDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={reverseDone} onCheckedChange={() => setReverseDone(!reverseDone)} />
+                  <Checkbox checked={reverseDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -307,7 +307,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setErrorsDone(!errorsDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={errorsDone} onCheckedChange={() => setErrorsDone(!errorsDone)} />
+                  <Checkbox checked={errorsDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -377,7 +377,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setBreakdownDone(!breakdownDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={breakdownDone} onCheckedChange={() => setBreakdownDone(!breakdownDone)} />
+                  <Checkbox checked={breakdownDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -450,7 +450,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setCommitDone(!commitDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={commitDone} onCheckedChange={() => setCommitDone(!commitDone)} />
+                  <Checkbox checked={commitDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -522,7 +522,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setOptionsDone(!optionsDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={optionsDone} onCheckedChange={() => setOptionsDone(!optionsDone)} />
+                  <Checkbox checked={optionsDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -581,7 +581,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setVibeDone(!vibeDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={vibeDone} onCheckedChange={() => setVibeDone(!vibeDone)} />
+                  <Checkbox checked={vibeDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -653,7 +653,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setAskWhyDone(!askWhyDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={askWhyDone} onCheckedChange={() => setAskWhyDone(!askWhyDone)} />
+                  <Checkbox checked={askWhyDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>

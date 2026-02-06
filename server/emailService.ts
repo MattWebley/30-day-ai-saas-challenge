@@ -16,6 +16,48 @@ function getResendClient() {
   };
 }
 
+// Send an email and log the result to the database
+async function sendAndLog(options: {
+  to: string;
+  subject: string;
+  text: string;
+  recipientName?: string;
+  templateKey?: string;
+}): Promise<{ success: boolean; id?: string }> {
+  const { client, fromEmail, replyTo } = getResendClient();
+  try {
+    const result = await client.emails.send({
+      from: fromEmail,
+      replyTo: replyTo,
+      to: [options.to],
+      subject: options.subject,
+      text: options.text,
+    });
+    const resendId = result?.data?.id || null;
+    // Log success (fire and forget — don't let logging failures break email sending)
+    storage.logEmail({
+      recipientEmail: options.to,
+      recipientName: options.recipientName || null,
+      subject: options.subject,
+      templateKey: options.templateKey || null,
+      status: 'sent',
+      resendId,
+    }).catch(err => console.error('Failed to log email:', err));
+    return { success: true, id: resendId || undefined };
+  } catch (error: any) {
+    // Log failure
+    storage.logEmail({
+      recipientEmail: options.to,
+      recipientName: options.recipientName || null,
+      subject: options.subject,
+      templateKey: options.templateKey || null,
+      status: 'failed',
+      error: error?.message || String(error),
+    }).catch(err => console.error('Failed to log email:', err));
+    throw error;
+  }
+}
+
 // Helper to replace {{variable}} placeholders in templates
 function replaceVariables(template: string, variables: Record<string, string | number | null | undefined>): string {
   let result = template;
@@ -98,14 +140,7 @@ You're receiving this because you purchased the challenge.`;
     const subject = replaceVariables(template.subject, variables);
     const body = replaceVariables(template.body, variables);
 
-    const { client, fromEmail, replyTo } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [to],
-      subject,
-      text: body,
-    });
+    await sendAndLog({ to, subject, text: body, recipientName: firstName, templateKey: 'purchase_confirmation' });
     console.log('Purchase confirmation email sent to:', to);
   } catch (error) {
     console.error('Failed to send purchase confirmation email:', error);
@@ -165,14 +200,7 @@ View all testimonials: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [recipient],
-      subject: `New Challenge Testimonial from ${userName}`,
-      text: body,
-    });
+    await sendAndLog({ to: recipient, subject: `New Challenge Testimonial from ${userName}`, text: body, recipientName: userName });
     console.log('Testimonial notification email sent to', recipient);
   } catch (error) {
     console.error('Failed to send testimonial notification email:', error);
@@ -238,14 +266,7 @@ View all requests: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [recipient],
-      subject: `New Critique Request from ${userName}`,
-      text: body,
-    });
+    await sendAndLog({ to: recipient, subject: `New Critique Request from ${userName}`, text: body, recipientName: userName });
     console.log('Critique notification email sent to', recipient);
   } catch (error) {
     console.error('Failed to send critique notification email:', error);
@@ -263,11 +284,8 @@ export async function sendCritiqueCompletedEmail(params: CritiqueCompletedParams
   const { to, firstName, videoUrl } = params;
 
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [to],
+    await sendAndLog({
+      to,
       subject: `Your Sales Page Video Critique is Ready`,
       text: `Hey ${firstName}!
 
@@ -284,6 +302,7 @@ If you have questions after watching, just reply to this email.
 --
 21-Day AI SaaS Challenge
 `,
+      recipientName: firstName,
     });
     console.log('Critique completed email sent to:', to);
   } catch (error) {
@@ -322,14 +341,7 @@ View all comments: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [recipient],
-      subject: `New Comment on Day ${day}: ${dayTitle}`,
-      text: body,
-    });
+    await sendAndLog({ to: recipient, subject: `New Comment on Day ${day}: ${dayTitle}`, text: body, recipientName: userName });
     console.log('Discussion notification email sent to', recipient);
   } catch (error) {
     console.error('Failed to send discussion notification email:', error);
@@ -374,14 +386,7 @@ View all pending questions: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [recipient],
-      subject: `New Question on Day ${day}: ${dayTitle}`,
-      text: body,
-    });
+    await sendAndLog({ to: recipient, subject: `New Question on Day ${day}: ${dayTitle}`, text: body, recipientName: userName });
     console.log('Question notification email sent to', recipient);
   } catch (error) {
     console.error('Failed to send question notification email:', error);
@@ -424,14 +429,7 @@ View all users: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [recipient],
-      subject: `New Coaching Purchase: ${coachingType} - ${currencySymbol}${amount}`,
-      text: body,
-    });
+    await sendAndLog({ to: recipient, subject: `New Coaching Purchase: ${coachingType} - ${currencySymbol}${amount}`, text: body, recipientName: userName });
     console.log('Coaching purchase notification email sent to', recipient);
   } catch (error) {
     console.error('Failed to send coaching purchase notification email:', error);
@@ -469,14 +467,7 @@ View all users: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [recipient],
-      subject: `New Referral: ${referrerName} referred ${newUserName}`,
-      text: body,
-    });
+    await sendAndLog({ to: recipient, subject: `New Referral: ${referrerName} referred ${newUserName}`, text: body });
     console.log('Referral notification email sent to', recipient);
   } catch (error) {
     console.error('Failed to send referral notification email:', error);
@@ -488,11 +479,8 @@ export async function sendCoachingConfirmationEmail(params: CoachingEmailParams)
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [to],
+    await sendAndLog({
+      to,
       subject: `Coaching Sessions Confirmed`,
       text: `Coaching Confirmed!
 
@@ -520,6 +508,7 @@ Questions? Just reply to this email.
 21-Day AI SaaS Challenge
 You're receiving this because you purchased coaching.
 `,
+      recipientName: firstName,
     });
     console.log('Coaching confirmation email sent to:', to);
   } catch (error) {
@@ -565,14 +554,7 @@ Review AI usage: https://challenge.mattwebley.com/admin
 `;
 
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [recipient],
-      subject: `AI Abuse Alert: ${reason}`,
-      text: body,
-    });
+    await sendAndLog({ to: recipient, subject: `AI Abuse Alert: ${reason}`, text: body, recipientName: userName });
     console.log('Abuse alert email sent to', recipient);
   } catch (error) {
     console.error('Failed to send abuse alert email:', error);
@@ -591,19 +573,11 @@ export async function sendBroadcastEmail(params: BroadcastEmailParams): Promise<
   const { to, firstName, subject, body } = params;
 
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-
     // Replace {{firstName}} placeholder
     const processedBody = body.replace(/\{\{firstName\}\}/g, firstName || 'there');
     const processedSubject = subject.replace(/\{\{firstName\}\}/g, firstName || 'there');
 
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to,
-      subject: processedSubject,
-      text: processedBody,
-    });
+    await sendAndLog({ to, subject: processedSubject, text: processedBody, recipientName: firstName, templateKey: 'broadcast' });
 
     return true;
   } catch (error) {
@@ -615,8 +589,6 @@ export async function sendBroadcastEmail(params: BroadcastEmailParams): Promise<
 // Magic link login email
 export async function sendMagicLinkEmail(email: string, magicLink: string): Promise<boolean> {
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-
     const subject = 'Your Login Link - 21-Day AI SaaS Challenge';
     const body = `Hi there!
 
@@ -634,13 +606,7 @@ If you didn't request this, you can safely ignore this email.
 --
 21-Day AI SaaS Challenge`;
 
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [email],
-      subject,
-      text: body,
-    });
+    await sendAndLog({ to: email, subject, text: body, templateKey: 'magic_link' });
 
     console.log('Magic link email sent to:', email);
     return true;
@@ -652,8 +618,6 @@ If you didn't request this, you can safely ignore this email.
 
 export async function sendWelcomeAccessEmail(email: string, magicLink: string): Promise<boolean> {
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
-
     const subject = 'Your Access to the 21-Day AI SaaS Challenge';
     const body = `Hey!
 
@@ -674,13 +638,7 @@ Let's build something amazing!
 21-Day AI SaaS Challenge
 Questions? Just reply to this email.`;
 
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [email],
-      subject,
-      text: body,
-    });
+    await sendAndLog({ to: email, subject, text: body, templateKey: 'welcome_access' });
 
     console.log('Welcome access email sent to:', email);
     return true;
@@ -700,7 +658,6 @@ export interface QuestionAnsweredEmailParams {
 
 export async function sendQuestionAnsweredEmail(params: QuestionAnsweredEmailParams): Promise<boolean> {
   try {
-    const { client, fromEmail, replyTo } = getResendClient();
     const { to, firstName, day, question, answer } = params;
 
     const subject = `Your Day ${day} question has been answered!`;
@@ -726,13 +683,7 @@ Keep building!
 21-Day AI SaaS Challenge
 Questions? Just reply to this email.`;
 
-    await client.emails.send({
-      from: fromEmail,
-      replyTo: replyTo,
-      to: [to],
-      subject,
-      text: body,
-    });
+    await sendAndLog({ to, subject, text: body, recipientName: firstName });
 
     console.log('Question answered email sent to:', to);
     return true;

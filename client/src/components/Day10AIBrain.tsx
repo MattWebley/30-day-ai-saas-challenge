@@ -139,7 +139,7 @@ export function Day10AIBrain({ userIdea, onComplete }: Day10AIBrainProps) {
                 onClick={() => setAccountDone(!accountDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={accountDone} onCheckedChange={() => setAccountDone(!accountDone)} />
+                  <Checkbox checked={accountDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>I've created my account and added credits</span>
                 </div>
               </div>
@@ -200,7 +200,7 @@ export function Day10AIBrain({ userIdea, onComplete }: Day10AIBrainProps) {
                 onClick={() => setApiKeyDone(!apiKeyDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={apiKeyDone} onCheckedChange={() => setApiKeyDone(!apiKeyDone)} />
+                  <Checkbox checked={apiKeyDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>I've copied my API key</span>
                 </div>
               </div>
@@ -282,7 +282,7 @@ export function Day10AIBrain({ userIdea, onComplete }: Day10AIBrainProps) {
                 onClick={() => setSecretsDone(!secretsDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={secretsDone} onCheckedChange={() => setSecretsDone(!secretsDone)} />
+                  <Checkbox checked={secretsDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>I've added my API key to Secrets</span>
                 </div>
               </div>
@@ -416,7 +416,7 @@ Use the OpenAI API. The API key is already stored in Replit Secrets as OPENAI_AP
               onClick={() => setAiWorking(!aiWorking)}
             >
               <div className="flex items-center gap-3">
-                <Checkbox checked={aiWorking} onCheckedChange={() => setAiWorking(!aiWorking)} />
+                <Checkbox checked={aiWorking} onCheckedChange={() => {}} />
                 <span className={ds.body + " font-medium"}>My AI feature is working</span>
               </div>
             </div>

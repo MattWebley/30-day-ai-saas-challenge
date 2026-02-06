@@ -257,7 +257,7 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                 onClick={() => setGithubDone(!githubDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={githubDone} onCheckedChange={() => setGithubDone(!githubDone)} />
+                  <Checkbox checked={githubDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Done</span>
                 </div>
               </div>
@@ -347,7 +347,7 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                 onClick={() => setClaudeInstalled(!claudeInstalled)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={claudeInstalled} onCheckedChange={() => setClaudeInstalled(!claudeInstalled)} />
+                  <Checkbox checked={claudeInstalled} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Done</span>
                 </div>
               </div>
@@ -425,7 +425,7 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                 onClick={() => setClaudeMdCreated(!claudeMdCreated)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={claudeMdCreated} onCheckedChange={() => setClaudeMdCreated(!claudeMdCreated)} />
+                  <Checkbox checked={claudeMdCreated} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>I've created CLAUDE.md</span>
                 </div>
               </div>
@@ -510,7 +510,7 @@ export function Day8ClaudeCode({ userIdea, onComplete }: Day8ClaudeCodeProps) {
                 onClick={() => setTestDone(!testDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={testDone} onCheckedChange={() => setTestDone(!testDone)} />
+                  <Checkbox checked={testDone} onCheckedChange={() => {}} />
                   <span className={ds.body + " font-medium"}>Done</span>
                 </div>
               </div>
