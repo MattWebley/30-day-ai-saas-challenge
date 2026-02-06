@@ -271,7 +271,14 @@ export default function Dashboard() {
 
   // Calculate the user's actual current task (next incomplete day)
   const lastCompletedDay = (stats as any)?.lastCompletedDay ?? -1;
-  const nextDay = Math.min(lastCompletedDay + 1, 21); // Cap at Day 21
+  const daysSinceStart = (stats as any)?.daysSinceStart ?? 0;
+  const hasBypassAccess = (stats as any)?.hasCoaching || (stats as any)?.allDaysUnlocked || (user as any)?.isAdmin;
+  const maxUnlockedDay = hasBypassAccess
+    ? 21
+    : Math.min(lastCompletedDay + 1, daysSinceStart + 1, 21);
+  const nextDay = hasBypassAccess
+    ? Math.min(lastCompletedDay + 1, 21)
+    : maxUnlockedDay;
 
   // Redirect to current task if no day specified in URL
   useEffect(() => {
@@ -279,6 +286,14 @@ export default function Dashboard() {
       setLocation(`/dashboard/${nextDay}`, { replace: true });
     }
   }, [urlDay, statsLoading, stats, nextDay, setLocation]);
+
+  // Guard against navigating to locked days (server will reject completion)
+  useEffect(() => {
+    if (urlDay !== null && !statsLoading && stats && !hasBypassAccess && urlDay > maxUnlockedDay) {
+      toast.error("That day isn't unlocked yet. New days unlock once per day.");
+      setLocation(`/dashboard/${maxUnlockedDay}`, { replace: true });
+    }
+  }, [urlDay, statsLoading, stats, hasBypassAccess, maxUnlockedDay, setLocation]);
 
   // Use URL day if provided, otherwise use calculated next day
   const currentDay = urlDay ?? nextDay;
@@ -292,6 +307,7 @@ export default function Dashboard() {
   const dayData = Array.isArray(allDays) ? allDays.find((d: any) => d.day === currentDay) : null;
   const dayProgress = Array.isArray(progress) ? progress.find((p: any) => p.day === currentDay) : null;
   const previousDayProgress = Array.isArray(progress) ? progress.find((p: any) => p.day === currentDay - 1) : null;
+  const daysUntilUnlock = Math.max((lastCompletedDay + 1) - maxUnlockedDay, 0);
 
   // Reset form when day changes
   useEffect(() => {
@@ -460,6 +476,16 @@ export default function Dashboard() {
                 <p className="text-slate-700 font-medium leading-relaxed">{dayData.tip}</p>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Next Day Unlock Banner */}
+        {!hasBypassAccess && daysUntilUnlock > 0 && lastCompletedDay < 21 && (
+          <div className="bg-slate-50 border border-slate-200 p-4 rounded-lg">
+            <p className="text-slate-700 font-medium">
+              Day {maxUnlockedDay + 1} unlocks {daysUntilUnlock === 1 ? "tomorrow" : `in ${daysUntilUnlock} days`}.
+              {" "}Come back then to keep going.
+            </p>
           </div>
         )}
 
@@ -728,6 +754,7 @@ export default function Dashboard() {
                       dayId={currentDay}
                       userIdea={previousDayProgress?.userInputs?.chosenIdea || previousDayProgress?.selectedIdea || ""}
                       userPainPoints={previousDayProgress?.userInputs?.selectedPainPoints || previousDayProgress?.selectedPainPoints || []}
+                      savedInputs={dayProgress?.userInputs}
                       onComplete={handleComplete}
                     />
                   </Card>

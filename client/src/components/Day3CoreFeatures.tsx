@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStepWithScroll } from "@/hooks/useStepWithScroll";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -18,11 +18,13 @@ interface Day3CoreFeaturesProps {
   dayId: number;
   userIdea: string;
   userPainPoints: string[];
+  savedInputs?: any;
   onComplete: (data: {
     coreFeatures: Feature[];
     sharedFeatures: Feature[];
     uspFeatures: Feature[];
     selectedFeatures: string[];
+    selectedFeatureKeys?: string[];
   }) => void;
 }
 
@@ -30,6 +32,7 @@ export function Day3CoreFeatures({
   dayId,
   userIdea,
   userPainPoints,
+  savedInputs,
   onComplete,
 }: Day3CoreFeaturesProps) {
   const [step, setStep, containerRef] = useStepWithScroll<"generate" | "select">("generate");
@@ -37,13 +40,55 @@ export function Day3CoreFeatures({
   const [sharedFeatures, setSharedFeatures] = useState<Feature[]>([]);
   const [uspFeatures, setUspFeatures] = useState<Feature[]>([]);
   const [customFeatures, setCustomFeatures] = useState<Feature[]>([]);
-  const [selectedFeatures, setSelectedFeatures] = useState<Set<string>>(new Set());
+  const [selectedFeatureKeys, setSelectedFeatureKeys] = useState<Set<string>>(new Set());
   const [newFeatureName, setNewFeatureName] = useState("");
   const [newFeatureDesc, setNewFeatureDesc] = useState("");
 
   // AI usage limits
   const [generateAttempts, setGenerateAttempts] = useState(0);
   const MAX_GENERATE_ATTEMPTS = 5;
+
+  const buildFeatureKey = (feature: Feature) => `${feature.category}:${feature.name}:${feature.description || ""}`;
+
+  const sanitizeFeatures = (features: Feature[] = [], category: Feature["category"]) => {
+    return features
+      .map((f) => ({
+        name: (f?.name || "").trim(),
+        description: (f?.description || "").trim(),
+        category,
+      }))
+      .filter((f) => f.name.length > 0);
+  };
+
+  useEffect(() => {
+    if (!savedInputs) return;
+
+    const savedCore = sanitizeFeatures(savedInputs.coreFeatures || [], "core");
+    const savedShared = sanitizeFeatures(savedInputs.sharedFeatures || [], "shared");
+    const savedUsp = sanitizeFeatures(savedInputs.uspFeatures || [], "usp");
+    const savedSelectedKeys: string[] = savedInputs.selectedFeatureKeys || [];
+    const savedSelectedNames: string[] = savedInputs.selectedFeatures || [];
+
+    if (savedCore.length || savedShared.length || savedUsp.length) {
+      setCoreFeatures(savedCore);
+      setSharedFeatures(savedShared);
+      setUspFeatures(savedUsp);
+      setStep("select");
+    }
+
+    if (savedSelectedKeys.length > 0) {
+      setSelectedFeatureKeys(new Set(savedSelectedKeys));
+    } else if (savedSelectedNames.length > 0) {
+      // Fallback: older saved data used names only
+      const keys = new Set<string>();
+      [...savedCore, ...savedShared, ...savedUsp].forEach((f) => {
+        if (savedSelectedNames.includes(f.name)) {
+          keys.add(buildFeatureKey(f));
+        }
+      });
+      setSelectedFeatureKeys(keys);
+    }
+  }, [savedInputs]);
 
   const generateFeatures = useMutation({
     mutationFn: async () => {
@@ -84,12 +129,12 @@ export function Day3CoreFeatures({
     },
     onSuccess: (data) => {
       console.log('[Day3] Features generated:', data);
-      setCoreFeatures(data.coreFeatures || []);
-      setSharedFeatures(data.sharedFeatures || []);
-      setUspFeatures(data.uspFeatures || []);
+      setCoreFeatures(sanitizeFeatures(data.coreFeatures || [], "core"));
+      setSharedFeatures(sanitizeFeatures(data.sharedFeatures || [], "shared"));
+      setUspFeatures(sanitizeFeatures(data.uspFeatures || [], "usp"));
 
       // Don't pre-select - let user choose which features they want
-      setSelectedFeatures(new Set());
+      setSelectedFeatureKeys(new Set());
       setGenerateAttempts(prev => prev + 1);
 
       setStep("select");
@@ -100,14 +145,15 @@ export function Day3CoreFeatures({
     },
   });
 
-  const toggleFeature = (featureName: string) => {
-    const newSelected = new Set(selectedFeatures);
-    if (newSelected.has(featureName)) {
-      newSelected.delete(featureName);
+  const toggleFeature = (feature: Feature) => {
+    const key = buildFeatureKey(feature);
+    const newSelected = new Set(selectedFeatureKeys);
+    if (newSelected.has(key)) {
+      newSelected.delete(key);
     } else {
-      newSelected.add(featureName);
+      newSelected.add(key);
     }
-    setSelectedFeatures(newSelected);
+    setSelectedFeatureKeys(newSelected);
   };
 
   const addCustomFeature = () => {
@@ -121,26 +167,36 @@ export function Day3CoreFeatures({
       category: "usp",
     };
     setCustomFeatures([...customFeatures, newFeature]);
-    setSelectedFeatures(new Set([...Array.from(selectedFeatures), newFeature.name]));
+    setSelectedFeatureKeys(new Set([...Array.from(selectedFeatureKeys), buildFeatureKey(newFeature)]));
     setNewFeatureName("");
     setNewFeatureDesc("");
     toast.success("Feature added!");
   };
 
   const removeCustomFeature = (index: number) => {
-    const featureName = customFeatures[index].name;
+    const feature = customFeatures[index];
     setCustomFeatures(customFeatures.filter((_, i) => i !== index));
-    const newSelected = new Set(selectedFeatures);
-    newSelected.delete(featureName);
-    setSelectedFeatures(newSelected);
+    const newSelected = new Set(selectedFeatureKeys);
+    newSelected.delete(buildFeatureKey(feature));
+    setSelectedFeatureKeys(newSelected);
   };
 
   const handleContinue = () => {
+    const allFeatures = [
+      ...coreFeatures,
+      ...sharedFeatures,
+      ...uspFeatures,
+      ...customFeatures,
+    ];
+    const selectedFeatures = allFeatures
+      .filter((f) => selectedFeatureKeys.has(buildFeatureKey(f)))
+      .map((f) => f.name);
     onComplete({
       coreFeatures,
       sharedFeatures,
       uspFeatures: [...uspFeatures, ...customFeatures],
-      selectedFeatures: Array.from(selectedFeatures),
+      selectedFeatures,
+      selectedFeatureKeys: Array.from(selectedFeatureKeys),
     });
   };
 
@@ -271,12 +327,12 @@ export function Day3CoreFeatures({
               {coreFeatures.map((feature, idx) => (
                 <div
                   key={idx}
-                  className={selectedFeatures.has(feature.name) ? ds.optionSelected : ds.optionDefault}
-                  onClick={() => toggleFeature(feature.name)}
+                  className={selectedFeatureKeys.has(buildFeatureKey(feature)) ? ds.optionSelected : ds.optionDefault}
+                  onClick={() => toggleFeature(feature)}
                 >
                   <div className="flex items-start gap-3">
                     <Checkbox
-                      checked={selectedFeatures.has(feature.name)}
+                      checked={selectedFeatureKeys.has(buildFeatureKey(feature))}
                       onCheckedChange={() => {}}
                       className="mt-1 pointer-events-none"
                     />
@@ -302,12 +358,12 @@ export function Day3CoreFeatures({
               {sharedFeatures.map((feature, idx) => (
                 <div
                   key={idx}
-                  className={selectedFeatures.has(feature.name) ? ds.optionSelected : ds.optionDefault}
-                  onClick={() => toggleFeature(feature.name)}
+                  className={selectedFeatureKeys.has(buildFeatureKey(feature)) ? ds.optionSelected : ds.optionDefault}
+                  onClick={() => toggleFeature(feature)}
                 >
                   <div className="flex items-start gap-3">
                     <Checkbox
-                      checked={selectedFeatures.has(feature.name)}
+                      checked={selectedFeatureKeys.has(buildFeatureKey(feature))}
                       onCheckedChange={() => {}}
                       className="mt-1 pointer-events-none"
                     />
@@ -333,12 +389,12 @@ export function Day3CoreFeatures({
               {uspFeatures.map((feature, idx) => (
                 <div
                   key={idx}
-                  className={selectedFeatures.has(feature.name) ? ds.optionSelected : ds.optionDefault}
-                  onClick={() => toggleFeature(feature.name)}
+                  className={selectedFeatureKeys.has(buildFeatureKey(feature)) ? ds.optionSelected : ds.optionDefault}
+                  onClick={() => toggleFeature(feature)}
                 >
                   <div className="flex items-start gap-3">
                     <Checkbox
-                      checked={selectedFeatures.has(feature.name)}
+                      checked={selectedFeatureKeys.has(buildFeatureKey(feature))}
                       onCheckedChange={() => {}}
                       className="mt-1 pointer-events-none"
                     />
@@ -365,12 +421,12 @@ export function Day3CoreFeatures({
               {customFeatures.map((feature, idx) => (
                 <div
                   key={`custom-${idx}`}
-                  className={selectedFeatures.has(feature.name) ? ds.optionSelected : ds.optionDefault}
+                  className={selectedFeatureKeys.has(buildFeatureKey(feature)) ? ds.optionSelected : ds.optionDefault}
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3" onClick={() => toggleFeature(feature.name)}>
+                    <div className="flex items-start gap-3" onClick={() => toggleFeature(feature)}>
                       <Checkbox
-                        checked={selectedFeatures.has(feature.name)}
+                        checked={selectedFeatureKeys.has(buildFeatureKey(feature))}
                         onCheckedChange={() => {}}
                         className="mt-1 pointer-events-none"
                       />
@@ -415,13 +471,13 @@ export function Day3CoreFeatures({
               ← Back
             </Button>
             <p className={ds.muted}>
-              {selectedFeatures.size} feature{selectedFeatures.size !== 1 ? "s" : ""} selected
+              {selectedFeatureKeys.size} feature{selectedFeatureKeys.size !== 1 ? "s" : ""} selected
             </p>
           </div>
           <Button
             size="lg"
             onClick={handleContinue}
-            disabled={selectedFeatures.size === 0}
+            disabled={selectedFeatureKeys.size === 0}
           >
             Continue with Selected Features
           </Button>

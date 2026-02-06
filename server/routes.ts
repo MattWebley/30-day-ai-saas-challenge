@@ -523,7 +523,7 @@ export async function registerRoutes(
   app.get("/api/days", isAuthenticated, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
-      if (!user?.challengePurchased && !user?.isAdmin) {
+      if (!user?.challengePurchased && !user?.coachingPurchased && !user?.allDaysUnlocked && !user?.isAdmin) {
         return res.status(403).json({ message: "Purchase required" });
       }
       const days = await storage.getAllDayContent();
@@ -537,7 +537,7 @@ export async function registerRoutes(
   app.get("/api/days/:day", isAuthenticated, async (req: any, res) => {
     try {
       const user = await storage.getUser(req.user.claims.sub);
-      if (!user?.challengePurchased && !user?.isAdmin) {
+      if (!user?.challengePurchased && !user?.coachingPurchased && !user?.allDaysUnlocked && !user?.isAdmin) {
         return res.status(403).json({ message: "Purchase required" });
       }
       const day = parseInt(req.params.day);
@@ -671,6 +671,18 @@ export async function registerRoutes(
         reflectionAnswer,
         userInputs,
       });
+
+      if (day === 3) {
+        const inputs = userInputs as Record<string, any> | undefined;
+        const selectedCount = Array.isArray(inputs?.selectedFeatures) ? inputs?.selectedFeatures.length : 0;
+        console.log(`[Day3] Completion`, {
+          userId,
+          selectedCount,
+          hasCore: Array.isArray(inputs?.coreFeatures) && inputs?.coreFeatures.length > 0,
+          hasShared: Array.isArray(inputs?.sharedFeatures) && inputs?.sharedFeatures.length > 0,
+          hasUsp: Array.isArray(inputs?.uspFeatures) && inputs?.uspFeatures.length > 0,
+        });
+      }
 
       // Update user stats
       const stats = await storage.getUserStats(userId);
@@ -2484,7 +2496,7 @@ Keep each description and why statement under 120 characters.`,
     try {
       const userId = req.user.claims.sub;
       const aiUser = await storage.getUser(userId);
-      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+      if (!aiUser?.challengePurchased && !aiUser?.coachingPurchased && !aiUser?.allDaysUnlocked && !aiUser?.isAdmin) {
         return res.status(403).json({ message: "Purchase required" });
       }
       const { ideaTitle, ideaDescription, userSkills, sharedFeatures, competitors } = req.body;
@@ -2541,7 +2553,7 @@ List only the features, one per line, each under 10 words. No numbering or bulle
     try {
       const userId = req.user.claims.sub;
       const aiUser = await storage.getUser(userId);
-      if (!aiUser?.challengePurchased && !aiUser?.isAdmin) {
+      if (!aiUser?.challengePurchased && !aiUser?.coachingPurchased && !aiUser?.allDaysUnlocked && !aiUser?.isAdmin) {
         return res.status(403).json({ message: "Purchase required" });
       }
       const { idea, painPoints } = req.body;
