@@ -15,9 +15,11 @@ export default function Welcome() {
   const [isSettingPassword, setIsSettingPassword] = useState(false);
   const [passwordSet, setPasswordSet] = useState(false);
 
+  const hasPurchased = (user as any)?.challengePurchased || (user as any)?.coachingPurchased || (user as any)?.isAdmin;
+
   useEffect(() => {
-    // Trigger confetti on load (only if authenticated)
-    if (isAuthenticated) {
+    // Trigger confetti on load (only if authenticated AND paid)
+    if (isAuthenticated && hasPurchased) {
       confetti({
         particleCount: 100,
         spread: 70,
@@ -27,7 +29,7 @@ export default function Welcome() {
 
     // Show content after a brief delay
     setTimeout(() => setShowContent(true), 300);
-  }, [isAuthenticated]);
+  }, [isAuthenticated, hasPurchased]);
 
   const firstName = (user as any)?.firstName || "there";
   const userEmail = (user as any)?.email || "";
@@ -139,7 +141,42 @@ export default function Welcome() {
     );
   }
 
-  // Authenticated user view
+  // Authenticated but hasn't paid - redirect them to purchase
+  if (isAuthenticated && !hasPurchased) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-6">
+        <div className={`max-w-lg w-full text-center space-y-8 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+
+          <div className="w-20 h-20 rounded-full bg-slate-200 flex items-center justify-center mx-auto">
+            <Lock className="w-10 h-10 text-slate-500" />
+          </div>
+
+          <div className="space-y-3">
+            <h1 className="text-4xl font-extrabold text-slate-900">
+              Almost There, {firstName}!
+            </h1>
+            <p className="text-xl text-slate-600">
+              Your account is set up, but you still need to purchase the challenge to get started.
+            </p>
+          </div>
+
+          <a
+            href="/order"
+            className="inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold text-xl py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 w-full"
+          >
+            Get the Challenge
+            <ArrowRight className="w-6 h-6" />
+          </a>
+
+          <p className="text-sm text-slate-500">
+            Questions? Email matt@mattwebley.com
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Authenticated user who has paid
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white flex items-center justify-center p-6">
       <div className={`max-w-lg w-full text-center space-y-8 transition-all duration-500 ${showContent ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>

@@ -205,24 +205,28 @@ export async function registerRoutes(
         return res.status(429).json({ message: "Too many requests. Please try again later." });
       }
 
-      // Check if this email has any purchases (challenge or coaching) or is a registered user
+      // Check if this email has any purchases - only send magic links to paying customers
       const pendingPurchase = await db.select().from(pendingPurchases)
         .where(eq(pendingPurchases.email, normalizedEmail))
         .limit(1);
-      
+
       const coachingPurchase = await db.select().from(coachingPurchases)
         .where(eq(coachingPurchases.email, normalizedEmail))
         .limit(1);
-      
+
       const existingUser = await db.select().from(users)
         .where(eq(users.email, normalizedEmail))
         .limit(1);
-      
-      if (pendingPurchase.length === 0 && coachingPurchase.length === 0 && existingUser.length === 0) {
+
+      // Only send magic links if they have a purchase (pending or completed) or are an existing paying user
+      const hasPurchase = pendingPurchase.length > 0 || coachingPurchase.length > 0;
+      const isPaidUser = existingUser.length > 0 && (existingUser[0].challengePurchased || existingUser[0].coachingPurchased || existingUser[0].isAdmin);
+
+      if (!hasPurchase && !isPaidUser) {
         // Don't reveal if email exists - always say "sent"
-        return res.json({ 
-          success: true, 
-          message: "If you have a purchase with this email, you'll receive a login link shortly." 
+        return res.json({
+          success: true,
+          message: "If you have a purchase with this email, you'll receive a login link shortly."
         });
       }
 

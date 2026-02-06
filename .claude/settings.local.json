@@ -108,7 +108,9 @@
       "Bash(__NEW_LINE_cacadbdd275f9fa0__ echo -e \"\\\\n\\\\n6. Static assets \\(logo\\):\")",
       "Bash(wc:*)",
       "Bash(npx:*)",
-      "Bash(# Check if this Replit has multiple deployments or the deployment uses a different DB ls -la /home/runner/.config/replit/ ; cat /home/runner/.replit)"
+      "Bash(# Check if this Replit has multiple deployments or the deployment uses a different DB ls -la /home/runner/.config/replit/ ; cat /home/runner/.replit)",
+      "Bash(replit deploy:*)",
+      "Bash(replit --help:*)"
     ]
   }
 }

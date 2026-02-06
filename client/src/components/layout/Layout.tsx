@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield } from "lucide-react";
 import { ReportProblem } from "@/components/ReportProblem";
 import { FocusButton } from "@/components/FocusButton";
 import { ChatWidget } from "@/components/ChatWidget";
+import { useAuth } from "@/hooks/useAuth";
+import { Link } from "wouter";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,6 +14,8 @@ interface LayoutProps {
 
 export function Layout({ children, currentDay = 1 }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { user } = useAuth();
+  const isAdmin = (user as any)?.isAdmin;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -32,6 +36,11 @@ export function Layout({ children, currentDay = 1 }: LayoutProps) {
             style={{ imageRendering: 'auto' }}
           />
         </div>
+        {isAdmin && (
+          <Link href="/admin" className="p-2 rounded-lg hover:bg-muted mr-1">
+            <Shield className="w-5 h-5 text-slate-600" />
+          </Link>
+        )}
         <FocusButton />
       </div>
 
@@ -57,6 +66,14 @@ export function Layout({ children, currentDay = 1 }: LayoutProps) {
           <Sidebar currentDay={currentDay} />
         </div>
         <main className="flex-1 min-w-0">
+          {isAdmin && (
+            <div className="flex justify-end px-6 pt-4">
+              <Link href="/admin" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
+                <Shield className="w-4 h-4" />
+                Admin
+              </Link>
+            </div>
+          )}
           <div className="max-w-5xl mx-auto p-4 sm:p-6 md:p-8 lg:p-12 animate-in fade-in duration-500">
             {children}
             <div className="mt-12 pt-6 border-t border-slate-200 flex justify-center">
