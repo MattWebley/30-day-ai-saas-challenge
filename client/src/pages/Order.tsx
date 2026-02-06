@@ -179,6 +179,9 @@ export default function Order() {
                   <p className="text-sm text-slate-600">
                     Skip the daily drip and work through the entire challenge at your own pace. Perfect if you want to move fast.
                   </p>
+                  <p className="text-xs text-slate-400">
+                    Charged separately. Promo codes apply to the challenge only.
+                  </p>
                 </div>
               </div>
             </button>

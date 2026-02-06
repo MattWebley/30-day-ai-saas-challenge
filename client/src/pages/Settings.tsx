@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "sonner";
-import { RotateCcw, Loader2 } from "lucide-react";
+import { RotateCcw, Loader2, Camera, X } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,26 +31,77 @@ export default function Settings() {
   // Local state for form
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoChanged, setPhotoChanged] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Update local state when user data loads
   useEffect(() => {
     if (user) {
       setFirstName(user.firstName || "");
       setLastName(user.lastName || "");
+      setPhotoPreview(user.profileImageUrl || null);
     }
   }, [user]);
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please select an image file");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image too large. Please use a photo under 5MB.");
+      return;
+    }
+
+    // Resize to 150x150 and convert to base64
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 150;
+        canvas.height = 150;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Crop to square from center
+        const size = Math.min(img.width, img.height);
+        const sx = (img.width - size) / 2;
+        const sy = (img.height - size) / 2;
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, 150, 150);
+
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        setPhotoPreview(dataUrl);
+        setPhotoChanged(true);
+      };
+      img.src = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removePhoto = () => {
+    setPhotoPreview(null);
+    setPhotoChanged(true);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   // Save profile mutation
   const saveProfile = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("PUT", "/api/auth/user", {
-        firstName,
-        lastName,
-      });
+      const body: any = { firstName, lastName };
+      if (photoChanged) {
+        body.profileImageUrl = photoPreview; // null = remove, string = new photo
+      }
+      const res = await apiRequest("PUT", "/api/auth/user", body);
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      setPhotoChanged(false);
       toast.success("Profile updated!");
     },
     onError: () => {
@@ -77,7 +128,8 @@ export default function Settings() {
   // Check if form has changes
   const hasChanges = user && (
     firstName !== (user.firstName || "") ||
-    lastName !== (user.lastName || "")
+    lastName !== (user.lastName || "") ||
+    photoChanged
   );
 
   if (isLoading) {
@@ -103,6 +155,58 @@ export default function Settings() {
         <Card className="p-6 space-y-8">
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Profile</h2>
+
+            {/* Profile Photo */}
+            <div className="grid gap-2">
+              <Label>Profile Photo</Label>
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  {photoPreview ? (
+                    <img
+                      src={photoPreview}
+                      alt="Profile"
+                      className="w-16 h-16 rounded-full object-cover border-2 border-slate-200"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 text-xl font-bold border-2 border-slate-200">
+                      {(firstName || user?.email || '?')[0]?.toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="gap-1"
+                  >
+                    <Camera className="w-4 h-4" />
+                    {photoPreview ? 'Change' : 'Upload'}
+                  </Button>
+                  {photoPreview && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={removePhoto}
+                      className="gap-1 text-red-600 hover:text-red-700"
+                    >
+                      <X className="w-4 h-4" />
+                      Remove
+                    </Button>
+                  )}
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoSelect}
+                  className="hidden"
+                />
+              </div>
+            </div>
+
             <div className="grid gap-2">
               <Label htmlFor="firstName">First Name</Label>
               <Input

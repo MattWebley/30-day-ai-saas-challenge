@@ -689,3 +689,55 @@ Questions? Just reply to this email.`;
     return false;
   }
 }
+
+export interface QuestionAnsweredEmailParams {
+  to: string;
+  firstName: string;
+  day: number;
+  question: string;
+  answer: string;
+}
+
+export async function sendQuestionAnsweredEmail(params: QuestionAnsweredEmailParams): Promise<boolean> {
+  try {
+    const { client, fromEmail, replyTo } = getResendClient();
+    const { to, firstName, day, question, answer } = params;
+
+    const subject = `Your Day ${day} question has been answered!`;
+    const body = `Hey ${firstName}!
+
+You asked a question on Day ${day} and it's been answered.
+
+YOUR QUESTION
+${question}
+
+ANSWER
+${answer}
+
+You can see this answer (and others) on your Day ${day} lesson page.
+
+Log in here: https://challenge.mattwebley.com/dashboard
+
+Keep building!
+
+- Matt
+
+--
+21-Day AI SaaS Challenge
+Questions? Just reply to this email.`;
+
+    await client.emails.send({
+      from: fromEmail,
+      replyTo: replyTo,
+      to: [to],
+      subject,
+      text: body,
+    });
+
+    console.log('Question answered email sent to:', to);
+    return true;
+  } catch (error) {
+    console.error('Failed to send question answered email:', error);
+    return false;
+  }
+}

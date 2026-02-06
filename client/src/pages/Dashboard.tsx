@@ -28,6 +28,7 @@ import { useDayContent } from "@/hooks/useDays";
 import { useUserProgress, useCompleteDay } from "@/hooks/useProgress";
 import { useUserStats } from "@/hooks/useStats";
 import { useAllBadges, useUserBadges } from "@/hooks/useBadges";
+import { useAuth } from "@/hooks/useAuth";
 import { DayCommunity } from "@/components/DayCommunity";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
@@ -262,9 +263,11 @@ export default function Dashboard() {
   const urlDay = params?.day ? parseInt(params.day) : null;
 
   // Fetch data
+  const { user } = useAuth();
   const { dayContent: allDays, isLoading: daysLoading } = useDayContent();
   const { progress, isLoading: progressLoading } = useUserProgress();
   const { stats, isLoading: statsLoading } = useUserStats();
+  const unlockPrice = (user as any)?.purchaseCurrency?.toLowerCase() === 'gbp' ? '£19' : '$29';
 
   // Calculate the user's actual current task (next incomplete day)
   const lastCompletedDay = (stats as any)?.lastCompletedDay ?? -1;
@@ -496,17 +499,31 @@ export default function Dashboard() {
                   )}
                 </div>
                 <Day0StartHere onComplete={handleComplete} />
-                {!(stats as any)?.hasCoaching && !(stats as any)?.allDaysUnlocked && (
-                  <Link href="/coaching">
-                    <Card className="p-4 border border-slate-200 bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
-                      <div className="flex items-center gap-3">
-                        <Zap className="w-5 h-5 text-amber-500" />
-                        <div>
-                          <p className="font-medium text-slate-700">Want to skip ahead? <span className="text-primary">Unlock all 21 days instantly</span></p>
-                        </div>
+                {!(stats as any)?.hasCoaching && !(stats as any)?.allDaysUnlocked && currentDay <= 4 && (
+                  <Card
+                    className="p-4 border-2 border-amber-300 bg-amber-50 hover:bg-amber-100 cursor-pointer transition-colors"
+                    onClick={async () => {
+                      try {
+                        const res = await fetch('/api/checkout/unlock-all-days', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                        });
+                        const data = await res.json();
+                        if (data.url) window.location.href = data.url;
+                      } catch (e) {
+                        console.error('Unlock checkout error:', e);
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Zap className="w-5 h-5 text-amber-500" />
+                      <div>
+                        <p className="font-medium text-slate-700">Want to move faster? <span className="text-primary font-bold">Unlock all 21 days for just {unlockPrice}</span></p>
+                        <p className="text-sm text-slate-500 mt-0.5">Skip the daily drip and go at your own pace</p>
                       </div>
-                    </Card>
-                  </Link>
+                    </div>
+                  </Card>
                 )}
               </>
             ) : currentDay === 1 ? (
@@ -567,17 +584,31 @@ export default function Dashboard() {
                     />
                   </Card>
                 </div>
-                {!(stats as any)?.hasCoaching && !(stats as any)?.allDaysUnlocked && (
-                  <Link href="/coaching">
-                    <Card className="p-4 border border-slate-200 bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors">
-                      <div className="flex items-center gap-3">
-                        <Zap className="w-5 h-5 text-amber-500" />
-                        <div>
-                          <p className="font-medium text-slate-700">Want to skip ahead? <span className="text-primary">Unlock all 21 days instantly</span></p>
-                        </div>
+                {!(stats as any)?.hasCoaching && !(stats as any)?.allDaysUnlocked && currentDay <= 4 && (
+                  <Card
+                    className="p-4 border-2 border-amber-300 bg-amber-50 hover:bg-amber-100 cursor-pointer transition-colors"
+                    onClick={async () => {
+                      try {
+                        const res = await fetch('/api/checkout/unlock-all-days', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          credentials: 'include',
+                        });
+                        const data = await res.json();
+                        if (data.url) window.location.href = data.url;
+                      } catch (e) {
+                        console.error('Unlock checkout error:', e);
+                      }
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Zap className="w-5 h-5 text-amber-500" />
+                      <div>
+                        <p className="font-medium text-slate-700">Want to move faster? <span className="text-primary font-bold">Unlock all 21 days for just {unlockPrice}</span></p>
+                        <p className="text-sm text-slate-500 mt-0.5">Skip the daily drip and go at your own pace</p>
                       </div>
-                    </Card>
-                  </Link>
+                    </div>
+                  </Card>
                 )}
               </>
             ) : currentDay === 2 ? (

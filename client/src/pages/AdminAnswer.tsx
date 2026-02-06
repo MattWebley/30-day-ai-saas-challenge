@@ -64,20 +64,35 @@ export default function AdminAnswer() {
       return;
     }
 
+    if (!token) {
+      toast.error("Missing answer token");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const res = await fetch(`/api/questions/token/${token}/answer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ answer: answer.trim() })
       });
 
-      if (!res.ok) throw new Error("Failed to submit answer");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || `Failed to submit (${res.status})`);
+      }
 
-      toast.success("Answer published!");
-      setIsAnswered(true);
-    } catch (error) {
-      toast.error("Failed to submit answer");
+      const data = await res.json();
+      if (data.success) {
+        toast.success("Answer published!");
+        setIsAnswered(true);
+      } else {
+        throw new Error("Unexpected response");
+      }
+    } catch (error: any) {
+      console.error("Submit error:", error);
+      toast.error(error.message || "Failed to submit answer");
     } finally {
       setIsSubmitting(false);
     }

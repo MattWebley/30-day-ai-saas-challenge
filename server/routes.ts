@@ -9,7 +9,7 @@ import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail } from "./emailService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
 import { callClaude, callClaudeForJSON, detectAbuse, checkRateLimit, logAIUsage, sendAbuseAlert } from "./aiService";
@@ -92,14 +92,64 @@ export async function registerRoutes(
   app.put('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { firstName, lastName } = req.body;
+      const { firstName, lastName, profileImageUrl } = req.body;
+
+      // Build update data
+      const updateData: Record<string, any> = {
+        firstName: firstName?.trim() || null,
+        lastName: lastName?.trim() || null,
+      };
+
+      // Handle profile photo (base64 data URL, strict validation)
+      if (profileImageUrl !== undefined) {
+        if (profileImageUrl === null) {
+          updateData.profileImageUrl = null;
+        } else if (typeof profileImageUrl === 'string') {
+          // 1. Only allow JPEG, PNG, WebP - NO SVG (can contain scripts)
+          const allowedPrefixes = [
+            'data:image/jpeg;base64,',
+            'data:image/png;base64,',
+            'data:image/webp;base64,',
+          ];
+          const matchedPrefix = allowedPrefixes.find(p => profileImageUrl.startsWith(p));
+          if (!matchedPrefix) {
+            return res.status(400).json({ message: "Invalid image format. Only JPEG, PNG, or WebP allowed." });
+          }
+
+          // 2. Size limit (300KB data URL ~= 200KB image)
+          if (profileImageUrl.length > 300000) {
+            return res.status(400).json({ message: "Photo too large. Please use a smaller image." });
+          }
+
+          // 3. Extract and validate base64
+          const base64Data = profileImageUrl.slice(matchedPrefix.length);
+          if (!/^[A-Za-z0-9+/=]+$/.test(base64Data)) {
+            return res.status(400).json({ message: "Invalid image data." });
+          }
+
+          // 4. Decode and check magic bytes to confirm it's actually an image
+          const buffer = Buffer.from(base64Data, 'base64');
+          const isJPEG = buffer[0] === 0xFF && buffer[1] === 0xD8 && buffer[2] === 0xFF;
+          const isPNG = buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4E && buffer[3] === 0x47;
+          const isWebP = buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46
+                      && buffer[8] === 0x57 && buffer[9] === 0x45 && buffer[10] === 0x42 && buffer[11] === 0x50;
+
+          if (!isJPEG && !isPNG && !isWebP) {
+            return res.status(400).json({ message: "File content doesn't match image format. Upload rejected." });
+          }
+
+          // 5. Check decoded size (max 200KB actual image data)
+          if (buffer.length > 200000) {
+            return res.status(400).json({ message: "Photo too large after decoding." });
+          }
+
+          updateData.profileImageUrl = profileImageUrl;
+        }
+      }
 
       // Update user in database
       await db.update(users)
-        .set({
-          firstName: firstName?.trim() || null,
-          lastName: lastName?.trim() || null,
-        })
+        .set(updateData)
         .where(eq(users.id, userId));
 
       // Fetch updated user
@@ -3542,7 +3592,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           userId,
           endpoint: 'ai-suggested-answer',
           endpointType: 'general',
-          systemPrompt: `You are Matt Webley's assistant for the 21-Day AI SaaS Challenge. Generate a helpful, concise answer to this student question about Day ${day}: "${dayContent?.title || 'Unknown'}". Keep answers practical and actionable. Use Matt's punchy, direct style with short sentences and ALL CAPS for emphasis occasionally.`,
+          systemPrompt: `You are Matt Webley's assistant for the 21-Day AI SaaS Challenge. Generate a helpful, concise answer to this student question about Day ${day}: "${dayContent?.title || 'Unknown'}". Keep answers practical and actionable. Use Matt's punchy, direct style with short sentences and ALL CAPS for emphasis occasionally. NEVER use em dashes. Use hyphens or rewrite the sentence instead.`,
           userMessage: question,
           maxTokens: 500,
         });
@@ -3647,6 +3697,24 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const sanitizedAnswer = sanitizeContent(answer.trim());
 
       const updated = await storage.answerQuestion(question.id, sanitizedAnswer);
+
+      // Send email notification to the student
+      try {
+        const student = await storage.getUser(question.userId);
+        if (student?.email) {
+          await sendQuestionAnsweredEmail({
+            to: student.email,
+            firstName: student.firstName || 'there',
+            day: question.day,
+            question: question.question,
+            answer: sanitizedAnswer,
+          });
+        }
+      } catch (emailError) {
+        console.error('[Answer] Failed to send notification email:', emailError);
+        // Don't fail the answer submission if email fails
+      }
+
       res.json({ success: true, question: updated });
     } catch (error: any) {
       console.error("Error answering question:", error);
@@ -3704,32 +3772,14 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       const userId = req.isAuthenticated() && req.user ? (req.user as User).id : null;
 
-      // Build line items - challenge + optional bump offer
-      const lineItems: any[] = [{
-        price: priceId,
-        quantity: 1
-      }];
-
-      if (unlockAllDays) {
-        const bumpAmounts: Record<string, number> = {
-          usd: 2900, // $29
-          gbp: 1900  // £19
-        };
-        lineItems.push({
-          price_data: {
-            currency: currency.toLowerCase(),
-            product_data: {
-              name: 'Unlock All 21 Days Instantly',
-            },
-            unit_amount: bumpAmounts[currency.toLowerCase()] || bumpAmounts.usd,
-          },
-          quantity: 1
-        });
-      }
-
+      // Only the challenge as a line item - bump is charged separately
+      // so promo codes only apply to the challenge
       const sessionConfig: any = {
         payment_method_types: ['card'],
-        line_items: lineItems,
+        line_items: [{
+          price: priceId,
+          quantity: 1
+        }],
         mode: 'payment',
         allow_promotion_codes: true,
         success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}&currency=${currency}`,
@@ -3936,6 +3986,57 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       res.json({ url: session.url });
     } catch (error: any) {
       console.error("Error creating Matt coaching checkout session:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  // Unlock All Days - standalone purchase (for users already in the challenge)
+  app.post("/api/checkout/unlock-all-days", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      if (user.allDaysUnlocked || user.coachingPurchased) {
+        return res.status(400).json({ message: "You already have all days unlocked" });
+      }
+
+      const currency = user.purchaseCurrency || 'usd';
+      const stripe = await getUncachableStripeClient();
+      const host = req.get('host');
+      const protocol = req.protocol;
+
+      const bumpAmounts: Record<string, number> = {
+        usd: 2900,
+        gbp: 1900
+      };
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: currency.toLowerCase(),
+            product_data: {
+              name: 'Unlock All 21 Days Instantly',
+            },
+            unit_amount: bumpAmounts[currency.toLowerCase()] || bumpAmounts.usd,
+          },
+          quantity: 1
+        }],
+        mode: 'payment',
+        success_url: `${protocol}://${host}/dashboard?unlocked=true`,
+        cancel_url: `${protocol}://${host}/dashboard`,
+        metadata: {
+          productType: 'unlock-all-days',
+          currency,
+          userId
+        }
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Error creating unlock checkout:", error);
       res.status(500).json({ message: "Failed to create checkout session" });
     }
   });
