@@ -95,48 +95,9 @@ export class WebhookHandlers {
       user = foundUser;
     }
 
-    // If bump offer selected, charge it separately (so promo codes don't apply to it)
-    if (unlockAllDays && productType === 'challenge') {
-      try {
-        const stripe = await getUncachableStripeClient();
-        const bumpAmounts: Record<string, number> = {
-          usd: 2900, // $29
-          gbp: 1900  // £19
-        };
-        const bumpAmount = bumpAmounts[currency.toLowerCase()] || bumpAmounts.usd;
-
-        // Get payment method from the checkout session's payment intent
-        const paymentIntentId = typeof session.payment_intent === 'string' ? session.payment_intent : session.payment_intent?.id;
-        let paymentMethodId: string | null = null;
-        if (paymentIntentId) {
-          const pi = await stripe.paymentIntents.retrieve(paymentIntentId);
-          paymentMethodId = typeof pi.payment_method === 'string' ? pi.payment_method : pi.payment_method?.id || null;
-        }
-
-        if (paymentMethodId) {
-          const bumpPayment = await stripe.paymentIntents.create({
-            amount: bumpAmount,
-            currency: currency.toLowerCase(),
-            customer: customerId,
-            payment_method: paymentMethodId,
-            off_session: true,
-            confirm: true,
-            description: 'Unlock All 21 Days - Add-on',
-            metadata: {
-              productType: 'unlock-all-days',
-              email: email || '',
-            }
-          });
-          console.log('[Webhook] Bump charge status:', bumpPayment.status, 'for', email);
-        } else {
-          console.error('[Webhook] No payment method found for bump charge - granting unlock anyway for', email);
-        }
-      } catch (bumpError: any) {
-        console.error('[Webhook] Bump charge failed for', email, ':', bumpError.message);
-        // Still grant the unlock - don't punish the customer for a payment issue
-        // Flag for manual review
-      }
-    }
+    // Bump (Unlock All Days) is now included as a line item in the Stripe checkout
+    // so it's already paid for - no separate charge needed. The LAUNCHOFFER coupon
+    // is restricted to the challenge product only, so the bump is always full price.
 
     if (user) {
       // User exists - grant access directly

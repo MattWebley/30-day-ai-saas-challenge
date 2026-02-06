@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { Menu, X } from "lucide-react";
 import { ReportProblem } from "@/components/ReportProblem";
+import { FocusButton } from "@/components/FocusButton";
 import { ChatWidget } from "@/components/ChatWidget";
 
 interface LayoutProps {
@@ -31,7 +32,7 @@ export function Layout({ children, currentDay = 1 }: LayoutProps) {
             style={{ imageRendering: 'auto' }}
           />
         </div>
-        <ReportProblem currentDay={currentDay} />
+        <FocusButton />
       </div>
 
       {/* Mobile Overlay */}

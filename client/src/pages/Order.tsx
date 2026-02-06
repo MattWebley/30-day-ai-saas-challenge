@@ -180,7 +180,7 @@ export default function Order() {
                     Skip the daily drip and work through the entire challenge at your own pace. Perfect if you want to move fast.
                   </p>
                   <p className="text-xs text-slate-400">
-                    Charged separately. Promo codes apply to the challenge only.
+                    Promo codes apply to the challenge only, not this add-on.
                   </p>
                 </div>
               </div>

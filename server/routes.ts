@@ -3766,20 +3766,28 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         gbp: 'price_1SqGYdLcRVtxg5yVgbtDKL7S'
       };
 
+      // Price IDs for Unlock All Days bump (coupon is restricted to challenge product only)
+      const unlockPriceIds: Record<string, string> = {
+        usd: 'price_1SxhHpLcRVtxg5yVD93NYLz6',
+        gbp: 'price_1SxhHpLcRVtxg5yVeJC8rNlY'
+      };
+
       const priceId = priceIds[currency.toLowerCase()] || priceIds.usd;
       const host = req.get('host');
       const protocol = req.protocol;
 
       const userId = req.isAuthenticated() && req.user ? (req.user as User).id : null;
 
-      // Only the challenge as a line item - bump is charged separately
-      // so promo codes only apply to the challenge
+      // Build line items - bump is a separate product so LAUNCHOFFER coupon won't apply to it
+      const lineItems: any[] = [{ price: priceId, quantity: 1 }];
+      if (unlockAllDays) {
+        const unlockPriceId = unlockPriceIds[currency.toLowerCase()] || unlockPriceIds.usd;
+        lineItems.push({ price: unlockPriceId, quantity: 1 });
+      }
+
       const sessionConfig: any = {
         payment_method_types: ['card'],
-        line_items: [{
-          price: priceId,
-          quantity: 1
-        }],
+        line_items: lineItems,
         mode: 'payment',
         allow_promotion_codes: true,
         success_url: `${protocol}://${host}/checkout/success?session_id={CHECKOUT_SESSION_ID}&currency=${currency}`,
