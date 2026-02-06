@@ -1,8 +1,10 @@
 import { useState, useRef } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { useTestMode } from "@/contexts/TestModeContext";
+import { toast } from "sonner";
 import {
   Users,
   TrendingUp,
@@ -20,6 +22,8 @@ import {
   Eye,
   ArrowRight,
   KeyRound,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   LineChart,
@@ -144,6 +148,7 @@ function FunnelBar({
 export default function Admin() {
   const { testMode, setTestMode } = useTestMode();
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
+  const [showRestoreLinks, setShowRestoreLinks] = useState(false);
 
   // Check if user is admin
   const { data: currentUser } = useQuery({
@@ -217,6 +222,22 @@ export default function Admin() {
     staleTime: 30_000,
   });
 
+  const queryClient = useQueryClient();
+
+  const backfillNames = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/admin/backfill-names");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast.success(data.message);
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to backfill names");
+    },
+  });
+
   if (isLoading) {
     return (
       <Layout currentDay={1}>
@@ -238,7 +259,12 @@ export default function Admin() {
 
   // Segments for overview
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const activeThisWeek = adminUsers.filter(
+    (u) => u.stats.lastActivityDate && new Date(u.stats.lastActivityDate) > sevenDaysAgo
+  ).length;
   const paidCount = adminUsers.filter((u) => u.challengePurchased).length;
+  const bumpCount = adminUsers.filter((u) => u.allDaysUnlocked).length;
+  const coachingCount = adminUsers.filter((u) => u.coachingPurchased).length;
   const stuckCount = adminUsers.filter(
     (u) =>
       u.challengePurchased &&
@@ -414,7 +440,7 @@ export default function Admin() {
                 </div>
                 <p className="text-4xl font-extrabold text-slate-900">{stats.totalUsers}</p>
                 <p className="text-slate-500 text-sm">
-                  {paidCount} paid, {stats.activeUsers} active this week
+                  {paidCount} paid, {activeThisWeek} active this week
                 </p>
               </Card>
 
@@ -440,6 +466,15 @@ export default function Admin() {
                 <p className="text-slate-500 text-sm">
                   {revenueData?.totals.transactions || 0} total sales
                 </p>
+                {revenueData?.revenueByProduct && revenueData.revenueByProduct.length > 0 && (
+                  <div className="mt-2 pt-2 border-t border-slate-100 space-y-0.5">
+                    {revenueData.revenueByProduct.map((p) => (
+                      <p key={p.name} className="text-xs text-slate-400">
+                        {p.name}: {formatCurrency(p.amount, p.currency)} ({p.count} sale{p.count !== 1 ? "s" : ""})
+                      </p>
+                    ))}
+                  </div>
+                )}
               </Card>
 
               {/* Completion */}
@@ -456,56 +491,92 @@ export default function Admin() {
                 </p>
               </Card>
 
-              {/* Active Now */}
+              {/* Active This Week */}
               <Card className="p-5 border border-slate-200 border-l-4 border-l-emerald-500 shadow-sm">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
                     <Activity className="w-5 h-5 text-emerald-600" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900">Active Now</h3>
+                  <h3 className="text-lg font-bold text-slate-900">Active This Week</h3>
                 </div>
-                <div className="flex items-center gap-2">
-                  <p className="text-4xl font-extrabold text-slate-900">{stats.activeUsers}</p>
-                  {stats.activeUsers > 0 && (
-                    <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-                  )}
-                </div>
-                <p className="text-slate-500 text-sm">active this week</p>
+                <p className="text-4xl font-extrabold text-slate-900">{activeThisWeek}</p>
+                <p className="text-slate-500 text-sm">
+                  of {paidCount} paid users
+                </p>
               </Card>
             </div>
 
-            {/* Emergency Admin Restore Links */}
-            <Card className="p-5 border border-slate-200 border-l-4 border-l-red-400 shadow-sm">
-              <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-200">
-                <KeyRound className="w-5 h-5 text-red-500" />
-                <h3 className="text-lg font-bold text-slate-900">Emergency Admin Restore</h3>
-              </div>
-              <p className="text-slate-600 mb-3">
-                If you ever lose admin access, paste one of these URLs into your browser. Each link works <strong>once</strong> then expires. After clicking, <strong>log out and log back in</strong> to see admin again.
-              </p>
-              <div className="space-y-2">
-                {[
-                  "https://challenge.mattwebley.com/api/restore/r1-a4e8c7f2b91d3056",
-                  "https://challenge.mattwebley.com/api/restore/r2-d7b3f1e8a04c9265",
-                  "https://challenge.mattwebley.com/api/restore/r3-91c5a8d3e7f24b06",
-                ].map((url, i) => (
-                  <div key={i} className="flex items-center gap-2 bg-slate-50 rounded-lg p-3 border border-slate-200">
-                    <span className="text-xs font-bold text-slate-400 w-5">#{i + 1}</span>
-                    <code className="text-xs text-slate-700 break-all flex-1">{url}</code>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(url);
-                      }}
-                      className="text-xs text-primary hover:underline flex-shrink-0"
-                    >
-                      Copy
-                    </button>
+            {/* Upsell Conversions */}
+            {paidCount > 0 && (
+              <Card className="p-5 border border-slate-200 border-l-4 border-l-purple-500 shadow-sm">
+                <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200">
+                  <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-purple-600" />
                   </div>
-                ))}
-              </div>
-              <p className="text-xs text-slate-400 mt-3">
-                These reset on every server restart, so all 3 are always available after a redeploy.
-              </p>
+                  <h3 className="text-lg font-bold text-slate-900">Upsell Conversions</h3>
+                </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <p className="text-sm text-slate-500 mb-1">Bump — Unlock All Days (+$29)</p>
+                    <p className="text-2xl font-extrabold text-slate-900">{bumpCount}</p>
+                    <p className="text-sm text-slate-500">
+                      of {paidCount} buyers ({paidCount > 0 ? ((bumpCount / paidCount) * 100).toFixed(0) : 0}%)
+                    </p>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                    <p className="text-sm text-slate-500 mb-1">Coaching Upsell ($599)</p>
+                    <p className="text-2xl font-extrabold text-slate-900">{coachingCount}</p>
+                    <p className="text-sm text-slate-500">
+                      of {paidCount} buyers ({paidCount > 0 ? ((coachingCount / paidCount) * 100).toFixed(0) : 0}%)
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            {/* Emergency Admin Restore Links (collapsed by default) */}
+            <Card className="border border-slate-200 border-l-4 border-l-red-400 shadow-sm overflow-hidden">
+              <button
+                onClick={() => setShowRestoreLinks(!showRestoreLinks)}
+                className="w-full p-5 flex items-center justify-between hover:bg-slate-50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <KeyRound className="w-5 h-5 text-red-500" />
+                  <h3 className="text-lg font-bold text-slate-900">Emergency Admin Restore</h3>
+                </div>
+                {showRestoreLinks ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+              </button>
+              {showRestoreLinks && (
+                <div className="px-5 pb-5 border-t border-slate-200 pt-3">
+                  <p className="text-slate-600 mb-3">
+                    If you ever lose admin access, paste one of these URLs into your browser. Each link works <strong>once</strong> then expires. After clicking, <strong>log out and log back in</strong> to see admin again.
+                  </p>
+                  <div className="space-y-2">
+                    {[
+                      "https://challenge.mattwebley.com/api/restore/r1-a4e8c7f2b91d3056",
+                      "https://challenge.mattwebley.com/api/restore/r2-d7b3f1e8a04c9265",
+                      "https://challenge.mattwebley.com/api/restore/r3-91c5a8d3e7f24b06",
+                    ].map((url, i) => (
+                      <div key={i} className="flex items-center gap-2 bg-slate-50 rounded-lg p-3 border border-slate-200">
+                        <span className="text-xs font-bold text-slate-400 w-5">#{i + 1}</span>
+                        <code className="text-xs text-slate-700 break-all flex-1">{url}</code>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(url);
+                          }}
+                          className="text-xs text-primary hover:underline flex-shrink-0"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-slate-400 mt-3">
+                    These reset on every server restart, so all 3 are always available after a redeploy.
+                  </p>
+                </div>
+              )}
             </Card>
 
             {/* Needs Attention Panel */}
@@ -793,8 +864,17 @@ export default function Admin() {
 
             {/* Student Progress Table */}
             <Card className="border border-slate-200 overflow-hidden shadow-sm">
-              <div className="p-4 border-b border-slate-100">
+              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
                 <h3 className="font-bold text-slate-900">Student Progress</h3>
+                {adminUsers.some((u: AdminUser) => !u.firstName && u.stripeCustomerId) && (
+                  <button
+                    onClick={() => backfillNames.mutate()}
+                    disabled={backfillNames.isPending}
+                    className="text-xs text-primary hover:underline disabled:opacity-50"
+                  >
+                    {backfillNames.isPending ? "Fetching names..." : "Fill missing names from Stripe"}
+                  </button>
+                )}
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">

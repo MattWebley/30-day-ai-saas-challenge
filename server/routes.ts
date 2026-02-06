@@ -9,7 +9,7 @@ import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
-import { eq, desc, isNull, sql, and, gte, count, countDistinct } from "drizzle-orm";
+import { eq, desc, isNull, isNotNull, sql, and, gte, count, countDistinct } from "drizzle-orm";
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail } from "./emailService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -6658,6 +6658,61 @@ Example format:
     } catch (error) {
       console.error("Error granting access:", error);
       res.status(500).json({ message: "Failed to grant access" });
+    }
+  });
+
+  // Admin: Backfill missing user names from Stripe customer data
+  app.post("/api/admin/backfill-names", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const stripe = await getUncachableStripeClient();
+
+      // Find users missing first name who have a Stripe customer ID
+      const usersWithoutNames = await db
+        .select()
+        .from(users)
+        .where(and(
+          isNull(users.firstName),
+          isNotNull(users.stripeCustomerId)
+        ));
+
+      let updated = 0;
+      const results: { email: string; name: string }[] = [];
+
+      for (const user of usersWithoutNames) {
+        try {
+          const customer = await stripe.customers.retrieve(user.stripeCustomerId!) as any;
+          if (customer.deleted) continue;
+
+          const name = customer.name as string | null;
+          if (!name) continue;
+
+          // Split "First Last" into parts
+          const parts = name.trim().split(/\s+/);
+          const firstName = parts[0];
+          const lastName = parts.length > 1 ? parts.slice(1).join(' ') : null;
+
+          await storage.updateUser(user.id, { firstName, lastName });
+          updated++;
+          results.push({ email: user.email || user.id, name });
+        } catch (stripeErr: any) {
+          // Skip this user if Stripe lookup fails (deleted customer, etc.)
+          console.error(`[Backfill] Failed for ${user.email}:`, stripeErr.message);
+        }
+      }
+
+      res.json({
+        success: true,
+        message: `Updated ${updated} of ${usersWithoutNames.length} users missing names`,
+        updated,
+        total: usersWithoutNames.length,
+        results,
+      });
+    } catch (error: any) {
+      console.error("Error backfilling names:", error);
+      res.status(500).json({ message: error.message || "Failed to backfill names" });
     }
   });
 
