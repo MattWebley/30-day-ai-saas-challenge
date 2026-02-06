@@ -18,17 +18,15 @@ export class WebhookHandlers {
       );
     }
 
-    // First, process with our custom handler (this is the important one)
+    // Process with our custom handler - this MUST succeed or throw
     await this.handleCheckoutComplete(payload, signature);
 
     // Then let StripeSync handle it (for general Stripe data sync)
-    // Wrapped in try-catch so StripeSync errors don't break the whole webhook
     try {
       const sync = await getStripeSync();
       await sync.processWebhook(payload, signature);
     } catch (syncError: any) {
       console.error('[Webhook] StripeSync error (non-fatal):', syncError.message);
-      // Don't rethrow - we still want to return 200 since our custom handler worked
     }
   }
 
@@ -37,25 +35,22 @@ export class WebhookHandlers {
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
     if (!webhookSecret) {
-      console.log('[Webhook] No STRIPE_WEBHOOK_SECRET configured, skipping custom processing');
-      return;
+      throw new Error('[Webhook] STRIPE_WEBHOOK_SECRET is not configured - cannot process webhooks');
     }
-
-    // Webhook secret is configured (don't log details in production)
 
     let event: Stripe.Event;
     try {
       event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
     } catch (err: any) {
-      console.error('[Webhook] Signature verification failed:', err.message);
-      return;
+      throw new Error('[Webhook] Signature verification failed: ' + err.message);
     }
 
-    console.log('[Webhook] Received event:', event.type);
+    console.log('[Webhook] Verified event:', event.type);
 
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
       await this.processCompletedCheckout(session);
+      console.log('[Webhook] Successfully processed checkout for:', session.customer_email || session.customer_details?.email);
     }
   }
 
