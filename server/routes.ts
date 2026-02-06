@@ -6810,9 +6810,16 @@ Example format:
       });
 
       // Revenue by product (from metadata or description)
+      const cleanProductName = (desc: string): string => {
+        const d = desc.toLowerCase();
+        if (d.includes('coaching') && d.includes('matt')) return 'Coaching (Matt)';
+        if (d.includes('coaching')) return 'Coaching';
+        if (d.includes('critique')) return 'Critique';
+        return 'Challenge';
+      };
       const revenueByProduct: Record<string, { amount: number; count: number; currency: string }> = {};
       successfulCharges.forEach(charge => {
-        const product = charge.description || 'Challenge';
+        const product = cleanProductName(charge.description || 'Challenge');
         const currency = charge.currency.toUpperCase();
         const key = `${product}__${currency}`;
         if (!revenueByProduct[key]) {

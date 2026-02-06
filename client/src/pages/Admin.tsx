@@ -469,10 +469,11 @@ export default function Admin() {
                 {revenueData?.revenueByProduct && revenueData.revenueByProduct.length > 0 && (
                   <div className="mt-2 pt-2 border-t border-slate-100 space-y-0.5">
                     {revenueData.revenueByProduct.map((p) => (
-                      <p key={p.name} className="text-xs text-slate-400">
-                        {p.name}: {formatCurrency(p.amount, p.currency)} ({p.count} sale{p.count !== 1 ? "s" : ""})
+                      <p key={`${p.name}-${p.currency}`} className="text-xs text-slate-400">
+                        {p.name}: {formatCurrency(p.amount, p.currency)} ({p.count})
                       </p>
                     ))}
+                    <p className="text-xs text-slate-300 italic">Challenge includes bump add-ons</p>
                   </div>
                 )}
               </Card>
