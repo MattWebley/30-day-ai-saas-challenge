@@ -105,12 +105,9 @@ export async function setupAuth(app: Express) {
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
-  app.get("/api/login", (req, res, next) => {
-    ensureStrategy(req.hostname);
-    passport.authenticate(`replitauth:${req.hostname}`, {
-      prompt: "login consent",
-      scope: ["openid", "email", "profile", "offline_access"],
-    })(req, res, next);
+  // Replit OAuth login disabled - users must purchase and use magic link or email/password
+  app.get("/api/login", (req, res) => {
+    res.redirect("/auth-error");
   });
 
   app.get("/api/callback", (req, res, next) => {

@@ -560,9 +560,15 @@ export async function registerRoutes(
 
       // --- Server-side day access enforcement ---
       const user = await storage.getUser(userId);
+      const hasPurchased = user?.challengePurchased || false;
       const hasCoaching = user?.coachingPurchased || false;
       const hasUnlockedAll = user?.allDaysUnlocked || false;
       const isAdmin = user?.isAdmin || false;
+
+      // Must have purchased the challenge (or be admin/coaching)
+      if (!hasPurchased && !hasCoaching && !isAdmin) {
+        return res.status(403).json({ message: "You need to purchase the challenge to access this content." });
+      }
 
       // Coaching purchasers, unlock-all buyers, and admins bypass all drip restrictions
       if (!hasCoaching && !hasUnlockedAll && !isAdmin) {
@@ -830,6 +836,11 @@ export async function registerRoutes(
   // Get single user with full details
   app.get("/api/admin/users/:id", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
       const { id } = req.params;
       const user = await storage.getUser(id);
 
@@ -856,6 +867,11 @@ export async function registerRoutes(
   // Create new user
   app.post("/api/admin/users", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
       const { email, firstName, lastName, isAdmin, challengePurchased, coachingPurchased } = req.body;
 
       if (!email) {
@@ -902,6 +918,11 @@ export async function registerRoutes(
   // Update user
   app.patch("/api/admin/users/:id", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
       const { id } = req.params;
       const {
         email,
@@ -984,6 +1005,11 @@ export async function registerRoutes(
   // Delete user
   app.delete("/api/admin/users/:id", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
       const { id } = req.params;
 
       const user = await storage.getUser(id);
@@ -1116,6 +1142,11 @@ export async function registerRoutes(
   // Reset user progress (without deleting user)
   app.post("/api/admin/users/:id/reset-progress", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
       const { id } = req.params;
 
       const user = await storage.getUser(id);
@@ -1155,6 +1186,11 @@ export async function registerRoutes(
   // Get detailed progress for a specific user (for admin)
   app.get("/api/admin/users/:id/progress", isAuthenticated, async (req: any, res) => {
     try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
       const { id } = req.params;
 
       const user = await storage.getUser(id);

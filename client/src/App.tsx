@@ -55,8 +55,8 @@ function ScrollToTop() {
 }
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
-  const [location] = useLocation();
+  const { user, isAuthenticated, isLoading } = useAuth();
+  const [location, setLocation] = useLocation();
 
   // Track page views for Google Analytics
   useAnalytics();
@@ -66,6 +66,15 @@ function Router() {
 
   // Send heartbeat for live user tracking (lightweight, in-memory only)
   useHeartbeat(isAuthenticated);
+
+  // Redirect authenticated but non-paying users to order page
+  const hasPurchased = (user as any)?.challengePurchased || (user as any)?.coachingPurchased || (user as any)?.isAdmin;
+  const protectedPaths = ['/dashboard', '/badges', '/referrals', '/build-log', '/claude-code', '/settings', '/coaching', '/critique', '/testimonial', '/congratulations'];
+  const isProtectedRoute = protectedPaths.some(path => location.startsWith(path));
+  if (isAuthenticated && !hasPurchased && isProtectedRoute) {
+    setLocation('/order');
+    return null;
+  }
 
   // Public routes that don't need auth check
   const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic'];
@@ -104,6 +113,8 @@ function Router() {
         <Route path="/auth/magic" component={MagicVerify} />
         {!isAuthenticated ? (
           <Route path="/" component={Landing} />
+        ) : !hasPurchased ? (
+          <Route path="/" component={Order} />
         ) : (
           <>
             <Route path="/" component={Dashboard} />
