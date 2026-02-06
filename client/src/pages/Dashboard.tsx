@@ -509,10 +509,15 @@ export default function Dashboard() {
                           headers: { 'Content-Type': 'application/json' },
                           credentials: 'include',
                         });
+                        if (!res.ok) {
+                          const errorData = await res.json().catch(() => ({}));
+                          throw new Error(errorData.message || "Checkout failed");
+                        }
                         const data = await res.json();
                         if (data.url) window.location.href = data.url;
-                      } catch (e) {
+                      } catch (e: any) {
                         console.error('Unlock checkout error:', e);
+                        toast.error(e.message || "Something went wrong. Please try again.");
                       }
                     }}
                   >
@@ -594,10 +599,15 @@ export default function Dashboard() {
                           headers: { 'Content-Type': 'application/json' },
                           credentials: 'include',
                         });
+                        if (!res.ok) {
+                          const errorData = await res.json().catch(() => ({}));
+                          throw new Error(errorData.message || "Checkout failed");
+                        }
                         const data = await res.json();
                         if (data.url) window.location.href = data.url;
-                      } catch (e) {
+                      } catch (e: any) {
                         console.error('Unlock checkout error:', e);
+                        toast.error(e.message || "Something went wrong. Please try again.");
                       }
                     }}
                   >
@@ -1230,7 +1240,7 @@ export default function Dashboard() {
                     <h2 className="font-bold text-xl text-slate-900">Your First External API</h2>
                   </div>
                   <Day13ExternalAPIs
-                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.chosenName || "your app"}
+                    appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "your app"}
                     onComplete={handleComplete}
                   />
                 </div>
@@ -1503,7 +1513,7 @@ export default function Dashboard() {
                     appName={(Array.isArray(progress) ? progress.find((p: any) => p.day === 4) : null)?.userInputs?.finalName || "Your App"}
                     userIdea={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.chosenIdea || ""}
                     painPoints={(Array.isArray(progress) ? progress.find((p: any) => p.day === 2) : null)?.userInputs?.selectedPainPoints || []}
-                    features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.coreFeatures || []}
+                    features={(Array.isArray(progress) ? progress.find((p: any) => p.day === 3) : null)?.userInputs?.selectedFeatures || []}
                     aiFeature={(Array.isArray(progress) ? progress.find((p: any) => p.day === 10) : null)?.userInputs?.aiFeature || ""}
                     brandColor={(Array.isArray(progress) ? progress.find((p: any) => p.day === 11) : null)?.userInputs?.primaryColor || ""}
                     onComplete={handleComplete}

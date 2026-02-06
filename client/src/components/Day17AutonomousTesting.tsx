@@ -266,7 +266,7 @@ export function Day17AutonomousTesting({ appName, onComplete }: Day17AutonomousT
                     <Checkbox
                       checked={testedAreas.has(area.id)}
                       onCheckedChange={() => {}}
-                      className="mt-0.5"
+                      className="mt-0.5 pointer-events-none"
                     />
                     <div>
                       <p className={ds.label}>{area.label}</p>

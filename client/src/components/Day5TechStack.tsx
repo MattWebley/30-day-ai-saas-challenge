@@ -126,7 +126,7 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
                 <Checkbox
                   checked={completedTools.has(tool.name)}
                   onCheckedChange={() => {}}
-                  className="mt-1"
+                  className="mt-1 pointer-events-none"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -184,7 +184,7 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
                 <Checkbox
                   checked={completedTools.has(tool.name)}
                   onCheckedChange={() => {}}
-                  className="mt-1"
+                  className="mt-1 pointer-events-none"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
@@ -252,7 +252,7 @@ export function Day5TechStack({ dayId, onComplete }: Day5TechStackProps) {
                 <Checkbox
                   checked={completedTools.has(tool.name)}
                   onCheckedChange={() => {}}
-                  className="mt-1"
+                  className="mt-1 pointer-events-none"
                 />
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">

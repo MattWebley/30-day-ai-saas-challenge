@@ -165,7 +165,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setSpecificDone(!specificDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={specificDone} onCheckedChange={() => {}} />
+                  <Checkbox checked={specificDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -234,7 +234,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setReverseDone(!reverseDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={reverseDone} onCheckedChange={() => {}} />
+                  <Checkbox checked={reverseDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -307,7 +307,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setErrorsDone(!errorsDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={errorsDone} onCheckedChange={() => {}} />
+                  <Checkbox checked={errorsDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -377,7 +377,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setBreakdownDone(!breakdownDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={breakdownDone} onCheckedChange={() => {}} />
+                  <Checkbox checked={breakdownDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -450,7 +450,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setCommitDone(!commitDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={commitDone} onCheckedChange={() => {}} />
+                  <Checkbox checked={commitDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -522,7 +522,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setOptionsDone(!optionsDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={optionsDone} onCheckedChange={() => {}} />
+                  <Checkbox checked={optionsDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -581,7 +581,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setVibeDone(!vibeDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={vibeDone} onCheckedChange={() => {}} />
+                  <Checkbox checked={vibeDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>
@@ -653,7 +653,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete }: Day9ClaudeCodeMa
                 onClick={() => setAskWhyDone(!askWhyDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={askWhyDone} onCheckedChange={() => {}} />
+                  <Checkbox checked={askWhyDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>Got it</span>
                 </div>
               </div>

@@ -278,7 +278,7 @@ export function Day3CoreFeatures({
                     <Checkbox
                       checked={selectedFeatures.has(feature.name)}
                       onCheckedChange={() => {}}
-                      className="mt-1"
+                      className="mt-1 pointer-events-none"
                     />
                     <div>
                       <h5 className={ds.label}>{feature.name}</h5>
@@ -309,7 +309,7 @@ export function Day3CoreFeatures({
                     <Checkbox
                       checked={selectedFeatures.has(feature.name)}
                       onCheckedChange={() => {}}
-                      className="mt-1"
+                      className="mt-1 pointer-events-none"
                     />
                     <div>
                       <h5 className={ds.label}>{feature.name}</h5>
@@ -340,7 +340,7 @@ export function Day3CoreFeatures({
                     <Checkbox
                       checked={selectedFeatures.has(feature.name)}
                       onCheckedChange={() => {}}
-                      className="mt-1"
+                      className="mt-1 pointer-events-none"
                     />
                     <div>
                       <h5 className={ds.label}>{feature.name}</h5>
@@ -372,7 +372,7 @@ export function Day3CoreFeatures({
                       <Checkbox
                         checked={selectedFeatures.has(feature.name)}
                         onCheckedChange={() => {}}
-                        className="mt-1"
+                        className="mt-1 pointer-events-none"
                       />
                       <div>
                         <h5 className={ds.label}>{feature.name}</h5>

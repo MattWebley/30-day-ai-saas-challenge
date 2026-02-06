@@ -96,7 +96,7 @@ export function Day13ExternalAPIs({ appName, onComplete }: Day13ExternalAPIsProp
                   onClick={() => setNeedsEmail(true)}
                 >
                   <div className="flex items-center gap-3">
-                    <Checkbox checked={needsEmail === true} onCheckedChange={() => setNeedsEmail(true)} />
+                    <Checkbox checked={needsEmail === true} onCheckedChange={() => {}} className="pointer-events-none" />
                     <span className={ds.body + " font-medium"}>Set up email with Resend</span>
                   </div>
                 </div>
@@ -106,7 +106,7 @@ export function Day13ExternalAPIs({ appName, onComplete }: Day13ExternalAPIsProp
                   onClick={() => setNeedsEmail(false)}
                 >
                   <div className="flex items-center gap-3">
-                    <Checkbox checked={needsEmail === false} onCheckedChange={() => setNeedsEmail(false)} />
+                    <Checkbox checked={needsEmail === false} onCheckedChange={() => {}} className="pointer-events-none" />
                     <span className={ds.body + " font-medium"}>Skip - I don't need email right now</span>
                   </div>
                 </div>
@@ -166,7 +166,7 @@ export function Day13ExternalAPIs({ appName, onComplete }: Day13ExternalAPIsProp
                 onClick={() => setSignupDone(!signupDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={signupDone} onCheckedChange={() => setSignupDone(!signupDone)} />
+                  <Checkbox checked={signupDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>I've created my Resend account</span>
                 </div>
               </div>
@@ -229,7 +229,7 @@ export function Day13ExternalAPIs({ appName, onComplete }: Day13ExternalAPIsProp
                 onClick={() => setApiKeyDone(!apiKeyDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={apiKeyDone} onCheckedChange={() => setApiKeyDone(!apiKeyDone)} />
+                  <Checkbox checked={apiKeyDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>I've copied my API key</span>
                 </div>
               </div>
@@ -300,7 +300,7 @@ export function Day13ExternalAPIs({ appName, onComplete }: Day13ExternalAPIsProp
                 onClick={() => setSecretsDone(!secretsDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={secretsDone} onCheckedChange={() => setSecretsDone(!secretsDone)} />
+                  <Checkbox checked={secretsDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>I've added my API key to Secrets</span>
                 </div>
               </div>
@@ -448,7 +448,7 @@ Send from: onboarding@resend.dev`}
                 onClick={() => setEmailReceived(!emailReceived)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={emailReceived} onCheckedChange={() => setEmailReceived(!emailReceived)} />
+                  <Checkbox checked={emailReceived} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>I received the test email</span>
                 </div>
               </div>

@@ -198,6 +198,7 @@ export function Day18BuildYourMVP({ appName, daysSinceStart, onComplete }: Day18
                     <Checkbox
                       checked={checksComplete.has(check.id)}
                       onCheckedChange={() => {}}
+                      className="pointer-events-none"
                     />
                     <span className={ds.body}>{check.text}</span>
                   </div>

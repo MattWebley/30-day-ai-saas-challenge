@@ -4,6 +4,7 @@ import { Layout } from "@/components/layout/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { useTestMode } from "@/contexts/TestModeContext";
 import { useLocation } from "wouter";
+import { toast } from "sonner";
 
 export default function Coaching() {
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
@@ -66,12 +67,17 @@ export default function Coaching() {
         credentials: 'include',
         body: JSON.stringify({ currency })
       });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Checkout failed");
+      }
       const data = await response.json();
       if (data.url) {
         window.location.href = data.url;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Checkout error:', error);
+      toast.error(error.message || "Something went wrong. Please try again.");
       setIsProcessing(null);
     }
   };

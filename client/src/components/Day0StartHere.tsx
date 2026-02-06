@@ -420,6 +420,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
             <Checkbox
               checked={shareToDiscussion}
               onCheckedChange={() => {}}
+              className="pointer-events-none"
             />
             <div className="flex-1">
               <span className={ds.muted}>

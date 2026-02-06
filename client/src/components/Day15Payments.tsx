@@ -142,7 +142,7 @@ Create a checkout button that takes users to Stripe's hosted checkout page. Afte
                 onClick={() => setSignupDone(!signupDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={signupDone} onCheckedChange={() => setSignupDone(!signupDone)} />
+                  <Checkbox checked={signupDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>I've created my Stripe account</span>
                 </div>
               </div>
@@ -203,7 +203,7 @@ Create a checkout button that takes users to Stripe's hosted checkout page. Afte
                 onClick={() => setKeysDone(!keysDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={keysDone} onCheckedChange={() => setKeysDone(!keysDone)} />
+                  <Checkbox checked={keysDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>I've copied both API keys</span>
                 </div>
               </div>
@@ -270,7 +270,7 @@ STRIPE_PUBLISHABLE_KEY = [paste your pk_test_ key]`}
                 onClick={() => setSecretsDone(!secretsDone)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={secretsDone} onCheckedChange={() => setSecretsDone(!secretsDone)} />
+                  <Checkbox checked={secretsDone} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>I've added both Stripe keys to Secrets</span>
                 </div>
               </div>
@@ -336,7 +336,7 @@ STRIPE_PUBLISHABLE_KEY = [paste your pk_test_ key]`}
                 onClick={() => setBuiltCheckout(!builtCheckout)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={builtCheckout} onCheckedChange={() => setBuiltCheckout(!builtCheckout)} />
+                  <Checkbox checked={builtCheckout} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>I've built my checkout flow</span>
                 </div>
               </div>
@@ -404,7 +404,7 @@ STRIPE_PUBLISHABLE_KEY = [paste your pk_test_ key]`}
                 onClick={() => setPaymentWorked(!paymentWorked)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={paymentWorked} onCheckedChange={() => setPaymentWorked(!paymentWorked)} />
+                  <Checkbox checked={paymentWorked} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>I made a test payment and saw it in Stripe!</span>
                 </div>
               </div>

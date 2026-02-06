@@ -122,7 +122,7 @@ export function Day10BuildLoop({ onComplete }: Day10BuildLoopProps) {
                 onClick={() => setReplitOpen(!replitOpen)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={replitOpen} onCheckedChange={() => setReplitOpen(!replitOpen)} />
+                  <Checkbox checked={replitOpen} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body}>I'm logged into Replit with my project open</span>
                 </div>
               </div>
@@ -132,7 +132,7 @@ export function Day10BuildLoop({ onComplete }: Day10BuildLoopProps) {
                 onClick={() => setClaudeOpen(!claudeOpen)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={claudeOpen} onCheckedChange={() => setClaudeOpen(!claudeOpen)} />
+                  <Checkbox checked={claudeOpen} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body}>I have Claude Code open and ready</span>
                 </div>
               </div>
@@ -293,7 +293,7 @@ export function Day10BuildLoop({ onComplete }: Day10BuildLoopProps) {
                 onClick={() => setAskedClaude(!askedClaude)}
               >
                 <div className="flex items-center gap-3">
-                  <Checkbox checked={askedClaude} onCheckedChange={() => setAskedClaude(!askedClaude)} />
+                  <Checkbox checked={askedClaude} onCheckedChange={() => {}} className="pointer-events-none" />
                   <span className={ds.body + " font-medium"}>I've asked Claude and it made changes</span>
                 </div>
               </div>

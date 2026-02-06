@@ -633,7 +633,7 @@ Don't change the layout or functionality - just the visual styling. Work through
             onClick={() => setMadeChanges(!madeChanges)}
           >
             <div className="flex items-center gap-3">
-              <Checkbox checked={madeChanges} onCheckedChange={() => setMadeChanges(!madeChanges)} />
+              <Checkbox checked={madeChanges} onCheckedChange={() => {}} className="pointer-events-none" />
               <span className={ds.body + " font-medium"}>I've updated my design (or at least started!)</span>
             </div>
           </div>

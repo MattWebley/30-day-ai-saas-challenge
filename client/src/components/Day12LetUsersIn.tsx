@@ -586,7 +586,7 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Checkbox checked={wantsCharts} onCheckedChange={() => {}} />
+                    <Checkbox checked={wantsCharts} onCheckedChange={() => {}} className="pointer-events-none" />
                     <div>
                       <span className="font-medium text-slate-900">Charts & Visualizations</span>
                       <span className={ds.muted + " ml-2"}>Line charts for trends, bar charts for breakdowns</span>
@@ -600,7 +600,7 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Checkbox checked={wantsExport} onCheckedChange={() => {}} />
+                    <Checkbox checked={wantsExport} onCheckedChange={() => {}} className="pointer-events-none" />
                     <div>
                       <span className="font-medium text-slate-900">Export to CSV</span>
                       <span className={ds.muted + " ml-2"}>Download user data and activity</span>
@@ -614,7 +614,7 @@ export function Day12LetUsersIn({ onComplete }: Day12LetUsersInProps) {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Checkbox checked={wantsAlerts} onCheckedChange={() => {}} />
+                    <Checkbox checked={wantsAlerts} onCheckedChange={() => {}} className="pointer-events-none" />
                     <div>
                       <span className="font-medium text-slate-900">Health Alerts</span>
                       <span className={ds.muted + " ml-2"}>Warnings when metrics drop suddenly</span>
