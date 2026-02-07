@@ -51,6 +51,8 @@ export const users = pgTable("users", {
   // Login tracking
   lastLoginAt: timestamp("last_login_at"),
   loginCount: integer("login_count").default(0),
+  // Drip email opt-out
+  dripUnsubscribed: boolean("drip_unsubscribed").default(false),
   // Ban system
   isBanned: boolean("is_banned").default(false),
   banReason: text("ban_reason"),
@@ -721,6 +723,37 @@ export const emailLogs = pgTable("email_logs", {
 
 export type EmailLog = typeof emailLogs.$inferSelect;
 export type InsertEmailLog = typeof emailLogs.$inferInsert;
+
+// Drip email sequence - automated daily challenge emails
+export const dripEmails = pgTable("drip_emails", {
+  id: serial("id").primaryKey(),
+  emailNumber: integer("email_number").notNull().unique(), // 1-20 sequence order
+  dayTrigger: integer("day_trigger").notNull(), // which challenge day triggers this (0 = immediate on signup)
+  subject: text("subject").notNull(),
+  altSubject: text("alt_subject"),
+  body: text("body").notNull(),
+  isActive: boolean("is_active").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type DripEmail = typeof dripEmails.$inferSelect;
+export type InsertDripEmail = typeof dripEmails.$inferInsert;
+
+// Track which drip emails have been sent to which users
+export const dripEmailsSent = pgTable("drip_emails_sent", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  dripEmailId: integer("drip_email_id").notNull().references(() => dripEmails.id, { onDelete: "cascade" }),
+  sentAt: timestamp("sent_at").defaultNow(),
+}, (table) => [
+  index("drip_emails_sent_user_idx").on(table.userId),
+  index("drip_emails_sent_drip_idx").on(table.dripEmailId),
+  uniqueIndex("drip_emails_sent_user_drip_uniq").on(table.userId, table.dripEmailId),
+]);
+
+export type DripEmailSent = typeof dripEmailsSent.$inferSelect;
+export type InsertDripEmailSent = typeof dripEmailsSent.$inferInsert;
 
 // Page view tracking - anonymous visitor analytics
 export const pageViews = pgTable("page_views", {

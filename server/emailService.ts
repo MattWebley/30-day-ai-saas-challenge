@@ -1,5 +1,7 @@
 import { Resend } from 'resend';
+import crypto from 'crypto';
 import { storage } from './storage';
+import type { DripEmail } from '@shared/schema';
 
 const FROM_EMAIL = 'Matt Webley <matt@mattwebley.com>';
 const REPLY_TO = 'matt@mattwebley.com';
@@ -297,6 +299,9 @@ ${videoUrl}
 
 If you have questions after watching, just reply to this email.
 
+Back to your dashboard:
+https://challenge.mattwebley.com/dashboard
+
 - Matt
 
 --
@@ -499,6 +504,9 @@ Total: ${currencySymbol}${amount}
 HOW TO BOOK YOUR SESSIONS
 -------------------------
 I'll email you within 24 hours with a booking link.
+
+In the meantime, keep going with the challenge:
+https://challenge.mattwebley.com/dashboard
 
 Questions? Just reply to this email.
 
@@ -721,4 +729,166 @@ Questions? Just reply to this email.`;
     console.error('Failed to send question answered email:', error);
     return false;
   }
+}
+
+// ============================================================
+// DRIP EMAIL SEQUENCE
+// ============================================================
+
+const DRIP_VARIABLES: Record<string, string> = {
+  DASHBOARD_URL: 'https://challenge.mattwebley.com/dashboard',
+  UNLOCK_URL: 'https://challenge.mattwebley.com/order',
+  READINESS_CALL_URL: 'https://challenge.mattwebley.com/coaching', // Replace with actual booking URL when ready
+};
+
+function generateUnsubscribeUrl(userId: string): string {
+  const token = crypto.createHmac('sha256', 'drip-unsubscribe-salt')
+    .update(userId)
+    .digest('hex')
+    .slice(0, 16);
+  return `https://challenge.mattwebley.com/api/drip/unsubscribe?uid=${encodeURIComponent(userId)}&token=${token}`;
+}
+
+const LEGAL_FOOTER = `
+
+--
+21-Day AI SaaS Challenge by Matt Webley
+Matt Webley Ltd, United Kingdom
+
+You're receiving this because you purchased the 21-Day AI SaaS Challenge.
+Unsubscribe from these emails: {{UNSUBSCRIBE_URL}}`;
+
+async function sendDripEmail(dripEmail: DripEmail, userEmail: string, firstName: string, unsubscribeUrl: string): Promise<boolean> {
+  try {
+    const variables: Record<string, string> = {
+      ...DRIP_VARIABLES,
+      firstName: firstName || 'there',
+      UNSUBSCRIBE_URL: unsubscribeUrl,
+    };
+
+    const subject = replaceVariables(dripEmail.subject, variables);
+    const bodyWithFooter = dripEmail.body + LEGAL_FOOTER;
+    const body = replaceVariables(bodyWithFooter, variables);
+
+    const { client, fromEmail, replyTo } = getResendClient();
+    const result = await client.emails.send({
+      from: fromEmail,
+      replyTo: replyTo,
+      to: [userEmail],
+      subject,
+      text: body,
+      headers: {
+        'List-Unsubscribe': `<${unsubscribeUrl}>`,
+        'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+      },
+    });
+
+    const resendId = result?.data?.id || null;
+    storage.logEmail({
+      recipientEmail: userEmail,
+      recipientName: firstName,
+      subject,
+      templateKey: `drip_email_${dripEmail.emailNumber}`,
+      status: 'sent',
+      resendId,
+    }).catch(err => console.error('Failed to log drip email:', err));
+
+    return true;
+  } catch (error) {
+    console.error(`[Drip] Failed to send email #${dripEmail.emailNumber} to ${userEmail}:`, error);
+    storage.logEmail({
+      recipientEmail: userEmail,
+      recipientName: firstName,
+      subject: dripEmail.subject,
+      templateKey: `drip_email_${dripEmail.emailNumber}`,
+      status: 'failed',
+      error: (error as any)?.message || String(error),
+    }).catch(err => console.error('Failed to log drip email:', err));
+    return false;
+  }
+}
+
+export async function processDripEmails(): Promise<{ sent: number; errors: number }> {
+  let sent = 0;
+  let errors = 0;
+
+  try {
+    // Get all active drip emails
+    const activeDrips = await storage.getActiveDripEmails();
+    if (activeDrips.length === 0) return { sent, errors };
+
+    // Get all paid users (skip unsubscribed and banned)
+    const allUsers = await storage.getAllUsers();
+    const paidUsers = allUsers.filter(u => u.challengePurchased && !u.isBanned && !u.dripUnsubscribed && u.email);
+
+    if (paidUsers.length === 0) return { sent, errors };
+
+    const now = new Date();
+
+    for (const user of paidUsers) {
+      // Calculate days since signup (using createdAt)
+      const signupDate = user.createdAt ? new Date(user.createdAt) : null;
+      if (!signupDate) continue;
+
+      const daysSinceSignup = Math.floor((now.getTime() - signupDate.getTime()) / (1000 * 60 * 60 * 24));
+
+      // Get which drip emails this user has already received
+      const alreadySent = await storage.getDripEmailsSentForUser(user.id);
+      const sentIds = new Set(alreadySent.map(s => s.dripEmailId));
+
+      // Find drip emails that should have been sent by now but haven't been
+      for (const drip of activeDrips) {
+        if (sentIds.has(drip.id)) continue; // Already sent
+        if (drip.dayTrigger > daysSinceSignup) continue; // Not time yet
+
+        // Send it
+        const unsubUrl = generateUnsubscribeUrl(user.id);
+        const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
+        if (success) {
+          await storage.markDripEmailSent(user.id, drip.id);
+          sent++;
+        } else {
+          errors++;
+        }
+
+        // Small delay between sends to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    }
+
+    if (sent > 0 || errors > 0) {
+      console.log(`[Drip] Processed: ${sent} sent, ${errors} errors`);
+    }
+  } catch (error) {
+    console.error('[Drip] Error processing drip emails:', error);
+  }
+
+  return { sent, errors };
+}
+
+// Start the drip email processor — runs every hour
+let dripInterval: ReturnType<typeof setInterval> | null = null;
+
+export function startDripEmailProcessor(): void {
+  if (dripInterval) return; // Already running
+
+  // Run every hour (3600000ms)
+  dripInterval = setInterval(async () => {
+    try {
+      await processDripEmails();
+    } catch (error) {
+      console.error('[Drip] Processor error:', error);
+    }
+  }, 60 * 60 * 1000);
+
+  // Also run once on startup (after a 30-second delay to let the server fully initialize)
+  setTimeout(async () => {
+    try {
+      await processDripEmails();
+    } catch (error) {
+      console.error('[Drip] Initial run error:', error);
+    }
+  }, 30000);
+
+  console.log('[Drip] Email processor started (runs every hour)');
 }

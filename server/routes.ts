@@ -10,7 +10,7 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
 import { eq, desc, isNull, isNotNull, sql, and, gte, count, countDistinct } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail, processDripEmails } from "./emailService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
 import { callClaude, callClaudeForJSON, detectAbuse, checkRateLimit, logAIUsage, sendAbuseAlert } from "./aiService";
@@ -720,6 +720,53 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error resetting password:", error);
       res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  // Helper to generate unsubscribe confirmation HTML page
+  function unsubscribeHTML(message: string, success: boolean): string {
+    return `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${success ? 'Unsubscribed' : 'Error'} — 21-Day AI SaaS Challenge</title>
+<style>body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f8fafc;color:#334155}
+.box{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:40px;max-width:440px;text-align:center}
+h1{font-size:20px;margin:0 0 12px}p{margin:0;line-height:1.6}
+a{color:#2563eb;text-decoration:none}</style></head>
+<body><div class="box"><h1>${success ? 'Done!' : 'Oops'}</h1><p>${message}</p>
+${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.com/dashboard">Back to Dashboard</a></p>' : ''}
+</div></body></html>`;
+  }
+
+  // Drip email unsubscribe (public — no auth needed, clicked from email)
+  app.get('/api/drip/unsubscribe', async (req, res) => {
+    try {
+      const { uid, token } = req.query;
+
+      if (!uid || !token) {
+        return res.status(400).send(unsubscribeHTML('Invalid unsubscribe link.', false));
+      }
+
+      // Verify token
+      const expectedToken = crypto.createHmac('sha256', 'drip-unsubscribe-salt')
+        .update(uid as string)
+        .digest('hex')
+        .slice(0, 16);
+
+      if (token !== expectedToken) {
+        return res.status(400).send(unsubscribeHTML('Invalid unsubscribe link.', false));
+      }
+
+      // Set unsubscribed
+      const user = await storage.getUser(uid as string);
+      if (!user) {
+        return res.status(400).send(unsubscribeHTML('User not found.', false));
+      }
+
+      await storage.updateUser(uid as string, { dripUnsubscribed: true } as any);
+      res.send(unsubscribeHTML(`You've been unsubscribed from the daily challenge emails, ${user.firstName || ''}.`, true));
+    } catch (error) {
+      console.error('Unsubscribe error:', error);
+      res.status(500).send(unsubscribeHTML('Something went wrong. Please try again or email matt@mattwebley.com.', false));
     }
   });
 
@@ -4529,6 +4576,157 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     } catch (error: any) {
       console.error("Error fetching email logs:", error);
       res.status(500).json({ message: "Failed to fetch email logs" });
+    }
+  });
+
+  // ============================================
+  // DRIP EMAIL ROUTES (Admin)
+  // ============================================
+
+  // Get all drip emails
+  app.get("/api/admin/drip-emails", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const dripEmails = await storage.getAllDripEmails();
+      const sentCounts = await storage.getDripEmailSentCount();
+      const sentMap = new Map(sentCounts.map(s => [s.dripEmailId, s.count]));
+
+      const result = dripEmails.map(d => ({
+        ...d,
+        sentCount: sentMap.get(d.id) || 0,
+      }));
+
+      res.json(result);
+    } catch (error: any) {
+      console.error("Error fetching drip emails:", error);
+      res.status(500).json({ message: "Failed to fetch drip emails" });
+    }
+  });
+
+  // Update a drip email
+  app.patch("/api/admin/drip-emails/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const { subject, altSubject, body, isActive } = req.body;
+      const updated = await storage.updateDripEmail(id, { subject, altSubject, body, isActive });
+
+      if (!updated) {
+        return res.status(404).json({ message: "Drip email not found" });
+      }
+
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating drip email:", error);
+      res.status(500).json({ message: "Failed to update drip email" });
+    }
+  });
+
+  // Toggle all drip emails on/off
+  app.post("/api/admin/drip-emails/toggle-all", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { isActive } = req.body;
+      await storage.setAllDripEmailsActive(!!isActive);
+      res.json({ message: `All drip emails ${isActive ? 'enabled' : 'disabled'}` });
+    } catch (error: any) {
+      console.error("Error toggling drip emails:", error);
+      res.status(500).json({ message: "Failed to toggle drip emails" });
+    }
+  });
+
+  // Manually trigger drip email processing
+  app.post("/api/admin/drip-emails/process", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const result = await processDripEmails();
+      res.json({ message: `Processed: ${result.sent} sent, ${result.errors} errors`, ...result });
+    } catch (error: any) {
+      console.error("Error processing drip emails:", error);
+      res.status(500).json({ message: "Failed to process drip emails" });
+    }
+  });
+
+  // Send test drip email to admin
+  app.post("/api/admin/drip-emails/:id/test", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const id = parseInt(req.params.id);
+      const { testEmail } = req.body;
+
+      if (!testEmail) {
+        return res.status(400).json({ message: "testEmail is required" });
+      }
+
+      const dripEmail = await storage.getDripEmail(id);
+      if (!dripEmail) {
+        return res.status(404).json({ message: "Drip email not found" });
+      }
+
+      // Send using the existing email infrastructure with sample data
+      const { Resend } = await import('resend');
+      const client = new Resend(process.env.RESEND_API_KEY);
+
+      // Replace variables with sample data (including legal footer like real sends)
+      const sampleUnsubscribeUrl = 'https://challenge.mattwebley.com/api/drip/unsubscribe?uid=test&token=test';
+      const legalFooter = `\n\n--\n21-Day AI SaaS Challenge by Matt Webley\nMatt Webley Ltd, United Kingdom\n\nYou're receiving this because you purchased the 21-Day AI SaaS Challenge.\nUnsubscribe from these emails: ${sampleUnsubscribeUrl}`;
+
+      const variables: Record<string, string> = {
+        firstName: 'Sarah',
+        DASHBOARD_URL: 'https://challenge.mattwebley.com/dashboard',
+        UNLOCK_URL: 'https://challenge.mattwebley.com/order',
+        READINESS_CALL_URL: 'https://challenge.mattwebley.com/coaching',
+        UNSUBSCRIBE_URL: sampleUnsubscribeUrl,
+      };
+
+      let subject = dripEmail.subject;
+      let body = dripEmail.body + legalFooter;
+      for (const [key, value] of Object.entries(variables)) {
+        const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+        subject = subject.replace(regex, value);
+        body = body.replace(regex, value);
+      }
+
+      await client.emails.send({
+        from: 'Matt Webley <matt@mattwebley.com>',
+        replyTo: 'matt@mattwebley.com',
+        to: [testEmail],
+        subject: `[TEST] ${subject}`,
+        text: body,
+        headers: {
+          'List-Unsubscribe': `<${sampleUnsubscribeUrl}>`,
+        },
+      });
+
+      res.json({ message: `Test email #${dripEmail.emailNumber} sent to ${testEmail}` });
+    } catch (error: any) {
+      console.error("Error sending test drip email:", error);
+      res.status(500).json({ message: "Failed to send test email" });
     }
   });
 

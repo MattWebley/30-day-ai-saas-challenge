@@ -179,6 +179,19 @@ export interface EmailTemplate {
   updatedAt: string;
 }
 
+export interface DripEmail {
+  id: number;
+  emailNumber: number;
+  dayTrigger: number;
+  subject: string;
+  altSubject: string | null;
+  body: string;
+  isActive: boolean;
+  sentCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface EmailLog {
   id: number;
   recipientEmail: string;

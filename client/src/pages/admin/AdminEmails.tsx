@@ -23,9 +23,13 @@ import {
   X,
   Users,
   AlertTriangle,
+  Zap,
+  Play,
+  Power,
+  PowerOff,
 } from "lucide-react";
 import { toast } from "sonner";
-import type { EmailTemplate, EmailLog } from "./adminTypes";
+import type { EmailTemplate, EmailLog, DripEmail } from "./adminTypes";
 
 // Sample values used to preview what an email will look like
 const SAMPLE_VARIABLES: Record<string, string> = {
@@ -58,6 +62,9 @@ const SAMPLE_VARIABLES: Record<string, string> = {
   newUserEmail: "alex@example.com",
   referralCount: "3",
   timestamp: new Date().toLocaleString(),
+  DASHBOARD_URL: "https://challenge.mattwebley.com/dashboard",
+  UNLOCK_URL: "https://challenge.mattwebley.com/order",
+  READINESS_CALL_URL: "https://challenge.mattwebley.com/coaching",
 };
 
 function renderPreview(text: string): string {
@@ -85,6 +92,13 @@ export default function AdminEmails() {
     }
   }, [testEmailAddress]);
 
+  // Drip sequence state
+  const [editingDrip, setEditingDrip] = useState<number | null>(null);
+  const [previewingDrip, setPreviewingDrip] = useState<number | null>(null);
+  const [editedDripSubject, setEditedDripSubject] = useState("");
+  const [editedDripAltSubject, setEditedDripAltSubject] = useState("");
+  const [editedDripBody, setEditedDripBody] = useState("");
+
   const [logPage, setLogPage] = useState(1);
   const [showNewForm, setShowNewForm] = useState(false);
   const [sendingTemplate, setSendingTemplate] = useState<string | null>(null);
@@ -110,6 +124,68 @@ export default function AdminEmails() {
       return res.json();
     },
     staleTime: 30_000,
+  });
+
+  // Drip email queries
+  const { data: dripEmails = [] } = useQuery<DripEmail[]>({
+    queryKey: ["/api/admin/drip-emails"],
+  });
+
+  const updateDripEmail = useMutation({
+    mutationFn: async ({ id, ...data }: { id: number; subject?: string; altSubject?: string; body?: string; isActive?: boolean }) => {
+      const res = await apiRequest("PATCH", `/api/admin/drip-emails/${id}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/drip-emails"] });
+      toast.success("Drip email updated");
+      setEditingDrip(null);
+    },
+    onError: (error: Error) => {
+      toast.error(getServerErrorMessage(error, "Failed to update drip email"));
+    },
+  });
+
+  const toggleAllDrip = useMutation({
+    mutationFn: async (isActive: boolean) => {
+      const res = await apiRequest("POST", "/api/admin/drip-emails/toggle-all", { isActive });
+      return res.json();
+    },
+    onSuccess: (_, isActive) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/drip-emails"] });
+      toast.success(isActive ? "All drip emails enabled" : "All drip emails disabled");
+    },
+    onError: (error: Error) => {
+      toast.error(getServerErrorMessage(error, "Failed to toggle drip emails"));
+    },
+  });
+
+  const processDrip = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/admin/drip-emails/process");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/drip-emails"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/email-logs"] });
+      toast.success(data.message || "Drip emails processed");
+    },
+    onError: (error: Error) => {
+      toast.error(getServerErrorMessage(error, "Failed to process drip emails"));
+    },
+  });
+
+  const sendTestDrip = useMutation({
+    mutationFn: async ({ id, testEmail }: { id: number; testEmail: string }) => {
+      const res = await apiRequest("POST", `/api/admin/drip-emails/${id}/test`, { testEmail });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      toast.success(data.message || "Test drip email sent");
+    },
+    onError: (error: Error) => {
+      toast.error(getServerErrorMessage(error, "Failed to send test drip email"));
+    },
   });
 
   const updateEmailTemplate = useMutation({
@@ -320,6 +396,247 @@ export default function AdminEmails() {
           <span className="text-sm text-slate-500">All test emails will be sent here</span>
         </div>
       </Card>
+
+      {/* ============================================ */}
+      {/* DRIP EMAIL SEQUENCE */}
+      {/* ============================================ */}
+      <div className="pt-6 border-t border-slate-200">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <Zap className="w-6 h-6 text-amber-500" />
+            <h2 className="text-xl font-bold text-slate-900">Drip Email Sequence</h2>
+            <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">
+              {dripEmails.filter(d => d.isActive).length}/{dripEmails.length} active
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => processDrip.mutate()}
+              disabled={processDrip.isPending}
+              title="Manually process drip emails now"
+            >
+              <Play className="w-4 h-4 mr-1" />
+              {processDrip.isPending ? "Processing..." : "Run Now"}
+            </Button>
+            {dripEmails.some(d => d.isActive) ? (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => toggleAllDrip.mutate(false)}
+                disabled={toggleAllDrip.isPending}
+              >
+                <PowerOff className="w-4 h-4 mr-1" />
+                Disable All
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                onClick={() => toggleAllDrip.mutate(true)}
+                disabled={toggleAllDrip.isPending}
+              >
+                <Power className="w-4 h-4 mr-1" />
+                Enable All
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <p className="text-sm text-slate-500 mb-4">
+          Automated emails sent to customers based on their challenge day. Runs every hour. All emails are OFF by default — enable them when you're ready.
+        </p>
+
+        {dripEmails.length === 0 ? (
+          <Card className="p-6 border border-slate-200 text-center">
+            <p className="text-slate-500">No drip emails found. They'll be seeded on next server restart.</p>
+          </Card>
+        ) : (
+          <div className="space-y-2">
+            {dripEmails.map((drip) => (
+              <Card
+                key={drip.id}
+                className={`p-3 border shadow-sm ${
+                  drip.isActive ? "border-slate-200" : "border-slate-200 bg-slate-50/50"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  {/* Left: number + info */}
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 ${
+                      drip.isActive ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-400"
+                    }`}>
+                      {drip.emailNumber}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <p className={`text-sm font-medium truncate ${drip.isActive ? "text-slate-900" : "text-slate-500"}`}>
+                          {drip.subject}
+                        </p>
+                        {!drip.isActive && (
+                          <span className="px-1.5 py-0.5 bg-slate-200 text-slate-500 text-[10px] font-bold rounded flex-shrink-0">
+                            OFF
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400">
+                        Day {drip.dayTrigger}{drip.dayTrigger === 0 ? " (immediate)" : ""} · {drip.sentCount} sent
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right: actions */}
+                  <div className="flex items-center gap-1 flex-shrink-0">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      title="Preview"
+                      onClick={() => {
+                        setPreviewingDrip(previewingDrip === drip.id ? null : drip.id);
+                        setEditingDrip(null);
+                      }}
+                    >
+                      <Eye className={`w-4 h-4 ${previewingDrip === drip.id ? "text-primary" : ""}`} />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      title={drip.isActive ? "Disable" : "Enable"}
+                      onClick={() => updateDripEmail.mutate({ id: drip.id, isActive: !drip.isActive })}
+                    >
+                      {drip.isActive ? (
+                        <ToggleRight className="w-4 h-4 text-primary" />
+                      ) : (
+                        <ToggleLeft className="w-4 h-4 text-slate-400" />
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      title="Edit"
+                      onClick={() => {
+                        if (editingDrip === drip.id) {
+                          setEditingDrip(null);
+                        } else {
+                          setEditingDrip(drip.id);
+                          setEditedDripSubject(drip.subject);
+                          setEditedDripAltSubject(drip.altSubject || "");
+                          setEditedDripBody(drip.body);
+                          setPreviewingDrip(null);
+                        }
+                      }}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      title={testEmailAddress ? `Send test to ${testEmailAddress}` : "Set test email first"}
+                      onClick={() => {
+                        if (!testEmailAddress) {
+                          toast.error("Set a test email address above first");
+                          return;
+                        }
+                        sendTestDrip.mutate({ id: drip.id, testEmail: testEmailAddress });
+                      }}
+                      disabled={sendTestDrip.isPending}
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Preview */}
+                {previewingDrip === drip.id && (
+                  <div className="mt-3 pt-3 border-t border-slate-200">
+                    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                      <div className="bg-slate-50 px-4 py-2 border-b border-slate-200">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-medium text-slate-400 w-14">Subject:</span>
+                          <span className="text-sm font-semibold text-slate-900">
+                            {renderPreview(drip.subject)}
+                          </span>
+                        </div>
+                        {drip.altSubject && (
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs font-medium text-slate-400 w-14">Alt:</span>
+                            <span className="text-sm text-slate-600">
+                              {renderPreview(drip.altSubject)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="px-4 py-3">
+                        <pre className="whitespace-pre-wrap font-sans text-sm text-slate-700 leading-relaxed">
+                          {renderPreview(drip.body)}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Edit */}
+                {editingDrip === drip.id && (
+                  <div className="mt-3 pt-3 border-t border-slate-200 space-y-3">
+                    <div>
+                      <Label className="text-xs">Subject</Label>
+                      <Input
+                        value={editedDripSubject}
+                        onChange={(e) => setEditedDripSubject(e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Alt Subject</Label>
+                      <Input
+                        value={editedDripAltSubject}
+                        onChange={(e) => setEditedDripAltSubject(e.target.value)}
+                        className="mt-1"
+                      />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Body ({"{{firstName}}, {{DASHBOARD_URL}}, {{UNLOCK_URL}}, {{READINESS_CALL_URL}}"})</Label>
+                      <Textarea
+                        value={editedDripBody}
+                        onChange={(e) => setEditedDripBody(e.target.value)}
+                        className="mt-1 font-mono text-sm min-h-[250px]"
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          updateDripEmail.mutate({
+                            id: drip.id,
+                            subject: editedDripSubject,
+                            altSubject: editedDripAltSubject,
+                            body: editedDripBody,
+                          });
+                        }}
+                        disabled={updateDripEmail.isPending}
+                      >
+                        <Save className="w-4 h-4 mr-1" />
+                        Save
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setEditingDrip(null)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ============================================ */}
+      {/* REGULAR EMAIL TEMPLATES */}
+      {/* ============================================ */}
 
       {/* Templates */}
       {emailTemplates.length === 0 ? (

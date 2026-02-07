@@ -72,6 +72,11 @@ import {
   emailLogs,
   type EmailLog,
   type InsertEmailLog,
+  dripEmails,
+  dripEmailsSent,
+  type DripEmail,
+  type InsertDripEmail,
+  type DripEmailSent,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, isNotNull, isNull, sql } from "drizzle-orm";
@@ -1478,6 +1483,84 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(emailLogs.sentAt))
       .limit(limit)
       .offset(offset);
+  }
+
+  // Drip email operations
+  async getAllDripEmails(): Promise<DripEmail[]> {
+    return await db.select().from(dripEmails).orderBy(dripEmails.emailNumber);
+  }
+
+  async getDripEmail(id: number): Promise<DripEmail | undefined> {
+    const [email] = await db.select().from(dripEmails).where(eq(dripEmails.id, id));
+    return email;
+  }
+
+  async getActiveDripEmails(): Promise<DripEmail[]> {
+    return await db
+      .select()
+      .from(dripEmails)
+      .where(eq(dripEmails.isActive, true))
+      .orderBy(dripEmails.emailNumber);
+  }
+
+  async upsertDripEmail(email: InsertDripEmail): Promise<DripEmail> {
+    const [result] = await db
+      .insert(dripEmails)
+      .values(email)
+      .onConflictDoUpdate({
+        target: dripEmails.emailNumber,
+        set: {
+          dayTrigger: email.dayTrigger,
+          subject: email.subject,
+          altSubject: email.altSubject,
+          body: email.body,
+          updatedAt: new Date(),
+        },
+      })
+      .returning();
+    return result;
+  }
+
+  async updateDripEmail(id: number, data: { subject?: string; altSubject?: string; body?: string; isActive?: boolean }): Promise<DripEmail | undefined> {
+    const [updated] = await db
+      .update(dripEmails)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(dripEmails.id, id))
+      .returning();
+    return updated;
+  }
+
+  async setAllDripEmailsActive(isActive: boolean): Promise<void> {
+    await db
+      .update(dripEmails)
+      .set({ isActive, updatedAt: new Date() });
+  }
+
+  async getDripEmailsSentForUser(userId: string): Promise<DripEmailSent[]> {
+    return await db
+      .select()
+      .from(dripEmailsSent)
+      .where(eq(dripEmailsSent.userId, userId));
+  }
+
+  async markDripEmailSent(userId: string, dripEmailId: number): Promise<DripEmailSent> {
+    const [result] = await db
+      .insert(dripEmailsSent)
+      .values({ userId, dripEmailId })
+      .onConflictDoNothing()
+      .returning();
+    return result;
+  }
+
+  async getDripEmailSentCount(): Promise<{ dripEmailId: number; count: number }[]> {
+    const results = await db
+      .select({
+        dripEmailId: dripEmailsSent.dripEmailId,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(dripEmailsSent)
+      .groupBy(dripEmailsSent.dripEmailId);
+    return results;
   }
 }
 

@@ -7,6 +7,8 @@ import { runMigrations } from 'stripe-replit-sync';
 import { getStripeSync, getStripePublishableKey } from './stripeClient';
 import { WebhookHandlers } from './webhookHandlers';
 import { seedIfNeeded } from './seed';
+import { seedDripEmails } from './dripEmailSeed';
+import { startDripEmailProcessor } from './emailService';
 
 const app = express();
 const httpServer = createServer(app);
@@ -135,6 +137,8 @@ app.use((req, res, next) => {
 
 (async () => {
   await seedIfNeeded();
+  await seedDripEmails();
+  startDripEmailProcessor();
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

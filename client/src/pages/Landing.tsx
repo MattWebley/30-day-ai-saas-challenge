@@ -394,6 +394,44 @@ export default function Landing() {
               If you can TYPE, you can do this.
             </p>
 
+            <div className="bg-white border-2 border-primary/30 rounded-xl p-8 my-8">
+              <h4 className="text-2xl font-black text-slate-900 mb-4">
+                Every Prompt You Need. Ready to Copy and Paste.
+              </h4>
+              <p className="text-slate-700 mb-4">
+                You don't need to figure out what to say to the AI. I've written every prompt for you. You literally <strong className="text-slate-900">copy</strong>, <strong className="text-slate-900">paste</strong>, and let AI do the rest.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-3 mt-4">
+                <div className="flex items-start gap-2">
+                  <Code className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-slate-700">Prompts to <strong>generate your SaaS idea</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Code className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-slate-700">Prompts to <strong>validate your market</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Code className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-slate-700">Prompts to <strong>build your entire app</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Code className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-slate-700">Prompts to <strong>add AI features</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Code className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-slate-700">Prompts to <strong>set up payments & auth</strong></span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Code className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <span className="text-slate-700">Prompts to <strong>write your sales page</strong></span>
+                </div>
+              </div>
+              <p className="text-slate-600 mt-4 text-base">
+                No staring at a blank screen wondering what to type. Every step has a prompt ready to go.
+              </p>
+            </div>
+
             <div className="bg-slate-900 text-white rounded-xl p-8 my-8">
               <p className="text-xl md:text-2xl font-bold leading-relaxed">
                 By the way: this challenge app you're looking at right now? I built it using the EXACT same system I'm teaching you.
@@ -779,9 +817,9 @@ export default function Landing() {
                 <span className="font-semibold text-slate-900">Bite-sized daily micro-tasks (not 4-hour marathons)</span>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 bg-slate-50 border-2 border-slate-200 rounded-lg p-4 -mx-4">
                 <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
-                <span className="font-semibold text-slate-900">Copy-paste prompts - the AI does the heavy lifting</span>
+                <span className="font-semibold text-slate-900">Every prompt you need, ready to copy and paste — the AI does the heavy lifting</span>
               </div>
 
               <div className="flex items-center gap-4">
