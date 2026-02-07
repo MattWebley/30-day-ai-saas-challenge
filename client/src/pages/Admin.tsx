@@ -231,8 +231,7 @@ export default function Admin() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      const debugNames = data.debug?.map((u: any) => `${u.email}: ${u.firstNameType}`).join('\n') || 'No debug data (redeploy may still be in progress)';
-      toast.success(data.message, { description: debugNames, duration: 30000 });
+      toast.success(data.message);
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to backfill names");
@@ -432,7 +431,7 @@ export default function Admin() {
             {/* KPI Cards */}
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Students */}
-              <Card className="p-5 border border-slate-200 border-l-4 border-l-blue-500 shadow-sm">
+              <Card className="p-5 border border-slate-200 border-l-4 border-l-blue-500 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("users")}>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
                     <Users className="w-5 h-5 text-blue-600" />
@@ -446,7 +445,7 @@ export default function Admin() {
               </Card>
 
               {/* Revenue */}
-              <Card className="p-5 border border-slate-200 border-l-4 border-l-green-500 shadow-sm">
+              <Card className="p-5 border border-slate-200 border-l-4 border-l-green-500 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("revenue")}>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
                     <PoundSterling className="w-5 h-5 text-green-600" />
@@ -480,7 +479,7 @@ export default function Admin() {
               </Card>
 
               {/* Completion */}
-              <Card className="p-5 border border-slate-200 border-l-4 border-l-amber-500 shadow-sm">
+              <Card className="p-5 border border-slate-200 border-l-4 border-l-amber-500 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("users")}>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
                     <TrendingUp className="w-5 h-5 text-amber-600" />
@@ -494,7 +493,7 @@ export default function Admin() {
               </Card>
 
               {/* Active This Week */}
-              <Card className="p-5 border border-slate-200 border-l-4 border-l-emerald-500 shadow-sm">
+              <Card className="p-5 border border-slate-200 border-l-4 border-l-emerald-500 shadow-sm cursor-pointer hover:shadow-md transition-shadow" onClick={() => setActiveTab("users")}>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
                     <Activity className="w-5 h-5 text-emerald-600" />

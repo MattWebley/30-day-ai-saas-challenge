@@ -6669,28 +6669,14 @@ Example format:
 
       const stripe = await getUncachableStripeClient();
 
-      // First, get ALL users so we can diagnose what's happening
-      const allUsers = await db.select({
-        id: users.id,
-        email: users.email,
-        firstName: users.firstName,
-        lastName: users.lastName,
-        stripeCustomerId: users.stripeCustomerId,
-      }).from(users);
-
-      // Debug: show what names look like for each user
-      const debug = allUsers.map(u => ({
-        email: u.email,
-        firstName: u.firstName,
-        firstNameType: u.firstName === null ? 'null' : u.firstName === '' ? 'empty' : `"${u.firstName}"`,
-        lastName: u.lastName,
-        hasStripeId: !!u.stripeCustomerId,
-      }));
-
       // Find users missing first name (null or empty) who have an email
-      const usersWithoutNames = allUsers.filter(u =>
-        (!u.firstName || u.firstName.trim() === '') && u.email
-      );
+      const usersWithoutNames = await db
+        .select()
+        .from(users)
+        .where(and(
+          sql`(${users.firstName} IS NULL OR TRIM(${users.firstName}) = '')`,
+          isNotNull(users.email)
+        ));
 
       let updated = 0;
       const skipped: string[] = [];
@@ -6735,7 +6721,6 @@ Example format:
         total: usersWithoutNames.length,
         skipped,
         results,
-        debug,
       });
     } catch (error: any) {
       console.error("Error backfilling names:", error);
