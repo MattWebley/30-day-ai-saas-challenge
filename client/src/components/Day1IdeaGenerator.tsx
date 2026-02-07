@@ -137,6 +137,19 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
       toast.error("Please fill in at least knowledge, skills, and interests");
       return;
     }
+    // If they already have ideas, this counts as a regeneration (same limits apply)
+    if (ideas.length > 0) {
+      if (cooldownSeconds > 0) {
+        toast.error(`Please wait ${cooldownSeconds} seconds before generating`);
+        return;
+      }
+      if (regenerationCount >= 10) {
+        toast.error("You've reached the maximum number of regenerations");
+        return;
+      }
+      setRegenerationCount((prev: number) => prev + 1);
+      setCooldownSeconds(30);
+    }
     setStep('generating');
     generateIdeas.mutate();
   };
@@ -486,13 +499,17 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
           <div className="flex items-center justify-between mb-2">
             <h2 className={ds.heading}>Let's Find Your Perfect SaaS Idea</h2>
             <button
-              onClick={() => setStep('choice')}
+              onClick={() => ideas.length > 0 ? setStep('ideas') : setStep('choice')}
               className="text-slate-500 hover:text-slate-700 text-sm"
             >
-              ← Back to options
+              {ideas.length > 0 ? '← Back to ideas' : '← Back to options'}
             </button>
           </div>
-          <p className={ds.muted}>Tell us about yourself and we'll generate 3 personalized ideas scored against Matt's criteria</p>
+          <p className={ds.muted}>
+            {ideas.length > 0
+              ? "Update your answers below, then hit Generate to get fresh ideas"
+              : "Tell us about yourself and we'll generate 3 personalized ideas scored against Matt's criteria"}
+          </p>
         </div>
 
         <div className="grid gap-6">
@@ -617,26 +634,34 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
 
         {/* Regenerate button */}
         {!showConfirmation && regenerationCount < 10 && (
-          <div className={`${ds.infoBoxHighlight} flex items-center justify-between`}>
-            <div>
-              <p className={ds.label}>Not feeling these ideas?</p>
-              <p className={`${ds.muted} text-sm`}>
-                {cooldownSeconds > 0
-                  ? `Wait ${cooldownSeconds}s before regenerating...`
-                  : "Generate 3 completely new ideas"}
-              </p>
-              {regenerationCount >= 5 && (
-                <p className="text-amber-600 text-sm mt-1">
-                  {10 - regenerationCount} regenerations remaining
+          <div className={`${ds.infoBoxHighlight}`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={ds.label}>Not feeling these ideas?</p>
+                <p className={`${ds.muted} text-sm`}>
+                  {cooldownSeconds > 0
+                    ? `Wait ${cooldownSeconds}s before regenerating...`
+                    : "Generate 3 completely new ideas"}
                 </p>
-              )}
+                {regenerationCount >= 5 && (
+                  <p className="text-amber-600 text-sm mt-1">
+                    {10 - regenerationCount} regenerations remaining
+                  </p>
+                )}
+              </div>
+              <Button
+                onClick={handleRegenerate}
+                disabled={cooldownSeconds > 0 || generateIdeas.isPending}
+              >
+                {cooldownSeconds > 0 ? `Wait ${cooldownSeconds}s` : "Regenerate"}
+              </Button>
             </div>
-            <Button
-              onClick={handleRegenerate}
-              disabled={cooldownSeconds > 0 || generateIdeas.isPending}
+            <button
+              onClick={() => setStep('inputs')}
+              className="mt-3 text-sm text-primary hover:text-primary/80 font-medium transition-colors"
             >
-              {cooldownSeconds > 0 ? `Wait ${cooldownSeconds}s` : "Regenerate"}
-            </Button>
+              or edit your answers and try again
+            </button>
           </div>
         )}
 
