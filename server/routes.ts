@@ -6669,13 +6669,14 @@ Example format:
 
       const stripe = await getUncachableStripeClient();
 
-      // Find users missing first name who have a Stripe customer ID
+      // Find users missing first name (null or empty) who have a Stripe customer ID
       const usersWithoutNames = await db
         .select()
         .from(users)
         .where(and(
-          isNull(users.firstName),
-          isNotNull(users.stripeCustomerId)
+          sql`(${users.firstName} IS NULL OR ${users.firstName} = '')`,
+          isNotNull(users.stripeCustomerId),
+          sql`${users.stripeCustomerId} != 'manual_grant'`
         ));
 
       let updated = 0;
