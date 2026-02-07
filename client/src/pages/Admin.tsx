@@ -232,6 +232,9 @@ export default function Admin() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       toast.success(data.message);
+      if (data.debug) console.log('[Backfill Debug] All users:', data.debug);
+      if (data.skipped?.length) console.log('[Backfill] Skipped (no Stripe match):', data.skipped);
+      if (data.results?.length) console.log('[Backfill] Updated:', data.results);
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to backfill names");
