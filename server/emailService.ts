@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 import { storage } from './storage';
 
-const FROM_EMAIL = 'Matt Webley <matt@challenge.mattwebley.com>';
+const FROM_EMAIL = 'Matt Webley <matt@mattwebley.com>';
 const REPLY_TO = 'matt@mattwebley.com';
 
 function getResendClient() {

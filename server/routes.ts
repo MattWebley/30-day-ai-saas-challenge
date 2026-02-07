@@ -4498,7 +4498,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       }
 
       await resend.emails.send({
-        from: 'Matt Webley <matt@challenge.mattwebley.com>',
+        from: 'Matt Webley <matt@mattwebley.com>',
         to: [testEmail],
         subject: `[TEST] ${testSubject}`,
         text: testBody,
