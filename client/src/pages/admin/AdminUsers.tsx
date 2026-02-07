@@ -1338,13 +1338,55 @@ export default function AdminUsers() {
                           </button>
                         </div>
                       ) : (
-                        <p className="text-slate-500">
-                          Day {user.stats.lastCompletedDay}/21 · {user.stats.totalXp} XP
+                        <p className="text-slate-500 text-xs mt-1">
+                          Day {user.completedDays > 0 ? user.stats.lastCompletedDay : 0}/21 · {user.stats.totalXp} XP
                         </p>
                       )}
                     </div>
                   </div>
                 </div>
+
+                {/* Progress Bar */}
+                {!user.isPending && (
+                  <>
+                    <div className="border-t border-slate-100 mx-4 mt-2" />
+                    <div className="px-4 pb-3 pt-2">
+                      {(() => {
+                        const phases = [
+                          { label: 'Plan', days: [0,1,2,3,4,5], color: 'bg-blue-500' },
+                          { label: 'Prepare', days: [6,7,8,9], color: 'bg-cyan-500' },
+                          { label: 'Build', days: [10,11,12,13,14,15,16,17,18], color: 'bg-violet-500' },
+                          { label: 'Launch', days: [19,20,21], color: 'bg-green-500' },
+                        ];
+                        const lastDay = user.completedDays > 0 ? user.stats.lastCompletedDay : -1;
+                        return (
+                          <div className="flex gap-2">
+                            {phases.map((phase) => (
+                              <div key={phase.label} className="min-w-0" style={{ flex: phase.days.length }}>
+                                <p className="text-[10px] text-slate-400 mb-1 truncate">{phase.label}</p>
+                                <div className="flex gap-px">
+                                  {phase.days.map((day) => (
+                                    <div
+                                      key={day}
+                                      className={`flex-1 h-2 rounded-sm ${day <= lastDay ? phase.color : 'bg-slate-200'}`}
+                                      title={`Day ${day}${day <= lastDay ? ' ✓' : ''}`}
+                                    />
+                                  ))}
+                                </div>
+                                <div className="flex justify-between mt-0.5">
+                                  <span className="text-[9px] text-slate-300">{phase.days[0]}</span>
+                                  {phase.days.length > 2 && (
+                                    <span className="text-[9px] text-slate-300">{phase.days[phase.days.length - 1]}</span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </>
+                )}
 
                 {/* Expanded Details */}
                 {selectedUser?.id === user.id && (
