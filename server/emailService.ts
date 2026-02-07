@@ -36,7 +36,7 @@ async function sendAndLog(options: {
       text: options.text,
     });
     const resendId = result?.data?.id || null;
-    // Log success (fire and forget — don't let logging failures break email sending)
+    // Log success (fire and forget - don't let logging failures break email sending)
     storage.logEmail({
       recipientEmail: options.to,
       recipientName: options.recipientName || null,
@@ -669,7 +669,7 @@ ${resetLink}
 
 This link expires in 1 hour and can only be used once.
 
-If you didn't request this, you can safely ignore this email — your password won't be changed.
+If you didn't request this, you can safely ignore this email - your password won't be changed.
 
 - Matt
 
@@ -738,7 +738,7 @@ Questions? Just reply to this email.`;
 const DRIP_VARIABLES: Record<string, string> = {
   DASHBOARD_URL: 'https://challenge.mattwebley.com/dashboard',
   UNLOCK_URL: 'https://challenge.mattwebley.com/order',
-  READINESS_CALL_URL: 'https://challenge.mattwebley.com/coaching', // Replace with actual booking URL when ready
+  READINESS_CALL_URL: 'https://cal.com/mattwebley/readiness-review',
 };
 
 function generateUnsubscribeUrl(userId: string): string {
@@ -813,9 +813,12 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
   let errors = 0;
 
   try {
-    // Get all active drip emails
+    // Get all active drip emails, split by type
     const activeDrips = await storage.getActiveDripEmails();
     if (activeDrips.length === 0) return { sent, errors };
+
+    const regularDrips = activeDrips.filter(d => d.emailType !== 'nag');
+    const nagDrips = activeDrips.filter(d => d.emailType === 'nag');
 
     // Get all paid users (skip unsubscribed and banned)
     const allUsers = await storage.getAllUsers();
@@ -823,26 +826,40 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
 
     if (paidUsers.length === 0) return { sent, errors };
 
+    // Pre-fetch all user stats and progress for efficiency
+    const allStats = await storage.getAllUserStats();
+    const allProgress = await storage.getAllUserProgress();
+    const statsMap = new Map(allStats.map(s => [s.userId, s]));
+    const progressMap = new Map<string, Set<number>>();
+    for (const p of allProgress) {
+      if (p.completed) {
+        if (!progressMap.has(p.userId)) progressMap.set(p.userId, new Set());
+        progressMap.get(p.userId)!.add(p.day);
+      }
+    }
+
     const now = new Date();
+    const dayMs = 1000 * 60 * 60 * 24;
 
     for (const user of paidUsers) {
-      // Calculate days since signup (using createdAt)
       const signupDate = user.createdAt ? new Date(user.createdAt) : null;
       if (!signupDate) continue;
 
-      const daysSinceSignup = Math.floor((now.getTime() - signupDate.getTime()) / (1000 * 60 * 60 * 24));
+      const daysSinceSignup = Math.floor((now.getTime() - signupDate.getTime()) / dayMs);
+      const completedDays = progressMap.get(user.id) || new Set<number>();
+      const stats = statsMap.get(user.id);
 
       // Get which drip emails this user has already received
       const alreadySent = await storage.getDripEmailsSentForUser(user.id);
       const sentIds = new Set(alreadySent.map(s => s.dripEmailId));
+      const unsubUrl = generateUnsubscribeUrl(user.id);
 
-      // Find drip emails that should have been sent by now but haven't been
-      for (const drip of activeDrips) {
+      // --- REGULAR DRIP EMAILS (exact day match) ---
+      for (const drip of regularDrips) {
         if (sentIds.has(drip.id)) continue; // Already sent
-        if (drip.dayTrigger > daysSinceSignup) continue; // Not time yet
+        if (daysSinceSignup !== drip.dayTrigger) continue; // Exact day match only
+        if (completedDays.has(drip.dayTrigger)) continue; // User already completed this day
 
-        // Send it
-        const unsubUrl = generateUnsubscribeUrl(user.id);
         const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
         if (success) {
           await storage.markDripEmailSent(user.id, drip.id);
@@ -850,9 +867,44 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
         } else {
           errors++;
         }
-
-        // Small delay between sends to avoid rate limiting
         await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      // --- NAG EMAILS (inactivity-based) ---
+      if (nagDrips.length > 0 && stats) {
+        const lastCompletedDay = stats.lastCompletedDay;
+        // Only nag users who started (completed at least day 0) but haven't finished
+        if (lastCompletedDay !== null && lastCompletedDay !== undefined && lastCompletedDay >= 0 && lastCompletedDay < 21) {
+          const lastActivity = stats.lastActivityDate ? new Date(stats.lastActivityDate) : null;
+          if (lastActivity) {
+            const daysInactive = Math.floor((now.getTime() - lastActivity.getTime()) / dayMs);
+
+            if (daysInactive >= 1) {
+              const nagResetAt = stats.nagResetAt ? new Date(stats.nagResetAt) : null;
+
+              for (const nag of nagDrips) {
+                // Skip if already sent after last nag reset
+                const wasSentAfterReset = alreadySent.some(s =>
+                  s.dripEmailId === nag.id &&
+                  s.sentAt &&
+                  (!nagResetAt || new Date(s.sentAt) > nagResetAt)
+                );
+                if (wasSentAfterReset) continue;
+
+                if (daysInactive < nag.dayTrigger) continue; // Not inactive long enough
+
+                const success = await sendDripEmail(nag, user.email!, user.firstName || '', unsubUrl);
+                if (success) {
+                  await storage.markDripEmailSent(user.id, nag.id);
+                  sent++;
+                } else {
+                  errors++;
+                }
+                await new Promise(resolve => setTimeout(resolve, 100));
+              }
+            }
+          }
+        }
       }
     }
 
@@ -866,7 +918,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
   return { sent, errors };
 }
 
-// Start the drip email processor — runs every hour
+// Start the drip email processor - runs every hour
 let dripInterval: ReturnType<typeof setInterval> | null = null;
 
 export function startDripEmailProcessor(): void {

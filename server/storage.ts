@@ -412,7 +412,7 @@ export class DatabaseStorage implements IStorage {
     reflectionAnswer?: string;
     userInputs?: Record<string, unknown>;
   }): Promise<UserProgress> {
-    // Atomic upsert — prevents duplicate rows if two requests arrive simultaneously
+    // Atomic upsert - prevents duplicate rows if two requests arrive simultaneously
     const [result] = await db
       .insert(userProgress)
       .values({
@@ -1514,6 +1514,8 @@ export class DatabaseStorage implements IStorage {
           subject: email.subject,
           altSubject: email.altSubject,
           body: email.body,
+          emailType: email.emailType,
+          nagLevel: email.nagLevel,
           updatedAt: new Date(),
         },
       })
@@ -1547,7 +1549,10 @@ export class DatabaseStorage implements IStorage {
     const [result] = await db
       .insert(dripEmailsSent)
       .values({ userId, dripEmailId })
-      .onConflictDoNothing()
+      .onConflictDoUpdate({
+        target: [dripEmailsSent.userId, dripEmailsSent.dripEmailId],
+        set: { sentAt: new Date() },
+      })
       .returning();
     return result;
   }

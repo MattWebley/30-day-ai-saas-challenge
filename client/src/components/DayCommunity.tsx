@@ -66,6 +66,29 @@ export function DayCommunity({ day }: DayCommunityProps) {
   );
 }
 
+const TRUNCATE_LENGTH = 200;
+
+function TruncatedText({ text, className }: { text: string; className?: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = text.length > TRUNCATE_LENGTH;
+
+  return (
+    <div>
+      <p className={`${className} whitespace-pre-line`}>
+        {isLong && !expanded ? text.slice(0, TRUNCATE_LENGTH).trimEnd() + "..." : text}
+      </p>
+      {isLong && (
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="text-sm text-primary hover:underline mt-1 font-medium"
+        >
+          {expanded ? "Show less" : "Read more"}
+        </button>
+      )}
+    </div>
+  );
+}
+
 // Q&A Section Component
 function QASection({ day }: { day: number }) {
   const [showForm, setShowForm] = useState(false);
@@ -185,7 +208,7 @@ function QASection({ day }: { day: number }) {
                     <p className="text-sm text-slate-500">
                       {q.user.firstName || "User"} asked:
                     </p>
-                    <p className="text-slate-900 font-medium">{q.question}</p>
+                    <TruncatedText text={q.question} className="text-slate-900 font-medium" />
                   </div>
                 </div>
 
@@ -196,7 +219,7 @@ function QASection({ day }: { day: number }) {
                       <CheckCircle2 className="w-4 h-4 text-green-600" />
                       <p className="text-sm text-green-600 font-medium">Answer:</p>
                     </div>
-                    <p className="text-slate-700 whitespace-pre-line">{q.answer}</p>
+                    <TruncatedText text={q.answer} className="text-slate-700" />
                   </div>
                 )}
 

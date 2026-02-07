@@ -119,7 +119,7 @@ export async function setupAuth(app: Express) {
         console.error("[Auth] Callback error:", err.message);
         return res.redirect("/auth-error");
       }
-      // Check if user has purchased — if not, send to order page
+      // Check if user has purchased - if not, send to order page
       try {
         const userId = (req.user as any)?.claims?.sub;
         if (userId) {

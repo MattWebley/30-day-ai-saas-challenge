@@ -7,6 +7,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest, getServerErrorMessage } from "@/lib/queryClient";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import {
   Mail,
   Save,
   Pencil,
@@ -27,6 +34,7 @@ import {
   Play,
   Power,
   PowerOff,
+  UserX,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { EmailTemplate, EmailLog, DripEmail } from "./adminTypes";
@@ -444,7 +452,7 @@ export default function AdminEmails() {
         </div>
 
         <p className="text-sm text-slate-500 mb-4">
-          Automated emails sent to customers based on their challenge day. Runs every hour. All emails are OFF by default — enable them when you're ready.
+          Automated emails sent to customers based on their challenge day (exact day match). Runs every hour. All emails are OFF by default - enable them when you're ready.
         </p>
 
         {dripEmails.length === 0 ? (
@@ -452,185 +460,333 @@ export default function AdminEmails() {
             <p className="text-slate-500">No drip emails found. They'll be seeded on next server restart.</p>
           </Card>
         ) : (
-          <div className="space-y-2">
-            {dripEmails.map((drip) => (
-              <Card
-                key={drip.id}
-                className={`p-3 border shadow-sm ${
-                  drip.isActive ? "border-slate-200" : "border-slate-200 bg-slate-50/50"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  {/* Left: number + info */}
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 ${
-                      drip.isActive ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-400"
-                    }`}>
-                      {drip.emailNumber}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className={`text-sm font-medium truncate ${drip.isActive ? "text-slate-900" : "text-slate-500"}`}>
-                          {drip.subject}
-                        </p>
-                        {!drip.isActive && (
-                          <span className="px-1.5 py-0.5 bg-slate-200 text-slate-500 text-[10px] font-bold rounded flex-shrink-0">
-                            OFF
-                          </span>
-                        )}
+          <>
+            {/* Regular drip emails */}
+            <div className="space-y-2">
+              {dripEmails.filter(d => d.emailType !== 'nag').map((drip) => (
+                <Card
+                  key={drip.id}
+                  className={`p-3 border shadow-sm ${
+                    drip.isActive ? "border-slate-200" : "border-slate-200 bg-slate-50/50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    {/* Left: number + info */}
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 ${
+                        drip.isActive ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-400"
+                      }`}>
+                        {drip.emailNumber}
                       </div>
-                      <p className="text-xs text-slate-400">
-                        Day {drip.dayTrigger}{drip.dayTrigger === 0 ? " (immediate)" : ""} · {drip.sentCount} sent
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Right: actions */}
-                  <div className="flex items-center gap-1 flex-shrink-0">
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0"
-                      title="Preview"
-                      onClick={() => {
-                        setPreviewingDrip(previewingDrip === drip.id ? null : drip.id);
-                        setEditingDrip(null);
-                      }}
-                    >
-                      <Eye className={`w-4 h-4 ${previewingDrip === drip.id ? "text-primary" : ""}`} />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0"
-                      title={drip.isActive ? "Disable" : "Enable"}
-                      onClick={() => updateDripEmail.mutate({ id: drip.id, isActive: !drip.isActive })}
-                    >
-                      {drip.isActive ? (
-                        <ToggleRight className="w-4 h-4 text-primary" />
-                      ) : (
-                        <ToggleLeft className="w-4 h-4 text-slate-400" />
-                      )}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0"
-                      title="Edit"
-                      onClick={() => {
-                        if (editingDrip === drip.id) {
-                          setEditingDrip(null);
-                        } else {
-                          setEditingDrip(drip.id);
-                          setEditedDripSubject(drip.subject);
-                          setEditedDripAltSubject(drip.altSubject || "");
-                          setEditedDripBody(drip.body);
-                          setPreviewingDrip(null);
-                        }
-                      }}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      className="h-8 w-8 p-0"
-                      title={testEmailAddress ? `Send test to ${testEmailAddress}` : "Set test email first"}
-                      onClick={() => {
-                        if (!testEmailAddress) {
-                          toast.error("Set a test email address above first");
-                          return;
-                        }
-                        sendTestDrip.mutate({ id: drip.id, testEmail: testEmailAddress });
-                      }}
-                      disabled={sendTestDrip.isPending}
-                    >
-                      <Send className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Preview */}
-                {previewingDrip === drip.id && (
-                  <div className="mt-3 pt-3 border-t border-slate-200">
-                    <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
-                      <div className="bg-slate-50 px-4 py-2 border-b border-slate-200">
+                      <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-slate-400 w-14">Subject:</span>
-                          <span className="text-sm font-semibold text-slate-900">
-                            {renderPreview(drip.subject)}
+                          <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded flex-shrink-0 ${
+                            drip.isActive ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-400"
+                          }`}>
+                            Day {drip.dayTrigger}
                           </span>
-                        </div>
-                        {drip.altSubject && (
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-xs font-medium text-slate-400 w-14">Alt:</span>
-                            <span className="text-sm text-slate-600">
-                              {renderPreview(drip.altSubject)}
+                          <p className={`text-sm font-medium truncate ${drip.isActive ? "text-slate-900" : "text-slate-500"}`}>
+                            {drip.subject}
+                          </p>
+                          {!drip.isActive && (
+                            <span className="px-1.5 py-0.5 bg-slate-200 text-slate-500 text-[10px] font-bold rounded flex-shrink-0">
+                              OFF
                             </span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="px-4 py-3">
-                        <pre className="whitespace-pre-wrap font-sans text-sm text-slate-700 leading-relaxed">
-                          {renderPreview(drip.body)}
-                        </pre>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-400">
+                          Sends on challenge day {drip.dayTrigger}{drip.dayTrigger === 0 ? " (immediately after signup)" : drip.dayTrigger > 21 ? " (post-challenge)" : ""} · {drip.sentCount} sent
+                        </p>
                       </div>
                     </div>
-                  </div>
-                )}
 
-                {/* Edit */}
-                {editingDrip === drip.id && (
-                  <div className="mt-3 pt-3 border-t border-slate-200 space-y-3">
-                    <div>
-                      <Label className="text-xs">Subject</Label>
-                      <Input
-                        value={editedDripSubject}
-                        onChange={(e) => setEditedDripSubject(e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs">Alt Subject</Label>
-                      <Input
-                        value={editedDripAltSubject}
-                        onChange={(e) => setEditedDripAltSubject(e.target.value)}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs">Body ({"{{firstName}}, {{DASHBOARD_URL}}, {{UNLOCK_URL}}, {{READINESS_CALL_URL}}"})</Label>
-                      <Textarea
-                        value={editedDripBody}
-                        onChange={(e) => setEditedDripBody(e.target.value)}
-                        className="mt-1 font-mono text-sm min-h-[250px]"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
+                    {/* Right: actions */}
+                    <div className="flex items-center gap-1 flex-shrink-0">
                       <Button
                         size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        title="Preview"
                         onClick={() => {
-                          updateDripEmail.mutate({
-                            id: drip.id,
-                            subject: editedDripSubject,
-                            altSubject: editedDripAltSubject,
-                            body: editedDripBody,
-                          });
+                          setPreviewingDrip(previewingDrip === drip.id ? null : drip.id);
+                          setEditingDrip(null);
                         }}
-                        disabled={updateDripEmail.isPending}
                       >
-                        <Save className="w-4 h-4 mr-1" />
-                        Save
+                        <Eye className={`w-4 h-4 ${previewingDrip === drip.id ? "text-primary" : ""}`} />
                       </Button>
-                      <Button size="sm" variant="outline" onClick={() => setEditingDrip(null)}>
-                        Cancel
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        title={drip.isActive ? "Disable" : "Enable"}
+                        onClick={() => updateDripEmail.mutate({ id: drip.id, isActive: !drip.isActive })}
+                      >
+                        {drip.isActive ? (
+                          <ToggleRight className="w-4 h-4 text-primary" />
+                        ) : (
+                          <ToggleLeft className="w-4 h-4 text-slate-400" />
+                        )}
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        title="Edit"
+                        onClick={() => {
+                          if (editingDrip === drip.id) {
+                            setEditingDrip(null);
+                          } else {
+                            setEditingDrip(drip.id);
+                            setEditedDripSubject(drip.subject);
+                            setEditedDripAltSubject(drip.altSubject || "");
+                            setEditedDripBody(drip.body);
+                            setPreviewingDrip(null);
+                          }
+                        }}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 w-8 p-0"
+                        title={testEmailAddress ? `Send test to ${testEmailAddress}` : "Set test email first"}
+                        onClick={() => {
+                          if (!testEmailAddress) {
+                            toast.error("Set a test email address above first");
+                            return;
+                          }
+                          sendTestDrip.mutate({ id: drip.id, testEmail: testEmailAddress });
+                        }}
+                        disabled={sendTestDrip.isPending}
+                      >
+                        <Send className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
-                )}
-              </Card>
-            ))}
-          </div>
+
+                  {/* Edit */}
+                  {editingDrip === drip.id && (
+                    <div className="mt-3 pt-3 border-t border-slate-200 space-y-3">
+                      <div>
+                        <Label className="text-xs">Subject</Label>
+                        <Input
+                          value={editedDripSubject}
+                          onChange={(e) => setEditedDripSubject(e.target.value)}
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Alt Subject</Label>
+                        <Input
+                          value={editedDripAltSubject}
+                          onChange={(e) => setEditedDripAltSubject(e.target.value)}
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Body ({"{{firstName}}, {{DASHBOARD_URL}}, {{UNLOCK_URL}}, {{READINESS_CALL_URL}}"})</Label>
+                        <Textarea
+                          value={editedDripBody}
+                          onChange={(e) => setEditedDripBody(e.target.value)}
+                          className="mt-1 font-mono text-sm min-h-[250px]"
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            updateDripEmail.mutate({
+                              id: drip.id,
+                              subject: editedDripSubject,
+                              altSubject: editedDripAltSubject,
+                              body: editedDripBody,
+                            });
+                          }}
+                          disabled={updateDripEmail.isPending}
+                        >
+                          <Save className="w-4 h-4 mr-1" />
+                          Save
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => setEditingDrip(null)}>
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              ))}
+            </div>
+
+            {/* Re-engagement / Nag emails section */}
+            {dripEmails.some(d => d.emailType === 'nag') && (
+              <div className="mt-6">
+                <div className="flex items-center gap-3 mb-3">
+                  <UserX className="w-5 h-5 text-orange-500" />
+                  <h3 className="text-lg font-bold text-slate-900">Re-engagement Sequence</h3>
+                  <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">
+                    {dripEmails.filter(d => d.emailType === 'nag' && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'nag').length} active
+                  </span>
+                </div>
+                <p className="text-sm text-slate-500 mb-3">
+                  Sent to users who stop progressing. Resets whenever they complete a day. Nag level escalates over time.
+                </p>
+                <div className="space-y-2">
+                  {dripEmails.filter(d => d.emailType === 'nag').map((drip) => (
+                    <Card
+                      key={drip.id}
+                      className={`p-3 border shadow-sm ${
+                        drip.isActive ? "border-orange-200" : "border-slate-200 bg-slate-50/50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 ${
+                            drip.isActive ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-400"
+                          }`}>
+                            {drip.nagLevel || "?"}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className={`px-1.5 py-0.5 text-[10px] font-bold rounded flex-shrink-0 ${
+                                drip.isActive ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-400"
+                              }`}>
+                                +{drip.dayTrigger}d inactive
+                              </span>
+                              <p className={`text-sm font-medium truncate ${drip.isActive ? "text-slate-900" : "text-slate-500"}`}>
+                                {drip.subject}
+                              </p>
+                              {!drip.isActive && (
+                                <span className="px-1.5 py-0.5 bg-slate-200 text-slate-500 text-[10px] font-bold rounded flex-shrink-0">
+                                  OFF
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-400">
+                              Sends {drip.dayTrigger} day{drip.dayTrigger !== 1 ? "s" : ""} after stalling · Nag level {drip.nagLevel} · {drip.sentCount} sent
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                            title="Preview"
+                            onClick={() => {
+                              setPreviewingDrip(previewingDrip === drip.id ? null : drip.id);
+                              setEditingDrip(null);
+                            }}
+                          >
+                            <Eye className={`w-4 h-4 ${previewingDrip === drip.id ? "text-primary" : ""}`} />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                            title={drip.isActive ? "Disable" : "Enable"}
+                            onClick={() => updateDripEmail.mutate({ id: drip.id, isActive: !drip.isActive })}
+                          >
+                            {drip.isActive ? (
+                              <ToggleRight className="w-4 h-4 text-orange-500" />
+                            ) : (
+                              <ToggleLeft className="w-4 h-4 text-slate-400" />
+                            )}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                            title="Edit"
+                            onClick={() => {
+                              if (editingDrip === drip.id) {
+                                setEditingDrip(null);
+                              } else {
+                                setEditingDrip(drip.id);
+                                setEditedDripSubject(drip.subject);
+                                setEditedDripAltSubject(drip.altSubject || "");
+                                setEditedDripBody(drip.body);
+                                setPreviewingDrip(null);
+                              }
+                            }}
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 w-8 p-0"
+                            title={testEmailAddress ? `Send test to ${testEmailAddress}` : "Set test email first"}
+                            onClick={() => {
+                              if (!testEmailAddress) {
+                                toast.error("Set a test email address above first");
+                                return;
+                              }
+                              sendTestDrip.mutate({ id: drip.id, testEmail: testEmailAddress });
+                            }}
+                            disabled={sendTestDrip.isPending}
+                          >
+                            <Send className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Edit */}
+                      {editingDrip === drip.id && (
+                        <div className="mt-3 pt-3 border-t border-slate-200 space-y-3">
+                          <div>
+                            <Label className="text-xs">Subject</Label>
+                            <Input
+                              value={editedDripSubject}
+                              onChange={(e) => setEditedDripSubject(e.target.value)}
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Alt Subject</Label>
+                            <Input
+                              value={editedDripAltSubject}
+                              onChange={(e) => setEditedDripAltSubject(e.target.value)}
+                              className="mt-1"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs">Body ({"{{firstName}}, {{DASHBOARD_URL}}"})</Label>
+                            <Textarea
+                              value={editedDripBody}
+                              onChange={(e) => setEditedDripBody(e.target.value)}
+                              className="mt-1 font-mono text-sm min-h-[250px]"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => {
+                                updateDripEmail.mutate({
+                                  id: drip.id,
+                                  subject: editedDripSubject,
+                                  altSubject: editedDripAltSubject,
+                                  body: editedDripBody,
+                                });
+                              }}
+                              disabled={updateDripEmail.isPending}
+                            >
+                              <Save className="w-4 h-4 mr-1" />
+                              Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={() => setEditingDrip(null)}>
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -768,38 +924,6 @@ export default function AdminEmails() {
                 </div>
               </div>
 
-              {/* Preview panel */}
-              {previewingTemplate === template.templateKey && (
-                <div className="pt-4 border-t border-slate-200">
-                  <div className="bg-white border border-slate-200 rounded-lg overflow-hidden">
-                    {/* Email header */}
-                    <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-slate-400 w-14">From:</span>
-                        <span className="text-sm text-slate-700">Matt Webley &lt;matt@challenge.mattwebley.com&gt;</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-slate-400 w-14">To:</span>
-                        <span className="text-sm text-slate-700">sarah@example.com</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-slate-400 w-14">Subject:</span>
-                        <span className="text-sm font-semibold text-slate-900">{renderPreview(template.subject)}</span>
-                      </div>
-                    </div>
-                    {/* Email body */}
-                    <div className="px-4 py-4">
-                      <pre className="whitespace-pre-wrap font-sans text-sm text-slate-700 leading-relaxed">
-                        {renderPreview(template.body)}
-                      </pre>
-                    </div>
-                  </div>
-                  <p className="text-xs text-slate-400 mt-2 text-center">
-                    Preview uses sample data — actual emails will use real customer details
-                  </p>
-                </div>
-              )}
-
               {/* Edit panel */}
               {editingTemplate === template.templateKey && (
                 <div className="space-y-4 pt-4 border-t border-slate-200">
@@ -886,7 +1010,7 @@ export default function AdminEmails() {
                   </div>
                   <p className="text-sm text-slate-500 mb-4">
                     {SEGMENTS.find(s => s.value === sendSegment)?.desc}
-                    {" — "}
+                    {" - "}
                     {"{{firstName}}"} will be replaced with each customer's name.
                   </p>
 
@@ -981,7 +1105,7 @@ export default function AdminEmails() {
                     <tr key={log.id} className="hover:bg-slate-50">
                       <td className="py-2.5 pr-4">
                         <div className="text-slate-900 text-sm font-medium">
-                          {log.recipientName || "—"}
+                          {log.recipientName || "-"}
                         </div>
                         <div className="text-slate-500 text-xs">{log.recipientEmail}</div>
                       </td>
@@ -994,7 +1118,7 @@ export default function AdminEmails() {
                             {log.templateKey}
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-400">—</span>
+                          <span className="text-xs text-slate-400">-</span>
                         )}
                       </td>
                       <td className="py-2.5 pr-4">
@@ -1011,7 +1135,7 @@ export default function AdminEmails() {
                         )}
                       </td>
                       <td className="py-2.5 text-xs text-slate-500 whitespace-nowrap">
-                        {log.sentAt ? new Date(log.sentAt).toLocaleString() : "—"}
+                        {log.sentAt ? new Date(log.sentAt).toLocaleString() : "-"}
                       </td>
                     </tr>
                   ))}
@@ -1049,6 +1173,68 @@ export default function AdminEmails() {
           </>
         )}
       </div>
+
+      {/* Email Preview Modal */}
+      {(() => {
+        const previewDrip = previewingDrip ? dripEmails.find(d => d.id === previewingDrip) : null;
+        const previewTemplate = previewingTemplate ? emailTemplates.find(t => t.templateKey === previewingTemplate) : null;
+        const isOpen = !!(previewDrip || previewTemplate);
+        const subject = previewDrip ? previewDrip.subject : previewTemplate?.subject || "";
+        const altSubject = previewDrip?.altSubject;
+        const body = previewDrip ? previewDrip.body : previewTemplate?.body || "";
+        const name = previewDrip ? `Drip #${previewDrip.emailNumber}` : previewTemplate?.name || "";
+
+        return (
+          <Dialog open={isOpen} onOpenChange={(open) => {
+            if (!open) {
+              setPreviewingDrip(null);
+              setPreviewingTemplate(null);
+            }
+          }}>
+            <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+              <DialogHeader>
+                <DialogTitle>{name} - Preview</DialogTitle>
+                <DialogDescription>
+                  Preview uses sample data - actual emails will use real customer details
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex-1 overflow-y-auto border border-slate-200 rounded-lg">
+                {/* Email header */}
+                <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 space-y-1 sticky top-0">
+                  {previewTemplate && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-slate-400 w-14">From:</span>
+                        <span className="text-sm text-slate-700">Matt Webley &lt;matt@challenge.mattwebley.com&gt;</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-slate-400 w-14">To:</span>
+                        <span className="text-sm text-slate-700">sarah@example.com</span>
+                      </div>
+                    </>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-slate-400 w-14">Subject:</span>
+                    <span className="text-sm font-semibold text-slate-900">{renderPreview(subject)}</span>
+                  </div>
+                  {altSubject && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-medium text-slate-400 w-14">Alt:</span>
+                      <span className="text-sm text-slate-600">{renderPreview(altSubject)}</span>
+                    </div>
+                  )}
+                </div>
+                {/* Email body */}
+                <div className="px-4 py-4">
+                  <pre className="whitespace-pre-wrap font-sans text-sm text-slate-700 leading-relaxed">
+                    {renderPreview(body)}
+                  </pre>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        );
+      })()}
     </div>
   );
 }

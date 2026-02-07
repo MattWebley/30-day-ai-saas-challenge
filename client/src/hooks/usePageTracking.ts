@@ -5,7 +5,7 @@ export function usePageTracking() {
   const [location] = useLocation();
 
   useEffect(() => {
-    // Fire-and-forget — don't block rendering
+    // Fire-and-forget - don't block rendering
     fetch("/api/track/page-view", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

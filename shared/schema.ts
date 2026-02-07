@@ -228,6 +228,7 @@ export const userStats = pgTable("user_stats", {
   totalXp: integer("total_xp").default(0),
   lastCompletedDay: integer("last_completed_day"),
   lastActivityDate: timestamp("last_activity_date"),
+  nagResetAt: timestamp("nag_reset_at"), // set when user completes a day, resets nag sequence
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 }, (table) => [
@@ -727,12 +728,14 @@ export type InsertEmailLog = typeof emailLogs.$inferInsert;
 // Drip email sequence - automated daily challenge emails
 export const dripEmails = pgTable("drip_emails", {
   id: serial("id").primaryKey(),
-  emailNumber: integer("email_number").notNull().unique(), // 1-20 sequence order
-  dayTrigger: integer("day_trigger").notNull(), // which challenge day triggers this (0 = immediate on signup)
+  emailNumber: integer("email_number").notNull().unique(), // 1-20 sequence order, 101+ for nag emails
+  dayTrigger: integer("day_trigger").notNull(), // which challenge day triggers this (0 = immediate on signup), or days inactive for nag emails
   subject: text("subject").notNull(),
   altSubject: text("alt_subject"),
   body: text("body").notNull(),
   isActive: boolean("is_active").default(false),
+  emailType: varchar("email_type").default("drip"), // 'drip' or 'nag'
+  nagLevel: integer("nag_level"), // 1, 2, or 3 for nag emails only
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

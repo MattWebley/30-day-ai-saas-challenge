@@ -23,7 +23,7 @@ interface Day8ClaudeCodeProps {
 const INSTALL_COMMAND = `curl -fsSL https://claude.ai/install.sh | bash && source ~/.bashrc && claude`;
 const INSTALL_FALLBACK = `npm install -g @anthropic-ai/claude-code && claude`;
 
-const CLAUDE_MD_TEMPLATE = `# CLAUDE.md — FOR NON-TECHNICAL BUILDERS
+const CLAUDE_MD_TEMPLATE = `# CLAUDE.md - FOR NON-TECHNICAL BUILDERS
 
 ---
 
@@ -90,8 +90,8 @@ For anything beyond a tiny change, share a quick plan:
 
 \`\`\`
 HERE IS WHAT I WILL DO:
-1. [step] — [why, in plain english]
-2. [step] — [why, in plain english]
+1. [step] - [why, in plain english]
+2. [step] - [why, in plain english]
 → Starting now unless you want me to adjust.
 \`\`\`
 

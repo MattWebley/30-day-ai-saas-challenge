@@ -187,6 +187,8 @@ export interface DripEmail {
   altSubject: string | null;
   body: string;
   isActive: boolean;
+  emailType: string;
+  nagLevel: number | null;
   sentCount: number;
   createdAt: string;
   updatedAt: string;
@@ -269,6 +271,15 @@ export interface RevenueData {
     customerEmail: string;
     customerName: string;
     description: string;
+    created: number;
+    productType: 'challenge' | 'coaching';
+  }[];
+  chartTransactions: {
+    id: string;
+    amount: number;
+    currency: string;
+    status: string;
+    refunded: boolean;
     created: number;
     productType: 'challenge' | 'coaching';
   }[];

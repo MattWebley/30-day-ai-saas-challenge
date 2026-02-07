@@ -3,7 +3,7 @@ import { storage } from './storage';
 // All 20 drip emails for the challenge sequence
 // Variables: {{firstName}}, {{DASHBOARD_URL}}, {{UNLOCK_URL}}, {{READINESS_CALL_URL}}
 // Legal footer + unsubscribe link automatically appended by emailService.ts
-// All seeded as isActive=false — Matt must enable them in admin before any send
+// All seeded as isActive=false - Matt must enable them in admin before any send
 
 const DRIP_EMAILS = [
   {
@@ -17,7 +17,7 @@ You're IN.
 
 And I need you to understand something right now...
 
-What you just did — signing up, committing, actually STARTING — puts you ahead of 99% of people who say they want to build a business.
+What you just did - signing up, committing, actually STARTING - puts you ahead of 99% of people who say they want to build a business.
 
 Most people talk. You ACTED.
 
@@ -76,7 +76,7 @@ Three months later I had a product nobody wanted.
 
 No users. No revenue. Just a really expensive lesson.
 
-And here's the thing — that experience is SO common it's almost a rite of passage in the startup world.
+And here's the thing - that experience is SO common it's almost a rite of passage in the startup world.
 
 But it doesn't HAVE to be.
 
@@ -86,11 +86,11 @@ That's what today's lesson is about.
 
 You're going to do THREE things:
 
-1. Research your competitors (yes, having competitors is actually a GOOD sign — it means there's a market)
+1. Research your competitors (yes, having competitors is actually a GOOD sign - it means there's a market)
 
 2. Map out the specific pain points your product solves
 
-3. Write your "I Help" statement — one sentence that makes it crystal clear who you help and how
+3. Write your "I Help" statement - one sentence that makes it crystal clear who you help and how
 
 When you nail that "I Help" statement, something clicks.
 
@@ -188,7 +188,7 @@ Today something changes.
 
 Today your product gets a NAME.
 
-And I'll be honest with you — I've worked with a LOT of people on this challenge, and this is the day where something shifts psychologically.
+And I'll be honest with you - I've worked with a LOT of people on this challenge, and this is the day where something shifts psychologically.
 
 When your product has a name... when you own the domain... when you can TYPE it into a browser and see YOUR space on the internet...
 
@@ -216,7 +216,7 @@ A good name is:
 
 That's it. It doesn't need to be clever. It doesn't need to be a pun. It just needs to be CLEAR and MEMORABLE.
 
-Some of the biggest companies in the world have names that mean absolutely nothing — Google, Spotify, Stripe. The name doesn't make the product. The PRODUCT makes the name.
+Some of the biggest companies in the world have names that mean absolutely nothing - Google, Spotify, Stripe. The name doesn't make the product. The PRODUCT makes the name.
 
 Pick one. Move forward. You can always rebrand later (though honestly, most people don't need to).
 
@@ -255,7 +255,7 @@ They trust it more. They're willing to pay more. They take it more seriously.
 
 This is called "perceived value" and it's one of the most powerful forces in business.
 
-A product that LOOKS like it cost £50K to build commands £50K prices — even if it cost you almost nothing to make.
+A product that LOOKS like it cost £50K to build commands £50K prices - even if it cost you almost nothing to make.
 
 Today, your product gets its visual identity.
 
@@ -338,7 +338,7 @@ Tomorrow we build your product blueprint. That's where it gets REALLY exciting.
 
 Matt
 
-P.S. Here's something I've noticed after working with hundreds of people on this... the ones who fly through the BUILD phase are usually the ones who had their tools configured RIGHT from the start. Getting stuck on technical setup problems burns hours and kills momentum. That's one of the things my coaching clients love most — they never get stuck because I'm right there with them. No wasted time. No frustration.`,
+P.S. Here's something I've noticed after working with hundreds of people on this... the ones who fly through the BUILD phase are usually the ones who had their tools configured RIGHT from the start. Getting stuck on technical setup problems burns hours and kills momentum. That's one of the things my coaching clients love most - they never get stuck because I'm right there with them. No wasted time. No frustration.`,
   },
   {
     emailNumber: 7,
@@ -351,7 +351,7 @@ This is the email I've been waiting to send you.
 
 Because TODAY is the day everything changes.
 
-Everything you've done over the last 6 days — the idea, the validation, the features, the name, the brand, the tools...
+Everything you've done over the last 6 days - the idea, the validation, the features, the name, the brand, the tools...
 
 It ALL comes together right now.
 
@@ -359,7 +359,7 @@ Today you create your Product Requirements Document (PRD).
 
 Think of it as the BLUEPRINT for your entire product.
 
-Every feature. Every page. Every flow. Every detail — all laid out in one document.
+Every feature. Every page. Every flow. Every detail - all laid out in one document.
 
 And then... you paste it into Replit and tell it to start BUILDING.
 
@@ -385,7 +385,7 @@ That's not a gimmick. That's the genuine reality of building software in 2025/20
 
 And it's why I believe SaaS is the single best business model on the planet right now.
 
-Low costs. High margins. Recurring revenue. Global reach. And now — no technical barrier to entry.
+Low costs. High margins. Recurring revenue. Global reach. And now - no technical barrier to entry.
 
 The opportunity is ENORMOUS. And you're right in the middle of it.
 
@@ -410,7 +410,7 @@ Not just in software. In ANY business.
 
 It's called having a SYSTEM.
 
-Most people who build things — products, businesses, content — do it randomly. They wing it. They make it up as they go.
+Most people who build things - products, businesses, content - do it randomly. They wing it. They make it up as they go.
 
 And it works... until it doesn't.
 
@@ -418,7 +418,7 @@ Until something breaks and they can't figure out why. Until they make a change a
 
 Today you set up a PROFESSIONAL development workflow.
 
-GitHub (version control — think of it as an "undo" button for your entire project). Claude Code. And your CLAUDE.md file, which gives AI a set of golden rules to follow every time it writes code for you.
+GitHub (version control - think of it as an "undo" button for your entire project). Claude Code. And your CLAUDE.md file, which gives AI a set of golden rules to follow every time it writes code for you.
 
 Here's what's funny about this...
 
@@ -426,7 +426,7 @@ Most actual professional developers don't have this level of organisation.
 
 I'm serious. I've worked with dev teams charging £100+/hour who don't have clear coding rules documented anywhere.
 
-You — someone who probably couldn't write a line of code a week ago — are about to have a more structured, more disciplined development process than people who've been coding for YEARS.
+You - someone who probably couldn't write a line of code a week ago - are about to have a more structured, more disciplined development process than people who've been coding for YEARS.
 
 That's not an accident. That's by DESIGN.
 
@@ -461,14 +461,14 @@ Not just for this challenge. Not just for this product. For EVERY product you ev
 
 Here they are:
 
-1. Be Specific — vague instructions = vague results
-2. Reverse mistakes — how to undo anything without panicking
-3. Report errors properly — AI can fix any bug if you tell it what happened
-4. Break down big tasks — small steps = reliable results
-5. Commit before changes — always save your work before trying something new
-6. Ask for options — don't accept the first answer, ask for alternatives
-7. Vibe with it — work WITH AI, not against it
-8. Ask Why — understand what AI did so you can learn from it
+1. Be Specific - vague instructions = vague results
+2. Reverse mistakes - how to undo anything without panicking
+3. Report errors properly - AI can fix any bug if you tell it what happened
+4. Break down big tasks - small steps = reliable results
+5. Commit before changes - always save your work before trying something new
+6. Ask for options - don't accept the first answer, ask for alternatives
+7. Vibe with it - work WITH AI, not against it
+8. Ask Why - understand what AI did so you can learn from it
 
 These 8 skills are the difference between someone who FIGHTS with AI tools and someone who FLOWS with them.
 
@@ -521,7 +521,7 @@ Your users will interact with your app and get intelligent responses. Not canned
 
 Think about that for a second...
 
-Your product — the one YOU built from scratch — will have the same kind of AI capabilities that companies are spending MILLIONS to develop.
+Your product - the one YOU built from scratch - will have the same kind of AI capabilities that companies are spending MILLIONS to develop.
 
 That's your competitive advantage. And it costs you almost nothing.
 
@@ -645,7 +645,7 @@ THAT'S the power of what you're building.
 
 Today's lesson gives you the first piece: users who can sign up and log in.
 
-The rest of the puzzle — payments, email, sales — is coming over the next few days.
+The rest of the puzzle - payments, email, sales - is coming over the next few days.
 
 Log in and let your users in:
 
@@ -715,7 +715,7 @@ I need you to really let this sink in.
 
 Your app can now accept MONEY.
 
-You — someone who probably couldn't write a line of code three weeks ago — built a product from SCRATCH... and it can now take PAYMENTS.
+You - someone who probably couldn't write a line of code three weeks ago - built a product from SCRATCH... and it can now take PAYMENTS.
 
 Stripe checkout. Full payment flow. End to end.
 
@@ -856,7 +856,7 @@ Your product does NOT need to be perfect. It needs to be GOOD ENOUGH.
 
 Good enough to provide value. Good enough to charge for. Good enough that people will use it and come back.
 
-You can — and WILL — improve it forever. That's the beauty of SaaS. You launch, you get feedback, you improve. Endlessly.
+You can - and WILL - improve it forever. That's the beauty of SaaS. You launch, you get feedback, you improve. Endlessly.
 
 But you can't improve something that doesn't EXIST.
 
@@ -907,7 +907,7 @@ The WORKS.
 
 A professional copywriter would charge £2,000-£5,000 for this.
 
-AI does it in minutes. And it's based on everything YOU'VE built over the last 19 days, so it's not generic rubbish — it's specific to YOUR product, YOUR audience, YOUR solution.
+AI does it in minutes. And it's based on everything YOU'VE built over the last 19 days, so it's not generic rubbish - it's specific to YOUR product, YOUR audience, YOUR solution.
 
 Here's one more insight for you...
 
@@ -944,7 +944,7 @@ They think they need to spend money on ads.
 
 Facebook ads. Google ads. Instagram ads.
 
-And look — ads CAN work. But they're expensive, complicated, and risky when you're just starting out.
+And look - ads CAN work. But they're expensive, complicated, and risky when you're just starting out.
 
 There's a better way.
 
@@ -1138,24 +1138,193 @@ Now go and make it COUNT.
 
 Matt`,
   },
+  {
+    emailNumber: 21,
+    dayTrigger: 24,
+    subject: "{{firstName}}, can I give you 30 minutes of free advice?",
+    altSubject: "Quick question for you, {{firstName}}",
+    body: `Hey {{firstName}},
+
+It's been a few days since you finished the challenge, and I've been thinking about you.
+
+Specifically, I've been thinking about what YOUR next move should be.
+
+Because here's what I know from working with hundreds of people who've been exactly where you are right now...
+
+The difference between people who turn their product into real income and people who don't?
+
+It's not talent. It's not luck. It's not even the product itself.
+
+It's having someone who can look at what you've built and say: "Here's EXACTLY what I'd do next if I were you."
+
+That's why I'm offering you a free Readiness Review call.
+
+Here's what happens on the call:
+
+1. You show me your product (takes 5 minutes)
+2. I tell you what's working and what needs fixing (honest, no fluff)
+3. We map out your first 30 days of marketing together
+4. I give you a specific plan to get your first paying customers
+
+No pitch. No upsell. Just 30 minutes of straight-up advice from someone who's been building and selling online for 20+ years.
+
+I do these because I genuinely love seeing people succeed with what they've built. And honestly? Helping you win helps me win too, because YOUR success story becomes proof that this challenge works.
+
+But I can only do a handful of these each week, so they fill up fast.
+
+If you've been thinking "what now?" or "how do I actually get customers?" - this call will give you clarity.
+
+Book your free call here:
+
+{{READINESS_CALL_URL}}
+
+Seriously, {{firstName}}. You built something real. Let me help you turn it into something profitable.
+
+Matt
+
+P.S. There's no catch. No "free call that's actually a sales pitch." I'll give you a genuine action plan you can start executing immediately. The only thing I ask is that you come prepared - have your product live and ready to show me. Book here: {{READINESS_CALL_URL}}`,
+  },
+];
+
+// Nag/re-engagement emails sent when users go inactive
+// dayTrigger = days of inactivity before sending
+const NAG_EMAILS = [
+  {
+    emailNumber: 101,
+    dayTrigger: 1,
+    emailType: 'nag' as const,
+    nagLevel: 1,
+    subject: "You're building something amazing - don't stop now",
+    altSubject: "{{firstName}}, are you stuck? (I can help)",
+    body: `Hey {{firstName}},
+
+I noticed you haven't been back to the challenge recently, and I wanted to check in.
+
+Are you stuck on something? Confused about a step? Just got busy?
+
+Whatever it is, it's completely normal. EVERYONE hits a wall at some point.
+
+Here's what I'd suggest: just log in and spend 5 minutes on your next lesson. That's it. Five minutes.
+
+You don't need to finish it. You don't need to do it perfectly. Just open it up and start.
+
+Because here's what I've learned from hundreds of people doing this challenge...
+
+The ones who succeed aren't the ones who never stop. They're the ones who START AGAIN after stopping.
+
+Your dashboard is right here:
+
+{{DASHBOARD_URL}}
+
+You've already done the hardest part - you started. Don't let that momentum disappear.
+
+I'm rooting for you.
+
+Matt`,
+  },
+  {
+    emailNumber: 102,
+    dayTrigger: 3,
+    emailType: 'nag' as const,
+    nagLevel: 2,
+    subject: "The other challengers are pulling ahead...",
+    altSubject: "{{firstName}}, your SaaS idea is waiting",
+    body: `{{firstName}}...
+
+I'll be honest with you.
+
+While you've been away, other people in the challenge have been building.
+
+They're completing lessons. Making progress. Getting closer to having a live, revenue-generating product.
+
+And your product? It's sitting there. Waiting for you.
+
+I'm not saying this to guilt-trip you. I'm saying it because I've seen this pattern before and it ALWAYS ends the same way...
+
+People who take a break "just for a few days" rarely come back. And then six months later, they're still in the same spot - no product, no business, no progress.
+
+You signed up for this challenge because you wanted something DIFFERENT.
+
+You wanted to BUILD something. To prove to yourself that you could do it.
+
+That desire hasn't gone away. It's still there.
+
+The only question is: are you going to act on it, or let it fade?
+
+Your next lesson takes less than 30 minutes:
+
+{{DASHBOARD_URL}}
+
+The challenge is still here. Your progress is still saved. You can pick up EXACTLY where you left off.
+
+But the window doesn't stay open forever.
+
+Matt
+
+P.S. If you're stuck on something specific, just reply to this email and tell me what's blocking you. I read every reply.`,
+  },
+  {
+    emailNumber: 103,
+    dayTrigger: 6,
+    emailType: 'nag' as const,
+    nagLevel: 3,
+    subject: "Last check-in - I don't want you to regret this",
+    altSubject: "{{firstName}}, this is my last email about this",
+    body: `{{firstName}},
+
+This is my last check-in about the challenge.
+
+I've sent a couple of emails over the past few days and I haven't heard back, so I want to respect your time.
+
+But before I stop, I want to leave you with one thought...
+
+Six months from now, you're going to look back at this moment.
+
+And you'll either think: "I'm so glad I got back on track and finished what I started."
+
+Or: "I wish I hadn't given up."
+
+I've been doing this for over 20 years. I've seen THOUSANDS of people start things. The ones who finish? They're the ones making money online right now. Building businesses. Living on their own terms.
+
+The ones who quit? They're still scrolling. Still wishing. Still saying "one day."
+
+Your product is still there. Your progress is saved. Everything is waiting for you:
+
+{{DASHBOARD_URL}}
+
+If life genuinely got in the way, I understand. No judgment. Just know the door is open whenever you're ready.
+
+But if you're just putting it off... if there's a part of you that KNOWS you should get back to it...
+
+Today is the day.
+
+Not tomorrow. Not next week. Today.
+
+Matt
+
+P.S. If something about the challenge isn't working for you, or you need help with a specific problem, reply to this email. I genuinely want to help you finish what you started.`,
+  },
 ];
 
 export async function seedDripEmails(): Promise<void> {
   try {
     const existing = await storage.getAllDripEmails();
+    const allEmails = [...DRIP_EMAILS, ...NAG_EMAILS];
+    const totalCount = allEmails.length;
 
-    // If emails exist, check if they need updating by comparing content
-    // Use version marker to detect old vs new content
-    if (existing.length >= 20) {
+    // Check if nag emails need seeding (look for emailNumber 101)
+    const hasNagEmails = existing.some(e => e.emailNumber === 101);
+
+    // If all emails exist including nags, check if content is up to date
+    if (existing.length >= totalCount && hasNagEmails) {
       const firstEmail = existing.find(e => e.emailNumber === 1);
-      if (firstEmail && firstEmail.body.includes('What you just did — signing up, committing')) {
-        console.log('[Drip Seed] All 20 drip emails already up to date, skipping seed');
+      if (firstEmail && firstEmail.body.includes('What you just did - signing up, committing')) {
+        console.log(`[Drip Seed] All ${totalCount} emails already up to date, skipping seed`);
         return;
       }
-      // Old content detected — reseed with updated versions
-      console.log('[Drip Seed] Updating 20 drip emails with new content...');
+      console.log(`[Drip Seed] Updating ${totalCount} emails with new content...`);
     } else {
-      console.log(`[Drip Seed] Seeding ${DRIP_EMAILS.length} drip emails...`);
+      console.log(`[Drip Seed] Seeding ${totalCount} emails (${existing.length} exist, nags: ${hasNagEmails ? 'yes' : 'no'})...`);
     }
 
     for (const email of DRIP_EMAILS) {
@@ -1168,7 +1337,21 @@ export async function seedDripEmails(): Promise<void> {
         isActive: false,
       });
     }
-    console.log('[Drip Seed] Done — all 20 drip emails seeded (disabled by default)');
+
+    for (const email of NAG_EMAILS) {
+      await storage.upsertDripEmail({
+        emailNumber: email.emailNumber,
+        dayTrigger: email.dayTrigger,
+        subject: email.subject,
+        altSubject: email.altSubject,
+        body: email.body,
+        emailType: email.emailType,
+        nagLevel: email.nagLevel,
+        isActive: false,
+      });
+    }
+
+    console.log(`[Drip Seed] Done - ${DRIP_EMAILS.length} drip + ${NAG_EMAILS.length} nag emails seeded (disabled by default)`);
   } catch (error) {
     console.error('[Drip Seed] Error seeding drip emails:', error);
   }

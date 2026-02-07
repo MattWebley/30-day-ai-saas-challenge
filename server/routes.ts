@@ -9,7 +9,7 @@ import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
-import { eq, desc, isNull, isNotNull, sql, and, gte, count, countDistinct } from "drizzle-orm";
+import { eq, desc, isNull, isNotNull, sql, and, gte, lte, count, countDistinct } from "drizzle-orm";
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail, processDripEmails } from "./emailService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -84,7 +84,7 @@ export async function registerRoutes(
   // Setup Replit Auth
   await setupAuth(app);
 
-  // Admin restore tokens — each works once, remove when no longer needed
+  // Admin restore tokens - each works once, remove when no longer needed
   const restoreTokens = new Set([
     'r1-a4e8c7f2b91d3056',
     'r2-d7b3f1e8a04c9265',
@@ -727,7 +727,7 @@ export async function registerRoutes(
   function unsubscribeHTML(message: string, success: boolean): string {
     return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${success ? 'Unsubscribed' : 'Error'} — 21-Day AI SaaS Challenge</title>
+<title>${success ? 'Unsubscribed' : 'Error'} - 21-Day AI SaaS Challenge</title>
 <style>body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;margin:0;background:#f8fafc;color:#334155}
 .box{background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:40px;max-width:440px;text-align:center}
 h1{font-size:20px;margin:0 0 12px}p{margin:0;line-height:1.6}
@@ -737,7 +737,7 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
 </div></body></html>`;
   }
 
-  // Drip email unsubscribe (public — no auth needed, clicked from email)
+  // Drip email unsubscribe (public - no auth needed, clicked from email)
   app.get('/api/drip/unsubscribe', async (req, res) => {
     try {
       const { uid, token } = req.query;
@@ -1006,6 +1006,7 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
           totalXp: (stats.totalXp || 0) + 100,
           lastCompletedDay: day,
           lastActivityDate: new Date(),
+          nagResetAt: new Date(),
         });
 
         // Check for badge awards
@@ -4700,7 +4701,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         firstName: 'Sarah',
         DASHBOARD_URL: 'https://challenge.mattwebley.com/dashboard',
         UNLOCK_URL: 'https://challenge.mattwebley.com/order',
-        READINESS_CALL_URL: 'https://challenge.mattwebley.com/coaching',
+        READINESS_CALL_URL: 'https://cal.com/mattwebley/readiness-review',
         UNSUBSCRIBE_URL: sampleUnsubscribeUrl,
       };
 
@@ -6958,6 +6959,12 @@ Example format:
         case '365d':
           rangeStart = new Date(Math.max(now.getTime() - 365 * 24 * 60 * 60 * 1000, STRIPE_DATA_CUTOFF.getTime()));
           break;
+        case 'thisYear':
+          rangeStart = new Date(Math.max(new Date(now.getFullYear(), 0, 1).getTime(), STRIPE_DATA_CUTOFF.getTime()));
+          break;
+        case 'lastYear':
+          rangeStart = new Date(Math.max(new Date(now.getFullYear() - 1, 0, 1).getTime(), STRIPE_DATA_CUTOFF.getTime()));
+          break;
         default:
           rangeStart = STRIPE_DATA_CUTOFF;
       }
@@ -6967,17 +6974,26 @@ Example format:
       // Get balance (this shows current balance, not historical)
       const balance = await stripe.balance.retrieve();
 
-      // Get charges created after the range start (respecting the cutoff)
+      // For lastYear, cap the end date to Dec 31 of last year
+      const rangeEnd = dateRange === 'lastYear'
+        ? new Date(now.getFullYear() - 1, 11, 31, 23, 59, 59)
+        : null;
+      const createdFilter: { gte: number; lte?: number } = {
+        gte: Math.floor(rangeStart.getTime() / 1000),
+      };
+      if (rangeEnd) createdFilter.lte = Math.floor(rangeEnd.getTime() / 1000);
+
+      // Get charges in range
       const charges = await stripe.charges.list({
         limit: 100,
-        created: { gte: Math.floor(rangeStart.getTime() / 1000) },
+        created: createdFilter,
         expand: ['data.customer'],
       });
 
-      // Get refunds created after the range start
+      // Get refunds in range
       const refunds = await stripe.refunds.list({
         limit: 50,
-        created: { gte: Math.floor(rangeStart.getTime() / 1000) },
+        created: createdFilter,
       });
 
       // Calculate totals
@@ -7001,8 +7017,8 @@ Example format:
       const totalRefunds = refunds.data.reduce((sum, r) => sum + r.amount, 0);
       const refundCount = refunds.data.length;
 
-      // Recent transactions - only show successful, non-refunded charges
-      const recentTransactions = successfulCharges.slice(0, 20).map(charge => {
+      // Map charge to transaction object
+      const mapCharge = (charge: any) => {
         const desc = (charge.description || '').toLowerCase();
         const productType = desc.includes('coaching') ? 'coaching' : 'challenge';
         return {
@@ -7017,7 +7033,9 @@ Example format:
           created: charge.created,
           productType,
         };
-      });
+      };
+      const recentTransactions = successfulCharges.slice(0, 20).map(mapCharge);
+      const chartTransactions = successfulCharges.map(mapCharge);
 
       // Revenue by product (from metadata or description)
       const cleanProductName = (desc: string): string => {
@@ -7104,6 +7122,7 @@ Example format:
           count: refundCount,
         },
         recentTransactions,
+        chartTransactions,
         revenueByProduct: Object.entries(revenueByProduct).map(([key, data]) => ({
           name: key.split('__')[0],
           amount: data.amount,
@@ -7742,9 +7761,24 @@ Example format:
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+      const range = req.query.range as string || '30';
+      const now2 = new Date();
+      let analyticsStart: Date;
+      switch (range) {
+        case '7': analyticsStart = new Date(now2.getTime() - 7 * 86400000); break;
+        case '90': analyticsStart = new Date(now2.getTime() - 90 * 86400000); break;
+        case '365': analyticsStart = new Date(now2.getTime() - 365 * 86400000); break;
+        case 'thisYear': analyticsStart = new Date(now2.getFullYear(), 0, 1); break;
+        case 'lastYear': analyticsStart = new Date(now2.getFullYear() - 1, 0, 1); break;
+        default: analyticsStart = new Date(now2.getTime() - 30 * 86400000); break;
+      }
+      const analyticsEnd = range === 'lastYear' ? new Date(now2.getFullYear() - 1, 11, 31, 23, 59, 59) : now2;
 
-      // Daily unique visitors (last 30 days)
+      const dateFilter = range === 'lastYear'
+        ? and(gte(pageViews.createdAt, analyticsStart), lte(pageViews.createdAt, analyticsEnd))
+        : gte(pageViews.createdAt, analyticsStart);
+
+      // Daily unique visitors
       const dailyVisitors = await db
         .select({
           date: sql<string>`DATE(${pageViews.createdAt})`.as("date"),
@@ -7752,11 +7786,11 @@ Example format:
           totalViews: count().as("total_views"),
         })
         .from(pageViews)
-        .where(gte(pageViews.createdAt, thirtyDaysAgo))
+        .where(dateFilter)
         .groupBy(sql`DATE(${pageViews.createdAt})`)
         .orderBy(sql`DATE(${pageViews.createdAt})`);
 
-      // Top pages (last 30 days)
+      // Top pages
       const topPages = await db
         .select({
           path: pageViews.path,
@@ -7764,35 +7798,38 @@ Example format:
           totalViews: count().as("total_views"),
         })
         .from(pageViews)
-        .where(gte(pageViews.createdAt, thirtyDaysAgo))
+        .where(dateFilter)
         .groupBy(pageViews.path)
         .orderBy(sql`count(*) DESC`)
         .limit(10);
 
-      // Conversion funnel counts (last 30 days)
+      // Conversion funnel counts
       // Landing page visitors (path = "/")
       const [landingResult] = await db
         .select({ cnt: countDistinct(pageViews.sessionId) })
         .from(pageViews)
-        .where(and(gte(pageViews.createdAt, thirtyDaysAgo), eq(pageViews.path, "/")));
+        .where(and(dateFilter, eq(pageViews.path, "/")));
 
       // Order page visitors (path = "/order")
       const [orderResult] = await db
         .select({ cnt: countDistinct(pageViews.sessionId) })
         .from(pageViews)
-        .where(and(gte(pageViews.createdAt, thirtyDaysAgo), eq(pageViews.path, "/order")));
+        .where(and(dateFilter, eq(pageViews.path, "/order")));
 
       // Total unique visitors across all pages
       const [totalResult] = await db
         .select({ cnt: countDistinct(pageViews.sessionId) })
         .from(pageViews)
-        .where(gte(pageViews.createdAt, thirtyDaysAgo));
+        .where(dateFilter);
 
-      // Purchases in last 30 days (from users table)
+      // Purchases in period (from users table)
+      const userDateFilter = range === 'lastYear'
+        ? and(eq(users.challengePurchased, true), gte(users.createdAt, analyticsStart), lte(users.createdAt, analyticsEnd))
+        : and(eq(users.challengePurchased, true), gte(users.createdAt, analyticsStart));
       const recentPurchases = await db
         .select({ cnt: count() })
         .from(users)
-        .where(and(eq(users.challengePurchased, true), gte(users.createdAt, thirtyDaysAgo)));
+        .where(userDateFilter);
 
       res.json({
         dailyVisitors,

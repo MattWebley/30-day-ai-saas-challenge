@@ -50,6 +50,15 @@ import AdminSettings from "./admin/AdminSettings";
 import AdminEmails from "./admin/AdminEmails";
 
 type TabKey = "overview" | "users" | "revenue" | "content" | "marketing" | "emails" | "settings";
+type ChartRange = "7" | "30" | "90" | "365" | "thisYear" | "lastYear";
+const CHART_RANGES: { value: ChartRange; label: string }[] = [
+  { value: "7", label: "7d" },
+  { value: "30", label: "30d" },
+  { value: "90", label: "90d" },
+  { value: "365", label: "1y" },
+  { value: "thisYear", label: "This Year" },
+  { value: "lastYear", label: "Last Year" },
+];
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: "overview", label: "Overview" },
@@ -148,6 +157,7 @@ function FunnelBar({
 export default function Admin() {
   const { testMode, setTestMode } = useTestMode();
   const [activeTab, setActiveTab] = useState<TabKey>("overview");
+  const [chartRange, setChartRange] = useState<ChartRange>("30");
   const [showRestoreLinks, setShowRestoreLinks] = useState(false);
 
   // Check if user is admin
@@ -218,7 +228,12 @@ export default function Admin() {
   });
 
   const { data: analyticsData } = useQuery<AnalyticsData>({
-    queryKey: ["/api/admin/analytics"],
+    queryKey: ["/api/admin/analytics", chartRange],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/analytics?range=${chartRange}`, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch analytics");
+      return res.json();
+    },
     staleTime: 30_000,
   });
 
@@ -314,20 +329,33 @@ export default function Admin() {
 
   const totalAttention = attentionItems.reduce((sum, item) => sum + item.count, 0);
 
-  // Chart data: Revenue trend (last 30 days) — split by product type
+  // Chart data: Revenue trend - split by product type
   const revenueTrendData = (() => {
-    if (!revenueData?.recentTransactions?.length) return [];
-    const dayMap: Record<string, { challenge: number; coaching: number }> = {};
+    const txs = revenueData?.chartTransactions || revenueData?.recentTransactions;
+    if (!txs?.length) return [];
     const now = new Date();
-    // Initialize last 30 days
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(d.getDate() - i);
-      const key = d.toISOString().split("T")[0];
-      dayMap[key] = { challenge: 0, coaching: 0 };
+    let startDate: Date;
+    let endDate = now;
+    switch (chartRange) {
+      case "7": startDate = new Date(now.getTime() - 7 * 86400000); break;
+      case "90": startDate = new Date(now.getTime() - 90 * 86400000); break;
+      case "365": startDate = new Date(now.getTime() - 365 * 86400000); break;
+      case "thisYear": startDate = new Date(now.getFullYear(), 0, 1); break;
+      case "lastYear":
+        startDate = new Date(now.getFullYear() - 1, 0, 1);
+        endDate = new Date(now.getFullYear() - 1, 11, 31);
+        break;
+      default: startDate = new Date(now.getTime() - 30 * 86400000); break;
     }
-    // Sum transactions by day and product type
-    revenueData.recentTransactions.forEach((tx) => {
+    // Build day map for the range
+    const dayMap: Record<string, { challenge: number; coaching: number }> = {};
+    const cursor = new Date(startDate);
+    while (cursor <= endDate) {
+      dayMap[cursor.toISOString().split("T")[0]] = { challenge: 0, coaching: 0 };
+      cursor.setDate(cursor.getDate() + 1);
+    }
+    // Sum transactions by day
+    txs.forEach((tx) => {
       if (tx.status === "succeeded" && !tx.refunded) {
         const d = new Date(tx.created * 1000).toISOString().split("T")[0];
         if (dayMap[d] !== undefined) {
@@ -336,8 +364,12 @@ export default function Admin() {
         }
       }
     });
+    // Date format: short for small ranges, month-only for large
+    const useShortFormat = Object.keys(dayMap).length <= 90;
     return Object.entries(dayMap).map(([date, amounts]) => ({
-      date: new Date(date).toLocaleDateString("en-GB", { day: "numeric", month: "short" }),
+      date: new Date(date).toLocaleDateString("en-GB",
+        useShortFormat ? { day: "numeric", month: "short" } : { month: "short", year: "2-digit" }
+      ),
       challenge: Math.round(amounts.challenge * 100) / 100,
       coaching: Math.round(amounts.coaching * 100) / 100,
     }));
@@ -518,7 +550,7 @@ export default function Admin() {
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                    <p className="text-sm text-slate-500 mb-1">Bump — Unlock All Days (+$29)</p>
+                    <p className="text-sm text-slate-500 mb-1">Bump - Unlock All Days (+$29)</p>
                     <p className="text-2xl font-extrabold text-slate-900">{bumpCount}</p>
                     <p className="text-sm text-slate-500">
                       of {paidCount} buyers ({paidCount > 0 ? ((bumpCount / paidCount) * 100).toFixed(0) : 0}%)
@@ -589,7 +621,7 @@ export default function Admin() {
               {totalAttention === 0 ? (
                 <div className="flex items-center gap-3 text-slate-500 py-2">
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
-                  <p>All clear — nothing needs attention</p>
+                  <p>All clear - nothing needs attention</p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -614,11 +646,33 @@ export default function Admin() {
               )}
             </Card>
 
+            {/* Chart range selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-slate-500">Period:</span>
+              <div className="flex gap-1">
+                {CHART_RANGES.map((r) => (
+                  <button
+                    key={r.value}
+                    onClick={() => setChartRange(r.value)}
+                    className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+                      chartRange === r.value
+                        ? "bg-primary text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Charts */}
             <div className="grid lg:grid-cols-2 gap-4">
               {/* Revenue Trend */}
               <Card className="p-5 border border-slate-200 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900 mb-4 pb-3 border-b border-slate-200">Revenue Trend (30 days)</h3>
+                <h3 className="text-lg font-bold text-slate-900 mb-4 pb-3 border-b border-slate-200">
+                  Revenue Trend ({CHART_RANGES.find(r => r.value === chartRange)?.label})
+                </h3>
                 {revenueTrendData.length > 0 ? (
                   <>
                     <div className="h-64">
@@ -717,7 +771,7 @@ export default function Admin() {
                 <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
                   <Eye className="w-5 h-5 text-blue-500" />
                   <h3 className="text-lg font-bold text-slate-900">Traffic & Conversions</h3>
-                  <span className="text-xs text-slate-400 ml-auto">Tracking started 6 Feb 2026 · Last 30 days</span>
+                  <span className="text-xs text-slate-400 ml-auto">Tracking started 6 Feb 2026 · {CHART_RANGES.find(r => r.value === chartRange)?.label}</span>
                 </div>
 
                 {/* Conversion funnel */}
