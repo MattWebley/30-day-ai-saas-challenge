@@ -1292,6 +1292,11 @@ export default function AdminUsers() {
                     </div>
                     <div className="text-right">
                       <div className="flex items-center justify-end gap-1">
+                        {user.allDaysUnlocked && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-semibold">
+                            All Days
+                          </span>
+                        )}
                         {user.isPending ? (
                           <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
                             <CreditCard className="w-3 h-3" />
@@ -1304,11 +1309,6 @@ export default function AdminUsers() {
                           </span>
                         ) : (
                           <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 text-xs font-semibold">No purchase</span>
-                        )}
-                        {user.allDaysUnlocked && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
-                            All Days
-                          </span>
                         )}
                       </div>
                       {user.isPending ? (
