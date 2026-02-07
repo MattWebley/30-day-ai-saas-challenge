@@ -6669,26 +6669,36 @@ Example format:
 
       const stripe = await getUncachableStripeClient();
 
-      // Find users missing first name (null or empty) who have a Stripe customer ID
+      // Find users missing first name (null or empty) who have an email
       const usersWithoutNames = await db
         .select()
         .from(users)
         .where(and(
-          sql`(${users.firstName} IS NULL OR ${users.firstName} = '')`,
-          isNotNull(users.stripeCustomerId),
-          sql`${users.stripeCustomerId} != 'manual_grant'`
+          sql`(${users.firstName} IS NULL OR TRIM(${users.firstName}) = '')`,
+          isNotNull(users.email)
         ));
 
       let updated = 0;
+      const skipped: string[] = [];
       const results: { email: string; name: string }[] = [];
 
       for (const user of usersWithoutNames) {
         try {
-          const customer = await stripe.customers.retrieve(user.stripeCustomerId!) as any;
+          // Search Stripe by email to find customer record
+          const customers = await stripe.customers.list({ email: user.email!, limit: 1 });
+          if (customers.data.length === 0) {
+            skipped.push(user.email || user.id);
+            continue;
+          }
+
+          const customer = customers.data[0];
           if (customer.deleted) continue;
 
           const name = customer.name as string | null;
-          if (!name) continue;
+          if (!name || !name.trim()) {
+            skipped.push(user.email || user.id);
+            continue;
+          }
 
           // Split "First Last" into parts
           const parts = name.trim().split(/\s+/);
@@ -6706,9 +6716,10 @@ Example format:
 
       res.json({
         success: true,
-        message: `Updated ${updated} of ${usersWithoutNames.length} users missing names`,
+        message: `Updated ${updated} of ${usersWithoutNames.length} users missing names${skipped.length > 0 ? ` (${skipped.length} not found in Stripe)` : ''}`,
         updated,
         total: usersWithoutNames.length,
+        skipped,
         results,
       });
     } catch (error: any) {
