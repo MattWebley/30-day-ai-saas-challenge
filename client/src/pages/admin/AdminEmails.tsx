@@ -111,6 +111,7 @@ export default function AdminEmails() {
   const [editedDripSubject, setEditedDripSubject] = useState("");
   const [editedDripAltSubject, setEditedDripAltSubject] = useState("");
   const [editedDripBody, setEditedDripBody] = useState("");
+  const [editedDripDayTrigger, setEditedDripDayTrigger] = useState<number>(1);
 
   const [logPage, setLogPage] = useState(1);
   const [showNewForm, setShowNewForm] = useState(false);
@@ -145,7 +146,7 @@ export default function AdminEmails() {
   });
 
   const updateDripEmail = useMutation({
-    mutationFn: async ({ id, ...data }: { id: number; subject?: string; altSubject?: string; body?: string; isActive?: boolean }) => {
+    mutationFn: async ({ id, ...data }: { id: number; subject?: string; altSubject?: string; body?: string; isActive?: boolean; dayTrigger?: number }) => {
       const res = await apiRequest("PATCH", `/api/admin/drip-emails/${id}`, data);
       return res.json();
     },
@@ -332,7 +333,7 @@ export default function AdminEmails() {
             <Button size="sm" variant="ghost" className="h-8 w-8 p-0" title="Edit"
               onClick={() => {
                 if (editingDrip === drip.id) { setEditingDrip(null); }
-                else { setEditingDrip(drip.id); setEditedDripSubject(drip.subject); setEditedDripAltSubject(drip.altSubject || ""); setEditedDripBody(drip.body); setPreviewingDrip(null); }
+                else { setEditingDrip(drip.id); setEditedDripSubject(drip.subject); setEditedDripAltSubject(drip.altSubject || ""); setEditedDripBody(drip.body); setEditedDripDayTrigger(drip.dayTrigger); setPreviewingDrip(null); }
               }}>
               <Pencil className="w-4 h-4" />
             </Button>
@@ -358,8 +359,15 @@ export default function AdminEmails() {
               <Label className="text-slate-700">Body ({"{{firstName}}, {{DASHBOARD_URL}}, {{UNLOCK_URL}}, {{READINESS_CALL_URL}}"})</Label>
               <Textarea value={editedDripBody} onChange={(e) => setEditedDripBody(e.target.value)} className="mt-1 font-mono text-sm min-h-[250px]" />
             </div>
+            {(drip.emailType === 'initial' || drip.emailType === 'nag') && (
+              <div>
+                <Label className="text-slate-700">Send after (days)</Label>
+                <Input type="number" min={1} max={90} value={editedDripDayTrigger} onChange={(e) => setEditedDripDayTrigger(parseInt(e.target.value) || 1)} className="mt-1 w-24" />
+                <p className="text-xs text-slate-500 mt-1">{drip.emailType === 'initial' ? 'Days after signup with no activity' : 'Days of inactivity before sending'}</p>
+              </div>
+            )}
             <div className="flex items-center gap-2">
-              <Button size="sm" onClick={() => updateDripEmail.mutate({ id: drip.id, subject: editedDripSubject, altSubject: editedDripAltSubject, body: editedDripBody })} disabled={updateDripEmail.isPending}>
+              <Button size="sm" onClick={() => updateDripEmail.mutate({ id: drip.id, subject: editedDripSubject, altSubject: editedDripAltSubject, body: editedDripBody, ...(drip.emailType === 'initial' || drip.emailType === 'nag' ? { dayTrigger: editedDripDayTrigger } : {}) })} disabled={updateDripEmail.isPending}>
                 <Save className="w-4 h-4 mr-1" /> Save
               </Button>
               <Button size="sm" variant="outline" onClick={() => setEditingDrip(null)}>Cancel</Button>

@@ -56,14 +56,19 @@ interface Day2Props {
   savedInputs?: Record<string, any>;
 }
 
+// Clean a pain point string once (strip wrapping quotes/brackets, trim)
+function cleanPainText(text: string): string {
+  return typeof text === 'string' ? text.replace(/^["'\[]+|["'\]]+$/g, '').trim() : '';
+}
+
 export function Day2IdeaValidator({ onComplete, savedInputs }: Day2Props) {
   const queryClient = useQueryClient();
   const [step, setStep, containerRef] = useStepWithScroll<'shortlist' | 'competitors' | 'pain' | 'done'>(savedInputs ? 'done' : 'shortlist');
   const [selectedIdeaIndex, setSelectedIdeaIndex] = useState<number | null>(savedInputs?.selectedIdeaIndex ?? null);
   const [validationInsights, setValidationInsights] = useState<Record<number, ValidationInsight>>(savedInputs?.validationInsights || {});
   const [loadingValidation, setLoadingValidation] = useState<number | null>(null);
-  const [painPoints, setPainPoints] = useState<string[]>(savedInputs?.selectedPainPoints || []);
-  const [selectedPainPoints, setSelectedPainPoints] = useState<string[]>(savedInputs?.selectedPainPoints || []);
+  const [painPoints, setPainPoints] = useState<string[]>(() => (savedInputs?.selectedPainPoints || []).map(cleanPainText).filter(Boolean));
+  const [selectedPainPoints, setSelectedPainPoints] = useState<string[]>(() => (savedInputs?.selectedPainPoints || []).map(cleanPainText).filter(Boolean));
   const [loadingPainPoints, setLoadingPainPoints] = useState(false);
   const [customPainInput, setCustomPainInput] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
@@ -269,8 +274,10 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
         .map((l: string) => l.trim())
         .filter((l: string) => l.length > 0)
         .map((l: string) => l.replace(/^\d+[\.\)]\s*/, '').replace(/^[-•]\s*/, ''))
+        .map(cleanPainText)
         .filter((l: string) => l.length > 10);
       setPainPoints(lines);
+      setSelectedPainPoints([]);
       setLoadingPainPoints(false);
       setPainPointAttempts(prev => prev + 1);
     },
@@ -402,7 +409,7 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
         return prev.filter(p => p !== pain);
       }
       if (prev.length >= 5) {
-        toast.error("Select up to 5 pain points");
+        toast.error("Maximum 5 selected. Remove one first to add another.");
         return prev;
       }
       return [...prev, pain];
@@ -759,21 +766,20 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
           <>
             <div className="grid gap-3">
               {painPoints.map((pain, idx) => {
-                const cleanPain = typeof pain === 'string' ? pain.replace(/^["'\[]+|["'\]]+$/g, '').trim() : '';
-                if (!cleanPain) return null;
-                const isSelected = selectedPainPoints.includes(cleanPain);
+                if (!pain) return null;
+                const isSelected = selectedPainPoints.includes(pain);
 
                 return (
                   <div
                     key={`pain-${idx}`}
                     className={isSelected ? ds.optionSelected : ds.optionDefault}
-                    onClick={() => togglePainPoint(cleanPain)}
+                    onClick={() => togglePainPoint(pain)}
                   >
                     <div className="flex items-center gap-3">
                       <div className={isSelected ? ds.checkSelected : ds.checkDefault}>
                         {isSelected && <Check className="w-3 h-3 text-white" />}
                       </div>
-                      <p className={ds.body}>{cleanPain}</p>
+                      <p className={ds.body}>{pain}</p>
                     </div>
                   </div>
                 );

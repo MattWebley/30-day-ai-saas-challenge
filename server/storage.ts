@@ -1523,7 +1523,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async updateDripEmail(id: number, data: { subject?: string; altSubject?: string; body?: string; isActive?: boolean }): Promise<DripEmail | undefined> {
+  async updateDripEmail(id: number, data: { subject?: string; altSubject?: string; body?: string; isActive?: boolean; dayTrigger?: number }): Promise<DripEmail | undefined> {
     const [updated] = await db
       .update(dripEmails)
       .set({ ...data, updatedAt: new Date() })

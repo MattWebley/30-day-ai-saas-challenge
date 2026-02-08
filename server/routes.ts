@@ -4661,8 +4661,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       }
 
       const id = parseInt(req.params.id);
-      const { subject, altSubject, body, isActive } = req.body;
-      const updated = await storage.updateDripEmail(id, { subject, altSubject, body, isActive });
+      const { subject, altSubject, body, isActive, dayTrigger } = req.body;
+      const updated = await storage.updateDripEmail(id, { subject, altSubject, body, isActive, dayTrigger });
 
       if (!updated) {
         return res.status(404).json({ message: "Drip email not found" });
