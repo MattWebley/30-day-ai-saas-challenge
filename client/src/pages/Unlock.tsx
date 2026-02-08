@@ -111,20 +111,20 @@ export default function Unlock() {
           </div>
         </div>
 
-        {/* What you get */}
+        {/* What you'll walk away with */}
         <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6">
-          <h2 className="text-lg font-bold text-slate-900 mb-3">Instant access to all 22 lessons:</h2>
-          <div className="grid grid-cols-2 gap-2">
+          <h2 className="text-lg font-bold text-slate-900 mb-3">By the end, you'll have:</h2>
+          <div className="space-y-2.5">
             {[
-              "Day 0: Start Here",
-              "Days 1-2: Your Winning Idea",
-              "Days 3-4: Plan & Name It",
-              "Day 5: Logo Design",
-              "Days 6-9: Get Set Up",
-              "Days 10-18: Build Your MVP",
-              "Days 19-21: Launch & Grow",
+              "A validated SaaS idea people will pay for",
+              "Your product name, logo, and brand identity",
+              "A complete feature list and product roadmap",
+              "Your full tech stack set up and ready to build",
+              "A working MVP built with AI",
+              "A sales page designed to convert",
+              "A launch strategy and roadmap to your first $100K",
             ].map((item, i) => (
-              <div key={i} className="flex items-center gap-2">
+              <div key={i} className="flex items-center gap-2.5">
                 <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
                 <span className="text-slate-700">{item}</span>
               </div>
@@ -137,7 +137,7 @@ export default function Unlock() {
           {/* Price */}
           <div className="text-center mb-5">
             <div className="text-4xl font-black text-slate-900">
-              $29 <span className="text-2xl font-bold text-slate-400">/ £19</span>
+              {(user as any)?.purchaseCurrency === 'gbp' ? '£19' : '$29'}
             </div>
             <p className="text-slate-600 mt-1">One-time payment. No subscription.</p>
           </div>
