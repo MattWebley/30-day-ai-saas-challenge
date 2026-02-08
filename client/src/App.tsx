@@ -38,6 +38,7 @@ import CritiqueSuccess from "@/pages/CritiqueSuccess";
 import Testimonial from "@/pages/Testimonial";
 import Welcome from "@/pages/Welcome";
 import Referrals from "@/pages/Referrals";
+import Unlock from "@/pages/Unlock";
 import Congratulations from "@/pages/Congratulations";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
@@ -86,7 +87,7 @@ function Router() {
   }
 
   // Public routes that don't need auth check
-  const publicPaths = ['/order', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password'];
+  const publicPaths = ['/order', '/unlock', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password'];
   const isPublicRoute = publicPaths.some(path => location.startsWith(path)) || location === '/';
 
   // Only show loading spinner for protected routes
@@ -107,6 +108,7 @@ function Router() {
       <Switch>
         {/* Public routes - render immediately without auth check */}
         <Route path="/showcase" component={Showcase} />
+        <Route path="/unlock" component={Unlock} />
         <Route path="/order" component={Order} />
         <Route path="/checkout/success" component={CheckoutSuccess} />
         <Route path="/admin/answer/:token" component={AdminAnswer} />

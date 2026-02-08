@@ -4700,7 +4700,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
       const variables: Record<string, string> = {
         firstName: 'Sarah',
         DASHBOARD_URL: 'https://challenge.mattwebley.com/dashboard',
-        UNLOCK_URL: 'https://challenge.mattwebley.com/order',
+        UNLOCK_URL: 'https://challenge.mattwebley.com/unlock',
         READINESS_CALL_URL: 'https://cal.com/mattwebley/readiness-review',
         UNSUBSCRIBE_URL: sampleUnsubscribeUrl,
       };

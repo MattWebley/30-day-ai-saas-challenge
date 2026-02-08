@@ -28,7 +28,8 @@ import {
   PenTool,
   Video,
   Users,
-  MessageSquare
+  MessageSquare,
+  Zap
 } from "lucide-react";
 import {
   Tooltip,
@@ -340,6 +341,19 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
             <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Upgrades
             </h3>
+            {!(stats as any)?.allDaysUnlocked && !(stats as any)?.hasCoaching && (
+              <Link href="/unlock" onClick={handleNavClick}>
+                <span className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                  location === "/unlock"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-amber-600 hover:bg-amber-50/50 hover:text-amber-700"
+                )}>
+                  <Zap className="w-4 h-4" />
+                  Unlock All Days
+                </span>
+              </Link>
+            )}
             <Link href="/coaching" onClick={handleNavClick}>
               <span className={cn(
                 "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",

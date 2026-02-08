@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,9 @@ import {
   User,
   AlertCircle,
   Trash2,
-  CheckCircle2
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -67,6 +69,36 @@ export function DayCommunity({ day }: DayCommunityProps) {
 }
 
 const TRUNCATE_LENGTH = 200;
+const ITEMS_PER_PAGE = 5;
+
+function PaginationControls({ page, totalPages, onPageChange }: { page: number; totalPages: number; onPageChange: (p: number) => void }) {
+  if (totalPages <= 1) return null;
+  return (
+    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(page - 1)}
+        disabled={page === 1}
+        className="gap-1"
+      >
+        <ChevronLeft className="w-4 h-4" /> Previous
+      </Button>
+      <span className="text-sm text-slate-700">
+        Page {page} of {totalPages}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(page + 1)}
+        disabled={page === totalPages}
+        className="gap-1"
+      >
+        Next <ChevronRight className="w-4 h-4" />
+      </Button>
+    </div>
+  );
+}
 
 function TruncatedText({ text, className }: { text: string; className?: string }) {
   const [expanded, setExpanded] = useState(false);
@@ -93,7 +125,11 @@ function TruncatedText({ text, className }: { text: string; className?: string }
 function QASection({ day }: { day: number }) {
   const [showForm, setShowForm] = useState(false);
   const [questionText, setQuestionText] = useState("");
+  const [page, setPage] = useState(1);
   const queryClient = useQueryClient();
+
+  // Reset to page 1 when switching days
+  useEffect(() => { setPage(1); }, [day]);
 
   const { data: questions = [], isLoading } = useQuery<Question[]>({
     queryKey: ["/api/questions/day", day],
@@ -145,7 +181,7 @@ function QASection({ day }: { day: number }) {
         </div>
         <h2 className="font-bold text-xl text-slate-900">Q&A</h2>
         {questions.length > 0 && (
-          <span className="text-sm text-slate-400">({questions.length})</span>
+          <span className="text-sm text-slate-600">({questions.length})</span>
         )}
       </div>
 
@@ -182,7 +218,7 @@ function QASection({ day }: { day: number }) {
                 Cancel
               </Button>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-600">
               Your question will be reviewed and answered. Answers appear here for everyone.
             </p>
           </div>
@@ -190,14 +226,14 @@ function QASection({ day }: { day: number }) {
 
         {/* Existing Q&A */}
         {isLoading ? (
-          <p className="text-slate-500 text-sm text-center py-4 mt-4">Loading questions...</p>
+          <p className="text-slate-600 text-sm text-center py-4 mt-4">Loading questions...</p>
         ) : questions.length === 0 ? (
-          <p className="text-slate-500 text-sm text-center py-4 mt-4">
+          <p className="text-slate-600 text-sm text-center py-4 mt-4">
             No questions yet. Be the first to ask!
           </p>
         ) : (
           <div className="space-y-3 mt-4">
-            {questions.map((q) => (
+            {questions.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE).map((q) => (
               <div key={q.id} className="p-4 bg-slate-50 rounded-lg border border-slate-200">
                 {/* Question */}
                 <div className="flex items-start gap-3 mb-3">
@@ -205,7 +241,7 @@ function QASection({ day }: { day: number }) {
                     <User className="w-4 h-4 text-slate-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-slate-700">
                       {q.user.firstName || "User"} asked:
                     </p>
                     <TruncatedText text={q.question} className="text-slate-900 font-medium" />
@@ -227,7 +263,7 @@ function QASection({ day }: { day: number }) {
                 <div className="mt-3 ml-11 flex items-center gap-2">
                   <button
                     onClick={() => markHelpful.mutate(q.id)}
-                    className="flex items-center gap-1 text-sm text-slate-500 hover:text-primary transition-colors"
+                    className="flex items-center gap-1 text-sm text-slate-600 hover:text-primary transition-colors"
                   >
                     <ThumbsUp className="w-4 h-4" />
                     Helpful {q.helpful > 0 && `(${q.helpful})`}
@@ -235,6 +271,11 @@ function QASection({ day }: { day: number }) {
                 </div>
               </div>
             ))}
+            <PaginationControls
+              page={page}
+              totalPages={Math.ceil(questions.length / ITEMS_PER_PAGE)}
+              onPageChange={setPage}
+            />
           </div>
         )}
       </Card>
@@ -247,6 +288,10 @@ function DiscussionSection({ day, isAdmin }: { day: number; isAdmin: boolean }) 
   const queryClient = useQueryClient();
   const [newComment, setNewComment] = useState("");
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+
+  // Reset to page 1 when switching days
+  useEffect(() => { setPage(1); }, [day]);
 
   const { data: comments = [], isLoading } = useQuery<Comment[]>({
     queryKey: [`/api/comments/${day}`],
@@ -264,6 +309,7 @@ function DiscussionSection({ day, isAdmin }: { day: number; isAdmin: boolean }) 
       } else {
         queryClient.invalidateQueries({ queryKey: [`/api/comments/${day}`] });
         toast.success("Comment posted!");
+        setPage(1);
       }
       setNewComment("");
     },
@@ -299,7 +345,7 @@ function DiscussionSection({ day, isAdmin }: { day: number; isAdmin: boolean }) 
           <MessageCircle className="w-4 h-4" />
         </div>
         <h2 className="font-bold text-xl text-slate-900">Discussion</h2>
-        <span className="text-sm text-slate-400">({comments.length})</span>
+        <span className="text-sm text-slate-600">({comments.length})</span>
       </div>
 
       <Card className="p-6 border-2 border-slate-100 shadow-none bg-white">
@@ -320,7 +366,7 @@ function DiscussionSection({ day, isAdmin }: { day: number; isAdmin: boolean }) 
               {postComment.isPending ? "..." : <><Send className="w-4 h-4" /> Post</>}
             </Button>
           </div>
-          <p className="text-xs text-slate-400 mt-2">
+          <p className="text-xs text-slate-600 mt-2">
             {newComment.length}/1000 characters
           </p>
         </form>
@@ -333,14 +379,14 @@ function DiscussionSection({ day, isAdmin }: { day: number; isAdmin: boolean }) 
         )}
 
         {isLoading ? (
-          <div className="text-center py-8 text-slate-400">Loading comments...</div>
+          <div className="text-center py-8 text-slate-600">Loading comments...</div>
         ) : comments.length === 0 ? (
-          <div className="text-center py-8 text-slate-400">
+          <div className="text-center py-8 text-slate-600">
             No comments yet. Be the first to share your thoughts!
           </div>
         ) : (
           <div className="space-y-4">
-            {comments.map((comment) => (
+            {comments.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE).map((comment) => (
               <div
                 key={comment.id}
                 className="flex gap-3 p-4 bg-slate-50 rounded-lg"
@@ -378,12 +424,17 @@ function DiscussionSection({ day, isAdmin }: { day: number; isAdmin: boolean }) 
                       </button>
                     )}
                   </div>
-                  <p className="text-slate-600 text-sm whitespace-pre-wrap break-words">
+                  <p className="text-slate-700 whitespace-pre-wrap break-words">
                     {comment.content}
                   </p>
                 </div>
               </div>
             ))}
+            <PaginationControls
+              page={page}
+              totalPages={Math.ceil(comments.length / ITEMS_PER_PAGE)}
+              onPageChange={setPage}
+            />
           </div>
         )}
       </Card>

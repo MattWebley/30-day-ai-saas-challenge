@@ -737,7 +737,7 @@ Questions? Just reply to this email.`;
 
 const DRIP_VARIABLES: Record<string, string> = {
   DASHBOARD_URL: 'https://challenge.mattwebley.com/dashboard',
-  UNLOCK_URL: 'https://challenge.mattwebley.com/order',
+  UNLOCK_URL: 'https://challenge.mattwebley.com/unlock',
   READINESS_CALL_URL: 'https://cal.com/mattwebley/readiness-review',
 };
 

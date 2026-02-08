@@ -71,7 +71,7 @@ const SAMPLE_VARIABLES: Record<string, string> = {
   referralCount: "3",
   timestamp: new Date().toLocaleString(),
   DASHBOARD_URL: "https://challenge.mattwebley.com/dashboard",
-  UNLOCK_URL: "https://challenge.mattwebley.com/order",
+  UNLOCK_URL: "https://challenge.mattwebley.com/unlock",
   READINESS_CALL_URL: "https://challenge.mattwebley.com/coaching",
 };
 
