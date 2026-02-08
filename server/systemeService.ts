@@ -10,6 +10,62 @@ interface AddContactOptions {
   tags: string[];
 }
 
+export interface SystemeResult {
+  success: boolean;
+  error?: string;
+}
+
+export async function addContactToSystemeDetailed({ email, firstName, lastName, tags }: AddContactOptions): Promise<SystemeResult> {
+  if (!SYSTEME_API_KEY) {
+    return { success: false, error: 'API key not configured' };
+  }
+
+  try {
+    const tagIds: number[] = [];
+    for (const tagName of tags) {
+      const tagId = await getOrCreateTag(tagName);
+      if (tagId) tagIds.push(tagId);
+    }
+
+    const existingContact = await findContact(email);
+
+    if (existingContact) {
+      await updateContactTags(existingContact.id, tagIds);
+      return { success: true };
+    }
+
+    const response = await fetch(`${SYSTEME_API_URL}/contacts`, {
+      method: 'POST',
+      headers: {
+        'X-API-Key': SYSTEME_API_KEY,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        locale: 'en',
+        fields: [
+          ...(firstName ? [{ slug: 'first_name', value: firstName }] : []),
+          ...(lastName ? [{ slug: 'last_name', value: lastName }] : []),
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      return { success: false, error: `${response.status}: ${errorBody}` };
+    }
+
+    const newContact = await response.json();
+    if (tagIds.length > 0 && newContact.id) {
+      await updateContactTags(newContact.id, tagIds);
+    }
+
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message || String(error) };
+  }
+}
+
 export async function addContactToSysteme({ email, firstName, lastName, tags }: AddContactOptions): Promise<boolean> {
   if (!SYSTEME_API_KEY) {
     console.error('[Systeme] API key not configured');

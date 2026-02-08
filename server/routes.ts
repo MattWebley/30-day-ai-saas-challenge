@@ -11,7 +11,7 @@ import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
 import { eq, desc, isNull, isNotNull, sql, and, gte, lte, count, countDistinct } from "drizzle-orm";
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails } from "./emailService";
-import { addContactToSysteme } from "./systemeService";
+import { addContactToSysteme, addContactToSystemeDetailed } from "./systemeService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
 import { callClaude, callClaudeForJSON, detectAbuse, checkRateLimit, logAIUsage, sendAbuseAlert } from "./aiService";
@@ -7918,15 +7918,15 @@ Example format:
         }
 
         try {
-          const success = await addContactToSysteme({
+          const result = await addContactToSystemeDetailed({
             email: user.email!,
             firstName: user.firstName || undefined,
             lastName: user.lastName || undefined,
             tags,
           });
-          results.push(`${user.email}: ${success ? tags.join(', ') : 'FAILED'}`);
+          results.push(`${user.email}: ${result.success ? tags.join(', ') : 'FAILED — ' + result.error}`);
         } catch (err: any) {
-          results.push(`${user.email}: ERROR - ${err.message || String(err)}`);
+          results.push(`${user.email}: ERROR — ${err.message || String(err)}`);
         }
         processed++;
 
