@@ -1226,7 +1226,7 @@ P.P.S. One more thing: you have a personal referral link that earns you real rew
 
 // Initial engagement emails for users who paid but never started (never completed Day 0)
 // dayTrigger = days since signup
-// One-time sequence — once they start, they move to the normal nag system
+// One-time sequence  - once they start, they move to the normal nag system
 const INITIAL_ENGAGEMENT_EMAILS = [
   {
     emailNumber: 201,
@@ -1258,21 +1258,21 @@ Matt`,
     dayTrigger: 3,
     emailType: 'initial' as const,
     nagLevel: 2,
-    subject: "Quick question — is something holding you back?",
+    subject: "Quick question  - is something holding you back?",
     altSubject: "{{firstName}}, just checking in",
     body: `Hey {{firstName}},
 
 I wanted to check in because you haven't started the challenge yet.
 
-Sometimes people sign up and then think "I'll do it later" — and later never comes.
+Sometimes people sign up and then think "I'll do it later"  - and later never comes.
 
 If something's holding you back, here are the most common things I hear:
 
-"I'm not technical enough" — You don't need to be. The challenge teaches everything step by step. No coding knowledge required.
+"I'm not technical enough"  - You don't need to be. The challenge teaches everything step by step. No coding knowledge required.
 
-"I don't have time" — Each lesson takes 15-30 minutes. You can do it on your lunch break.
+"I don't have time"  - Each lesson takes 15-30 minutes. You can do it on your lunch break.
 
-"I'm not sure which idea to pick" — That's literally what Day 0 helps you figure out. AI does the heavy lifting.
+"I'm not sure which idea to pick"  - That's literally what Day 0 helps you figure out. AI does the heavy lifting.
 
 Your first lesson is sitting right here:
 
@@ -1292,14 +1292,14 @@ P.P.S. Some people prefer to have a guide. If you want someone experienced walki
     emailType: 'initial' as const,
     nagLevel: 3,
     subject: "Your challenge access is still waiting",
-    altSubject: "{{firstName}} — one last note from me",
+    altSubject: "{{firstName}}  - one last note from me",
     body: `{{firstName}},
 
 This is my last nudge about getting started.
 
 You invested in the challenge, and I want to make sure you get your money's worth.
 
-Everything is set up and waiting for you. Your first lesson takes 10 minutes. And people who start Day 0 almost always keep going — because once you see AI generating real product ideas for you, something clicks.
+Everything is set up and waiting for you. Your first lesson takes 10 minutes. And people who start Day 0 almost always keep going  - because once you see AI generating real product ideas for you, something clicks.
 
 Here's your dashboard:
 
@@ -1449,10 +1449,10 @@ const GENTLE_NUDGE_EMAILS = [
     emailType: 'nag' as const,
     nagLevel: 4,
     subject: "Your challenge progress is saved",
-    altSubject: "Quick reminder — your next lesson is ready",
+    altSubject: "Quick reminder  - your next lesson is ready",
     body: `Hey {{firstName}},
 
-Just a quick note — your challenge progress is saved and your next lesson is ready whenever you are.
+Just a quick note  - your challenge progress is saved and your next lesson is ready whenever you are.
 
 Pick up where you left off:
 

@@ -557,27 +557,27 @@ export default function AdminEmails() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                 <div className="flex items-start gap-2">
                   <span className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
-                  <span><strong>Initial Engagement</strong> — paid but never started</span>
+                  <span><strong>Initial Engagement</strong>  - paid but never started</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
-                  <span><strong>Daily Challenge</strong> — sent as user completes each day</span>
+                  <span><strong>Daily Challenge</strong>  - sent as user completes each day</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0" />
-                  <span><strong>Milestone Celebrations</strong> — key achievements</span>
+                  <span><strong>Milestone Celebrations</strong>  - key achievements</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="w-2 h-2 rounded-full bg-orange-500 mt-1.5 flex-shrink-0" />
-                  <span><strong>Personal Re-engagement</strong> — started but stalled</span>
+                  <span><strong>Personal Re-engagement</strong>  - started but stalled</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="w-2 h-2 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
-                  <span><strong>Gentle Nudges</strong> — repeat stalls (ongoing)</span>
+                  <span><strong>Gentle Nudges</strong>  - repeat stalls (ongoing)</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="w-2 h-2 rounded-full bg-teal-500 mt-1.5 flex-shrink-0" />
-                  <span><strong>Welcome Back</strong> — returned after being nagged</span>
+                  <span><strong>Welcome Back</strong>  - returned after being nagged</span>
                 </div>
               </div>
               <p className="text-slate-600">All campaigns skip banned users, unsubscribed users, and users without an email address. Every email includes an unsubscribe link.</p>
@@ -607,7 +607,7 @@ export default function AdminEmails() {
                     <br />
                     <strong>When:</strong> Based on days since signup (1, 3, and 7 days).
                     <br />
-                    <strong>Repeats?</strong> No — one-time only. Once they complete Day 0, these stop permanently and the Daily Challenge emails take over.
+                    <strong>Repeats?</strong> No  - one-time only. Once they complete Day 0, these stop permanently and the Daily Challenge emails take over.
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -655,7 +655,7 @@ export default function AdminEmails() {
                     <br />
                     <strong>When:</strong> Based on days of inactivity (1, 3, and 6 days with no activity).
                     <br />
-                    <strong>Repeats?</strong> No — this personal sequence plays ONCE ever. After they've received all 3, it never sends again. If they stall again in the future, they get the Gentle Nudges instead.
+                    <strong>Repeats?</strong> No  - this personal sequence plays ONCE ever. After they've received all 3, it never sends again. If they stall again in the future, they get the Gentle Nudges instead.
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -680,7 +680,7 @@ export default function AdminEmails() {
                     <br />
                     <strong>When:</strong> Based on days of inactivity (2 and 7 days).
                     <br />
-                    <strong>Repeats?</strong> Yes — these are short and non-personal, so they reset each time the user comes back and stalls again. Designed to never feel annoying.
+                    <strong>Repeats?</strong> Yes  - these are short and non-personal, so they reset each time the user comes back and stalls again. Designed to never feel annoying.
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -705,7 +705,7 @@ export default function AdminEmails() {
                     <br />
                     <strong>When:</strong> Fires once when the user completes a milestone day (planning done, build phase, mid-build, launch phase, challenge complete).
                     <br />
-                    <strong>Repeats?</strong> No — one-time per milestone.
+                    <strong>Repeats?</strong> No  - one-time per milestone.
                   </p>
                 </div>
                 <div className="space-y-2">
@@ -730,7 +730,7 @@ export default function AdminEmails() {
                     <br />
                     <strong>When:</strong> Fires when the user becomes active again after being nagged.
                     <br />
-                    <strong>Repeats?</strong> Yes — sends once per inactive/active cycle. Each time they come back after a nag, they get a fresh welcome back.
+                    <strong>Repeats?</strong> Yes  - sends once per inactive/active cycle. Each time they come back after a nag, they get a fresh welcome back.
                   </p>
                 </div>
                 <div className="space-y-2">

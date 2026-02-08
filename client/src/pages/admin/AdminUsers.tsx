@@ -495,7 +495,7 @@ function UserDetailPanel({
               details.coachingPurchases.map((cp: any, i: number) => (
                 <div key={`cp-${i}`} className="flex justify-between">
                   <span className="text-slate-500">
-                    Coaching ({cp.coachType === 'matt' ? 'Matt' : 'Expert'} — {cp.sessionsTotal} session{cp.sessionsTotal > 1 ? 's' : ''}):
+                    Coaching ({cp.coachType === 'matt' ? 'Matt' : 'Expert'}  - {cp.sessionsTotal} session{cp.sessionsTotal > 1 ? 's' : ''}):
                   </span>
                   <span className="text-green-600 font-medium">
                     {formatCurrency(cp.amountPaid, cp.currency)}

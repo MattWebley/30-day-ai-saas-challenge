@@ -713,7 +713,7 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete, savedInputs }: Day
                 <p className={ds.body}><strong>3.</strong> Say "delete that file" to clean up</p>
               </div>
               <p className={ds.muted}>
-                That's it! You just saw your app name on a page for the first time — and practiced giving a specific instruction and reversing it. You're ready for Build Week.
+                That's it! You just saw your app name on a page for the first time  - and practiced giving a specific instruction and reversing it. You're ready for Build Week.
               </p>
             </div>
           </div>
