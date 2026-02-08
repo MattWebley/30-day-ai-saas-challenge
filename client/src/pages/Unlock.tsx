@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
-import { Zap, Clock, Rocket, TrendingUp, CheckCircle2, ArrowRight, Loader2 } from "lucide-react";
+import { Zap, Clock, Rocket, TrendingUp, CheckCircle2, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Unlock() {
@@ -66,6 +66,15 @@ export default function Unlock() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-2xl mx-auto px-4 py-12">
+        {/* Back button */}
+        <button
+          onClick={() => setLocation('/dashboard')}
+          className="flex items-center gap-1.5 text-slate-600 hover:text-slate-900 font-medium mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Dashboard
+        </button>
+
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-4 py-1.5 mb-4">
@@ -86,7 +95,7 @@ export default function Unlock() {
           <div className="space-y-3">
             {[
               { icon: Clock, title: "Work at your own pace", desc: "Binge through the challenge in a weekend or spread it over a month. You're in control." },
-              { icon: Rocket, title: "No more waiting", desc: "Every lesson, every exercise, every AI prompt — available right now. No daily drip." },
+              { icon: Rocket, title: "No more waiting", desc: "Every lesson, every exercise, every AI prompt - available right now. No daily drip." },
               { icon: TrendingUp, title: "Get ahead of other challengers", desc: "While others wait for tomorrow's lesson, you'll already be building." },
             ].map((benefit, i) => (
               <div key={i} className="flex gap-3">
@@ -108,12 +117,12 @@ export default function Unlock() {
           <div className="grid grid-cols-2 gap-2">
             {[
               "Day 0: Start Here",
-              "Days 1-2: Idea & Validate",
-              "Days 3-4: Features & Naming",
+              "Days 1-2: Your Winning Idea",
+              "Days 3-4: Plan & Name It",
               "Day 5: Logo Design",
-              "Days 6-9: Tech Setup",
+              "Days 6-9: Get Set Up",
               "Days 10-18: Build Your MVP",
-              "Days 19-21: Launch & Scale",
+              "Days 19-21: Launch & Grow",
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
@@ -178,7 +187,7 @@ export default function Unlock() {
         {/* FAQ/Reassurance */}
         <div className="text-center text-slate-600 space-y-1">
           <p>Secure payment via Stripe. Instant access after purchase.</p>
-          <p>Already bought this at checkout? You're all set — <a href="/dashboard" className="text-primary font-medium hover:underline">go to your dashboard</a>.</p>
+          <p>Already bought this at checkout? You're all set - <a href="/dashboard" className="text-primary font-medium hover:underline">go to your dashboard</a>.</p>
         </div>
       </div>
     </div>

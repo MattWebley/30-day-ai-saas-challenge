@@ -5262,7 +5262,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         gbp: 1900
       };
 
-      const session = await stripe.checkout.sessions.create({
+      const sessionConfig: any = {
         payment_method_types: ['card'],
         line_items: [{
           price_data: {
@@ -5276,13 +5276,24 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         }],
         mode: 'payment',
         success_url: `${protocol}://${host}/dashboard?unlocked=true`,
-        cancel_url: `${protocol}://${host}/dashboard`,
+        cancel_url: `${protocol}://${host}/unlock`,
         metadata: {
           productType: 'unlock-all-days',
           currency,
           userId
         }
-      });
+      };
+
+      // Link to existing Stripe customer so webhook can find them
+      if (user.stripeCustomerId) {
+        sessionConfig.customer = user.stripeCustomerId;
+      }
+      // Pre-fill email so webhook can match by email as fallback
+      if (user.email) {
+        sessionConfig.customer_email = user.email;
+      }
+
+      const session = await stripe.checkout.sessions.create(sessionConfig);
 
       res.json({ url: session.url });
     } catch (error: any) {
