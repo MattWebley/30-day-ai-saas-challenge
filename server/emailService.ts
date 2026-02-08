@@ -883,7 +883,11 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
   try {
     // Get all active drip emails, split by type
     const activeDrips = await storage.getActiveDripEmails();
-    if (activeDrips.length === 0) return { sent, errors };
+    if (activeDrips.length === 0) {
+      console.log('[Drip] No active drip emails found, skipping');
+      return { sent, errors };
+    }
+    console.log(`[Drip] Found ${activeDrips.length} active drip emails: ${activeDrips.map(d => `#${d.emailNumber} "${d.subject.substring(0, 40)}"`).join(', ')}`);
 
     const regularDrips = activeDrips.filter(d => !d.emailType || d.emailType === 'drip');
     const initialDrips = activeDrips.filter(d => d.emailType === 'initial');
@@ -943,6 +947,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
           if (daysSinceSignup < drip.dayTrigger) continue;
         }
 
+        console.log(`[Drip] SENDING email #${drip.emailNumber} "${drip.subject}" to ${user.email}`);
         const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
         if (success) {
           await storage.markDripEmailSent(user.id, drip.id);
@@ -959,6 +964,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
           if (sentIds.has(drip.id)) continue; // Already sent (one-time only)
           if (daysSinceSignup < drip.dayTrigger) continue; // Not enough days since signup
 
+          console.log(`[Drip] SENDING initial email #${drip.emailNumber} "${drip.subject}" to ${user.email}`);
           const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
           if (success) {
             await storage.markDripEmailSent(user.id, drip.id);
@@ -1003,6 +1009,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
 
                 if (daysInactive < nag.dayTrigger) continue; // Not inactive long enough
 
+                console.log(`[Drip] SENDING nag email #${nag.emailNumber} (level ${nag.nagLevel}) "${nag.subject}" to ${user.email}`);
                 const success = await sendDripEmail(nag, user.email!, user.firstName || '', unsubUrl);
                 if (success) {
                   await storage.markDripEmailSent(user.id, nag.id);
@@ -1032,6 +1039,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
           if (sentIds.has(drip.id)) continue; // Already sent (one-time only)
           if (!completedDays.has(drip.dayTrigger)) continue; // Haven't completed this day yet
 
+          console.log(`[Drip] SENDING milestone email #${drip.emailNumber} "${drip.subject}" to ${user.email}`);
           const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
           if (success) {
             await storage.markDripEmailSent(user.id, drip.id);
@@ -1069,6 +1077,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
                   new Date(s.sentAt) > lastNagDate
                 );
                 if (!alreadySentWb) {
+                  console.log(`[Drip] SENDING welcome-back email #${wb.emailNumber} "${wb.subject}" to ${user.email}`);
                   const success = await sendDripEmail(wb, user.email!, user.firstName || '', unsubUrl);
                   if (success) {
                     await storage.markDripEmailSent(user.id, wb.id);
