@@ -290,7 +290,7 @@ export default function AdminEmails() {
     return (
       <Card
         key={drip.id}
-        className={`p-3 border shadow-sm ${drip.isActive ? c.active : "border-slate-200 bg-slate-50/50"}`}
+        className={`p-3 border-2 shadow-none ${drip.isActive ? c.active : "border-slate-200 bg-slate-50/50"}`}
       >
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -313,7 +313,7 @@ export default function AdminEmails() {
                   <span className="px-1.5 py-0.5 bg-slate-200 text-slate-500 text-[10px] font-bold rounded flex-shrink-0">OFF</span>
                 )}
               </div>
-              <p className="text-xs text-slate-400">{drip.sentCount || 0} sent</p>
+              <p className="text-xs text-slate-600">{drip.sentCount || 0} sent</p>
             </div>
           </div>
           <div className="flex items-center gap-1 flex-shrink-0">
@@ -343,15 +343,15 @@ export default function AdminEmails() {
         {editingDrip === drip.id && (
           <div className="mt-3 pt-3 border-t border-slate-200 space-y-3">
             <div>
-              <Label className="text-xs">Subject</Label>
+              <Label className="text-slate-700">Subject</Label>
               <Input value={editedDripSubject} onChange={(e) => setEditedDripSubject(e.target.value)} className="mt-1" />
             </div>
             <div>
-              <Label className="text-xs">Alt Subject</Label>
+              <Label className="text-slate-700">Alt Subject</Label>
               <Input value={editedDripAltSubject} onChange={(e) => setEditedDripAltSubject(e.target.value)} className="mt-1" />
             </div>
             <div>
-              <Label className="text-xs">Body ({"{{firstName}}, {{DASHBOARD_URL}}, {{UNLOCK_URL}}, {{READINESS_CALL_URL}}"})</Label>
+              <Label className="text-slate-700">Body ({"{{firstName}}, {{DASHBOARD_URL}}, {{UNLOCK_URL}}, {{READINESS_CALL_URL}}"})</Label>
               <Textarea value={editedDripBody} onChange={(e) => setEditedDripBody(e.target.value)} className="mt-1 font-mono text-sm min-h-[250px]" />
             </div>
             <div className="flex items-center gap-2">
@@ -417,7 +417,7 @@ export default function AdminEmails() {
                 onChange={(e) => setNewTemplate({ ...newTemplate, templateKey: e.target.value })}
                 className="mt-1"
               />
-              <p className="text-xs text-slate-400 mt-1">Unique identifier (lowercase, underscores)</p>
+              <p className="text-xs text-slate-600 mt-1">Unique identifier (lowercase, underscores)</p>
             </div>
             <div>
               <Label className="text-slate-700">Display Name</Label>
@@ -446,7 +446,7 @@ export default function AdminEmails() {
               onChange={(e) => setNewTemplate({ ...newTemplate, variables: e.target.value })}
               className="mt-1"
             />
-            <p className="text-xs text-slate-400 mt-1">{"Use {{variableName}} in subject and body to insert dynamic values"}</p>
+            <p className="text-xs text-slate-600 mt-1">{"Use {{variableName}} in subject and body to insert dynamic values"}</p>
           </div>
           <div className="mb-4">
             <Label className="text-slate-700">Subject</Label>
@@ -483,7 +483,7 @@ export default function AdminEmails() {
       )}
 
       {/* Test Email Address Config */}
-      <Card className="p-4 border border-slate-200 bg-slate-50">
+      <Card className="p-4 border-2 border-slate-200 shadow-none bg-slate-50">
         <div className="flex items-center gap-3">
           <Label className="text-slate-700 font-medium whitespace-nowrap">Test Email Address:</Label>
           <Input
@@ -493,7 +493,7 @@ export default function AdminEmails() {
             onChange={(e) => setTestEmailAddress(e.target.value)}
             className="flex-1 max-w-xs"
           />
-          <span className="text-sm text-slate-500">All test emails will be sent here</span>
+          <span className="text-slate-600">All test emails will be sent here</span>
         </div>
       </Card>
 
@@ -547,7 +547,7 @@ export default function AdminEmails() {
         <div className="p-4 bg-slate-50 border-2 border-slate-200 rounded-lg mb-6">
           <div className="flex items-start gap-3">
             <Info className="w-5 h-5 text-slate-500 mt-0.5 flex-shrink-0" />
-            <div className="text-sm text-slate-700 space-y-2">
+            <div className="text-slate-700 space-y-2">
               <p className="font-medium text-slate-900">How the email system works</p>
               <p>The system checks every hour and sends emails based on each customer's situation. There are 4 campaigns that work together — a customer will only ever be in ONE campaign at a time:</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
@@ -568,14 +568,14 @@ export default function AdminEmails() {
                   <span><strong>Gentle Nudges</strong> — repeat stalls (ongoing)</span>
                 </div>
               </div>
-              <p className="text-slate-500">All campaigns skip banned users, unsubscribed users, and users without an email address. Every email includes an unsubscribe link.</p>
+              <p className="text-slate-600">All campaigns skip banned users, unsubscribed users, and users without an email address. Every email includes an unsubscribe link.</p>
             </div>
           </div>
         </div>
 
         {dripEmails.length === 0 ? (
-          <Card className="p-6 border border-slate-200 text-center">
-            <p className="text-slate-500">No drip emails found. They'll be seeded on next server restart.</p>
+          <Card className="p-6 border-2 border-slate-200 shadow-none text-center">
+            <p className="text-slate-600">No drip emails found. They'll be seeded on next server restart.</p>
           </Card>
         ) : (
           <>
@@ -589,8 +589,8 @@ export default function AdminEmails() {
                     {dripEmails.filter(d => d.emailType === 'initial' && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'initial').length} active
                   </span>
                 </div>
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-3">
-                  <p className="text-sm text-blue-800">
+                <div className="p-3 bg-blue-50 border-2 border-blue-200 rounded-lg mb-3">
+                  <p className="text-blue-900">
                     <strong>Who:</strong> Customers who paid but have never completed Day 0.
                     <br />
                     <strong>When:</strong> Based on days since signup (1, 3, and 7 days).
@@ -613,8 +613,8 @@ export default function AdminEmails() {
                   {dripEmails.filter(d => !d.emailType || d.emailType === 'drip').filter(d => d.isActive).length}/{dripEmails.filter(d => !d.emailType || d.emailType === 'drip').length} active
                 </span>
               </div>
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg mb-3">
-                <p className="text-sm text-amber-800">
+              <div className="p-3 bg-amber-50 border-2 border-amber-200 rounded-lg mb-3">
+                <p className="text-amber-900">
                   <strong>Who:</strong> Active customers who are progressing through the challenge.
                   <br />
                   <strong>When:</strong> Sent on the exact day number after signup — but ONLY if the user completed the previous day's lesson. Users who aren't progressing won't receive these.
@@ -637,8 +637,8 @@ export default function AdminEmails() {
                     {dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) <= 3 && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) <= 3).length} active
                   </span>
                 </div>
-                <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg mb-3">
-                  <p className="text-sm text-orange-800">
+                <div className="p-3 bg-orange-50 border-2 border-orange-200 rounded-lg mb-3">
+                  <p className="text-orange-900">
                     <strong>Who:</strong> Users who completed at least Day 0 but then stopped progressing. Does NOT go to people who never started.
                     <br />
                     <strong>When:</strong> Based on days of inactivity (1, 3, and 6 days with no activity).
@@ -662,8 +662,8 @@ export default function AdminEmails() {
                     {dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) > 3 && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) > 3).length} active
                   </span>
                 </div>
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg mb-3">
-                  <p className="text-sm text-slate-700">
+                <div className="p-3 bg-slate-50 border-2 border-slate-200 rounded-lg mb-3">
+                  <p className="text-slate-700">
                     <strong>Who:</strong> Users who've already been through the Personal Re-engagement sequence above, and have gone inactive again.
                     <br />
                     <strong>When:</strong> Based on days of inactivity (2 and 7 days).
@@ -686,9 +686,9 @@ export default function AdminEmails() {
 
       {/* Templates */}
       {emailTemplates.length === 0 ? (
-        <Card className="p-8 border border-slate-200 text-center">
+        <Card className="p-8 border-2 border-slate-200 shadow-none text-center">
           <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-500">
+          <p className="text-slate-600">
             No email templates found. Run the seed script to create default templates.
           </p>
         </Card>
@@ -697,8 +697,8 @@ export default function AdminEmails() {
           {emailTemplates.map((template) => (
             <Card
               key={template.templateKey}
-              className={`p-4 border shadow-sm ${
-                template.isActive ? "border-slate-200" : "border-slate-300 bg-slate-50 opacity-75"
+              className={`p-4 border-2 shadow-none ${
+                template.isActive ? "border-slate-200" : "border-slate-200 bg-slate-50 opacity-75"
               }`}
             >
               <div className="flex items-start justify-between gap-4 mb-3">
@@ -711,9 +711,9 @@ export default function AdminEmails() {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-slate-500 mt-1">{template.description}</p>
+                  <p className="text-slate-700 mt-1">{template.description}</p>
                   {template.variables && (
-                    <p className="text-xs text-slate-400 mt-1">
+                    <p className="text-sm text-slate-600 mt-1">
                       Variables:{" "}
                       {template.variables
                         .split(",")
@@ -898,7 +898,7 @@ export default function AdminEmails() {
                       </button>
                     ))}
                   </div>
-                  <p className="text-sm text-slate-500 mb-4">
+                  <p className="text-slate-700 mb-4">
                     {SEGMENTS.find(s => s.value === sendSegment)?.desc}
                     {" - "}
                     {"{{firstName}}"} will be replaced with each customer's name.
@@ -925,7 +925,7 @@ export default function AdminEmails() {
                           <p className="font-bold text-slate-900 mb-1">
                             Are you sure?
                           </p>
-                          <p className="text-sm text-slate-700 mb-3">
+                          <p className="text-slate-700 mb-3">
                             This will send "{template.subject}" to all <strong>{sendSegment}</strong> users. This cannot be undone.
                           </p>
                           <div className="flex items-center gap-3">
@@ -969,13 +969,13 @@ export default function AdminEmails() {
         </div>
 
         {logsLoading ? (
-          <Card className="p-8 border border-slate-200 text-center">
-            <p className="text-slate-500">Loading email logs...</p>
+          <Card className="p-8 border-2 border-slate-200 shadow-none text-center">
+            <p className="text-slate-600">Loading email logs...</p>
           </Card>
         ) : emailLogs.length === 0 ? (
-          <Card className="p-8 border border-slate-200 text-center">
+          <Card className="p-8 border-2 border-slate-200 shadow-none text-center">
             <ScrollText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500">No emails sent yet. Logs will appear here as emails are sent.</p>
+            <p className="text-slate-600">No emails sent yet. Logs will appear here as emails are sent.</p>
           </Card>
         ) : (
           <>
@@ -983,23 +983,23 @@ export default function AdminEmails() {
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-slate-200">
-                    <th className="pb-2 text-xs font-bold text-slate-500 uppercase">Recipient</th>
-                    <th className="pb-2 text-xs font-bold text-slate-500 uppercase">Subject</th>
-                    <th className="pb-2 text-xs font-bold text-slate-500 uppercase">Template</th>
-                    <th className="pb-2 text-xs font-bold text-slate-500 uppercase">Status</th>
-                    <th className="pb-2 text-xs font-bold text-slate-500 uppercase">Date</th>
+                    <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Recipient</th>
+                    <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Subject</th>
+                    <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Template</th>
+                    <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Status</th>
+                    <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Date</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
                   {emailLogs.map((log) => (
                     <tr key={log.id} className="hover:bg-slate-50">
                       <td className="py-2.5 pr-4">
-                        <div className="text-slate-900 text-sm font-medium">
+                        <div className="text-slate-900 font-medium">
                           {log.recipientName || "-"}
                         </div>
-                        <div className="text-slate-500 text-xs">{log.recipientEmail}</div>
+                        <div className="text-slate-600 text-sm">{log.recipientEmail}</div>
                       </td>
-                      <td className="py-2.5 pr-4 text-sm text-slate-700 max-w-xs truncate">
+                      <td className="py-2.5 pr-4 text-slate-700 max-w-xs truncate">
                         {log.subject}
                       </td>
                       <td className="py-2.5 pr-4">
@@ -1008,7 +1008,7 @@ export default function AdminEmails() {
                             {log.templateKey}
                           </span>
                         ) : (
-                          <span className="text-xs text-slate-400">-</span>
+                          <span className="text-slate-600">-</span>
                         )}
                       </td>
                       <td className="py-2.5 pr-4">
@@ -1024,7 +1024,7 @@ export default function AdminEmails() {
                           </span>
                         )}
                       </td>
-                      <td className="py-2.5 text-xs text-slate-500 whitespace-nowrap">
+                      <td className="py-2.5 text-sm text-slate-600 whitespace-nowrap">
                         {log.sentAt ? new Date(log.sentAt).toLocaleString() : "-"}
                       </td>
                     </tr>
@@ -1035,7 +1035,7 @@ export default function AdminEmails() {
 
             {/* Pagination */}
             <div className="flex items-center justify-between mt-4">
-              <div className="text-sm text-slate-500">
+              <div className="text-slate-700">
                 Page {logPage}{emailLogs.length === 50 ? "+" : ""}
               </div>
               <div className="flex items-center gap-2">
@@ -1094,11 +1094,11 @@ export default function AdminEmails() {
                   {previewTemplate && (
                     <>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-slate-400 w-14">From:</span>
+                        <span className="text-xs font-medium text-slate-600 w-14">From:</span>
                         <span className="text-sm text-slate-700">Matt Webley &lt;matt@challenge.mattwebley.com&gt;</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-slate-400 w-14">To:</span>
+                        <span className="text-xs font-medium text-slate-600 w-14">To:</span>
                         <span className="text-sm text-slate-700">sarah@example.com</span>
                       </div>
                     </>
