@@ -4744,6 +4744,10 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         DASHBOARD_URL: 'https://challenge.mattwebley.com/dashboard',
         UNLOCK_URL: 'https://challenge.mattwebley.com/unlock',
         READINESS_CALL_URL: 'https://cal.com/mattwebley/readiness-review',
+        COACHING_URL: 'https://challenge.mattwebley.com/coaching',
+        REFERRAL_URL: 'https://challenge.mattwebley.com/referrals',
+        CRITIQUE_URL: 'https://challenge.mattwebley.com/critique',
+        SHOWCASE_URL: 'https://challenge.mattwebley.com/showcase',
         UNSUBSCRIBE_URL: sampleUnsubscribeUrl,
       };
 
