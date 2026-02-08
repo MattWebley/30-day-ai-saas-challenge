@@ -111,7 +111,8 @@
       "Bash(# Check if this Replit has multiple deployments or the deployment uses a different DB ls -la /home/runner/.config/replit/ ; cat /home/runner/.replit)",
       "Bash(replit deploy:*)",
       "Bash(replit --help:*)",
-      "Bash(printenv:*)"
+      "Bash(printenv:*)",
+      "Bash(python3:*)"
     ]
   }
 }

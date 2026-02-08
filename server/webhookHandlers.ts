@@ -237,6 +237,14 @@ export class WebhookHandlers {
           currency: currency.toLowerCase() as 'usd' | 'gbp',
           amount: amountPaid / 100
         }).catch((err: any) => console.error('[Webhook] Coaching notification error:', err));
+
+        // Tag coaching buyers in Systeme.io
+        addContactToSysteme({
+          email,
+          firstName: user?.firstName || undefined,
+          lastName: user?.lastName || undefined,
+          tags: ['Coaching Customer'],
+        }).catch((err: any) => console.error('[Webhook] Systeme.io coaching tag error:', err));
         break;
       case 'critique':
         // Critique notification - will be sent when they submit the form

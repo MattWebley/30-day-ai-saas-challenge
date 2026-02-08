@@ -1,6 +1,7 @@
 import { Resend } from 'resend';
 import crypto from 'crypto';
 import { storage } from './storage';
+import { addContactToSysteme } from './systemeService';
 import type { DripEmail } from '@shared/schema';
 
 const FROM_EMAIL = 'Matt Webley <matt@mattwebley.com>';
@@ -106,7 +107,7 @@ export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams)
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
   const defaultSubject = `You're in! Welcome to the 21-Day AI SaaS Challenge`;
-  const defaultBody = `You're In, {{firstName}}!
+  const defaultBody = `{{firstName}}... you're IN!
 
 Welcome to the 21-Day AI SaaS Challenge.
 
@@ -115,21 +116,40 @@ ORDER CONFIRMED
 21-Day AI SaaS Challenge
 Total: {{currencySymbol}}{{total}}
 
-WHAT'S NEXT
------------
-1. Log in and start Day 0
-2. Complete one day at a time at your own pace
-3. The challenge covers 21 days of lessons and exercises
+HERE'S WHAT HAPPENS NEXT
+------------------------
+In the next 21 days, you're going to build a REAL AI-powered SaaS product from scratch. No coding experience needed.
 
-Start now: https://challenge.mattwebley.com/dashboard
+By the end, you'll have:
+- A live product with AI features
+- User authentication and accounts
+- Payment processing (yes, it will accept real money)
+- A sales page, SEO, and a marketing roadmap
 
-Questions? Just reply to this email.
+This is not a course you watch. This is a challenge you DO.
 
-- Matt
+YOUR FIRST STEP
+---------------
+Log in now and start Day 0. It takes about 10 minutes, and AI will generate personalised SaaS ideas for you based on your skills and interests.
 
---
-21-Day AI SaaS Challenge
-You're receiving this because you purchased the challenge.`;
+Start here: https://challenge.mattwebley.com/dashboard
+
+HOW IT WORKS
+------------
+- One lesson per day (15-30 minutes each)
+- Each lesson builds on the last
+- AI does the heavy lifting, you make the decisions
+- Your progress is saved automatically
+
+I'll be in your inbox with guidance, tips, and motivation along the way.
+
+Let's build something amazing.
+
+Matt
+
+P.S. If you want to work ahead at your own pace (skip the daily drip), you can unlock all 21 days instantly here: https://challenge.mattwebley.com/unlock
+
+P.P.S. If you want someone experienced guiding you 1:1 through the entire challenge, check out my coaching packages: https://challenge.mattwebley.com/coaching` + TRANSACTIONAL_FOOTER;
 
   try {
     const template = await getTemplate('purchase_confirmation', defaultSubject, defaultBody);
@@ -510,12 +530,7 @@ https://challenge.mattwebley.com/dashboard
 
 Questions? Just reply to this email.
 
-- Matt
-
---
-21-Day AI SaaS Challenge
-You're receiving this because you purchased coaching.
-`,
+- Matt` + TRANSACTIONAL_FOOTER,
       recipientName: firstName,
     });
     console.log('Coaching confirmation email sent to:', to);
@@ -566,6 +581,45 @@ Review AI usage: https://challenge.mattwebley.com/admin
     console.log('Abuse alert email sent to', recipient);
   } catch (error) {
     console.error('Failed to send abuse alert email:', error);
+  }
+}
+
+// Badge earned notification email
+export interface BadgeEarnedEmailParams {
+  to: string;
+  firstName: string;
+  badgeName: string;
+  badgeDescription: string;
+}
+
+export async function sendBadgeEarnedEmail(params: BadgeEarnedEmailParams): Promise<void> {
+  const { to, firstName, badgeName, badgeDescription } = params;
+
+  try {
+    await sendAndLog({
+      to,
+      subject: `You just earned the "${badgeName}" badge!`,
+      text: `Hey ${firstName}!
+
+You just earned a new badge: ${badgeName}
+
+${badgeDescription}
+
+Every badge you earn is proof of progress. Keep going and see how many you can collect.
+
+View your badges: https://challenge.mattwebley.com/dashboard
+
+Know someone who should be doing this challenge too? Share your referral link and earn rewards for every person who signs up: https://challenge.mattwebley.com/referrals
+
+Keep building!
+
+Matt` + TRANSACTIONAL_FOOTER,
+      recipientName: firstName,
+      templateKey: `badge_earned_${badgeName}`,
+    });
+    console.log(`Badge earned email sent to ${to}: ${badgeName}`);
+  } catch (error) {
+    console.error('Failed to send badge earned email:', error);
   }
 }
 
@@ -739,6 +793,10 @@ const DRIP_VARIABLES: Record<string, string> = {
   DASHBOARD_URL: 'https://challenge.mattwebley.com/dashboard',
   UNLOCK_URL: 'https://challenge.mattwebley.com/unlock',
   READINESS_CALL_URL: 'https://cal.com/mattwebley/readiness-review',
+  COACHING_URL: 'https://challenge.mattwebley.com/coaching',
+  REFERRAL_URL: 'https://challenge.mattwebley.com/referrals',
+  CRITIQUE_URL: 'https://challenge.mattwebley.com/critique',
+  SHOWCASE_URL: 'https://challenge.mattwebley.com/showcase',
 };
 
 function generateUnsubscribeUrl(userId: string): string {
@@ -759,6 +817,14 @@ Silicon Oasis, Dubai
 
 You're receiving this because you purchased the 21-Day AI SaaS Challenge.
 Unsubscribe from these emails: {{UNSUBSCRIBE_URL}}`;
+
+const TRANSACTIONAL_FOOTER = `
+
+--
+21-Day AI SaaS Challenge by Matt Webley
+Webley Global - FZCO
+Building A1, Dubai Digital Park
+Silicon Oasis, Dubai`;
 
 async function sendDripEmail(dripEmail: DripEmail, userEmail: string, firstName: string, unsubscribeUrl: string): Promise<boolean> {
   try {
@@ -822,6 +888,8 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
     const regularDrips = activeDrips.filter(d => !d.emailType || d.emailType === 'drip');
     const initialDrips = activeDrips.filter(d => d.emailType === 'initial');
     const nagDrips = activeDrips.filter(d => d.emailType === 'nag');
+    const milestoneDrips = activeDrips.filter(d => d.emailType === 'milestone');
+    const welcomeBackDrips = activeDrips.filter(d => d.emailType === 'welcome_back');
 
     // Get all paid users (skip unsubscribed and banned)
     const allUsers = await storage.getAllUsers();
@@ -857,13 +925,23 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
       const sentIds = new Set(alreadySent.map(s => s.dripEmailId));
       const unsubUrl = generateUnsubscribeUrl(user.id);
 
-      // --- REGULAR DRIP EMAILS (exact day match, only if user is progressing) ---
+      // --- REGULAR DRIP EMAILS (progress-based for challenge days, calendar-based for post-completion) ---
       for (const drip of regularDrips) {
         if (sentIds.has(drip.id)) continue; // Already sent
-        if (daysSinceSignup !== drip.dayTrigger) continue; // Exact day match only
-        if (completedDays.has(drip.dayTrigger)) continue; // User already completed this day
-        // Only send if user completed the previous day (skip for Day 0 which has no prerequisite)
-        if (drip.dayTrigger > 0 && !completedDays.has(drip.dayTrigger - 1)) continue;
+
+        if (drip.dayTrigger === 0) {
+          // Day 0 welcome email: send on signup day only
+          if (daysSinceSignup !== 0) continue;
+          if (completedDays.has(0)) continue;
+        } else if (drip.dayTrigger <= 21) {
+          // Challenge emails (Days 1-21): send when user completed previous day but hasn't done this one yet
+          if (!completedDays.has(drip.dayTrigger - 1)) continue;
+          if (completedDays.has(drip.dayTrigger)) continue;
+        } else {
+          // Post-completion emails (Days 22+): send after finishing the challenge, calendar-spaced
+          if (!completedDays.has(21)) continue;
+          if (daysSinceSignup < drip.dayTrigger) continue;
+        }
 
         const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
         if (success) {
@@ -929,10 +1007,77 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
                 if (success) {
                   await storage.markDripEmailSent(user.id, nag.id);
                   sent++;
+                  // Tag as stalled in Systeme on first nag
+                  if (nag.nagLevel === 1) {
+                    addContactToSysteme({
+                      email: user.email!,
+                      firstName: user.firstName || undefined,
+                      lastName: user.lastName || undefined,
+                      tags: ['Challenge Stalled'],
+                    }).catch(err => console.error('[Systeme] Stalled tag error:', err));
+                  }
                 } else {
                   errors++;
                 }
                 await new Promise(resolve => setTimeout(resolve, 100));
+              }
+            }
+          }
+        }
+      }
+
+      // --- MILESTONE EMAILS (one-time, fires when user completes the specified day) ---
+      if (milestoneDrips.length > 0) {
+        for (const drip of milestoneDrips) {
+          if (sentIds.has(drip.id)) continue; // Already sent (one-time only)
+          if (!completedDays.has(drip.dayTrigger)) continue; // Haven't completed this day yet
+
+          const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
+          if (success) {
+            await storage.markDripEmailSent(user.id, drip.id);
+            sent++;
+          } else {
+            errors++;
+          }
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+
+      // --- WELCOME BACK EMAIL (fires when user returns after receiving nag emails) ---
+      if (welcomeBackDrips.length > 0 && stats?.lastActivityDate) {
+        const lastActivity = new Date(stats.lastActivityDate);
+        const daysInactive = Math.floor((now.getTime() - lastActivity.getTime()) / dayMs);
+
+        // User is currently active (last activity within 2 days)
+        if (daysInactive < 2) {
+          // Find the most recent nag sent to this user
+          const nagEmailIds = new Set(nagDrips.map(n => n.id));
+          const sentNags = alreadySent
+            .filter(s => nagEmailIds.has(s.dripEmailId) && s.sentAt)
+            .sort((a, b) => new Date(b.sentAt!).getTime() - new Date(a.sentAt!).getTime());
+
+          if (sentNags.length > 0) {
+            const lastNagDate = new Date(sentNags[0].sentAt!);
+
+            // User's activity is more recent than the last nag (they came back)
+            if (lastActivity > lastNagDate) {
+              for (const wb of welcomeBackDrips) {
+                // Only send if not already sent after the last nag
+                const alreadySentWb = alreadySent.some(s =>
+                  s.dripEmailId === wb.id &&
+                  s.sentAt &&
+                  new Date(s.sentAt) > lastNagDate
+                );
+                if (!alreadySentWb) {
+                  const success = await sendDripEmail(wb, user.email!, user.firstName || '', unsubUrl);
+                  if (success) {
+                    await storage.markDripEmailSent(user.id, wb.id);
+                    sent++;
+                  } else {
+                    errors++;
+                  }
+                  await new Promise(resolve => setTimeout(resolve, 100));
+                }
               }
             }
           }

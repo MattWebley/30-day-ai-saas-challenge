@@ -38,6 +38,8 @@ import {
   UserPlus,
   Heart,
   Info,
+  Trophy,
+  RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { EmailTemplate, EmailLog, DripEmail } from "./adminTypes";
@@ -283,6 +285,8 @@ export default function AdminEmails() {
     blue: { active: "border-blue-200", badge: "bg-blue-100 text-blue-700", toggle: "text-blue-500" },
     orange: { active: "border-orange-200", badge: "bg-orange-100 text-orange-700", toggle: "text-orange-500" },
     slate: { active: "border-slate-200", badge: "bg-slate-200 text-slate-600", toggle: "text-slate-500" },
+    emerald: { active: "border-emerald-200", badge: "bg-emerald-100 text-emerald-700", toggle: "text-emerald-500" },
+    teal: { active: "border-teal-200", badge: "bg-teal-100 text-teal-700", toggle: "text-teal-500" },
   };
 
   function renderDripCard(drip: DripEmail, color: string, triggerLabel: string) {
@@ -297,7 +301,7 @@ export default function AdminEmails() {
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 ${
               drip.isActive ? c.badge : "bg-slate-100 text-slate-400"
             }`}>
-              {drip.emailType === 'nag' || drip.emailType === 'initial' ? drip.nagLevel || drip.emailNumber : drip.emailNumber}
+              {drip.emailType === 'nag' || drip.emailType === 'initial' ? drip.nagLevel || drip.emailNumber : drip.emailType === 'milestone' ? `D${drip.dayTrigger}` : drip.emailType === 'welcome_back' ? '↩' : drip.emailNumber}
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
@@ -549,7 +553,7 @@ export default function AdminEmails() {
             <Info className="w-5 h-5 text-slate-500 mt-0.5 flex-shrink-0" />
             <div className="text-slate-700 space-y-2">
               <p className="font-medium text-slate-900">How the email system works</p>
-              <p>The system checks every hour and sends emails based on each customer's situation. There are 4 campaigns that work together — a customer will only ever be in ONE campaign at a time:</p>
+              <p>The system checks every hour and sends emails based on each customer's situation. There are 6 campaigns that work together:</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
                 <div className="flex items-start gap-2">
                   <span className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
@@ -557,15 +561,23 @@ export default function AdminEmails() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
-                  <span><strong>Daily Challenge</strong> — actively progressing</span>
+                  <span><strong>Daily Challenge</strong> — sent as user completes each day</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0" />
+                  <span><strong>Milestone Celebrations</strong> — key achievements</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="w-2 h-2 rounded-full bg-orange-500 mt-1.5 flex-shrink-0" />
-                  <span><strong>Personal Re-engagement</strong> — started but stalled (first time)</span>
+                  <span><strong>Personal Re-engagement</strong> — started but stalled</span>
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="w-2 h-2 rounded-full bg-slate-400 mt-1.5 flex-shrink-0" />
                   <span><strong>Gentle Nudges</strong> — repeat stalls (ongoing)</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="w-2 h-2 rounded-full bg-teal-500 mt-1.5 flex-shrink-0" />
+                  <span><strong>Welcome Back</strong> — returned after being nagged</span>
                 </div>
               </div>
               <p className="text-slate-600">All campaigns skip banned users, unsubscribed users, and users without an email address. Every email includes an unsubscribe link.</p>
@@ -617,9 +629,9 @@ export default function AdminEmails() {
                 <p className="text-amber-900">
                   <strong>Who:</strong> Active customers who are progressing through the challenge.
                   <br />
-                  <strong>When:</strong> Sent on the exact day number after signup — but ONLY if the user completed the previous day's lesson. Users who aren't progressing won't receive these.
+                  <strong>When:</strong> Progress-based. Sent when the user completes a day, motivating them to do the NEXT one. Works at any pace (fast or slow).
                   <br />
-                  <strong>Skips if:</strong> The user already completed that day, or hasn't done the day before it.
+                  <strong>Skips if:</strong> The user already completed that day, or hasn't done the day before it. Post-completion emails (Days 22+) are calendar-spaced after finishing.
                 </p>
               </div>
               <div className="space-y-2">
@@ -673,6 +685,56 @@ export default function AdminEmails() {
                 </div>
                 <div className="space-y-2">
                   {dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) > 3).map((drip) => renderDripCard(drip, "slate", `+${drip.dayTrigger}d inactive`))}
+                </div>
+              </div>
+            )}
+
+            {/* ---- CAMPAIGN 5: MILESTONE CELEBRATIONS ---- */}
+            {dripEmails.some(d => d.emailType === 'milestone') && (
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-2">
+                  <Trophy className="w-5 h-5 text-emerald-500" />
+                  <h3 className="text-lg font-bold text-slate-900">Milestone Celebrations</h3>
+                  <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">
+                    {dripEmails.filter(d => d.emailType === 'milestone' && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'milestone').length} active
+                  </span>
+                </div>
+                <div className="p-3 bg-emerald-50 border-2 border-emerald-200 rounded-lg mb-3">
+                  <p className="text-emerald-900">
+                    <strong>Who:</strong> All active customers, as they hit key achievements.
+                    <br />
+                    <strong>When:</strong> Fires once when the user completes a milestone day (planning done, build phase, mid-build, launch phase, challenge complete).
+                    <br />
+                    <strong>Repeats?</strong> No — one-time per milestone.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  {dripEmails.filter(d => d.emailType === 'milestone').map((drip) => renderDripCard(drip, "emerald", `Completed Day ${drip.dayTrigger}`))}
+                </div>
+              </div>
+            )}
+
+            {/* ---- CAMPAIGN 6: WELCOME BACK ---- */}
+            {dripEmails.some(d => d.emailType === 'welcome_back') && (
+              <div className="mb-8">
+                <div className="flex items-center gap-3 mb-2">
+                  <RefreshCw className="w-5 h-5 text-teal-500" />
+                  <h3 className="text-lg font-bold text-slate-900">Welcome Back</h3>
+                  <span className="px-2 py-0.5 bg-teal-100 text-teal-700 text-xs font-bold rounded-full">
+                    {dripEmails.filter(d => d.emailType === 'welcome_back' && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'welcome_back').length} active
+                  </span>
+                </div>
+                <div className="p-3 bg-teal-50 border-2 border-teal-200 rounded-lg mb-3">
+                  <p className="text-teal-900">
+                    <strong>Who:</strong> Users who went inactive, received re-engagement or nudge emails, and then came back.
+                    <br />
+                    <strong>When:</strong> Fires when the user becomes active again after being nagged.
+                    <br />
+                    <strong>Repeats?</strong> Yes — sends once per inactive/active cycle. Each time they come back after a nag, they get a fresh welcome back.
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  {dripEmails.filter(d => d.emailType === 'welcome_back').map((drip) => renderDripCard(drip, "teal", "On return"))}
                 </div>
               </div>
             )}

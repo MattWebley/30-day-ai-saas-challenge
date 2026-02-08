@@ -10,7 +10,8 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
 import { eq, desc, isNull, isNotNull, sql, and, gte, lte, count, countDistinct } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail, processDripEmails } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails } from "./emailService";
+import { addContactToSysteme } from "./systemeService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
 import { callClaude, callClaudeForJSON, detectAbuse, checkRateLimit, logAIUsage, sendAbuseAlert } from "./aiService";
@@ -1009,6 +1010,17 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
           nagResetAt: new Date(),
         });
 
+        // Update Systeme.io tags at key milestones (fire and forget)
+        if (user?.email && (day === 0 || day === 9 || day === 21)) {
+          const tag = day === 0 ? 'Challenge Started' : day === 9 ? 'Challenge Building' : 'Challenge Finished';
+          addContactToSysteme({
+            email: user.email,
+            firstName: user.firstName || undefined,
+            lastName: user.lastName || undefined,
+            tags: [tag],
+          }).catch(err => console.error('[Systeme] Progress tag error:', err));
+        }
+
         // Check for badge awards
         const allBadges = await storage.getAllBadges();
         const userBadgesEarned = await storage.getUserBadges(userId);
@@ -1037,6 +1049,15 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
 
           if (shouldAward) {
             await storage.awardBadge(userId, badge.id);
+            // Send badge notification email (fire and forget)
+            if (user?.email) {
+              sendBadgeEarnedEmail({
+                to: user.email,
+                firstName: user.firstName || 'there',
+                badgeName: badge.name,
+                badgeDescription: badge.description || `You earned the ${badge.name} badge!`,
+              }).catch(err => console.error('Failed to send badge email:', err));
+            }
           }
         }
       }
@@ -2459,6 +2480,14 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
         if (badge.triggerType === 'referral' && referralCount >= (badge.triggerValue || 0)) {
           await storage.awardBadge(referrer.id, badge.id);
           console.log(`Awarded referral badge ${badge.name} to user ${referrer.id}`);
+          if (referrer.email) {
+            sendBadgeEarnedEmail({
+              to: referrer.email,
+              firstName: referrer.firstName || 'there',
+              badgeName: badge.name,
+              badgeDescription: badge.description || `You earned the ${badge.name} badge!`,
+            }).catch(err => console.error('Failed to send badge email:', err));
+          }
         }
       }
 
@@ -7844,6 +7873,68 @@ Example format:
     } catch (error) {
       console.error("Error fetching analytics:", error);
       res.status(500).json({ message: "Failed to fetch analytics" });
+    }
+  });
+
+  // One-time backfill: add all paying customers to Systeme.io with progress tags
+  app.post("/api/admin/backfill-systeme", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const allUsers = await storage.getAllUsers();
+      const paidUsers = allUsers.filter(u => u.challengePurchased && u.email);
+      const allProgress = await storage.getAllUserProgress();
+      const allStats = await storage.getAllUserStats();
+
+      const progressMap = new Map<string, Set<number>>();
+      for (const p of allProgress) {
+        if (p.completed) {
+          if (!progressMap.has(p.userId)) progressMap.set(p.userId, new Set());
+          progressMap.get(p.userId)!.add(p.day);
+        }
+      }
+      const statsMap = new Map(allStats.map(s => [s.userId, s]));
+
+      let processed = 0;
+      const results: string[] = [];
+      const dayMs = 1000 * 60 * 60 * 24;
+      const now = new Date();
+
+      for (const user of paidUsers) {
+        const completedDays = progressMap.get(user.id) || new Set<number>();
+        const stats = statsMap.get(user.id);
+        const tags: string[] = ['21-Day Challenge Buyer'];
+
+        if (completedDays.has(0)) tags.push('Challenge Started');
+        if (completedDays.has(9)) tags.push('Challenge Building');
+        if (completedDays.has(21)) tags.push('Challenge Finished');
+        if (user.coachingPurchased) tags.push('Coaching Customer');
+
+        // Check if stalled (started but inactive 7+ days and not finished)
+        if (completedDays.size > 0 && !completedDays.has(21) && stats?.lastActivityDate) {
+          const daysInactive = Math.floor((now.getTime() - new Date(stats.lastActivityDate).getTime()) / dayMs);
+          if (daysInactive >= 7) tags.push('Challenge Stalled');
+        }
+
+        const success = await addContactToSysteme({
+          email: user.email!,
+          firstName: user.firstName || undefined,
+          lastName: user.lastName || undefined,
+          tags,
+        });
+
+        results.push(`${user.email}: ${success ? tags.join(', ') : 'FAILED'}`);
+        processed++;
+
+        // Rate limit: 200ms between API calls
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+
+      res.json({ processed, results });
+    } catch (error: any) {
+      console.error("Error backfilling Systeme:", error);
+      res.status(500).json({ message: error.message || "Backfill failed" });
     }
   });
 

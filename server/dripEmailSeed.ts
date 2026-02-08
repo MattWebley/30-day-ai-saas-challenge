@@ -1,7 +1,7 @@
 import { storage } from './storage';
 
-// All 20 drip emails for the challenge sequence
-// Variables: {{firstName}}, {{DASHBOARD_URL}}, {{UNLOCK_URL}}, {{READINESS_CALL_URL}}
+// All drip emails for the challenge sequence
+// Variables: {{firstName}}, {{DASHBOARD_URL}}, {{UNLOCK_URL}}, {{READINESS_CALL_URL}}, {{COACHING_URL}}, {{REFERRAL_URL}}, {{CRITIQUE_URL}}, {{SHOWCASE_URL}}
 // Legal footer + unsubscribe link automatically appended by emailService.ts
 // All seeded as isActive=false - Matt must enable them in admin before any send
 
@@ -116,7 +116,7 @@ Matt
 
 P.S. Want the full challenge unlocked so you can work ahead at your own pace? Grab it here: {{UNLOCK_URL}}
 
-P.P.S. If you're looking at your idea and thinking "is this REALLY the right one?"... that's actually a good sign. It means you're taking this seriously. And it's EXACTLY the kind of thing I help people figure out in my coaching. Having someone who's launched multiple SaaS products look over your shoulder makes a HUGE difference this early on. Just saying...`,
+P.P.S. If you're looking at your idea and thinking "is this REALLY the right one?"... that's actually a good sign. It means you're taking this seriously. And it's EXACTLY the kind of thing I help people figure out in my 1:1 coaching. Having someone who's launched multiple SaaS products look over your shoulder makes a HUGE difference this early on: {{COACHING_URL}}`,
   },
   {
     emailNumber: 3,
@@ -175,7 +175,7 @@ Matt
 
 P.S. If you're enjoying the challenge so far, make sure you've unlocked the full thing: {{UNLOCK_URL}}
 
-P.P.S. The difference between people who build a product that SELLS and people who build something nobody wants often comes down to getting the features RIGHT. My coaching clients get direct feedback on their feature choices before they build a single thing. Something to think about...`,
+P.P.S. The difference between people who build a product that SELLS and people who build something nobody wants often comes down to getting the features RIGHT. My coaching clients get direct feedback on their feature choices before they build a single thing. If that sounds useful: {{COACHING_URL}}`,
   },
   {
     emailNumber: 4,
@@ -230,7 +230,7 @@ See you in there,
 
 Matt
 
-P.S. I've seen people get stuck on naming for WEEKS. Don't be that person. My coaching clients never have to second-guess stuff like this because I'm right there going "yep, that one's good, go with it." Sometimes you just need someone who's done it before to give you the green light.`,
+P.S. I've seen people get stuck on naming for WEEKS. Don't be that person. My coaching clients never have to second-guess stuff like this because I'm right there going "yep, that one's good, go with it." Sometimes you just need someone who's done it before to give you the green light: {{COACHING_URL}}`,
   },
   {
     emailNumber: 5,
@@ -283,7 +283,9 @@ Log in and build your brand:
 
 This is getting REAL now.
 
-Matt`,
+Matt
+
+P.S. Haven't unlocked the full challenge yet? You can work ahead at your own pace: {{UNLOCK_URL}}`,
   },
   {
     emailNumber: 6,
@@ -338,7 +340,7 @@ Tomorrow we build your product blueprint. That's where it gets REALLY exciting.
 
 Matt
 
-P.S. Here's something I've noticed after working with hundreds of people on this... the ones who fly through the BUILD phase are usually the ones who had their tools configured RIGHT from the start. Getting stuck on technical setup problems burns hours and kills momentum. That's one of the things my coaching clients love most - they never get stuck because I'm right there with them. No wasted time. No frustration.`,
+P.S. Here's something I've noticed after working with hundreds of people on this... the ones who fly through the BUILD phase are usually the ones who had their tools configured RIGHT from the start. Getting stuck on technical setup problems burns hours and kills momentum. That's one of the things my coaching clients love most - they never get stuck because I'm right there with them. No wasted time. No frustration: {{COACHING_URL}}`,
   },
   {
     emailNumber: 7,
@@ -395,7 +397,9 @@ Log in and build your PRD:
 
 Let's GO.
 
-Matt`,
+Matt
+
+P.S. Want to work ahead at your own pace? Unlock the full challenge here: {{UNLOCK_URL}}`,
   },
   {
     emailNumber: 8,
@@ -442,7 +446,9 @@ Log in and set up your workflow:
 
 Tomorrow you learn the 8 skills that make AI do EXACTLY what you want. Don't miss it.
 
-Matt`,
+Matt
+
+P.S. If you haven't already, unlock the full challenge so you can build at whatever pace suits you: {{UNLOCK_URL}}`,
   },
   {
     emailNumber: 9,
@@ -496,7 +502,9 @@ Tomorrow we enter the BUILD phase. And these 8 skills are going to make the whol
 
 You've got this.
 
-Matt`,
+Matt
+
+P.S. Tomorrow is Day 10. The BUILD phase. If you haven't unlocked the full challenge yet, now's the time: {{UNLOCK_URL}}`,
   },
   {
     emailNumber: 10,
@@ -549,7 +557,9 @@ Log in and give your app AI powers:
 
 You're past the halfway mark. Keep the momentum going.
 
-Matt`,
+Matt
+
+P.S. AI integration is the part where most people need the most guidance. If you want someone who's done this across multiple products to help you get it right first time, my coaching exists for exactly this: {{COACHING_URL}}`,
   },
   {
     emailNumber: 11,
@@ -596,7 +606,9 @@ Log in and brand your app:
 
 Looking good, {{firstName}}. Really good.
 
-Matt`,
+Matt
+
+P.S. Not sure if your design is hitting the right note? My coaching clients get direct feedback on their brand and design choices before they go live. Saves a lot of second-guessing: {{COACHING_URL}}`,
   },
   {
     emailNumber: 12,
@@ -653,7 +665,9 @@ Log in and let your users in:
 
 Your app is getting closer to launch EVERY single day.
 
-Matt`,
+Matt
+
+P.S. Getting user accounts and authentication working properly is one of the most important things to get right. If something's not clicking, my coaching clients get real-time help with exactly this kind of thing: {{COACHING_URL}}`,
   },
   {
     emailNumber: 13,
@@ -702,7 +716,9 @@ Log in and add email to your app:
 
 Nearly at the finish line now. Don't stop.
 
-Matt`,
+Matt
+
+P.S. Knowing WHAT to email your users (and when) is one of those things that separates products that grow from products that don't. My coaching clients get a personalised email strategy built around their specific product: {{COACHING_URL}}`,
   },
   {
     emailNumber: 14,
@@ -761,7 +777,9 @@ Log in and set up payments:
 
 This is MASSIVE. Well done, {{firstName}}.
 
-Matt`,
+Matt
+
+P.S. Now that your app can take money, the big question is: how much should you charge? Pricing is one of the things I spend the most time on with my coaching clients because getting it right from day one can be the difference between £500/month and £5,000/month: {{COACHING_URL}}`,
   },
   {
     emailNumber: 15,
@@ -810,7 +828,9 @@ Log in and make your app mobile-ready:
 
 Nearly there now...
 
-Matt`,
+Matt
+
+P.S. Mobile responsiveness is one of those things that's hard to judge on your own. My coaching clients get me to test their app on different devices and tell them exactly what needs fixing. No guessing: {{COACHING_URL}}`,
   },
   {
     emailNumber: 16,
@@ -870,7 +890,11 @@ Log in and FINISH your MVP:
 
 You're SO close. Keep going.
 
-Matt`,
+Matt
+
+P.S. Once your MVP is done, the big question becomes "how do I get my first paying customers?" That's exactly what I cover in my free 1:1 Readiness Review call. We'll look at your product and map out your path to revenue together: {{READINESS_CALL_URL}}
+
+P.P.S. If you want hands-on help finishing your MVP and getting launch-ready, my coaching clients get direct support through the entire process: {{COACHING_URL}}`,
   },
   {
     emailNumber: 17,
@@ -925,7 +949,11 @@ Log in and build your sales machine:
 
 Two days left. You're about to LAUNCH.
 
-Matt`,
+Matt
+
+P.S. Want a professional to review your sales page and tell you exactly what to change? I offer a detailed video critique where I go through your page line by line and show you how to make it convert. Details here: {{CRITIQUE_URL}}
+
+P.P.S. When this challenge wraps up, I'm offering a free 1:1 Readiness Review call where I look at everything you've built and tell you exactly what to do next. Details on Day 21.`,
   },
   {
     emailNumber: 18,
@@ -987,7 +1015,9 @@ Tomorrow is the FINAL day. And it's a big one.
 
 Matt
 
-P.S. Once you've launched, the biggest question is always "what do I focus on NEXT?" How do you get your first 10 customers? Your first 100? How do you price it? How do you grow? That's exactly what I cover in my free 1:1 Readiness Review call. More on that tomorrow...`,
+P.S. If you haven't already, get your sales page professionally critiqued. I'll record a detailed video going through it line by line and show you exactly what to change to make it convert: {{CRITIQUE_URL}}
+
+P.P.S. Once you've launched, the biggest question is "what do I focus on NEXT?" That's exactly what I cover in my free 1:1 Readiness Review call. More on that tomorrow...`,
   },
   {
     emailNumber: 19,
@@ -1063,7 +1093,9 @@ Spots are limited. First come, first served.
 
 Proud of you, {{firstName}}.
 
-Matt`,
+Matt
+
+P.S. Show off what you've built! Add your product to the Challenge Showcase so other builders can see it. It's also a great way to get early feedback and your first users: {{SHOWCASE_URL}}`,
   },
   {
     emailNumber: 20,
@@ -1136,7 +1168,11 @@ I mean it when I say I'm proud of what you've done.
 
 Now go and make it COUNT.
 
-Matt`,
+Matt
+
+P.S. Have you added your product to the Challenge Showcase yet? It's a great way to get your first eyeballs and feedback: {{SHOWCASE_URL}}
+
+P.P.S. Know someone who'd benefit from this challenge? Your personal referral link earns you rewards - including a free marketing prompt pack and even a free coaching call: {{REFERRAL_URL}}`,
   },
   {
     emailNumber: 21,
@@ -1182,7 +1218,9 @@ Seriously, {{firstName}}. You built something real. Let me help you turn it into
 
 Matt
 
-P.S. There's no catch. No "free call that's actually a sales pitch." I'll give you a genuine action plan you can start executing immediately. The only thing I ask is that you come prepared - have your product live and ready to show me. Book here: {{READINESS_CALL_URL}}`,
+P.S. There's no catch. No "free call that's actually a sales pitch." I'll give you a genuine action plan you can start executing immediately. The only thing I ask is that you come prepared - have your product live and ready to show me. Book here: {{READINESS_CALL_URL}}
+
+P.P.S. One more thing: you have a personal referral link that earns you real rewards when people you know sign up. Free marketing prompts, a free critique, even a free coaching call. Check it out: {{REFERRAL_URL}}`,
   },
 ];
 
@@ -1244,7 +1282,9 @@ Give it 10 minutes. If it's not for you, no hard feelings. But I think you'll su
 
 Matt
 
-P.S. If you're stuck on something technical (can't log in, page not loading, etc.), just reply to this email and I'll sort it out.`,
+P.S. If you're stuck on something technical (can't log in, page not loading, etc.), just reply to this email and I'll sort it out.
+
+P.P.S. Some people prefer to have a guide. If you want someone experienced walking alongside you through every step, my 1:1 coaching is designed for exactly that: {{COACHING_URL}}`,
   },
   {
     emailNumber: 203,
@@ -1267,7 +1307,9 @@ Here's your dashboard:
 
 Whenever you're ready, it'll be there.
 
-Matt`,
+Matt
+
+P.S. If the idea of doing this alone feels overwhelming, you don't have to. My 1:1 coaching gives you someone right there with you from day one. We'll get you started and moving in one session: {{COACHING_URL}}`,
   },
 ];
 
@@ -1305,7 +1347,9 @@ You've already done the hardest part - you started. Don't let that momentum disa
 
 I'm rooting for you.
 
-Matt`,
+Matt
+
+P.S. If you're feeling stuck or overwhelmed, that's normal. And it's exactly why my 1:1 coaching exists. Having someone who's done this before walk you through the tricky bits makes ALL the difference. No more guessing, no more stalling: {{COACHING_URL}}`,
   },
   {
     emailNumber: 102,
@@ -1346,7 +1390,9 @@ But the window doesn't stay open forever.
 
 Matt
 
-P.S. If you're stuck on something specific, just reply to this email and tell me what's blocking you. I read every reply.`,
+P.S. If you're stuck on something specific, just reply to this email and tell me what's blocking you. I read every reply.
+
+P.P.S. A lot of people who stalled have told me that getting 1:1 coaching was what got them moving again. Having someone walk you through the exact step you're stuck on makes a huge difference: {{COACHING_URL}}`,
   },
   {
     emailNumber: 103,
@@ -1387,7 +1433,9 @@ Not tomorrow. Not next week. Today.
 
 Matt
 
-P.S. If something about the challenge isn't working for you, or you need help with a specific problem, reply to this email. I genuinely want to help you finish what you started.`,
+P.S. If something about the challenge isn't working for you, or you need help with a specific problem, reply to this email. I genuinely want to help you finish what you started.
+
+P.P.S. If doing it alone isn't working, you don't have to. My 1:1 coaching is designed for exactly this situation. I'll get on a call with you, look at where you're stuck, and walk you through it step by step: {{COACHING_URL}}`,
   },
 ];
 
@@ -1431,19 +1479,298 @@ Matt`,
   },
 ];
 
+// Additional drip email for Day 1 (picking your idea)
+// Separate from main array to avoid disrupting existing email numbers
+const DAY_1_DRIP = [
+  {
+    emailNumber: 50,
+    dayTrigger: 1,
+    subject: "How to pick the idea that's RIGHT for you",
+    altSubject: "{{firstName}}, trust your gut on this one",
+    body: `{{firstName}}...
+
+Let me tell you the secret to picking the right idea.
+
+It's not about finding the "perfect" one. There is no perfect one.
+
+It's about finding one that hits THREE things:
+
+1. You understand the PROBLEM it solves (ideally because you've felt it yourself)
+
+2. People are already PAYING for solutions (competitors exist, and that's GOOD)
+
+3. You're genuinely INTERESTED in the space (because you'll be living with this for a while)
+
+That's it. Three boxes to tick.
+
+You've got a list of AI-generated ideas sitting in your dashboard right now, scored and ranked.
+
+Your job today is simple: pick one and commit.
+
+Not forever. Not as a blood oath. Just as your starting point.
+
+Here's something I tell everyone I work with...
+
+You can always pivot later. The WORST thing you can do is spend weeks going back and forth between ideas. That's not being careful. That's procrastination wearing a clever disguise.
+
+The people who build successful products pick an idea, START, and adjust as they go.
+
+The people who never launch? They're still "deciding."
+
+Pick the one that excites you most. Trust your gut. Move forward.
+
+Log in and lock in your idea:
+
+{{DASHBOARD_URL}}
+
+Tomorrow we validate it with real market data. That's where you'll know for SURE if it has legs.
+
+Matt
+
+P.S. Want to unlock the full challenge so you can work at your own pace? Grab it here: {{UNLOCK_URL}}`,
+  },
+];
+
+// Additional drip emails to fill sequence gaps
+const EXTRA_DRIP_EMAILS = [
+  {
+    emailNumber: 51,
+    dayTrigger: 14,
+    subject: "You now have something 99% of 'entrepreneurs' don't have",
+    altSubject: "{{firstName}}, your app now has REAL users",
+    body: `{{firstName}}...
+
+Let me point out something you might not have fully appreciated yet.
+
+Your app now has user authentication and an admin dashboard.
+
+That means REAL PEOPLE can create accounts and use your product. And YOU can see everything that's happening inside it.
+
+Who's signing up. What they're doing. When they last logged in. All of it.
+
+That's not a toy project. That's a REAL product with REAL infrastructure.
+
+And here's what makes this so powerful from a business perspective...
+
+The admin dashboard is your command centre. It's how you'll track growth. Spot problems. Understand your users. Make decisions based on DATA, not guesses.
+
+Every successful SaaS founder I know lives in their admin dashboard. It's where you go from "I think people like my product" to "I KNOW people like my product because I can SEE the numbers."
+
+Tomorrow you add the feature that turns all of this into a REVENUE machine: payments.
+
+Log in and check out your admin dashboard:
+
+{{DASHBOARD_URL}}
+
+You're building a real business, {{firstName}}. This is not a drill.
+
+Matt
+
+P.S. Getting your admin dashboard set up right - knowing what metrics to track and how to use them to grow - is something I help my coaching clients with. The right data early on saves months of guessing: {{COACHING_URL}}`,
+  },
+];
+
+// Milestone celebration emails - fire once when user completes specific days
+const MILESTONE_EMAILS = [
+  {
+    emailNumber: 401,
+    dayTrigger: 4,
+    emailType: 'milestone' as const,
+    subject: "Phase 1: DONE. You've got a real product concept.",
+    altSubject: "{{firstName}}, the planning phase is complete",
+    body: `{{firstName}}...
+
+Stop for a second and look at what you've done.
+
+You have a validated SaaS idea. A clear value proposition. A full feature map. And a NAME with a domain.
+
+That's not just "planning." That's a FOUNDATION.
+
+Most people who say they want to build a business never get this far. They stay in the "thinking about it" phase forever.
+
+You've got a real product concept with real market validation. The planning phase is DONE.
+
+Next up: we give it a look, set up your tools, and prepare to BUILD.
+
+This is where it starts getting really fun.
+
+{{DASHBOARD_URL}}
+
+Keep going.
+
+Matt
+
+P.S. Know someone who's been talking about building an app or starting a side project? Share your personal referral link and earn rewards like a free marketing prompt pack, a free critique, or even a free coaching call: {{REFERRAL_URL}}
+
+P.P.S. If you want someone experienced to look over your idea and tell you if you're on the right track, my 1:1 coaching clients get that kind of direct feedback. It can save you weeks of going in the wrong direction: {{COACHING_URL}}`,
+  },
+  {
+    emailNumber: 402,
+    dayTrigger: 9,
+    emailType: 'milestone' as const,
+    subject: "Tools ready. Skills locked in. Tomorrow you BUILD.",
+    altSubject: "{{firstName}}, the training wheels come off tomorrow",
+    body: `{{firstName}}...
+
+Tomorrow you start BUILDING.
+
+Everything up to this point has been preparation. The idea. The validation. The name. The brand. The tools. The skills.
+
+All of it was leading to this.
+
+From Day 10 onwards, you're writing actual features. Real AI integration. Real user authentication. Real payment processing.
+
+You're about to watch your product come to life.
+
+This is the part people remember. This is the part that changes how you see yourself.
+
+Ready?
+
+{{DASHBOARD_URL}}
+
+Let's build.
+
+Matt
+
+P.S. Know someone who wants to build their own SaaS? Share your referral link and earn rewards (free marketing prompts, critiques, even coaching): {{REFERRAL_URL}}
+
+P.P.S. The build phase is where people either fly or get stuck. My coaching clients never get stuck because I'm right there guiding them through every step. If you want that kind of support: {{COACHING_URL}}`,
+  },
+  {
+    emailNumber: 403,
+    dayTrigger: 13,
+    emailType: 'milestone' as const,
+    subject: "Your app has AI, auth, design, and email. Read that again.",
+    altSubject: "{{firstName}}, look at what you've built so far",
+    body: `{{firstName}}...
+
+I want to point something out.
+
+Your app has AI features. A professional design. User accounts. Email notifications.
+
+Real people can sign up and use your product RIGHT NOW.
+
+Do you realise how far ahead of most people you are? Most "aspiring entrepreneurs" are still watching YouTube videos about business ideas. You're BUILDING one.
+
+A few more days and this thing is ready to launch.
+
+Keep pushing.
+
+{{DASHBOARD_URL}}
+
+Matt
+
+P.S. Proud of yourself? You should be. Share your referral link with people who'd want to do this too. You earn real rewards for every person who signs up: {{REFERRAL_URL}}`,
+  },
+  {
+    emailNumber: 404,
+    dayTrigger: 18,
+    emailType: 'milestone' as const,
+    subject: "BUILD phase complete. Now we get you CUSTOMERS.",
+    altSubject: "{{firstName}}, your product is built. Time to launch.",
+    body: `{{firstName}}...
+
+Your product is BUILT.
+
+I want you to actually sit with that for a moment.
+
+You started this challenge with nothing but an idea. Now you have a working SaaS application with AI, auth, email, payments, mobile support, and an admin dashboard.
+
+YOU built that.
+
+The build phase is done. The next three days are about one thing: getting this product in front of PAYING CUSTOMERS.
+
+Sales page. SEO. Marketing roadmap.
+
+The finish line is right there.
+
+{{DASHBOARD_URL}}
+
+Matt
+
+P.S. You just built a full SaaS product. That's worth telling people about. Share your referral link and earn rewards for every person who signs up: {{REFERRAL_URL}}
+
+P.P.S. The launch phase is where strategy matters most. If you want someone who's done this dozens of times to look at your product and tell you exactly how to position it, my coaching is built for this exact moment: {{COACHING_URL}}`,
+  },
+  {
+    emailNumber: 405,
+    dayTrigger: 21,
+    emailType: 'milestone' as const,
+    subject: "You finished. I need you to read this.",
+    altSubject: "{{firstName}}... look at what you just did",
+    body: `{{firstName}}...
+
+You finished the 21-Day AI SaaS Challenge.
+
+I don't say this lightly: most people don't make it to the end.
+
+They sign up full of motivation. They start strong. Then life gets in the way, or they hit a wall, or they convince themselves they'll "come back to it later."
+
+But you didn't stop.
+
+You pushed through 21 days of planning, building, and launching. You now have a live SaaS product that didn't exist three weeks ago.
+
+That's not a small thing. That's a life skill you now own forever. The ability to take an idea and turn it into a real, working product.
+
+Whatever happens next with this particular product, you've proven something to yourself that nobody can take away.
+
+I'm genuinely proud of you.
+
+Now go make it count.
+
+Matt
+
+P.S. If you want help figuring out the next steps (getting customers, pricing, growth), I'm offering a free 1:1 Readiness Review call. No pitch, just straight advice. Book here: {{READINESS_CALL_URL}}
+
+P.P.S. You just did something most people only talk about. Add your product to the Challenge Showcase so others can see it: {{SHOWCASE_URL}} And share your referral link to earn rewards for every person you bring in: {{REFERRAL_URL}}
+
+And if you want ongoing support as you grow, my coaching clients get direct access to me whenever they need it: {{COACHING_URL}}`,
+  },
+];
+
+// Welcome back email - fires when user returns after receiving nag emails
+const WELCOME_BACK_EMAILS = [
+  {
+    emailNumber: 301,
+    dayTrigger: 0,
+    emailType: 'welcome_back' as const,
+    subject: "Good to see you back",
+    altSubject: "{{firstName}}, welcome back",
+    body: `Hey {{firstName}},
+
+Good to see you back.
+
+Your progress is exactly where you left it. Your next lesson is ready and waiting.
+
+No guilt. No lecture. Just pick up where you stopped and keep moving forward.
+
+The people who finish this challenge aren't the ones who never take a break. They're the ones who come BACK after the break. That's you. Right now.
+
+{{DASHBOARD_URL}}
+
+Matt
+
+P.S. If you want to make sure you don't stall again, my 1:1 coaching keeps you accountable and moving. Think of it as having a co-pilot who's built this stuff before: {{COACHING_URL}}`,
+  },
+];
+
 export async function seedDripEmails(): Promise<void> {
   try {
     const existing = await storage.getAllDripEmails();
-    const allEmails = [...DRIP_EMAILS, ...INITIAL_ENGAGEMENT_EMAILS, ...NAG_EMAILS, ...GENTLE_NUDGE_EMAILS];
+    const allEmails = [...DRIP_EMAILS, ...DAY_1_DRIP, ...EXTRA_DRIP_EMAILS, ...INITIAL_ENGAGEMENT_EMAILS, ...NAG_EMAILS, ...GENTLE_NUDGE_EMAILS, ...MILESTONE_EMAILS, ...WELCOME_BACK_EMAILS];
     const totalCount = allEmails.length;
 
     // Check if all email types need seeding
     const hasNagEmails = existing.some(e => e.emailNumber === 101);
     const hasGentleNudges = existing.some(e => e.emailNumber === 104);
     const hasInitialEngagement = existing.some(e => e.emailNumber === 201);
+    const hasMilestones = existing.some(e => e.emailNumber === 401);
+    const hasWelcomeBack = existing.some(e => e.emailNumber === 301);
+    const hasDay1Drip = existing.some(e => e.emailNumber === 50);
+    const hasExtraDrips = existing.some(e => e.emailNumber === 51);
 
     // If all emails exist, check if content is up to date
-    if (existing.length >= totalCount && hasNagEmails && hasGentleNudges && hasInitialEngagement) {
+    if (existing.length >= totalCount && hasNagEmails && hasGentleNudges && hasInitialEngagement && hasMilestones && hasWelcomeBack && hasDay1Drip && hasExtraDrips) {
       const firstEmail = existing.find(e => e.emailNumber === 1);
       if (firstEmail && firstEmail.body.includes('What you just did - signing up, committing')) {
         console.log(`[Drip Seed] All ${totalCount} emails already up to date, skipping seed`);
@@ -1451,10 +1778,21 @@ export async function seedDripEmails(): Promise<void> {
       }
       console.log(`[Drip Seed] Updating ${totalCount} emails with new content...`);
     } else {
-      console.log(`[Drip Seed] Seeding ${totalCount} emails (${existing.length} exist, nags: ${hasNagEmails ? 'yes' : 'no'}, nudges: ${hasGentleNudges ? 'yes' : 'no'}, initial: ${hasInitialEngagement ? 'yes' : 'no'})...`);
+      console.log(`[Drip Seed] Seeding ${totalCount} emails (${existing.length} exist, nags: ${hasNagEmails ? 'yes' : 'no'}, nudges: ${hasGentleNudges ? 'yes' : 'no'}, initial: ${hasInitialEngagement ? 'yes' : 'no'}, milestones: ${hasMilestones ? 'yes' : 'no'}, welcome_back: ${hasWelcomeBack ? 'yes' : 'no'}, extra: ${hasExtraDrips ? 'yes' : 'no'})...`);
     }
 
     for (const email of DRIP_EMAILS) {
+      await storage.upsertDripEmail({
+        emailNumber: email.emailNumber,
+        dayTrigger: email.dayTrigger,
+        subject: email.subject,
+        altSubject: email.altSubject,
+        body: email.body,
+        isActive: false,
+      });
+    }
+
+    for (const email of [...DAY_1_DRIP, ...EXTRA_DRIP_EMAILS]) {
       await storage.upsertDripEmail({
         emailNumber: email.emailNumber,
         dayTrigger: email.dayTrigger,
@@ -1478,7 +1816,19 @@ export async function seedDripEmails(): Promise<void> {
       });
     }
 
-    console.log(`[Drip Seed] Done - ${DRIP_EMAILS.length} drip + ${INITIAL_ENGAGEMENT_EMAILS.length} initial + ${NAG_EMAILS.length} nag + ${GENTLE_NUDGE_EMAILS.length} nudge emails seeded (disabled by default)`);
+    for (const email of [...MILESTONE_EMAILS, ...WELCOME_BACK_EMAILS]) {
+      await storage.upsertDripEmail({
+        emailNumber: email.emailNumber,
+        dayTrigger: email.dayTrigger,
+        subject: email.subject,
+        altSubject: email.altSubject,
+        body: email.body,
+        emailType: email.emailType,
+        isActive: false,
+      });
+    }
+
+    console.log(`[Drip Seed] Done - ${DRIP_EMAILS.length + DAY_1_DRIP.length + EXTRA_DRIP_EMAILS.length} drip + ${INITIAL_ENGAGEMENT_EMAILS.length} initial + ${NAG_EMAILS.length} nag + ${GENTLE_NUDGE_EMAILS.length} nudge + ${MILESTONE_EMAILS.length} milestone + ${WELCOME_BACK_EMAILS.length} welcome_back emails seeded (disabled by default)`);
   } catch (error) {
     console.error('[Drip Seed] Error seeding drip emails:', error);
   }
