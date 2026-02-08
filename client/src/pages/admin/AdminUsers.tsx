@@ -453,44 +453,68 @@ function UserDetailPanel({
         <div className="bg-white border border-slate-200 rounded-lg p-3">
           <p className="text-sm font-medium text-slate-700 mb-2">Payment Details</p>
           <div className="space-y-1 text-sm">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Challenge:</span>
-              <span
-                className={
-                  user.challengePurchased ? "text-green-600 font-medium" : "text-slate-400"
-                }
-              >
-                {user.challengePurchased ? "Purchased" : "Not purchased"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Coaching:</span>
-              <span
-                className={
-                  user.coachingPurchased ? "text-green-600 font-medium" : "text-slate-400"
-                }
-              >
-                {user.coachingPurchased ? "Purchased" : "Not purchased"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Currency:</span>
-              <span className="text-slate-700">
-                {user.purchaseCurrency?.toUpperCase() || "N/A"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Stripe ID:</span>
-              <span className="text-slate-700 font-mono text-xs">
-                {user.stripeCustomerId || "None"}
-              </span>
-            </div>
+            {/* Purchase history with amounts */}
+            {details.purchaseHistory && details.purchaseHistory.length > 0 ? (
+              <>
+                {details.purchaseHistory.map((p: any, i: number) => (
+                  <div key={i} className="flex justify-between">
+                    <span className="text-slate-500 capitalize">{p.productType.replace(/-/g, ' ')}:</span>
+                    <span className="text-green-600 font-medium">
+                      {formatCurrency(p.amountPaid, p.currency)}
+                    </span>
+                  </div>
+                ))}
+                <div className="flex justify-between border-t border-slate-100 pt-1 mt-1">
+                  <span className="text-slate-700 font-medium">Total Paid:</span>
+                  <span className="text-slate-900 font-bold">
+                    {formatCurrency(
+                      details.purchaseHistory.reduce((sum: number, p: any) => sum + p.amountPaid, 0),
+                      details.purchaseHistory[0]?.currency || user.purchaseCurrency || 'gbp'
+                    )}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Challenge:</span>
+                  <span className={user.challengePurchased ? "text-green-600 font-medium" : "text-slate-400"}>
+                    {user.challengePurchased ? "Purchased" : "Not purchased"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Coaching:</span>
+                  <span className={user.coachingPurchased ? "text-green-600 font-medium" : "text-slate-400"}>
+                    {user.coachingPurchased ? "Purchased" : "Not purchased"}
+                  </span>
+                </div>
+              </>
+            )}
+            {/* Coaching purchases with details */}
+            {details.coachingPurchases && details.coachingPurchases.length > 0 && (
+              details.coachingPurchases.map((cp: any, i: number) => (
+                <div key={`cp-${i}`} className="flex justify-between">
+                  <span className="text-slate-500">
+                    Coaching ({cp.coachType === 'matt' ? 'Matt' : 'Expert'} — {cp.sessionsTotal} session{cp.sessionsTotal > 1 ? 's' : ''}):
+                  </span>
+                  <span className="text-green-600 font-medium">
+                    {formatCurrency(cp.amountPaid, cp.currency)}
+                  </span>
+                </div>
+              ))
+            )}
             {details.allDaysUnlocked && (
               <div className="flex justify-between">
                 <span className="text-slate-500">All Days Unlocked:</span>
                 <span className="text-green-600 font-medium">Yes</span>
               </div>
             )}
+            <div className="flex justify-between border-t border-slate-100 pt-1 mt-1">
+              <span className="text-slate-500">Stripe ID:</span>
+              <span className="text-slate-700 font-mono text-xs">
+                {user.stripeCustomerId || "None"}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -598,29 +622,6 @@ function UserDetailPanel({
               >
                 <Award className="w-3 h-3" /> {b.name}
               </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Coaching Purchases */}
-      {details.coachingPurchases && details.coachingPurchases.length > 0 && (
-        <div>
-          <p className="text-sm font-medium text-slate-700 mb-2">Coaching Purchases</p>
-          <div className="space-y-2">
-            {details.coachingPurchases.map((cp: any, i: number) => (
-              <div
-                key={i}
-                className="text-sm bg-white border border-slate-200 rounded px-3 py-2 flex justify-between"
-              >
-                <span className="text-slate-700">
-                  {cp.coachType === "matt" ? "Sessions with Matt" : "Expert Coaching"} -{" "}
-                  {cp.packageType === "single" ? "1 session" : "4 sessions"}
-                </span>
-                <span className="font-medium text-slate-900">
-                  {formatCurrency(cp.amountPaid, cp.currency)}
-                </span>
-              </div>
             ))}
           </div>
         </div>

@@ -217,13 +217,13 @@ Day 1 starts now. Follow along if you want to see how this goes.
       {/* What You'll Achieve */}
       <div className={ds.cardWithPadding}>
         <h2 className={`${ds.heading} mb-4`}>Your Journey</h2>
-        <div className="grid grid-cols-6 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {milestones.map((milestone, index) => (
             <div key={milestone.label} className="text-center">
               <div className="relative">
                 <div className="w-3 h-3 mx-auto rounded-full bg-slate-300" />
                 {index < milestones.length - 1 && (
-                  <div className="absolute top-1/2 left-[calc(50%+6px)] w-[calc(100%-12px)] h-0.5 bg-slate-200 -translate-y-1/2" />
+                  <div className="hidden sm:block absolute top-1/2 left-[calc(50%+6px)] w-[calc(100%-12px)] h-0.5 bg-slate-200 -translate-y-1/2" />
                 )}
               </div>
               <p className="text-xs font-bold text-slate-700 mt-2">{milestone.label}</p>
@@ -269,14 +269,14 @@ Day 1 starts now. Follow along if you want to see how this goes.
                 onClick={() => toggleCommitment(index)}
               >
                 <div className="flex items-start gap-3">
-                  <div className={isCommitted ? ds.checkSelected : ds.checkDefault}>
+                  <div className={`flex-shrink-0 ${isCommitted ? ds.checkSelected : ds.checkDefault}`}>
                     {isCommitted && <Check className="w-3 h-3 text-white" />}
                   </div>
-                  <div>
+                  <div className="flex-1 min-w-0">
                     <h3 className={ds.label}>
                       {rule.title}
                     </h3>
-                    <p className={`${ds.muted} mt-1`}>
+                    <p className={`${ds.muted} mt-1 break-words`}>
                       {rule.description}
                     </p>
                   </div>
@@ -306,13 +306,13 @@ Day 1 starts now. Follow along if you want to see how this goes.
                 className={isSelected ? ds.optionSelected : ds.optionDefault}
                 onClick={() => toggleWhy(index)}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{option.emoji}</span>
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl flex-shrink-0 w-8 text-center leading-tight">{option.emoji}</span>
                   <div className="flex-1 min-w-0">
                     <p className={ds.label}>
                       {option.label}
                     </p>
-                    <p className={ds.muted}>{option.description}</p>
+                    <p className={`${ds.muted} break-words`}>{option.description}</p>
                   </div>
                 </div>
               </div>
@@ -541,7 +541,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
               {!publicPostClaimed ? (
                 <div className="bg-slate-50 rounded-lg p-4 space-y-3">
                   <p className={ds.label}>Paste your post link...</p>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Input
                       placeholder="https://twitter.com/you/status/..."
                       value={publicPostLink}
@@ -551,6 +551,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
                     <Button
                       onClick={handleClaimBadge}
                       disabled={publicPostLink.trim().length < 10}
+                      className="flex-shrink-0"
                     >
                       Claim Badge
                     </Button>

@@ -103,7 +103,8 @@ export interface CoachingEmailParams extends EmailParams {
 }
 
 export async function sendPurchaseConfirmationEmail(params: PurchaseEmailParams): Promise<void> {
-  const { to, firstName, currency, total } = params;
+  const { to, currency, total } = params;
+  const firstName = params.firstName || 'there';
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
   const defaultSubject = `You're in! Welcome to the 21-Day AI SaaS Challenge`;
@@ -303,7 +304,8 @@ export interface CritiqueCompletedParams {
 }
 
 export async function sendCritiqueCompletedEmail(params: CritiqueCompletedParams): Promise<void> {
-  const { to, firstName, videoUrl } = params;
+  const { to, videoUrl } = params;
+  const firstName = params.firstName || 'there';
 
   try {
     await sendAndLog({
@@ -500,7 +502,8 @@ View all users: https://challenge.mattwebley.com/admin
 }
 
 export async function sendCoachingConfirmationEmail(params: CoachingEmailParams): Promise<void> {
-  const { to, firstName, currency, amount } = params;
+  const { to, currency, amount } = params;
+  const firstName = params.firstName || 'there';
   const currencySymbol = currency === 'gbp' ? '£' : '$';
 
   try {
@@ -585,7 +588,8 @@ export interface BadgeEarnedEmailParams {
 }
 
 export async function sendBadgeEarnedEmail(params: BadgeEarnedEmailParams): Promise<void> {
-  const { to, firstName, badgeName, badgeDescription } = params;
+  const { to, badgeName, badgeDescription } = params;
+  const firstName = params.firstName || 'there';
 
   try {
     await sendAndLog({
@@ -742,7 +746,8 @@ export interface QuestionAnsweredEmailParams {
 
 export async function sendQuestionAnsweredEmail(params: QuestionAnsweredEmailParams): Promise<boolean> {
   try {
-    const { to, firstName, day, question, answer } = params;
+    const { to, day, question, answer } = params;
+    const firstName = params.firstName || 'there';
 
     const subject = `Your Day ${day} question has been answered!`;
     const body = `Hey ${firstName}!

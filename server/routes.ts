@@ -9,7 +9,7 @@ import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
-import { eq, desc, isNull, isNotNull, sql, and, gte, lte, count, countDistinct } from "drizzle-orm";
+import { eq, desc, isNull, isNotNull, sql, and, or, gte, lte, count, countDistinct } from "drizzle-orm";
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails } from "./emailService";
 import { addContactToSysteme, addContactToSystemeDetailed } from "./systemeService";
 import { magicTokens } from "@shared/schema";
@@ -1420,6 +1420,7 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
         testimonialData,
         coachingData,
         tokenData,
+        purchaseData,
       ] = await Promise.all([
         storage.getUserStats(id),
         db.select().from(userProgress).where(eq(userProgress.userId, id)).orderBy(userProgress.day),
@@ -1432,6 +1433,12 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
         db.select().from(testimonials).where(eq(testimonials.userId, id)),
         db.select().from(coachingPurchases).where(eq(coachingPurchases.userId, id)),
         db.select().from(magicTokens).where(eq(magicTokens.email, user.email!)).orderBy(desc(magicTokens.createdAt)),
+        db.select().from(pendingPurchases).where(
+          or(
+            eq(pendingPurchases.linkedToUserId, id),
+            eq(pendingPurchases.email, user.email!)
+          )
+        ).orderBy(pendingPurchases.createdAt),
       ]);
 
       // Get badge names
@@ -1463,6 +1470,12 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
         showcaseEntries: showcaseData,
         testimonial: testimonialData[0] || null,
         coachingPurchases: coachingData,
+        purchaseHistory: purchaseData.map(p => ({
+          productType: p.productType,
+          amountPaid: p.amountPaid,
+          currency: p.currency,
+          purchasedAt: p.createdAt,
+        })),
         magicLinks: tokenData.map(t => ({
           sentAt: t.createdAt,
           expiresAt: t.expiresAt,
