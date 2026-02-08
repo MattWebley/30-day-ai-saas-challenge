@@ -137,7 +137,7 @@ Every feature. Every bell and whistle. Every "wouldn't it be cool if..."
 
 And they NEVER finish.
 
-I've seen it hundreds of times. Talented people with great ideas who spend 6 months building something that could have been done in 6 WEEKS... if they'd just focused on what MATTERED.
+I've seen it over and over. Talented people with great ideas who spend 6 months building something that could have been done in 6 WEEKS... if they'd just focused on what MATTERED.
 
 Here's the rule I follow in EVERY business I build:
 
@@ -188,7 +188,7 @@ Today something changes.
 
 Today your product gets a NAME.
 
-And I'll be honest with you - I've worked with a LOT of people on this challenge, and this is the day where something shifts psychologically.
+And I'll be honest with you - this is the day where something shifts psychologically.
 
 When your product has a name... when you own the domain... when you can TYPE it into a browser and see YOUR space on the internet...
 
@@ -255,7 +255,7 @@ They trust it more. They're willing to pay more. They take it more seriously.
 
 This is called "perceived value" and it's one of the most powerful forces in business.
 
-A product that LOOKS like it cost £50K to build commands £50K prices - even if it cost you almost nothing to make.
+A product that LOOKS like it cost $50K to build commands $50K prices - even if it cost you almost nothing to make.
 
 Today, your product gets its visual identity.
 
@@ -290,7 +290,7 @@ P.S. Haven't unlocked the full challenge yet? You can work ahead at your own pac
   {
     emailNumber: 6,
     dayTrigger: 6,
-    subject: "I used to spend £200K/year on developers. Now I use these 2 tools.",
+    subject: "I used to spend $200K/year on developers. Now I use these 2 tools.",
     altSubject: "Set this up today (takes 20 mins, saves you a fortune)",
     body: `{{firstName}}...
 
@@ -298,7 +298,7 @@ I want to give you some context that I think will blow your mind.
 
 Before AI coding tools existed, building a SaaS product cost a FORTUNE.
 
-I'm talking £50K-£200K just to get a basic product off the ground.
+I'm talking $50K-$200K just to get a basic product off the ground.
 
 Developers. Designers. Project managers. Months of back-and-forth. Bugs. Delays. More money.
 
@@ -326,7 +326,7 @@ That's the world we live in now.
 
 And that's why right NOW is the single best time in history to start a SaaS business.
 
-The barrier to entry that used to be £100K+ is now... essentially zero.
+The barrier to entry that used to be $100K+ is now... essentially zero.
 
 You just need the knowledge of HOW to use these tools effectively.
 
@@ -340,7 +340,7 @@ Tomorrow we build your product blueprint. That's where it gets REALLY exciting.
 
 Matt
 
-P.S. Here's something I've noticed after working with hundreds of people on this... the ones who fly through the BUILD phase are usually the ones who had their tools configured RIGHT from the start. Getting stuck on technical setup problems burns hours and kills momentum. That's one of the things my coaching clients love most - they never get stuck because I'm right there with them. No wasted time. No frustration: {{COACHING_URL}}`,
+P.S. Here's something I've noticed... the ones who fly through the BUILD phase are usually the ones who had their tools configured RIGHT from the start. Getting stuck on technical setup problems burns hours and kills momentum. That's one of the things my coaching clients love most - they never get stuck because I'm right there with them. No wasted time. No frustration: {{COACHING_URL}}`,
   },
   {
     emailNumber: 7,
@@ -379,11 +379,11 @@ And it's about to happen to YOU.
 
 But let me put this in perspective for you...
 
-What you're about to do today would have taken a development team 2-3 months and cost anywhere from £30K-£80K.
+What you're about to do today would have taken a development team 2-3 months and cost anywhere from $30K-$80K.
 
 You're going to do it this afternoon. For essentially free.
 
-That's not a gimmick. That's the genuine reality of building software in 2025/2026.
+That's not a gimmick. That's the genuine reality of building software right now.
 
 And it's why I believe SaaS is the single best business model on the planet right now.
 
@@ -428,7 +428,7 @@ Here's what's funny about this...
 
 Most actual professional developers don't have this level of organisation.
 
-I'm serious. I've worked with dev teams charging £100+/hour who don't have clear coding rules documented anywhere.
+I'm serious. I've worked with dev teams charging $100+/hour who don't have clear coding rules documented anywhere.
 
 You - someone who probably couldn't write a line of code a week ago - are about to have a more structured, more disciplined development process than people who've been coding for YEARS.
 
@@ -741,7 +741,7 @@ Let me put this in context...
 
 There are people who spend YEARS in business before they ever build something that can accept a payment online.
 
-There are people who spend tens of thousands of pounds hiring developers to build payment systems.
+There are people who spend tens of thousands of dollars hiring developers to build payment systems.
 
 And there are people who never get here at all. They stay in the "planning" phase forever, dreaming about the business they'll "one day" build.
 
@@ -755,15 +755,15 @@ Pricing.
 
 Most people price their SaaS way too LOW.
 
-They think "who would pay £30/month for this?" or "it's just a small tool, I should charge £5."
+They think "who would pay $30/month for this?" or "it's just a small tool, I should charge $5."
 
 But here's the reality...
 
-If your product saves someone TIME, makes them MONEY, or solves a genuine PAIN... they will HAPPILY pay £20, £30, £50, even £100+ per month.
+If your product saves someone TIME, makes them MONEY, or solves a genuine PAIN... they will HAPPILY pay $20, $30, $50, even $100+ per month.
 
 And with recurring SaaS revenue, even a small number of customers adds up FAST.
 
-100 customers at £29/month = £2,900/month = £34,800/year
+100 customers at $29/month = $2,900/month = $34,800/year
 
 That's not a side hustle. That's a BUSINESS.
 
@@ -779,7 +779,7 @@ This is MASSIVE. Well done, {{firstName}}.
 
 Matt
 
-P.S. Now that your app can take money, the big question is: how much should you charge? Pricing is one of the things I spend the most time on with my coaching clients because getting it right from day one can be the difference between £500/month and £5,000/month: {{COACHING_URL}}`,
+P.S. Now that your app can take money, the big question is: how much should you charge? Pricing is one of the things I spend the most time on with my coaching clients because getting it right from day one can be the difference between $500/month and $5,000/month: {{COACHING_URL}}`,
   },
   {
     emailNumber: 15,
@@ -899,7 +899,7 @@ P.P.S. If you want hands-on help finishing your MVP and getting launch-ready, my
   {
     emailNumber: 17,
     dayTrigger: 19,
-    subject: "A copywriter would charge you £3K+ for what AI just did in 10 minutes",
+    subject: "A copywriter would charge you $3K+ for what AI just did in 10 minutes",
     altSubject: "AI just wrote your ENTIRE sales page...",
     body: `{{firstName}}...
 
@@ -929,7 +929,7 @@ Powerful headlines. Complete sales copy. Problem statement. Solution overview. F
 
 The WORKS.
 
-A professional copywriter would charge £2,000-£5,000 for this.
+A professional copywriter would charge $2,000-$5,000 for this.
 
 AI does it in minutes. And it's based on everything YOU'VE built over the last 19 days, so it's not generic rubbish - it's specific to YOUR product, YOUR audience, YOUR solution.
 
@@ -1138,9 +1138,9 @@ Everything from here is iteration. Marketing. Talking to users. Making it better
 
 And here's what that can look like with even MODEST success...
 
-50 customers at £19/month = £950/month
-100 customers at £29/month = £2,900/month
-200 customers at £49/month = £9,800/month
+50 customers at $19/month = $950/month
+100 customers at $29/month = $2,900/month
+200 customers at $49/month = $9,800/month
 
 Those aren't fantasy numbers. Those are achievable targets for a focused SaaS product solving a real problem.
 
@@ -1185,7 +1185,7 @@ It's been a few days since you finished the challenge, and I've been thinking ab
 
 Specifically, I've been thinking about what YOUR next move should be.
 
-Because here's what I know from working with hundreds of people who've been exactly where you are right now...
+Because here's what I know from working with people who've been exactly where you are right now...
 
 The difference between people who turn their product into real income and people who don't?
 
@@ -1335,7 +1335,7 @@ Here's what I'd suggest: just log in and spend 5 minutes on your next lesson. Th
 
 You don't need to finish it. You don't need to do it perfectly. Just open it up and start.
 
-Because here's what I've learned from hundreds of people doing this challenge...
+Because here's what I've learned...
 
 The ones who succeed aren't the ones who never stop. They're the ones who START AGAIN after stopping.
 
@@ -1415,7 +1415,7 @@ And you'll either think: "I'm so glad I got back on track and finished what I st
 
 Or: "I wish I hadn't given up."
 
-I've been doing this for over 20 years. I've seen THOUSANDS of people start things. The ones who finish? They're the ones making money online right now. Building businesses. Living on their own terms.
+I've been doing this for over 20 years. The people who finish what they start? They're the ones making money online right now. Building businesses. Living on their own terms.
 
 The ones who quit? They're still scrolling. Still wishing. Still saying "one day."
 

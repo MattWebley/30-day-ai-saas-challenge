@@ -112,7 +112,9 @@
       "Bash(replit deploy:*)",
       "Bash(replit --help:*)",
       "Bash(printenv:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "WebFetch(domain:cal.com)",
+      "WebFetch(domain:challenge.mattwebley.com)"
     ]
   }
 }

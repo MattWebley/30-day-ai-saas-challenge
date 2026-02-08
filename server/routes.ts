@@ -5527,6 +5527,111 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     }
   });
 
+  // Create account directly from Stripe checkout session (for guest purchasers)
+  // This runs on the success page so users don't need to find a magic link email
+  app.post("/api/auth/setup-from-checkout", async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+      if (!sessionId) {
+        return res.status(400).json({ message: "Session ID required" });
+      }
+
+      const stripe = await getUncachableStripeClient();
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+      if (session.payment_status !== 'paid') {
+        return res.status(400).json({ message: "Payment not completed" });
+      }
+
+      const rawEmail = session.customer_email || session.customer_details?.email;
+      const email = rawEmail?.toLowerCase().trim();
+      if (!email) {
+        return res.status(400).json({ message: "No email found in checkout session" });
+      }
+
+      // Check if user already exists (logged-in purchase or already created)
+      const [existingUser] = await db.select().from(users)
+        .where(sql`lower(${users.email}) = ${email}`);
+
+      if (existingUser) {
+        // User exists — just log them in
+        if (req.session) {
+          (req.session as any).userId = existingUser.id;
+          (req.session as any).userEmail = existingUser.email;
+          (req.session as any).checkoutAuth = true;
+          await new Promise<void>((resolve, reject) => {
+            req.session.save((err) => err ? reject(err) : resolve());
+          });
+        }
+        return res.json({ success: true, message: "Logged in to existing account", userId: existingUser.id });
+      }
+
+      // Create new user account
+      const newUserId = crypto.randomUUID();
+      const fullName = session.customer_details?.name?.trim();
+      const firstName = fullName?.split(' ')[0] || null;
+      const lastName = fullName?.split(' ').slice(1).join(' ') || null;
+      const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id;
+      const currency = session.metadata?.currency || 'usd';
+      const unlockAllDays = session.metadata?.unlockAllDays === 'true';
+      const productType = session.metadata?.productType || 'challenge';
+
+      await db.insert(users).values({
+        id: newUserId,
+        email,
+        firstName,
+        lastName,
+        challengePurchased: productType.startsWith('challenge'),
+        coachingPurchased: productType.includes('coaching'),
+        allDaysUnlocked: unlockAllDays,
+        stripeCustomerId: customerId || null,
+        purchaseCurrency: currency.toLowerCase() as 'usd' | 'gbp',
+      });
+
+      // Link any pending purchases for this email
+      const pendingList = await db.select().from(pendingPurchases)
+        .where(sql`lower(${pendingPurchases.email}) = ${email}`);
+
+      for (const purchase of pendingList) {
+        if (!purchase.linkedToUserId) {
+          const hasUnlock = purchase.productType.includes('+unlock');
+          if (hasUnlock) {
+            await db.update(users).set({ allDaysUnlocked: true }).where(eq(users.id, newUserId));
+          }
+          await db.update(pendingPurchases)
+            .set({ linkedToUserId: newUserId, linkedAt: new Date() })
+            .where(eq(pendingPurchases.id, purchase.id));
+        }
+      }
+
+      // Log them in immediately
+      if (req.session) {
+        (req.session as any).userId = newUserId;
+        (req.session as any).userEmail = email;
+        (req.session as any).checkoutAuth = true;
+        await new Promise<void>((resolve, reject) => {
+          req.session.save((err) => err ? reject(err) : resolve());
+        });
+      }
+
+      console.log('[Setup From Checkout] Account created and logged in:', email, newUserId);
+
+      // Send purchase confirmation email
+      const total = session.amount_total ? session.amount_total / 100 : 399;
+      sendPurchaseConfirmationEmail({
+        to: email,
+        firstName: firstName || 'there',
+        currency: currency.toLowerCase() as 'usd' | 'gbp',
+        total
+      }).catch(err => console.error('[Setup From Checkout] Email error:', err));
+
+      res.json({ success: true, message: "Account created", userId: newUserId });
+    } catch (error: any) {
+      console.error("Error setting up account from checkout:", error);
+      res.status(500).json({ message: "Failed to create account" });
+    }
+  });
+
   // Debug endpoint to check session state (Admin only)
   app.get("/api/debug/session", isAuthenticated, async (req: any, res) => {
     try {

@@ -511,19 +511,11 @@ export async function sendCoachingConfirmationEmail(params: CoachingEmailParams)
 
 Hey ${firstName}, your coaching purchase is confirmed.
 
-YOUR COACHING PACKAGE
----------------------
-4 x 1-Hour Sessions
-
-What's included:
-- 1:1 video calls
-- Screen sharing
-
 Total: ${currencySymbol}${amount}
 
-HOW TO BOOK YOUR SESSIONS
--------------------------
-I'll email you within 24 hours with a booking link.
+WHAT HAPPENS NEXT
+-----------------
+I'll email you within 24 hours with details on how to book your sessions.
 
 In the meantime, keep going with the challenge:
 https://challenge.mattwebley.com/dashboard

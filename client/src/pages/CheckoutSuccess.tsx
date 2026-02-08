@@ -52,12 +52,34 @@ export default function CheckoutSuccess() {
 
           if (data.success) {
             setStatus("Payment details saved! Redirecting...");
-            // Small delay to ensure session cookie is fully processed by browser
             await new Promise(resolve => setTimeout(resolve, 500));
           }
         } catch (error) {
           console.error('Error processing checkout:', error);
-          // Continue anyway - the upsell will just use traditional checkout
+        }
+
+        // If user is NOT logged in, create their account from the checkout session
+        if (!isAuthenticated) {
+          try {
+            setStatus("Setting up your account...");
+            const setupRes = await fetch('/api/auth/setup-from-checkout', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ sessionId })
+            });
+
+            const setupData = await setupRes.json();
+            console.log('[CheckoutSuccess] Account setup result:', setupData);
+
+            if (setupData.success) {
+              setStatus("Account created! Redirecting...");
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          } catch (error) {
+            console.error('Error setting up account:', error);
+            // Continue anyway - they can still use magic link as fallback
+          }
         }
 
         // Redirect to coaching upsell page with currency

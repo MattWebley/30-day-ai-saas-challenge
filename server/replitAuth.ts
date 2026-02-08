@@ -147,8 +147,8 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
   const user = req.user as any;
   const session = req.session as any;
 
-  // Check for magic link authentication first
-  if (session?.magicLinkAuth && session?.userId) {
+  // Check for magic link or checkout authentication first
+  if ((session?.magicLinkAuth || session?.checkoutAuth) && session?.userId) {
     // Create a user object that matches the Replit Auth structure
     if (!req.user) {
       (req as any).user = {
