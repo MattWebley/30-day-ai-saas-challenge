@@ -410,7 +410,7 @@ function DiscussionSection({ day, isAdmin }: { day: number; isAdmin: boolean }) 
                       {comment.user?.firstName || "Anonymous"}
                       {comment.user?.lastName ? ` ${comment.user.lastName[0]}.` : ""}
                     </span>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-slate-500">
                       {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                     </span>
                     {isAdmin && (
