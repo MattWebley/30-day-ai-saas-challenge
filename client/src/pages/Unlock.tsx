@@ -10,10 +10,11 @@ export default function Unlock() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
 
-  // If already unlocked, redirect to dashboard
+  // If already unlocked, redirect to dashboard (admins can still preview)
   const allDaysUnlocked = (user as any)?.allDaysUnlocked;
   const coachingPurchased = (user as any)?.coachingPurchased;
-  if (isAuthenticated && (allDaysUnlocked || coachingPurchased)) {
+  const isAdmin = (user as any)?.isAdmin;
+  if (isAuthenticated && (allDaysUnlocked || coachingPurchased) && !isAdmin) {
     setLocation('/dashboard');
     return null;
   }
