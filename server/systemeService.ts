@@ -34,7 +34,7 @@ export async function addContactToSysteme({ email, firstName, lastName, tags }: 
       return true;
     }
 
-    // Create new contact
+    // Create new contact (Systeme ignores tags on creation, must add separately)
     const response = await fetch(`${SYSTEME_API_URL}/contacts`, {
       method: 'POST',
       headers: {
@@ -48,7 +48,6 @@ export async function addContactToSysteme({ email, firstName, lastName, tags }: 
           ...(firstName ? [{ slug: 'first_name', value: firstName }] : []),
           ...(lastName ? [{ slug: 'last_name', value: lastName }] : []),
         ],
-        tags: tagIds,
       }),
     });
 
@@ -56,6 +55,13 @@ export async function addContactToSysteme({ email, firstName, lastName, tags }: 
       const error = await response.text();
       console.error(`[Systeme] Failed to add contact ${email}: ${response.status} ${error}`);
       return false;
+    }
+
+    const newContact = await response.json();
+
+    // Add tags to the newly created contact
+    if (tagIds.length > 0 && newContact.id) {
+      await updateContactTags(newContact.id, tagIds);
     }
 
     console.log('[Systeme] Added contact:', email, 'with tags:', tags);
