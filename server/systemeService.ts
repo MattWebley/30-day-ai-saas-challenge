@@ -54,7 +54,7 @@ export async function addContactToSysteme({ email, firstName, lastName, tags }: 
 
     if (!response.ok) {
       const error = await response.text();
-      console.error('[Systeme] Failed to add contact:', error);
+      console.error(`[Systeme] Failed to add contact ${email}: ${response.status} ${error}`);
       return false;
     }
 
@@ -93,7 +93,7 @@ async function updateContactTags(contactId: number, tagIds: number[]): Promise<v
 
   for (const tagId of tagIds) {
     try {
-      await fetch(`${SYSTEME_API_URL}/contacts/${contactId}/tags`, {
+      const res = await fetch(`${SYSTEME_API_URL}/contacts/${contactId}/tags`, {
         method: 'POST',
         headers: {
           'X-API-Key': SYSTEME_API_KEY,
@@ -101,6 +101,12 @@ async function updateContactTags(contactId: number, tagIds: number[]): Promise<v
         },
         body: JSON.stringify({ tagId }),
       });
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error(`[Systeme] Tag ${tagId} failed for contact ${contactId}: ${res.status} ${errText}`);
+      }
+      // Small delay between tag operations
+      await new Promise(resolve => setTimeout(resolve, 150));
     } catch (error) {
       console.error('[Systeme] Error adding tag to contact:', error);
     }

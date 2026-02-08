@@ -7917,18 +7917,21 @@ Example format:
           if (daysInactive >= 7) tags.push('Challenge Stalled');
         }
 
-        const success = await addContactToSysteme({
-          email: user.email!,
-          firstName: user.firstName || undefined,
-          lastName: user.lastName || undefined,
-          tags,
-        });
-
-        results.push(`${user.email}: ${success ? tags.join(', ') : 'FAILED'}`);
+        try {
+          const success = await addContactToSysteme({
+            email: user.email!,
+            firstName: user.firstName || undefined,
+            lastName: user.lastName || undefined,
+            tags,
+          });
+          results.push(`${user.email}: ${success ? tags.join(', ') : 'FAILED'}`);
+        } catch (err: any) {
+          results.push(`${user.email}: ERROR - ${err.message || String(err)}`);
+        }
         processed++;
 
-        // Rate limit: 200ms between API calls
-        await new Promise(resolve => setTimeout(resolve, 200));
+        // Rate limit: 500ms between users to avoid Systeme API limits
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
 
       res.json({ processed, results });
