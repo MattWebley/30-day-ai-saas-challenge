@@ -9,6 +9,8 @@ import { WebhookHandlers } from './webhookHandlers';
 import { seedIfNeeded } from './seed';
 import { seedDripEmails } from './dripEmailSeed';
 import { startDripEmailProcessor } from './emailService';
+import { db } from './db';
+import { sql } from 'drizzle-orm';
 
 const app = express();
 const httpServer = createServer(app);
@@ -138,6 +140,18 @@ app.use((req, res, next) => {
 (async () => {
   await seedIfNeeded();
   await seedDripEmails();
+
+  // One-time migration: fix drip email greetings (safe to remove after first deploy)
+  try {
+    // "{{firstName}}..." (16 chars) → "Hi {{firstName}},"
+    await db.execute(sql`UPDATE drip_emails SET body = 'Hi {{firstName}},' || substring(body from 17) WHERE body LIKE '{{firstName}}...%'`);
+    // "{{firstName}}," (14 chars) → "Hi {{firstName}}," (skip ones already starting with Hi/Hey)
+    await db.execute(sql`UPDATE drip_emails SET body = 'Hi {{firstName}},' || substring(body from 15) WHERE body LIKE '{{firstName}},%' AND body NOT LIKE 'Hi %' AND body NOT LIKE 'Hey %'`);
+    console.log('[Migration] Drip email greetings updated');
+  } catch (e) {
+    console.error('[Migration] Greeting update failed (non-fatal):', e);
+  }
+
   startDripEmailProcessor();
   await registerRoutes(httpServer, app);
 

@@ -11,7 +11,7 @@ const DRIP_EMAILS = [
     dayTrigger: 0,
     subject: "You just did something 99% of people never do...",
     altSubject: "{{firstName}}, your first SaaS ideas are ready",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 You're IN.
 
@@ -64,7 +64,7 @@ P.S. If you haven't unlocked the FULL 21-day challenge yet, you can grab lifetim
     dayTrigger: 2,
     subject: "The 10-minute test that saves you MONTHS of wasted time",
     altSubject: "Is your idea actually worth building? (Let's find out)",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 I want to tell you something that might save you MONTHS of wasted effort.
 
@@ -123,7 +123,7 @@ P.P.S. If you're looking at your idea and thinking "is this REALLY the right one
     dayTrigger: 3,
     subject: "The #1 reason most apps never launch (and how to avoid it)",
     altSubject: "Your AI just mapped out your entire product...",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Let me share something that took me YEARS to learn...
 
@@ -182,7 +182,7 @@ P.P.S. The difference between people who build a product that SELLS and people w
     dayTrigger: 4,
     subject: "Something shifts in your brain today...",
     altSubject: "{{firstName}}, it's time to make this REAL",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Today something changes.
 
@@ -237,7 +237,7 @@ P.S. I've seen people get stuck on naming for WEEKS. Don't be that person. My co
     dayTrigger: 5,
     subject: "Why your product needs to LOOK expensive (even if it's not)",
     altSubject: "Nobody will believe you made this yourself...",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Let me share a business truth that most people don't want to hear...
 
@@ -292,7 +292,7 @@ P.S. Haven't unlocked the full challenge yet? You can work ahead at your own pac
     dayTrigger: 6,
     subject: "I used to spend $200K/year on developers. Now I use these 2 tools.",
     altSubject: "Set this up today (takes 20 mins, saves you a fortune)",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 I want to give you some context that I think will blow your mind.
 
@@ -347,7 +347,7 @@ P.S. Here's something I've noticed... the ones who fly through the BUILD phase a
     dayTrigger: 7,
     subject: "The moment everything changes ({{firstName}}, hit play today)",
     altSubject: "You hit \"go\" today. For real.",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 This is the email I've been waiting to send you.
 
@@ -406,7 +406,7 @@ P.S. Want to work ahead at your own pace? Unlock the full challenge here: {{UNLO
     dayTrigger: 8,
     subject: "You now have a better dev process than most actual developers",
     altSubject: "The system that makes EVERYTHING easier from here",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Today I want to teach you something that separates amateurs from professionals.
 
@@ -455,7 +455,7 @@ P.S. If you haven't already, unlock the full challenge so you can build at whate
     dayTrigger: 9,
     subject: "8 skills. Learn these and you can build ANYTHING.",
     altSubject: "The difference between fighting AI and flowing with it",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 What I'm about to share with you today is probably the most VALUABLE training in the entire challenge.
 
@@ -511,7 +511,7 @@ P.S. Tomorrow is Day 10. The BUILD phase. If you haven't unlocked the full chall
     dayTrigger: 10,
     subject: "Your app just got AI superpowers (this changes everything)",
     altSubject: "The 4-step loop you'll use 100+ times",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 We've hit the TURNING POINT.
 
@@ -566,7 +566,7 @@ P.S. AI integration is the part where most people need the most guidance. If you
     dayTrigger: 11,
     subject: "The 3-second rule that determines if people BUY or BOUNCE",
     altSubject: "First impressions MATTER (here's why today is big)",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 I want to share something with you about human psychology that will change how you think about your product.
 
@@ -615,7 +615,7 @@ P.S. Not sure if your design is hitting the right note? My coaching clients get 
     dayTrigger: 12,
     subject: "Real users can now sign up for YOUR product",
     altSubject: "{{firstName}}, you just built something people can USE",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Big day today. Like, REALLY big.
 
@@ -674,7 +674,7 @@ P.S. Getting user accounts and authentication working properly is one of the mos
     dayTrigger: 13,
     subject: "The feature that turns \"users\" into \"customers\" (read this)",
     altSubject: "Welcome emails, notifications, the works...",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Let me tell you about the single most underrated feature in any SaaS product.
 
@@ -725,7 +725,7 @@ P.S. Knowing WHAT to email your users (and when) is one of those things that sep
     dayTrigger: 15,
     subject: "Your app can now accept MONEY. (Read that again.)",
     altSubject: "Read this subject line again. Slowly.",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 I need you to really let this sink in.
 
@@ -786,7 +786,7 @@ P.S. Now that your app can take money, the big question is: how much should you 
     dayTrigger: 16,
     subject: "You're about to lose 60% of your customers (unless you do THIS today)",
     altSubject: "If your app doesn't pass this test, you'll lose users",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Here's a stat that should make you sit up...
 
@@ -837,7 +837,7 @@ P.S. Mobile responsiveness is one of those things that's hard to judge on your o
     dayTrigger: 17,
     subject: "Final sprint. Let's finish this thing.",
     altSubject: "Your MVP checklist (8 items. Let's check them ALL off.)",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 This is the FINAL BUILD PUSH.
 
@@ -901,7 +901,7 @@ P.P.S. If you want hands-on help finishing your MVP and getting launch-ready, my
     dayTrigger: 19,
     subject: "A copywriter would charge you $3K+ for what AI just did in 10 minutes",
     altSubject: "AI just wrote your ENTIRE sales page...",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Your product is BUILT.
 
@@ -960,7 +960,7 @@ P.P.S. When this challenge wraps up, I'm offering a free 1:1 Readiness Review ca
     dayTrigger: 20,
     subject: "How to get customers without spending a penny on ads",
     altSubject: "Google now knows your product EXISTS",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Your product is built. Your sales page is done.
 
@@ -1024,7 +1024,7 @@ P.P.S. Once you've launched, the biggest question is "what do I focus on NEXT?" 
     dayTrigger: 21,
     subject: "You did it. Now here's the roadmap to REAL money.",
     altSubject: "{{firstName}}... look at what you've built",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 You did it.
 
@@ -1102,7 +1102,7 @@ P.S. Show off what you've built! Add your product to the Challenge Showcase so o
     dayTrigger: 22,
     subject: "{{firstName}}... the challenge is over. Your business is just beginning.",
     altSubject: "What happens NOW? (Don't make this mistake)",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 I want you to think about where you were when you started this challenge.
 
@@ -1293,7 +1293,7 @@ P.P.S. Some people prefer to have a guide. If you want someone experienced walki
     nagLevel: 3,
     subject: "Your challenge access is still waiting",
     altSubject: "{{firstName}}  - one last note from me",
-    body: `{{firstName}},
+    body: `Hi {{firstName}},
 
 This is my last nudge about getting started.
 
@@ -1358,7 +1358,7 @@ P.S. If you're feeling stuck or overwhelmed, that's normal. And it's exactly why
     nagLevel: 2,
     subject: "The other challengers are pulling ahead...",
     altSubject: "{{firstName}}, your SaaS idea is waiting",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 I'll be honest with you.
 
@@ -1401,7 +1401,7 @@ P.P.S. A lot of people who stalled have told me that getting 1:1 coaching was wh
     nagLevel: 3,
     subject: "Last check-in - I don't want you to regret this",
     altSubject: "{{firstName}}, this is my last email about this",
-    body: `{{firstName}},
+    body: `Hi {{firstName}},
 
 This is my last check-in about the challenge.
 
@@ -1487,7 +1487,7 @@ const DAY_1_DRIP = [
     dayTrigger: 1,
     subject: "How to pick the idea that's RIGHT for you",
     altSubject: "{{firstName}}, trust your gut on this one",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Let me tell you the secret to picking the right idea.
 
@@ -1538,7 +1538,7 @@ const EXTRA_DRIP_EMAILS = [
     dayTrigger: 14,
     subject: "You now have something 99% of 'entrepreneurs' don't have",
     altSubject: "{{firstName}}, your app now has REAL users",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Let me point out something you might not have fully appreciated yet.
 
@@ -1578,7 +1578,7 @@ const MILESTONE_EMAILS = [
     emailType: 'milestone' as const,
     subject: "Phase 1: DONE. You've got a real product concept.",
     altSubject: "{{firstName}}, the planning phase is complete",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Stop for a second and look at what you've done.
 
@@ -1610,7 +1610,7 @@ P.P.S. If you want someone experienced to look over your idea and tell you if yo
     emailType: 'milestone' as const,
     subject: "Tools ready. Skills locked in. Tomorrow you BUILD.",
     altSubject: "{{firstName}}, the training wheels come off tomorrow",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Tomorrow you start BUILDING.
 
@@ -1642,7 +1642,7 @@ P.P.S. The build phase is where people either fly or get stuck. My coaching clie
     emailType: 'milestone' as const,
     subject: "Your app has AI, auth, design, and email. Read that again.",
     altSubject: "{{firstName}}, look at what you've built so far",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 I want to point something out.
 
@@ -1668,7 +1668,7 @@ P.S. Proud of yourself? You should be. Share your referral link with people who'
     emailType: 'milestone' as const,
     subject: "BUILD phase complete. Now we get you CUSTOMERS.",
     altSubject: "{{firstName}}, your product is built. Time to launch.",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 Your product is BUILT.
 
@@ -1698,7 +1698,7 @@ P.P.S. The launch phase is where strategy matters most. If you want someone who'
     emailType: 'milestone' as const,
     subject: "You finished. I need you to read this.",
     altSubject: "{{firstName}}... look at what you just did",
-    body: `{{firstName}}...
+    body: `Hi {{firstName}},
 
 You finished the 21-Day AI SaaS Challenge.
 
