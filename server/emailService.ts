@@ -753,7 +753,9 @@ const LEGAL_FOOTER = `
 
 --
 21-Day AI SaaS Challenge by Matt Webley
-Matt Webley Ltd, United Kingdom
+Webley Global - FZCO
+Building A1, Dubai Digital Park
+Silicon Oasis, Dubai
 
 You're receiving this because you purchased the 21-Day AI SaaS Challenge.
 Unsubscribe from these emails: {{UNSUBSCRIBE_URL}}`;
@@ -817,7 +819,8 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
     const activeDrips = await storage.getActiveDripEmails();
     if (activeDrips.length === 0) return { sent, errors };
 
-    const regularDrips = activeDrips.filter(d => d.emailType !== 'nag');
+    const regularDrips = activeDrips.filter(d => !d.emailType || d.emailType === 'drip');
+    const initialDrips = activeDrips.filter(d => d.emailType === 'initial');
     const nagDrips = activeDrips.filter(d => d.emailType === 'nag');
 
     // Get all paid users (skip unsubscribed and banned)
@@ -854,11 +857,13 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
       const sentIds = new Set(alreadySent.map(s => s.dripEmailId));
       const unsubUrl = generateUnsubscribeUrl(user.id);
 
-      // --- REGULAR DRIP EMAILS (exact day match) ---
+      // --- REGULAR DRIP EMAILS (exact day match, only if user is progressing) ---
       for (const drip of regularDrips) {
         if (sentIds.has(drip.id)) continue; // Already sent
         if (daysSinceSignup !== drip.dayTrigger) continue; // Exact day match only
         if (completedDays.has(drip.dayTrigger)) continue; // User already completed this day
+        // Only send if user completed the previous day (skip for Day 0 which has no prerequisite)
+        if (drip.dayTrigger > 0 && !completedDays.has(drip.dayTrigger - 1)) continue;
 
         const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
         if (success) {
@@ -868,6 +873,23 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
           errors++;
         }
         await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      // --- INITIAL ENGAGEMENT (paid but never started, never completed Day 0) ---
+      if (initialDrips.length > 0 && !completedDays.has(0)) {
+        for (const drip of initialDrips) {
+          if (sentIds.has(drip.id)) continue; // Already sent (one-time only)
+          if (daysSinceSignup < drip.dayTrigger) continue; // Not enough days since signup
+
+          const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
+          if (success) {
+            await storage.markDripEmailSent(user.id, drip.id);
+            sent++;
+          } else {
+            errors++;
+          }
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
       }
 
       // --- NAG EMAILS (inactivity-based) ---
@@ -882,7 +904,17 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
             if (daysInactive >= 1) {
               const nagResetAt = stats.nagResetAt ? new Date(stats.nagResetAt) : null;
 
-              for (const nag of nagDrips) {
+              // Personal nags (levels 1-3) only play once ever. Generic nudges (4+) repeat each cycle.
+              const personalNags = nagDrips.filter(n => (n.nagLevel || 0) <= 3);
+              const gentleNudges = nagDrips.filter(n => (n.nagLevel || 0) > 3);
+
+              // Has the user ever received the final personal nag (level 3)?
+              const finalPersonalNag = personalNags.find(n => n.nagLevel === 3);
+              const completedPersonalCycle = finalPersonalNag && alreadySent.some(s => s.dripEmailId === finalPersonalNag.id);
+
+              const nagsToUse = completedPersonalCycle ? gentleNudges : personalNags;
+
+              for (const nag of nagsToUse) {
                 // Skip if already sent after last nag reset
                 const wasSentAfterReset = alreadySent.some(s =>
                   s.dripEmailId === nag.id &&

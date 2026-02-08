@@ -1274,6 +1274,11 @@ export default function AdminUsers() {
                             Banned
                           </span>
                         )}
+                        {(user as any).dripUnsubscribed && (
+                          <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded">
+                            Unsubscribed
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-slate-500">{user.email || "No email"}</p>
                     </div>

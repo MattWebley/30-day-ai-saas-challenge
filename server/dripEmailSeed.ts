@@ -1186,6 +1186,91 @@ P.S. There's no catch. No "free call that's actually a sales pitch." I'll give y
   },
 ];
 
+// Initial engagement emails for users who paid but never started (never completed Day 0)
+// dayTrigger = days since signup
+// One-time sequence — once they start, they move to the normal nag system
+const INITIAL_ENGAGEMENT_EMAILS = [
+  {
+    emailNumber: 201,
+    dayTrigger: 1,
+    emailType: 'initial' as const,
+    nagLevel: 1,
+    subject: "Your first lesson takes 10 minutes (and it's the fun one)",
+    altSubject: "{{firstName}}, your AI-generated SaaS ideas are waiting",
+    body: `Hey {{firstName}},
+
+I noticed you haven't jumped into the challenge yet, and I didn't want you to miss the best bit...
+
+Your first lesson generates real SaaS ideas for you using AI.
+
+You answer a few questions. AI analyses the market. And you get a scored list of product ideas personalised to YOUR skills and interests.
+
+It takes about 10 minutes, and honestly? It's the part most people say got them hooked.
+
+Your dashboard is ready:
+
+{{DASHBOARD_URL}}
+
+Just click "Start Day 0" and follow the steps. Everything is guided.
+
+Matt`,
+  },
+  {
+    emailNumber: 202,
+    dayTrigger: 3,
+    emailType: 'initial' as const,
+    nagLevel: 2,
+    subject: "Quick question — is something holding you back?",
+    altSubject: "{{firstName}}, just checking in",
+    body: `Hey {{firstName}},
+
+I wanted to check in because you haven't started the challenge yet.
+
+Sometimes people sign up and then think "I'll do it later" — and later never comes.
+
+If something's holding you back, here are the most common things I hear:
+
+"I'm not technical enough" — You don't need to be. The challenge teaches everything step by step. No coding knowledge required.
+
+"I don't have time" — Each lesson takes 15-30 minutes. You can do it on your lunch break.
+
+"I'm not sure which idea to pick" — That's literally what Day 0 helps you figure out. AI does the heavy lifting.
+
+Your first lesson is sitting right here:
+
+{{DASHBOARD_URL}}
+
+Give it 10 minutes. If it's not for you, no hard feelings. But I think you'll surprise yourself.
+
+Matt
+
+P.S. If you're stuck on something technical (can't log in, page not loading, etc.), just reply to this email and I'll sort it out.`,
+  },
+  {
+    emailNumber: 203,
+    dayTrigger: 7,
+    emailType: 'initial' as const,
+    nagLevel: 3,
+    subject: "Your challenge access is still waiting",
+    altSubject: "{{firstName}} — one last note from me",
+    body: `{{firstName}},
+
+This is my last nudge about getting started.
+
+You invested in the challenge, and I want to make sure you get your money's worth.
+
+Everything is set up and waiting for you. Your first lesson takes 10 minutes. And people who start Day 0 almost always keep going — because once you see AI generating real product ideas for you, something clicks.
+
+Here's your dashboard:
+
+{{DASHBOARD_URL}}
+
+Whenever you're ready, it'll be there.
+
+Matt`,
+  },
+];
+
 // Nag/re-engagement emails sent when users go inactive
 // dayTrigger = days of inactivity before sending
 const NAG_EMAILS = [
@@ -1306,17 +1391,59 @@ P.S. If something about the challenge isn't working for you, or you need help wi
   },
 ];
 
+// Generic gentle nudge emails for repeat inactive periods
+// These replace the personal nag sequence after the user has been through it once
+// Designed to be non-annoying even if received multiple times
+const GENTLE_NUDGE_EMAILS = [
+  {
+    emailNumber: 104,
+    dayTrigger: 2,
+    emailType: 'nag' as const,
+    nagLevel: 4,
+    subject: "Your challenge progress is saved",
+    altSubject: "Quick reminder — your next lesson is ready",
+    body: `Hey {{firstName}},
+
+Just a quick note — your challenge progress is saved and your next lesson is ready whenever you are.
+
+Pick up where you left off:
+
+{{DASHBOARD_URL}}
+
+No pressure. It'll be here when you're ready.
+
+Matt`,
+  },
+  {
+    emailNumber: 105,
+    dayTrigger: 7,
+    emailType: 'nag' as const,
+    nagLevel: 5,
+    subject: "Your next lesson is waiting",
+    altSubject: "Whenever you're ready, {{firstName}}",
+    body: `Hey {{firstName}},
+
+Your dashboard is here whenever you want to jump back in:
+
+{{DASHBOARD_URL}}
+
+Matt`,
+  },
+];
+
 export async function seedDripEmails(): Promise<void> {
   try {
     const existing = await storage.getAllDripEmails();
-    const allEmails = [...DRIP_EMAILS, ...NAG_EMAILS];
+    const allEmails = [...DRIP_EMAILS, ...INITIAL_ENGAGEMENT_EMAILS, ...NAG_EMAILS, ...GENTLE_NUDGE_EMAILS];
     const totalCount = allEmails.length;
 
-    // Check if nag emails need seeding (look for emailNumber 101)
+    // Check if all email types need seeding
     const hasNagEmails = existing.some(e => e.emailNumber === 101);
+    const hasGentleNudges = existing.some(e => e.emailNumber === 104);
+    const hasInitialEngagement = existing.some(e => e.emailNumber === 201);
 
-    // If all emails exist including nags, check if content is up to date
-    if (existing.length >= totalCount && hasNagEmails) {
+    // If all emails exist, check if content is up to date
+    if (existing.length >= totalCount && hasNagEmails && hasGentleNudges && hasInitialEngagement) {
       const firstEmail = existing.find(e => e.emailNumber === 1);
       if (firstEmail && firstEmail.body.includes('What you just did - signing up, committing')) {
         console.log(`[Drip Seed] All ${totalCount} emails already up to date, skipping seed`);
@@ -1324,7 +1451,7 @@ export async function seedDripEmails(): Promise<void> {
       }
       console.log(`[Drip Seed] Updating ${totalCount} emails with new content...`);
     } else {
-      console.log(`[Drip Seed] Seeding ${totalCount} emails (${existing.length} exist, nags: ${hasNagEmails ? 'yes' : 'no'})...`);
+      console.log(`[Drip Seed] Seeding ${totalCount} emails (${existing.length} exist, nags: ${hasNagEmails ? 'yes' : 'no'}, nudges: ${hasGentleNudges ? 'yes' : 'no'}, initial: ${hasInitialEngagement ? 'yes' : 'no'})...`);
     }
 
     for (const email of DRIP_EMAILS) {
@@ -1338,7 +1465,7 @@ export async function seedDripEmails(): Promise<void> {
       });
     }
 
-    for (const email of NAG_EMAILS) {
+    for (const email of [...INITIAL_ENGAGEMENT_EMAILS, ...NAG_EMAILS, ...GENTLE_NUDGE_EMAILS]) {
       await storage.upsertDripEmail({
         emailNumber: email.emailNumber,
         dayTrigger: email.dayTrigger,
@@ -1351,7 +1478,7 @@ export async function seedDripEmails(): Promise<void> {
       });
     }
 
-    console.log(`[Drip Seed] Done - ${DRIP_EMAILS.length} drip + ${NAG_EMAILS.length} nag emails seeded (disabled by default)`);
+    console.log(`[Drip Seed] Done - ${DRIP_EMAILS.length} drip + ${INITIAL_ENGAGEMENT_EMAILS.length} initial + ${NAG_EMAILS.length} nag + ${GENTLE_NUDGE_EMAILS.length} nudge emails seeded (disabled by default)`);
   } catch (error) {
     console.error('[Drip Seed] Error seeding drip emails:', error);
   }
