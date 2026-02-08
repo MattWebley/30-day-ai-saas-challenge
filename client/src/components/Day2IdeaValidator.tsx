@@ -787,18 +787,21 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
                   <Plus className="w-4 h-4" /> Add Your Own
                 </Button>
               ) : (
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <Input
                     placeholder="Enter a pain point..."
                     value={customPainInput}
                     onChange={(e) => setCustomPainInput(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddCustomPain()}
                     autoFocus
+                    className="flex-1"
                   />
-                  <Button onClick={handleAddCustomPain}><Plus className="w-4 h-4" /></Button>
-                  <Button variant="outline" onClick={() => { setShowCustomInput(false); setCustomPainInput(""); }}>
-                    <X className="w-4 h-4" />
-                  </Button>
+                  <div className="flex gap-2 flex-shrink-0">
+                    <Button onClick={handleAddCustomPain}><Plus className="w-4 h-4" /></Button>
+                    <Button variant="outline" onClick={() => { setShowCustomInput(false); setCustomPainInput(""); }}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>
@@ -862,7 +865,7 @@ Format: One pain point per line, numbered 1-8. No explanations, just the pain po
                 {insight ? (
                   <div className="pt-4 border-t border-slate-100 space-y-4">
                     {/* Quick stats row */}
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div className={`${ds.infoBoxHighlight} text-center`}>
                         <div className={ds.heading}>{insight.demandScore}/10</div>
                         <p className={ds.muted}>Demand Score</p>

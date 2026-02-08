@@ -273,7 +273,7 @@ export function Day21LaunchDay({ appName, savedInputs, onComplete }: Day21Launch
               <h4 className={ds.heading}>Pick Your Price Point</h4>
             </div>
 
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
               {PRICE_TIERS.map((tier) => (
                 <button
                   key={tier.price}
@@ -674,7 +674,7 @@ export function Day21LaunchDay({ appName, savedInputs, onComplete }: Day21Launch
 
           <Card className={ds.cardWithPadding}>
             <h4 className={`${ds.heading} mb-3`}>Your Target</h4>
-            <div className="grid grid-cols-3 gap-4 text-center">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
               <div className="p-4 bg-slate-50 rounded-lg">
                 <p className="text-2xl font-bold text-slate-900">${targetIncome.toLocaleString()}</p>
                 <p className="text-slate-600 text-sm">Monthly Goal</p>

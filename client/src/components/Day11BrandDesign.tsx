@@ -555,7 +555,7 @@ Don't change the layout or functionality - just the visual styling. Work through
           <div className={ds.cardWithPadding}>
             <h3 className={ds.heading + " mb-4"}>Your Design Choices</h3>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="text-center">
                 <Type className="w-6 h-6 mx-auto mb-2 text-slate-400" />
                 <p className="font-medium text-slate-900">{selectedFontData?.name}</p>

@@ -325,7 +325,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
     const colors = getScoreColor(score);
     return (
       <div className="flex items-center gap-2 text-xs">
-        <span className="w-24 text-slate-500 truncate">{label}</span>
+        <span className="w-20 sm:w-24 text-slate-500 text-[11px] sm:text-xs">{label}</span>
         <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
           <div 
             className={`h-full ${colors.bg} rounded-full transition-all`}

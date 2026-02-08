@@ -518,7 +518,7 @@ The app is called "${appName || 'my app'}". Make it look like it belongs in the 
               This color will be your main accent for buttons, links, and interactive elements.
             </p>
 
-            <div className="grid grid-cols-4 gap-3 mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
               {COLOR_OPTIONS.map((color) => {
                 const isSelected = selectedColor === color.id;
                 return (
