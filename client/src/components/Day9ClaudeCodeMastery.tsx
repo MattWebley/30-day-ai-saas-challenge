@@ -708,12 +708,12 @@ export function Day9ClaudeCodeMastery({ userIdea, onComplete, savedInputs }: Day
                 Before you finish, try this quick exercise to practice Rules 1 & 2
               </p>
               <div className="space-y-2 pl-4 border-l-2 border-primary">
-                <p className={ds.body}><strong>1.</strong> Ask Claude to change a button color in your app</p>
-                <p className={ds.body}><strong>2.</strong> See the change in your preview</p>
-                <p className={ds.body}><strong>3.</strong> Say "reverse that" to undo it</p>
+                <p className={ds.body}><strong>1.</strong> Ask Claude Code to "create a one-page HTML file called landing.html with a heading that says my app name"</p>
+                <p className={ds.body}><strong>2.</strong> Preview it in your browser</p>
+                <p className={ds.body}><strong>3.</strong> Say "delete that file" to clean up</p>
               </div>
               <p className={ds.muted}>
-                That's it! You just practiced giving a specific instruction AND using the undo command. You're ready.
+                That's it! You just saw your app name on a page for the first time — and practiced giving a specific instruction and reversing it. You're ready for Build Week.
               </p>
             </div>
           </div>
