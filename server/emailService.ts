@@ -809,7 +809,7 @@ const LEGAL_FOOTER = `
 --
 21-Day AI SaaS Challenge by Matt Webley
 Webley Global - FZCO
-Building A1, Dubai Digital Park, Dubai Silicon Oasis, Dubai, United Arab Emirates
+Dubai Silicon Oasis, Dubai, United Arab Emirates
 
 You're receiving this because you purchased the 21-Day AI SaaS Challenge.
 Unsubscribe from these emails: {{UNSUBSCRIBE_URL}}`;
@@ -819,7 +819,7 @@ const TRANSACTIONAL_FOOTER = `
 --
 21-Day AI SaaS Challenge by Matt Webley
 Webley Global - FZCO
-Building A1, Dubai Digital Park, Dubai Silicon Oasis, Dubai, United Arab Emirates`;
+Dubai Silicon Oasis, Dubai, United Arab Emirates`;
 
 async function sendDripEmail(dripEmail: DripEmail, userEmail: string, firstName: string, unsubscribeUrl: string): Promise<boolean> {
   try {

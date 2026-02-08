@@ -4737,7 +4737,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       // Replace variables with sample data (including legal footer like real sends)
       const sampleUnsubscribeUrl = 'https://challenge.mattwebley.com/api/drip/unsubscribe?uid=test&token=test';
-      const legalFooter = `\n\n--\n21-Day AI SaaS Challenge by Matt Webley\nWebley Global - FZCO\nBuilding A1, Dubai Digital Park, Dubai Silicon Oasis, Dubai, United Arab Emirates\n\nYou're receiving this because you purchased the 21-Day AI SaaS Challenge.\nUnsubscribe from these emails: ${sampleUnsubscribeUrl}`;
+      const legalFooter = `\n\n--\n21-Day AI SaaS Challenge by Matt Webley\nWebley Global - FZCO\nDubai Silicon Oasis, Dubai, United Arab Emirates\n\nYou're receiving this because you purchased the 21-Day AI SaaS Challenge.\nUnsubscribe from these emails: ${sampleUnsubscribeUrl}`;
 
       const variables: Record<string, string> = {
         firstName: 'Sarah',

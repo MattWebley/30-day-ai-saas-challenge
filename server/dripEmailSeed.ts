@@ -66,17 +66,15 @@ P.S. If you haven't unlocked the FULL 21-day challenge yet, you can grab lifetim
     altSubject: "Is your idea actually worth building? (Let's find out)",
     body: `Hi {{firstName}},
 
-I want to tell you something that might save you MONTHS of wasted effort.
+Today's lesson might save you MONTHS of wasted effort.
 
-When I built my first software product years ago, I skipped validation entirely.
+The number one mistake people make when building a product? They skip validation.
 
-I was SO excited about the idea that I just... started building.
+They get excited about an idea and just... start building.
 
-Three months later I had a product nobody wanted.
+Months later they have a product nobody wants. No users. No revenue. Just an expensive lesson.
 
-No users. No revenue. Just a really expensive lesson.
-
-And here's the thing - that experience is SO common it's almost a rite of passage in the startup world.
+It's SO common it's almost a rite of passage in the startup world.
 
 But it doesn't HAVE to be.
 
