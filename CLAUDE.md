@@ -226,9 +226,9 @@ Interactive components MUST match lesson text styling:
 - [ ] Test Day 0 -> Day 1 -> Day 2 flow (server-side enforcement now added)
 - [ ] Add Namecheap affiliate ID to Day4Naming.tsx
 - [ ] Add coaching call booking links (Days 1-7, 19-21)
-- [ ] Audit database email templates for correct URLs (started but interrupted)
 - [ ] Investigate production admin panel user count (dev DB is separate from production DB)
 - [ ] Consider adding "Pending Customers" section to admin panel (5 customers in pendingPurchases table never created accounts)
+- [ ] Remove one-time startup migration from `server/index.ts` after first deploy (greeting fix + email #2 story fix)
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
@@ -238,6 +238,52 @@ Interactive components MUST match lesson text styling:
 ---
 
 ## Session Log
+
+### 2026-02-08 (Session 4) - Day 2 Pain Points Bug Fix, Admin Email Improvements, Drip Email Updates
+- **Tasks Completed:**
+  - **Day 2 Pain Points Bug Fix** (customer-reported: Paul Hampton):
+    - Pain points were cleaned at render time but stored uncleaned, causing mismatch between displayed items and `selectedPainPoints` state
+    - Added `cleanPainText()` helper — cleans pain points once at entry (AI generation + saved data load)
+    - Removed render-time cleaning to prevent mismatches
+    - Reset `selectedPainPoints` to `[]` when regenerating pain points
+    - Improved error message: "Maximum 5 selected. Remove one first to add another."
+  - **Admin Email: Editable Time Delays**:
+    - Added `dayTrigger` to `updateDripEmail` in storage + routes
+    - Added "Send after (days)" number input in admin email edit panel
+    - Only shown for initial engagement and nag emails (not daily drip/milestone)
+  - **Admin Email: Test Email Variables Fix**:
+    - Test drip email endpoint was missing `COACHING_URL`, `REFERRAL_URL`, `CRITIQUE_URL`, `SHOWCASE_URL`
+    - Added all 4 missing variables so test emails match real sends
+  - **Unlock Page Admin Preview Fix**:
+    - `/unlock` page was redirecting admins to dashboard (allDaysUnlocked = true)
+    - Added admin exception so Matt can preview the page
+  - **Drip Email Greeting Updates**:
+    - Changed ~28 emails from `{{firstName}}...` → `Hi {{firstName}},`
+    - Changed 2 emails from `{{firstName}},` → `Hi {{firstName}},`
+    - Left `Hey {{firstName}},` emails as-is (already natural)
+    - Added startup migration to update existing database emails
+  - **Drip Email #2 Story Fix**:
+    - Removed fictional backstory ("When I built my first software product years ago...")
+    - Replaced with honest framing about common validation mistakes
+    - Added database migration for existing email
+  - **Legal Footer Address Update**:
+    - Removed "Building A1, Dubai Digital Park" from all email footers
+    - Now just "Dubai Silicon Oasis, Dubai, United Arab Emirates"
+    - Updated in `emailService.ts` (2 places) and `routes.ts` (1 place)
+- **Files Modified:**
+  - `client/src/components/Day2IdeaValidator.tsx` — Pain points bug fix (cleanPainText helper, removed render-time cleaning)
+  - `client/src/pages/admin/AdminEmails.tsx` — Editable dayTrigger for drip emails
+  - `client/src/pages/Unlock.tsx` — Admin can preview unlock page
+  - `server/storage.ts` — Added dayTrigger to updateDripEmail type
+  - `server/routes.ts` — dayTrigger in PATCH endpoint, test email variables fix, address update
+  - `server/emailService.ts` — Address update in legal footers
+  - `server/dripEmailSeed.ts` — Greeting changes, email #2 story fix
+  - `server/index.ts` — One-time database migration (greetings + email #2 story)
+- **Notes for Next Session:**
+  - NEEDS REDEPLOY for all changes to take effect
+  - Remove one-time startup migration from `server/index.ts` after first successful deploy
+  - Day 2 pain points fix should resolve Paul Hampton's bug — verify after deploy
+  - All drip email greetings now use "Hi" or "Hey" — check a test email to confirm
 
 ### 2026-02-06 (Session 3) - Major Security Audit, Bump Offer, Focus Button Fix
 - **Tasks Completed:**
