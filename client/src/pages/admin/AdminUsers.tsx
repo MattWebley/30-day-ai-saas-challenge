@@ -275,6 +275,26 @@ function UserDetailPanel({
           </Button>
         )}
 
+        {!user.coachingPurchased ? (
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-purple-600 border-purple-200 hover:bg-purple-50"
+            onClick={() => updateUser.mutate({ id: user.id, coachingPurchased: true })}
+          >
+            <Check className="w-3 h-3 mr-1" /> Grant Coaching
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-red-600 border-red-200 hover:bg-red-50"
+            onClick={() => updateUser.mutate({ id: user.id, coachingPurchased: false })}
+          >
+            <X className="w-3 h-3 mr-1" /> Revoke Coaching
+          </Button>
+        )}
+
         {!user.allDaysUnlocked ? (
           <Button
             size="sm"
@@ -414,11 +434,13 @@ function UserDetailPanel({
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Last Login:</span>
+              <span className="text-slate-500">Last Active:</span>
               <span className="text-slate-700">
                 {user.lastLoginAt
                   ? formatDistanceToNow(new Date(user.lastLoginAt), { addSuffix: true })
-                  : "Never"}
+                  : user.stats?.lastActivityDate
+                    ? formatDistanceToNow(new Date(user.stats.lastActivityDate), { addSuffix: true })
+                    : "Never"}
               </span>
             </div>
             <div className="flex justify-between">

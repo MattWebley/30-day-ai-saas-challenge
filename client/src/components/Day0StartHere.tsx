@@ -312,7 +312,7 @@ Day 1 starts now. Follow along if you want to see how this goes.
                     <p className={ds.label}>
                       {option.label}
                     </p>
-                    <p className={`${ds.muted} truncate`}>{option.description}</p>
+                    <p className={ds.muted}>{option.description}</p>
                   </div>
                 </div>
               </div>
