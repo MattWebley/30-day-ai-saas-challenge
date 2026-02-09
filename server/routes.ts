@@ -3694,6 +3694,16 @@ Just output the look & feel description, nothing else.`,
         return res.status(400).json({ message: "Comment too long (max 1000 characters)" });
       }
       
+      // Check for duplicate comment (same user, same day, same content)
+      const existingComments = await storage.getDayComments(day);
+      const trimmedContent = sanitizeContent(content.trim());
+      const isDuplicate = existingComments.some(
+        (c: any) => c.userId === userId && c.content === trimmedContent
+      );
+      if (isDuplicate) {
+        return res.status(409).json({ message: "You've already posted this comment" });
+      }
+
       // Check user's spam status
       const spamStatus = await storage.getUserSpamStatus(userId);
       const requiresApproval = spamStatus?.requiresApproval || false;

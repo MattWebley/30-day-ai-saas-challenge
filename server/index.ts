@@ -141,39 +141,18 @@ app.use((req, res, next) => {
   await seedIfNeeded();
   await seedDripEmails();
 
-  // One-time migration: fix drip email greetings (safe to remove after first deploy)
+  // One-time migration: remove duplicate comments (safe to remove after first deploy)
   try {
-    // "{{firstName}}..." (16 chars) → "Hi {{firstName}},"
-    await db.execute(sql`UPDATE drip_emails SET body = 'Hi {{firstName}},' || substring(body from 17) WHERE body LIKE '{{firstName}}...%'`);
-    // "{{firstName}}," (14 chars) → "Hi {{firstName}}," (skip ones already starting with Hi/Hey)
-    await db.execute(sql`UPDATE drip_emails SET body = 'Hi {{firstName}},' || substring(body from 15) WHERE body LIKE '{{firstName}},%' AND body NOT LIKE 'Hi %' AND body NOT LIKE 'Hey %'`);
-    // Fix email #2 opening story
-    await db.execute(sql`UPDATE drip_emails SET body = replace(body, 'I want to tell you something that might save you MONTHS of wasted effort.
-
-When I built my first software product years ago, I skipped validation entirely.
-
-I was SO excited about the idea that I just... started building.
-
-Three months later I had a product nobody wanted.
-
-No users. No revenue. Just a really expensive lesson.
-
-And here''s the thing - that experience is SO common it''s almost a rite of passage in the startup world.
-
-But it doesn''t HAVE to be.', 'Today''s lesson might save you MONTHS of wasted effort.
-
-The number one mistake people make when building a product? They skip validation.
-
-They get excited about an idea and just... start building.
-
-Months later they have a product nobody wants. No users. No revenue. Just an expensive lesson.
-
-It''s SO common it''s almost a rite of passage in the startup world.
-
-But it doesn''t HAVE to be.') WHERE email_number = 2 AND email_type = 'drip'`);
-    console.log('[Migration] Drip email greetings and content updated');
+    const result = await db.execute(sql`
+      DELETE FROM day_comments
+      WHERE id NOT IN (
+        SELECT MIN(id) FROM day_comments
+        GROUP BY user_id, day, content
+      )
+    `);
+    console.log('[Migration] Duplicate comments cleanup complete');
   } catch (e) {
-    console.error('[Migration] Update failed (non-fatal):', e);
+    console.error('[Migration] Duplicate comments cleanup failed (non-fatal):', e);
   }
 
   startDripEmailProcessor();
