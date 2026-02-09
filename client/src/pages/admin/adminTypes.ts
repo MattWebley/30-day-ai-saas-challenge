@@ -406,6 +406,17 @@ export interface AnalyticsData {
     orderVisitors: number;
     purchases: number;
   };
+  trafficSources: {
+    referrerUrl: string | null;
+    landingUrl: string | null;
+    utmSource: string | null;
+    utmMedium: string | null;
+    utmCampaign: string | null;
+    utmContent: string | null;
+    firstName: string | null;
+    email: string | null;
+    createdAt: string | null;
+  }[];
 }
 
 export const FONT_OPTIONS = [

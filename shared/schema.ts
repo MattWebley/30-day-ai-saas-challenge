@@ -51,6 +51,14 @@ export const users = pgTable("users", {
   // Login tracking
   lastLoginAt: timestamp("last_login_at"),
   loginCount: integer("login_count").default(0),
+  // Traffic source tracking (captured from ad URLs on landing)
+  landingUrl: text("landing_url"),       // Full URL they first landed on
+  referrerUrl: varchar("referrer_url"),  // Where they came from (facebook.com, etc.)
+  utmSource: varchar("utm_source"),
+  utmMedium: varchar("utm_medium"),
+  utmCampaign: varchar("utm_campaign"),
+  utmContent: varchar("utm_content"),
+  utmTerm: varchar("utm_term"),
   // Drip email opt-out
   dripUnsubscribed: boolean("drip_unsubscribed").default(false),
   // Ban system

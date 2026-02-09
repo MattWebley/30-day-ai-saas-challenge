@@ -9,13 +9,15 @@ import { BrandProvider } from "@/components/BrandProvider";
 import { TestModeProvider, useTestMode } from "@/contexts/TestModeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { captureReferralCode, useReferralTracking } from "@/hooks/useReferral";
+import { captureUtmParams } from "@/hooks/useUtm";
 import { useHeartbeat } from "@/hooks/useHeartbeat";
 import { usePageTracking } from "@/hooks/usePageTracking";
 import { initGA } from "@/lib/analytics";
 import { useAnalytics } from "@/hooks/use-analytics";
 
-// Capture referral code from URL immediately on load
+// Capture referral code and UTM params from URL immediately on load
 captureReferralCode();
+captureUtmParams();
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/Landing";
 import CheckoutSuccess from "@/pages/CheckoutSuccess";

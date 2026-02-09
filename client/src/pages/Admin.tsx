@@ -24,6 +24,7 @@ import {
   KeyRound,
   ChevronDown,
   ChevronUp,
+  Target,
 } from "lucide-react";
 import {
   LineChart,
@@ -50,8 +51,10 @@ import AdminSettings from "./admin/AdminSettings";
 import AdminEmails from "./admin/AdminEmails";
 
 type TabKey = "overview" | "users" | "revenue" | "content" | "marketing" | "emails" | "settings";
-type ChartRange = "7" | "30" | "90" | "365" | "thisYear" | "lastYear";
+type ChartRange = "1" | "3" | "7" | "30" | "90" | "365" | "thisYear" | "lastYear";
 const CHART_RANGES: { value: ChartRange; label: string }[] = [
+  { value: "1", label: "24h" },
+  { value: "3", label: "72h" },
   { value: "7", label: "7d" },
   { value: "30", label: "30d" },
   { value: "90", label: "90d" },
@@ -337,6 +340,8 @@ export default function Admin() {
     let startDate: Date;
     let endDate = now;
     switch (chartRange) {
+      case "1": startDate = new Date(now.getTime() - 1 * 86400000); break;
+      case "3": startDate = new Date(now.getTime() - 3 * 86400000); break;
       case "7": startDate = new Date(now.getTime() - 7 * 86400000); break;
       case "90": startDate = new Date(now.getTime() - 90 * 86400000); break;
       case "365": startDate = new Date(now.getTime() - 365 * 86400000); break;
@@ -857,6 +862,66 @@ export default function Admin() {
                     </div>
                   </div>
                 )}
+              </Card>
+            )}
+
+            {/* Traffic Sources — where purchases came from */}
+            {analyticsData && analyticsData.trafficSources.length > 0 && (
+              <Card className="p-5 border border-slate-200 shadow-sm">
+                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">
+                  <Target className="w-5 h-5 text-green-500" />
+                  <h3 className="text-lg font-bold text-slate-900">Purchase Sources</h3>
+                  <span className="text-xs text-slate-400 ml-auto">{analyticsData.trafficSources.length} purchases</span>
+                </div>
+
+                {/* Summary by source */}
+                {(() => {
+                  const sources = analyticsData.trafficSources;
+                  const bySource: Record<string, number> = {};
+                  sources.forEach(s => {
+                    const source = s.utmSource || s.utmCampaign
+                      || (s.referrerUrl ? new URL(s.referrerUrl).hostname.replace('www.', '').replace('l.', '') : null)
+                      || (s.landingUrl && new URL(s.landingUrl).search ? new URL(s.landingUrl).search : null)
+                      || 'Direct / Unknown';
+                    bySource[source] = (bySource[source] || 0) + 1;
+                  });
+                  const sorted = Object.entries(bySource).sort((a, b) => b[1] - a[1]);
+
+                  return (
+                    <div className="space-y-2 mb-4">
+                      {sorted.map(([source, count]) => (
+                        <div key={source} className="flex items-center justify-between text-sm py-1.5 px-3 bg-slate-50 rounded-lg">
+                          <span className="text-slate-700 font-medium">{source}</span>
+                          <div className="flex items-center gap-3">
+                            <span className="font-bold text-slate-900">{count}</span>
+                            <span className="text-xs text-slate-400">{((count / sources.length) * 100).toFixed(0)}%</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+
+                {/* Individual purchases with source details */}
+                <details className="mt-2">
+                  <summary className="text-sm text-slate-500 cursor-pointer hover:text-slate-700 font-medium">
+                    Show individual purchases
+                  </summary>
+                  <div className="mt-3 space-y-2">
+                    {analyticsData.trafficSources.map((s, i) => (
+                      <div key={i} className="text-xs p-3 bg-slate-50 rounded-lg border border-slate-100 space-y-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-slate-900">{s.firstName || s.email || 'Unknown'}</span>
+                          <span className="text-slate-400">{s.createdAt ? new Date(s.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''}</span>
+                        </div>
+                        {s.referrerUrl && <p className="text-slate-600">From: <span className="font-mono">{s.referrerUrl}</span></p>}
+                        {s.utmSource && <p className="text-slate-600">Source: <span className="font-medium">{s.utmSource}</span>{s.utmMedium ? ` / ${s.utmMedium}` : ''}{s.utmCampaign ? ` / ${s.utmCampaign}` : ''}{s.utmContent ? ` / ${s.utmContent}` : ''}</p>}
+                        {s.landingUrl && <p className="text-slate-500 font-mono truncate">{s.landingUrl}</p>}
+                        {!s.referrerUrl && !s.utmSource && !s.landingUrl && <p className="text-slate-400 italic">No source data (direct visit or pre-tracking)</p>}
+                      </div>
+                    ))}
+                  </div>
+                </details>
               </Card>
             )}
 

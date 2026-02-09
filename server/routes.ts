@@ -5012,7 +5012,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
   // No auth required - users can buy as guests, access granted via webhook
   app.post("/api/checkout", async (req, res) => {
     try {
-      const { currency = 'usd', unlockAllDays = false } = req.body;
+      const { currency = 'usd', unlockAllDays = false, utm } = req.body;
       const userEmail = req.isAuthenticated() && req.user ? (req.user as any).email : null;
       const stripe = await getUncachableStripeClient();
 
@@ -5058,7 +5058,14 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           currency: currency,
           productType: 'challenge',
           unlockAllDays: unlockAllDays ? 'true' : 'false',
-          userId: userId || ''
+          userId: userId || '',
+          landingUrl: utm?.landingUrl || '',
+          referrer: utm?.referrer || '',
+          utmSource: utm?.utm_source || '',
+          utmMedium: utm?.utm_medium || '',
+          utmCampaign: utm?.utm_campaign || '',
+          utmContent: utm?.utm_content || '',
+          utmTerm: utm?.utm_term || '',
         }
       };
 
@@ -5624,6 +5631,14 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         allDaysUnlocked: unlockAllDays,
         stripeCustomerId: customerId || null,
         purchaseCurrency: currency.toLowerCase() as 'usd' | 'gbp',
+        // Traffic source from ad click
+        landingUrl: session.metadata?.landingUrl || null,
+        referrerUrl: session.metadata?.referrer || null,
+        utmSource: session.metadata?.utmSource || null,
+        utmMedium: session.metadata?.utmMedium || null,
+        utmCampaign: session.metadata?.utmCampaign || null,
+        utmContent: session.metadata?.utmContent || null,
+        utmTerm: session.metadata?.utmTerm || null,
       });
 
       // Link any pending purchases for this email
@@ -7937,6 +7952,8 @@ Example format:
       const now2 = new Date();
       let analyticsStart: Date;
       switch (range) {
+        case '1': analyticsStart = new Date(now2.getTime() - 1 * 86400000); break;
+        case '3': analyticsStart = new Date(now2.getTime() - 3 * 86400000); break;
         case '7': analyticsStart = new Date(now2.getTime() - 7 * 86400000); break;
         case '90': analyticsStart = new Date(now2.getTime() - 90 * 86400000); break;
         case '365': analyticsStart = new Date(now2.getTime() - 365 * 86400000); break;
@@ -8003,6 +8020,22 @@ Example format:
         .from(users)
         .where(userDateFilter);
 
+      // Traffic sources for purchases in this period
+      const trafficSources = await db
+        .select({
+          referrerUrl: users.referrerUrl,
+          landingUrl: users.landingUrl,
+          utmSource: users.utmSource,
+          utmMedium: users.utmMedium,
+          utmCampaign: users.utmCampaign,
+          utmContent: users.utmContent,
+          firstName: users.firstName,
+          email: users.email,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .where(userDateFilter);
+
       res.json({
         dailyVisitors,
         topPages,
@@ -8012,6 +8045,7 @@ Example format:
           orderVisitors: orderResult?.cnt || 0,
           purchases: recentPurchases[0]?.cnt || 0,
         },
+        trafficSources,
       });
     } catch (error) {
       console.error("Error fetching analytics:", error);

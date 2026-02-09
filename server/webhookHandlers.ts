@@ -69,6 +69,17 @@ export class WebhookHandlers {
     const amountPaid = session.amount_total || 0;
     const unlockAllDays = session.metadata?.unlockAllDays === 'true';
 
+    // Traffic source data from ad URLs
+    const trafficSource = {
+      landingUrl: session.metadata?.landingUrl || null,
+      referrerUrl: session.metadata?.referrer || null,
+      utmSource: session.metadata?.utmSource || null,
+      utmMedium: session.metadata?.utmMedium || null,
+      utmCampaign: session.metadata?.utmCampaign || null,
+      utmContent: session.metadata?.utmContent || null,
+      utmTerm: session.metadata?.utmTerm || null,
+    };
+
     console.log('[Webhook] Processing checkout:', {
       email,
       customerId,
@@ -133,6 +144,18 @@ export class WebhookHandlers {
           .where(eq(users.id, user.id));
       }
       await this.grantAccessToUser(user.id, productType, customerId, currency, email, amountPaid, unlockAllDays);
+      // Save traffic source data (only if not already set — keep the original source)
+      if (!user.utmSource && !user.landingUrl) {
+        await db.update(users).set({
+          landingUrl: trafficSource.landingUrl,
+          referrerUrl: trafficSource.referrerUrl,
+          utmSource: trafficSource.utmSource,
+          utmMedium: trafficSource.utmMedium,
+          utmCampaign: trafficSource.utmCampaign,
+          utmContent: trafficSource.utmContent,
+          utmTerm: trafficSource.utmTerm,
+        }).where(eq(users.id, user.id));
+      }
     } else {
       // No user found - save as pending purchase
       console.log('[Webhook] No user found, saving pending purchase for:', email);

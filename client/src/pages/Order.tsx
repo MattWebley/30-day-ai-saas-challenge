@@ -4,6 +4,7 @@ import { useTestMode } from "@/contexts/TestModeContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { trackFacebookEvent, generateEventId } from "@/components/FacebookPixel";
+import { getStoredUtmData } from "@/hooks/useUtm";
 
 // ⬇️ SET TO true TO PAUSE PURCHASES ⬇️
 const SALES_PAUSED = false;
@@ -67,7 +68,7 @@ export default function Order() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ currency: selectedCurrency, unlockAllDays }),
+        body: JSON.stringify({ currency: selectedCurrency, unlockAllDays, utm: getStoredUtmData() }),
         signal: controller.signal
       });
       clearTimeout(timeoutId);
