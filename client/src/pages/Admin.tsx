@@ -776,27 +776,42 @@ export default function Admin() {
 
                 {/* Conversion funnel */}
                 <div className="grid sm:grid-cols-4 gap-3 mb-6">
-                  {[
-                    { label: "Total Visitors", value: analyticsData.funnel.totalVisitors, color: "blue" },
-                    { label: "Landing Page", value: analyticsData.funnel.landingVisitors, color: "cyan" },
-                    { label: "Order Page", value: analyticsData.funnel.orderVisitors, color: "amber" },
-                    { label: "Purchases", value: analyticsData.funnel.purchases, color: "green" },
-                  ].map((step, i, arr) => (
-                    <div key={step.label} className="relative">
-                      <div className={`bg-slate-50 rounded-lg p-3 border border-slate-200`}>
-                        <p className="text-xs text-slate-500">{step.label}</p>
-                        <p className="text-2xl font-extrabold text-slate-900">{step.value}</p>
-                        {i > 0 && arr[i - 1].value > 0 && (
-                          <p className="text-xs text-slate-400">
-                            {((step.value / arr[i - 1].value) * 100).toFixed(1)}% conv.
-                          </p>
+                  {(() => {
+                    const steps = [
+                      { label: "Total Visitors", value: analyticsData.funnel.totalVisitors },
+                      { label: "Landing Page", value: analyticsData.funnel.landingVisitors },
+                      { label: "Order Page", value: analyticsData.funnel.orderVisitors },
+                      { label: "Purchases", value: analyticsData.funnel.purchases },
+                    ];
+                    const totalVisitors = steps[0].value;
+                    const purchases = steps[3].value;
+                    return steps.map((step, i) => (
+                      <div key={step.label} className="relative">
+                        <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                          <p className="text-xs text-slate-500">{step.label}</p>
+                          <p className="text-2xl font-extrabold text-slate-900">{step.value}</p>
+                          {i > 0 && steps[i - 1].value > 0 && (
+                            <p className="text-xs text-slate-400">
+                              {((step.value / steps[i - 1].value) * 100).toFixed(1)}% from prev
+                            </p>
+                          )}
+                          {i > 0 && i < 3 && totalVisitors > 0 && (
+                            <p className="text-xs text-slate-400">
+                              {((step.value / totalVisitors) * 100).toFixed(1)}% of visitors
+                            </p>
+                          )}
+                          {i === 3 && totalVisitors > 0 && (
+                            <p className="text-xs font-semibold text-green-600">
+                              {((purchases / totalVisitors) * 100).toFixed(2)}% overall conv.
+                            </p>
+                          )}
+                        </div>
+                        {i < steps.length - 1 && (
+                          <ArrowRight className="hidden sm:block absolute -right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 z-10" />
                         )}
                       </div>
-                      {i < arr.length - 1 && (
-                        <ArrowRight className="hidden sm:block absolute -right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 z-10" />
-                      )}
-                    </div>
-                  ))}
+                    ));
+                  })()}
                 </div>
 
                 {/* Daily visitors chart */}
