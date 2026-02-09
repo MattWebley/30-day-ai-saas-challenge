@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Check, ArrowRight } from "lucide-react";
+import { trackFacebookEvent } from "@/components/FacebookPixel";
 
 export default function CheckoutSuccess() {
   const [, setLocation] = useLocation();
@@ -27,15 +28,14 @@ export default function CheckoutSuccess() {
 
       // If there's a session_id, this is coming from main challenge checkout
       if (sessionId) {
-        // Track purchase with Meta Pixel
-        if (window.fbq) {
-          window.fbq('track', 'Purchase', {
-            value: currency === 'gbp' ? 295 : 399,
-            currency: currency.toUpperCase(),
-            content_name: '21-Day AI SaaS Challenge',
-            content_type: 'product'
-          });
-        }
+        // Track purchase with Meta Pixel (use sessionId as eventId for CAPI dedup)
+        trackFacebookEvent('Purchase', {
+          value: currency === 'gbp' ? 295 : 399,
+          currency: currency.toUpperCase(),
+          content_name: '21-Day AI SaaS Challenge',
+          content_type: 'product',
+          content_ids: ['challenge-21day']
+        }, sessionId || undefined);
 
         try {
           // Save the Stripe customer ID for one-click upsells

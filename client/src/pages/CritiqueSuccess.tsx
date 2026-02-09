@@ -3,6 +3,7 @@ import { Check, Send, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { trackFacebookEvent, generateEventId } from "@/components/FacebookPixel";
 
 export default function CritiqueSuccess() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -22,14 +23,15 @@ export default function CritiqueSuccess() {
 
   // Track purchase with Meta Pixel (only once)
   useEffect(() => {
-    if (window.fbq && !purchaseTracked.current) {
+    if (!purchaseTracked.current) {
       purchaseTracked.current = true;
-      window.fbq('track', 'Purchase', {
+      trackFacebookEvent('Purchase', {
         value: 495,
         currency: 'GBP',
         content_name: 'Sales Page Critique',
-        content_type: 'product'
-      });
+        content_type: 'product',
+        content_ids: ['critique-sales-page']
+      }, generateEventId());
     }
   }, []);
 

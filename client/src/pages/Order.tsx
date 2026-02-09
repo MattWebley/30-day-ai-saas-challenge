@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft, FastForward, Copy, Clock } from "lucide-react";
 import { useTestMode } from "@/contexts/TestModeContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { trackFacebookEvent, generateEventId } from "@/components/FacebookPixel";
 
 // ⬇️ SET TO true TO PAUSE PURCHASES ⬇️
 const SALES_PAUSED = false;
@@ -13,6 +14,17 @@ export default function Order() {
   const { testMode } = useTestMode();
   const [selectedCurrency, setSelectedCurrency] = useState<'usd' | 'gbp'>('usd');
   const [copiedCode, setCopiedCode] = useState(false);
+
+  // Track ViewContent when the order page loads
+  useEffect(() => {
+    trackFacebookEvent('ViewContent', {
+      content_name: '21-Day AI SaaS Challenge',
+      content_type: 'product',
+      content_ids: ['challenge-21day'],
+      value: 399,
+      currency: 'USD'
+    }, generateEventId());
+  }, []);
 
   const copyPromoCode = async () => {
     await navigator.clipboard.writeText('LAUNCHOFFER');
@@ -36,6 +48,17 @@ export default function Order() {
     if (isCheckingOut) return;
     setIsCheckingOut(true);
     setCheckoutError(null);
+
+    // Track InitiateCheckout with Meta Pixel
+    trackFacebookEvent('InitiateCheckout', {
+      content_name: '21-Day AI SaaS Challenge',
+      content_type: 'product',
+      content_ids: ['challenge-21day'],
+      value: pricing[selectedCurrency].amount + (unlockAllDays ? bumpPricing[selectedCurrency].amount : 0),
+      currency: pricing[selectedCurrency].code,
+      num_items: unlockAllDays ? 2 : 1
+    }, generateEventId());
+
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);

@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, useSearch } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { trackFacebookEvent, generateEventId } from "@/components/FacebookPixel";
 
 export default function CoachingSuccess() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -16,25 +17,33 @@ export default function CoachingSuccess() {
 
   // Track purchase with Meta Pixel
   useEffect(() => {
-    if (window.fbq) {
-      // Determine value based on type (GBP prices)
-      const getPurchaseValue = () => {
-        switch (type) {
-          case "expert-single": return 349;
-          case "expert": return 995;
-          case "matt-single": return 1995;
-          case "matt": return 3995;
-          default: return 995;
-        }
-      };
+    const getPurchaseValue = () => {
+      switch (type) {
+        case "expert-single": return 349;
+        case "expert": return 995;
+        case "matt-single": return 1995;
+        case "matt": return 3995;
+        default: return 995;
+      }
+    };
 
-      window.fbq('track', 'Purchase', {
-        value: getPurchaseValue(),
-        currency: 'GBP',
-        content_name: getProductName(),
-        content_type: 'product'
-      });
-    }
+    const getContentId = () => {
+      switch (type) {
+        case "expert-single": return 'coaching-expert-single';
+        case "expert": return 'coaching-expert-pack';
+        case "matt-single": return 'coaching-matt-single';
+        case "matt": return 'coaching-matt-pack';
+        default: return 'coaching-expert-pack';
+      }
+    };
+
+    trackFacebookEvent('Purchase', {
+      value: getPurchaseValue(),
+      currency: 'GBP',
+      content_name: getProductName(),
+      content_type: 'product',
+      content_ids: [getContentId()]
+    }, generateEventId());
   }, [type]);
 
   const getProductName = () => {

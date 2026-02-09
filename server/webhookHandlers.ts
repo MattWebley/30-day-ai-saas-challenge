@@ -6,6 +6,7 @@ import { users, pendingPurchases, coachingPurchases, magicTokens } from '../shar
 import { eq, sql } from 'drizzle-orm';
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendCoachingPurchaseNotificationEmail, sendCritiqueNotificationEmail, sendWelcomeAccessEmail } from './emailService';
 import { addContactToSysteme } from './systemeService';
+import { sendPurchaseEvent } from './metaConversions';
 
 export class WebhookHandlers {
   static lastWebhookAt: Date | null = null;
@@ -98,6 +99,23 @@ export class WebhookHandlers {
     // Bump (Unlock All Days) is now included as a line item in the Stripe checkout
     // so it's already paid for - no separate charge needed. The LAUNCHOFFER coupon
     // is restricted to the challenge product only, so the bump is always full price.
+
+    // Send server-side Purchase event to Meta Conversions API
+    // Uses Stripe session ID as event_id for deduplication with client-side pixel
+    if (productType === 'challenge') {
+      const firstName = session.customer_details?.name?.split(' ')[0] || undefined;
+      const lastName = session.customer_details?.name?.split(' ').slice(1).join(' ') || undefined;
+      sendPurchaseEvent({
+        eventId: session.id,
+        email,
+        value: amountPaid / 100,
+        currency: currency.toUpperCase(),
+        contentName: '21-Day AI SaaS Challenge',
+        contentIds: ['challenge-21day'],
+        firstName,
+        lastName,
+      }).catch(err => console.error('[Webhook] Meta CAPI error:', err));
+    }
 
     if (user) {
       // User exists - grant access directly

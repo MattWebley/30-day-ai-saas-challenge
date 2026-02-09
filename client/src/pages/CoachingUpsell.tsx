@@ -3,6 +3,7 @@ import { ArrowRight, Check, Video, Calendar, Clock, Users, Zap, Shield, Eye, Che
 import { useTestMode } from "@/contexts/TestModeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { LazyVimeo } from "@/components/LazyVimeo";
+import { trackFacebookEvent, generateEventId } from "@/components/FacebookPixel";
 
 export default function CoachingUpsell() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -93,14 +94,13 @@ export default function CoachingUpsell() {
       if (data.success) {
         // One-click purchase succeeded!
         // Track purchase with Meta Pixel
-        if (window.fbq) {
-          window.fbq('track', 'Purchase', {
-            value: price.amount,
-            currency: currency.toUpperCase(),
-            content_name: '4x Coaching Sessions (Upsell)',
-            content_type: 'product'
-          });
-        }
+        trackFacebookEvent('Purchase', {
+          value: price.amount,
+          currency: currency.toUpperCase(),
+          content_name: '4x Coaching Sessions (Upsell)',
+          content_type: 'product',
+          content_ids: ['coaching-upsell']
+        }, generateEventId());
 
         setPurchaseSuccess(true);
         setButtonText("Added to Your Order!");

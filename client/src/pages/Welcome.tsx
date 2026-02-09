@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Check, ArrowRight, Sparkles, Calendar, BookOpen, Trophy, Lock, Eye, EyeOff, Mail } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import confetti from "canvas-confetti";
 import { toast } from "sonner";
+import { trackFacebookEvent, generateEventId } from "@/components/FacebookPixel";
 
 export default function Welcome() {
   const { user, isAuthenticated, isLoading } = useAuth();
@@ -16,6 +17,18 @@ export default function Welcome() {
   const [passwordSet, setPasswordSet] = useState(false);
 
   const hasPurchased = (user as any)?.challengePurchased || (user as any)?.coachingPurchased || (user as any)?.isAdmin;
+  const registrationTracked = useRef(false);
+
+  // Track CompleteRegistration when an authenticated, paid user reaches this page
+  useEffect(() => {
+    if (isAuthenticated && hasPurchased && !registrationTracked.current) {
+      registrationTracked.current = true;
+      trackFacebookEvent('CompleteRegistration', {
+        content_name: '21-Day AI SaaS Challenge',
+        status: true
+      }, generateEventId());
+    }
+  }, [isAuthenticated, hasPurchased]);
 
   useEffect(() => {
     // Trigger confetti on load (only if authenticated AND paid)
