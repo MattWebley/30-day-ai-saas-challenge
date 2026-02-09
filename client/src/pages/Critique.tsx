@@ -16,7 +16,8 @@ export default function Critique() {
 
   // Check if user has reached Launch phase (Day 19+)
   const lastCompletedDay = (stats as any)?.lastCompletedDay ?? -1;
-  const hasReachedLaunchPhase = lastCompletedDay >= 18; // Completed Day 18 = on Day 19
+  const allDaysUnlocked = (user as any)?.allDaysUnlocked || false;
+  const hasReachedLaunchPhase = lastCompletedDay >= 18 || allDaysUnlocked; // Completed Day 18 = on Day 19
 
   // Set default currency based on user's purchase currency
   useEffect(() => {

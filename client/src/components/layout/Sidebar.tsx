@@ -300,7 +300,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 </span>
               </Link>
             )}
-            {completedDays.has(8) || testMode ? (
+            {completedDays.has(8) || testMode || (stats as any)?.allDaysUnlocked ? (
               <Link href="/claude-code" onClick={handleNavClick}>
                 <span className={cn(
                   "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
@@ -365,7 +365,7 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 1:1 Coaching Calls
               </span>
             </Link>
-            {lastCompleted >= 18 || testMode ? (
+            {lastCompleted >= 18 || testMode || (stats as any)?.allDaysUnlocked ? (
               <Link href="/critique" onClick={handleNavClick}>
                 <span className={cn(
                   "flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
