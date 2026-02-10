@@ -62,6 +62,7 @@ export const users = pgTable("users", {
   // Drip email opt-out
   dripUnsubscribed: boolean("drip_unsubscribed").default(false),
   // Ban system
+  isCoach: boolean("is_coach").default(false),
   isBanned: boolean("is_banned").default(false),
   banReason: text("ban_reason"),
   bannedAt: timestamp("banned_at"),
@@ -102,6 +103,7 @@ export const coachingPurchases = pgTable("coaching_purchases", {
   amountPaid: integer("amount_paid").notNull(), // in cents
   currency: varchar("currency").notNull(), // 'usd' or 'gbp'
   stripeSessionId: varchar("stripe_session_id"),
+  assignedCoachId: integer("assigned_coach_id"), // refs coaches.id (nullable until assigned)
   purchasedAt: timestamp("purchased_at").defaultNow(),
 });
 
@@ -801,3 +803,63 @@ export const moodCheckins = pgTable("mood_checkins", {
 
 export type MoodCheckin = typeof moodCheckins.$inferSelect;
 export type InsertMoodCheckin = typeof moodCheckins.$inferInsert;
+
+// Coaches - coach profiles linked to user accounts
+export const coaches = pgTable("coaches", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  displayName: varchar("display_name").notNull(),
+  email: varchar("email").notNull(),
+  calComLink: varchar("cal_com_link"), // cal.com booking link
+  ratePerSession: integer("rate_per_session").notNull(), // in cents
+  rateCurrency: varchar("rate_currency").notNull().default('gbp'), // 'usd' or 'gbp'
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("coaches_user_id_idx").on(table.userId),
+]);
+
+export type Coach = typeof coaches.$inferSelect;
+export type InsertCoach = typeof coaches.$inferInsert;
+
+// Coaching sessions - individual sessions within a coaching purchase
+export const coachingSessions = pgTable("coaching_sessions", {
+  id: serial("id").primaryKey(),
+  coachingPurchaseId: integer("coaching_purchase_id").notNull().references(() => coachingPurchases.id, { onDelete: "cascade" }),
+  coachId: integer("coach_id").notNull().references(() => coaches.id, { onDelete: "cascade" }),
+  clientUserId: varchar("client_user_id"),
+  clientEmail: varchar("client_email").notNull(),
+  sessionNumber: integer("session_number").notNull(), // 1, 2, 3, or 4
+  status: varchar("status").notNull().default('pending'), // 'pending' | 'completed' | 'cancelled'
+  completedAt: timestamp("completed_at"),
+  coachNotes: text("coach_notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("coaching_sessions_coach_id_idx").on(table.coachId),
+  index("coaching_sessions_purchase_id_idx").on(table.coachingPurchaseId),
+  index("coaching_sessions_client_idx").on(table.clientUserId),
+]);
+
+export type CoachingSession = typeof coachingSessions.$inferSelect;
+export type InsertCoachingSession = typeof coachingSessions.$inferInsert;
+
+// Coach payouts - payout requests from coaches
+export const coachPayouts = pgTable("coach_payouts", {
+  id: serial("id").primaryKey(),
+  coachId: integer("coach_id").notNull().references(() => coaches.id, { onDelete: "cascade" }),
+  amount: integer("amount").notNull(), // in cents
+  currency: varchar("currency").notNull().default('gbp'),
+  status: varchar("status").notNull().default('requested'), // 'requested' | 'paid'
+  requestedAt: timestamp("requested_at").defaultNow(),
+  paidAt: timestamp("paid_at"),
+  invoiceNumber: varchar("invoice_number"),
+  // Session IDs included in this payout (for invoice generation)
+  sessionIds: jsonb("session_ids").$type<number[]>(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("coach_payouts_coach_id_idx").on(table.coachId),
+  index("coach_payouts_status_idx").on(table.status),
+]);
+
+export type CoachPayout = typeof coachPayouts.$inferSelect;
+export type InsertCoachPayout = typeof coachPayouts.$inferInsert;

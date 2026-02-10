@@ -49,8 +49,9 @@ import AdminContent from "./admin/AdminContent";
 import AdminMarketing from "./admin/AdminMarketing";
 import AdminSettings from "./admin/AdminSettings";
 import AdminEmails from "./admin/AdminEmails";
+import AdminCoaches from "./admin/AdminCoaches";
 
-type TabKey = "overview" | "users" | "revenue" | "content" | "marketing" | "emails" | "settings";
+type TabKey = "overview" | "users" | "revenue" | "content" | "marketing" | "emails" | "coaches" | "settings";
 type ChartRange = "1" | "3" | "7" | "30" | "90" | "365" | "thisYear" | "lastYear";
 const CHART_RANGES: { value: ChartRange; label: string }[] = [
   { value: "1", label: "24h" },
@@ -70,6 +71,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "content", label: "Content" },
   { key: "marketing", label: "Marketing" },
   { key: "emails", label: "Emails" },
+  { key: "coaches", label: "Coaches" },
   { key: "settings", label: "Settings" },
 ];
 
@@ -1140,6 +1142,7 @@ export default function Admin() {
         {activeTab === "content" && <AdminContent />}
         {activeTab === "marketing" && <AdminMarketing />}
         {activeTab === "emails" && <AdminEmails />}
+        {activeTab === "coaches" && <AdminCoaches />}
         {activeTab === "settings" && <AdminSettings />}
       </div>
     </Layout>

@@ -50,6 +50,8 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
+import CoachLogin from "@/pages/CoachLogin";
+import CoachDashboard from "@/pages/CoachDashboard";
 import { CookieConsent } from "@/components/CookieConsent";
 import { FacebookPixel } from "@/components/FacebookPixel";
 
@@ -80,7 +82,7 @@ function Router() {
   usePageTracking();
 
   // Redirect authenticated but non-paying users to order page
-  const hasPurchased = (user as any)?.challengePurchased || (user as any)?.coachingPurchased || (user as any)?.isAdmin;
+  const hasPurchased = (user as any)?.challengePurchased || (user as any)?.coachingPurchased || (user as any)?.isAdmin || (user as any)?.isCoach;
   const protectedPaths = ['/dashboard', '/badges', '/referrals', '/build-log', '/claude-code', '/settings', '/coaching', '/critique', '/testimonial', '/congratulations'];
   const isProtectedRoute = protectedPaths.some(path => location.startsWith(path));
   if (isAuthenticated && !hasPurchased && isProtectedRoute) {
@@ -89,7 +91,7 @@ function Router() {
   }
 
   // Public routes that don't need auth check
-  const publicPaths = ['/order', '/unlock', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password'];
+  const publicPaths = ['/order', '/unlock', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password', '/coach-login', '/coach'];
   const isPublicRoute = publicPaths.some(path => location.startsWith(path)) || location === '/';
 
   // Only show loading spinner for protected routes
@@ -128,6 +130,9 @@ function Router() {
         <Route path="/auth-error" component={AuthError} />
         <Route path="/auth/error" component={AuthError} />
         <Route path="/auth/magic" component={MagicVerify} />
+        {/* Coach routes */}
+        <Route path="/coach-login" component={CoachLogin} />
+        {isAuthenticated && <Route path="/coach" component={CoachDashboard} />}
         {/* Admin route - available to any authenticated user (component checks isAdmin) */}
         {isAuthenticated && <Route path="/admin" component={Admin} />}
         {!isAuthenticated ? (

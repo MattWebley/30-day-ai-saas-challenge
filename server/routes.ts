@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, moodCheckins, type User, userProgress, chatMessages, dayComments, dayQuestions, userBadges, aiUsageLogs, showcase, testimonials, badges, pageViews } from "@shared/schema";
+import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, moodCheckins, type User, userProgress, chatMessages, dayComments, dayQuestions, userBadges, aiUsageLogs, showcase, testimonials, badges, pageViews, coaches, coachingSessions, coachPayouts } from "@shared/schema";
 import dns from "dns";
 import { promisify } from "util";
 import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
@@ -10,7 +10,7 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
 import { eq, desc, isNull, isNotNull, sql, and, or, gte, lte, count, countDistinct } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails, sendCoachAssignmentEmail, sendBookNextSessionEmail } from "./emailService";
 import { addContactToSysteme, addContactToSystemeDetailed } from "./systemeService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -500,7 +500,7 @@ export async function registerRoutes(
         .set({ lastLoginAt: new Date(), loginCount: (user.loginCount || 0) + 1 })
         .where(eq(users.id, user.id));
 
-      res.json({ success: true, message: "Logged in successfully" });
+      res.json({ success: true, message: "Logged in successfully", isCoach: user.isCoach || false });
     } catch (error) {
       console.error("Error logging in:", error);
       res.status(500).json({ message: "Failed to log in" });
@@ -1263,6 +1263,7 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
             amountPaid: 0,
             currency: cu.purchaseCurrency || 'gbp',
             stripeSessionId: null as any,
+            assignedCoachId: null,
             purchasedAt: cu.createdAt as any,
           });
         }
@@ -1285,6 +1286,7 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
             amountPaid: pp.amountPaid,
             currency: pp.currency,
             stripeSessionId: pp.stripeSessionId as any,
+            assignedCoachId: null,
             purchasedAt: pp.createdAt as any,
           });
           purchaseEmails.add(pp.email.toLowerCase());
@@ -8355,6 +8357,653 @@ Example format:
     } catch (error: any) {
       console.error("Error backfilling Systeme:", error);
       res.status(500).json({ message: error.message || "Backfill failed" });
+    }
+  });
+
+  // =============================================
+  // COACH ADMIN ENDPOINTS (Matt's admin panel)
+  // =============================================
+
+  // Helper: check if user is admin
+  const requireAdmin = async (req: any, res: any): Promise<boolean> => {
+    const userId = req.user?.claims?.sub;
+    if (!userId) { res.status(401).json({ message: "Unauthorized" }); return false; }
+    const user = await storage.getUser(userId);
+    if (!user?.isAdmin) { res.status(403).json({ message: "Admin access required" }); return false; }
+    return true;
+  };
+
+  // Helper: check if user is a coach
+  const requireCoach = async (req: any, res: any): Promise<{ userId: string; coachId: number } | null> => {
+    const userId = req.user?.claims?.sub;
+    if (!userId) { res.status(401).json({ message: "Unauthorized" }); return null; }
+    const user = await storage.getUser(userId);
+    if (!user?.isCoach) { res.status(403).json({ message: "Coach access required" }); return null; }
+    const [coach] = await db.select().from(coaches).where(eq(coaches.userId, userId));
+    if (!coach) { res.status(403).json({ message: "Coach profile not found" }); return null; }
+    return { userId, coachId: coach.id };
+  };
+
+  // GET /api/admin/coaches - List all coaches with stats
+  app.get('/api/admin/coaches', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const allCoaches = await db.select().from(coaches).orderBy(desc(coaches.createdAt));
+
+      // Get stats for each coach
+      const coachesWithStats = await Promise.all(allCoaches.map(async (coach) => {
+        const sessions = await db.select().from(coachingSessions).where(eq(coachingSessions.coachId, coach.id));
+        const completedSessions = sessions.filter(s => s.status === 'completed');
+        const payouts = await db.select().from(coachPayouts).where(eq(coachPayouts.coachId, coach.id));
+        const paidOut = payouts.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
+        const pendingPayouts = payouts.filter(p => p.status === 'requested').reduce((sum, p) => sum + p.amount, 0);
+        const totalEarned = completedSessions.length * coach.ratePerSession;
+        const availableBalance = totalEarned - paidOut - pendingPayouts;
+
+        // Unique clients
+        const clientIds = Array.from(new Set(sessions.map(s => s.clientUserId || s.clientEmail)));
+
+        return {
+          ...coach,
+          stats: {
+            totalClients: clientIds.length,
+            completedSessions: completedSessions.length,
+            pendingSessions: sessions.filter(s => s.status === 'pending').length,
+            totalEarned,
+            availableBalance,
+            paidOut,
+            pendingPayouts,
+          },
+        };
+      }));
+
+      res.json(coachesWithStats);
+    } catch (error: any) {
+      console.error("Error fetching coaches:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch coaches" });
+    }
+  });
+
+  // POST /api/admin/coaches - Create a new coach
+  app.post('/api/admin/coaches', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const { email, firstName, password, calComLink, ratePerSession, rateCurrency } = req.body;
+
+      if (!email || !firstName || !password || !ratePerSession) {
+        return res.status(400).json({ message: "Email, first name, password, and rate per session are required" });
+      }
+
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      const normalizedEmail = email.toLowerCase().trim();
+
+      // Check if user already exists
+      const [existing] = await db.select().from(users).where(sql`lower(${users.email}) = ${normalizedEmail}`);
+
+      let userId: string;
+
+      if (existing) {
+        // Existing user - just mark as coach
+        userId = existing.id;
+        await db.update(users).set({ isCoach: true }).where(eq(users.id, userId));
+      } else {
+        // Create new user with password
+        const salt = randomBytes(16).toString('hex');
+        const hash = scryptSync(password, salt, 64).toString('hex');
+        const passwordHash = `${salt}:${hash}`;
+
+        const newUserId = crypto.randomUUID();
+        await db.insert(users).values({
+          id: newUserId,
+          email: normalizedEmail,
+          firstName: firstName.trim(),
+          passwordHash,
+          isCoach: true,
+        });
+        userId = newUserId;
+      }
+
+      // Check if coach record already exists
+      const [existingCoach] = await db.select().from(coaches).where(eq(coaches.userId, userId));
+      if (existingCoach) {
+        return res.status(409).json({ message: "This user is already a coach" });
+      }
+
+      // Create coach profile
+      const [newCoach] = await db.insert(coaches).values({
+        userId,
+        displayName: firstName.trim(),
+        email: normalizedEmail,
+        calComLink: calComLink?.trim() || null,
+        ratePerSession: parseInt(ratePerSession),
+        rateCurrency: rateCurrency || 'gbp',
+      }).returning();
+
+      res.json(newCoach);
+    } catch (error: any) {
+      console.error("Error creating coach:", error);
+      res.status(500).json({ message: error.message || "Failed to create coach" });
+    }
+  });
+
+  // PATCH /api/admin/coaches/:id - Update coach details
+  app.patch('/api/admin/coaches/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const coachId = parseInt(req.params.id);
+      const { displayName, calComLink, ratePerSession, rateCurrency, isActive } = req.body;
+
+      const updateData: Record<string, any> = {};
+      if (displayName !== undefined) updateData.displayName = displayName.trim();
+      if (calComLink !== undefined) updateData.calComLink = calComLink?.trim() || null;
+      if (ratePerSession !== undefined) updateData.ratePerSession = parseInt(ratePerSession);
+      if (rateCurrency !== undefined) updateData.rateCurrency = rateCurrency;
+      if (isActive !== undefined) updateData.isActive = isActive;
+
+      const [updated] = await db.update(coaches).set(updateData).where(eq(coaches.id, coachId)).returning();
+
+      if (!updated) {
+        return res.status(404).json({ message: "Coach not found" });
+      }
+
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating coach:", error);
+      res.status(500).json({ message: error.message || "Failed to update coach" });
+    }
+  });
+
+  // GET /api/admin/unassigned-coaching - List coaching purchases without a coach
+  app.get('/api/admin/unassigned-coaching', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const unassigned = await db.select().from(coachingPurchases)
+        .where(isNull(coachingPurchases.assignedCoachId))
+        .orderBy(desc(coachingPurchases.purchasedAt));
+
+      // Enrich with user info
+      const enriched = await Promise.all(unassigned.map(async (cp) => {
+        let user = null;
+        if (cp.userId) {
+          user = await storage.getUser(cp.userId);
+        }
+        return {
+          ...cp,
+          user: user ? { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email } : null,
+        };
+      }));
+
+      res.json(enriched);
+    } catch (error: any) {
+      console.error("Error fetching unassigned coaching:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch unassigned coaching" });
+    }
+  });
+
+  // POST /api/admin/coaching-purchases/:id/assign - Assign a client to a coach
+  app.post('/api/admin/coaching-purchases/:id/assign', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const purchaseId = parseInt(req.params.id);
+      const { coachId } = req.body;
+
+      if (!coachId) {
+        return res.status(400).json({ message: "Coach ID is required" });
+      }
+
+      // Get the coaching purchase
+      const [purchase] = await db.select().from(coachingPurchases).where(eq(coachingPurchases.id, purchaseId));
+      if (!purchase) {
+        return res.status(404).json({ message: "Coaching purchase not found" });
+      }
+
+      // Get the coach
+      const [coach] = await db.select().from(coaches).where(eq(coaches.id, parseInt(coachId)));
+      if (!coach) {
+        return res.status(404).json({ message: "Coach not found" });
+      }
+
+      // Update the purchase with assigned coach
+      await db.update(coachingPurchases)
+        .set({ assignedCoachId: coach.id })
+        .where(eq(coachingPurchases.id, purchaseId));
+
+      // Create pending session records
+      for (let i = 1; i <= purchase.sessionsTotal; i++) {
+        await db.insert(coachingSessions).values({
+          coachingPurchaseId: purchaseId,
+          coachId: coach.id,
+          clientUserId: purchase.userId || null,
+          clientEmail: purchase.email,
+          sessionNumber: i,
+          status: 'pending',
+        });
+      }
+
+      // Send assignment email to client
+      try {
+        await sendCoachAssignmentEmail({
+          to: purchase.email,
+          firstName: '',
+          coachName: coach.displayName,
+          calComLink: coach.calComLink || '',
+          sessionsTotal: purchase.sessionsTotal,
+        });
+      } catch (emailErr) {
+        console.error("Failed to send coach assignment email:", emailErr);
+        // Don't fail the assignment if email fails
+      }
+
+      res.json({ success: true, message: `Assigned to ${coach.displayName} with ${purchase.sessionsTotal} sessions created` });
+    } catch (error: any) {
+      console.error("Error assigning coach:", error);
+      res.status(500).json({ message: error.message || "Failed to assign coach" });
+    }
+  });
+
+  // GET /api/admin/coach-payouts - List all payout requests
+  app.get('/api/admin/coach-payouts', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const payouts = await db.select().from(coachPayouts).orderBy(desc(coachPayouts.requestedAt));
+
+      // Enrich with coach info
+      const enriched = await Promise.all(payouts.map(async (payout) => {
+        const [coach] = await db.select().from(coaches).where(eq(coaches.id, payout.coachId));
+        return { ...payout, coach: coach || null };
+      }));
+
+      res.json(enriched);
+    } catch (error: any) {
+      console.error("Error fetching payouts:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch payouts" });
+    }
+  });
+
+  // PATCH /api/admin/coach-payouts/:id - Mark payout as paid
+  app.patch('/api/admin/coach-payouts/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const payoutId = parseInt(req.params.id);
+      const [updated] = await db.update(coachPayouts)
+        .set({ status: 'paid', paidAt: new Date() })
+        .where(eq(coachPayouts.id, payoutId))
+        .returning();
+
+      if (!updated) {
+        return res.status(404).json({ message: "Payout not found" });
+      }
+
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating payout:", error);
+      res.status(500).json({ message: error.message || "Failed to update payout" });
+    }
+  });
+
+  // GET /api/admin/coach-sessions - All sessions across coaches
+  app.get('/api/admin/coach-sessions', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const sessions = await db.select().from(coachingSessions).orderBy(desc(coachingSessions.createdAt));
+
+      // Enrich with coach and client info
+      const enriched = await Promise.all(sessions.map(async (session) => {
+        const [coach] = await db.select().from(coaches).where(eq(coaches.id, session.coachId));
+        let clientUser = null;
+        if (session.clientUserId) {
+          clientUser = await storage.getUser(session.clientUserId);
+        }
+        return {
+          ...session,
+          coach: coach ? { id: coach.id, displayName: coach.displayName } : null,
+          clientUser: clientUser ? { firstName: clientUser.firstName, lastName: clientUser.lastName, email: clientUser.email } : null,
+        };
+      }));
+
+      res.json(enriched);
+    } catch (error: any) {
+      console.error("Error fetching sessions:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch sessions" });
+    }
+  });
+
+  // =============================================
+  // COACH DASHBOARD ENDPOINTS (coach's own view)
+  // =============================================
+
+  // GET /api/coach/profile - Coach's own profile and stats
+  app.get('/api/coach/profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      const [coach] = await db.select().from(coaches).where(eq(coaches.id, auth.coachId));
+      const sessions = await db.select().from(coachingSessions).where(eq(coachingSessions.coachId, auth.coachId));
+      const completedSessions = sessions.filter(s => s.status === 'completed');
+      const payouts = await db.select().from(coachPayouts).where(eq(coachPayouts.coachId, auth.coachId));
+      const paidOut = payouts.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
+      const pendingPayouts = payouts.filter(p => p.status === 'requested').reduce((sum, p) => sum + p.amount, 0);
+      const totalEarned = completedSessions.length * coach.ratePerSession;
+      const availableBalance = totalEarned - paidOut - pendingPayouts;
+
+      res.json({
+        ...coach,
+        stats: {
+          completedSessions: completedSessions.length,
+          pendingSessions: sessions.filter(s => s.status === 'pending').length,
+          totalEarned,
+          availableBalance,
+          paidOut,
+          pendingPayouts,
+        },
+      });
+    } catch (error: any) {
+      console.error("Error fetching coach profile:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch profile" });
+    }
+  });
+
+  // GET /api/coach/clients - Coach's assigned clients with progress data
+  app.get('/api/coach/clients', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      // Get all coaching purchases assigned to this coach
+      const purchases = await db.select().from(coachingPurchases)
+        .where(eq(coachingPurchases.assignedCoachId, auth.coachId));
+
+      const clients = await Promise.all(purchases.map(async (purchase) => {
+        let user = null;
+        let progress: any[] = [];
+        if (purchase.userId) {
+          user = await storage.getUser(purchase.userId);
+          // Get their challenge progress
+          progress = await db.select().from(userProgress)
+            .where(and(eq(userProgress.userId, purchase.userId), eq(userProgress.completed, true)));
+        }
+
+        // Get sessions for this purchase
+        const sessions = await db.select().from(coachingSessions)
+          .where(eq(coachingSessions.coachingPurchaseId, purchase.id));
+
+        const completedSessions = sessions.filter(s => s.status === 'completed').length;
+
+        return {
+          purchaseId: purchase.id,
+          email: purchase.email,
+          packageType: purchase.packageType,
+          sessionsTotal: purchase.sessionsTotal,
+          sessionsCompleted: completedSessions,
+          sessionsRemaining: purchase.sessionsTotal - completedSessions,
+          purchasedAt: purchase.purchasedAt,
+          user: user ? {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            currentDay: progress.length > 0 ? Math.max(...progress.map(p => p.day)) : 0,
+            daysCompleted: progress.length,
+          } : null,
+          sessions,
+        };
+      }));
+
+      res.json(clients);
+    } catch (error: any) {
+      console.error("Error fetching coach clients:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch clients" });
+    }
+  });
+
+  // GET /api/coach/sessions - All sessions for this coach
+  app.get('/api/coach/sessions', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      const sessions = await db.select().from(coachingSessions)
+        .where(eq(coachingSessions.coachId, auth.coachId))
+        .orderBy(desc(coachingSessions.createdAt));
+
+      // Enrich with client info
+      const enriched = await Promise.all(sessions.map(async (session) => {
+        let clientUser = null;
+        if (session.clientUserId) {
+          clientUser = await storage.getUser(session.clientUserId);
+        }
+        return {
+          ...session,
+          clientUser: clientUser ? { firstName: clientUser.firstName, lastName: clientUser.lastName, email: clientUser.email } : null,
+        };
+      }));
+
+      res.json(enriched);
+    } catch (error: any) {
+      console.error("Error fetching coach sessions:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch sessions" });
+    }
+  });
+
+  // POST /api/coach/sessions/:id/complete - Mark session as done
+  app.post('/api/coach/sessions/:id/complete', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      const sessionId = parseInt(req.params.id);
+      const { notes } = req.body;
+
+      // Verify this session belongs to this coach
+      const [session] = await db.select().from(coachingSessions)
+        .where(and(eq(coachingSessions.id, sessionId), eq(coachingSessions.coachId, auth.coachId)));
+
+      if (!session) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      if (session.status === 'completed') {
+        return res.status(400).json({ message: "Session already completed" });
+      }
+
+      // Mark as completed
+      const [updated] = await db.update(coachingSessions)
+        .set({
+          status: 'completed',
+          completedAt: new Date(),
+          coachNotes: notes?.trim() || null,
+        })
+        .where(eq(coachingSessions.id, sessionId))
+        .returning();
+
+      // Get coach details for the email
+      const [coach] = await db.select().from(coaches).where(eq(coaches.id, auth.coachId));
+
+      // Check remaining sessions and send email
+      const allSessions = await db.select().from(coachingSessions)
+        .where(eq(coachingSessions.coachingPurchaseId, session.coachingPurchaseId));
+      const remaining = allSessions.filter(s => s.status === 'pending').length;
+
+      if (remaining > 0 && coach) {
+        try {
+          await sendBookNextSessionEmail({
+            to: session.clientEmail,
+            firstName: '',
+            coachName: coach.displayName,
+            calComLink: coach.calComLink || '',
+            sessionsRemaining: remaining,
+          });
+        } catch (emailErr) {
+          console.error("Failed to send book-next-session email:", emailErr);
+        }
+      }
+
+      res.json({ ...updated, sessionsRemaining: remaining });
+    } catch (error: any) {
+      console.error("Error completing session:", error);
+      res.status(500).json({ message: error.message || "Failed to complete session" });
+    }
+  });
+
+  // GET /api/coach/earnings - Earnings summary
+  app.get('/api/coach/earnings', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      const [coach] = await db.select().from(coaches).where(eq(coaches.id, auth.coachId));
+      const sessions = await db.select().from(coachingSessions)
+        .where(and(eq(coachingSessions.coachId, auth.coachId), eq(coachingSessions.status, 'completed')));
+      const payouts = await db.select().from(coachPayouts)
+        .where(eq(coachPayouts.coachId, auth.coachId));
+
+      const totalEarned = sessions.length * coach.ratePerSession;
+      const paidOut = payouts.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
+      const requested = payouts.filter(p => p.status === 'requested').reduce((sum, p) => sum + p.amount, 0);
+      const availableBalance = totalEarned - paidOut - requested;
+
+      // Enrich sessions with client info
+      const enrichedSessions = await Promise.all(sessions.map(async (session) => {
+        let clientUser = null;
+        if (session.clientUserId) {
+          clientUser = await storage.getUser(session.clientUserId);
+        }
+        return {
+          ...session,
+          earnings: coach.ratePerSession,
+          clientUser: clientUser ? { firstName: clientUser.firstName, lastName: clientUser.lastName, email: clientUser.email } : null,
+        };
+      }));
+
+      res.json({
+        currency: coach.rateCurrency,
+        ratePerSession: coach.ratePerSession,
+        totalEarned,
+        availableBalance,
+        requested,
+        paidOut,
+        completedSessions: enrichedSessions,
+        payouts: payouts.sort((a, b) => new Date(b.requestedAt || 0).getTime() - new Date(a.requestedAt || 0).getTime()),
+      });
+    } catch (error: any) {
+      console.error("Error fetching earnings:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch earnings" });
+    }
+  });
+
+  // POST /api/coach/payouts/request - Request payout of available balance
+  app.post('/api/coach/payouts/request', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      const [coach] = await db.select().from(coaches).where(eq(coaches.id, auth.coachId));
+      const sessions = await db.select().from(coachingSessions)
+        .where(and(eq(coachingSessions.coachId, auth.coachId), eq(coachingSessions.status, 'completed')));
+      const payouts = await db.select().from(coachPayouts)
+        .where(eq(coachPayouts.coachId, auth.coachId));
+
+      const totalEarned = sessions.length * coach.ratePerSession;
+      const paidOut = payouts.filter(p => p.status === 'paid').reduce((sum, p) => sum + p.amount, 0);
+      const requested = payouts.filter(p => p.status === 'requested').reduce((sum, p) => sum + p.amount, 0);
+      const availableBalance = totalEarned - paidOut - requested;
+
+      if (availableBalance <= 0) {
+        return res.status(400).json({ message: "No balance available for payout" });
+      }
+
+      // Find session IDs that haven't been paid out yet
+      const paidSessionIds = payouts.flatMap(p => (p.sessionIds as number[]) || []);
+      const unpaidSessions = sessions.filter(s => !paidSessionIds.includes(s.id));
+      const sessionIds = unpaidSessions.map(s => s.id);
+
+      // Generate invoice number
+      const invoiceNumber = `INV-${coach.id}-${Date.now().toString(36).toUpperCase()}`;
+
+      const [payout] = await db.insert(coachPayouts).values({
+        coachId: auth.coachId,
+        amount: availableBalance,
+        currency: coach.rateCurrency,
+        status: 'requested',
+        invoiceNumber,
+        sessionIds,
+      }).returning();
+
+      res.json(payout);
+    } catch (error: any) {
+      console.error("Error requesting payout:", error);
+      res.status(500).json({ message: error.message || "Failed to request payout" });
+    }
+  });
+
+  // GET /api/coach/invoice/:payoutId - Generate invoice HTML
+  app.get('/api/coach/invoice/:payoutId', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      const payoutId = parseInt(req.params.payoutId);
+      const [payout] = await db.select().from(coachPayouts)
+        .where(and(eq(coachPayouts.id, payoutId), eq(coachPayouts.coachId, auth.coachId)));
+
+      if (!payout) {
+        return res.status(404).json({ message: "Payout not found" });
+      }
+
+      const [coach] = await db.select().from(coaches).where(eq(coaches.id, auth.coachId));
+
+      // Get sessions included in this payout
+      const sessionIds = (payout.sessionIds as number[]) || [];
+      const sessions = sessionIds.length > 0
+        ? await db.select().from(coachingSessions).where(sql`${coachingSessions.id} = ANY(${sessionIds})`)
+        : [];
+
+      // Enrich sessions with client info
+      const enrichedSessions = await Promise.all(sessions.map(async (session) => {
+        let clientName = session.clientEmail;
+        if (session.clientUserId) {
+          const user = await storage.getUser(session.clientUserId);
+          if (user) {
+            clientName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.email || session.clientEmail;
+          }
+        }
+        return { ...session, clientName };
+      }));
+
+      const { generateInvoiceHTML } = await import('./coachInvoiceTemplate');
+      const html = generateInvoiceHTML({
+        invoiceNumber: payout.invoiceNumber || `INV-${payout.id}`,
+        coachName: coach.displayName,
+        coachEmail: coach.email,
+        date: payout.requestedAt || payout.createdAt || new Date(),
+        sessions: enrichedSessions.map(s => ({
+          clientName: s.clientName,
+          completedAt: s.completedAt,
+          amount: coach.ratePerSession,
+        })),
+        total: payout.amount,
+        currency: payout.currency,
+        status: payout.status,
+        paidAt: payout.paidAt,
+      });
+
+      res.setHeader('Content-Type', 'text/html');
+      res.send(html);
+    } catch (error: any) {
+      console.error("Error generating invoice:", error);
+      res.status(500).json({ message: error.message || "Failed to generate invoice" });
     }
   });
 

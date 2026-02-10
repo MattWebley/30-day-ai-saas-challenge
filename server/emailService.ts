@@ -1194,3 +1194,93 @@ export function startDripEmailProcessor(): void {
 
   console.log('[Drip] Email processor started (runs every hour)');
 }
+
+// =============================================
+// COACHING EMAILS
+// =============================================
+
+export interface CoachAssignmentEmailParams {
+  to: string;
+  firstName: string;
+  coachName: string;
+  calComLink: string;
+  sessionsTotal: number;
+}
+
+export async function sendCoachAssignmentEmail(params: CoachAssignmentEmailParams): Promise<void> {
+  const { to, coachName, calComLink, sessionsTotal } = params;
+  const firstName = params.firstName || 'there';
+
+  const bookingLine = calComLink
+    ? `Book your first call here: ${calComLink}`
+    : 'Your coach will be in touch shortly to arrange your first call.';
+
+  await sendAndLog({
+    to,
+    subject: `Your coaching sessions are ready! Meet ${coachName}`,
+    text: `Hi ${firstName},
+
+Great news — your coaching sessions have been set up!
+
+You've been paired with ${coachName}, who will be guiding you through ${sessionsTotal} 1:1 coaching session${sessionsTotal > 1 ? 's' : ''}.
+
+YOUR NEXT STEP
+--------------
+${bookingLine}
+
+During your sessions, your coach will:
+- Review your progress and give personalised feedback
+- Help you overcome any blockers
+- Share strategies specific to your product idea
+- Keep you accountable and on track
+
+BEFORE YOUR FIRST CALL
+-----------------------
+Make sure you're as far along in the challenge as possible — the more progress you've made, the more valuable your coaching session will be.
+
+Looking forward to hearing how it goes!
+
+Matt` + TRANSACTIONAL_FOOTER,
+    recipientName: firstName,
+    templateKey: 'coach_assignment',
+  });
+}
+
+export interface BookNextSessionEmailParams {
+  to: string;
+  firstName: string;
+  coachName: string;
+  calComLink: string;
+  sessionsRemaining: number;
+}
+
+export async function sendBookNextSessionEmail(params: BookNextSessionEmailParams): Promise<void> {
+  const { to, coachName, calComLink, sessionsRemaining } = params;
+  const firstName = params.firstName || 'there';
+
+  const bookingLine = calComLink
+    ? `Book your next call here: ${calComLink}`
+    : `${coachName} will be in touch to arrange your next session.`;
+
+  await sendAndLog({
+    to,
+    subject: `Great session! You have ${sessionsRemaining} coaching session${sessionsRemaining > 1 ? 's' : ''} remaining`,
+    text: `Hi ${firstName},
+
+Your coaching session with ${coachName} has been completed — nice work!
+
+You have ${sessionsRemaining} session${sessionsRemaining > 1 ? 's' : ''} remaining.
+
+BOOK YOUR NEXT SESSION
+----------------------
+${bookingLine}
+
+Tip: The best time to book your next session is when you've made meaningful progress on the challenge. That way you'll get the most value from your coach's feedback.
+
+Keep building!
+
+Matt` + TRANSACTIONAL_FOOTER,
+    recipientName: firstName,
+    templateKey: 'book_next_session',
+  });
+}
