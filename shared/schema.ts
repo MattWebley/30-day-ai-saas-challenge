@@ -105,6 +105,7 @@ export const coachingPurchases = pgTable("coaching_purchases", {
   stripeSessionId: varchar("stripe_session_id"),
   assignedCoachId: integer("assigned_coach_id"), // refs coaches.id (nullable until assigned)
   coachNotes: text("coach_notes"), // Persistent notes about this client (coach fills in)
+  dismissed: boolean("dismissed").default(false), // Admin can dismiss false positives from the queue
   purchasedAt: timestamp("purchased_at").defaultNow(),
 });
 

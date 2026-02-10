@@ -1421,6 +1421,7 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
             stripeSessionId: null as any,
             assignedCoachId: null,
             coachNotes: null,
+            dismissed: false,
             purchasedAt: cu.createdAt as any,
           });
         }
@@ -1445,6 +1446,7 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
             stripeSessionId: pp.stripeSessionId as any,
             assignedCoachId: null,
             coachNotes: null,
+            dismissed: false,
             purchasedAt: pp.createdAt as any,
           });
           purchaseEmails.add(pp.email.toLowerCase());
@@ -8948,6 +8950,27 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     }
   });
 
+  // GET /api/admin/coach-agreements/:coachId - Get signed agreement for a coach
+  app.get('/api/admin/coach-agreements/:coachId', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const coachId = parseInt(req.params.coachId);
+      const [agreement] = await db.select().from(coachAgreements)
+        .where(eq(coachAgreements.coachId, coachId))
+        .orderBy(desc(coachAgreements.signedAt))
+        .limit(1);
+
+      if (!agreement) {
+        return res.status(404).json({ message: "No signed agreement found for this coach" });
+      }
+
+      res.json(agreement);
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to fetch agreement" });
+    }
+  });
+
   // PATCH /api/admin/coaches/:id - Update coach details
   app.patch('/api/admin/coaches/:id', isAuthenticated, async (req: any, res) => {
     try {
@@ -9009,19 +9032,21 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     try {
       if (!await requireAdmin(req, res)) return;
 
-      // 1. Get all actual coaching purchase records
+      // 1. Get all actual coaching purchase records (exclude dismissed)
       const allPurchases = await db.select().from(coachingPurchases)
+        .where(or(eq(coachingPurchases.dismissed, false), isNull(coachingPurchases.dismissed)))
         .orderBy(desc(coachingPurchases.purchasedAt));
       const purchaseEmails = new Set(allPurchases.map(p => p.email.toLowerCase()));
 
       // 2. Find users with coachingPurchased=true who don't have a coachingPurchases record
       const coachingUsers = await db.select().from(users).where(eq(users.coachingPurchased, true));
       for (const cu of coachingUsers) {
-        if (cu.email && !purchaseEmails.has(cu.email.toLowerCase())) {
+        const cuEmail = cu.email || `user-${cu.id}@unknown`;
+        if (!purchaseEmails.has(cuEmail.toLowerCase())) {
           allPurchases.push({
             id: 0,
             userId: cu.id,
-            email: cu.email,
+            email: cuEmail,
             coachType: 'unknown',
             packageType: 'unknown',
             sessionsTotal: 0,
@@ -9030,9 +9055,10 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
             stripeSessionId: null as any,
             assignedCoachId: null,
             coachNotes: null,
+            dismissed: false,
             purchasedAt: cu.createdAt as any,
           });
-          purchaseEmails.add(cu.email.toLowerCase());
+          purchaseEmails.add(cuEmail.toLowerCase());
         }
       }
 
@@ -9055,6 +9081,7 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
             stripeSessionId: pp.stripeSessionId as any,
             assignedCoachId: null,
             coachNotes: null,
+            dismissed: false,
             purchasedAt: pp.createdAt as any,
           });
           purchaseEmails.add(pp.email.toLowerCase());
@@ -9095,6 +9122,83 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     } catch (error: any) {
       console.error("Error fetching all coaching clients:", error);
       res.status(500).json({ message: error.message || "Failed to fetch coaching clients" });
+    }
+  });
+
+  // POST /api/admin/coaching-clients/add - Manually add a coaching client
+  app.post('/api/admin/coaching-clients/add', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const { email, coachType, packageType, sessionsTotal } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      // Check if they already exist in coachingPurchases
+      const existing = await db.select().from(coachingPurchases)
+        .where(sql`lower(${coachingPurchases.email}) = ${email.toLowerCase()}`);
+      if (existing.length > 0) {
+        return res.status(400).json({ message: "This email already has a coaching purchase record" });
+      }
+
+      // Find user by email if they have an account
+      const userRecord = await db.select().from(users)
+        .where(sql`lower(${users.email}) = ${email.toLowerCase()}`);
+      const userId = userRecord[0]?.id || null;
+
+      const sessions = sessionsTotal || (packageType === 'single' ? 1 : 4);
+
+      const [purchase] = await db.insert(coachingPurchases).values({
+        userId,
+        email,
+        coachType: coachType || 'expert',
+        packageType: packageType || 'pack',
+        sessionsTotal: sessions,
+        amountPaid: 0,
+        currency: 'gbp',
+        stripeSessionId: `manual_${Date.now()}`,
+      }).returning();
+
+      res.json({ success: true, purchase, message: `Added ${email} as coaching client` });
+    } catch (error: any) {
+      console.error("Error adding coaching client:", error);
+      res.status(500).json({ message: error.message || "Failed to add coaching client" });
+    }
+  });
+
+  // POST /api/admin/coaching-clients/:id/dismiss - Dismiss a client from the coaching queue
+  app.post('/api/admin/coaching-clients/:id/dismiss', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const id = parseInt(req.params.id);
+      const { email } = req.body;
+
+      if (id === 0 && email) {
+        // Synthetic record from users table — set coachingPurchased to false
+        const userRecord = await db.select().from(users)
+          .where(sql`lower(${users.email}) = ${email.toLowerCase()}`);
+        if (userRecord[0]) {
+          await db.update(users)
+            .set({ coachingPurchased: false })
+            .where(eq(users.id, userRecord[0].id));
+        }
+        return res.json({ success: true, message: `Dismissed ${email}` });
+      }
+
+      if (id > 0) {
+        // Real coachingPurchases record — mark as dismissed
+        await db.update(coachingPurchases)
+          .set({ dismissed: true })
+          .where(eq(coachingPurchases.id, id));
+        return res.json({ success: true, message: `Dismissed coaching purchase #${id}` });
+      }
+
+      res.status(400).json({ message: "Invalid request" });
+    } catch (error: any) {
+      console.error("Error dismissing coaching client:", error);
+      res.status(500).json({ message: error.message || "Failed to dismiss" });
     }
   });
 

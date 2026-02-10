@@ -126,6 +126,10 @@ export default function AdminCoaches() {
   // Form state — invitation only needs email + rate
   const [newCoach, setNewCoach] = useState({ email: '', ratePerSession: '', rateCurrency: 'gbp' });
   const [editData, setEditData] = useState<Partial<Coach>>({});
+  const [showAddClient, setShowAddClient] = useState(false);
+  const [newClient, setNewClient] = useState({ email: '', coachType: 'expert', packageType: 'pack', sessionsTotal: 4 });
+  const [expandedClient, setExpandedClient] = useState<string | null>(null);
+  const [expandedCoachView, setExpandedCoachView] = useState<number | null>(null);
 
   // Queries
   const { data: coaches = [], isLoading } = useQuery<Coach[]>({
@@ -238,6 +242,33 @@ export default function AdminCoaches() {
       toast.success('Default coach updated — new purchases will be auto-assigned');
     },
     onError: (err: any) => toast.error(err.message || 'Failed to set default coach'),
+  });
+
+  const addClient = useMutation({
+    mutationFn: async (data: typeof newClient) => {
+      const res = await apiRequest('POST', '/api/admin/coaching-clients/add', data);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/all-coaching-clients'] });
+      toast.success(data.message || 'Client added');
+      setShowAddClient(false);
+      setNewClient({ email: '', coachType: 'expert', packageType: 'pack', sessionsTotal: 4 });
+    },
+    onError: (err: any) => toast.error(err.message || 'Failed to add client'),
+  });
+
+  const dismissClient = useMutation({
+    mutationFn: async (params: { id: number; email: string }) => {
+      const res = await apiRequest('POST', `/api/admin/coaching-clients/${params.id}/dismiss`, { email: params.email });
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/all-coaching-clients'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/coaches'] });
+      toast.success(data.message || 'Client dismissed');
+    },
+    onError: (err: any) => toast.error(err.message || 'Failed to dismiss'),
   });
 
   const sendCalcomSetup = useMutation({
@@ -431,10 +462,17 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
               {coaches.length === 0 ? (
                 <p className="text-slate-500 py-4 text-center">No coaches yet. Invite your first coach above.</p>
               ) : (
-                coaches.map((coach) => (
-              <div key={coach.id} className={`rounded-lg border p-4 ${coach.isActive ? 'border-slate-200' : 'border-slate-200 opacity-60'}`}>
+                coaches.map((coach) => {
+                  const coachClients = allClients.filter(c => c.assignedCoachId === coach.id);
+                  const coachSessions = allSessions.filter(s => s.coachId === coach.id);
+                  const completedSessions = coachSessions.filter(s => s.status === 'completed');
+                  const scheduledSessions = coachSessions.filter(s => s.status === 'scheduled');
+                  const pendingSess = coachSessions.filter(s => s.status === 'pending');
+                  const isExpanded = expandedCoachView === coach.id;
+                  return (
+              <div key={coach.id} className={`rounded-lg border ${coach.isActive ? 'border-slate-200' : 'border-slate-200 opacity-60'}`}>
                 {editingCoach === coach.id ? (
-                  <div className="space-y-3">
+                  <div className="p-4 space-y-3">
                     <div className="grid sm:grid-cols-2 gap-3">
                       <div>
                         <label className="text-sm font-medium text-slate-700">Display Name</label>
@@ -492,80 +530,248 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-slate-900">{coach.displayName}</h4>
-                        {coach.isActive ? (
-                          <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Active</span>
+                  <>
+                    <div className="p-4">
+                      <div className="flex items-start justify-between">
+                        <div className="space-y-1 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="font-bold text-slate-900">{coach.displayName}</h4>
+                            {coach.isActive ? (
+                              <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Active</span>
+                            ) : (
+                              <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Inactive</span>
+                            )}
+                            {coachesWithAgreements.has(coach.email.toLowerCase()) && (
+                              <button
+                                onClick={async () => {
+                                  try {
+                                    const res = await fetch(`/api/admin/coach-agreements/${coach.id}`);
+                                    if (!res.ok) throw new Error('Failed to load agreement');
+                                    const data = await res.json();
+                                    setPreviewText(
+                                      `${data.fullText}\n\n` +
+                                      `———————————————————————\n` +
+                                      `Signed by: ${data.signatureName}\n` +
+                                      `Date: ${new Date(data.signedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}\n` +
+                                      `Version: ${data.agreementVersion}`
+                                    );
+                                    setPreviewType('agreement');
+                                  } catch {
+                                    toast.error('Failed to load agreement');
+                                  }
+                                }}
+                                className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full flex items-center gap-1 hover:bg-blue-200 cursor-pointer"
+                              >
+                                <FileCheck className="w-3 h-3" /> Agreement signed
+                              </button>
+                            )}
+                            {coach.isDefault && (
+                              <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full flex items-center gap-1">
+                                <UserPlus className="w-3 h-3" /> Auto-assign
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-slate-500">{coach.email}</p>
+                          {coach.calComLink && (
+                            <p className="text-sm text-slate-500">
+                              <Calendar className="w-3.5 h-3.5 inline mr-1" />
+                              <a href={coach.calComLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{coach.calComLink}</a>
+                            </p>
+                          )}
+                          <p className="text-sm text-slate-500">
+                            Rate: <span className="font-semibold text-slate-700">{formatMoney(coach.ratePerSession, coach.rateCurrency)}</span>/session
+                          </p>
+                          {/* Quick stats row */}
+                          <div className="flex gap-4 pt-1 flex-wrap">
+                            <span className="text-xs font-medium text-slate-700">{coachClients.length} client{coachClients.length !== 1 ? 's' : ''}</span>
+                            <span className="text-xs text-green-600">{completedSessions.length} done</span>
+                            <span className="text-xs text-blue-600">{scheduledSessions.length} booked</span>
+                            <span className="text-xs text-slate-400">{pendingSess.length} pending</span>
+                            <span className="text-xs font-medium text-green-600">Balance: {formatMoney(coach.stats.availableBalance, coach.rateCurrency)}</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 ml-3">
+                          <button
+                            onClick={() => setExpandedCoachView(isExpanded ? null : coach.id)}
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-lg"
+                            title="View clients and sessions"
+                          >
+                            <Eye className="w-3.5 h-3.5" /> {isExpanded ? 'Hide' : 'Clients'}
+                          </button>
+                          <button
+                            onClick={() => setDefaultCoach.mutate(coach.isDefault ? null : coach.id)}
+                            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg ${coach.isDefault ? 'text-amber-700 bg-amber-50 hover:bg-amber-100' : 'text-slate-500 bg-slate-50 hover:bg-slate-100'}`}
+                            title={coach.isDefault ? 'Remove as default coach' : 'Set as default coach for new purchases'}
+                          >
+                            {coach.isDefault ? 'Remove Default' : 'Set Default'}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditingCoach(coach.id);
+                              setEditData({ displayName: coach.displayName, calComLink: coach.calComLink || '', ratePerSession: coach.ratePerSession, rateCurrency: coach.rateCurrency });
+                            }}
+                            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
+                            title="Edit"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => updateCoach.mutate({ id: coach.id, data: { isActive: !coach.isActive } })}
+                            className={`p-2 rounded-lg ${coach.isActive ? 'text-red-400 hover:text-red-600 hover:bg-red-50' : 'text-green-400 hover:text-green-600 hover:bg-green-50'}`}
+                            title={coach.isActive ? 'Deactivate' : 'Activate'}
+                          >
+                            {coach.isActive ? <X className="w-4 h-4" /> : <Check className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Expanded per-coach client overview */}
+                    {isExpanded && (
+                      <div className="border-t border-slate-200 bg-slate-50 px-4 py-3">
+                        {coachClients.length === 0 ? (
+                          <p className="text-sm text-slate-500 text-center py-2">No clients assigned yet</p>
                         ) : (
-                          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Inactive</span>
-                        )}
-                        {coachesWithAgreements.has(coach.email.toLowerCase()) && (
-                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full flex items-center gap-1">
-                            <FileCheck className="w-3 h-3" /> Agreement signed
-                          </span>
-                        )}
-                        {coach.isDefault && (
-                          <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full flex items-center gap-1">
-                            <UserPlus className="w-3 h-3" /> Auto-assign
-                          </span>
+                          <div className="space-y-3">
+                            {coachClients.map((client) => {
+                              const clientName = client.user
+                                ? [client.user.firstName, client.user.lastName].filter(Boolean).join(' ') || client.email
+                                : client.email;
+                              const clientSessions = allSessions.filter(s => s.coachingPurchaseId === client.id);
+                              const cCompleted = clientSessions.filter(s => s.status === 'completed').length;
+                              const cScheduled = clientSessions.filter(s => s.status === 'scheduled').length;
+                              const cPending = clientSessions.filter(s => s.status === 'pending').length;
+                              const clientKey = `${coach.id}-${client.id}-${client.email}`;
+                              const isClientExpanded = expandedClient === clientKey;
+
+                              // Find next upcoming session
+                              const nextSession = clientSessions
+                                .filter(s => s.status === 'scheduled' && s.scheduledAt)
+                                .sort((a, b) => new Date(a.scheduledAt!).getTime() - new Date(b.scheduledAt!).getTime())[0];
+
+                              return (
+                                <div key={clientKey} className="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                                  <div
+                                    className="p-3 cursor-pointer hover:bg-slate-50"
+                                    onClick={() => setExpandedClient(isClientExpanded ? null : clientKey)}
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                          <p className="font-medium text-slate-900">{clientName}</p>
+                                          {client.email !== clientName && (
+                                            <span className="text-xs text-slate-400">{client.email}</span>
+                                          )}
+                                        </div>
+                                        <div className="flex items-center gap-3 mt-1 flex-wrap">
+                                          <span className="text-xs text-slate-500">
+                                            {client.coachType === 'matt' ? 'Matt' : 'Expert'} • {client.sessionsTotal} session{client.sessionsTotal !== 1 ? 's' : ''}
+                                          </span>
+                                          {/* Progress bar */}
+                                          <div className="flex items-center gap-1.5">
+                                            {Array.from({ length: client.sessionsTotal || clientSessions.length }, (_, i) => {
+                                              const session = clientSessions[i];
+                                              const status = session?.status || 'empty';
+                                              return (
+                                                <div
+                                                  key={i}
+                                                  className={`w-5 h-2 rounded-full ${
+                                                    status === 'completed' ? 'bg-green-500' :
+                                                    status === 'scheduled' ? 'bg-blue-500' :
+                                                    status === 'pending' ? 'bg-slate-200' :
+                                                    'bg-slate-100'
+                                                  }`}
+                                                  title={`Session ${i + 1}: ${status}`}
+                                                />
+                                              );
+                                            })}
+                                          </div>
+                                          <span className="text-xs text-slate-400">
+                                            {cCompleted}/{client.sessionsTotal} done
+                                          </span>
+                                        </div>
+                                        {nextSession && (
+                                          <p className="text-xs text-blue-600 mt-1">
+                                            Next: {new Date(nextSession.scheduledAt!).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                          </p>
+                                        )}
+                                      </div>
+                                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isClientExpanded ? 'rotate-180' : ''}`} />
+                                    </div>
+                                  </div>
+
+                                  {/* Client session details */}
+                                  {isClientExpanded && (
+                                    <div className="border-t border-slate-100 px-3 py-2 bg-slate-50 space-y-1.5">
+                                      {clientSessions.length === 0 ? (
+                                        <p className="text-xs text-slate-400 py-1">No sessions created yet</p>
+                                      ) : (
+                                        clientSessions.map((s) => (
+                                          <div key={s.id} className="flex items-center justify-between text-sm py-1">
+                                            <span className="text-slate-600">Session #{s.sessionNumber}</span>
+                                            <div className="flex items-center gap-2">
+                                              {s.scheduledAt && (
+                                                <span className="text-xs text-slate-500">
+                                                  {new Date(s.scheduledAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                                </span>
+                                              )}
+                                              {s.completedAt && (
+                                                <span className="text-xs text-slate-500">
+                                                  {new Date(s.completedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                                                </span>
+                                              )}
+                                              {s.status === 'completed' ? (
+                                                <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Done</span>
+                                              ) : s.status === 'scheduled' ? (
+                                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Booked</span>
+                                              ) : s.status === 'cancelled' ? (
+                                                <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full">Cancelled</span>
+                                              ) : (
+                                                <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Pending</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        ))
+                                      )}
+                                      <div className="pt-2 flex items-center justify-between text-xs border-t border-slate-200">
+                                        <span className="text-slate-400">
+                                          Purchased {new Date(client.purchasedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                                          {client.amountPaid > 0 && <> • {formatMoney(client.amountPaid, client.currency)}</>}
+                                        </span>
+                                        <select
+                                          onChange={(e) => {
+                                            if (e.target.value) {
+                                              assignCoach.mutate({
+                                                purchaseId: client.id,
+                                                coachId: parseInt(e.target.value),
+                                                ...(client.id === 0 ? { email: client.email, sessionsTotal: client.sessionsTotal, coachType: client.coachType, packageType: client.packageType, currency: client.currency } : {}),
+                                              });
+                                              e.target.value = '';
+                                            }
+                                          }}
+                                          className="px-2 py-1 border border-slate-200 rounded text-xs bg-white"
+                                          defaultValue=""
+                                        >
+                                          <option value="" disabled>Reassign...</option>
+                                          {activeCoaches.filter(c => c.id !== coach.id).map((c) => (
+                                            <option key={c.id} value={c.id}>{c.displayName}</option>
+                                          ))}
+                                        </select>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
                         )}
                       </div>
-                      <p className="text-sm text-slate-500">{coach.email}</p>
-                      {coach.calComLink && (
-                        <p className="text-sm text-slate-500">
-                          <Calendar className="w-3.5 h-3.5 inline mr-1" />
-                          <a href={coach.calComLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{coach.calComLink}</a>
-                        </p>
-                      )}
-                      <p className="text-sm text-slate-500">
-                        Rate: <span className="font-semibold text-slate-700">{formatMoney(coach.ratePerSession, coach.rateCurrency)}</span>/session
-                      </p>
-                      <div className="flex gap-4 pt-1">
-                        <span className="text-xs text-slate-500">{coach.stats.totalClients} clients</span>
-                        <span className="text-xs text-slate-500">{coach.stats.completedSessions} sessions done</span>
-                        <span className="text-xs text-slate-500">{coach.stats.pendingSessions} pending</span>
-                        <span className="text-xs font-medium text-green-600">Balance: {formatMoney(coach.stats.availableBalance, coach.rateCurrency)}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={`/coach?coachId=${coach.id}`}
-                        className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-lg"
-                        title="View this coach's dashboard"
-                      >
-                        <Eye className="w-3.5 h-3.5" /> View
-                      </a>
-                      <button
-                        onClick={() => setDefaultCoach.mutate(coach.isDefault ? null : coach.id)}
-                        className={`px-2.5 py-1.5 text-xs font-medium rounded-lg ${coach.isDefault ? 'text-amber-700 bg-amber-50 hover:bg-amber-100' : 'text-slate-500 bg-slate-50 hover:bg-slate-100'}`}
-                        title={coach.isDefault ? 'Remove as default coach' : 'Set as default coach for new purchases'}
-                      >
-                        {coach.isDefault ? 'Remove Default' : 'Set Default'}
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEditingCoach(coach.id);
-                          setEditData({ displayName: coach.displayName, calComLink: coach.calComLink || '', ratePerSession: coach.ratePerSession, rateCurrency: coach.rateCurrency });
-                        }}
-                        className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
-                        title="Edit"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => updateCoach.mutate({ id: coach.id, data: { isActive: !coach.isActive } })}
-                        className={`p-2 rounded-lg ${coach.isActive ? 'text-red-400 hover:text-red-600 hover:bg-red-50' : 'text-green-400 hover:text-green-600 hover:bg-green-50'}`}
-                        title={coach.isActive ? 'Deactivate' : 'Activate'}
-                      >
-                        {coach.isActive ? <X className="w-4 h-4" /> : <Check className="w-4 h-4" />}
-                      </button>
-                    </div>
-                  </div>
+                    )}
+                  </>
                 )}
               </div>
-            ))
+            );
+                })
               )}
             </div>
           </>
@@ -691,26 +897,84 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
 
       {/* All Coaching Clients */}
       <Card className={`border border-slate-200 shadow-sm overflow-hidden ${allClients.some(c => !c.assignedCoachId) ? 'border-l-4 border-l-amber-500' : ''}`}>
-        <button onClick={() => toggleSection('clients')} className="w-full p-5 flex items-center gap-3 text-left">
-          <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
-            <UserPlus className="w-5 h-5 text-slate-600" />
-          </div>
-          <div className="flex-1">
-            <h3 className="text-lg font-bold text-slate-900">Coaching Clients</h3>
-            <p className="text-sm text-slate-500">
-              {allClients.length} total
-              {allClients.some(c => !c.assignedCoachId) && (
-                <> — <span className="text-amber-600 font-medium">{allClients.filter(c => !c.assignedCoachId).length} need assignment</span></>
-              )}
-            </p>
-          </div>
-          {allClients.some(c => !c.assignedCoachId) && <AlertTriangle className="w-5 h-5 text-amber-500" />}
-          {openSections.has('clients') ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
-        </button>
+        <div className="p-5 flex items-center justify-between">
+          <button onClick={() => toggleSection('clients')} className="flex items-center gap-3 text-left flex-1">
+            <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+              <UserPlus className="w-5 h-5 text-slate-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-slate-900">Coaching Clients</h3>
+              <p className="text-sm text-slate-500">
+                {allClients.length} total
+                {allClients.some(c => !c.assignedCoachId) && (
+                  <> — <span className="text-amber-600 font-medium">{allClients.filter(c => !c.assignedCoachId).length} need assignment</span></>
+                )}
+              </p>
+            </div>
+            {allClients.some(c => !c.assignedCoachId) && <AlertTriangle className="w-5 h-5 text-amber-500" />}
+            {openSections.has('clients') ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setShowAddClient(!showAddClient); if (!openSections.has('clients')) toggleSection('clients'); }}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-200 ml-3"
+          >
+            <Plus className="w-4 h-4" /> Add Client
+          </button>
+        </div>
 
-        {openSections.has('clients') && allClients.length > 0 && (
+        {openSections.has('clients') && (
           <div className="px-5 pb-5">
-            {/* Unassigned first */}
+            {/* Add client form */}
+            {showAddClient && (
+              <div className="mb-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                <p className="text-sm font-semibold text-slate-700 mb-3">Manually Add Coaching Client</p>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <input
+                    placeholder="Client email"
+                    value={newClient.email}
+                    onChange={(e) => setNewClient(prev => ({ ...prev, email: e.target.value }))}
+                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                  />
+                  <select
+                    value={newClient.coachType}
+                    onChange={(e) => setNewClient(prev => ({ ...prev, coachType: e.target.value }))}
+                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white"
+                  >
+                    <option value="expert">Expert Coaching</option>
+                    <option value="matt">Matt Coaching</option>
+                  </select>
+                  <select
+                    value={newClient.packageType}
+                    onChange={(e) => setNewClient(prev => ({
+                      ...prev,
+                      packageType: e.target.value,
+                      sessionsTotal: e.target.value === 'single' ? 1 : 4,
+                    }))}
+                    className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white"
+                  >
+                    <option value="pack">4-Session Pack</option>
+                    <option value="single">Single Session</option>
+                  </select>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => addClient.mutate(newClient)}
+                      disabled={!newClient.email || addClient.isPending}
+                      className="flex-1 px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                    >
+                      {addClient.isPending ? 'Adding...' : 'Add Client'}
+                    </button>
+                    <button
+                      onClick={() => setShowAddClient(false)}
+                      className="px-3 py-2 bg-white text-slate-600 text-sm border border-slate-200 rounded-lg hover:bg-slate-50"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Unassigned clients */}
             {allClients.filter(c => !c.assignedCoachId).length > 0 && (
               <div className="mb-4">
                 <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-2">Unassigned</p>
@@ -719,35 +983,53 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                     const clientName = client.user
                       ? [client.user.firstName, client.user.lastName].filter(Boolean).join(' ') || client.email
                       : client.email;
+                    const clientSessions = allSessions.filter(s => s.coachingPurchaseId === client.id);
+                    const scheduled = clientSessions.filter(s => s.status === 'scheduled').length;
+                    const completed = clientSessions.filter(s => s.status === 'completed').length;
                     return (
-                      <div key={client.id} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
-                        <div>
-                          <p className="font-medium text-slate-900">{clientName}</p>
-                          <p className="text-sm text-slate-500">
-                            {client.packageType === 'pack' ? '4 Sessions' : '1 Session'} • {client.coachType} •{' '}
-                            {formatMoney(client.amountPaid, client.currency)} •{' '}
-                            {new Date(client.purchasedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                          </p>
+                      <div key={`${client.id}-${client.email}`} className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-slate-900">{clientName}</p>
+                            <p className="text-sm text-slate-500">
+                              {client.coachType === 'matt' ? 'Matt' : 'Expert'} • {client.packageType === 'pack' ? '4 Sessions' : '1 Session'}
+                              {client.amountPaid > 0 && <> • {formatMoney(client.amountPaid, client.currency)}</>}
+                              {' '} • {new Date(client.purchasedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 ml-3">
+                            <select
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  assignCoach.mutate({
+                                    purchaseId: client.id,
+                                    coachId: parseInt(e.target.value),
+                                    ...(client.id === 0 ? { email: client.email, sessionsTotal: client.sessionsTotal, coachType: client.coachType, packageType: client.packageType, currency: client.currency } : {}),
+                                  });
+                                  e.target.value = '';
+                                }
+                              }}
+                              className="px-3 py-1.5 border border-amber-300 rounded-lg text-sm bg-white"
+                              defaultValue=""
+                            >
+                              <option value="" disabled>Assign to...</option>
+                              {activeCoaches.map((coach) => (
+                                <option key={coach.id} value={coach.id}>{coach.displayName}</option>
+                              ))}
+                            </select>
+                            <button
+                              onClick={() => {
+                                if (confirm(`Dismiss ${client.email} from coaching clients?`)) {
+                                  dismissClient.mutate({ id: client.id, email: client.email });
+                                }
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded"
+                              title="Dismiss — not a real coaching client"
+                            >
+                              <XCircle className="w-4 h-4" />
+                            </button>
+                          </div>
                         </div>
-                        <select
-                          onChange={(e) => {
-                            if (e.target.value) {
-                              assignCoach.mutate({
-                                purchaseId: client.id,
-                                coachId: parseInt(e.target.value),
-                                ...(client.id === 0 ? { email: client.email, sessionsTotal: client.sessionsTotal, coachType: client.coachType, packageType: client.packageType, currency: client.currency } : {}),
-                              });
-                              e.target.value = '';
-                            }
-                          }}
-                          className="px-3 py-1.5 border border-amber-300 rounded-lg text-sm bg-white"
-                          defaultValue=""
-                        >
-                          <option value="" disabled>Assign to...</option>
-                          {activeCoaches.map((coach) => (
-                            <option key={coach.id} value={coach.id}>{coach.displayName}</option>
-                          ))}
-                        </select>
                       </div>
                     );
                   })}
@@ -755,66 +1037,9 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
               </div>
             )}
 
-            {/* Assigned clients grouped by coach */}
-            {activeCoaches.filter(coach => allClients.some(c => c.assignedCoachId === coach.id)).map((coach) => {
-              const coachClients = allClients.filter(c => c.assignedCoachId === coach.id);
-              return (
-                <div key={coach.id} className="mb-4">
-                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-                    {coach.displayName} ({coachClients.length} client{coachClients.length !== 1 ? 's' : ''})
-                  </p>
-                  <div className="space-y-2">
-                    {coachClients.map((client) => {
-                      const clientName = client.user
-                        ? [client.user.firstName, client.user.lastName].filter(Boolean).join(' ') || client.email
-                        : client.email;
-                      return (
-                        <div key={client.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200">
-                          <div>
-                            <p className="font-medium text-slate-900">{clientName}</p>
-                            <p className="text-sm text-slate-500">
-                              {client.packageType === 'pack' ? '4 Sessions' : '1 Session'} •{' '}
-                              {client.sessionsCompleted}/{client.sessionsTotal} done •{' '}
-                              {formatMoney(client.amountPaid, client.currency)} •{' '}
-                              {new Date(client.purchasedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                            </p>
-                          </div>
-                          <select
-                            onChange={(e) => {
-                              if (e.target.value) {
-                                assignCoach.mutate({
-                                purchaseId: client.id,
-                                coachId: parseInt(e.target.value),
-                                ...(client.id === 0 ? { email: client.email, sessionsTotal: client.sessionsTotal, coachType: client.coachType, packageType: client.packageType, currency: client.currency } : {}),
-                              });
-                                e.target.value = '';
-                              }
-                            }}
-                            className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm bg-white"
-                            defaultValue=""
-                          >
-                            <option value="" disabled>Reassign...</option>
-                            {activeCoaches.filter(c => c.id !== coach.id).map((c) => (
-                              <option key={c.id} value={c.id}>{c.displayName}</option>
-                            ))}
-                          </select>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-
             {allClients.length === 0 && (
-              <p className="text-slate-500 py-4 text-center">No coaching clients yet.</p>
+              <p className="text-slate-500 py-4 text-center">No coaching clients yet. Use "Add Client" to manually add one.</p>
             )}
-          </div>
-        )}
-
-        {openSections.has('clients') && allClients.length === 0 && (
-          <div className="px-5 pb-5">
-            <p className="text-slate-500 py-4 text-center">No coaching clients yet.</p>
           </div>
         )}
       </Card>
