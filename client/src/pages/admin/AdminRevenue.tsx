@@ -452,11 +452,12 @@ export default function AdminRevenue() {
                             {formatCurrency(tx.amount, tx.currency)}
                           </p>
                           <p className="text-xs text-slate-400">
-                            {new Date(tx.created * 1000).toLocaleDateString("en-GB", {
+                            {new Date(tx.created * 1000).toLocaleString("en-GB", {
                               day: "numeric",
                               month: "short",
                               hour: "2-digit",
                               minute: "2-digit",
+                              timeZone: "Asia/Dubai",
                             })}
                           </p>
                         </div>

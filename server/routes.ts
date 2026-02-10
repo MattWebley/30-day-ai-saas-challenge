@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, type User, userProgress, chatMessages, dayComments, dayQuestions, userBadges, aiUsageLogs, showcase, testimonials, badges, pageViews } from "@shared/schema";
+import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, moodCheckins, type User, userProgress, chatMessages, dayComments, dayQuestions, userBadges, aiUsageLogs, showcase, testimonials, badges, pageViews } from "@shared/schema";
 import dns from "dns";
 import { promisify } from "util";
 import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
@@ -7968,6 +7968,119 @@ Example format:
     } catch (error) {
       console.error("Error dismissing announcement:", error);
       res.status(500).json({ message: "Failed to dismiss announcement" });
+    }
+  });
+
+  // ===== MOOD CHECK-INS =====
+
+  // Save a mood check-in
+  app.post("/api/mood-checkin", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.challengePurchased && !user?.isAdmin) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const { day, emoji, emojiLabel, text, consentToShare } = req.body;
+      if (day == null || !emoji || !emojiLabel) {
+        return res.status(400).json({ message: "day, emoji, and emojiLabel are required" });
+      }
+
+      // Check if already submitted for this day
+      const [existing] = await db.select().from(moodCheckins)
+        .where(and(eq(moodCheckins.userId, userId), eq(moodCheckins.day, day)));
+      if (existing) {
+        return res.status(409).json({ message: "Already submitted for this day" });
+      }
+
+      await db.insert(moodCheckins).values({
+        userId,
+        day,
+        emoji,
+        emojiLabel,
+        text: text ? String(text).substring(0, 500) : null,
+        consentToShare: !!consentToShare,
+      });
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error saving mood check-in:", error);
+      res.status(500).json({ message: "Failed to save" });
+    }
+  });
+
+  // Check if user already submitted a mood check-in for a day
+  app.get("/api/mood-checkin/:day", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const day = parseInt(req.params.day);
+      const [existing] = await db.select().from(moodCheckins)
+        .where(and(eq(moodCheckins.userId, userId), eq(moodCheckins.day, day)));
+      res.json({ submitted: !!existing });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to check" });
+    }
+  });
+
+  // Admin: Get all mood check-ins
+  app.get("/api/admin/mood-checkins", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const checkins = await db.select({
+        id: moodCheckins.id,
+        userId: moodCheckins.userId,
+        day: moodCheckins.day,
+        emoji: moodCheckins.emoji,
+        emojiLabel: moodCheckins.emojiLabel,
+        text: moodCheckins.text,
+        consentToShare: moodCheckins.consentToShare,
+        promotedToTestimonial: moodCheckins.promotedToTestimonial,
+        createdAt: moodCheckins.createdAt,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        email: users.email,
+      })
+      .from(moodCheckins)
+      .leftJoin(users, eq(moodCheckins.userId, users.id))
+      .orderBy(desc(moodCheckins.createdAt));
+
+      res.json(checkins);
+    } catch (error) {
+      console.error("Error fetching mood check-ins:", error);
+      res.status(500).json({ message: "Failed to fetch" });
+    }
+  });
+
+  // Admin: Promote a mood check-in to testimonial
+  app.post("/api/admin/mood-checkins/:id/promote", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const checkinId = parseInt(req.params.id);
+      const [checkin] = await db.select().from(moodCheckins).where(eq(moodCheckins.id, checkinId));
+      if (!checkin) return res.status(404).json({ message: "Not found" });
+      if (!checkin.text) return res.status(400).json({ message: "No text to promote" });
+
+      // Create testimonial from mood check-in
+      await db.insert(testimonials).values({
+        userId: checkin.userId,
+        testimonial: checkin.text,
+        featured: false,
+      });
+
+      // Mark as promoted
+      await db.update(moodCheckins)
+        .set({ promotedToTestimonial: true })
+        .where(eq(moodCheckins.id, checkinId));
+
+      res.json({ success: true, message: "Promoted to testimonial" });
+    } catch (error) {
+      console.error("Error promoting mood check-in:", error);
+      res.status(500).json({ message: "Failed to promote" });
     }
   });
 

@@ -389,6 +389,8 @@ export async function sendQuestionNotificationEmail(params: QuestionNotification
   const { userEmail, userName, day, dayTitle, question, answerUrl, sendTo } = params;
   const recipient = sendTo || 'matt@mattwebley.com';
 
+  const dayPageUrl = `https://challenge.mattwebley.com/dashboard/${day}`;
+
   const body = `New Question on Day ${day}!
 
 FROM
@@ -406,7 +408,9 @@ ANSWER NOW
 ----------
 ${answerUrl}
 
-Click the link above to view the question and submit your answer.
+VIEW THE DAY
+-------------
+${dayPageUrl}
 
 --
 View all pending questions: https://challenge.mattwebley.com/admin

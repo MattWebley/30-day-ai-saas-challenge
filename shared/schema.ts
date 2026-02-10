@@ -782,3 +782,22 @@ export const pageViews = pgTable("page_views", {
 
 export type PageView = typeof pageViews.$inferSelect;
 export type InsertPageView = typeof pageViews.$inferInsert;
+
+// Mood check-ins - captures how users feel at key milestones (also used for testimonial capture)
+export const moodCheckins = pgTable("mood_checkins", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  day: integer("day").notNull(),
+  emoji: varchar("emoji").notNull(), // The emoji character
+  emojiLabel: varchar("emoji_label").notNull(), // e.g. "Nervous", "Excited", "On Fire"
+  text: text("text"), // Optional free-text response
+  consentToShare: boolean("consent_to_share").default(false), // Can we use this as a testimonial?
+  promotedToTestimonial: boolean("promoted_to_testimonial").default(false), // Admin promoted it
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("mood_checkins_user_id_idx").on(table.userId),
+  index("mood_checkins_day_idx").on(table.day),
+]);
+
+export type MoodCheckin = typeof moodCheckins.$inferSelect;
+export type InsertMoodCheckin = typeof moodCheckins.$inferInsert;
