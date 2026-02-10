@@ -8011,8 +8011,12 @@ Example format:
       }
       pageViewRateLimit.set(rateKey, Date.now());
 
-      // Get userId if authenticated
+      // Get userId if authenticated — skip tracking for admins
       const userId = req.user?.claims?.sub || null;
+      if (userId) {
+        const viewUser = await storage.getUser(userId);
+        if (viewUser?.isAdmin) return res.json({ ok: true });
+      }
 
       await db.insert(pageViews).values({
         sessionId,
