@@ -32,6 +32,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { DayCommunity } from "@/components/DayCommunity";
 import { DayInstructions } from "@/components/DayInstructions";
 import { DayCompletionModal } from "@/components/DayCompletionModal";
+import { MoodCheckin, MOOD_CHECKIN_DAYS } from "@/components/MoodCheckin";
 import { AnnouncementBanner } from "@/components/AnnouncementBanner";
 import { LazyLoom } from "@/components/LazyLoom";
 import { toast } from "sonner";
@@ -258,6 +259,7 @@ export default function Dashboard() {
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [videoLoading, setVideoLoading] = useState(true);
+  const [showMoodCheckin, setShowMoodCheckin] = useState(false);
 
   // Determine current day from URL
   const urlDay = params?.day ? parseInt(params.day) : null;
@@ -375,10 +377,10 @@ export default function Dashboard() {
         return;
       }
 
-      // Special handling for Day 21 - redirect to congratulations page
+      // Special handling for Day 21 - show mood check-in first, then redirect
       if (currentDay === 21) {
         toast.success("Congratulations! You completed the challenge!");
-        setLocation("/congratulations");
+        setShowMoodCheckin(true);
         return;
       }
 
@@ -394,8 +396,22 @@ export default function Dashboard() {
 
   const handleContinueFromModal = () => {
     setShowCompletionModal(false);
+    // Show mood check-in on trigger days before navigating
+    if (MOOD_CHECKIN_DAYS.includes(currentDay)) {
+      setShowMoodCheckin(true);
+      return;
+    }
     // Navigate to next day if not the last day
     if (currentDay < 21) {
+      setLocation(`/dashboard/${currentDay + 1}`);
+    }
+  };
+
+  const handleMoodCheckinClose = () => {
+    setShowMoodCheckin(false);
+    if (currentDay === 21) {
+      setLocation("/congratulations");
+    } else if (currentDay < 21) {
       setLocation(`/dashboard/${currentDay + 1}`);
     }
   };
@@ -1768,6 +1784,13 @@ export default function Dashboard() {
         completionMessage={dayData.completionMessage}
         motivationalQuote={dayData.motivationalQuote}
         onContinue={handleContinueFromModal}
+      />
+
+      {/* Mood Check-in (appears after completion on trigger days) */}
+      <MoodCheckin
+        isOpen={showMoodCheckin}
+        day={currentDay}
+        onClose={handleMoodCheckinClose}
       />
 
       {/* Video Lesson Modal */}
