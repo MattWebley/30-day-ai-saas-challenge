@@ -94,7 +94,7 @@ interface CoachInvitation {
 }
 
 function formatMoney(cents: number, currency: string = 'gbp') {
-  const symbol = currency === 'gbp' ? '£' : '$';
+  const symbol = currency === 'gbp' ? '£' : currency === 'aed' ? 'AED ' : '$';
   return `${symbol}${(cents / 100).toFixed(2)}`;
 }
 
@@ -146,7 +146,10 @@ export default function AdminCoaches() {
   // Mutations
   const createCoach = useMutation({
     mutationFn: async (data: typeof newCoach) => {
-      const res = await apiRequest('POST', '/api/admin/coaches', data);
+      const res = await apiRequest('POST', '/api/admin/coaches', {
+        ...data,
+        ratePerSession: Math.round(parseFloat(data.ratePerSession) * 100),
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -279,13 +282,13 @@ export default function AdminCoaches() {
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-slate-700">Rate Per Session (pence/cents) *</label>
+                      <label className="text-sm font-medium text-slate-700">Rate Per Session ({newCoach.rateCurrency === 'gbp' ? '£' : newCoach.rateCurrency === 'usd' ? '$' : 'AED'}) *</label>
                       <input
                         type="number"
                         value={newCoach.ratePerSession}
                         onChange={(e) => setNewCoach({ ...newCoach, ratePerSession: e.target.value })}
                         className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                        placeholder="5000 = £50.00"
+                        placeholder="e.g. 50"
                       />
                     </div>
                     <div>
@@ -297,6 +300,7 @@ export default function AdminCoaches() {
                       >
                         <option value="gbp">GBP (£)</option>
                         <option value="usd">USD ($)</option>
+                        <option value="aed">AED</option>
                       </select>
                     </div>
                   </div>
@@ -348,11 +352,11 @@ export default function AdminCoaches() {
                         />
                       </div>
                       <div>
-                        <label className="text-sm font-medium text-slate-700">Rate Per Session (pence/cents)</label>
+                        <label className="text-sm font-medium text-slate-700">Rate Per Session ({editData.rateCurrency === 'usd' ? '$' : editData.rateCurrency === 'aed' ? 'AED' : '£'})</label>
                         <input
                           type="number"
-                          value={editData.ratePerSession || ''}
-                          onChange={(e) => setEditData({ ...editData, ratePerSession: parseInt(e.target.value) })}
+                          value={editData.ratePerSession ? editData.ratePerSession / 100 : ''}
+                          onChange={(e) => setEditData({ ...editData, ratePerSession: Math.round(parseFloat(e.target.value) * 100) })}
                           className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
                         />
                       </div>
@@ -365,6 +369,7 @@ export default function AdminCoaches() {
                         >
                           <option value="gbp">GBP (£)</option>
                           <option value="usd">USD ($)</option>
+                          <option value="aed">AED</option>
                         </select>
                       </div>
                     </div>
