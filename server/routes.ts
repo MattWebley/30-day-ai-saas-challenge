@@ -10,7 +10,7 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
 import { eq, desc, isNull, isNotNull, sql, and, or, gte, lte, count, countDistinct } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails, sendCoachAssignmentEmail, sendBookNextSessionEmail, sendCoachInvitationEmail, sendCoachAgreementCopyEmail, sendCalcomSetupEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails, sendCoachAssignmentEmail, sendBookNextSessionEmail, sendCoachInvitationEmail, sendCoachAgreementCopyEmail, sendCalcomSetupEmail, sendCoachNudgeEmail } from "./emailService";
 import { addContactToSysteme, addContactToSystemeDetailed } from "./systemeService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -9175,27 +9175,34 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
       const id = parseInt(req.params.id);
       const { email } = req.body;
 
-      if (id === 0 && email) {
-        // Synthetic record from users table — set coachingPurchased to false
-        const userRecord = await db.select().from(users)
-          .where(sql`lower(${users.email}) = ${email.toLowerCase()}`);
-        if (userRecord[0]) {
-          await db.update(users)
-            .set({ coachingPurchased: false })
-            .where(eq(users.id, userRecord[0].id));
-        }
-        return res.json({ success: true, message: `Dismissed ${email}` });
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
       }
 
-      if (id > 0) {
-        // Real coachingPurchases record — mark as dismissed
-        await db.update(coachingPurchases)
-          .set({ dismissed: true })
-          .where(eq(coachingPurchases.id, id));
-        return res.json({ success: true, message: `Dismissed coaching purchase #${id}` });
+      // Remove from ALL sources so they don't reappear
+
+      // 1. Set coachingPurchased=false on user record
+      const userRecord = await db.select().from(users)
+        .where(sql`lower(${users.email}) = ${email.toLowerCase()}`);
+      if (userRecord[0]) {
+        await db.update(users)
+          .set({ coachingPurchased: false })
+          .where(eq(users.id, userRecord[0].id));
       }
 
-      res.status(400).json({ message: "Invalid request" });
+      // 2. Mark ALL coachingPurchases records for this email as dismissed
+      await db.update(coachingPurchases)
+        .set({ dismissed: true })
+        .where(sql`lower(${coachingPurchases.email}) = ${email.toLowerCase()}`);
+
+      // 3. Remove from pendingPurchases coaching entries
+      await db.delete(pendingPurchases)
+        .where(and(
+          sql`lower(${pendingPurchases.email}) = ${email.toLowerCase()}`,
+          sql`${pendingPurchases.productType} LIKE '%coaching%'`,
+        ));
+
+      res.json({ success: true, message: `Dismissed ${email} from all sources` });
     } catch (error: any) {
       console.error("Error dismissing coaching client:", error);
       res.status(500).json({ message: error.message || "Failed to dismiss" });
@@ -9536,10 +9543,13 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
         return {
           purchaseId: purchase.id,
           email: purchase.email,
+          coachType: purchase.coachType,
           packageType: purchase.packageType,
           sessionsTotal: purchase.sessionsTotal,
           sessionsCompleted: completedSessions,
           sessionsRemaining: purchase.sessionsTotal - completedSessions,
+          amountPaid: purchase.amountPaid,
+          currency: purchase.currency,
           purchasedAt: purchase.purchasedAt,
           coachNotes: purchase.coachNotes || '',
           user: user ? {
@@ -9586,6 +9596,57 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     } catch (error: any) {
       console.error("Error saving client notes:", error);
       res.status(500).json({ message: error.message || "Failed to save notes" });
+    }
+  });
+
+  // POST /api/coach/clients/:purchaseId/nudge - Send a nudge email to get client to book
+  app.post('/api/coach/clients/:purchaseId/nudge', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      const purchaseId = parseInt(req.params.purchaseId);
+
+      // Verify this purchase belongs to this coach
+      const [purchase] = await db.select().from(coachingPurchases)
+        .where(and(eq(coachingPurchases.id, purchaseId), eq(coachingPurchases.assignedCoachId, auth.coachId)));
+      if (!purchase) {
+        return res.status(404).json({ message: "Client not found" });
+      }
+
+      // Get coach details
+      const [coach] = await db.select().from(coaches).where(eq(coaches.id, auth.coachId));
+      if (!coach) {
+        return res.status(404).json({ message: "Coach not found" });
+      }
+
+      // Get client name
+      let firstName = 'there';
+      if (purchase.userId) {
+        const user = await storage.getUser(purchase.userId);
+        if (user?.firstName) firstName = user.firstName;
+      }
+
+      const completedCount = (await db.select().from(coachingSessions)
+        .where(and(eq(coachingSessions.coachingPurchaseId, purchaseId), eq(coachingSessions.status, 'completed')))).length;
+      const remaining = purchase.sessionsTotal - completedCount;
+
+      if (remaining <= 0) {
+        return res.status(400).json({ message: "This client has no remaining sessions" });
+      }
+
+      await sendCoachNudgeEmail({
+        to: purchase.email,
+        firstName,
+        coachName: coach.displayName,
+        calComLink: coach.calComLink || '',
+        sessionsRemaining: remaining,
+      });
+
+      res.json({ success: true, message: `Nudge sent to ${purchase.email}` });
+    } catch (error: any) {
+      console.error("Error sending nudge:", error);
+      res.status(500).json({ message: error.message || "Failed to send nudge" });
     }
   });
 

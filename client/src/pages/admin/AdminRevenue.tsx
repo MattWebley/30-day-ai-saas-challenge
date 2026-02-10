@@ -42,6 +42,9 @@ export default function AdminRevenue() {
     expiresAt: "",
   });
 
+  // Expanded transaction details
+  const [expandedTx, setExpandedTx] = useState<string | null>(null);
+
   // Refund confirmation modal state
   const [refundConfirmation, setRefundConfirmation] = useState<{
     isOpen: boolean;
@@ -391,77 +394,112 @@ export default function AdminRevenue() {
                   <div className="p-8 text-center text-slate-500">No transactions yet</div>
                 ) : (
                   revenueData.recentTransactions.map((tx) => (
-                    <div
-                      key={tx.id}
-                      className="p-4 flex items-center justify-between hover:bg-slate-50"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                            tx.refunded
-                              ? "bg-red-100"
-                              : tx.status === "succeeded"
-                              ? "bg-green-100"
-                              : "bg-slate-100"
-                          }`}
-                        >
-                          {tx.refunded ? (
-                            <ArrowDownRight className="w-4 h-4 text-red-600" />
-                          ) : (
-                            <Receipt className="w-4 h-4 text-green-600" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium text-slate-900">
-                            {tx.customerName !== "Unknown" ? tx.customerName : tx.customerEmail}
-                          </p>
-                          <p className="text-sm text-slate-500">{tx.description}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-4">
-                        {!tx.refunded && tx.status === "succeeded" && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => {
-                              setRefundConfirmation({
-                                isOpen: true,
-                                chargeId: tx.id,
-                                amount: tx.amount,
-                                currency: tx.currency,
-                                customerEmail: tx.customerEmail,
-                                confirmText: "",
-                                step: 1,
-                              });
-                            }}
-                            disabled={issueRefund.isPending}
-                          >
-                            Refund
-                          </Button>
-                        )}
-                        {tx.refunded && (
-                          <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 font-semibold rounded-full">Refunded</span>
-                        )}
-                        <div className="text-right">
-                          <p
-                            className={`font-bold ${
-                              tx.refunded ? "text-red-600 line-through" : "text-slate-900"
+                    <div key={tx.id}>
+                      <div
+                        className="p-4 flex items-center justify-between hover:bg-slate-50 cursor-pointer"
+                        onClick={() => setExpandedTx(expandedTx === tx.id ? null : tx.id)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                              tx.refunded
+                                ? "bg-red-100"
+                                : tx.status === "succeeded"
+                                ? "bg-green-100"
+                                : "bg-slate-100"
                             }`}
                           >
-                            {formatCurrency(tx.amount, tx.currency)}
-                          </p>
-                          <p className="text-xs text-slate-400">
-                            {new Date(tx.created * 1000).toLocaleString("en-GB", {
-                              day: "numeric",
-                              month: "short",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              timeZone: "Asia/Dubai",
-                            })}
-                          </p>
+                            {tx.refunded ? (
+                              <ArrowDownRight className="w-4 h-4 text-red-600" />
+                            ) : (
+                              <Receipt className="w-4 h-4 text-green-600" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-medium text-slate-900">
+                              {tx.customerName !== "Unknown" ? tx.customerName : tx.customerEmail}
+                            </p>
+                            <p className="text-sm text-slate-500">{tx.description}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          {!tx.refunded && tx.status === "succeeded" && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setRefundConfirmation({
+                                  isOpen: true,
+                                  chargeId: tx.id,
+                                  amount: tx.amount,
+                                  currency: tx.currency,
+                                  customerEmail: tx.customerEmail,
+                                  confirmText: "",
+                                  step: 1,
+                                });
+                              }}
+                              disabled={issueRefund.isPending}
+                            >
+                              Refund
+                            </Button>
+                          )}
+                          {tx.refunded && (
+                            <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 font-semibold rounded-full">Refunded</span>
+                          )}
+                          <div className="text-right">
+                            <p
+                              className={`font-bold ${
+                                tx.refunded ? "text-red-600 line-through" : "text-slate-900"
+                              }`}
+                            >
+                              {formatCurrency(tx.amount, tx.currency)}
+                            </p>
+                            <p className="text-xs text-slate-400">
+                              {new Date(tx.created * 1000).toLocaleString("en-GB", {
+                                day: "numeric",
+                                month: "short",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                timeZone: "Asia/Dubai",
+                              })}
+                            </p>
+                          </div>
                         </div>
                       </div>
+                      {expandedTx === tx.id && (
+                        <div className="px-4 pb-4 pt-0">
+                          <div className="bg-slate-50 rounded-lg border border-slate-200 p-3 space-y-2 text-sm select-all">
+                            <div className="grid sm:grid-cols-2 gap-2">
+                              <div>
+                                <p className="text-xs font-semibold text-slate-400 uppercase">Name</p>
+                                <p className="text-slate-900">{tx.customerName}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-slate-400 uppercase">Email</p>
+                                <p className="text-slate-900">{tx.customerEmail}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-slate-400 uppercase">Product</p>
+                                <p className="text-slate-900">{tx.description} ({tx.productType})</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-slate-400 uppercase">Amount</p>
+                                <p className="text-slate-900">{formatCurrency(tx.amount, tx.currency)} {tx.currency.toUpperCase()}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-slate-400 uppercase">Date</p>
+                                <p className="text-slate-900">{new Date(tx.created * 1000).toLocaleString("en-GB", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Dubai" })}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold text-slate-400 uppercase">Stripe Charge ID</p>
+                                <p className="text-slate-900 font-mono text-xs">{tx.id}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))
                 )}

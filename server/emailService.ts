@@ -1285,6 +1285,39 @@ Matt` + TRANSACTIONAL_FOOTER,
   });
 }
 
+// Coach nudge email — sent by coach to get an inactive client to book
+export async function sendCoachNudgeEmail(params: {
+  to: string;
+  firstName: string;
+  coachName: string;
+  calComLink: string;
+  sessionsRemaining: number;
+}): Promise<void> {
+  const { to, coachName, calComLink, sessionsRemaining } = params;
+  const firstName = params.firstName || 'there';
+
+  const bookingLine = calComLink
+    ? `Book your next session here: ${calComLink}`
+    : `Reply to this email and ${coachName} will arrange a time with you.`;
+
+  await sendAndLog({
+    to,
+    subject: `${coachName} is ready for your next coaching session`,
+    text: `Hi ${firstName},
+
+Just a quick note from your coach ${coachName} — you still have ${sessionsRemaining} coaching session${sessionsRemaining > 1 ? 's' : ''} available and they'd love to help you make progress.
+
+${bookingLine}
+
+These sessions are yours — make the most of them!
+
+Best,
+The 21-Day AI SaaS Challenge Team` + TRANSACTIONAL_FOOTER,
+    recipientName: firstName,
+    templateKey: 'coach_nudge',
+  });
+}
+
 // Coach invitation email
 export async function sendCoachInvitationEmail(email: string, setupLink: string): Promise<boolean> {
   try {

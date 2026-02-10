@@ -16,6 +16,7 @@ import {
   ChevronUp,
   ExternalLink,
   Settings,
+  Mail,
 } from "lucide-react";
 
 interface CoachProfile {
@@ -51,10 +52,13 @@ interface ClientSession {
 interface Client {
   purchaseId: number;
   email: string;
+  coachType: string;
   packageType: string;
   sessionsTotal: number;
   sessionsCompleted: number;
   sessionsRemaining: number;
+  amountPaid: number;
+  currency: string;
   purchasedAt: string;
   coachNotes: string;
   user: {
@@ -220,6 +224,15 @@ export default function CoachDashboard() {
     onError: (err: any) => toast.error(err.message || 'Failed to save notes'),
   });
 
+  const nudgeClient = useMutation({
+    mutationFn: async (purchaseId: number) => {
+      const res = await apiRequest('POST', `/api/coach/clients/${purchaseId}/nudge${qs}`);
+      return res.json();
+    },
+    onSuccess: (data) => toast.success(data.message || 'Nudge sent!'),
+    onError: (err: any) => toast.error(err.message || 'Failed to send nudge'),
+  });
+
   const [clientNotes, setClientNotes] = useState<Record<number, string>>({});
 
   // Load profile data into settings form
@@ -378,8 +391,10 @@ export default function CoachDashboard() {
                           <p className="text-sm font-medium text-slate-700">
                             {client.sessionsCompleted}/{client.sessionsTotal} sessions
                           </p>
-                          {client.user && (
-                            <p className="text-xs text-slate-500">Day {client.user.currentDay} of 21</p>
+                          {profile && (
+                            <p className="text-xs text-green-600 font-medium">
+                              {formatMoney(client.sessionsCompleted * profile.ratePerSession, profile.rateCurrency)} earned
+                            </p>
                           )}
                         </div>
                         {isExpanded ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
@@ -406,6 +421,38 @@ export default function CoachDashboard() {
                             <p className="text-xs text-slate-500 mt-1">
                               Day {client.user.currentDay} • {client.user.daysCompleted} days completed
                             </p>
+                          </div>
+                        )}
+
+                        {/* Earnings & Actions */}
+                        {profile && (
+                          <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-sm font-medium text-slate-700">Earnings from this client</p>
+                                <div className="flex items-center gap-4 mt-1">
+                                  <span className="text-sm text-green-600 font-semibold">
+                                    {formatMoney(client.sessionsCompleted * profile.ratePerSession, profile.rateCurrency)} earned
+                                  </span>
+                                  {client.sessionsRemaining > 0 && (
+                                    <span className="text-xs text-slate-400">
+                                      {formatMoney(client.sessionsTotal * profile.ratePerSession, profile.rateCurrency)} if all completed
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              {client.sessionsRemaining > 0 && (
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); nudgeClient.mutate(client.purchaseId); }}
+                                  disabled={nudgeClient.isPending}
+                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                  title="Send an email reminder to book their next session"
+                                >
+                                  <Mail className="w-3.5 h-3.5" />
+                                  {nudgeClient.isPending ? 'Sending...' : 'Nudge to Book'}
+                                </button>
+                              )}
+                            </div>
                           </div>
                         )}
 
