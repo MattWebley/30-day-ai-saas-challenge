@@ -9451,6 +9451,35 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     }
   });
 
+  // PATCH /api/admin/coach-sessions/:id - Admin manually update a session
+  app.patch('/api/admin/coach-sessions/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const sessionId = parseInt(req.params.id);
+      const { status, completedAt, scheduledAt, coachNotes } = req.body;
+
+      const [session] = await db.select().from(coachingSessions).where(eq(coachingSessions.id, sessionId));
+      if (!session) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      const updateData: Record<string, any> = {};
+      if (status) updateData.status = status;
+      if (status === 'completed') updateData.completedAt = completedAt ? new Date(completedAt) : new Date();
+      if (status === 'pending') { updateData.completedAt = null; updateData.scheduledAt = null; updateData.calcomBookingUid = null; }
+      if (scheduledAt !== undefined) updateData.scheduledAt = scheduledAt ? new Date(scheduledAt) : null;
+      if (coachNotes !== undefined) updateData.coachNotes = coachNotes || null;
+
+      await db.update(coachingSessions).set(updateData).where(eq(coachingSessions.id, sessionId));
+
+      res.json({ success: true, message: `Session #${session.sessionNumber} updated to ${status || 'updated'}` });
+    } catch (error: any) {
+      console.error("Error updating session:", error);
+      res.status(500).json({ message: error.message || "Failed to update session" });
+    }
+  });
+
   // =============================================
   // COACH DASHBOARD ENDPOINTS (coach's own view)
   // =============================================

@@ -272,6 +272,20 @@ export default function AdminCoaches() {
     onError: (err: any) => toast.error(err.message || 'Failed to dismiss'),
   });
 
+  const updateSession = useMutation({
+    mutationFn: async (params: { sessionId: number; status: string; completedAt?: string }) => {
+      const res = await apiRequest('PATCH', `/api/admin/coach-sessions/${params.sessionId}`, params);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/coach-sessions'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/all-coaching-clients'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/coaches'] });
+      toast.success(data.message || 'Session updated');
+    },
+    onError: (err: any) => toast.error(err.message || 'Failed to update session'),
+  });
+
   const sendCalcomSetup = useMutation({
     mutationFn: async (coachId: number) => {
       const res = await apiRequest('POST', `/api/admin/coaches/${coachId}/send-calcom-setup`);
@@ -533,15 +547,76 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                 ) : (
                   <>
                     <div className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1 flex-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <h4 className="font-bold text-slate-900">{coach.displayName}</h4>
-                            {coach.isActive ? (
-                              <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Active</span>
-                            ) : (
-                              <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Inactive</span>
+                      {/* Compact header — always visible */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-sm font-bold text-slate-600 shrink-0">
+                            {coach.displayName[0]?.toUpperCase()}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h4 className="font-bold text-slate-900">{coach.displayName}</h4>
+                              {!coach.isActive && (
+                                <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Inactive</span>
+                              )}
+                              {coach.isDefault && (
+                                <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">Auto-assign</span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 mt-0.5 flex-wrap">
+                              <span className="text-xs font-medium text-slate-700">{coachClients.length} client{coachClients.length !== 1 ? 's' : ''}</span>
+                              <span className="text-xs text-green-600">{completedSessions.length} done</span>
+                              <span className="text-xs text-blue-600">{scheduledSessions.length} booked</span>
+                              <span className="text-xs text-slate-400">{pendingSess.length} pending</span>
+                              <span className="text-xs font-medium text-green-600">Balance: {formatMoney(coach.stats.availableBalance, coach.rateCurrency)}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 ml-3">
+                          <button
+                            onClick={() => setExpandedCoachView(isExpanded ? null : coach.id)}
+                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-lg"
+                          >
+                            <Eye className="w-3.5 h-3.5" /> {isExpanded ? 'Hide' : 'Clients'}
+                          </button>
+                          <button
+                            onClick={() => toggleSection(`coach-details-${coach.id}`)}
+                            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
+                            title="Coach details"
+                          >
+                            <Settings2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Collapsible details — hidden by default */}
+                      {openSections.has(`coach-details-${coach.id}`) && (
+                        <div className="mt-3 pt-3 border-t border-slate-100 space-y-2">
+                          <div className="grid sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
+                            <div>
+                              <span className="text-slate-400 text-xs">Email</span>
+                              <p className="text-slate-700">{coach.email}</p>
+                            </div>
+                            <div>
+                              <span className="text-slate-400 text-xs">Rate</span>
+                              <p className="text-slate-700 font-medium">{formatMoney(coach.ratePerSession, coach.rateCurrency)}/session</p>
+                            </div>
+                            {coach.calComLink && (
+                              <div className="sm:col-span-2">
+                                <span className="text-slate-400 text-xs">Cal.com</span>
+                                <p>
+                                  <a href={coach.calComLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-sm">{coach.calComLink}</a>
+                                </p>
+                              </div>
                             )}
+                          </div>
+                          <div className="flex items-center gap-2 flex-wrap pt-1">
+                            <a
+                              href={`/coach?coachId=${coach.id}`}
+                              className="px-2.5 py-1 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-full flex items-center gap-1"
+                            >
+                              <Eye className="w-3 h-3" /> View as Coach
+                            </a>
                             {coachesWithAgreements.has(coach.email.toLowerCase()) && (
                               <button
                                 onClick={async () => {
@@ -561,70 +636,35 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                                     toast.error('Failed to load agreement');
                                   }
                                 }}
-                                className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full flex items-center gap-1 hover:bg-blue-200 cursor-pointer"
+                                className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full flex items-center gap-1 hover:bg-blue-200"
                               >
-                                <FileCheck className="w-3 h-3" /> Agreement signed
+                                <FileCheck className="w-3 h-3" /> View Agreement
                               </button>
                             )}
-                            {coach.isDefault && (
-                              <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full flex items-center gap-1">
-                                <UserPlus className="w-3 h-3" /> Auto-assign
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-sm text-slate-500">{coach.email}</p>
-                          {coach.calComLink && (
-                            <p className="text-sm text-slate-500">
-                              <Calendar className="w-3.5 h-3.5 inline mr-1" />
-                              <a href={coach.calComLink} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">{coach.calComLink}</a>
-                            </p>
-                          )}
-                          <p className="text-sm text-slate-500">
-                            Rate: <span className="font-semibold text-slate-700">{formatMoney(coach.ratePerSession, coach.rateCurrency)}</span>/session
-                          </p>
-                          {/* Quick stats row */}
-                          <div className="flex gap-4 pt-1 flex-wrap">
-                            <span className="text-xs font-medium text-slate-700">{coachClients.length} client{coachClients.length !== 1 ? 's' : ''}</span>
-                            <span className="text-xs text-green-600">{completedSessions.length} done</span>
-                            <span className="text-xs text-blue-600">{scheduledSessions.length} booked</span>
-                            <span className="text-xs text-slate-400">{pendingSess.length} pending</span>
-                            <span className="text-xs font-medium text-green-600">Balance: {formatMoney(coach.stats.availableBalance, coach.rateCurrency)}</span>
+                            <button
+                              onClick={() => setDefaultCoach.mutate(coach.isDefault ? null : coach.id)}
+                              className={`px-2.5 py-1 text-xs font-medium rounded-full ${coach.isDefault ? 'text-amber-700 bg-amber-100 hover:bg-amber-200' : 'text-slate-500 bg-slate-100 hover:bg-slate-200'}`}
+                            >
+                              {coach.isDefault ? 'Remove Default' : 'Set Default'}
+                            </button>
+                            <button
+                              onClick={() => {
+                                setEditingCoach(coach.id);
+                                setEditData({ displayName: coach.displayName, calComLink: coach.calComLink || '', ratePerSession: coach.ratePerSession, rateCurrency: coach.rateCurrency });
+                              }}
+                              className="px-2.5 py-1 text-xs font-medium text-slate-500 bg-slate-100 hover:bg-slate-200 rounded-full flex items-center gap-1"
+                            >
+                              <Edit3 className="w-3 h-3" /> Edit
+                            </button>
+                            <button
+                              onClick={() => updateCoach.mutate({ id: coach.id, data: { isActive: !coach.isActive } })}
+                              className={`px-2.5 py-1 text-xs font-medium rounded-full ${coach.isActive ? 'text-red-600 bg-red-50 hover:bg-red-100' : 'text-green-600 bg-green-50 hover:bg-green-100'}`}
+                            >
+                              {coach.isActive ? 'Deactivate' : 'Activate'}
+                            </button>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 ml-3">
-                          <button
-                            onClick={() => setExpandedCoachView(isExpanded ? null : coach.id)}
-                            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-lg"
-                            title="View clients and sessions"
-                          >
-                            <Eye className="w-3.5 h-3.5" /> {isExpanded ? 'Hide' : 'Clients'}
-                          </button>
-                          <button
-                            onClick={() => setDefaultCoach.mutate(coach.isDefault ? null : coach.id)}
-                            className={`px-2.5 py-1.5 text-xs font-medium rounded-lg ${coach.isDefault ? 'text-amber-700 bg-amber-50 hover:bg-amber-100' : 'text-slate-500 bg-slate-50 hover:bg-slate-100'}`}
-                            title={coach.isDefault ? 'Remove as default coach' : 'Set as default coach for new purchases'}
-                          >
-                            {coach.isDefault ? 'Remove Default' : 'Set Default'}
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditingCoach(coach.id);
-                              setEditData({ displayName: coach.displayName, calComLink: coach.calComLink || '', ratePerSession: coach.ratePerSession, rateCurrency: coach.rateCurrency });
-                            }}
-                            className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg"
-                            title="Edit"
-                          >
-                            <Edit3 className="w-4 h-4" />
-                          </button>
-                          <button
-                            onClick={() => updateCoach.mutate({ id: coach.id, data: { isActive: !coach.isActive } })}
-                            className={`p-2 rounded-lg ${coach.isActive ? 'text-red-400 hover:text-red-600 hover:bg-red-50' : 'text-green-400 hover:text-green-600 hover:bg-green-50'}`}
-                            title={coach.isActive ? 'Deactivate' : 'Activate'}
-                          >
-                            {coach.isActive ? <X className="w-4 h-4" /> : <Check className="w-4 h-4" />}
-                          </button>
-                        </div>
-                      </div>
+                      )}
                     </div>
 
                     {/* Expanded per-coach client overview */}
@@ -718,7 +758,7 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                                         <p className="text-xs text-slate-400 py-1">No sessions created yet</p>
                                       ) : (
                                         clientSessions.map((s) => (
-                                          <div key={s.id} className="flex items-center justify-between text-sm py-1">
+                                          <div key={s.id} className="flex items-center justify-between text-sm py-1.5">
                                             <span className="text-slate-600">Session #{s.sessionNumber}</span>
                                             <div className="flex items-center gap-2">
                                               {s.scheduledAt && (
@@ -731,15 +771,34 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                                                   {new Date(s.completedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                                                 </span>
                                               )}
-                                              {s.status === 'completed' ? (
-                                                <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Done</span>
-                                              ) : s.status === 'scheduled' ? (
-                                                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Booked</span>
-                                              ) : s.status === 'cancelled' ? (
-                                                <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full">Cancelled</span>
-                                              ) : (
-                                                <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Pending</span>
-                                              )}
+                                              <select
+                                                value={s.status}
+                                                onChange={(e) => {
+                                                  const newStatus = e.target.value;
+                                                  if (newStatus === s.status) return;
+                                                  if (newStatus === 'completed' || newStatus === 'pending') {
+                                                    updateSession.mutate({ sessionId: s.id, status: newStatus });
+                                                  } else if (newStatus === 'scheduled') {
+                                                    updateSession.mutate({ sessionId: s.id, status: newStatus });
+                                                  } else if (newStatus === 'cancelled') {
+                                                    if (confirm('Mark this session as cancelled?')) {
+                                                      updateSession.mutate({ sessionId: s.id, status: newStatus });
+                                                    }
+                                                  }
+                                                }}
+                                                className={`px-2 py-0.5 text-xs font-semibold rounded-full border-0 cursor-pointer appearance-none text-center ${
+                                                  s.status === 'completed' ? 'bg-green-100 text-green-700' :
+                                                  s.status === 'scheduled' ? 'bg-blue-100 text-blue-700' :
+                                                  s.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                                                  'bg-slate-100 text-slate-500'
+                                                }`}
+                                                style={{ backgroundImage: 'none', paddingRight: '8px' }}
+                                              >
+                                                <option value="pending">Pending</option>
+                                                <option value="scheduled">Booked</option>
+                                                <option value="completed">Done</option>
+                                                <option value="cancelled">Cancelled</option>
+                                              </select>
                                             </div>
                                           </div>
                                         ))
@@ -1020,15 +1079,27 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                       <td className="px-5 py-3 text-sm text-slate-700">{session.coach?.displayName || '-'}</td>
                       <td className="px-5 py-3 text-sm text-slate-700">#{session.sessionNumber}</td>
                       <td className="px-5 py-3">
-                        {session.status === 'completed' ? (
-                          <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Completed</span>
-                        ) : session.status === 'scheduled' ? (
-                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Booked</span>
-                        ) : session.status === 'cancelled' ? (
-                          <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full">Cancelled</span>
-                        ) : (
-                          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Pending</span>
-                        )}
+                        <select
+                          value={session.status}
+                          onChange={(e) => {
+                            const newStatus = e.target.value;
+                            if (newStatus === session.status) return;
+                            if (newStatus === 'cancelled' && !confirm('Mark this session as cancelled?')) return;
+                            updateSession.mutate({ sessionId: session.id, status: newStatus });
+                          }}
+                          className={`px-2 py-0.5 text-xs font-semibold rounded-full border-0 cursor-pointer appearance-none text-center ${
+                            session.status === 'completed' ? 'bg-green-100 text-green-700' :
+                            session.status === 'scheduled' ? 'bg-blue-100 text-blue-700' :
+                            session.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+                            'bg-slate-100 text-slate-500'
+                          }`}
+                          style={{ backgroundImage: 'none', paddingRight: '8px' }}
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="scheduled">Booked</option>
+                          <option value="completed">Completed</option>
+                          <option value="cancelled">Cancelled</option>
+                        </select>
                       </td>
                       <td className="px-5 py-3 text-sm text-slate-500">
                         {session.completedAt
