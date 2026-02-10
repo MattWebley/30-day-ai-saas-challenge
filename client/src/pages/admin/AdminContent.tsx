@@ -21,6 +21,8 @@ import {
   ChevronUp,
   EyeOff,
   Sparkles,
+  Smile,
+  ArrowUpRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -65,6 +67,11 @@ export default function AdminContent() {
 
   const { data: testimonials = [] } = useQuery<TestimonialEntry[]>({
     queryKey: ["/api/admin/testimonials"],
+  });
+
+  const { data: moodCheckins = [] } = useQuery<any[]>({
+    queryKey: ["/api/admin/mood-checkins"],
+    staleTime: 30_000,
   });
 
   const pendingQuestions = allQuestions.filter((q) => q.status === "pending");
@@ -195,6 +202,21 @@ export default function AdminContent() {
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to update featured status");
+    },
+  });
+
+  const promoteMoodCheckin = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("POST", `/api/admin/mood-checkins/${id}/promote`, {});
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/mood-checkins"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/testimonials"] });
+      toast.success("Promoted to testimonial!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to promote");
     },
   });
 
@@ -896,6 +918,104 @@ export default function AdminContent() {
                     )}
                   </div>
                 )}
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Mood Check-ins */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-3">
+          <Smile className="w-6 h-6 text-primary" />
+          <h2 className="text-xl font-bold text-slate-900">Mood Check-ins</h2>
+          {moodCheckins.length > 0 && (
+            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">
+              {moodCheckins.length} total
+            </span>
+          )}
+          {moodCheckins.filter((m: any) => m.consentToShare && m.text && !m.promotedToTestimonial).length > 0 && (
+            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+              {moodCheckins.filter((m: any) => m.consentToShare && m.text && !m.promotedToTestimonial).length} shareable
+            </span>
+          )}
+        </div>
+
+        {moodCheckins.length === 0 ? (
+          <Card className="p-8 border border-slate-200 text-center">
+            <Smile className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+            <p className="text-slate-500">No mood check-ins yet</p>
+            <p className="text-sm text-slate-400 mt-1">These appear after students complete Days 0, 4, 9, 14, and 21</p>
+          </Card>
+        ) : (
+          <div className="space-y-3">
+            {moodCheckins.map((checkin: any) => (
+              <Card
+                key={checkin.id}
+                className={`p-4 border ${
+                  checkin.consentToShare && checkin.text && !checkin.promotedToTestimonial
+                    ? "border-green-200 border-l-4 border-l-green-500"
+                    : checkin.promotedToTestimonial
+                    ? "border-blue-200 border-l-4 border-l-blue-500"
+                    : "border-slate-200"
+                }`}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3 flex-1">
+                    <span className="text-3xl">{checkin.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="font-medium text-slate-900">
+                          {checkin.firstName || checkin.lastName
+                            ? `${checkin.firstName || ""} ${checkin.lastName || ""}`.trim()
+                            : "Unknown"}
+                        </span>
+                        {checkin.email && (
+                          <span className="text-xs text-slate-500">{checkin.email}</span>
+                        )}
+                        <span className="text-xs px-2 py-0.5 bg-slate-100 text-slate-600 rounded-full">
+                          Day {checkin.day}
+                        </span>
+                        <span className="text-xs text-slate-500">
+                          {checkin.emojiLabel}
+                        </span>
+                        {checkin.promotedToTestimonial && (
+                          <span className="text-xs px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full font-medium">
+                            Testimonial
+                          </span>
+                        )}
+                      </div>
+                      {checkin.text && (
+                        <p className="text-slate-700 mt-1">{checkin.text}</p>
+                      )}
+                      <p className="text-xs text-slate-400 mt-1">
+                        {checkin.createdAt
+                          ? new Date(checkin.createdAt).toLocaleString("en-GB", {
+                              day: "numeric",
+                              month: "short",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              timeZone: "Asia/Dubai",
+                            })
+                          : ""}
+                        {checkin.consentToShare && checkin.text && (
+                          <span className="ml-2 text-green-600 font-medium">Consented to share</span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                  {checkin.consentToShare && checkin.text && !checkin.promotedToTestimonial && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-green-600 border-green-200 hover:bg-green-50 shrink-0"
+                      onClick={() => promoteMoodCheckin.mutate(checkin.id)}
+                      disabled={promoteMoodCheckin.isPending}
+                    >
+                      <ArrowUpRight className="w-3 h-3 mr-1" /> Promote
+                    </Button>
+                  )}
+                </div>
               </Card>
             ))}
           </div>

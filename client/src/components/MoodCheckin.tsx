@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,16 @@ export function MoodCheckin({ isOpen, day, onClose }: MoodCheckinProps) {
   const [text, setText] = useState("");
   const [consentToShare, setConsentToShare] = useState(true);
   const [step, setStep] = useState<"emoji" | "text" | "done">("emoji");
+
+  // Reset state every time the popup opens
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedMood(null);
+      setText("");
+      setConsentToShare(true);
+      setStep("emoji");
+    }
+  }, [isOpen]);
 
   const saveMutation = useMutation({
     mutationFn: async (data: { day: number; emoji: string; emojiLabel: string; text: string; consentToShare: boolean }) => {
