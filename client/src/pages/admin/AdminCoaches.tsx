@@ -186,8 +186,8 @@ export default function AdminCoaches() {
   });
 
   const assignCoach = useMutation({
-    mutationFn: async ({ purchaseId, coachId }: { purchaseId: number; coachId: number }) => {
-      const res = await apiRequest('POST', `/api/admin/coaching-purchases/${purchaseId}/assign`, { coachId });
+    mutationFn: async (params: { purchaseId: number; coachId: number; email?: string; sessionsTotal?: number; coachType?: string; packageType?: string; currency?: string }) => {
+      const res = await apiRequest('POST', `/api/admin/coaching-purchases/${params.purchaseId}/assign`, params);
       return res.json();
     },
     onSuccess: (data) => {
@@ -732,7 +732,11 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                         <select
                           onChange={(e) => {
                             if (e.target.value) {
-                              assignCoach.mutate({ purchaseId: client.id, coachId: parseInt(e.target.value) });
+                              assignCoach.mutate({
+                                purchaseId: client.id,
+                                coachId: parseInt(e.target.value),
+                                ...(client.id === 0 ? { email: client.email, sessionsTotal: client.sessionsTotal, coachType: client.coachType, packageType: client.packageType, currency: client.currency } : {}),
+                              });
                               e.target.value = '';
                             }
                           }}
@@ -778,7 +782,11 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                           <select
                             onChange={(e) => {
                               if (e.target.value) {
-                                assignCoach.mutate({ purchaseId: client.id, coachId: parseInt(e.target.value) });
+                                assignCoach.mutate({
+                                purchaseId: client.id,
+                                coachId: parseInt(e.target.value),
+                                ...(client.id === 0 ? { email: client.email, sessionsTotal: client.sessionsTotal, coachType: client.coachType, packageType: client.packageType, currency: client.currency } : {}),
+                              });
                                 e.target.value = '';
                               }
                             }}

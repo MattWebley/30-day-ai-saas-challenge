@@ -9004,13 +9004,62 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     }
   });
 
-  // GET /api/admin/all-coaching-clients - List ALL coaching purchases with coach and user info
+  // GET /api/admin/all-coaching-clients - List ALL coaching clients from all sources
   app.get('/api/admin/all-coaching-clients', isAuthenticated, async (req: any, res) => {
     try {
       if (!await requireAdmin(req, res)) return;
 
+      // 1. Get all actual coaching purchase records
       const allPurchases = await db.select().from(coachingPurchases)
         .orderBy(desc(coachingPurchases.purchasedAt));
+      const purchaseEmails = new Set(allPurchases.map(p => p.email.toLowerCase()));
+
+      // 2. Find users with coachingPurchased=true who don't have a coachingPurchases record
+      const coachingUsers = await db.select().from(users).where(eq(users.coachingPurchased, true));
+      for (const cu of coachingUsers) {
+        if (cu.email && !purchaseEmails.has(cu.email.toLowerCase())) {
+          allPurchases.push({
+            id: 0,
+            userId: cu.id,
+            email: cu.email,
+            coachType: 'unknown',
+            packageType: 'unknown',
+            sessionsTotal: 0,
+            amountPaid: 0,
+            currency: cu.purchaseCurrency || 'gbp',
+            stripeSessionId: null as any,
+            assignedCoachId: null,
+            coachNotes: null,
+            purchasedAt: cu.createdAt as any,
+          });
+          purchaseEmails.add(cu.email.toLowerCase());
+        }
+      }
+
+      // 3. Find pending purchases with coaching that don't have a coachingPurchases record
+      const allPendingCoaching = await db.select().from(pendingPurchases)
+        .where(sql`${pendingPurchases.productType} LIKE '%coaching%'`);
+      for (const pp of allPendingCoaching) {
+        if (!purchaseEmails.has(pp.email.toLowerCase())) {
+          const isMatt = (pp.productType || '').includes('matt');
+          const isSingle = (pp.productType || '').includes('single');
+          allPurchases.push({
+            id: 0,
+            userId: null as any,
+            email: pp.email,
+            coachType: isMatt ? 'matt' : 'expert',
+            packageType: isSingle ? 'single' : 'pack',
+            sessionsTotal: isSingle ? 1 : 4,
+            amountPaid: pp.amountPaid,
+            currency: pp.currency,
+            stripeSessionId: pp.stripeSessionId as any,
+            assignedCoachId: null,
+            coachNotes: null,
+            purchasedAt: pp.createdAt as any,
+          });
+          purchaseEmails.add(pp.email.toLowerCase());
+        }
+      }
 
       const allCoaches = await db.select().from(coaches);
       const coachMap = new Map(allCoaches.map(c => [c.id, c]));
@@ -9055,16 +9104,10 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
       if (!await requireAdmin(req, res)) return;
 
       const purchaseId = parseInt(req.params.id);
-      const { coachId } = req.body;
+      const { coachId, email, sessionsTotal: reqSessions, coachType, packageType, currency } = req.body;
 
       if (!coachId) {
         return res.status(400).json({ message: "Coach ID is required" });
-      }
-
-      // Get the coaching purchase
-      const [purchase] = await db.select().from(coachingPurchases).where(eq(coachingPurchases.id, purchaseId));
-      if (!purchase) {
-        return res.status(404).json({ message: "Coaching purchase not found" });
       }
 
       // Get the coach
@@ -9073,32 +9116,71 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
         return res.status(404).json({ message: "Coach not found" });
       }
 
-      const isReassignment = purchase.assignedCoachId !== null && purchase.assignedCoachId !== coach.id;
+      let purchase;
 
-      // Update the purchase with assigned coach
-      await db.update(coachingPurchases)
-        .set({ assignedCoachId: coach.id })
-        .where(eq(coachingPurchases.id, purchaseId));
+      if (purchaseId === 0 && email) {
+        // This is a synthetic record (from users table or pendingPurchases) — create a real coachingPurchases record
+        const sessionsCount = reqSessions || 4;
+        const userRecord = await db.select().from(users).where(sql`lower(${users.email}) = ${email.toLowerCase()}`);
+        const userId = userRecord[0]?.id || null;
 
-      if (isReassignment) {
-        // Reassignment: move pending sessions to new coach (completed sessions stay with old coach)
-        await db.update(coachingSessions)
-          .set({ coachId: coach.id })
-          .where(and(
-            eq(coachingSessions.coachingPurchaseId, purchaseId),
-            eq(coachingSessions.status, 'pending'),
-          ));
-      } else if (!purchase.assignedCoachId) {
-        // First-time assignment: create pending session records
-        for (let i = 1; i <= purchase.sessionsTotal; i++) {
+        [purchase] = await db.insert(coachingPurchases).values({
+          userId,
+          email,
+          coachType: coachType || 'expert',
+          packageType: packageType || 'pack',
+          sessionsTotal: sessionsCount,
+          amountPaid: 0,
+          currency: currency || 'gbp',
+          stripeSessionId: `manual_${Date.now()}`,
+          assignedCoachId: coach.id,
+        }).returning();
+
+        // Create pending session records
+        for (let i = 1; i <= sessionsCount; i++) {
           await db.insert(coachingSessions).values({
-            coachingPurchaseId: purchaseId,
+            coachingPurchaseId: purchase.id,
             coachId: coach.id,
-            clientUserId: purchase.userId || null,
-            clientEmail: purchase.email,
+            clientUserId: userId,
+            clientEmail: email,
             sessionNumber: i,
             status: 'pending',
           });
+        }
+      } else {
+        // Normal flow — lookup existing purchase
+        [purchase] = await db.select().from(coachingPurchases).where(eq(coachingPurchases.id, purchaseId));
+        if (!purchase) {
+          return res.status(404).json({ message: "Coaching purchase not found" });
+        }
+
+        const isReassignment = purchase.assignedCoachId !== null && purchase.assignedCoachId !== coach.id;
+
+        // Update the purchase with assigned coach
+        await db.update(coachingPurchases)
+          .set({ assignedCoachId: coach.id })
+          .where(eq(coachingPurchases.id, purchaseId));
+
+        if (isReassignment) {
+          // Reassignment: move pending sessions to new coach (completed sessions stay with old coach)
+          await db.update(coachingSessions)
+            .set({ coachId: coach.id })
+            .where(and(
+              eq(coachingSessions.coachingPurchaseId, purchaseId),
+              eq(coachingSessions.status, 'pending'),
+            ));
+        } else if (!purchase.assignedCoachId) {
+          // First-time assignment: create pending session records
+          for (let i = 1; i <= purchase.sessionsTotal; i++) {
+            await db.insert(coachingSessions).values({
+              coachingPurchaseId: purchaseId,
+              coachId: coach.id,
+              clientUserId: purchase.userId || null,
+              clientEmail: purchase.email,
+              sessionNumber: i,
+              status: 'pending',
+            });
+          }
         }
       }
 
@@ -9115,8 +9197,7 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
         console.error("Failed to send coach assignment email:", emailErr);
       }
 
-      const action = isReassignment ? 'Reassigned' : 'Assigned';
-      res.json({ success: true, message: `${action} to ${coach.displayName}` });
+      res.json({ success: true, message: `Assigned to ${coach.displayName}` });
     } catch (error: any) {
       console.error("Error assigning coach:", error);
       res.status(500).json({ message: error.message || "Failed to assign coach" });
