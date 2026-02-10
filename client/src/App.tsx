@@ -53,6 +53,7 @@ import ResetPassword from "@/pages/ResetPassword";
 import CoachLogin from "@/pages/CoachLogin";
 import CoachDashboard from "@/pages/CoachDashboard";
 import CoachSetup from "@/pages/CoachSetup";
+import MyCoaching from "@/pages/MyCoaching";
 import { CookieConsent } from "@/components/CookieConsent";
 import { FacebookPixel } from "@/components/FacebookPixel";
 
@@ -84,7 +85,7 @@ function Router() {
 
   // Redirect authenticated but non-paying users to order page
   const hasPurchased = (user as any)?.challengePurchased || (user as any)?.coachingPurchased || (user as any)?.isAdmin || (user as any)?.isCoach;
-  const protectedPaths = ['/dashboard', '/badges', '/referrals', '/build-log', '/claude-code', '/settings', '/coaching', '/critique', '/testimonial', '/congratulations'];
+  const protectedPaths = ['/dashboard', '/badges', '/referrals', '/build-log', '/claude-code', '/settings', '/coaching', '/my-coaching', '/critique', '/testimonial', '/congratulations'];
   const isProtectedRoute = protectedPaths.some(path => location.startsWith(path));
   if (isAuthenticated && !hasPurchased && isProtectedRoute) {
     setLocation('/order');
@@ -153,6 +154,7 @@ function Router() {
             <Route path="/settings" component={Settings} />
             <Route path="/design-preview" component={DesignPreview} />
             <Route path="/coaching" component={Coaching} />
+            <Route path="/my-coaching" component={MyCoaching} />
             <Route path="/critique" component={Critique} />
             <Route path="/testimonial" component={Testimonial} />
             <Route path="/congratulations" component={Congratulations} />

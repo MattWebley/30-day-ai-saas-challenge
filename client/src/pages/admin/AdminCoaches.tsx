@@ -82,6 +82,7 @@ interface CoachSession {
   clientEmail: string;
   sessionNumber: number;
   status: string;
+  scheduledAt: string | null;
   completedAt: string | null;
   coachNotes: string | null;
   createdAt: string;
@@ -237,6 +238,15 @@ export default function AdminCoaches() {
       toast.success('Default coach updated — new purchases will be auto-assigned');
     },
     onError: (err: any) => toast.error(err.message || 'Failed to set default coach'),
+  });
+
+  const sendCalcomSetup = useMutation({
+    mutationFn: async (coachId: number) => {
+      const res = await apiRequest('POST', `/api/admin/coaches/${coachId}/send-calcom-setup`);
+      return res.json();
+    },
+    onSuccess: (data) => toast.success(data.message || 'Setup instructions sent'),
+    onError: (err: any) => toast.error(err.message || 'Failed to send email'),
   });
 
   const loadPreview = async (type: 'email' | 'agreement') => {
@@ -562,6 +572,59 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
         )}
       </Card>
 
+      {/* Cal.com Setup */}
+      {activeCoaches.length > 0 && (
+        <Card className="border border-slate-200 shadow-sm overflow-hidden">
+          <button onClick={() => toggleSection('calcom')} className="w-full p-5 flex items-center gap-3 text-left">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-slate-900">Cal.com Integration</h3>
+              <p className="text-sm text-slate-500">Webhook setup for automatic booking sync</p>
+            </div>
+            {openSections.has('calcom') ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+          </button>
+          {openSections.has('calcom') && (
+            <div className="px-5 pb-5 space-y-4">
+              <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3">
+                <p className="text-slate-700 font-medium">How it works</p>
+                <p className="text-sm text-slate-600">
+                  Each coach adds a webhook in their Cal.com account. When a client books, reschedules, or cancels, the platform updates automatically.
+                </p>
+                <div className="bg-white rounded-lg p-3 border border-slate-200 space-y-2">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Webhook URL (same for all coaches)</p>
+                  <code className="block text-sm text-slate-900 bg-slate-50 px-3 py-2 rounded border border-slate-200 select-all">
+                    https://challenge.mattwebley.com/api/webhooks/calcom
+                  </code>
+                  <p className="text-xs text-slate-500">Events: Booking Created, Booking Rescheduled, Booking Cancelled</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-slate-700">Send setup instructions to coaches:</p>
+                {activeCoaches.map((coach) => (
+                  <div key={coach.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200">
+                    <div>
+                      <p className="font-medium text-slate-900">{coach.displayName}</p>
+                      <p className="text-sm text-slate-500">{coach.email}</p>
+                    </div>
+                    <button
+                      onClick={() => sendCalcomSetup.mutate(coach.id)}
+                      disabled={sendCalcomSetup.isPending}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-sm font-medium rounded-lg hover:opacity-90 disabled:opacity-50"
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      {sendCalcomSetup.isPending ? 'Sending...' : 'Send Instructions'}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </Card>
+      )}
+
       {/* Pending Invitations */}
       {invitations.length > 0 && (
         <Card className="border border-slate-200 shadow-sm overflow-hidden">
@@ -827,15 +890,19 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                       <td className="px-5 py-3">
                         {session.status === 'completed' ? (
                           <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Completed</span>
+                        ) : session.status === 'scheduled' ? (
+                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Booked</span>
                         ) : session.status === 'cancelled' ? (
                           <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs font-semibold rounded-full">Cancelled</span>
                         ) : (
-                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Pending</span>
+                          <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Pending</span>
                         )}
                       </td>
                       <td className="px-5 py-3 text-sm text-slate-500">
                         {session.completedAt
                           ? new Date(session.completedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+                          : session.scheduledAt
+                          ? new Date(session.scheduledAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
                           : new Date(session.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
                         }
                       </td>

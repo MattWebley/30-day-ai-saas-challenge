@@ -1356,3 +1356,61 @@ This is an automated record. Store for your records.`,
     return false;
   }
 }
+
+// Send Cal.com webhook setup instructions to a coach
+export async function sendCalcomSetupEmail(params: {
+  to: string;
+  coachName: string;
+  webhookUrl: string;
+  webhookSecret: string | null;
+}): Promise<boolean> {
+  const { to, coachName, webhookUrl, webhookSecret } = params;
+  try {
+    const secretSection = webhookSecret
+      ? `\n5. Under "Secret", paste this: ${webhookSecret}\n   (This verifies the webhook is really from Cal.com)\n`
+      : '';
+
+    await sendAndLog({
+      to,
+      subject: 'Action needed: Connect your Cal.com calendar to the coaching platform',
+      text: `Hi ${coachName},
+
+To automatically sync your bookings with the coaching platform, please add a webhook in your Cal.com account. This takes about 2 minutes.
+
+HOW TO SET IT UP:
+-----------------
+
+1. Log into Cal.com and go to Settings → Developer → Webhooks
+   (Direct link: https://app.cal.com/settings/developer/webhooks)
+
+2. Click "New Webhook"
+
+3. Set the Subscriber URL to:
+   ${webhookUrl}
+
+4. Under "Event Triggers", select these 3 events:
+   - Booking Created
+   - Booking Rescheduled
+   - Booking Cancelled
+${secretSection}
+6. Click "Save"
+
+That's it! Once this is set up, when a client books, reschedules, or cancels a session through your Cal.com link, the coaching platform will update automatically.
+
+WHAT THIS DOES:
+- When a client books → their session shows as "Booked" with the date/time
+- When they reschedule → the date updates automatically
+- When they cancel → the session goes back to "Available" so they can rebook
+
+If you have any issues setting this up, just reply to this email.
+
+Matt` + TRANSACTIONAL_FOOTER,
+      templateKey: 'calcom_setup_instructions',
+    });
+    console.log('Cal.com setup instructions sent to:', to);
+    return true;
+  } catch (error) {
+    console.error('Failed to send Cal.com setup email:', error);
+    return false;
+  }
+}

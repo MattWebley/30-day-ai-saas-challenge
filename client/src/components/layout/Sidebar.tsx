@@ -354,17 +354,31 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
                 </span>
               </Link>
             )}
-            <Link href="/coaching" onClick={handleNavClick}>
-              <span className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
-                location === "/coaching"
-                  ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                  : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
-              )}>
-                <Video className="w-4 h-4" />
-                1:1 Coaching Calls
-              </span>
-            </Link>
+            {(stats as any)?.hasCoaching ? (
+              <Link href="/my-coaching" onClick={handleNavClick}>
+                <span className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                  location === "/my-coaching"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                )}>
+                  <Video className="w-4 h-4" />
+                  My Coaching
+                </span>
+              </Link>
+            ) : (
+              <Link href="/coaching" onClick={handleNavClick}>
+                <span className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+                  location === "/coaching"
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+                )}>
+                  <Video className="w-4 h-4" />
+                  1:1 Coaching Calls
+                </span>
+              </Link>
+            )}
             {lastCompleted >= 18 || testMode || (stats as any)?.allDaysUnlocked ? (
               <Link href="/critique" onClick={handleNavClick}>
                 <span className={cn(

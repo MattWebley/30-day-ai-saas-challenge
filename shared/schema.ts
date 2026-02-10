@@ -837,7 +837,9 @@ export const coachingSessions = pgTable("coaching_sessions", {
   clientUserId: varchar("client_user_id"),
   clientEmail: varchar("client_email").notNull(),
   sessionNumber: integer("session_number").notNull(), // 1, 2, 3, or 4
-  status: varchar("status").notNull().default('pending'), // 'pending' | 'completed' | 'cancelled'
+  status: varchar("status").notNull().default('pending'), // 'pending' | 'scheduled' | 'completed' | 'cancelled'
+  scheduledAt: timestamp("scheduled_at"), // When the Cal.com booking is for
+  calcomBookingUid: varchar("calcom_booking_uid"), // Cal.com booking UID for matching webhooks
   completedAt: timestamp("completed_at"),
   coachNotes: text("coach_notes"),
   createdAt: timestamp("created_at").defaultNow(),

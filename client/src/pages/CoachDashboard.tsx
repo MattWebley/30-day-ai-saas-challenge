@@ -74,6 +74,7 @@ interface CoachSession {
   clientEmail: string;
   sessionNumber: number;
   status: string;
+  scheduledAt: string | null;
   completedAt: string | null;
   coachNotes: string | null;
   createdAt: string;
@@ -261,7 +262,7 @@ export default function CoachDashboard() {
 
   const tabs: { key: Tab; label: string; icon: any; count?: number }[] = [
     { key: 'clients', label: 'Clients', icon: Users, count: clients.length },
-    { key: 'sessions', label: 'Sessions', icon: Calendar, count: sessions.filter(s => s.status === 'pending').length },
+    { key: 'sessions', label: 'Sessions', icon: Calendar, count: sessions.filter(s => s.status === 'pending' || s.status === 'scheduled').length },
     { key: 'earnings', label: 'Earnings', icon: DollarSign },
     { key: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -506,10 +507,69 @@ export default function CoachDashboard() {
               </Card>
             ) : (
               <>
-                {/* Pending sessions first */}
+                {/* Scheduled sessions first */}
+                {sessions.filter(s => s.status === 'scheduled').length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-2">Upcoming (Booked)</h3>
+                    <div className="space-y-2">
+                      {sessions.filter(s => s.status === 'scheduled').map((session) => {
+                        const clientName = session.clientUser
+                          ? [session.clientUser.firstName, session.clientUser.lastName].filter(Boolean).join(' ') || session.clientEmail
+                          : session.clientEmail;
+
+                        return (
+                          <Card key={session.id} className="p-4 border border-blue-200 bg-blue-50/50 flex items-center justify-between">
+                            <div>
+                              <p className="font-medium text-slate-900">{clientName}</p>
+                              <p className="text-sm text-slate-500">
+                                Session #{session.sessionNumber}
+                                {session.scheduledAt && (
+                                  <> — {new Date(session.scheduledAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</>
+                                )}
+                              </p>
+                            </div>
+                            {completingSession === session.id ? (
+                              <div className="flex items-center gap-2">
+                                <input
+                                  type="text"
+                                  value={sessionNotes}
+                                  onChange={(e) => setSessionNotes(e.target.value)}
+                                  placeholder="Notes (optional)"
+                                  className="px-2 py-1 border border-slate-200 rounded text-sm w-40"
+                                />
+                                <button
+                                  onClick={() => completeSession.mutate({ sessionId: session.id, notes: sessionNotes })}
+                                  disabled={completeSession.isPending}
+                                  className="px-3 py-1.5 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50"
+                                >
+                                  {completeSession.isPending ? '...' : 'Confirm'}
+                                </button>
+                                <button
+                                  onClick={() => { setCompletingSession(null); setSessionNotes(''); }}
+                                  className="text-xs text-slate-400 hover:text-slate-600"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setCompletingSession(session.id)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg hover:opacity-90"
+                              >
+                                <Check className="w-3.5 h-3.5" /> Mark Done
+                              </button>
+                            )}
+                          </Card>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Pending (unbooked) sessions */}
                 {sessions.filter(s => s.status === 'pending').length > 0 && (
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900 mb-2">Pending Sessions</h3>
+                    <h3 className="text-sm font-bold text-slate-900 mb-2">Pending (Not Yet Booked)</h3>
                     <div className="space-y-2">
                       {sessions.filter(s => s.status === 'pending').map((session) => {
                         const clientName = session.clientUser

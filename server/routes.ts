@@ -10,7 +10,7 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
 import { eq, desc, isNull, isNotNull, sql, and, or, gte, lte, count, countDistinct } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails, sendCoachAssignmentEmail, sendBookNextSessionEmail, sendCoachInvitationEmail, sendCoachAgreementCopyEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails, sendCoachAssignmentEmail, sendBookNextSessionEmail, sendCoachInvitationEmail, sendCoachAgreementCopyEmail, sendCalcomSetupEmail } from "./emailService";
 import { addContactToSysteme, addContactToSystemeDetailed } from "./systemeService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -8730,6 +8730,69 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     return { userId, coachId: coach.id };
   };
 
+  // GET /api/my-coaching - Client's own coaching info (coach, sessions, booking link)
+  app.get('/api/my-coaching', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+
+      // Find this user's coaching purchases
+      const purchases = await db.select().from(coachingPurchases)
+        .where(eq(coachingPurchases.userId, userId))
+        .orderBy(desc(coachingPurchases.purchasedAt));
+
+      if (purchases.length === 0) {
+        // Also check by email
+        const user = await storage.getUser(userId);
+        if (user?.email) {
+          const byEmail = await db.select().from(coachingPurchases)
+            .where(sql`lower(${coachingPurchases.email}) = ${user.email.toLowerCase()}`)
+            .orderBy(desc(coachingPurchases.purchasedAt));
+          if (byEmail.length === 0) {
+            return res.json({ purchases: [] });
+          }
+          purchases.push(...byEmail);
+        } else {
+          return res.json({ purchases: [] });
+        }
+      }
+
+      // Get coach info and sessions for each purchase
+      const allCoaches = await db.select().from(coaches);
+      const coachMap = new Map(allCoaches.map(c => [c.id, c]));
+
+      const result = await Promise.all(purchases.map(async (purchase) => {
+        const coach = purchase.assignedCoachId ? coachMap.get(purchase.assignedCoachId) : null;
+        const sessions = await db.select().from(coachingSessions)
+          .where(eq(coachingSessions.coachingPurchaseId, purchase.id))
+          .orderBy(coachingSessions.sessionNumber);
+
+        return {
+          id: purchase.id,
+          coachType: purchase.coachType,
+          packageType: purchase.packageType,
+          sessionsTotal: purchase.sessionsTotal,
+          purchasedAt: purchase.purchasedAt,
+          coach: coach ? {
+            displayName: coach.displayName,
+            calComLink: coach.calComLink,
+          } : null,
+          sessions: sessions.map(s => ({
+            id: s.id,
+            sessionNumber: s.sessionNumber,
+            status: s.status,
+            scheduledAt: s.scheduledAt,
+            completedAt: s.completedAt,
+          })),
+        };
+      }));
+
+      res.json({ purchases: result });
+    } catch (error: any) {
+      console.error("Error fetching my coaching:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch coaching info" });
+    }
+  });
+
   // GET /api/admin/coaches - List all coaches with stats
   app.get('/api/admin/coaches', isAuthenticated, async (req: any, res) => {
     try {
@@ -9091,6 +9154,38 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     } catch (error: any) {
       console.error("Error removing default coach:", error);
       res.status(500).json({ message: error.message || "Failed to remove default coach" });
+    }
+  });
+
+  // POST /api/admin/coaches/:id/send-calcom-setup - Send Cal.com webhook setup instructions
+  app.post('/api/admin/coaches/:id/send-calcom-setup', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const coachId = parseInt(req.params.id);
+      const [coach] = await db.select().from(coaches).where(eq(coaches.id, coachId));
+      if (!coach) {
+        return res.status(404).json({ message: "Coach not found" });
+      }
+
+      const webhookUrl = 'https://challenge.mattwebley.com/api/webhooks/calcom';
+      const webhookSecret = process.env.CALCOM_WEBHOOK_SECRET || null;
+
+      const sent = await sendCalcomSetupEmail({
+        to: coach.email,
+        coachName: coach.displayName,
+        webhookUrl,
+        webhookSecret,
+      });
+
+      if (sent) {
+        res.json({ success: true, message: `Setup instructions sent to ${coach.email}` });
+      } else {
+        res.status(500).json({ message: "Failed to send email" });
+      }
+    } catch (error: any) {
+      console.error("Error sending Cal.com setup email:", error);
+      res.status(500).json({ message: error.message || "Failed to send email" });
     }
   });
 

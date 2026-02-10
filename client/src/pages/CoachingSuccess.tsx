@@ -12,9 +12,6 @@ export default function CoachingSuccess() {
   const params = new URLSearchParams(searchString);
   const type = params.get("type") || "coaching";
 
-  // Determine what they bought based on type param
-  const isMattSession = type === "matt" || type === "matt-single";
-
   // Track purchase with Meta Pixel
   useEffect(() => {
     const getPurchaseValue = () => {
@@ -75,57 +72,24 @@ export default function CoachingSuccess() {
           </p>
         </div>
 
-        {isMattSession ? (
-          <>
-            <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4 space-y-3">
-              <div className="flex items-center justify-center gap-2 text-slate-700">
-                <Calendar className="w-5 h-5" />
-                <span className="font-medium">Book your session now</span>
-              </div>
-              <p className="text-slate-600">
-                Pick a time that works for you and let's get started.
-              </p>
-              <a
-                href="https://cal.com/mattwebley/30min"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button className="w-full bg-green-600 hover:bg-green-700">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule with Matt
-                </Button>
-              </a>
-            </div>
-            <p className="text-slate-500 text-sm">
-              You'll also receive a confirmation email with this link.
-            </p>
-          </>
-        ) : (
-          <>
-            <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4 space-y-3">
-              <div className="flex items-center justify-center gap-2 text-slate-700">
-                <Calendar className="w-5 h-5" />
-                <span className="font-medium">Book your session now</span>
-              </div>
-              <p className="text-slate-600">
-                Pick a time that works for you and let's get started.
-              </p>
-              <a
-                href="https://cal.eu/jamesf/vibe-coding-call"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Button className="w-full bg-green-600 hover:bg-green-700">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Schedule with James
-                </Button>
-              </a>
-            </div>
-            <p className="text-slate-500 text-sm">
-              You'll also receive a confirmation email with this link.
-            </p>
-          </>
-        )}
+        <div className="bg-slate-50 border-2 border-slate-200 rounded-lg p-4 space-y-3">
+          <div className="flex items-center justify-center gap-2 text-slate-700">
+            <Calendar className="w-5 h-5" />
+            <span className="font-medium">Book your session now</span>
+          </div>
+          <p className="text-slate-600">
+            Head to your coaching page to book your first session.
+          </p>
+          <Link href="/my-coaching">
+            <Button className="w-full bg-green-600 hover:bg-green-700">
+              <Calendar className="w-4 h-4 mr-2" />
+              Go to My Coaching
+            </Button>
+          </Link>
+        </div>
+        <p className="text-slate-500 text-sm">
+          You'll also receive a confirmation email with booking details.
+        </p>
 
         <p className="text-xs text-slate-400 px-2">
           Coaching sessions are delivered by independent third-party professionals. Your coaching relationship is with the independent coach, not with us.

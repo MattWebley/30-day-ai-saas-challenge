@@ -1,11 +1,13 @@
 import express, { type Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
+import crypto from "crypto";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { runMigrations } from 'stripe-replit-sync';
 import { getStripeSync, getStripePublishableKey } from './stripeClient';
 import { WebhookHandlers } from './webhookHandlers';
+import { handleCalcomWebhook } from './calcomWebhook';
 import { seedIfNeeded } from './seed';
 import { seedDripEmails } from './dripEmailSeed';
 import { startDripEmailProcessor } from './emailService';
@@ -79,6 +81,30 @@ app.post(
     }
   }
 );
+
+// Cal.com webhook — receives booking events (JSON body, no raw parsing needed)
+app.post('/api/webhooks/calcom', express.json(), async (req, res) => {
+  try {
+    // Verify webhook signature if secret is configured
+    const secret = process.env.CALCOM_WEBHOOK_SECRET;
+    if (secret) {
+      const signature = req.headers['x-cal-signature-256'] as string;
+      if (signature) {
+        const expected = crypto.createHmac('sha256', secret).update(JSON.stringify(req.body)).digest('hex');
+        if (signature !== expected) {
+          console.error('[Cal.com Webhook] Signature mismatch');
+          return res.status(401).json({ error: 'Invalid signature' });
+        }
+      }
+    }
+
+    await handleCalcomWebhook(req.body);
+    res.status(200).json({ received: true });
+  } catch (error: any) {
+    console.error('[Cal.com Webhook] Error:', error.message);
+    res.status(200).json({ received: true }); // Always return 200 so Cal.com doesn't retry
+  }
+});
 
 app.get('/api/stripe/publishable-key', async (req, res) => {
   try {
