@@ -56,6 +56,7 @@ interface Client {
   sessionsCompleted: number;
   sessionsRemaining: number;
   purchasedAt: string;
+  coachNotes: string;
   user: {
     id: string;
     firstName: string | null;
@@ -205,6 +206,20 @@ export default function CoachDashboard() {
     },
     onError: (err: any) => toast.error(err.message || 'Failed to save settings'),
   });
+
+  const saveClientNotes = useMutation({
+    mutationFn: async ({ purchaseId, notes }: { purchaseId: number; notes: string }) => {
+      const res = await apiRequest('PATCH', `/api/coach/clients/${purchaseId}/notes${qs}`, { notes });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/coach/clients'] });
+      toast.success('Notes saved');
+    },
+    onError: (err: any) => toast.error(err.message || 'Failed to save notes'),
+  });
+
+  const [clientNotes, setClientNotes] = useState<Record<number, string>>({});
 
   // Load profile data into settings form
   useEffect(() => {
@@ -392,6 +407,27 @@ export default function CoachDashboard() {
                             </p>
                           </div>
                         )}
+
+                        {/* Client Notes */}
+                        <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                          <p className="text-sm font-medium text-slate-700 mb-2">Notes about this client</p>
+                          <textarea
+                            value={clientNotes[client.purchaseId] ?? client.coachNotes}
+                            onChange={(e) => setClientNotes(prev => ({ ...prev, [client.purchaseId]: e.target.value }))}
+                            placeholder="Add private notes about this client..."
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm resize-none bg-white"
+                            rows={3}
+                          />
+                          {(clientNotes[client.purchaseId] !== undefined && clientNotes[client.purchaseId] !== client.coachNotes) && (
+                            <button
+                              onClick={() => saveClientNotes.mutate({ purchaseId: client.purchaseId, notes: clientNotes[client.purchaseId] })}
+                              disabled={saveClientNotes.isPending}
+                              className="mt-2 px-3 py-1.5 bg-primary text-white text-xs font-semibold rounded-lg hover:opacity-90 disabled:opacity-50"
+                            >
+                              {saveClientNotes.isPending ? 'Saving...' : 'Save Notes'}
+                            </button>
+                          )}
+                        </div>
 
                         {/* Sessions */}
                         <div>

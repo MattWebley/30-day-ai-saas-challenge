@@ -33,6 +33,7 @@ interface Coach {
   ratePerSession: number;
   rateCurrency: string;
   isActive: boolean;
+  isDefault: boolean;
   createdAt: string;
   stats: {
     totalClients: number;
@@ -45,7 +46,7 @@ interface Coach {
   };
 }
 
-interface UnassignedPurchase {
+interface CoachingClient {
   id: number;
   userId: string | null;
   email: string;
@@ -55,6 +56,10 @@ interface UnassignedPurchase {
   amountPaid: number;
   currency: string;
   purchasedAt: string;
+  assignedCoachId: number | null;
+  assignedCoach: { id: number; displayName: string } | null;
+  sessionsCompleted: number;
+  sessionsPending: number;
   user: { id: string; firstName: string | null; lastName: string | null; email: string | null } | null;
 }
 
@@ -104,7 +109,7 @@ export default function AdminCoaches() {
   const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCoach, setEditingCoach] = useState<number | null>(null);
-  const [openSections, setOpenSections] = useState<Set<string>>(new Set(['coaches']));
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set(['coaches', 'clients']));
   const [previewType, setPreviewType] = useState<'email' | 'agreement' | null>(null);
   const [previewText, setPreviewText] = useState('');
 
@@ -127,8 +132,8 @@ export default function AdminCoaches() {
     staleTime: 30_000,
   });
 
-  const { data: unassigned = [] } = useQuery<UnassignedPurchase[]>({
-    queryKey: ['/api/admin/unassigned-coaching'],
+  const { data: allClients = [] } = useQuery<CoachingClient[]>({
+    queryKey: ['/api/admin/all-coaching-clients'],
     staleTime: 30_000,
   });
 
@@ -185,7 +190,7 @@ export default function AdminCoaches() {
       return res.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/admin/unassigned-coaching'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/all-coaching-clients'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/coaches'] });
       queryClient.invalidateQueries({ queryKey: ['/api/admin/coach-sessions'] });
       toast.success(data.message || 'Client assigned');
@@ -216,6 +221,22 @@ export default function AdminCoaches() {
       toast.success('Invitation cancelled');
     },
     onError: (err: any) => toast.error(err.message || 'Failed to cancel invitation'),
+  });
+
+  const setDefaultCoach = useMutation({
+    mutationFn: async (coachId: number | null) => {
+      if (coachId === null) {
+        const res = await apiRequest('DELETE', '/api/admin/coaches/default');
+        return res.json();
+      }
+      const res = await apiRequest('POST', `/api/admin/coaches/${coachId}/set-default`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/coaches'] });
+      toast.success('Default coach updated — new purchases will be auto-assigned');
+    },
+    onError: (err: any) => toast.error(err.message || 'Failed to set default coach'),
   });
 
   const loadPreview = async (type: 'email' | 'agreement') => {
@@ -284,8 +305,11 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
           <p className="text-3xl font-extrabold text-slate-900">{activeCoaches.length}</p>
         </Card>
         <Card className="p-4 border border-slate-200 border-l-4 border-l-amber-500 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Unassigned Clients</p>
-          <p className="text-3xl font-extrabold text-slate-900">{unassigned.length}</p>
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Coaching Clients</p>
+          <p className="text-3xl font-extrabold text-slate-900">{allClients.length}</p>
+          {allClients.filter(c => !c.assignedCoachId).length > 0 && (
+            <p className="text-xs text-amber-600 font-medium">{allClients.filter(c => !c.assignedCoachId).length} unassigned</p>
+          )}
         </Card>
         <Card className="p-4 border border-slate-200 border-l-4 border-l-green-500 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Pending Payouts</p>
@@ -472,6 +496,11 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                             <FileCheck className="w-3 h-3" /> Agreement signed
                           </span>
                         )}
+                        {coach.isDefault && (
+                          <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full flex items-center gap-1">
+                            <UserPlus className="w-3 h-3" /> Auto-assign
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-slate-500">{coach.email}</p>
                       {coach.calComLink && (
@@ -498,6 +527,13 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                       >
                         <Eye className="w-3.5 h-3.5" /> View
                       </a>
+                      <button
+                        onClick={() => setDefaultCoach.mutate(coach.isDefault ? null : coach.id)}
+                        className={`px-2.5 py-1.5 text-xs font-medium rounded-lg ${coach.isDefault ? 'text-amber-700 bg-amber-50 hover:bg-amber-100' : 'text-slate-500 bg-slate-50 hover:bg-slate-100'}`}
+                        title={coach.isDefault ? 'Remove as default coach' : 'Set as default coach for new purchases'}
+                      >
+                        {coach.isDefault ? 'Remove Default' : 'Set Default'}
+                      </button>
                       <button
                         onClick={() => {
                           setEditingCoach(coach.id);
@@ -590,54 +626,124 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
         </Card>
       )}
 
-      {/* Unassigned Clients */}
-      <Card className={`border border-slate-200 shadow-sm overflow-hidden ${unassigned.length > 0 ? 'border-l-4 border-l-amber-500' : ''}`}>
-        <button onClick={() => toggleSection('unassigned')} className="w-full p-5 flex items-center gap-3 text-left">
-          {unassigned.length > 0 && <AlertTriangle className="w-5 h-5 text-amber-500" />}
-          <div className="flex-1">
-            <h3 className="text-lg font-bold text-slate-900">Unassigned Clients</h3>
-            <p className="text-sm text-slate-500">{unassigned.length} coaching purchase{unassigned.length !== 1 ? 's' : ''} waiting for assignment</p>
+      {/* All Coaching Clients */}
+      <Card className={`border border-slate-200 shadow-sm overflow-hidden ${allClients.some(c => !c.assignedCoachId) ? 'border-l-4 border-l-amber-500' : ''}`}>
+        <button onClick={() => toggleSection('clients')} className="w-full p-5 flex items-center gap-3 text-left">
+          <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
+            <UserPlus className="w-5 h-5 text-slate-600" />
           </div>
-          {openSections.has('unassigned') ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-slate-900">Coaching Clients</h3>
+            <p className="text-sm text-slate-500">
+              {allClients.length} total
+              {allClients.some(c => !c.assignedCoachId) && (
+                <> — <span className="text-amber-600 font-medium">{allClients.filter(c => !c.assignedCoachId).length} need assignment</span></>
+              )}
+            </p>
+          </div>
+          {allClients.some(c => !c.assignedCoachId) && <AlertTriangle className="w-5 h-5 text-amber-500" />}
+          {openSections.has('clients') ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
         </button>
 
-        {openSections.has('unassigned') && unassigned.length > 0 && (
-          <div className="px-5 pb-5 space-y-3">
-            {unassigned.map((purchase) => {
-              const clientName = purchase.user
-                ? [purchase.user.firstName, purchase.user.lastName].filter(Boolean).join(' ') || purchase.email
-                : purchase.email;
+        {openSections.has('clients') && allClients.length > 0 && (
+          <div className="px-5 pb-5">
+            {/* Unassigned first */}
+            {allClients.filter(c => !c.assignedCoachId).length > 0 && (
+              <div className="mb-4">
+                <p className="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-2">Unassigned</p>
+                <div className="space-y-2">
+                  {allClients.filter(c => !c.assignedCoachId).map((client) => {
+                    const clientName = client.user
+                      ? [client.user.firstName, client.user.lastName].filter(Boolean).join(' ') || client.email
+                      : client.email;
+                    return (
+                      <div key={client.id} className="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-200">
+                        <div>
+                          <p className="font-medium text-slate-900">{clientName}</p>
+                          <p className="text-sm text-slate-500">
+                            {client.packageType === 'pack' ? '4 Sessions' : '1 Session'} • {client.coachType} •{' '}
+                            {formatMoney(client.amountPaid, client.currency)} •{' '}
+                            {new Date(client.purchasedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                          </p>
+                        </div>
+                        <select
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              assignCoach.mutate({ purchaseId: client.id, coachId: parseInt(e.target.value) });
+                              e.target.value = '';
+                            }
+                          }}
+                          className="px-3 py-1.5 border border-amber-300 rounded-lg text-sm bg-white"
+                          defaultValue=""
+                        >
+                          <option value="" disabled>Assign to...</option>
+                          {activeCoaches.map((coach) => (
+                            <option key={coach.id} value={coach.id}>{coach.displayName}</option>
+                          ))}
+                        </select>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
+            {/* Assigned clients grouped by coach */}
+            {activeCoaches.filter(coach => allClients.some(c => c.assignedCoachId === coach.id)).map((coach) => {
+              const coachClients = allClients.filter(c => c.assignedCoachId === coach.id);
               return (
-                <div key={purchase.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-200">
-                  <div>
-                    <p className="font-medium text-slate-900">{clientName}</p>
-                    <p className="text-sm text-slate-500">
-                      {purchase.packageType === 'pack' ? '4 Sessions' : '1 Session'} • {purchase.coachType} •{' '}
-                      {formatMoney(purchase.amountPaid, purchase.currency)} •{' '}
-                      {new Date(purchase.purchasedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <select
-                      onChange={(e) => {
-                        if (e.target.value) {
-                          assignCoach.mutate({ purchaseId: purchase.id, coachId: parseInt(e.target.value) });
-                          e.target.value = '';
-                        }
-                      }}
-                      className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm bg-white"
-                      defaultValue=""
-                    >
-                      <option value="" disabled>Assign to...</option>
-                      {activeCoaches.map((coach) => (
-                        <option key={coach.id} value={coach.id}>{coach.displayName}</option>
-                      ))}
-                    </select>
+                <div key={coach.id} className="mb-4">
+                  <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                    {coach.displayName} ({coachClients.length} client{coachClients.length !== 1 ? 's' : ''})
+                  </p>
+                  <div className="space-y-2">
+                    {coachClients.map((client) => {
+                      const clientName = client.user
+                        ? [client.user.firstName, client.user.lastName].filter(Boolean).join(' ') || client.email
+                        : client.email;
+                      return (
+                        <div key={client.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200">
+                          <div>
+                            <p className="font-medium text-slate-900">{clientName}</p>
+                            <p className="text-sm text-slate-500">
+                              {client.packageType === 'pack' ? '4 Sessions' : '1 Session'} •{' '}
+                              {client.sessionsCompleted}/{client.sessionsTotal} done •{' '}
+                              {formatMoney(client.amountPaid, client.currency)} •{' '}
+                              {new Date(client.purchasedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                            </p>
+                          </div>
+                          <select
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                assignCoach.mutate({ purchaseId: client.id, coachId: parseInt(e.target.value) });
+                                e.target.value = '';
+                              }
+                            }}
+                            className="px-3 py-1.5 border border-slate-200 rounded-lg text-sm bg-white"
+                            defaultValue=""
+                          >
+                            <option value="" disabled>Reassign...</option>
+                            {activeCoaches.filter(c => c.id !== coach.id).map((c) => (
+                              <option key={c.id} value={c.id}>{c.displayName}</option>
+                            ))}
+                          </select>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
             })}
+
+            {allClients.length === 0 && (
+              <p className="text-slate-500 py-4 text-center">No coaching clients yet.</p>
+            )}
+          </div>
+        )}
+
+        {openSections.has('clients') && allClients.length === 0 && (
+          <div className="px-5 pb-5">
+            <p className="text-slate-500 py-4 text-center">No coaching clients yet.</p>
           </div>
         )}
       </Card>

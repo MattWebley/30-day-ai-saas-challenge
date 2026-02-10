@@ -2,11 +2,50 @@ import Stripe from 'stripe';
 import crypto from 'crypto';
 import { getStripeSync, getUncachableStripeClient } from './stripeClient';
 import { db } from './db';
-import { users, pendingPurchases, coachingPurchases, magicTokens } from '../shared/schema';
+import { users, pendingPurchases, coachingPurchases, coaches, coachingSessions, magicTokens } from '../shared/schema';
 import { eq, sql } from 'drizzle-orm';
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendCoachingPurchaseNotificationEmail, sendCritiqueNotificationEmail, sendWelcomeAccessEmail } from './emailService';
 import { addContactToSysteme } from './systemeService';
 import { sendPurchaseEvent } from './metaConversions';
+import { sendCoachAssignmentEmail } from './emailService';
+
+// Auto-assign a coaching purchase to the default coach if one is set
+async function autoAssignDefaultCoach(purchaseId: number, email: string, userId: string | null, sessionsTotal: number) {
+  try {
+    const [defaultCoach] = await db.select().from(coaches).where(eq(coaches.isDefault, true));
+    if (!defaultCoach) return;
+
+    // Assign the purchase
+    await db.update(coachingPurchases)
+      .set({ assignedCoachId: defaultCoach.id })
+      .where(eq(coachingPurchases.id, purchaseId));
+
+    // Create pending session records
+    for (let i = 1; i <= sessionsTotal; i++) {
+      await db.insert(coachingSessions).values({
+        coachingPurchaseId: purchaseId,
+        coachId: defaultCoach.id,
+        clientUserId: userId,
+        clientEmail: email,
+        sessionNumber: i,
+        status: 'pending',
+      });
+    }
+
+    console.log(`[Webhook] Auto-assigned coaching purchase ${purchaseId} to ${defaultCoach.displayName}`);
+
+    // Send assignment email to client
+    sendCoachAssignmentEmail({
+      to: email,
+      firstName: '',
+      coachName: defaultCoach.displayName,
+      calComLink: defaultCoach.calComLink || '',
+      sessionsTotal,
+    }).catch((err: any) => console.error('[Webhook] Auto-assign email error:', err));
+  } catch (err) {
+    console.error('[Webhook] Auto-assign failed:', err);
+  }
+}
 
 export class WebhookHandlers {
   static lastWebhookAt: Date | null = null;
@@ -177,17 +216,21 @@ export class WebhookHandlers {
       if (productType.includes('coaching')) {
         const isMattCoach = productType.includes('matt');
         const isSingleSession = productType.includes('single');
-        await db.insert(coachingPurchases).values({
+        const sessionsCount = isSingleSession ? 1 : 4;
+        const [guestCoachPurchase] = await db.insert(coachingPurchases).values({
           userId: null,
           email,
           coachType: isMattCoach ? 'matt' : 'expert',
           packageType: isSingleSession ? 'single' : 'pack',
-          sessionsTotal: isSingleSession ? 1 : 4,
+          sessionsTotal: sessionsCount,
           amountPaid,
           currency: currency.toLowerCase(),
           stripeSessionId: session.id,
-        });
+        }).returning();
         console.log('[Webhook] Guest coaching purchase recorded:', { email, coach: isMattCoach ? 'matt' : 'expert' });
+
+        // Auto-assign to default coach if one is set
+        await autoAssignDefaultCoach(guestCoachPurchase.id, email, null, sessionsCount);
 
         // Send coaching emails to guest
         const custFirstName2 = session.customer_details?.name?.split(' ')[0] || 'there';
@@ -282,17 +325,21 @@ export class WebhookHandlers {
         // Record the coaching purchase details
         const isMattCoach = productType.includes('matt');
         const isSingleSession = productType.includes('single');
-        await db.insert(coachingPurchases).values({
+        const sessionsCount2 = isSingleSession ? 1 : 4;
+        const [coachPurchase] = await db.insert(coachingPurchases).values({
           userId,
           email,
           coachType: isMattCoach ? 'matt' : 'expert',
           packageType: isSingleSession ? 'single' : 'pack',
-          sessionsTotal: isSingleSession ? 1 : 4,
+          sessionsTotal: sessionsCount2,
           amountPaid,
           currency: currency.toLowerCase(),
           stripeSessionId: `coaching_${userId}_${Date.now()}`,
-        });
-        console.log('[Webhook] Coaching purchase recorded:', { email, coach: isMattCoach ? 'matt' : 'expert', sessions: isSingleSession ? 1 : 4 });
+        }).returning();
+        console.log('[Webhook] Coaching purchase recorded:', { email, coach: isMattCoach ? 'matt' : 'expert', sessions: sessionsCount2 });
+
+        // Auto-assign to default coach if one is set
+        await autoAssignDefaultCoach(coachPurchase.id, email, userId, sessionsCount2);
 
         // Send coaching emails
         const [user] = await db.select().from(users).where(eq(users.id, userId));

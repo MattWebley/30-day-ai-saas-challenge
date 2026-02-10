@@ -1420,6 +1420,7 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
             currency: cu.purchaseCurrency || 'gbp',
             stripeSessionId: null as any,
             assignedCoachId: null,
+            coachNotes: null,
             purchasedAt: cu.createdAt as any,
           });
         }
@@ -1443,6 +1444,7 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
             currency: pp.currency,
             stripeSessionId: pp.stripeSessionId as any,
             assignedCoachId: null,
+            coachNotes: null,
             purchasedAt: pp.createdAt as any,
           });
           purchaseEmails.add(pp.email.toLowerCase());
@@ -8939,7 +8941,52 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     }
   });
 
-  // POST /api/admin/coaching-purchases/:id/assign - Assign a client to a coach
+  // GET /api/admin/all-coaching-clients - List ALL coaching purchases with coach and user info
+  app.get('/api/admin/all-coaching-clients', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const allPurchases = await db.select().from(coachingPurchases)
+        .orderBy(desc(coachingPurchases.purchasedAt));
+
+      const allCoaches = await db.select().from(coaches);
+      const coachMap = new Map(allCoaches.map(c => [c.id, c]));
+
+      // Get session counts per purchase
+      const allSess = await db.select().from(coachingSessions);
+      const sessionsByPurchase = new Map<number, { completed: number; pending: number }>();
+      for (const s of allSess) {
+        const cur = sessionsByPurchase.get(s.coachingPurchaseId) || { completed: 0, pending: 0 };
+        if (s.status === 'completed') cur.completed++;
+        else if (s.status === 'pending') cur.pending++;
+        sessionsByPurchase.set(s.coachingPurchaseId, cur);
+      }
+
+      const enriched = await Promise.all(allPurchases.map(async (cp) => {
+        let user = null;
+        if (cp.userId) {
+          user = await storage.getUser(cp.userId);
+        }
+        const coach = cp.assignedCoachId ? coachMap.get(cp.assignedCoachId) : null;
+        const sessions = sessionsByPurchase.get(cp.id) || { completed: 0, pending: 0 };
+
+        return {
+          ...cp,
+          user: user ? { id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email } : null,
+          assignedCoach: coach ? { id: coach.id, displayName: coach.displayName } : null,
+          sessionsCompleted: sessions.completed,
+          sessionsPending: sessions.pending,
+        };
+      }));
+
+      res.json(enriched);
+    } catch (error: any) {
+      console.error("Error fetching all coaching clients:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch coaching clients" });
+    }
+  });
+
+  // POST /api/admin/coaching-purchases/:id/assign - Assign or reassign a client to a coach
   app.post('/api/admin/coaching-purchases/:id/assign', isAuthenticated, async (req: any, res) => {
     try {
       if (!await requireAdmin(req, res)) return;
@@ -8963,21 +9010,33 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
         return res.status(404).json({ message: "Coach not found" });
       }
 
+      const isReassignment = purchase.assignedCoachId !== null && purchase.assignedCoachId !== coach.id;
+
       // Update the purchase with assigned coach
       await db.update(coachingPurchases)
         .set({ assignedCoachId: coach.id })
         .where(eq(coachingPurchases.id, purchaseId));
 
-      // Create pending session records
-      for (let i = 1; i <= purchase.sessionsTotal; i++) {
-        await db.insert(coachingSessions).values({
-          coachingPurchaseId: purchaseId,
-          coachId: coach.id,
-          clientUserId: purchase.userId || null,
-          clientEmail: purchase.email,
-          sessionNumber: i,
-          status: 'pending',
-        });
+      if (isReassignment) {
+        // Reassignment: move pending sessions to new coach (completed sessions stay with old coach)
+        await db.update(coachingSessions)
+          .set({ coachId: coach.id })
+          .where(and(
+            eq(coachingSessions.coachingPurchaseId, purchaseId),
+            eq(coachingSessions.status, 'pending'),
+          ));
+      } else if (!purchase.assignedCoachId) {
+        // First-time assignment: create pending session records
+        for (let i = 1; i <= purchase.sessionsTotal; i++) {
+          await db.insert(coachingSessions).values({
+            coachingPurchaseId: purchaseId,
+            coachId: coach.id,
+            clientUserId: purchase.userId || null,
+            clientEmail: purchase.email,
+            sessionNumber: i,
+            status: 'pending',
+          });
+        }
       }
 
       // Send assignment email to client
@@ -8991,13 +9050,47 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
         });
       } catch (emailErr) {
         console.error("Failed to send coach assignment email:", emailErr);
-        // Don't fail the assignment if email fails
       }
 
-      res.json({ success: true, message: `Assigned to ${coach.displayName} with ${purchase.sessionsTotal} sessions created` });
+      const action = isReassignment ? 'Reassigned' : 'Assigned';
+      res.json({ success: true, message: `${action} to ${coach.displayName}` });
     } catch (error: any) {
       console.error("Error assigning coach:", error);
       res.status(500).json({ message: error.message || "Failed to assign coach" });
+    }
+  });
+
+  // POST /api/admin/coaches/:id/set-default - Set a coach as the default for auto-assignment
+  app.post('/api/admin/coaches/:id/set-default', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const coachId = parseInt(req.params.id);
+
+      // Clear all existing defaults
+      await db.update(coaches).set({ isDefault: false }).where(eq(coaches.isDefault, true));
+
+      // Set the new default
+      await db.update(coaches).set({ isDefault: true }).where(eq(coaches.id, coachId));
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error setting default coach:", error);
+      res.status(500).json({ message: error.message || "Failed to set default coach" });
+    }
+  });
+
+  // DELETE /api/admin/coaches/default - Remove default coach (no auto-assignment)
+  app.delete('/api/admin/coaches/default', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      await db.update(coaches).set({ isDefault: false }).where(eq(coaches.isDefault, true));
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error removing default coach:", error);
+      res.status(500).json({ message: error.message || "Failed to remove default coach" });
     }
   });
 
@@ -9168,6 +9261,7 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
           sessionsCompleted: completedSessions,
           sessionsRemaining: purchase.sessionsTotal - completedSessions,
           purchasedAt: purchase.purchasedAt,
+          coachNotes: purchase.coachNotes || '',
           user: user ? {
             id: user.id,
             firstName: user.firstName,
@@ -9184,6 +9278,34 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     } catch (error: any) {
       console.error("Error fetching coach clients:", error);
       res.status(500).json({ message: error.message || "Failed to fetch clients" });
+    }
+  });
+
+  // PATCH /api/coach/clients/:purchaseId/notes - Save notes for a client
+  app.patch('/api/coach/clients/:purchaseId/notes', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      const purchaseId = parseInt(req.params.purchaseId);
+      const { notes } = req.body;
+
+      // Verify this purchase belongs to this coach
+      const [purchase] = await db.select().from(coachingPurchases)
+        .where(and(eq(coachingPurchases.id, purchaseId), eq(coachingPurchases.assignedCoachId, auth.coachId)));
+
+      if (!purchase) {
+        return res.status(404).json({ message: "Client not found" });
+      }
+
+      await db.update(coachingPurchases)
+        .set({ coachNotes: notes || null })
+        .where(eq(coachingPurchases.id, purchaseId));
+
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error saving client notes:", error);
+      res.status(500).json({ message: error.message || "Failed to save notes" });
     }
   });
 

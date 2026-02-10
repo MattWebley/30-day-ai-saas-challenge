@@ -104,6 +104,7 @@ export const coachingPurchases = pgTable("coaching_purchases", {
   currency: varchar("currency").notNull(), // 'usd' or 'gbp'
   stripeSessionId: varchar("stripe_session_id"),
   assignedCoachId: integer("assigned_coach_id"), // refs coaches.id (nullable until assigned)
+  coachNotes: text("coach_notes"), // Persistent notes about this client (coach fills in)
   purchasedAt: timestamp("purchased_at").defaultNow(),
 });
 
@@ -814,6 +815,7 @@ export const coaches = pgTable("coaches", {
   ratePerSession: integer("rate_per_session").notNull(), // in cents
   rateCurrency: varchar("rate_currency").notNull().default('gbp'), // 'usd' or 'gbp'
   isActive: boolean("is_active").default(true),
+  isDefault: boolean("is_default").default(false), // Auto-assign new coaching purchases to this coach
   // Company/invoice details (coach fills these in from their dashboard)
   companyName: varchar("company_name"),
   companyAddress: text("company_address"),
