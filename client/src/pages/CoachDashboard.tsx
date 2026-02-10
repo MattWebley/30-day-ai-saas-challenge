@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  Settings,
 } from "lucide-react";
 
 interface CoachProfile {
@@ -24,6 +25,10 @@ interface CoachProfile {
   calComLink: string | null;
   ratePerSession: number;
   rateCurrency: string;
+  companyName: string | null;
+  companyAddress: string | null;
+  taxId: string | null;
+  bankDetails: string | null;
   stats: {
     completedSessions: number;
     pendingSessions: number;
@@ -93,7 +98,7 @@ interface Earnings {
   }[];
 }
 
-type Tab = 'clients' | 'sessions' | 'earnings';
+type Tab = 'clients' | 'sessions' | 'earnings' | 'settings';
 
 function formatMoney(cents: number, currency: string = 'gbp') {
   const symbol = currency === 'gbp' ? '£' : '$';
@@ -108,6 +113,14 @@ export default function CoachDashboard() {
   const [expandedClient, setExpandedClient] = useState<number | null>(null);
   const [completingSession, setCompletingSession] = useState<number | null>(null);
   const [sessionNotes, setSessionNotes] = useState('');
+  const [settingsForm, setSettingsForm] = useState({
+    calComLink: '',
+    companyName: '',
+    companyAddress: '',
+    taxId: '',
+    bankDetails: '',
+  });
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
 
   // Admin impersonation: read coachId from URL query param
   const urlParams = new URLSearchParams(window.location.search);
@@ -181,6 +194,32 @@ export default function CoachDashboard() {
     onError: (err: any) => toast.error(err.message || 'Failed to request payout'),
   });
 
+  const saveSettings = useMutation({
+    mutationFn: async (data: typeof settingsForm) => {
+      const res = await apiRequest('PATCH', `/api/coach/profile${qs}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/coach/profile'] });
+      toast.success('Settings saved');
+    },
+    onError: (err: any) => toast.error(err.message || 'Failed to save settings'),
+  });
+
+  // Load profile data into settings form
+  useEffect(() => {
+    if (profile && !settingsLoaded) {
+      setSettingsForm({
+        calComLink: profile.calComLink || '',
+        companyName: profile.companyName || '',
+        companyAddress: profile.companyAddress || '',
+        taxId: profile.taxId || '',
+        bankDetails: profile.bankDetails || '',
+      });
+      setSettingsLoaded(true);
+    }
+  }, [profile, settingsLoaded]);
+
   const handleLogout = () => {
     window.location.href = '/api/logout';
   };
@@ -209,6 +248,7 @@ export default function CoachDashboard() {
     { key: 'clients', label: 'Clients', icon: Users, count: clients.length },
     { key: 'sessions', label: 'Sessions', icon: Calendar, count: sessions.filter(s => s.status === 'pending').length },
     { key: 'earnings', label: 'Earnings', icon: DollarSign },
+    { key: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (
@@ -620,6 +660,86 @@ export default function CoachDashboard() {
                 </div>
               </Card>
             )}
+          </div>
+        )}
+
+        {/* Settings Tab */}
+        {activeTab === 'settings' && (
+          <div className="space-y-6">
+            {/* Booking Link */}
+            <Card className="border border-slate-200 p-5 space-y-4">
+              <h3 className="font-bold text-slate-900">Booking Link</h3>
+              <div>
+                <label className="text-slate-700 font-medium">Cal.com Link</label>
+                <input
+                  type="url"
+                  value={settingsForm.calComLink}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, calComLink: e.target.value })}
+                  className="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:border-primary"
+                  placeholder="https://cal.com/your-name/coaching"
+                />
+                <p className="text-sm text-slate-500 mt-1">Clients use this to book sessions with you.</p>
+              </div>
+            </Card>
+
+            {/* Company / Invoice Details */}
+            <Card className="border border-slate-200 p-5 space-y-4">
+              <div>
+                <h3 className="font-bold text-slate-900">Company & Invoice Details</h3>
+                <p className="text-sm text-slate-500">These details will appear on your invoices and payout records.</p>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-slate-700 font-medium">Company / Business Name</label>
+                  <input
+                    type="text"
+                    value={settingsForm.companyName}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, companyName: e.target.value })}
+                    className="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:border-primary"
+                    placeholder="Your company or trading name"
+                  />
+                </div>
+                <div>
+                  <label className="text-slate-700 font-medium">Tax ID / VAT Number</label>
+                  <input
+                    type="text"
+                    value={settingsForm.taxId}
+                    onChange={(e) => setSettingsForm({ ...settingsForm, taxId: e.target.value })}
+                    className="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:border-primary"
+                    placeholder="e.g. GB123456789"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-slate-700 font-medium">Business Address</label>
+                <textarea
+                  value={settingsForm.companyAddress}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, companyAddress: e.target.value })}
+                  rows={3}
+                  className="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:border-primary resize-none"
+                  placeholder="Your registered business address"
+                />
+              </div>
+              <div>
+                <label className="text-slate-700 font-medium">Bank / Payment Details</label>
+                <textarea
+                  value={settingsForm.bankDetails}
+                  onChange={(e) => setSettingsForm({ ...settingsForm, bankDetails: e.target.value })}
+                  rows={3}
+                  className="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:border-primary resize-none"
+                  placeholder="Bank name, sort code, account number — or PayPal email, Wise details, etc."
+                />
+                <p className="text-sm text-slate-500 mt-1">This is where we'll send your payouts. Only you and the admin can see this.</p>
+              </div>
+            </Card>
+
+            <button
+              onClick={() => saveSettings.mutate(settingsForm)}
+              disabled={saveSettings.isPending}
+              className="px-6 py-2.5 bg-primary text-white font-medium rounded-lg hover:opacity-90 disabled:opacity-50"
+            >
+              {saveSettings.isPending ? 'Saving...' : 'Save Settings'}
+            </button>
           </div>
         )}
       </div>

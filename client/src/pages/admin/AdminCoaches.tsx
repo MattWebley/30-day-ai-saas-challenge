@@ -20,6 +20,8 @@ import {
   Clock,
   FileCheck,
   Send,
+  FileText,
+  XCircle,
 } from "lucide-react";
 
 interface Coach {
@@ -103,6 +105,8 @@ export default function AdminCoaches() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCoach, setEditingCoach] = useState<number | null>(null);
   const [openSections, setOpenSections] = useState<Set<string>>(new Set(['coaches']));
+  const [previewType, setPreviewType] = useState<'email' | 'agreement' | null>(null);
+  const [previewText, setPreviewText] = useState('');
 
   const toggleSection = (section: string) => {
     setOpenSections(prev => {
@@ -201,6 +205,59 @@ export default function AdminCoaches() {
     },
     onError: (err: any) => toast.error(err.message || 'Failed to update payout'),
   });
+
+  const cancelInvitation = useMutation({
+    mutationFn: async (invId: number) => {
+      const res = await apiRequest('DELETE', `/api/admin/coach-invitations/${invId}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/coach-invitations'] });
+      toast.success('Invitation cancelled');
+    },
+    onError: (err: any) => toast.error(err.message || 'Failed to cancel invitation'),
+  });
+
+  const loadPreview = async (type: 'email' | 'agreement') => {
+    if (type === 'email') {
+      setPreviewText(`Subject: You've been invited to coach on the 21-Day AI SaaS Challenge
+
+Hi there,
+
+You've been invited to join the 21-Day AI SaaS Challenge as a coach.
+
+Before you can start coaching, you'll need to:
+1. Review and sign the Independent Contractor Agreement
+2. Set up your coach profile
+
+Click the link below to get started:
+https://challenge.mattwebley.com/coach-setup/[unique-token]
+
+This invitation link expires in 7 days.
+
+If you have any questions, just reply to this email.
+
+Matt
+
+--
+21-Day AI SaaS Challenge by Matt Webley
+Webley Global - FZCO
+Dubai Silicon Oasis, Dubai, United Arab Emirates`);
+      setPreviewType('email');
+    } else {
+      try {
+        const rate = newCoach.ratePerSession ? Math.round(parseFloat(newCoach.ratePerSession) * 100) : 5000;
+        const currency = newCoach.rateCurrency || 'gbp';
+        const email = newCoach.email || 'coach@example.com';
+        const res = await fetch(`/api/admin/coach-contract-preview?email=${encodeURIComponent(email)}&rate=${rate}&currency=${currency}`);
+        const data = await res.json();
+        setPreviewText(data.contractText);
+        setPreviewType('agreement');
+      } catch {
+        toast.error('Failed to load preview');
+      }
+    }
+  };
 
   const activeCoaches = coaches.filter(c => c.isActive);
   const pendingPayouts = payouts.filter(p => p.status === 'requested');
@@ -304,13 +361,25 @@ export default function AdminCoaches() {
                       </select>
                     </div>
                   </div>
-                  <div className="flex gap-2 pt-2">
+                  <div className="flex flex-wrap gap-2 pt-2">
                     <button
                       onClick={() => createCoach.mutate(newCoach)}
                       disabled={createCoach.isPending || !newCoach.email || !newCoach.ratePerSession}
                       className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:opacity-90 disabled:opacity-50"
                     >
                       {createCoach.isPending ? 'Sending...' : 'Send Invitation'}
+                    </button>
+                    <button
+                      onClick={() => loadPreview('email')}
+                      className="flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50"
+                    >
+                      <Mail className="w-3.5 h-3.5" /> Preview Email
+                    </button>
+                    <button
+                      onClick={() => loadPreview('agreement')}
+                      className="flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50"
+                    >
+                      <FileText className="w-3.5 h-3.5" /> Preview Agreement
                     </button>
                     <button
                       onClick={() => setShowAddForm(false)}
@@ -489,11 +558,21 @@ export default function AdminCoaches() {
                       )}
                     </p>
                   </div>
-                  <div>
+                  <div className="flex items-center gap-2">
                     {inv.status === 'pending' && (
-                      <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full flex items-center gap-1">
-                        <Clock className="w-3 h-3" /> Pending
-                      </span>
+                      <>
+                        <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full flex items-center gap-1">
+                          <Clock className="w-3 h-3" /> Pending
+                        </span>
+                        <button
+                          onClick={() => cancelInvitation.mutate(inv.id)}
+                          disabled={cancelInvitation.isPending}
+                          className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
+                          title="Cancel invitation"
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </button>
+                      </>
                     )}
                     {inv.status === 'accepted' && (
                       <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center gap-1">
@@ -501,7 +580,7 @@ export default function AdminCoaches() {
                       </span>
                     )}
                     {inv.status === 'expired' && (
-                      <span className="px-2.5 py-1 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Expired</span>
+                      <span className="px-2.5 py-1 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Cancelled</span>
                     )}
                   </div>
                 </div>
@@ -662,6 +741,30 @@ export default function AdminCoaches() {
           </div>
         )}
       </Card>
+
+      {/* Preview Modal */}
+      {previewType && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setPreviewType(null)}>
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="p-5 border-b border-slate-200 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-slate-900">
+                {previewType === 'email' ? 'Invitation Email Preview' : 'Contractor Agreement Preview'}
+              </h3>
+              <button onClick={() => setPreviewType(null)} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-5 overflow-y-auto flex-1">
+              <pre className="whitespace-pre-wrap text-sm text-slate-700 font-mono leading-relaxed">{previewText}</pre>
+            </div>
+            <div className="p-4 border-t border-slate-200">
+              <button onClick={() => setPreviewType(null)} className="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-200">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

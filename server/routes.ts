@@ -8841,6 +8841,48 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     }
   });
 
+  // DELETE /api/admin/coach-invitations/:id - Cancel a pending invitation
+  app.delete('/api/admin/coach-invitations/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const invId = parseInt(req.params.id);
+      const [invitation] = await db.select().from(coachInvitations).where(eq(coachInvitations.id, invId));
+
+      if (!invitation) {
+        return res.status(404).json({ message: "Invitation not found" });
+      }
+      if (invitation.status !== 'pending') {
+        return res.status(400).json({ message: "Only pending invitations can be cancelled" });
+      }
+
+      await db.update(coachInvitations)
+        .set({ status: 'expired' })
+        .where(eq(coachInvitations.id, invId));
+
+      res.json({ message: "Invitation cancelled" });
+    } catch (error: any) {
+      console.error("Error cancelling invitation:", error);
+      res.status(500).json({ message: error.message || "Failed to cancel invitation" });
+    }
+  });
+
+  // GET /api/admin/coach-contract-preview - Preview the contract text
+  app.get('/api/admin/coach-contract-preview', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const email = (req.query.email as string) || 'coach@example.com';
+      const rate = parseInt(req.query.rate as string) || 5000;
+      const currency = (req.query.currency as string) || 'gbp';
+
+      const contractText = getCoachContractText(email, rate, currency);
+      res.json({ contractText });
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to generate preview" });
+    }
+  });
+
   // PATCH /api/admin/coaches/:id - Update coach details
   app.patch('/api/admin/coaches/:id', isAuthenticated, async (req: any, res) => {
     try {
@@ -9062,6 +9104,33 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     } catch (error: any) {
       console.error("Error fetching coach profile:", error);
       res.status(500).json({ message: error.message || "Failed to fetch profile" });
+    }
+  });
+
+  // PATCH /api/coach/profile - Coach updates their own company/profile details
+  app.patch('/api/coach/profile', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      const { calComLink, companyName, companyAddress, taxId, bankDetails } = req.body;
+
+      const updateData: Record<string, any> = {};
+      if (calComLink !== undefined) updateData.calComLink = calComLink?.trim() || null;
+      if (companyName !== undefined) updateData.companyName = companyName?.trim() || null;
+      if (companyAddress !== undefined) updateData.companyAddress = companyAddress?.trim() || null;
+      if (taxId !== undefined) updateData.taxId = taxId?.trim() || null;
+      if (bankDetails !== undefined) updateData.bankDetails = bankDetails?.trim() || null;
+
+      if (Object.keys(updateData).length === 0) {
+        return res.status(400).json({ message: "No fields to update" });
+      }
+
+      const [updated] = await db.update(coaches).set(updateData).where(eq(coaches.id, auth.coachId)).returning();
+      res.json(updated);
+    } catch (error: any) {
+      console.error("Error updating coach profile:", error);
+      res.status(500).json({ message: error.message || "Failed to update profile" });
     }
   });
 

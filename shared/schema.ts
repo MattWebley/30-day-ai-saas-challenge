@@ -814,6 +814,11 @@ export const coaches = pgTable("coaches", {
   ratePerSession: integer("rate_per_session").notNull(), // in cents
   rateCurrency: varchar("rate_currency").notNull().default('gbp'), // 'usd' or 'gbp'
   isActive: boolean("is_active").default(true),
+  // Company/invoice details (coach fills these in from their dashboard)
+  companyName: varchar("company_name"),
+  companyAddress: text("company_address"),
+  taxId: varchar("tax_id"), // VAT number, tax ID, etc.
+  bankDetails: text("bank_details"), // Free text for bank/payment info
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [
   index("coaches_user_id_idx").on(table.userId),
