@@ -863,3 +863,42 @@ export const coachPayouts = pgTable("coach_payouts", {
 
 export type CoachPayout = typeof coachPayouts.$inferSelect;
 export type InsertCoachPayout = typeof coachPayouts.$inferInsert;
+
+// Coach invitations - tracks pending coach invitations
+export const coachInvitations = pgTable("coach_invitations", {
+  id: serial("id").primaryKey(),
+  token: varchar("token").notNull().unique(),
+  email: varchar("email").notNull(),
+  ratePerSession: integer("rate_per_session").notNull(),
+  rateCurrency: varchar("rate_currency").notNull().default('gbp'),
+  status: varchar("status").notNull().default('pending'), // 'pending' | 'accepted' | 'expired'
+  expiresAt: timestamp("expires_at").notNull(),
+  invitedBy: varchar("invited_by").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("coach_invitations_token_idx").on(table.token),
+  index("coach_invitations_email_idx").on(table.email),
+]);
+
+export type CoachInvitation = typeof coachInvitations.$inferSelect;
+export type InsertCoachInvitation = typeof coachInvitations.$inferInsert;
+
+// Coach agreements - stores signed contracts permanently
+export const coachAgreements = pgTable("coach_agreements", {
+  id: serial("id").primaryKey(),
+  coachId: integer("coach_id").notNull().references(() => coaches.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  agreementVersion: varchar("agreement_version").notNull().default('1.0'),
+  fullText: text("full_text").notNull(),
+  signedAt: timestamp("signed_at").notNull(),
+  ipAddress: varchar("ip_address"),
+  userAgent: text("user_agent"),
+  signatureName: varchar("signature_name").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("coach_agreements_coach_id_idx").on(table.coachId),
+  index("coach_agreements_user_id_idx").on(table.userId),
+]);
+
+export type CoachAgreement = typeof coachAgreements.$inferSelect;
+export type InsertCoachAgreement = typeof coachAgreements.$inferInsert;

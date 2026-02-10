@@ -52,6 +52,7 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
 import CoachLogin from "@/pages/CoachLogin";
 import CoachDashboard from "@/pages/CoachDashboard";
+import CoachSetup from "@/pages/CoachSetup";
 import { CookieConsent } from "@/components/CookieConsent";
 import { FacebookPixel } from "@/components/FacebookPixel";
 
@@ -91,7 +92,7 @@ function Router() {
   }
 
   // Public routes that don't need auth check
-  const publicPaths = ['/order', '/unlock', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password', '/coach-login', '/coach'];
+  const publicPaths = ['/order', '/unlock', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password', '/coach-login', '/coach', '/coach-setup'];
   const isPublicRoute = publicPaths.some(path => location.startsWith(path)) || location === '/';
 
   // Only show loading spinner for protected routes
@@ -131,6 +132,7 @@ function Router() {
         <Route path="/auth/error" component={AuthError} />
         <Route path="/auth/magic" component={MagicVerify} />
         {/* Coach routes */}
+        <Route path="/coach-setup/:token" component={CoachSetup} />
         <Route path="/coach-login" component={CoachLogin} />
         {isAuthenticated && <Route path="/coach" component={CoachDashboard} />}
         {/* Admin route - available to any authenticated user (component checks isAdmin) */}

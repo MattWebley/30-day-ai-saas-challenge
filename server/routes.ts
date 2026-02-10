@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, moodCheckins, type User, userProgress, chatMessages, dayComments, dayQuestions, userBadges, aiUsageLogs, showcase, testimonials, badges, pageViews, coaches, coachingSessions, coachPayouts } from "@shared/schema";
+import { insertUserProgressSchema, insertDayContentSchema, users, abTests, abVariants, critiqueRequests, pendingPurchases, coachingPurchases, moodCheckins, type User, userProgress, chatMessages, dayComments, dayQuestions, userBadges, aiUsageLogs, showcase, testimonials, badges, pageViews, coaches, coachingSessions, coachPayouts, coachInvitations, coachAgreements } from "@shared/schema";
 import dns from "dns";
 import { promisify } from "util";
 import crypto, { scryptSync, randomBytes, timingSafeEqual } from "crypto";
@@ -10,7 +10,7 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
 import { eq, desc, isNull, isNotNull, sql, and, or, gte, lte, count, countDistinct } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails, sendCoachAssignmentEmail, sendBookNextSessionEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails, sendCoachAssignmentEmail, sendBookNextSessionEmail, sendCoachInvitationEmail, sendCoachAgreementCopyEmail } from "./emailService";
 import { addContactToSysteme, addContactToSystemeDetailed } from "./systemeService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -427,6 +427,162 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error verifying magic link:", error);
       res.redirect('/auth/error?reason=server_error');
+    }
+  });
+
+  // =============================================
+  // COACH SETUP (public - token-based)
+  // =============================================
+
+  // GET /api/coach/setup/:token - Validate token and return invitation details + contract
+  app.get('/api/coach/setup/:token', async (req, res) => {
+    try {
+      const { token } = req.params;
+
+      const [invitation] = await db.select().from(coachInvitations)
+        .where(eq(coachInvitations.token, token));
+
+      if (!invitation) {
+        return res.status(404).json({ message: "Invalid invitation link" });
+      }
+
+      if (invitation.status !== 'pending') {
+        return res.status(410).json({ message: "This invitation has already been used" });
+      }
+
+      if (new Date() > invitation.expiresAt) {
+        // Mark as expired
+        await db.update(coachInvitations).set({ status: 'expired' }).where(eq(coachInvitations.id, invitation.id));
+        return res.status(410).json({ message: "This invitation has expired. Please ask for a new one." });
+      }
+
+      const contractText = getCoachContractText(invitation.email, invitation.ratePerSession, invitation.rateCurrency);
+
+      res.json({
+        email: invitation.email,
+        ratePerSession: invitation.ratePerSession,
+        rateCurrency: invitation.rateCurrency,
+        contractText,
+      });
+    } catch (error: any) {
+      console.error("Error validating coach setup token:", error);
+      res.status(500).json({ message: "Something went wrong" });
+    }
+  });
+
+  // POST /api/coach/setup/:token - Sign contract and create coach account
+  app.post('/api/coach/setup/:token', async (req: any, res) => {
+    try {
+      const { token } = req.params;
+      const { firstName, lastName, password, signatureName, agreedToContract, calComLink } = req.body;
+
+      // Validate inputs
+      if (!firstName || !lastName || !password || !signatureName || !agreedToContract) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      }
+
+      // Validate token
+      const [invitation] = await db.select().from(coachInvitations)
+        .where(eq(coachInvitations.token, token));
+
+      if (!invitation) {
+        return res.status(404).json({ message: "Invalid invitation link" });
+      }
+      if (invitation.status !== 'pending') {
+        return res.status(410).json({ message: "This invitation has already been used" });
+      }
+      if (new Date() > invitation.expiresAt) {
+        await db.update(coachInvitations).set({ status: 'expired' }).where(eq(coachInvitations.id, invitation.id));
+        return res.status(410).json({ message: "This invitation has expired" });
+      }
+
+      const normalizedEmail = invitation.email.toLowerCase().trim();
+
+      // Capture IP and User Agent
+      const ipAddress = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
+      const userAgent = req.headers['user-agent'] || 'unknown';
+
+      // Create or update user
+      let userId: string;
+      const [existing] = await db.select().from(users).where(sql`lower(${users.email}) = ${normalizedEmail}`);
+
+      const salt = randomBytes(16).toString('hex');
+      const hash = scryptSync(password, salt, 64).toString('hex');
+      const passwordHash = `${salt}:${hash}`;
+
+      if (existing) {
+        userId = existing.id;
+        await db.update(users).set({
+          isCoach: true,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          passwordHash,
+        }).where(eq(users.id, userId));
+      } else {
+        userId = crypto.randomUUID();
+        await db.insert(users).values({
+          id: userId,
+          email: normalizedEmail,
+          firstName: firstName.trim(),
+          lastName: lastName.trim(),
+          passwordHash,
+          isCoach: true,
+        });
+      }
+
+      // Create coach profile
+      const displayName = `${firstName.trim()} ${lastName.trim()}`;
+      const [newCoach] = await db.insert(coaches).values({
+        userId,
+        displayName,
+        email: normalizedEmail,
+        calComLink: calComLink?.trim() || null,
+        ratePerSession: invitation.ratePerSession,
+        rateCurrency: invitation.rateCurrency,
+      }).returning();
+
+      // Store signed agreement
+      const contractText = getCoachContractText(invitation.email, invitation.ratePerSession, invitation.rateCurrency);
+      const signedAt = new Date();
+
+      await db.insert(coachAgreements).values({
+        coachId: newCoach.id,
+        userId,
+        agreementVersion: '1.0',
+        fullText: contractText,
+        signedAt,
+        ipAddress,
+        userAgent,
+        signatureName: signatureName.trim(),
+      });
+
+      // Mark invitation as accepted
+      await db.update(coachInvitations).set({ status: 'accepted' }).where(eq(coachInvitations.id, invitation.id));
+
+      // Create session (same pattern as magic link auth)
+      if (req.session) {
+        (req.session as any).userId = userId;
+        (req.session as any).userEmail = normalizedEmail;
+        (req.session as any).magicLinkAuth = true;
+      }
+
+      // Email signed contract to Matt
+      sendCoachAgreementCopyEmail({
+        coachName: displayName,
+        coachEmail: normalizedEmail,
+        signedAt: signedAt.toISOString(),
+        ipAddress,
+        signatureName: signatureName.trim(),
+        agreementText: contractText,
+      }).catch(err => console.error('Failed to send agreement copy:', err));
+
+      res.json({ success: true, message: "Account created and contract signed" });
+    } catch (error: any) {
+      console.error("Error completing coach setup:", error);
+      res.status(500).json({ message: error.message || "Something went wrong" });
     }
   });
 
@@ -8361,6 +8517,185 @@ Example format:
   });
 
   // =============================================
+  // COACH CONTRACT TEXT
+  // =============================================
+
+  function getCoachContractText(email: string, rate: number, currency: string): string {
+    const currencySymbol = currency === 'gbp' ? '£' : '$';
+    const rateFormatted = `${currencySymbol}${(rate / 100).toFixed(2)}`;
+    const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    return `INDEPENDENT CONTRACTOR AGREEMENT
+Version 1.0 — ${today}
+
+BETWEEN:
+(1) Webley Global - FZCO, Dubai Silicon Oasis, Dubai, United Arab Emirates ("the Company")
+(2) The individual accepting this agreement via electronic signature ("the Contractor")
+
+Contractor Email: ${email}
+Agreed Rate: ${rateFormatted} per session (${currency.toUpperCase()})
+
+---
+
+1. RELATIONSHIP AND STATUS
+
+1.1. The Contractor is engaged as an independent contractor and is NOT an employee, worker, or agent of the Company.
+
+1.2. The Contractor is responsible for their own tax obligations, national insurance contributions (or equivalent), and any other statutory payments in their jurisdiction.
+
+1.3. Nothing in this agreement creates a partnership, joint venture, or employment relationship.
+
+1.4. The Contractor shall not hold themselves out as an employee or agent of the Company.
+
+2. SERVICES
+
+2.1. The Contractor will provide 1:1 coaching sessions to students of the 21-Day AI SaaS Challenge ("the Challenge") via video call.
+
+2.2. Sessions will be booked through the platform's booking system or as otherwise arranged.
+
+2.3. Each session is expected to last approximately 30-60 minutes unless otherwise agreed.
+
+3. PAYMENT
+
+3.1. The Contractor will be paid ${rateFormatted} per completed coaching session.
+
+3.2. Payment will be made solely through the Company's platform payout system.
+
+3.3. The Contractor must submit a payout request via their coach dashboard. Payouts will be processed within 14 business days of an approved request.
+
+3.4. The Company reserves the right to withhold payment in cases of client complaint, breach of this agreement, or suspected fraud, pending investigation.
+
+3.5. The Contractor is responsible for issuing their own invoices where required by their local tax jurisdiction.
+
+4. PROFESSIONAL CONDUCT
+
+4.1. The Contractor shall respond to client messages and booking requests within 48 hours during business days.
+
+4.2. The Contractor shall not make guarantees about specific financial outcomes, revenue targets, or business results.
+
+4.3. The Contractor shall operate within their area of competence and refer clients to appropriate professionals (legal, financial, medical) where necessary.
+
+4.4. The Contractor shall treat all clients with professionalism and respect.
+
+4.5. The Contractor shall not engage in any conduct that could bring the Company or the Challenge into disrepute.
+
+5. CONFIDENTIALITY
+
+5.1. The Contractor shall keep confidential all information relating to:
+  (a) Client personal data, business ideas, and session content
+  (b) The Company's business operations, pricing, revenue, and strategy
+  (c) The Company's proprietary methods, content, and technology
+  (d) Any information marked or reasonably understood to be confidential
+
+5.2. This obligation survives termination of this agreement indefinitely.
+
+5.3. The Contractor may disclose confidential information only where required by law, and shall notify the Company promptly if such disclosure is required.
+
+6. DATA PROTECTION AND GDPR
+
+6.1. The Contractor shall process client personal data solely for the purpose of delivering coaching sessions.
+
+6.2. The Contractor shall not store client personal data outside of the Company's platform unless strictly necessary for session delivery.
+
+6.3. Any client data stored locally (notes, recordings with consent) must be deleted within 30 days of the coaching engagement ending.
+
+6.4. The Contractor shall report any data breach or suspected data breach to the Company within 24 hours of becoming aware.
+
+6.5. The Contractor shall comply with all applicable data protection laws including (where applicable) the UK GDPR, EU GDPR, and UAE data protection regulations.
+
+7. NON-SOLICITATION
+
+7.1. During this agreement and for 12 months after termination, the Contractor shall not:
+  (a) Directly or indirectly solicit, approach, or accept business from any client introduced through the Challenge platform
+  (b) Encourage any client to leave the Challenge or use alternative coaching services
+  (c) Recruit, solicit, or attempt to hire any other contractor or employee of the Company
+
+7.2. This restriction applies regardless of who initiates contact.
+
+8. INTELLECTUAL PROPERTY
+
+8.1. All Challenge content, curriculum, branding, and materials remain the exclusive intellectual property of the Company.
+
+8.2. The Contractor shall not reproduce, distribute, or create derivative works from any Challenge materials.
+
+8.3. Any materials created by the Contractor specifically for Challenge clients (session notes, templates, frameworks) shall be jointly owned, with the Company retaining the right to use them.
+
+8.4. The Contractor retains ownership of their pre-existing intellectual property and general coaching methodologies.
+
+9. INDEMNIFICATION
+
+9.1. The Contractor shall indemnify, defend, and hold harmless the Company, its directors, officers, and employees from and against ALL claims, damages, losses, costs, and expenses (including reasonable legal fees) arising from:
+  (a) The Contractor's breach of this agreement
+  (b) The Contractor's negligence or wilful misconduct
+  (c) Any claim by a client relating to the Contractor's coaching services
+  (d) The Contractor's violation of any applicable law or regulation
+  (e) Any tax liability arising from the Contractor's engagement
+
+9.2. This indemnification obligation survives termination of this agreement.
+
+10. LIMITATION OF LIABILITY
+
+10.1. The Company's total aggregate liability to the Contractor under or in connection with this agreement shall not exceed the total fees paid to the Contractor in the 3 months preceding the claim.
+
+10.2. The Company shall not be liable for any indirect, consequential, special, or incidental damages, including lost profits or loss of business opportunity.
+
+10.3. Nothing in this agreement excludes liability for fraud, death, or personal injury caused by negligence.
+
+11. INSURANCE
+
+11.1. The Contractor is strongly recommended to maintain professional indemnity insurance appropriate to their coaching activities.
+
+11.2. The Company does not provide insurance coverage for the Contractor's activities.
+
+12. TERMINATION
+
+12.1. Either party may terminate this agreement by giving 14 days' written notice to the other party.
+
+12.2. The Company may terminate this agreement immediately and without notice in the event of:
+  (a) Material breach of this agreement by the Contractor
+  (b) Gross misconduct or behaviour that brings the Company into disrepute
+  (c) Breach of confidentiality obligations
+  (d) Breach of data protection obligations
+  (e) Client complaint substantiated by investigation
+
+12.3. Upon termination:
+  (a) The Contractor shall complete any sessions already booked (unless terminated for cause)
+  (b) Outstanding approved payments will be processed
+  (c) The Contractor shall return or destroy any confidential information
+  (d) Platform access will be revoked
+
+13. DISPUTE RESOLUTION
+
+13.1. Any dispute arising from this agreement shall first be attempted to be resolved by good-faith negotiation between the parties.
+
+13.2. If negotiation fails within 30 days, the dispute shall be referred to mediation.
+
+13.3. If mediation fails, the dispute shall be submitted to the exclusive jurisdiction of the courts of Dubai, United Arab Emirates.
+
+14. FORCE MAJEURE
+
+14.1. Neither party shall be liable for failure to perform obligations due to circumstances beyond their reasonable control, including but not limited to natural disasters, war, pandemic, government action, or widespread technology failure.
+
+14.2. The affected party shall notify the other party as soon as reasonably practicable.
+
+15. GENERAL
+
+15.1. This agreement constitutes the entire agreement between the parties.
+
+15.2. This agreement is governed by and construed in accordance with the laws of the United Arab Emirates, specifically the Emirate of Dubai.
+
+15.3. If any provision is found to be unenforceable, the remaining provisions shall continue in full force.
+
+15.4. Amendments to this agreement must be made in writing and agreed by both parties.
+
+15.5. The Contractor may not assign or transfer this agreement without the Company's prior written consent.
+
+---
+
+BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE TO BE BOUND BY ALL TERMS OF THIS AGREEMENT.`;
+  }
+
+  // =============================================
   // COACH ADMIN ENDPOINTS (Matt's admin panel)
   // =============================================
 
@@ -8434,69 +8769,75 @@ Example format:
     }
   });
 
-  // POST /api/admin/coaches - Create a new coach
+  // POST /api/admin/coaches - Send coach invitation (email + rate only)
   app.post('/api/admin/coaches', isAuthenticated, async (req: any, res) => {
     try {
       if (!await requireAdmin(req, res)) return;
 
-      const { email, firstName, password, calComLink, ratePerSession, rateCurrency } = req.body;
+      const { email, ratePerSession, rateCurrency } = req.body;
 
-      if (!email || !firstName || !password || !ratePerSession) {
-        return res.status(400).json({ message: "Email, first name, password, and rate per session are required" });
-      }
-
-      if (password.length < 8) {
-        return res.status(400).json({ message: "Password must be at least 8 characters" });
+      if (!email || !ratePerSession) {
+        return res.status(400).json({ message: "Email and rate per session are required" });
       }
 
       const normalizedEmail = email.toLowerCase().trim();
 
-      // Check if user already exists
-      const [existing] = await db.select().from(users).where(sql`lower(${users.email}) = ${normalizedEmail}`);
-
-      let userId: string;
-
-      if (existing) {
-        // Existing user - just mark as coach
-        userId = existing.id;
-        await db.update(users).set({ isCoach: true }).where(eq(users.id, userId));
-      } else {
-        // Create new user with password
-        const salt = randomBytes(16).toString('hex');
-        const hash = scryptSync(password, salt, 64).toString('hex');
-        const passwordHash = `${salt}:${hash}`;
-
-        const newUserId = crypto.randomUUID();
-        await db.insert(users).values({
-          id: newUserId,
-          email: normalizedEmail,
-          firstName: firstName.trim(),
-          passwordHash,
-          isCoach: true,
-        });
-        userId = newUserId;
-      }
-
-      // Check if coach record already exists
-      const [existingCoach] = await db.select().from(coaches).where(eq(coaches.userId, userId));
+      // Check if already an active coach
+      const [existingCoach] = await db.select().from(coaches)
+        .where(sql`lower(${coaches.email}) = ${normalizedEmail}`);
       if (existingCoach) {
-        return res.status(409).json({ message: "This user is already a coach" });
+        return res.status(409).json({ message: "This email is already registered as a coach" });
       }
 
-      // Create coach profile
-      const [newCoach] = await db.insert(coaches).values({
-        userId,
-        displayName: firstName.trim(),
+      // Check for existing pending invitation
+      const [existingInvite] = await db.select().from(coachInvitations)
+        .where(and(
+          sql`lower(${coachInvitations.email}) = ${normalizedEmail}`,
+          eq(coachInvitations.status, 'pending')
+        ));
+      if (existingInvite) {
+        return res.status(409).json({ message: "An invitation is already pending for this email" });
+      }
+
+      // Generate invitation token
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+      const adminUserId = req.user?.claims?.sub;
+
+      await db.insert(coachInvitations).values({
+        token,
         email: normalizedEmail,
-        calComLink: calComLink?.trim() || null,
         ratePerSession: parseInt(ratePerSession),
         rateCurrency: rateCurrency || 'gbp',
-      }).returning();
+        status: 'pending',
+        expiresAt,
+        invitedBy: adminUserId,
+      });
 
-      res.json(newCoach);
+      // Send invitation email
+      const setupLink = `https://challenge.mattwebley.com/coach-setup/${token}`;
+      await sendCoachInvitationEmail(normalizedEmail, setupLink);
+
+      res.json({ message: "Invitation sent", email: normalizedEmail });
     } catch (error: any) {
-      console.error("Error creating coach:", error);
-      res.status(500).json({ message: error.message || "Failed to create coach" });
+      console.error("Error sending coach invitation:", error);
+      res.status(500).json({ message: error.message || "Failed to send invitation" });
+    }
+  });
+
+  // GET /api/admin/coach-invitations - List pending invitations
+  app.get('/api/admin/coach-invitations', isAuthenticated, async (req: any, res) => {
+    try {
+      if (!await requireAdmin(req, res)) return;
+
+      const invitations = await db.select().from(coachInvitations)
+        .orderBy(desc(coachInvitations.createdAt));
+
+      res.json(invitations);
+    } catch (error: any) {
+      console.error("Error fetching coach invitations:", error);
+      res.status(500).json({ message: error.message || "Failed to fetch invitations" });
     }
   });
 

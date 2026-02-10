@@ -16,6 +16,10 @@ import {
   ChevronDown,
   ChevronUp,
   Eye,
+  Mail,
+  Clock,
+  FileCheck,
+  Send,
 } from "lucide-react";
 
 interface Coach {
@@ -78,6 +82,17 @@ interface CoachSession {
   clientUser: { firstName: string | null; lastName: string | null; email: string | null } | null;
 }
 
+interface CoachInvitation {
+  id: number;
+  token: string;
+  email: string;
+  ratePerSession: number;
+  rateCurrency: string;
+  status: string;
+  expiresAt: string;
+  createdAt: string;
+}
+
 function formatMoney(cents: number, currency: string = 'gbp') {
   const symbol = currency === 'gbp' ? '£' : '$';
   return `${symbol}${(cents / 100).toFixed(2)}`;
@@ -87,10 +102,19 @@ export default function AdminCoaches() {
   const queryClient = useQueryClient();
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCoach, setEditingCoach] = useState<number | null>(null);
-  const [expandedSection, setExpandedSection] = useState<'coaches' | 'unassigned' | 'payouts' | 'sessions'>('coaches');
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set(['coaches']));
 
-  // Form state
-  const [newCoach, setNewCoach] = useState({ email: '', firstName: '', password: '', calComLink: '', ratePerSession: '', rateCurrency: 'gbp' });
+  const toggleSection = (section: string) => {
+    setOpenSections(prev => {
+      const next = new Set(prev);
+      if (next.has(section)) next.delete(section);
+      else next.add(section);
+      return next;
+    });
+  };
+
+  // Form state — invitation only needs email + rate
+  const [newCoach, setNewCoach] = useState({ email: '', ratePerSession: '', rateCurrency: 'gbp' });
   const [editData, setEditData] = useState<Partial<Coach>>({});
 
   // Queries
@@ -114,6 +138,11 @@ export default function AdminCoaches() {
     staleTime: 30_000,
   });
 
+  const { data: invitations = [] } = useQuery<CoachInvitation[]>({
+    queryKey: ['/api/admin/coach-invitations'],
+    staleTime: 30_000,
+  });
+
   // Mutations
   const createCoach = useMutation({
     mutationFn: async (data: typeof newCoach) => {
@@ -122,11 +151,12 @@ export default function AdminCoaches() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/coaches'] });
-      toast.success('Coach created successfully');
+      queryClient.invalidateQueries({ queryKey: ['/api/admin/coach-invitations'] });
+      toast.success('Invitation sent');
       setShowAddForm(false);
-      setNewCoach({ email: '', firstName: '', password: '', calComLink: '', ratePerSession: '', rateCurrency: 'gbp' });
+      setNewCoach({ email: '', ratePerSession: '', rateCurrency: 'gbp' });
     },
-    onError: (err: any) => toast.error(err.message || 'Failed to create coach'),
+    onError: (err: any) => toast.error(err.message || 'Failed to send invitation'),
   });
 
   const updateCoach = useMutation({
@@ -171,6 +201,11 @@ export default function AdminCoaches() {
 
   const activeCoaches = coaches.filter(c => c.isActive);
   const pendingPayouts = payouts.filter(p => p.status === 'requested');
+  const pendingInvitations = invitations.filter(i => i.status === 'pending');
+  // Build a set of coach IDs that have signed agreements (from invitations marked accepted)
+  const coachesWithAgreements = new Set(
+    invitations.filter(i => i.status === 'accepted').map(i => i.email.toLowerCase())
+  );
 
   if (isLoading) {
     return (
@@ -205,11 +240,8 @@ export default function AdminCoaches() {
 
       {/* Coaches Section */}
       <Card className="border border-slate-200 shadow-sm overflow-hidden">
-        <button
-          onClick={() => setExpandedSection(expandedSection === 'coaches' ? 'coaches' : 'coaches')}
-          className="w-full p-5 flex items-center justify-between text-left"
-        >
-          <div className="flex items-center gap-3">
+        <div className="p-5 flex items-center justify-between">
+          <button onClick={() => toggleSection('coaches')} className="flex items-center gap-3 text-left">
             <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
               <Users className="w-5 h-5 text-blue-600" />
             </div>
@@ -217,108 +249,82 @@ export default function AdminCoaches() {
               <h3 className="text-lg font-bold text-slate-900">Coaches</h3>
               <p className="text-sm text-slate-500">{coaches.length} total, {activeCoaches.length} active</p>
             </div>
-          </div>
+            {openSections.has('coaches') ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+          </button>
           <button
-            onClick={(e) => { e.stopPropagation(); setShowAddForm(!showAddForm); }}
+            onClick={(e) => { e.stopPropagation(); setShowAddForm(!showAddForm); if (!openSections.has('coaches')) toggleSection('coaches'); }}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-sm font-medium rounded-lg hover:opacity-90"
           >
-            <Plus className="w-4 h-4" /> Add Coach
+            <Send className="w-4 h-4" /> Invite Coach
           </button>
-        </button>
+        </div>
 
-        {/* Add Coach Form */}
-        {showAddForm && (
-          <div className="px-5 pb-5 border-t border-slate-200 pt-4">
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3">
-              <h4 className="font-bold text-slate-900">New Coach</h4>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-sm font-medium text-slate-700">First Name *</label>
-                  <input
-                    type="text"
-                    value={newCoach.firstName}
-                    onChange={(e) => setNewCoach({ ...newCoach, firstName: e.target.value })}
-                    className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                    placeholder="Jane"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-700">Email *</label>
-                  <input
-                    type="email"
-                    value={newCoach.email}
-                    onChange={(e) => setNewCoach({ ...newCoach, email: e.target.value })}
-                    className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                    placeholder="jane@example.com"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-700">Password *</label>
-                  <input
-                    type="text"
-                    value={newCoach.password}
-                    onChange={(e) => setNewCoach({ ...newCoach, password: e.target.value })}
-                    className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                    placeholder="Min 8 characters"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-700">Cal.com Booking Link</label>
-                  <input
-                    type="url"
-                    value={newCoach.calComLink}
-                    onChange={(e) => setNewCoach({ ...newCoach, calComLink: e.target.value })}
-                    className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                    placeholder="https://cal.com/jane/coaching"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-700">Rate Per Session (pence/cents) *</label>
-                  <input
-                    type="number"
-                    value={newCoach.ratePerSession}
-                    onChange={(e) => setNewCoach({ ...newCoach, ratePerSession: e.target.value })}
-                    className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                    placeholder="5000 = £50.00"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-700">Currency</label>
-                  <select
-                    value={newCoach.rateCurrency}
-                    onChange={(e) => setNewCoach({ ...newCoach, rateCurrency: e.target.value })}
-                    className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
-                  >
-                    <option value="gbp">GBP (£)</option>
-                    <option value="usd">USD ($)</option>
-                  </select>
+        {openSections.has('coaches') && (
+          <>
+            {/* Add Coach Form — invitation-based */}
+            {showAddForm && (
+              <div className="px-5 pb-5 border-t border-slate-200 pt-4">
+                <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3">
+                  <h4 className="font-bold text-slate-900">Send Coach Invitation</h4>
+                  <p className="text-slate-600 text-sm">The coach will receive an email with a link to sign the contractor agreement and set up their account.</p>
+                  <div className="grid sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-sm font-medium text-slate-700">Email *</label>
+                      <input
+                        type="email"
+                        value={newCoach.email}
+                        onChange={(e) => setNewCoach({ ...newCoach, email: e.target.value })}
+                        className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                        placeholder="coach@example.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-700">Rate Per Session (pence/cents) *</label>
+                      <input
+                        type="number"
+                        value={newCoach.ratePerSession}
+                        onChange={(e) => setNewCoach({ ...newCoach, ratePerSession: e.target.value })}
+                        className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                        placeholder="5000 = £50.00"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-700">Currency</label>
+                      <select
+                        value={newCoach.rateCurrency}
+                        onChange={(e) => setNewCoach({ ...newCoach, rateCurrency: e.target.value })}
+                        className="mt-1 w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                      >
+                        <option value="gbp">GBP (£)</option>
+                        <option value="usd">USD ($)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      onClick={() => createCoach.mutate(newCoach)}
+                      disabled={createCoach.isPending || !newCoach.email || !newCoach.ratePerSession}
+                      className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:opacity-90 disabled:opacity-50"
+                    >
+                      {createCoach.isPending ? 'Sending...' : 'Send Invitation'}
+                    </button>
+                    <button
+                      onClick={() => setShowAddForm(false)}
+                      className="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-200"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="flex gap-2 pt-2">
-                <button
-                  onClick={() => createCoach.mutate(newCoach)}
-                  disabled={createCoach.isPending || !newCoach.email || !newCoach.firstName || !newCoach.password || !newCoach.ratePerSession}
-                  className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:opacity-90 disabled:opacity-50"
-                >
-                  {createCoach.isPending ? 'Creating...' : 'Create Coach'}
-                </button>
-                <button
-                  onClick={() => setShowAddForm(false)}
-                  className="px-4 py-2 bg-slate-100 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-200"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+            )}
 
-        {/* Coach List */}
-        <div className="px-5 pb-5 space-y-3">
-          {coaches.length === 0 ? (
-            <p className="text-slate-500 py-4 text-center">No coaches yet. Add your first coach above.</p>
-          ) : (
-            coaches.map((coach) => (
+            {/* Coach List */}
+            <div className="px-5 pb-5 space-y-3">
+              {coaches.length === 0 ? (
+                <p className="text-slate-500 py-4 text-center">No coaches yet. Invite your first coach above.</p>
+              ) : (
+                coaches.map((coach) => (
               <div key={coach.id} className={`rounded-lg border p-4 ${coach.isActive ? 'border-slate-200' : 'border-slate-200 opacity-60'}`}>
                 {editingCoach === coach.id ? (
                   <div className="space-y-3">
@@ -387,6 +393,11 @@ export default function AdminCoaches() {
                         ) : (
                           <span className="px-2 py-0.5 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Inactive</span>
                         )}
+                        {coachesWithAgreements.has(coach.email.toLowerCase()) && (
+                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full flex items-center gap-1">
+                            <FileCheck className="w-3 h-3" /> Agreement signed
+                          </span>
+                        )}
                       </div>
                       <p className="text-sm text-slate-500">{coach.email}</p>
                       {coach.calComLink && (
@@ -435,9 +446,65 @@ export default function AdminCoaches() {
                 )}
               </div>
             ))
-          )}
-        </div>
+              )}
+            </div>
+          </>
+        )}
       </Card>
+
+      {/* Pending Invitations */}
+      {invitations.length > 0 && (
+        <Card className="border border-slate-200 shadow-sm overflow-hidden">
+          <button onClick={() => toggleSection('invitations')} className="w-full p-5 flex items-center gap-3 text-left">
+            <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
+              <Mail className="w-5 h-5 text-amber-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-bold text-slate-900">Coach Invitations</h3>
+              <p className="text-sm text-slate-500">{pendingInvitations.length} pending, {invitations.filter(i => i.status === 'accepted').length} accepted</p>
+            </div>
+            {openSections.has('invitations') ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+          </button>
+          {openSections.has('invitations') && (
+            <div className="px-5 pb-5 space-y-2">
+              {invitations.map((inv) => (
+                <div key={inv.id} className={`flex items-center justify-between p-3 rounded-lg border ${
+                  inv.status === 'pending' ? 'bg-amber-50 border-amber-200' :
+                  inv.status === 'accepted' ? 'bg-green-50 border-green-200' :
+                  'bg-slate-50 border-slate-200'
+                }`}>
+                  <div>
+                    <p className="font-medium text-slate-900">{inv.email}</p>
+                    <p className="text-sm text-slate-500">
+                      {formatMoney(inv.ratePerSession, inv.rateCurrency)}/session
+                      {' · '}
+                      Sent {new Date(inv.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                      {inv.status === 'pending' && (
+                        <> · Expires {new Date(inv.expiresAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</>
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    {inv.status === 'pending' && (
+                      <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> Pending
+                      </span>
+                    )}
+                    {inv.status === 'accepted' && (
+                      <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center gap-1">
+                        <Check className="w-3 h-3" /> Accepted
+                      </span>
+                    )}
+                    {inv.status === 'expired' && (
+                      <span className="px-2.5 py-1 bg-slate-100 text-slate-500 text-xs font-semibold rounded-full">Expired</span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
+      )}
 
       {/* Unassigned Clients */}
       <Card className={`border border-slate-200 shadow-sm overflow-hidden ${unassigned.length > 0 ? 'border-l-4 border-l-amber-500' : ''}`}>

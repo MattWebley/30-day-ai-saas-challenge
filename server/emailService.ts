@@ -1284,3 +1284,75 @@ Matt` + TRANSACTIONAL_FOOTER,
     templateKey: 'book_next_session',
   });
 }
+
+// Coach invitation email
+export async function sendCoachInvitationEmail(email: string, setupLink: string): Promise<boolean> {
+  try {
+    await sendAndLog({
+      to: email,
+      subject: 'You\'ve been invited to coach on the 21-Day AI SaaS Challenge',
+      text: `Hi there,
+
+You've been invited to join the 21-Day AI SaaS Challenge as a coach.
+
+Before you can start coaching, you'll need to:
+1. Review and sign the Independent Contractor Agreement
+2. Set up your coach profile
+
+Click the link below to get started:
+${setupLink}
+
+This invitation link expires in 7 days.
+
+If you have any questions, just reply to this email.
+
+Matt` + TRANSACTIONAL_FOOTER,
+      templateKey: 'coach_invitation',
+    });
+    console.log('Coach invitation email sent to:', email);
+    return true;
+  } catch (error) {
+    console.error('Failed to send coach invitation email:', error);
+    return false;
+  }
+}
+
+// Send signed coach agreement copy to Matt
+export async function sendCoachAgreementCopyEmail(params: {
+  coachName: string;
+  coachEmail: string;
+  signedAt: string;
+  ipAddress: string;
+  signatureName: string;
+  agreementText: string;
+}): Promise<boolean> {
+  const { coachName, coachEmail, signedAt, ipAddress, signatureName, agreementText } = params;
+  try {
+    await sendAndLog({
+      to: 'matt@mattwebley.com',
+      subject: `Signed Coach Agreement: ${coachName}`,
+      text: `SIGNED INDEPENDENT CONTRACTOR AGREEMENT
+
+COACH DETAILS
+--------------
+Name: ${coachName}
+Email: ${coachEmail}
+Signed At: ${signedAt}
+IP Address: ${ipAddress}
+E-Signature: ${signatureName}
+
+FULL AGREEMENT TEXT
+-------------------
+${agreementText}
+
+--
+This is an automated record. Store for your records.`,
+      templateKey: 'coach_agreement_copy',
+    });
+    console.log('Coach agreement copy email sent for:', coachName);
+    return true;
+  } catch (error) {
+    console.error('Failed to send coach agreement copy email:', error);
+    return false;
+  }
+}
