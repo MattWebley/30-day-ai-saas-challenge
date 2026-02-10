@@ -1318,6 +1318,39 @@ The 21-Day AI SaaS Challenge Team` + TRANSACTIONAL_FOOTER,
   });
 }
 
+// Send rebooking payment link to client
+export async function sendCoachingRebookEmail(params: {
+  to: string;
+  firstName: string;
+  coachName: string;
+  sessionsCount: number;
+  paymentUrl: string;
+  price: string;
+}): Promise<void> {
+  const { to, coachName, sessionsCount, paymentUrl, price } = params;
+  const firstName = params.firstName || 'there';
+
+  await sendAndLog({
+    to,
+    subject: `Book another ${sessionsCount} coaching sessions with ${coachName}`,
+    text: `Hi ${firstName},
+
+Great news — your coach ${coachName} has sent you a link to book another ${sessionsCount} coaching sessions at the same price you paid before (${price}).
+
+Book your next ${sessionsCount} sessions here:
+${paymentUrl}
+
+This is a secure Stripe payment link. Once payment is confirmed, your new sessions will be set up automatically and ${coachName} will be ready to continue working with you.
+
+If you have any questions, just reply to this email.
+
+Best,
+The 21-Day AI SaaS Challenge Team` + TRANSACTIONAL_FOOTER,
+    recipientName: firstName,
+    templateKey: 'coaching_rebook',
+  });
+}
+
 // Coach invitation email
 export async function sendCoachInvitationEmail(email: string, setupLink: string): Promise<boolean> {
   try {

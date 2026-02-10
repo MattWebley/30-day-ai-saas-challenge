@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Settings,
   Mail,
+  RefreshCw,
 } from "lucide-react";
 
 interface CoachProfile {
@@ -233,6 +234,15 @@ export default function CoachDashboard() {
     onError: (err: any) => toast.error(err.message || 'Failed to send nudge'),
   });
 
+  const sendRebook = useMutation({
+    mutationFn: async (purchaseId: number) => {
+      const res = await apiRequest('POST', `/api/coach/clients/${purchaseId}/rebook${qs}`);
+      return res.json();
+    },
+    onSuccess: (data) => toast.success(data.message || 'Rebooking link sent!'),
+    onError: (err: any) => toast.error(err.message || 'Failed to send rebooking link'),
+  });
+
   const [clientNotes, setClientNotes] = useState<Record<number, string>>({});
 
   // Load profile data into settings form
@@ -441,17 +451,34 @@ export default function CoachDashboard() {
                                   )}
                                 </div>
                               </div>
-                              {client.sessionsRemaining > 0 && (
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); nudgeClient.mutate(client.purchaseId); }}
-                                  disabled={nudgeClient.isPending}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                                  title="Send an email reminder to book their next session"
-                                >
-                                  <Mail className="w-3.5 h-3.5" />
-                                  {nudgeClient.isPending ? 'Sending...' : 'Nudge to Book'}
-                                </button>
-                              )}
+                              <div className="flex items-center gap-2">
+                                {client.sessionsRemaining > 0 ? (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); nudgeClient.mutate(client.purchaseId); }}
+                                    disabled={nudgeClient.isPending}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                    title="Send an email reminder to book their next session"
+                                  >
+                                    <Mail className="w-3.5 h-3.5" />
+                                    {nudgeClient.isPending ? 'Sending...' : 'Nudge to Book'}
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      if (confirm(`Send ${clientName} a payment link for 4 more sessions at ${formatMoney(client.amountPaid, client.currency)}?`)) {
+                                        sendRebook.mutate(client.purchaseId);
+                                      }
+                                    }}
+                                    disabled={sendRebook.isPending}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-green-600 text-white text-xs font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50"
+                                    title="Send a Stripe payment link for 4 more sessions at the same price"
+                                  >
+                                    <RefreshCw className="w-3.5 h-3.5" />
+                                    {sendRebook.isPending ? 'Sending...' : 'Send Rebooking Link'}
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         )}

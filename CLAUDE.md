@@ -229,6 +229,10 @@ Interactive components MUST match lesson text styling:
 - [ ] Investigate production admin panel user count (dev DB is separate from production DB)
 - [ ] Consider adding "Pending Customers" section to admin panel (5 customers in pendingPurchases table never created accounts)
 - [ ] Remove one-time startup migration from `server/index.ts` after first deploy (greeting fix + email #2 story fix)
+- [ ] After deploy: use "Add Client" to manually add the 2 missing coaching clients by email
+- [ ] After deploy: dismiss Matt from coaching queue
+- [ ] After deploy: assign clients to James (coach)
+- [ ] Run `npm run db:push` on production for the `dismissed` column on coachingPurchases
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
@@ -238,6 +242,60 @@ Interactive components MUST match lesson text styling:
 ---
 
 ## Session Log
+
+### 2026-02-10 (Session 6) - Coaching Admin Major Build-out, Session Editing, Rebooking Links
+- **Tasks Completed (across 2 continued conversations):**
+  - **Coaching data fix — missing clients**:
+    - Fixed null email bug in `all-coaching-clients` endpoint that silently skipped users
+    - Coaching data lives in 3 sources (coachingPurchases, users.coachingPurchased, pendingPurchases) — all 3 now queried
+  - **Dismiss coaching clients**:
+    - Added `dismissed` boolean column to coachingPurchases schema
+    - Dismiss endpoint cleans ALL 3 data sources atomically (set coachingPurchased=false, mark purchases dismissed, delete pendingPurchases coaching entries)
+  - **Add Client manually**:
+    - `POST /api/admin/coaching-clients/add` — admin can add coaching client by email
+    - Add Client form in admin Coaching Clients section
+  - **Per-coach client overview in admin**:
+    - Each coach card has expandable "Clients" button showing assigned clients
+    - Visual progress bars (green=done, blue=booked, grey=pending)
+    - Click client to expand individual session details
+    - Financial info: client revenue (what they paid) + coach cost (completed sessions × rate)
+  - **Compact coach cards**:
+    - Avatar + name + stats always visible; setup details (email, cal link, rate, edit, deactivate) hidden behind gear icon
+    - "View as Coach" link in details panel
+    - Signed agreement viewable via click on badge
+  - **Setup & Settings collapsed section**:
+    - Cal.com integration and Coach Invitations moved to collapsed "Setup & Settings" card at bottom
+  - **Expandable transaction details in AdminRevenue**:
+    - Transaction rows clickable, show selectable detail grid (name, email, product, amount, date, Stripe charge ID)
+  - **Coach financial info**:
+    - Admin per-coach view: shows "Paid £X" (revenue) and "Coach cost: £X" per client
+    - Coach dashboard: shows earned per client + potential total
+  - **Coach nudge email**:
+    - "Nudge to Book" button on coach dashboard sends reminder email
+    - `sendCoachNudgeEmail()` function + `POST /api/coach/clients/:purchaseId/nudge` endpoint
+  - **Admin session editing**:
+    - `PATCH /api/admin/coach-sessions/:id` endpoint — admin can change session status, completedAt, scheduledAt, coachNotes
+    - Session status badges in admin per-coach client view are now dropdown selects (Pending/Booked/Done/Cancelled)
+    - All Sessions table also has editable status dropdowns
+  - **Coach rebooking link**:
+    - `POST /api/coach/clients/:purchaseId/rebook` — creates Stripe checkout for 4 more sessions at the same price client originally paid
+    - `sendCoachingRebookEmail()` — sends client the payment link
+    - Green "Send Rebooking Link" button replaces "Nudge to Book" when client's sessions are all used up
+    - Confirmation prompt shows the price before sending
+- **Files Modified:**
+  - `shared/schema.ts` — Added `dismissed` boolean to coachingPurchases
+  - `server/routes.ts` — New endpoints: add client, dismiss client, coach agreements, nudge, update session, rebook link. Updated all-coaching-clients to filter dismissed + fix null email
+  - `server/emailService.ts` — Added `sendCoachNudgeEmail()`, `sendCoachingRebookEmail()`
+  - `server/webhookHandlers.ts` — Added `dismissed: false` to synthetic records
+  - `client/src/pages/admin/AdminCoaches.tsx` — Major redesign: compact coach cards, gear icon details, per-coach client drill-down, financial info, session status dropdowns, add/dismiss client, Setup & Settings section
+  - `client/src/pages/admin/AdminRevenue.tsx` — Expandable transaction detail rows
+  - `client/src/pages/CoachDashboard.tsx` — Earnings per client, nudge button, rebooking link button
+- **Notes for Next Session:**
+  - NEEDS REDEPLOY for ALL changes to take effect (49 commits ahead of origin)
+  - Run `npm run db:push` on production for `dismissed` column
+  - After deploy: manually add 2 missing coaching clients, dismiss Matt, assign clients to James
+  - Stripe webhook handles rebooking payments automatically (same `coaching`/`coaching-matt` productType)
+  - Rebooking always creates 4 sessions at the same total price the client originally paid
 
 ### 2026-02-08 (Session 4) - Day 2 Pain Points Bug Fix, Admin Email Improvements, Drip Email Updates
 - **Tasks Completed:**

@@ -10,7 +10,7 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
 import { eq, desc, isNull, isNotNull, sql, and, or, gte, lte, count, countDistinct } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails, sendCoachAssignmentEmail, sendBookNextSessionEmail, sendCoachInvitationEmail, sendCoachAgreementCopyEmail, sendCalcomSetupEmail, sendCoachNudgeEmail } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails, sendCoachAssignmentEmail, sendBookNextSessionEmail, sendCoachInvitationEmail, sendCoachAgreementCopyEmail, sendCalcomSetupEmail, sendCoachNudgeEmail, sendCoachingRebookEmail } from "./emailService";
 import { addContactToSysteme, addContactToSystemeDetailed } from "./systemeService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -9676,6 +9676,93 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
     } catch (error: any) {
       console.error("Error sending nudge:", error);
       res.status(500).json({ message: error.message || "Failed to send nudge" });
+    }
+  });
+
+  // POST /api/coach/clients/:purchaseId/rebook - Send a payment link for another 4 sessions at the same price
+  app.post('/api/coach/clients/:purchaseId/rebook', isAuthenticated, async (req: any, res) => {
+    try {
+      const auth = await requireCoach(req, res);
+      if (!auth) return;
+
+      const purchaseId = parseInt(req.params.purchaseId);
+
+      // Verify this purchase belongs to this coach
+      const [purchase] = await db.select().from(coachingPurchases)
+        .where(and(eq(coachingPurchases.id, purchaseId), eq(coachingPurchases.assignedCoachId, auth.coachId)));
+      if (!purchase) {
+        return res.status(404).json({ message: "Client not found" });
+      }
+
+      // Get coach details
+      const [coach] = await db.select().from(coaches).where(eq(coaches.id, auth.coachId));
+      if (!coach) {
+        return res.status(404).json({ message: "Coach not found" });
+      }
+
+      // Get client name
+      let firstName = 'there';
+      if (purchase.userId) {
+        const user = await storage.getUser(purchase.userId);
+        if (user?.firstName) firstName = user.firstName;
+      }
+
+      // Create a Stripe checkout session for 4 sessions at the same price
+      const stripe = await getUncachableStripeClient();
+      const currency = purchase.currency || 'gbp';
+      const amount = purchase.amountPaid; // Same price they paid before
+      const isMatt = purchase.coachType === 'matt';
+      const productType = isMatt ? 'coaching-matt' : 'coaching';
+
+      const checkoutSession = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        customer_email: purchase.email,
+        line_items: [{
+          price_data: {
+            currency: currency.toLowerCase(),
+            product_data: {
+              name: `1:1 ${isMatt ? 'Matt Webley' : 'Expert'} Coaching - 4 x 1-Hour Sessions (Returning Client)`,
+            },
+            unit_amount: amount,
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        success_url: `https://challenge.mattwebley.com/coaching/success?type=${isMatt ? 'matt' : 'expert'}`,
+        cancel_url: `https://challenge.mattwebley.com/dashboard`,
+        payment_intent_data: {
+          capture_method: 'automatic',
+          description: `4x ${isMatt ? 'Matt Webley' : 'Expert'} Coaching Sessions (Returning Client)`,
+          metadata: { productType },
+        },
+        metadata: {
+          productType,
+          currency,
+        },
+      });
+
+      if (!checkoutSession.url) {
+        return res.status(500).json({ message: "Failed to create payment link" });
+      }
+
+      // Format price for the email
+      const symbol = currency === 'gbp' ? '£' : currency === 'aed' ? 'AED ' : '$';
+      const priceStr = `${symbol}${(amount / 100).toFixed(2)}`;
+
+      // Send the email with the payment link
+      await sendCoachingRebookEmail({
+        to: purchase.email,
+        firstName,
+        coachName: coach.displayName,
+        sessionsCount: 4,
+        paymentUrl: checkoutSession.url,
+        price: priceStr,
+      });
+
+      res.json({ success: true, message: `Rebooking link sent to ${purchase.email} (${priceStr} for 4 sessions)` });
+    } catch (error: any) {
+      console.error("Error sending rebook link:", error);
+      res.status(500).json({ message: error.message || "Failed to send rebooking link" });
     }
   });
 
