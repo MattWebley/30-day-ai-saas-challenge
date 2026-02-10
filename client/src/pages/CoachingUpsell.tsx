@@ -364,6 +364,11 @@ export default function CoachingUpsell() {
               No thanks, continue to my dashboard
             </button>
 
+            {/* Third-party disclaimer */}
+            <p className="text-xs text-slate-400 text-center px-4">
+              Coaching sessions are delivered by independent third-party professionals. We facilitate the introduction but are not responsible for the content, advice, or outcomes of any coaching sessions. By purchasing, you acknowledge that your coaching relationship is with the independent coach, not with us.
+            </p>
+
             {/* Guarantee */}
             {!timerExpired && (
               <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">

@@ -127,6 +127,10 @@ export default function CoachingSuccess() {
           </>
         )}
 
+        <p className="text-xs text-slate-400 px-2">
+          Coaching sessions are delivered by independent third-party professionals. Your coaching relationship is with the independent coach, not with us.
+        </p>
+
         <a href={isLoading ? "#" : (isAuthenticated ? "/dashboard" : "/login")} onClick={(e) => isLoading && e.preventDefault()}>
           <Button className="w-full" disabled={isLoading}>
             {isLoading ? (

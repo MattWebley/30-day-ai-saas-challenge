@@ -3454,72 +3454,76 @@ Keep it concise, professional, and compelling. 3-4 sentences maximum.`,
         userId,
         endpoint: 'generate-prd',
         endpointType: 'features',
-        systemPrompt: 'You are a product expert. No fluff, no filler, no generic advice. Be extremely specific.',
-        userMessage: `Create a PRD for this product.
+        systemPrompt: 'You are a senior product manager who writes PRDs specifically for SaaS products being built in Replit. You write PRDs that a non-technical founder can hand directly to an AI coding tool (like Claude Code) and start building immediately. No fluff, no filler, no generic advice. Every line should be specific and actionable for THIS product.',
+        userMessage: `I need a PRD for my SaaS I'm building in Replit.
 
-PRODUCT NAME: ${appName || 'TBD'}
-PRODUCT IDEA: ${idea}
-${iHelpStatement ? `VALUE PROPOSITION: "${iHelpStatement}"` : ''}
+${appName ? `My SaaS NAME is "${appName}".` : ''}
+My CUSTOMER AVATAR is: ${customerAvatar || 'Not specified yet'}
+The PROBLEM my SaaS solves is: ${painPoints.map((p: string) => p).join('; ')}
+${iHelpStatement ? `My VALUE PROPOSITION is: "${iHelpStatement}"` : ''}
 
-CUSTOMER AVATAR: ${customerAvatar || 'Not specified'}
+My FEATURE set is:
+${mvpFeatures.map((f: string) => `- ${f}`).join('\n')}
+${features.filter((f: string) => !mvpFeatures.includes(f)).length > 0 ? `\nFuture features (not MVP):\n${features.filter((f: string) => !mvpFeatures.includes(f)).map((f: string) => `- ${f}`).join('\n')}` : ''}
 
-PAIN POINTS:
-${painPoints.map((p: string, i: number) => `- ${p}`).join('\n')}
+${uspFeatures && uspFeatures.length > 0 ? `My USP is: ${uspFeatures.join('; ')}` : ''}
+I want it to LOOK AND FEEL like: ${lookAndFeel || 'Modern and clean'}
+${brandVibe ? `Brand vibe: ${brandVibe}` : ''}
 
-MVP FEATURES:
-${mvpFeatures.map((f: string, i: number) => `- ${f}`).join('\n')}
+Write the PRD in this exact format:
 
-ALL FEATURES:
-${features.map((f: string, i: number) => `- ${f}`).join('\n')}
-
-${uspFeatures && uspFeatures.length > 0 ? `STANDOUT FEATURES (USP):
-${uspFeatures.map((f: string) => `- ${f}`).join('\n')}` : ''}
-
-${brandVibe ? `BRAND VIBE: ${brandVibe}` : ''}
-LOOK & FEEL: ${lookAndFeel || 'Modern and clean'}
-
-OUTPUT FORMAT:
-
-# ${appName || idea} - PRD
+# ${appName || idea} — Product Requirements Document
 
 ## What It Is
-[1-2 sentences. What does this specific product do?]
+[2-3 sentences. What does this product do, who is it for, and why does it exist? Write this so someone with zero context immediately understands the product.]
 
-## Who It's For
-[Use the customer avatar provided. Be specific and detailed about who this person is and their situation.]
+## Target User
+[Use the customer avatar above. Paint a vivid picture: who are they, what's their day like, what's frustrating them right now, and what are they currently doing instead of using this product?]
 
 ## Core Problem
-[The #1 pain point this solves. One sentence.]
+[The #1 pain point this solves. One clear sentence.]
 
 ## Unique Value Proposition
-[What makes this different from competitors? Why would someone choose THIS product?]
+[What makes this different from alternatives? Why would someone switch to THIS product? Be specific — not "better UX" but exactly what's better.]
 
-## MVP Features
+## MVP Features (Build These First)
 
 [For EACH MVP feature, write:]
 
 ### [Feature Name]
-**User does:** [Exact action user takes]
-**System does:** [Exact system response]
-**Done when:** [Specific completion criteria - testable]
+**What the user does:** [The exact action — e.g. "Clicks 'New Project', fills in name and deadline, hits Save"]
+**What the system does:** [The exact response — e.g. "Creates project record, shows it on dashboard with countdown timer"]
+**It works when:** [Testable success criteria — e.g. "User can see their new project on the dashboard within 1 second of saving"]
+
+## Pages & Navigation
+[List every page/screen in the MVP. For each one: page name, what it shows, and key actions available. E.g.:]
+[- **Dashboard** — Shows all projects as cards with status. User can create new, click to open, or archive.]
+[- **Project Detail** — Shows tasks, deadline, progress bar. User can add/complete tasks.]
 
 ## Data Model
-[List the core entities/tables needed. E.g., Users, Projects, Tasks - with key fields]
+[List the database tables needed for MVP. For each table: name and key fields with types. E.g.:]
+[- **users** — id, email, name, password_hash, created_at]
+[- **projects** — id, user_id, name, deadline, status, created_at]
 
 ## API Endpoints
-[List 5-8 critical endpoints. Format: METHOD /path - what it does]
+[List the essential API routes. Format: METHOD /path — what it does. Group by resource. E.g.:]
+[- POST /api/auth/register — Create new account]
+[- GET /api/projects — List user's projects]
 
 ## Third-Party Services
-[Only list if actually needed: Stripe, SendGrid, etc. with WHY]
+[Only list services actually needed. For each: what it is, what it's for, and whether it's required for MVP or can wait. E.g.:]
+[- **Stripe** — Payments. Required for MVP if charging at launch.]
+[- **Resend** — Transactional email. Can wait until post-MVP.]
 
 ## UI/UX Direction
-[Based on the look & feel description: ${lookAndFeel || 'modern and clean'}]
-[2-3 sentences on the visual style and user experience approach]
+[Based on "${lookAndFeel || 'modern and clean'}". Reference 1-2 real apps as visual inspiration. Describe the vibe in 2-3 sentences so a designer or AI tool knows exactly what to aim for.]
 
-## Launch Blockers
-[5-7 specific items that MUST work before launch. Not generic - specific to this product]
+## Launch Checklist
+[5-7 specific things that MUST work before real users touch this. Not generic best practices — specific to THIS product. E.g.:]
+[- User can complete full signup → create first project → add tasks flow without errors]
+[- Stripe checkout works with test card and creates paid account]
 
-NO generic advice. NO "consider accessibility". NO "ensure security best practices". Only specific, actionable items for THIS product.`,
+IMPORTANT: This PRD will be handed to an AI coding assistant to build. Make every section specific enough that a developer (human or AI) can start building without asking clarifying questions. No generic advice. No "ensure scalability". No "consider accessibility". Only what's needed for THIS specific product.`,
         maxTokens: 4000,
       });
 
@@ -5090,6 +5094,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         payment_intent_data: {
           setup_future_usage: 'off_session',
           capture_method: 'automatic',
+          description: '21-Day AI SaaS Challenge',
+          metadata: { productType: 'challenge' },
         },
         metadata: {
           currency: currency,
@@ -5161,6 +5167,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         cancel_url: `${protocol}://${host}/coaching/upsell?currency=${currency}`,
         payment_intent_data: {
           capture_method: 'automatic',
+          description: '4x Expert Coaching Sessions (50% Off)',
+          metadata: { productType: 'coaching' },
         },
         metadata: {
           productType: 'coaching',
@@ -5202,6 +5210,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         cancel_url: `${protocol}://${host}/coaching`,
         payment_intent_data: {
           capture_method: 'automatic',
+          description: 'Expert Coaching Session',
+          metadata: { productType: 'coaching-single' },
         },
         metadata: {
           productType: 'coaching-single',
@@ -5243,6 +5253,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         cancel_url: `${protocol}://${host}/coaching`,
         payment_intent_data: {
           capture_method: 'automatic',
+          description: 'Coaching Session with Matt',
+          metadata: { productType: 'coaching-matt-single' },
         },
         metadata: {
           productType: 'coaching-matt-single',
@@ -5284,6 +5296,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         cancel_url: `${protocol}://${host}/coaching`,
         payment_intent_data: {
           capture_method: 'automatic',
+          description: '4x Coaching Sessions with Matt',
+          metadata: { productType: 'coaching-matt' },
         },
         metadata: {
           productType: 'coaching-matt',
@@ -5388,6 +5402,8 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         cancel_url: `${protocol}://${host}/critique`,
         payment_intent_data: {
           capture_method: 'automatic',
+          description: 'SaaS Critique',
+          metadata: { productType: 'critique' },
         },
         metadata: {
           productType: 'critique',
@@ -7293,10 +7309,34 @@ Example format:
       const totalRefunds = refunds.data.reduce((sum, r) => sum + r.amount, 0);
       const refundCount = refunds.data.length;
 
+      // Determine product label from charge data
+      const getProductLabel = (charge: any): { description: string; productType: string } => {
+        // 1. If Stripe has a description, use it
+        if (charge.description) {
+          const d = charge.description.toLowerCase();
+          if (d.includes('coaching') && d.includes('matt')) return { description: charge.description, productType: 'coaching' };
+          if (d.includes('coaching')) return { description: charge.description, productType: 'coaching' };
+          if (d.includes('critique')) return { description: charge.description, productType: 'critique' };
+          if (d.includes('unlock')) return { description: charge.description, productType: 'unlock' };
+          return { description: charge.description, productType: 'challenge' };
+        }
+        // 2. If charge has metadata from payment_intent_data (future charges)
+        if (charge.metadata?.productType) {
+          const pt = charge.metadata.productType;
+          if (pt.includes('coaching') && pt.includes('matt')) return { description: 'Coaching (Matt)', productType: 'coaching' };
+          if (pt.includes('coaching')) return { description: 'Expert Coaching', productType: 'coaching' };
+          if (pt.includes('critique')) return { description: 'SaaS Critique', productType: 'critique' };
+          if (pt.includes('unlock')) return { description: 'Unlock All Days', productType: 'unlock' };
+          return { description: 'Challenge Purchase', productType: 'challenge' };
+        }
+        // 3. Fallback: use amount to distinguish (coaching is always ≥ £349/$449 = 34900)
+        if (charge.amount >= 34900) return { description: 'Coaching Purchase', productType: 'coaching' };
+        return { description: 'Challenge Purchase', productType: 'challenge' };
+      };
+
       // Map charge to transaction object
       const mapCharge = (charge: any) => {
-        const desc = (charge.description || '').toLowerCase();
-        const productType = desc.includes('coaching') ? 'coaching' : 'challenge';
+        const label = getProductLabel(charge);
         return {
           id: charge.id,
           amount: charge.amount,
@@ -7305,25 +7345,19 @@ Example format:
           refunded: charge.refunded,
           customerEmail: (charge.customer as any)?.email || charge.billing_details?.email || 'Unknown',
           customerName: charge.billing_details?.name || 'Unknown',
-          description: charge.description || 'Challenge Purchase',
+          description: label.description,
           created: charge.created,
-          productType,
+          productType: label.productType,
         };
       };
       const recentTransactions = successfulCharges.slice(0, 20).map(mapCharge);
       const chartTransactions = successfulCharges.map(mapCharge);
 
-      // Revenue by product (from metadata or description)
-      const cleanProductName = (desc: string): string => {
-        const d = desc.toLowerCase();
-        if (d.includes('coaching') && d.includes('matt')) return 'Coaching (Matt)';
-        if (d.includes('coaching')) return 'Coaching';
-        if (d.includes('critique')) return 'Critique';
-        return 'Challenge';
-      };
+      // Revenue by product (uses same getProductLabel logic)
       const revenueByProduct: Record<string, { amount: number; count: number; currency: string }> = {};
       successfulCharges.forEach(charge => {
-        const product = cleanProductName(charge.description || 'Challenge');
+        const label = getProductLabel(charge);
+        const product = label.description.replace(' Purchase', '');
         const currency = charge.currency.toUpperCase();
         const key = `${product}__${currency}`;
         if (!revenueByProduct[key]) {

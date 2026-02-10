@@ -508,6 +508,11 @@ export default function Coaching() {
           </div>
         </div>
 
+        {/* Third-party disclaimer */}
+        <p className="text-center text-xs text-slate-400 max-w-2xl mx-auto px-4">
+          Coaching sessions are delivered by independent third-party professionals. We facilitate the introduction but are not responsible for the content, advice, or outcomes of any coaching sessions. By purchasing, you acknowledge that your coaching relationship is with the independent coach, not with us.
+        </p>
+
         {/* Questions */}
         <p className="text-center text-slate-500 text-sm">
           Questions? Email matt@mattwebley.com
