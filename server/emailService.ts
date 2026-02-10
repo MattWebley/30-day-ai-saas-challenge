@@ -674,6 +674,71 @@ If you didn't request this, you can safely ignore this email.
   }
 }
 
+// Login help email - sent by admin to help customers who are struggling to log in
+export async function sendLoginHelpEmail(email: string, firstName: string, magicLink: string): Promise<boolean> {
+  try {
+    const name = firstName || 'there';
+    const subject = 'How to Log In - 21-Day AI SaaS Challenge';
+    const body = `Hi ${name},
+
+Matt here from the 21-Day AI SaaS Challenge. I understand you're having trouble logging in — let me help!
+
+You have two ways to get in:
+
+
+OPTION 1: MAGIC LINK (EASIEST)
+
+I've generated a fresh login link just for you. Click the link below and you'll be logged straight in — no password needed:
+
+${magicLink}
+
+This link expires in 15 minutes, so click it soon. If it expires, just use Option 2 below.
+
+
+OPTION 2: EMAIL & PASSWORD
+
+If you've already set up a password, you can log in here:
+
+https://challenge.mattwebley.com/auth/error
+
+1. Enter your email address: ${email}
+2. Enter the password you created
+3. Click "Log In"
+
+Forgot your password? On that same page, click "Forgot password?" and you'll get a reset link sent to this email.
+
+
+OPTION 3: REQUEST A NEW MAGIC LINK
+
+If the link above has expired:
+
+1. Go to: https://challenge.mattwebley.com/auth/error
+2. Scroll down to "Send Me a Login Link"
+3. Enter your email: ${email}
+4. Check your inbox (and spam/junk folder!) for the link
+5. Click the link in the email to log straight in
+
+
+STILL STUCK?
+
+Just reply to this email and I'll sort it out for you personally.
+
+- Matt
+
+--
+21-Day AI SaaS Challenge by Matt Webley
+Questions? Just reply to this email.`;
+
+    await sendAndLog({ to: email, subject, text: body, recipientName: firstName || undefined, templateKey: 'login_help' });
+
+    console.log('Login help email sent to:', email);
+    return true;
+  } catch (error) {
+    console.error('Failed to send login help email:', error);
+    return false;
+  }
+}
+
 export async function sendWelcomeAccessEmail(email: string, magicLink: string): Promise<boolean> {
   try {
     const subject = 'Your Access to the 21-Day AI SaaS Challenge';

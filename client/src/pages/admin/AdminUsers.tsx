@@ -24,6 +24,9 @@ import {
   Award,
   ExternalLink,
   Link,
+  Mail,
+  Copy,
+  HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -67,6 +70,46 @@ function UserDetailPanel({
       toast.error(error.message || "Failed to link purchase");
     },
   });
+
+  const sendLoginHelpMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const res = await apiRequest("POST", "/api/admin/send-login-help", { userId });
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      toast.success(data.message || "Login help email sent!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to send login help email");
+    },
+  });
+
+  const copyLoginInstructions = () => {
+    const name = user.firstName || "there";
+    const email = user.email || "[your email]";
+    const text = `Hi ${name}! Here's how to log in to the 21-Day AI SaaS Challenge:
+
+EASIEST WAY — Magic Link:
+1. Go to: https://challenge.mattwebley.com/auth/error
+2. Scroll down to where it says "Send Me a Login Link"
+3. Enter your email: ${email}
+4. Check your inbox (and spam/junk folder!) for an email from me
+5. Click the link in that email — you'll be logged straight in, no password needed
+
+ALTERNATIVE — Email & Password:
+If you've set up a password before, you can use that instead:
+1. Go to: https://challenge.mattwebley.com/auth/error
+2. Enter your email: ${email}
+3. Enter your password
+4. Click "Log In"
+
+If you've forgotten your password, click "Forgot password?" on that page and you'll get a reset link.
+
+Still stuck? Just let me know and I'll sort it out!`;
+
+    navigator.clipboard.writeText(text);
+    toast.success("Login instructions copied to clipboard!");
+  };
 
   const { data: details, isLoading } = useQuery<any>({
     queryKey: [`/api/admin/users/${user.id}`],
@@ -370,6 +413,34 @@ function UserDetailPanel({
           <Trash2 className="w-3 h-3 mr-1" /> Delete
         </Button>
       </div>
+
+      {/* Login Help Actions */}
+      {user.email && (
+        <div className="flex flex-wrap gap-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div className="w-full flex items-center gap-2 mb-1">
+            <HelpCircle className="w-4 h-4 text-blue-600" />
+            <span className="text-sm font-medium text-blue-800">Login Help</span>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-blue-600 border-blue-200 hover:bg-blue-100 bg-white"
+            onClick={() => sendLoginHelpMutation.mutate(user.id)}
+            disabled={sendLoginHelpMutation.isPending}
+          >
+            <Mail className="w-3 h-3 mr-1" />
+            {sendLoginHelpMutation.isPending ? "Sending..." : "Email Login Instructions"}
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-blue-600 border-blue-200 hover:bg-blue-100 bg-white"
+            onClick={copyLoginInstructions}
+          >
+            <Copy className="w-3 h-3 mr-1" /> Copy DM Instructions
+          </Button>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

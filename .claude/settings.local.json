@@ -114,7 +114,8 @@
       "Bash(printenv:*)",
       "Bash(python3:*)",
       "WebFetch(domain:cal.com)",
-      "WebFetch(domain:challenge.mattwebley.com)"
+      "WebFetch(domain:challenge.mattwebley.com)",
+      "Bash(stripe:*)"
     ]
   }
 }

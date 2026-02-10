@@ -173,6 +173,41 @@ export class WebhookHandlers {
         amountPaid
       }).onConflictDoNothing();
 
+      // If coaching purchase, also record in coachingPurchases table (with null userId for now)
+      if (productType.includes('coaching')) {
+        const isMattCoach = productType.includes('matt');
+        const isSingleSession = productType.includes('single');
+        await db.insert(coachingPurchases).values({
+          userId: null,
+          email,
+          coachType: isMattCoach ? 'matt' : 'expert',
+          packageType: isSingleSession ? 'single' : 'pack',
+          sessionsTotal: isSingleSession ? 1 : 4,
+          amountPaid,
+          currency: currency.toLowerCase(),
+          stripeSessionId: session.id,
+        });
+        console.log('[Webhook] Guest coaching purchase recorded:', { email, coach: isMattCoach ? 'matt' : 'expert' });
+
+        // Send coaching emails to guest
+        const custFirstName2 = session.customer_details?.name?.split(' ')[0] || 'there';
+        sendCoachingConfirmationEmail({
+          to: email,
+          firstName: custFirstName2,
+          currency: currency.toLowerCase() as 'usd' | 'gbp',
+          amount: amountPaid / 100
+        }).catch((err: any) => console.error('[Webhook] Guest coaching email error:', err));
+
+        const custName = session.customer_details?.name || 'Guest';
+        sendCoachingPurchaseNotificationEmail({
+          userEmail: email,
+          userName: custName,
+          coachingType: productType.includes('matt') ? 'Sessions with Matt' : 'Expert Coaching',
+          currency: currency.toLowerCase() as 'usd' | 'gbp',
+          amount: amountPaid / 100
+        }).catch((err: any) => console.error('[Webhook] Guest coaching notification error:', err));
+      }
+
       // Generate magic link for instant access
       const token = crypto.randomBytes(32).toString('hex');
       const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days

@@ -10,7 +10,7 @@ import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClie
 import { WebhookHandlers } from "./webhookHandlers";
 import { db } from "./db";
 import { eq, desc, isNull, isNotNull, sql, and, or, gte, lte, count, countDistinct } from "drizzle-orm";
-import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails } from "./emailService";
+import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendTestimonialNotificationEmail, sendCritiqueNotificationEmail, sendCritiqueCompletedEmail, sendQuestionNotificationEmail, sendQuestionAnsweredEmail, sendDiscussionNotificationEmail, sendCoachingPurchaseNotificationEmail, sendReferralNotificationEmail, sendMagicLinkEmail, sendLoginHelpEmail, sendPasswordResetEmail, sendBadgeEarnedEmail, processDripEmails } from "./emailService";
 import { addContactToSysteme, addContactToSystemeDetailed } from "./systemeService";
 import { magicTokens } from "@shared/schema";
 import { generateBadgeImage, generateReferralImage } from "./badge-image";
@@ -1268,6 +1268,29 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
         }
       }
 
+      // Also include coaching purchases from pendingPurchases (guest purchases before account creation)
+      const allPendingCoaching = await db.select().from(pendingPurchases)
+        .where(sql`${pendingPurchases.productType} LIKE '%coaching%'`);
+      for (const pp of allPendingCoaching) {
+        if (!purchaseEmails.has(pp.email.toLowerCase())) {
+          const isMatt = (pp.productType || '').includes('matt');
+          const isSingle = (pp.productType || '').includes('single');
+          purchaseList.push({
+            id: 0,
+            userId: null as any,
+            email: pp.email,
+            coachType: isMatt ? 'matt' : 'expert',
+            packageType: isSingle ? 'single' : 'pack',
+            sessionsTotal: isSingle ? 1 : 4,
+            amountPaid: pp.amountPaid,
+            currency: pp.currency,
+            stripeSessionId: pp.stripeSessionId as any,
+            purchasedAt: pp.createdAt as any,
+          });
+          purchaseEmails.add(pp.email.toLowerCase());
+        }
+      }
+
       res.json(purchaseList);
     } catch (error) {
       console.error("Error fetching coaching purchases:", error);
@@ -1313,28 +1336,41 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
       );
       const registeredEmails = new Set(allUsers.map((u: any) => u.email?.toLowerCase()));
 
-      const pendingUsers = allPending
-        .filter(p => !registeredEmails.has(p.email.toLowerCase()))
-        .map(p => ({
-          id: `pending_${p.id}`,
-          email: p.email,
-          firstName: p.firstName || null,
-          lastName: p.lastName || null,
+      // Group pending purchases by email so each person shows once with all their purchases
+      const pendingByEmail = new Map<string, typeof allPending>();
+      for (const p of allPending) {
+        const email = p.email.toLowerCase();
+        if (registeredEmails.has(email)) continue;
+        if (!pendingByEmail.has(email)) pendingByEmail.set(email, []);
+        pendingByEmail.get(email)!.push(p);
+      }
+
+      const pendingUsers = Array.from(pendingByEmail.entries()).map(([, purchases]) => {
+        const first = purchases[0]; // Use first purchase for basic info
+        const hasChallenge = purchases.some(p => (p.productType || '').startsWith('challenge'));
+        const hasCoaching = purchases.some(p => (p.productType || '').includes('coaching'));
+        const hasUnlock = purchases.some(p => (p.productType || '').includes('unlock'));
+        const totalPaid = purchases.reduce((sum, p) => sum + (p.amountPaid || 0), 0);
+        return {
+          id: `pending_${first.id}`,
+          email: first.email,
+          firstName: first.firstName || purchases.find(p => p.firstName)?.firstName || null,
+          lastName: first.lastName || purchases.find(p => p.lastName)?.lastName || null,
           profileImageUrl: null,
           isAdmin: false,
-          challengePurchased: true,
-          coachingPurchased: false,
-          allDaysUnlocked: (p.productType || "").includes("unlock"),
-          stripeCustomerId: p.stripeCustomerId,
-          purchaseCurrency: p.currency,
+          challengePurchased: hasChallenge,
+          coachingPurchased: hasCoaching,
+          allDaysUnlocked: hasUnlock || hasCoaching,
+          stripeCustomerId: first.stripeCustomerId,
+          purchaseCurrency: first.currency,
           referralCode: null,
           adminNotes: null,
           isBanned: false,
           banReason: null,
           bannedAt: null,
-          createdAt: p.createdAt,
+          createdAt: first.createdAt,
           isPending: true,
-          amountPaid: p.amountPaid,
+          amountPaid: totalPaid,
           lastLoginAt: null,
           loginCount: 0,
           stats: {
@@ -1344,7 +1380,8 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
             lastActivityDate: null,
           },
           completedDays: 0,
-        }));
+        };
+      });
 
       res.json([...usersWithDetails, ...pendingUsers]);
     } catch (error) {
@@ -7044,6 +7081,58 @@ Example format:
     } catch (error) {
       console.error("Error granting access:", error);
       res.status(500).json({ message: "Failed to grant access" });
+    }
+  });
+
+  // Admin: Send login help email to a user who is struggling to log in
+  app.post("/api/admin/send-login-help", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const { userId } = req.body;
+      if (!userId) return res.status(400).json({ message: "userId is required" });
+
+      // Find the target user
+      const targetUser = await storage.getUser(userId);
+      if (!targetUser || !targetUser.email) {
+        return res.status(404).json({ message: "User not found or has no email" });
+      }
+
+      // Generate a fresh magic link for them
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+      await db.insert(magicTokens).values({
+        email: targetUser.email.toLowerCase().trim(),
+        token,
+        expiresAt,
+      });
+      const magicLink = `https://challenge.mattwebley.com/api/auth/magic-link/verify?token=${token}`;
+
+      // Send the login help email
+      const emailSent = await sendLoginHelpEmail(
+        targetUser.email,
+        targetUser.firstName || '',
+        magicLink
+      );
+
+      if (!emailSent) {
+        return res.status(500).json({ message: "Failed to send email" });
+      }
+
+      // Log the action
+      await storage.logActivity({
+        userId: req.user.claims.sub,
+        targetUserId: userId,
+        action: 'login_help_sent',
+        category: 'user',
+        details: { email: targetUser.email }
+      });
+
+      res.json({ success: true, message: `Login help email sent to ${targetUser.email}` });
+    } catch (error) {
+      console.error("Error sending login help:", error);
+      res.status(500).json({ message: "Failed to send login help email" });
     }
   });
 
