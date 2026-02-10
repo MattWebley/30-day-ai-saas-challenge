@@ -508,17 +508,16 @@ export default function AdminCoaches() {
 
       {/* Unassigned Clients */}
       <Card className={`border border-slate-200 shadow-sm overflow-hidden ${unassigned.length > 0 ? 'border-l-4 border-l-amber-500' : ''}`}>
-        <div className="p-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {unassigned.length > 0 && <AlertTriangle className="w-5 h-5 text-amber-500" />}
-            <div>
-              <h3 className="text-lg font-bold text-slate-900">Unassigned Clients</h3>
-              <p className="text-sm text-slate-500">{unassigned.length} coaching purchase{unassigned.length !== 1 ? 's' : ''} waiting for assignment</p>
-            </div>
+        <button onClick={() => toggleSection('unassigned')} className="w-full p-5 flex items-center gap-3 text-left">
+          {unassigned.length > 0 && <AlertTriangle className="w-5 h-5 text-amber-500" />}
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-slate-900">Unassigned Clients</h3>
+            <p className="text-sm text-slate-500">{unassigned.length} coaching purchase{unassigned.length !== 1 ? 's' : ''} waiting for assignment</p>
           </div>
-        </div>
+          {openSections.has('unassigned') ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+        </button>
 
-        {unassigned.length > 0 && (
+        {openSections.has('unassigned') && unassigned.length > 0 && (
           <div className="px-5 pb-5 space-y-3">
             {unassigned.map((purchase) => {
               const clientName = purchase.user
@@ -561,19 +560,18 @@ export default function AdminCoaches() {
 
       {/* Payout Requests */}
       <Card className={`border border-slate-200 shadow-sm overflow-hidden ${pendingPayouts.length > 0 ? 'border-l-4 border-l-green-500' : ''}`}>
-        <div className="p-5">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-green-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-slate-900">Payout Requests</h3>
-              <p className="text-sm text-slate-500">{pendingPayouts.length} pending, {payouts.filter(p => p.status === 'paid').length} paid</p>
-            </div>
+        <button onClick={() => toggleSection('payouts')} className="w-full p-5 flex items-center gap-3 text-left">
+          <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+            <DollarSign className="w-5 h-5 text-green-600" />
           </div>
-        </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-slate-900">Payout Requests</h3>
+            <p className="text-sm text-slate-500">{pendingPayouts.length} pending, {payouts.filter(p => p.status === 'paid').length} paid</p>
+          </div>
+          {openSections.has('payouts') ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+        </button>
 
-        {payouts.length > 0 && (
+        {openSections.has('payouts') && payouts.length > 0 && (
           <div className="px-5 pb-5 space-y-3">
             {payouts.map((payout) => (
               <div key={payout.id} className={`flex items-center justify-between p-3 rounded-lg border ${payout.status === 'requested' ? 'bg-amber-50 border-amber-200' : 'bg-white border-slate-200'}`}>
@@ -607,11 +605,14 @@ export default function AdminCoaches() {
 
       {/* All Sessions */}
       <Card className="border border-slate-200 shadow-sm overflow-hidden">
-        <div className="p-5">
-          <h3 className="text-lg font-bold text-slate-900">All Sessions</h3>
-          <p className="text-sm text-slate-500">{allSessions.length} total sessions across all coaches</p>
-        </div>
-        {allSessions.length > 0 && (
+        <button onClick={() => toggleSection('sessions')} className="w-full p-5 flex items-center gap-3 text-left">
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-slate-900">All Sessions</h3>
+            <p className="text-sm text-slate-500">{allSessions.length} total sessions across all coaches</p>
+          </div>
+          {openSections.has('sessions') ? <ChevronUp className="w-5 h-5 text-slate-400" /> : <ChevronDown className="w-5 h-5 text-slate-400" />}
+        </button>
+        {openSections.has('sessions') && allSessions.length > 0 && (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-slate-50 border-y border-slate-200">
