@@ -16,10 +16,27 @@ const MOOD_OPTIONS = [
 
 const DAY_PROMPTS: Record<number, string> = {
   0: "You just took the first step! What's going through your mind?",
+  1: "You've picked your idea. How does that feel?",
+  2: "You've validated whether people will pay. What's your gut saying?",
+  3: "Core features locked in. How are you feeling about your product?",
   4: "You've named your product! How does it feel to make it real?",
-  9: "Dev tools are set up — you're ready to build. How are you feeling?",
-  14: "Your MVP is taking shape! What's on your mind right now?",
-  21: "You did it — 21 days, start to finish. How do you feel?",
+  5: "Your product has a logo now. Starting to feel real?",
+  6: "You've chosen your tech stack. How are you feeling about the build ahead?",
+  7: "PRD is done and your product is planned out. What's on your mind?",
+  8: "Dev environment is set up. Ready to build?",
+  9: "Dev tools mastered and you're ready to build. How are you feeling?",
+  10: "First real build day done! How did it go?",
+  11: "Your brand is coming together. How does it feel?",
+  12: "You've added the AI brain. What's going through your mind?",
+  13: "Email and APIs wired up. How are you feeling?",
+  14: "Users and admin are in. Your app is getting real! How's it going?",
+  15: "Payments are live! How does it feel to take real money?",
+  16: "Mobile and speed sorted. How are you feeling about the polish?",
+  17: "You've tested and shipped. What's your mood right now?",
+  18: "MVP is built! How are you feeling about what you've created?",
+  19: "Sales page done. You're ready to sell! How does that feel?",
+  20: "SEO and discoverability sorted. Nearly there, how are you feeling?",
+  21: "You did it! 21 days, start to finish. How do you feel?",
 };
 
 interface MoodCheckinProps {
@@ -225,4 +242,4 @@ export function MoodCheckin({ isOpen, day, onClose }: MoodCheckinProps) {
 }
 
 // Days that trigger a mood check-in after completion
-export const MOOD_CHECKIN_DAYS = [0, 4, 9, 14, 21];
+export const MOOD_CHECKIN_DAYS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
