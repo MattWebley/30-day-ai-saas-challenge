@@ -8373,11 +8373,20 @@ Example format:
     return true;
   };
 
-  // Helper: check if user is a coach
+  // Helper: check if user is a coach (admins can impersonate via ?coachId=X)
   const requireCoach = async (req: any, res: any): Promise<{ userId: string; coachId: number } | null> => {
     const userId = req.user?.claims?.sub;
     if (!userId) { res.status(401).json({ message: "Unauthorized" }); return null; }
     const user = await storage.getUser(userId);
+
+    // Admin impersonation: allow admins to view any coach's data
+    if (user?.isAdmin && req.query.coachId) {
+      const impersonateId = parseInt(req.query.coachId);
+      const [coach] = await db.select().from(coaches).where(eq(coaches.id, impersonateId));
+      if (!coach) { res.status(404).json({ message: "Coach not found" }); return null; }
+      return { userId, coachId: coach.id };
+    }
+
     if (!user?.isCoach) { res.status(403).json({ message: "Coach access required" }); return null; }
     const [coach] = await db.select().from(coaches).where(eq(coaches.userId, userId));
     if (!coach) { res.status(403).json({ message: "Coach profile not found" }); return null; }

@@ -109,29 +109,55 @@ export default function CoachDashboard() {
   const [completingSession, setCompletingSession] = useState<number | null>(null);
   const [sessionNotes, setSessionNotes] = useState('');
 
+  // Admin impersonation: read coachId from URL query param
+  const urlParams = new URLSearchParams(window.location.search);
+  const impersonateCoachId = urlParams.get('coachId');
+  const isAdminViewing = !!(user as any)?.isAdmin && !!impersonateCoachId;
+  const qs = impersonateCoachId ? `?coachId=${impersonateCoachId}` : '';
+
   const { data: profile, isLoading: profileLoading } = useQuery<CoachProfile>({
-    queryKey: ['/api/coach/profile'],
+    queryKey: ['/api/coach/profile', impersonateCoachId],
+    queryFn: async () => {
+      const res = await fetch(`/api/coach/profile${qs}`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch profile');
+      return res.json();
+    },
     staleTime: 30_000,
   });
 
   const { data: clients = [] } = useQuery<Client[]>({
-    queryKey: ['/api/coach/clients'],
+    queryKey: ['/api/coach/clients', impersonateCoachId],
+    queryFn: async () => {
+      const res = await fetch(`/api/coach/clients${qs}`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch clients');
+      return res.json();
+    },
     staleTime: 30_000,
   });
 
   const { data: sessions = [] } = useQuery<CoachSession[]>({
-    queryKey: ['/api/coach/sessions'],
+    queryKey: ['/api/coach/sessions', impersonateCoachId],
+    queryFn: async () => {
+      const res = await fetch(`/api/coach/sessions${qs}`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch sessions');
+      return res.json();
+    },
     staleTime: 30_000,
   });
 
   const { data: earnings } = useQuery<Earnings>({
-    queryKey: ['/api/coach/earnings'],
+    queryKey: ['/api/coach/earnings', impersonateCoachId],
+    queryFn: async () => {
+      const res = await fetch(`/api/coach/earnings${qs}`, { credentials: 'include' });
+      if (!res.ok) throw new Error('Failed to fetch earnings');
+      return res.json();
+    },
     staleTime: 30_000,
   });
 
   const completeSession = useMutation({
     mutationFn: async ({ sessionId, notes }: { sessionId: number; notes: string }) => {
-      const res = await apiRequest('POST', `/api/coach/sessions/${sessionId}/complete`, { notes });
+      const res = await apiRequest('POST', `/api/coach/sessions/${sessionId}/complete${qs}`, { notes });
       return res.json();
     },
     onSuccess: (data) => {
@@ -145,7 +171,7 @@ export default function CoachDashboard() {
 
   const requestPayout = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest('POST', '/api/coach/payouts/request');
+      const res = await apiRequest('POST', `/api/coach/payouts/request${qs}`);
       return res.json();
     },
     onSuccess: (data) => {
@@ -167,7 +193,7 @@ export default function CoachDashboard() {
     );
   }
 
-  if (!user || !(user as any).isCoach) {
+  if (!user || (!(user as any).isCoach && !(user as any).isAdmin)) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
         <Card className="p-8 text-center max-w-md border border-slate-200">
@@ -187,6 +213,18 @@ export default function CoachDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      {/* Admin viewing banner */}
+      {isAdminViewing && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-2 flex items-center justify-between">
+          <p className="text-sm text-amber-800 font-medium">
+            Viewing as: <strong>{profile?.displayName || 'Coach'}</strong> (admin preview)
+          </p>
+          <a href="/admin" className="text-sm text-amber-700 hover:text-amber-900 font-medium hover:underline">
+            ← Back to Admin
+          </a>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-white border-b border-slate-200">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -540,7 +578,7 @@ export default function CoachDashboard() {
                           <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">Requested</span>
                         )}
                         <a
-                          href={`/api/coach/invoice/${payout.id}`}
+                          href={`/api/coach/invoice/${payout.id}${qs}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center gap-1 px-3 py-1.5 text-sm text-primary hover:bg-primary/5 rounded-lg"

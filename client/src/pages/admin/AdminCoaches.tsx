@@ -15,6 +15,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronUp,
+  Eye,
 } from "lucide-react";
 
 interface Coach {
@@ -405,6 +406,13 @@ export default function AdminCoaches() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                      <a
+                        href={`/coach?coachId=${coach.id}`}
+                        className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-primary bg-primary/5 hover:bg-primary/10 rounded-lg"
+                        title="View this coach's dashboard"
+                      >
+                        <Eye className="w-3.5 h-3.5" /> View
+                      </a>
                       <button
                         onClick={() => {
                           setEditingCoach(coach.id);
