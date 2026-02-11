@@ -117,10 +117,8 @@ export default function Landing() {
                 <LazyVimeo videoId="1158816837" hash="38a9da32e3" title="How the 21-Day Challenge works" overlayText="Watch: How It Works" thumbnail="/thumbnails/video-thumbnail-1.png" />
               </div>
 
-              <a href="/order" className="block">
-                <Button size="lg" className="w-full py-5 text-lg font-bold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all">
+              <a href="/order" className="block w-full py-5 text-lg font-bold text-center rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 transition-all inline-flex items-center justify-center gap-2">
                   Start the Challenge <ArrowRight className="w-5 h-5 inline ml-1" />
-                </Button>
               </a>
 
             </div>
@@ -441,10 +439,8 @@ export default function Landing() {
               </p>
             </div>
 
-            <a href="/order" className="block">
-              <Button size="lg" className="w-full py-4 text-lg font-bold">
+            <a href="/order" className="block w-full py-4 text-lg font-bold text-center rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-all inline-flex items-center justify-center gap-2">
                 Start the 21-Day Challenge <ArrowRight className="w-5 h-5 inline ml-1" />
-              </Button>
             </a>
           </div>
         </section>
@@ -545,10 +541,8 @@ export default function Landing() {
                 </p>
               </div>
 
-              <a href="/order" className="block mt-8">
-                <Button size="lg" className="w-full py-4 text-lg font-bold">
+              <a href="/order" className="block mt-8 w-full py-4 text-lg font-bold text-center rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-all inline-flex items-center justify-center gap-2">
                   I'm Ready to Build <ArrowRight className="w-5 h-5 inline ml-1" />
-                </Button>
               </a>
             </div>
           </div>
@@ -678,10 +672,8 @@ export default function Landing() {
 
             <div className="text-center pt-8 space-y-4">
               <p className="text-slate-600 font-medium">Join hundreds of builders who started exactly where you are now</p>
-              <a href="/order" className="block">
-                <Button size="lg" className="py-4 px-8 text-lg font-bold">
+              <a href="/order" className="block py-4 px-8 text-lg font-bold text-center rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-all inline-flex items-center justify-center gap-2">
                   Start Building Today <ArrowRight className="w-5 h-5 inline ml-1" />
-                </Button>
               </a>
             </div>
           </div>
@@ -1126,10 +1118,8 @@ export default function Landing() {
               )}
 
               {!SALES_PAUSED && (
-                <a href="/order" className="block">
-                  <Button size="lg" className="w-full h-16 text-xl font-bold gap-3">
+                <a href="/order" className="block w-full h-16 text-xl font-bold text-center rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-all inline-flex items-center justify-center gap-3">
                     Start the Challenge <ArrowRight className="w-6 h-6" />
-                  </Button>
                 </a>
               )}
 
@@ -1375,10 +1365,8 @@ export default function Landing() {
 
           {/* CTA Section */}
           <div className="pt-8 pb-12 text-center space-y-4">
-            <a href="/order" className="block">
-              <Button size="lg" className="w-full py-5 text-xl font-bold shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 transition-all">
+            <a href="/order" className="block w-full py-5 text-xl font-bold text-center rounded-md bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 transition-all inline-flex items-center justify-center gap-2">
                 Start the Challenge <ArrowRight className="w-6 h-6 inline ml-2" />
-              </Button>
             </a>
             <p className="text-slate-500 text-sm">
               One-time payment · Instant access · 6 months
