@@ -1060,7 +1060,7 @@ export default function AdminRevenue() {
                           vatNumber: extracted.vatNumber || prev.vatNumber,
                         };
                         // Also look up any missing details from the database
-                        if (updated.customerEmail) enrichFromDatabase(updated);
+                        enrichFromDatabase(updated);
                         return updated;
                       });
                       toast.success("Details extracted and filled in");
