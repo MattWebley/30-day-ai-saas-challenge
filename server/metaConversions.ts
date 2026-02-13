@@ -12,7 +12,7 @@
 
 import crypto from 'crypto';
 
-const PIXEL_ID = '2480835232355599';
+const PIXEL_ID = '1889243161741109';
 const API_VERSION = 'v21.0';
 
 interface PurchaseEventData {

@@ -590,3 +590,48 @@ This file contains archived session logs from CLAUDE.md to keep the main file un
 - Critique form: added preferred email field
 - Prompt Pack removed entirely
 - Product audit completed (10 Stripe price IDs needed)
+
+---
+
+## Archived Sessions (Feb 3 - Feb 8, 2026)
+
+### 2026-02-03 (Session 1) - Videos, Security, CLAUDE.md Template
+- Added 14 Loom videos (Days 0-12 + Day 8.1) with thumbnails
+- Security audit and fixes (Test Mode admin-only, debug endpoints secured)
+- Fixed comment sanitization (HTML entities)
+- Created new CLAUDE.md template for non-technical builders
+- Updated Day 8 with new template
+
+### 2026-02-03 (Session 2) - Videos Complete, Day 20 Styling Fix
+- Added ALL remaining videos (Days 13-21) - all 22 days now have videos
+- Fixed Day 20 design to match app's design system
+- Fixed Day 9 Mastery Progress mobile overflow
+
+### 2026-02-05 (Session 1) - Stripe Webhook Fix, Magic Links, Settings Page
+- Fixed Stripe webhook failures (57 failures since Jan 30)
+- Fixed magic link URLs using wrong domain (Replit dev URL instead of production)
+- Created admin tool to manually grant access to customers
+- Implemented magic link authentication flow (30-day tokens)
+- Added password setup on Welcome page
+- Fixed Settings page with real user data
+- Sent welcome/apology emails to 5 customers
+
+### 2026-02-05 (Session 2) - Admin Dashboard Redesign, Day Drip Security Fix
+- Admin Dashboard Visual Redesign — all 6 admin files restyled
+- SECURITY FIX: Server-side day drip enforcement on POST /api/progress/complete/:day
+- Previously ALL day access control was client-side only
+
+### 2026-02-06 (Session 3) - Major Security Audit, Bump Offer, Focus Button Fix
+- Bump Offer ("Unlock All Days") fully implemented ($29/£19 Stripe product)
+- Focus Button mobile fix (dropdown positioning)
+- MAJOR SECURITY AUDIT: 11 admin endpoints, 10 AI endpoints, 6 content endpoints secured
+- Disabled Replit OAuth login, rate limiting added, timing-safe password comparison
+- Admin panel caching fix (staleTime: 30_000)
+
+### 2026-02-08 (Session 4) - Day 2 Pain Points Bug Fix, Admin Email Improvements, Drip Email Updates
+- Day 2 Pain Points Bug Fix (customer-reported: Paul Hampton) — cleanPainText() helper
+- Admin Email: Editable time delays, test email variables fix
+- Unlock Page admin preview fix
+- Drip Email greeting updates (~28 emails changed to "Hi {{firstName}},")
+- Drip Email #2 story fix (removed fictional backstory)
+- Legal footer address update
