@@ -233,6 +233,8 @@ Interactive components MUST match lesson text styling:
 - [ ] After deploy: dismiss Matt from coaching queue
 - [ ] After deploy: assign clients to James (coach)
 - [ ] Run `npm run db:push` on production for the `dismissed` column on coachingPurchases
+- [ ] Run `npm run db:push` on production for email tracking columns (trackingId, openCount, clickCount on emailLogs)
+- [ ] NEEDS REDEPLOY for all session 7 changes to take effect
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
@@ -242,6 +244,75 @@ Interactive components MUST match lesson text styling:
 ---
 
 ## Session Log
+
+### 2026-02-13 (Session 7) - Email Stats, Tracking, Drip Spam Fix, Invoice Creator, Admin Improvements
+- **Tasks Completed:**
+  - **Admin Email Stats & KPI Cards**:
+    - Added `GET /api/admin/email-stats` endpoint with aggregate email statistics
+    - Added `getEmailStats()` method to storage.ts
+    - 6 KPI cards in AdminEmails: Total Sent, Opened (with rate %), Clicked (with rate %), Delivery Rate, Sent Today, This Week
+    - Failed emails summary card, per-campaign sent counts, total badge on log header
+  - **Self-hosted Email Open/Click Tracking**:
+    - Added `trackingId`, `openCount`, `clickCount` columns to emailLogs schema
+    - Tracking pixel endpoint (`GET /api/t/:trackingId/pixel.png`) — 1x1 transparent PNG
+    - Click redirect endpoint (`GET /api/t/:trackingId/link?url=...`) — records click, redirects
+    - `buildTrackedHtml()` converts plain text emails to HTML with embedded tracking
+    - `sendAndLog()` now generates trackingId via `crypto.randomUUID()`, sends both text + HTML
+    - Opens and Clicks columns in admin email log table
+  - **Coaching Page Public Access**:
+    - `/coaching` page now viewable without login (for purchasing coaching)
+    - Conditional Layout wrapper — logged-in paying users get sidebar, everyone else gets standalone page
+    - "Back to Dashboard" button only for authenticated paying users
+  - **Mood Check-ins on Admin Overview**:
+    - `GET /api/admin/mood-summary` endpoint — aggregated mood data by day
+    - Stacked bar chart on admin overview showing mood distribution per day (0-21)
+    - Color gradient: red (Nervous) → amber (Curious) → yellow (Good) → lime (Excited) → green (On Fire)
+    - Hover tooltips with emoji and count
+  - **Positive Highlights in Admin Content**:
+    - Green "Positive Highlights" card at top of Mood Check-ins section
+    - Filters for Excited/On Fire/Good moods with text > 10 chars
+    - Shows message, name, day, consent status, and Promote button for quick testimonials
+  - **User Funnel Redesign**:
+    - Replaced centered narrowing funnel with clean horizontal bar chart
+    - Stage labels on left, proportional colored bars, percentage on right
+    - Hover tooltips with user lists preserved
+  - **Drip Email Spam Fix**:
+    - **1 email per user per processor run** — prevents multiple emails dumped at once
+    - **2 emails per day cap** — checks emailLogs for today's sends per recipient
+    - **Smart priority selection** — picks the single best email based on user's journey stage:
+      1. Milestone (celebrate achievement) → 2. Regular drip (core journey) → 3. Welcome back → 4. Initial engagement → 5. Nag (lowest priority)
+    - Pre-fetches daily counts via SQL aggregate for efficiency
+  - **Email Footer Cleanup**:
+    - Condensed 5-line legal footer to 2 lines: `Matt Webley · Webley Global FZCO · Dubai Silicon Oasis, UAE`
+    - Updated in emailService.ts (LEGAL_FOOTER, TRANSACTIONAL_FOOTER) and routes.ts (test email)
+  - **Invoice Creator in Admin Revenue**:
+    - Full invoice form: customer name, email, company, VAT, address, product, amount, currency, date, notes
+    - **AI-powered paste & extract**: paste any customer message, AI extracts name/email/company/VAT/address
+    - **Database auto-enrichment**: looks up user by email or name (exact match only), fills missing fields
+    - **Stripe purchase lookup**: backend queries Stripe directly for amount, currency, date, product
+    - "Create Invoice" button on each transaction row (pre-fills from Stripe data)
+    - "Generate Invoice" button on each user in Users tab (navigates to Revenue tab, auto-fills everything)
+    - Generates clean printable invoice in new tab (print to PDF)
+    - `GET /api/admin/user-lookup` endpoint — finds user by email or name, includes Stripe purchase data
+- **Files Modified:**
+  - `shared/schema.ts` — trackingId, openCount, clickCount on emailLogs
+  - `server/emailService.ts` — buildTrackedHtml(), tracking in sendAndLog(), smart drip priority, daily cap, compact footer
+  - `server/storage.ts` — getEmailStats(), recordEmailOpen(), recordEmailClick()
+  - `server/routes.ts` — email stats endpoint, tracking pixel/click endpoints, mood summary endpoint, user-lookup endpoint (email/name/Stripe)
+  - `client/src/App.tsx` — /coaching route made public
+  - `client/src/pages/Coaching.tsx` — conditional Layout, back button
+  - `client/src/pages/Admin.tsx` — mood summary chart, funnel redesign (FunnelRow), mood color gradient
+  - `client/src/pages/admin/AdminEmails.tsx` — email stats KPIs, open/click columns
+  - `client/src/pages/admin/AdminRevenue.tsx` — invoice creator with AI extract, database enrichment, Stripe lookup
+  - `client/src/pages/admin/AdminUsers.tsx` — "Generate Invoice" button on user detail panel
+  - `client/src/pages/admin/AdminContent.tsx` — positive highlights card for mood check-ins
+  - `client/src/pages/admin/adminTypes.ts` — trackingId, openCount, clickCount on EmailLog type
+- **Notes for Next Session:**
+  - NEEDS REDEPLOY for all changes to take effect (21+ commits ahead of origin)
+  - Run `npm run db:push` on production for email tracking columns (trackingId, openCount, clickCount)
+  - Drip email processor now sends max 1 email per user per hour, max 2 per day — emails will trickle out naturally
+  - Invoice creator uses `/api/ai-prompt` for extraction (counts against AI usage quota)
+  - Tracking pixel/click URLs hardcoded to `https://challenge.mattwebley.com` — only works on production
 
 ### 2026-02-10 (Session 6) - Coaching Admin Major Build-out, Session Editing, Rebooking Links
 - **Tasks Completed (across 2 continued conversations):**
