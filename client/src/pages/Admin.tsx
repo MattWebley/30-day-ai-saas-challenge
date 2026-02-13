@@ -76,26 +76,20 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "settings", label: "Settings" },
 ];
 
-function FunnelStage({
+function FunnelRow({
   stage,
   count,
   color,
   widthPercent,
-  dropRate,
   overallRate,
   users,
-  isFirst,
-  isLast,
 }: {
   stage: string;
   count: number;
   color: string;
   widthPercent: number;
-  dropRate: string | null;
   overallRate: string;
   users: AdminUser[];
-  isFirst: boolean;
-  isLast: boolean;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
 
@@ -105,53 +99,51 @@ function FunnelStage({
       : u.email || "Unknown";
 
   return (
-    <>
-      {/* Drop-off arrow between stages */}
-      {!isFirst && dropRate && (
-        <div className="flex items-center justify-center -my-1 relative z-10">
-          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white border border-slate-200 rounded-full shadow-sm">
-            <ChevronDown className="w-3 h-3 text-slate-400" />
-            <span className="text-[11px] font-medium text-slate-500">{dropRate}%</span>
+    <div
+      className="relative flex items-center gap-3 cursor-pointer group"
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
+      <div className="w-28 flex-shrink-0 text-right">
+        <span className="text-sm font-medium text-slate-700">{stage}</span>
+      </div>
+      <div className="flex-1 flex items-center gap-2">
+        <div className="flex-1 h-8 bg-slate-100 rounded-md overflow-hidden">
+          <div
+            className={`${color} h-full rounded-md transition-all duration-500 flex items-center px-3`}
+            style={{ width: `${Math.max(widthPercent, 3)}%` }}
+          >
+            {widthPercent >= 15 && (
+              <span className="text-white text-xs font-bold">{count}</span>
+            )}
+          </div>
+        </div>
+        {widthPercent < 15 && (
+          <span className="text-sm font-bold text-slate-700 w-8">{count}</span>
+        )}
+        <span className="text-xs text-slate-400 w-10 text-right">{overallRate}%</span>
+      </div>
+      {showTooltip && count > 0 && (
+        <div className="absolute z-50 left-32 top-full mt-1 bg-slate-900 text-white rounded-lg shadow-xl p-3 min-w-[220px] max-w-[320px]">
+          <p className="text-xs font-bold text-slate-300 mb-1">
+            {stage} — {count} user{count !== 1 ? "s" : ""} ({overallRate}% of total)
+          </p>
+          <div className="space-y-1 max-h-[200px] overflow-y-auto">
+            {users.slice(0, 20).map((u) => (
+              <div key={u.id} className="flex items-center justify-between gap-3 text-xs">
+                <span className="text-white truncate">{userName(u)}</span>
+                <span className="text-slate-400 flex-shrink-0">Day {u.stats.lastCompletedDay}</span>
+              </div>
+            ))}
+            {users.length > 20 && (
+              <p className="text-xs text-slate-400 pt-1">
+                + {users.length - 20} more...
+              </p>
+            )}
           </div>
         </div>
       )}
-      {/* Funnel bar - centered, width based on data */}
-      <div
-        className="relative flex justify-center cursor-pointer"
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
-      >
-        <div
-          className={`${color} transition-all duration-500 py-2.5 px-4 flex items-center justify-between gap-3 ${
-            isFirst ? 'rounded-t-xl' : ''
-          } ${isLast ? 'rounded-b-xl' : ''}`}
-          style={{ width: `${Math.max(widthPercent, 20)}%` }}
-        >
-          <span className="text-white font-medium text-sm truncate">{stage}</span>
-          <span className="text-white/90 font-bold text-sm flex-shrink-0">{count}</span>
-        </div>
-        {showTooltip && count > 0 && (
-          <div className="absolute z-50 top-full mt-1 bg-slate-900 text-white rounded-lg shadow-xl p-3 min-w-[220px] max-w-[320px]">
-            <p className="text-xs font-bold text-slate-300 mb-1">
-              {stage} — {count} user{count !== 1 ? "s" : ""} ({overallRate}% of total)
-            </p>
-            <div className="space-y-1 max-h-[200px] overflow-y-auto">
-              {users.slice(0, 20).map((u) => (
-                <div key={u.id} className="flex items-center justify-between gap-3 text-xs">
-                  <span className="text-white truncate">{userName(u)}</span>
-                  <span className="text-slate-400 flex-shrink-0">Day {u.stats.lastCompletedDay}</span>
-                </div>
-              ))}
-              {users.length > 20 && (
-                <p className="text-xs text-slate-400 pt-1">
-                  + {users.length - 20} more...
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-    </>
+    </div>
   );
 }
 
@@ -958,11 +950,11 @@ export default function Admin() {
               // Sort days and order moods consistently
               const moodOrder = ["Nervous", "Curious", "Good", "Excited", "On Fire"];
               const moodColors: Record<string, string> = {
-                "Nervous": "bg-amber-100",
-                "Curious": "bg-blue-100",
-                "Good": "bg-green-100",
-                "Excited": "bg-purple-100",
-                "On Fire": "bg-orange-100",
+                "Nervous": "bg-red-200",
+                "Curious": "bg-amber-200",
+                "Good": "bg-yellow-200",
+                "Excited": "bg-lime-200",
+                "On Fire": "bg-green-300",
               };
               const sortedDays = Array.from(byDay.keys()).sort((a, b) => a - b);
 
@@ -983,7 +975,7 @@ export default function Admin() {
                       if (!entry) return null;
                       return (
                         <div key={label} className="flex items-center gap-1.5">
-                          <span className={`w-3 h-3 rounded-full ${moodColors[label]}`} />
+                          <span className={`w-3.5 h-3.5 rounded-full ${moodColors[label]} ring-1 ring-slate-300`} />
                           <span className="text-xs text-slate-600">{entry.emoji} {label}</span>
                         </div>
                       );
@@ -1042,31 +1034,24 @@ export default function Admin() {
                 </span>
               </div>
 
-              {/* Funnel visualization - centered narrowing shape */}
-              <div className="flex flex-col items-center">
-                {funnelData.map((stage, index) => {
+              {/* Funnel visualization - horizontal bars */}
+              <div className="space-y-2">
+                {funnelData.map((stage) => {
                   const widthPercent = (stage.count / maxFunnelCount) * 100;
-                  const dropRate =
-                    index > 0 && funnelData[index - 1].count > 0
-                      ? ((stage.count / funnelData[index - 1].count) * 100).toFixed(0)
-                      : null;
                   const overallRate =
                     funnelData[0].count > 0
                       ? ((stage.count / funnelData[0].count) * 100).toFixed(0)
                       : "0";
 
                   return (
-                    <FunnelStage
+                    <FunnelRow
                       key={stage.stage}
                       stage={stage.stage}
                       count={stage.count}
                       color={stage.color}
                       widthPercent={widthPercent}
-                      dropRate={dropRate}
                       overallRate={overallRate}
                       users={stage.users}
-                      isFirst={index === 0}
-                      isLast={index === funnelData.length - 1}
                     />
                   );
                 })}

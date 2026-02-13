@@ -1029,8 +1029,13 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
       const sentIds = new Set(alreadySent.map(s => s.dripEmailId));
       const unsubUrl = generateUnsubscribeUrl(user.id);
 
+      // SPAM GUARD: Only send 1 email per user per processor run.
+      // The next hourly run will pick up the next qualifying email.
+      let sentToThisUser = false;
+
       // --- REGULAR DRIP EMAILS (progress-based for challenge days, calendar-based for post-completion) ---
       for (const drip of regularDrips) {
+        if (sentToThisUser) break;
         if (sentIds.has(drip.id)) continue; // Already sent
 
         if (drip.dayTrigger === 0) {
@@ -1052,6 +1057,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
         if (success) {
           await storage.markDripEmailSent(user.id, drip.id);
           sent++;
+          sentToThisUser = true;
         } else {
           errors++;
         }
@@ -1059,8 +1065,9 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
       }
 
       // --- INITIAL ENGAGEMENT (paid but never started, never completed Day 0) ---
-      if (initialDrips.length > 0 && !completedDays.has(0)) {
+      if (!sentToThisUser && initialDrips.length > 0 && !completedDays.has(0)) {
         for (const drip of initialDrips) {
+          if (sentToThisUser) break;
           if (sentIds.has(drip.id)) continue; // Already sent (one-time only)
           if (daysSinceSignup < drip.dayTrigger) continue; // Not enough days since signup
 
@@ -1069,6 +1076,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
           if (success) {
             await storage.markDripEmailSent(user.id, drip.id);
             sent++;
+            sentToThisUser = true;
           } else {
             errors++;
           }
@@ -1077,7 +1085,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
       }
 
       // --- NAG EMAILS (inactivity-based) ---
-      if (nagDrips.length > 0 && stats) {
+      if (!sentToThisUser && nagDrips.length > 0 && stats) {
         const lastCompletedDay = stats.lastCompletedDay;
         // Only nag users who started (completed at least day 0) but haven't finished
         if (lastCompletedDay !== null && lastCompletedDay !== undefined && lastCompletedDay >= 0 && lastCompletedDay < 21) {
@@ -1099,6 +1107,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
               const nagsToUse = completedPersonalCycle ? gentleNudges : personalNags;
 
               for (const nag of nagsToUse) {
+                if (sentToThisUser) break;
                 // Skip if already sent after last nag reset
                 const wasSentAfterReset = alreadySent.some(s =>
                   s.dripEmailId === nag.id &&
@@ -1114,6 +1123,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
                 if (success) {
                   await storage.markDripEmailSent(user.id, nag.id);
                   sent++;
+                  sentToThisUser = true;
                   // Tag as stalled in Systeme on first nag
                   if (nag.nagLevel === 1) {
                     addContactToSysteme({
@@ -1134,8 +1144,9 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
       }
 
       // --- MILESTONE EMAILS (one-time, fires when user completes the specified day) ---
-      if (milestoneDrips.length > 0) {
+      if (!sentToThisUser && milestoneDrips.length > 0) {
         for (const drip of milestoneDrips) {
+          if (sentToThisUser) break;
           if (sentIds.has(drip.id)) continue; // Already sent (one-time only)
           if (!completedDays.has(drip.dayTrigger)) continue; // Haven't completed this day yet
 
@@ -1144,6 +1155,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
           if (success) {
             await storage.markDripEmailSent(user.id, drip.id);
             sent++;
+            sentToThisUser = true;
           } else {
             errors++;
           }
@@ -1152,7 +1164,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
       }
 
       // --- WELCOME BACK EMAIL (fires when user returns after receiving nag emails) ---
-      if (welcomeBackDrips.length > 0 && stats?.lastActivityDate) {
+      if (!sentToThisUser && welcomeBackDrips.length > 0 && stats?.lastActivityDate) {
         const lastActivity = new Date(stats.lastActivityDate);
         const daysInactive = Math.floor((now.getTime() - lastActivity.getTime()) / dayMs);
 
@@ -1170,6 +1182,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
             // User's activity is more recent than the last nag (they came back)
             if (lastActivity > lastNagDate) {
               for (const wb of welcomeBackDrips) {
+                if (sentToThisUser) break;
                 // Only send if not already sent after the last nag
                 const alreadySentWb = alreadySent.some(s =>
                   s.dripEmailId === wb.id &&
@@ -1182,6 +1195,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
                   if (success) {
                     await storage.markDripEmailSent(user.id, wb.id);
                     sent++;
+                    sentToThisUser = true;
                   } else {
                     errors++;
                   }
