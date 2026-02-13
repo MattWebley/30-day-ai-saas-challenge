@@ -422,8 +422,15 @@ export async function registerRoutes(
         (req.session as any).magicLinkAuth = true;
       }
 
-      // Redirect to welcome page for new users to set up their account
-      res.redirect('/welcome');
+      // Save session to database BEFORE redirecting (prevents race condition
+      // where browser follows redirect before session is persisted)
+      req.session.save((err) => {
+        if (err) {
+          console.error("Error saving magic link session:", err);
+          return res.redirect('/auth/error?reason=server_error');
+        }
+        res.redirect('/welcome');
+      });
     } catch (error) {
       console.error("Error verifying magic link:", error);
       res.redirect('/auth/error?reason=server_error');
