@@ -87,12 +87,16 @@ export default function AdminRevenue() {
   const [pasteText, setPasteText] = useState("");
   const [extracting, setExtracting] = useState(false);
 
-  // Auto-fill missing invoice details from database by email
+  // Auto-fill missing invoice details from database by email or name
   const enrichFromDatabase = async (currentInvoice: typeof invoice) => {
     const email = currentInvoice.customerEmail?.trim();
-    if (!email) return;
+    const name = currentInvoice.customerName?.trim();
+    if (!email && !name) return;
     try {
-      const res = await fetch(`/api/admin/user-lookup?email=${encodeURIComponent(email)}`, { credentials: "include" });
+      const params = new URLSearchParams();
+      if (email) params.set("email", email);
+      if (name) params.set("name", name);
+      const res = await fetch(`/api/admin/user-lookup?${params}`, { credentials: "include" });
       const data = await res.json();
       if (!data.found) return;
       const fullName = `${data.firstName || ""} ${data.lastName || ""}`.trim();
@@ -100,6 +104,7 @@ export default function AdminRevenue() {
         ...prev,
         // Only fill in fields that are still empty
         customerName: prev.customerName || fullName,
+        customerEmail: prev.customerEmail || data.email,
       }));
     } catch {}
   };

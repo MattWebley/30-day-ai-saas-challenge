@@ -8489,17 +8489,43 @@ Example format:
       if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
 
       const email = (req.query.email as string || "").trim().toLowerCase();
-      if (!email) return res.status(400).json({ message: "Email required" });
+      const name = (req.query.name as string || "").trim().toLowerCase();
 
-      const user = await storage.getUserByEmail(email);
-      if (!user) return res.json({ found: false });
+      if (!email && !name) return res.status(400).json({ message: "Email or name required" });
 
-      res.json({
-        found: true,
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
-        email: user.email || "",
-      });
+      // Try email first (exact match)
+      if (email) {
+        const user = await storage.getUserByEmail(email);
+        if (user) {
+          return res.json({
+            found: true,
+            firstName: user.firstName || "",
+            lastName: user.lastName || "",
+            email: user.email || "",
+          });
+        }
+      }
+
+      // Fall back to name search — only return if exactly 1 match
+      if (name) {
+        const allUsers = await storage.getAllUsers();
+        const matches = allUsers.filter(u => {
+          const fullName = `${u.firstName || ""} ${u.lastName || ""}`.trim().toLowerCase();
+          return fullName === name ||
+            (u.firstName && u.lastName && name.includes(u.firstName.toLowerCase()) && name.includes(u.lastName.toLowerCase()));
+        });
+        if (matches.length === 1) {
+          const user = matches[0];
+          return res.json({
+            found: true,
+            firstName: user.firstName || "",
+            lastName: user.lastName || "",
+            email: user.email || "",
+          });
+        }
+      }
+
+      res.json({ found: false });
     } catch (error) {
       console.error("Error looking up user:", error);
       res.status(500).json({ message: "Failed to look up user" });
