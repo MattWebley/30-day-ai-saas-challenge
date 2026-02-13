@@ -169,6 +169,7 @@ export default function AdminSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/chatbot/flagged"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
       toast.success("Marked as reviewed");
     },
     onError: (error: any) => {
@@ -566,7 +567,7 @@ export default function AdminSettings() {
         </Card>
 
         {/* Flagged Messages */}
-        <Card className={`p-6 border border-slate-200 shadow-sm ${flaggedMessages.length > 0 ? "border-l-4 border-l-red-500" : ""}`}>
+        <Card id="admin-flagged" className={`p-6 border border-slate-200 shadow-sm scroll-mt-4 ${flaggedMessages.length > 0 ? "border-l-4 border-l-red-500" : ""}`}>
           <div className="flex items-center gap-2 mb-4">
             <Flag className={`w-5 h-5 ${flaggedMessages.length > 0 ? "text-red-500" : "text-primary"}`} />
             <h3 className="font-semibold text-slate-900">Flagged Messages</h3>

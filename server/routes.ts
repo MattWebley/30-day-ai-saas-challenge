@@ -2799,15 +2799,18 @@ Format: { "ideas": [...] }`;
   app.post("/api/progress/day1", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { userInputs, generatedIdeas, shortlistedIdeas } = req.body;
-      
+      const { userInputs, generatedIdeas, shortlistedIdeas, manualIdeas, previousIdeas } = req.body;
+
+      // Bundle manualIdeas and previousIdeas into userInputs (no separate DB columns for these)
+      const enrichedInputs = { ...userInputs, manualIdeas, previousIdeas };
+
       // Check if progress exists
       const existing = await storage.getUserProgressForDay(userId, 1);
-      
+
       if (existing) {
         // Update existing progress
         const updated = await storage.updateUserProgress(existing.id, {
-          userInputs,
+          userInputs: enrichedInputs,
           generatedIdeas,
           shortlistedIdeas,
         });
@@ -2817,7 +2820,7 @@ Format: { "ideas": [...] }`;
         const created = await storage.createUserProgress({
           userId,
           day: 1,
-          userInputs,
+          userInputs: enrichedInputs,
           generatedIdeas,
           shortlistedIdeas,
         });
@@ -3995,11 +3998,11 @@ Just output the look & feel description, nothing else.`,
       res.json({
         total,
         items: [
-          { key: 'comments', label: 'Pending comments', count: pendingComments, tab: 'content' },
-          { key: 'questions', label: 'Unanswered questions', count: pendingQuestions, tab: 'content' },
-          { key: 'showcase', label: 'Pending showcase apps', count: pendingShowcase, tab: 'content' },
-          { key: 'critiques', label: 'Pending critique requests', count: pendingCritiques, tab: 'content' },
-          { key: 'flagged', label: 'Flagged chat messages', count: flaggedMessages, tab: 'settings' },
+          { key: 'comments', label: 'Pending comments', count: pendingComments, tab: 'content', section: 'admin-comments' },
+          { key: 'questions', label: 'Unanswered questions', count: pendingQuestions, tab: 'content', section: 'admin-questions' },
+          { key: 'showcase', label: 'Pending showcase apps', count: pendingShowcase, tab: 'content', section: 'admin-showcase' },
+          { key: 'critiques', label: 'Pending critique requests', count: pendingCritiques, tab: 'content', section: 'admin-critiques' },
+          { key: 'flagged', label: 'Flagged chat messages', count: flaggedMessages, tab: 'settings', section: 'admin-flagged' },
         ].filter(item => item.count > 0),
       });
     } catch (error) {

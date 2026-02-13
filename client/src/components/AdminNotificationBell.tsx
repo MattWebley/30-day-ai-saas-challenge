@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { Bell, MessageSquare, HelpCircle, Image, Video, Flag } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
 
 interface NotificationItem {
   key: string;
   label: string;
   count: number;
   tab: string;
+  section: string;
 }
 
 interface NotificationData {
@@ -26,11 +26,10 @@ const ICONS: Record<string, typeof Bell> = {
 export function AdminNotificationBell() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-  const [, setLocation] = useLocation();
 
   const { data } = useQuery<NotificationData>({
     queryKey: ["/api/admin/notifications"],
-    refetchInterval: 60_000, // poll every minute
+    refetchInterval: 60_000,
   });
 
   // Close on outside click
@@ -45,6 +44,13 @@ export function AdminNotificationBell() {
   }, [open]);
 
   const total = data?.total || 0;
+
+  const navigateTo = (tab: string, section: string) => {
+    setOpen(false);
+    // Use window.location to force a full navigation so the admin page
+    // picks up the tab param and scrolls to the right section
+    window.location.href = `/admin?tab=${tab}#${section}`;
+  };
 
   return (
     <div ref={ref} className="relative">
@@ -77,10 +83,7 @@ export function AdminNotificationBell() {
                 return (
                   <button
                     key={item.key}
-                    onClick={() => {
-                      setOpen(false);
-                      setLocation(`/admin?tab=${item.tab}`);
-                    }}
+                    onClick={() => navigateTo(item.tab, item.section)}
                     className="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors text-left border-b border-slate-50 last:border-0"
                   >
                     <div className="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
@@ -96,10 +99,7 @@ export function AdminNotificationBell() {
             </div>
           )}
           <button
-            onClick={() => {
-              setOpen(false);
-              setLocation("/admin");
-            }}
+            onClick={() => { setOpen(false); window.location.href = "/admin"; }}
             className="w-full px-4 py-2.5 text-center text-sm font-medium text-primary hover:bg-slate-50 border-t border-slate-100"
           >
             Open Admin Dashboard

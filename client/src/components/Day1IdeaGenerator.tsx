@@ -41,7 +41,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   const queryClient = useQueryClient();
   const [step, setStep, containerRef] = useStepWithScroll<'choice' | 'inputs' | 'generating' | 'ideas' | 'manual' | 'shortlist'>(
     existingProgress?.generatedIdeas ? 'ideas' :
-    existingProgress?.manualIdeas?.length > 0 ? 'manual' : 'choice'
+    existingProgress?.userInputs?.manualIdeas?.length > 0 ? 'manual' : 'choice'
   );
   
   const [inputs, setInputs] = useState({
@@ -52,7 +52,7 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   });
   
   const [ideas, setIdeas] = useState<Idea[]>(existingProgress?.generatedIdeas || []);
-  const [manualIdeas, setManualIdeas] = useState<Idea[]>(existingProgress?.manualIdeas || []);
+  const [manualIdeas, setManualIdeas] = useState<Idea[]>(existingProgress?.userInputs?.manualIdeas || []);
   const [selectedIdeas, setSelectedIdeas] = useState<number[]>(existingProgress?.shortlistedIdeas || []);
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customIdea, setCustomIdea] = useState({ title: "", desc: "", targetCustomer: "" });
@@ -62,6 +62,8 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
   const [isRevealing, setIsRevealing] = useState(false);
   const [regenerationCount, setRegenerationCount] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [previousIdeas, setPreviousIdeas] = useState<Idea[]>(existingProgress?.userInputs?.previousIdeas || []);
+  const [showPreviousIdeas, setShowPreviousIdeas] = useState(false);
 
   // Cooldown timer effect
   useEffect(() => {
@@ -108,12 +110,15 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
     },
     onSuccess: (data) => {
       console.log('[Day1] Successfully generated', data.length, 'ideas');
+      // Save current ideas to previous ideas (so users can get them back)
+      const updatedPrevious = ideas.length > 0 ? [...previousIdeas, ...ideas] : previousIdeas;
+      setPreviousIdeas(updatedPrevious);
       setIdeas(data);
-      setSelectedIdeas([]); // Clear selections on regenerate
-      setVisibleIdeasCount(0); // Reset to start reveal from beginning
-      setIsRevealing(true); // Start the staggered reveal
+      setSelectedIdeas([]);
+      setVisibleIdeasCount(0);
+      setIsRevealing(true);
       setStep('ideas');
-      saveProgress.mutate({ userInputs: inputs, generatedIdeas: data, shortlistedIdeas: [] });
+      saveProgress.mutate({ userInputs: inputs, generatedIdeas: data, shortlistedIdeas: [], previousIdeas: updatedPrevious });
     },
     onError: (error: any) => {
       console.error('[Day1] Idea generation failed:', error);
@@ -662,6 +667,62 @@ export function Day1IdeaGenerator({ existingProgress, onComplete }: Day1IdeaGene
             >
               or edit your answers and try again
             </button>
+          </div>
+        )}
+
+        {/* Previous Ideas (from earlier rounds) */}
+        {!showConfirmation && previousIdeas.length > 0 && (
+          <div className="border border-slate-200 rounded-lg overflow-hidden">
+            <button
+              onClick={() => setShowPreviousIdeas(!showPreviousIdeas)}
+              className="w-full flex items-center justify-between px-4 py-3 bg-slate-50 hover:bg-slate-100 transition-colors text-left"
+            >
+              <span className={ds.label}>Previous Ideas ({previousIdeas.length})</span>
+              {showPreviousIdeas ? <ChevronLeft className="w-4 h-4 text-slate-400 rotate-90" /> : <ChevronRight className="w-4 h-4 text-slate-400 rotate-90" />}
+            </button>
+            {showPreviousIdeas && (
+              <div className="p-4 space-y-3 border-t border-slate-200">
+                <p className={`${ds.muted} text-sm`}>Ideas from earlier rounds. Click "Add Back" to move one into your current list.</p>
+                {previousIdeas.map((idea, pIndex) => (
+                  <div key={pIndex} className={ds.optionDefault}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h4 className={ds.label}>{idea.title}</h4>
+                        <p className={`${ds.muted} text-sm mt-1`}>{idea.desc}</p>
+                        <p className={`${ds.muted} text-sm mt-1`}>
+                          <span className="font-medium">Target:</span> {idea.targetCustomer}
+                        </p>
+                        <span className={`inline-block mt-2 px-2 py-0.5 ${getTotalScoreColor(idea.totalScore).badge} text-xs font-bold rounded-full`}>
+                          {idea.totalScore}/25
+                        </span>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="flex-shrink-0 gap-1.5 text-primary border-primary/30 hover:bg-primary/5"
+                        onClick={() => {
+                          // Add to current ideas, remove from previous
+                          setIdeas(prev => [...prev, idea]);
+                          setPreviousIdeas(prev => prev.filter((_, i) => i !== pIndex));
+                          setVisibleIdeasCount((prev: number) => prev + 1);
+                          // Save updated state
+                          const updatedPrevious = previousIdeas.filter((_, i) => i !== pIndex);
+                          saveProgress.mutate({
+                            userInputs: inputs,
+                            generatedIdeas: [...ideas, idea],
+                            shortlistedIdeas: selectedIdeas,
+                            previousIdeas: updatedPrevious,
+                          });
+                          toast.success(`"${idea.title}" added back to your ideas`);
+                        }}
+                      >
+                        <Plus className="w-3 h-3" /> Add Back
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

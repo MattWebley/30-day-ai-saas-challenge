@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card } from "@/components/ui/card";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -169,6 +169,18 @@ export default function Admin() {
   });
   const [chartRange, setChartRange] = useState<ChartRange>("30");
   const [showRestoreLinks, setShowRestoreLinks] = useState(false);
+
+  // Scroll to section from URL hash (e.g. #admin-questions)
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+    if (hash) {
+      // Small delay to let the tab content render before scrolling
+      setTimeout(() => {
+        const el = document.getElementById(hash);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    }
+  }, []);
 
   // Check if user is admin
   const { data: currentUser } = useQuery({

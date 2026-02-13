@@ -49,6 +49,8 @@ export default function AdminContent() {
   const [notesDrafts, setNotesDrafts] = useState<Record<number, string>>({});
   const [generatingDraft, setGeneratingDraft] = useState<Record<number, boolean>>({});
   const [refiningDraft, setRefiningDraft] = useState<Record<number, string | null>>({});
+  const [editingAnswerId, setEditingAnswerId] = useState<number | null>(null);
+  const [editingAnswerText, setEditingAnswerText] = useState("");
 
   // Data queries
   const { data: pendingComments = [] } = useQuery<PendingComment[]>({
@@ -102,6 +104,7 @@ export default function AdminContent() {
     onSuccess: (_, { status }) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/pending-comments"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/comments"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
       toast.success(status === "approved" ? "Comment approved" : "Comment rejected");
     },
     onError: (error: any) => {
@@ -131,7 +134,13 @@ export default function AdminContent() {
     },
     onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/questions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
       setAnswerDrafts((prev) => {
+        const next = { ...prev };
+        delete next[id];
+        return next;
+      });
+      setNotesDrafts((prev) => {
         const next = { ...prev };
         delete next[id];
         return next;
@@ -143,6 +152,22 @@ export default function AdminContent() {
     },
   });
 
+  const updateAnswer = useMutation({
+    mutationFn: async ({ id, answer }: { id: number; answer: string }) => {
+      const res = await apiRequest("POST", `/api/admin/questions/${id}/answer`, { answer });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/questions"] });
+      setEditingAnswerId(null);
+      setEditingAnswerText("");
+      toast.success("Answer updated");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to update answer");
+    },
+  });
+
   const hideQuestion = useMutation({
     mutationFn: async (id: number) => {
       const res = await apiRequest("POST", `/api/admin/questions/${id}/hide`);
@@ -150,6 +175,7 @@ export default function AdminContent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/questions"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
       toast.success("Question hidden");
     },
     onError: (error: any) => {
@@ -164,6 +190,7 @@ export default function AdminContent() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/critiques"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
       toast.success("Critique status updated");
     },
     onError: () => {
@@ -192,6 +219,7 @@ export default function AdminContent() {
     },
     onSuccess: (_, { status }) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/showcase/pending"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/notifications"] });
       toast.success(status === "approved" ? "App approved and added to showcase!" : "App rejected");
     },
     onError: (error: any) => {
@@ -245,7 +273,7 @@ export default function AdminContent() {
   return (
     <div className="space-y-8">
       {/* Student Questions */}
-      <div className="space-y-4">
+      <div id="admin-questions" className="space-y-4 scroll-mt-4">
         <div className="flex items-center gap-3">
           <HelpCircle className="w-6 h-6 text-primary" />
           <h2 className="text-xl font-bold text-slate-900">Student Questions</h2>
@@ -489,31 +517,84 @@ export default function AdminContent() {
 
                 {showAnswered && (
                   <div className="mt-3 space-y-3 max-h-[600px] overflow-y-auto">
-                    {answeredQuestions.map((q) => (
-                      <Card key={q.id} className="p-4 border border-slate-200 border-l-4 border-l-green-400">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-slate-900 text-sm">
-                            {q.user?.firstName || "Anonymous"} {q.user?.lastName || ""}
-                          </span>
-                          <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
-                            Day {q.day}
-                          </span>
-                          <span className="text-xs text-slate-400">
-                            {formatDistanceToNow(new Date(q.createdAt), { addSuffix: true })}
-                          </span>
-                        </div>
-                        <p className="text-slate-700 whitespace-pre-wrap break-words mb-3">{q.question}</p>
-                        <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
-                          <p className="text-xs font-medium text-slate-500 mb-1">Your answer:</p>
-                          <p className="text-sm text-slate-700 whitespace-pre-wrap">{q.answer}</p>
-                          {q.answeredAt && (
-                            <p className="text-xs text-slate-400 mt-2">
-                              Answered {formatDistanceToNow(new Date(q.answeredAt), { addSuffix: true })}
-                            </p>
+                    {answeredQuestions.map((q) => {
+                      const isEditing = editingAnswerId === q.id;
+                      return (
+                        <Card key={q.id} className="p-4 border border-slate-200 border-l-4 border-l-green-400">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-slate-900 text-sm">
+                              {q.user?.firstName || "Anonymous"} {q.user?.lastName || ""}
+                            </span>
+                            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
+                              Day {q.day}
+                            </span>
+                            <span className="text-xs text-slate-400">
+                              {formatDistanceToNow(new Date(q.createdAt), { addSuffix: true })}
+                            </span>
+                          </div>
+                          <p className="text-slate-700 whitespace-pre-wrap break-words mb-3">{q.question}</p>
+
+                          {isEditing ? (
+                            <div className="space-y-2">
+                              <textarea
+                                className="w-full border border-slate-200 rounded-lg p-3 text-sm text-slate-700 resize-y min-h-[100px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                value={editingAnswerText}
+                                onChange={(e) => setEditingAnswerText(e.target.value)}
+                              />
+                              <div className="flex gap-2 justify-end">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => { setEditingAnswerId(null); setEditingAnswerText(""); }}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  className="gap-1.5"
+                                  onClick={() => {
+                                    const answer = editingAnswerText.trim();
+                                    if (!answer) { toast.error("Answer can't be empty"); return; }
+                                    updateAnswer.mutate({ id: q.id, answer });
+                                  }}
+                                  disabled={updateAnswer.isPending || !editingAnswerText.trim()}
+                                >
+                                  <Check className="w-4 h-4" />
+                                  Save
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                              <div className="flex items-center justify-between mb-1">
+                                <p className="text-xs font-medium text-slate-500">Your answer:</p>
+                                <div className="flex gap-1">
+                                  <button
+                                    onClick={() => { setEditingAnswerId(q.id); setEditingAnswerText(q.answer || ""); }}
+                                    className="text-xs text-slate-400 hover:text-primary flex items-center gap-1 transition-colors"
+                                  >
+                                    <Pencil className="w-3 h-3" /> Edit
+                                  </button>
+                                  <span className="text-slate-300">|</span>
+                                  <button
+                                    onClick={() => { setEditingAnswerId(q.id); setEditingAnswerText((q.answer || "") + "\n\n"); }}
+                                    className="text-xs text-slate-400 hover:text-primary flex items-center gap-1 transition-colors"
+                                  >
+                                    <Plus className="w-3 h-3" /> Add more
+                                  </button>
+                                </div>
+                              </div>
+                              <p className="text-sm text-slate-700 whitespace-pre-wrap">{q.answer}</p>
+                              {q.answeredAt && (
+                                <p className="text-xs text-slate-400 mt-2">
+                                  Answered {formatDistanceToNow(new Date(q.answeredAt), { addSuffix: true })}
+                                </p>
+                              )}
+                            </div>
                           )}
-                        </div>
-                      </Card>
-                    ))}
+                        </Card>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -523,7 +604,7 @@ export default function AdminContent() {
       </div>
 
       {/* Comment Approval Queue */}
-      <div className="space-y-4">
+      <div id="admin-comments" className="space-y-4 scroll-mt-4">
         <div className="flex items-center gap-3">
           <MessageSquare className="w-6 h-6 text-primary" />
           <h2 className="text-xl font-bold text-slate-900">Comments</h2>
@@ -652,7 +733,7 @@ export default function AdminContent() {
       </div>
 
       {/* Critique Requests */}
-      <div className="space-y-4">
+      <div id="admin-critiques" className="space-y-4 scroll-mt-4">
         <div className="flex items-center gap-3">
           <Video className="w-6 h-6 text-primary" />
           <h2 className="text-xl font-bold text-slate-900">Video Critiques</h2>
@@ -839,7 +920,7 @@ export default function AdminContent() {
       </div>
 
       {/* Showcase Moderation */}
-      <div className="space-y-4">
+      <div id="admin-showcase" className="space-y-4 scroll-mt-4">
         <div className="flex items-center gap-3">
           <Image className="w-6 h-6 text-primary" />
           <h2 className="text-xl font-bold text-slate-900">Showcase Moderation</h2>
