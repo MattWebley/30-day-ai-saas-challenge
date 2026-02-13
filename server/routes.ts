@@ -108,6 +108,44 @@ export async function registerRoutes(
     res.json({ success: true, message: 'Admin access restored. Log out, log back in, then go to /admin.' });
   });
 
+  // Email tracking endpoints (no auth - must be lightweight for tracking pixels)
+  // 1x1 transparent PNG pixel for open tracking
+  const TRACKING_PIXEL = Buffer.from(
+    'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+    'base64'
+  );
+
+  app.get('/api/t/:trackingId/pixel.png', async (req, res) => {
+    try {
+      const { trackingId } = req.params;
+      if (trackingId && trackingId.length > 10) {
+        storage.recordEmailOpen(trackingId).catch(() => {});
+      }
+    } catch (_) {}
+    res.set({
+      'Content-Type': 'image/png',
+      'Content-Length': TRACKING_PIXEL.length.toString(),
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+    });
+    res.end(TRACKING_PIXEL);
+  });
+
+  app.get('/api/t/:trackingId/link', async (req, res) => {
+    try {
+      const { trackingId } = req.params;
+      const url = req.query.url as string;
+      if (trackingId && trackingId.length > 10) {
+        storage.recordEmailClick(trackingId).catch(() => {});
+      }
+      if (url && (url.startsWith('https://') || url.startsWith('http://'))) {
+        return res.redirect(302, url);
+      }
+    } catch (_) {}
+    res.redirect(302, 'https://challenge.mattwebley.com');
+  });
+
   // Auth routes
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
@@ -8418,6 +8456,29 @@ Example format:
     } catch (error) {
       console.error("Error promoting mood check-in:", error);
       res.status(500).json({ message: "Failed to promote" });
+    }
+  });
+
+  // Admin: Get mood check-in summary (aggregated by day)
+  app.get("/api/admin/mood-summary", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const summary = await db.select({
+        day: moodCheckins.day,
+        emojiLabel: moodCheckins.emojiLabel,
+        emoji: moodCheckins.emoji,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(moodCheckins)
+      .groupBy(moodCheckins.day, moodCheckins.emojiLabel, moodCheckins.emoji)
+      .orderBy(moodCheckins.day);
+
+      res.json(summary);
+    } catch (error) {
+      console.error("Error fetching mood summary:", error);
+      res.status(500).json({ message: "Failed to fetch" });
     }
   });
 

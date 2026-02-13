@@ -203,6 +203,9 @@ export interface EmailLog {
   status: string;
   resendId: string | null;
   error: string | null;
+  trackingId: string | null;
+  openCount: number;
+  clickCount: number;
   sentAt: string;
 }
 

@@ -115,7 +115,8 @@
       "Bash(python3:*)",
       "WebFetch(domain:cal.com)",
       "WebFetch(domain:challenge.mattwebley.com)",
-      "Bash(stripe:*)"
+      "Bash(stripe:*)",
+      "Bash(yes:*)"
     ]
   }
 }

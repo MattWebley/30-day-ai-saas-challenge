@@ -1587,6 +1587,10 @@ export class DatabaseStorage implements IStorage {
     totalFailed: number;
     sentToday: number;
     sentThisWeek: number;
+    totalOpens: number;
+    totalClicks: number;
+    uniqueOpens: number;
+    uniqueClicks: number;
     recentFailures: { error: string; count: number }[];
   }> {
     const now = new Date();
@@ -1600,6 +1604,10 @@ export class DatabaseStorage implements IStorage {
         totalFailed: sql<number>`count(*) filter (where ${emailLogs.status} = 'failed')::int`,
         sentToday: sql<number>`count(*) filter (where ${emailLogs.status} = 'sent' and ${emailLogs.sentAt} >= ${startOfToday})::int`,
         sentThisWeek: sql<number>`count(*) filter (where ${emailLogs.status} = 'sent' and ${emailLogs.sentAt} >= ${startOfWeek})::int`,
+        totalOpens: sql<number>`coalesce(sum(${emailLogs.openCount}), 0)::int`,
+        totalClicks: sql<number>`coalesce(sum(${emailLogs.clickCount}), 0)::int`,
+        uniqueOpens: sql<number>`count(*) filter (where ${emailLogs.openCount} > 0)::int`,
+        uniqueClicks: sql<number>`count(*) filter (where ${emailLogs.clickCount} > 0)::int`,
       })
       .from(emailLogs);
 
@@ -1619,6 +1627,10 @@ export class DatabaseStorage implements IStorage {
       totalFailed: totals?.totalFailed || 0,
       sentToday: totals?.sentToday || 0,
       sentThisWeek: totals?.sentThisWeek || 0,
+      totalOpens: totals?.totalOpens || 0,
+      totalClicks: totals?.totalClicks || 0,
+      uniqueOpens: totals?.uniqueOpens || 0,
+      uniqueClicks: totals?.uniqueClicks || 0,
       recentFailures,
     };
   }

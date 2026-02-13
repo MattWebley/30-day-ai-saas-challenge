@@ -43,6 +43,8 @@ import {
   BarChart3,
   TrendingUp,
   Clock,
+  MousePointerClick,
+  EyeIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { EmailTemplate, EmailLog, DripEmail } from "./adminTypes";
@@ -154,6 +156,10 @@ export default function AdminEmails() {
     totalFailed: number;
     sentToday: number;
     sentThisWeek: number;
+    totalOpens: number;
+    totalClicks: number;
+    uniqueOpens: number;
+    uniqueClicks: number;
     recentFailures: { error: string; count: number }[];
   }>({
     queryKey: ["/api/admin/email-stats"],
@@ -419,7 +425,7 @@ export default function AdminEmails() {
     <div className="space-y-6">
       {/* Email Stats Overview */}
       {emailStats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           <Card className="p-4 border-2 border-slate-200 shadow-none border-l-4 border-l-blue-500">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
@@ -431,6 +437,28 @@ export default function AdminEmails() {
               </div>
             </div>
           </Card>
+          <Card className="p-4 border-2 border-slate-200 shadow-none border-l-4 border-l-emerald-500">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <EyeIcon className="w-5 h-5 text-emerald-500" />
+              </div>
+              <div>
+                <p className="text-2xl font-extrabold text-slate-900">{emailStats.uniqueOpens.toLocaleString()}</p>
+                <p className="text-slate-600">Opened ({emailStats.totalSent > 0 ? Math.round((emailStats.uniqueOpens / emailStats.totalSent) * 100) : 0}%)</p>
+              </div>
+            </div>
+          </Card>
+          <Card className="p-4 border-2 border-slate-200 shadow-none border-l-4 border-l-violet-500">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-violet-50 flex items-center justify-center">
+                <MousePointerClick className="w-5 h-5 text-violet-500" />
+              </div>
+              <div>
+                <p className="text-2xl font-extrabold text-slate-900">{emailStats.uniqueClicks.toLocaleString()}</p>
+                <p className="text-slate-600">Clicked ({emailStats.totalSent > 0 ? Math.round((emailStats.uniqueClicks / emailStats.totalSent) * 100) : 0}%)</p>
+              </div>
+            </div>
+          </Card>
           <Card className="p-4 border-2 border-slate-200 shadow-none border-l-4 border-l-green-500">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
@@ -438,7 +466,7 @@ export default function AdminEmails() {
               </div>
               <div>
                 <p className="text-2xl font-extrabold text-slate-900">{successRate}%</p>
-                <p className="text-slate-600">Success Rate</p>
+                <p className="text-slate-600">Delivery Rate</p>
               </div>
             </div>
           </Card>
@@ -1193,6 +1221,8 @@ export default function AdminEmails() {
                     <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Subject</th>
                     <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Template</th>
                     <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Status</th>
+                    <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Opens</th>
+                    <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Clicks</th>
                     <th className="pb-2 text-xs font-bold text-slate-700 uppercase">Date</th>
                   </tr>
                 </thead>
@@ -1228,6 +1258,26 @@ export default function AdminEmails() {
                             <XCircle className="w-3 h-3" />
                             Failed
                           </span>
+                        )}
+                      </td>
+                      <td className="py-2.5 pr-4 text-center">
+                        {log.openCount > 0 ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full">
+                            <EyeIcon className="w-3 h-3" />
+                            {log.openCount}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-xs">-</span>
+                        )}
+                      </td>
+                      <td className="py-2.5 pr-4 text-center">
+                        {log.clickCount > 0 ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-violet-50 text-violet-700 text-xs font-bold rounded-full">
+                            <MousePointerClick className="w-3 h-3" />
+                            {log.clickCount}
+                          </span>
+                        ) : (
+                          <span className="text-slate-400 text-xs">-</span>
                         )}
                       </td>
                       <td className="py-2.5 text-sm text-slate-600 whitespace-nowrap">

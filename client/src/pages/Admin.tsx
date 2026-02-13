@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/layout/Layout";
 import { Card } from "@/components/ui/card";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -25,6 +25,7 @@ import {
   ChevronDown,
   ChevronUp,
   Target,
+  SmilePlus,
 } from "lucide-react";
 import {
   LineChart,
@@ -75,25 +76,28 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "settings", label: "Settings" },
 ];
 
-function FunnelBar({
+function FunnelStage({
   stage,
   count,
   color,
   widthPercent,
-  conversionRate,
+  dropRate,
   overallRate,
   users,
+  isFirst,
+  isLast,
 }: {
   stage: string;
   count: number;
   color: string;
   widthPercent: number;
-  conversionRate: string | null;
+  dropRate: string | null;
   overallRate: string;
   users: AdminUser[];
+  isFirst: boolean;
+  isLast: boolean;
 }) {
   const [showTooltip, setShowTooltip] = useState(false);
-  const barRef = useRef<HTMLDivElement>(null);
 
   const userName = (u: AdminUser) =>
     u.firstName || u.lastName
@@ -101,43 +105,35 @@ function FunnelBar({
       : u.email || "Unknown";
 
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between text-sm">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-slate-900">{stage}</span>
-          {conversionRate && (
-            <span className="text-xs text-slate-400">
-              ({conversionRate}% from previous)
-            </span>
-          )}
+    <>
+      {/* Drop-off arrow between stages */}
+      {!isFirst && dropRate && (
+        <div className="flex items-center justify-center -my-1 relative z-10">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 bg-white border border-slate-200 rounded-full shadow-sm">
+            <ChevronDown className="w-3 h-3 text-slate-400" />
+            <span className="text-[11px] font-medium text-slate-500">{dropRate}%</span>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-slate-400">{overallRate}%</span>
-          <span className="font-bold text-slate-900 w-12 text-right">
-            {count}
-          </span>
-        </div>
-      </div>
+      )}
+      {/* Funnel bar - centered, width based on data */}
       <div
-        className="relative"
-        ref={barRef}
+        className="relative flex justify-center cursor-pointer"
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
       >
-        <div className="h-8 bg-slate-100 rounded-lg overflow-hidden cursor-pointer">
-          <div
-            className={`h-full ${color} transition-all duration-500 rounded-lg flex items-center justify-end pr-2`}
-            style={{ width: `${Math.max(widthPercent, 2)}%` }}
-          >
-            {widthPercent > 15 && (
-              <span className="text-xs text-white font-medium">{count}</span>
-            )}
-          </div>
+        <div
+          className={`${color} transition-all duration-500 py-2.5 px-4 flex items-center justify-between gap-3 ${
+            isFirst ? 'rounded-t-xl' : ''
+          } ${isLast ? 'rounded-b-xl' : ''}`}
+          style={{ width: `${Math.max(widthPercent, 20)}%` }}
+        >
+          <span className="text-white font-medium text-sm truncate">{stage}</span>
+          <span className="text-white/90 font-bold text-sm flex-shrink-0">{count}</span>
         </div>
         {showTooltip && count > 0 && (
-          <div className="absolute z-50 top-full mt-1 left-0 bg-slate-900 text-white rounded-lg shadow-xl p-3 min-w-[220px] max-w-[320px]">
-            <p className="text-xs font-bold text-slate-300 mb-2">
-              {stage} ({count} user{count !== 1 ? "s" : ""})
+          <div className="absolute z-50 top-full mt-1 bg-slate-900 text-white rounded-lg shadow-xl p-3 min-w-[220px] max-w-[320px]">
+            <p className="text-xs font-bold text-slate-300 mb-1">
+              {stage} — {count} user{count !== 1 ? "s" : ""} ({overallRate}% of total)
             </p>
             <div className="space-y-1 max-h-[200px] overflow-y-auto">
               {users.slice(0, 20).map((u) => (
@@ -155,7 +151,7 @@ function FunnelBar({
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 
@@ -256,6 +252,11 @@ export default function Admin() {
       if (!res.ok) throw new Error("Failed to fetch analytics");
       return res.json();
     },
+    staleTime: 30_000,
+  });
+
+  const { data: moodSummary = [] } = useQuery<{ day: number; emojiLabel: string; emoji: string; count: number }[]>({
+    queryKey: ["/api/admin/mood-summary"],
     staleTime: 30_000,
   });
 
@@ -944,16 +945,108 @@ export default function Admin() {
               </Card>
             )}
 
+            {/* Mood Check-in Summary */}
+            {moodSummary.length > 0 && (() => {
+              // Group by day
+              const byDay = new Map<number, { emoji: string; label: string; count: number }[]>();
+              let totalCheckins = 0;
+              moodSummary.forEach(m => {
+                if (!byDay.has(m.day)) byDay.set(m.day, []);
+                byDay.get(m.day)!.push({ emoji: m.emoji, label: m.emojiLabel, count: m.count });
+                totalCheckins += m.count;
+              });
+              // Sort days and order moods consistently
+              const moodOrder = ["Nervous", "Curious", "Good", "Excited", "On Fire"];
+              const moodColors: Record<string, string> = {
+                "Nervous": "bg-amber-100",
+                "Curious": "bg-blue-100",
+                "Good": "bg-green-100",
+                "Excited": "bg-purple-100",
+                "On Fire": "bg-orange-100",
+              };
+              const sortedDays = Array.from(byDay.keys()).sort((a, b) => a - b);
+
+              return (
+                <Card className="p-6 border border-slate-200 shadow-sm">
+                  <div className="flex items-center gap-3 mb-4">
+                    <SmilePlus className="w-6 h-6 text-amber-500" />
+                    <h3 className="text-lg font-bold text-slate-900">Mood Check-ins</h3>
+                    <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">
+                      {totalCheckins} total
+                    </span>
+                  </div>
+
+                  {/* Legend */}
+                  <div className="flex flex-wrap items-center gap-3 mb-4 pb-3 border-b border-slate-200">
+                    {moodOrder.map(label => {
+                      const entry = moodSummary.find(m => m.emojiLabel === label);
+                      if (!entry) return null;
+                      return (
+                        <div key={label} className="flex items-center gap-1.5">
+                          <span className={`w-3 h-3 rounded-full ${moodColors[label]}`} />
+                          <span className="text-xs text-slate-600">{entry.emoji} {label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Day rows */}
+                  <div className="space-y-2">
+                    {sortedDays.map(day => {
+                      const moods = byDay.get(day)!;
+                      const dayTotal = moods.reduce((s, m) => s + m.count, 0);
+                      // Sort moods in consistent order
+                      const sorted = moodOrder
+                        .map(label => moods.find(m => m.label === label))
+                        .filter(Boolean) as { emoji: string; label: string; count: number }[];
+
+                      return (
+                        <div key={day} className="flex items-center gap-3">
+                          <div className="w-14 flex-shrink-0">
+                            <span className="text-sm font-bold text-slate-900">Day {day}</span>
+                          </div>
+                          {/* Stacked bar */}
+                          <div className="flex-1 flex h-7 rounded-lg overflow-hidden bg-slate-100">
+                            {sorted.map(m => {
+                              const pct = (m.count / dayTotal) * 100;
+                              return (
+                                <div
+                                  key={m.label}
+                                  className={`${moodColors[m.label]} flex items-center justify-center transition-all`}
+                                  style={{ width: `${pct}%` }}
+                                  title={`${m.emoji} ${m.label}: ${m.count} (${Math.round(pct)}%)`}
+                                >
+                                  {pct >= 12 && <span className="text-xs">{m.emoji}</span>}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <div className="w-8 flex-shrink-0 text-right">
+                            <span className="text-xs font-medium text-slate-500">{dayTotal}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              );
+            })()}
+
             {/* User Funnel */}
             <Card className="p-6 border border-slate-200 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <BarChart3 className="w-6 h-6 text-primary" />
+              <div className="flex items-center gap-3 mb-6">
+                <Target className="w-6 h-6 text-primary" />
                 <h3 className="text-lg font-bold text-slate-900">User Funnel</h3>
+                <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
+                  {funnelData[0]?.count || 0} users
+                </span>
               </div>
-              <div className="space-y-4">
+
+              {/* Funnel visualization - centered narrowing shape */}
+              <div className="flex flex-col items-center">
                 {funnelData.map((stage, index) => {
                   const widthPercent = (stage.count / maxFunnelCount) * 100;
-                  const conversionRate =
+                  const dropRate =
                     index > 0 && funnelData[index - 1].count > 0
                       ? ((stage.count / funnelData[index - 1].count) * 100).toFixed(0)
                       : null;
@@ -963,54 +1056,55 @@ export default function Admin() {
                       : "0";
 
                   return (
-                    <FunnelBar
+                    <FunnelStage
                       key={stage.stage}
                       stage={stage.stage}
                       count={stage.count}
                       color={stage.color}
                       widthPercent={widthPercent}
-                      conversionRate={conversionRate}
+                      dropRate={dropRate}
                       overallRate={overallRate}
                       users={stage.users}
+                      isFirst={index === 0}
+                      isLast={index === funnelData.length - 1}
                     />
                   );
                 })}
+              </div>
 
-                {/* Funnel Insights */}
-                <div className="pt-4 border-t border-slate-100 mt-4">
-                  <h4 className="text-sm font-bold text-slate-900 mb-3">Key Metrics</h4>
-                  <div className="grid sm:grid-cols-3 gap-4">
-                    <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
-                      <p className="text-xs text-slate-500">Conversion to Purchase</p>
-                      <p className="text-lg font-bold text-slate-900">
-                        {adminUsers.length > 0
-                          ? ((paidCount / adminUsers.length) * 100).toFixed(1)
-                          : 0}
-                        %
-                      </p>
-                    </div>
-                    <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
-                      <p className="text-xs text-slate-500">Completion Rate</p>
-                      <p className="text-lg font-bold text-slate-900">
-                        {paidCount > 0
-                          ? (
-                              (adminUsers.filter((u) => u.stats.lastCompletedDay >= 21).length /
-                                paidCount) *
-                              100
-                            ).toFixed(1)
-                          : 0}
-                        %
-                      </p>
-                    </div>
-                    <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
-                      <p className="text-xs text-slate-500">Stuck Users</p>
-                      <p className="text-lg font-bold text-slate-900">
-                        {stuckCount}
-                        <span className="text-sm font-normal text-slate-400 ml-1">
-                          ({paidCount > 0 ? ((stuckCount / paidCount) * 100).toFixed(0) : 0}%)
-                        </span>
-                      </p>
-                    </div>
+              {/* Key Metrics */}
+              <div className="pt-5 border-t border-slate-100 mt-6">
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                    <p className="text-xs text-slate-500">Conversion to Purchase</p>
+                    <p className="text-lg font-bold text-slate-900">
+                      {adminUsers.length > 0
+                        ? ((paidCount / adminUsers.length) * 100).toFixed(1)
+                        : 0}
+                      %
+                    </p>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                    <p className="text-xs text-slate-500">Completion Rate</p>
+                    <p className="text-lg font-bold text-slate-900">
+                      {paidCount > 0
+                        ? (
+                            (adminUsers.filter((u) => u.stats.lastCompletedDay >= 21).length /
+                              paidCount) *
+                            100
+                          ).toFixed(1)
+                        : 0}
+                      %
+                    </p>
+                  </div>
+                  <div className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                    <p className="text-xs text-slate-500">Stuck Users</p>
+                    <p className="text-lg font-bold text-slate-900">
+                      {stuckCount}
+                      <span className="text-sm font-normal text-slate-400 ml-1">
+                        ({paidCount > 0 ? ((stuckCount / paidCount) * 100).toFixed(0) : 0}%)
+                      </span>
+                    </p>
                   </div>
                 </div>
               </div>

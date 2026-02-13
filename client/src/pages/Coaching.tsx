@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowRight, Check, Video, Calendar, Clock, Users, Zap, Shield, Star } from "lucide-react";
+import { ArrowRight, ArrowLeft, Check, Video, Calendar, Clock, Users, Zap, Shield, Star } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { useAuth } from "@/hooks/useAuth";
 import { useTestMode } from "@/contexts/TestModeContext";
@@ -87,6 +87,17 @@ export default function Coaching() {
 
   const content = (
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+
+        {/* Back to Dashboard - only for logged-in paying users */}
+        {isAuthenticated && (user as any)?.challengePurchased && (
+          <button
+            onClick={() => setLocation('/dashboard')}
+            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 font-medium transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </button>
+        )}
 
         {/* Currency Toggle */}
         <div className="flex justify-center">

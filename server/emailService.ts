@@ -6,6 +6,7 @@ import type { DripEmail } from '@shared/schema';
 
 const FROM_EMAIL = 'Matt Webley <matt@mattwebley.com>';
 const REPLY_TO = 'matt@mattwebley.com';
+const TRACKING_BASE_URL = 'https://challenge.mattwebley.com';
 
 function getResendClient() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -19,6 +20,35 @@ function getResendClient() {
   };
 }
 
+// Convert plain text email to HTML with tracking pixel and click-tracked links
+function buildTrackedHtml(text: string, trackingId: string): string {
+  // Escape HTML entities in the text
+  let html = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Wrap URLs with click tracking (match http/https URLs)
+  html = html.replace(
+    /(https?:\/\/[^\s<>"')\]]+)/g,
+    (url) => {
+      const trackUrl = `${TRACKING_BASE_URL}/api/t/${trackingId}/link?url=${encodeURIComponent(url)}`;
+      return `<a href="${trackUrl}" style="color:#2563eb;">${url}</a>`;
+    }
+  );
+
+  // Convert newlines to <br>
+  html = html.replace(/\n/g, '<br>\n');
+
+  // Wrap in minimal HTML with tracking pixel
+  return `<!DOCTYPE html>
+<html><head><meta charset="utf-8"></head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:15px;line-height:1.6;color:#334155;">
+${html}
+<img src="${TRACKING_BASE_URL}/api/t/${trackingId}/pixel.png" width="1" height="1" alt="" style="display:none;" />
+</body></html>`;
+}
+
 // Send an email and log the result to the database
 async function sendAndLog(options: {
   to: string;
@@ -28,13 +58,17 @@ async function sendAndLog(options: {
   templateKey?: string;
 }): Promise<{ success: boolean; id?: string }> {
   const { client, fromEmail, replyTo } = getResendClient();
+  const trackingId = crypto.randomUUID();
+
   try {
+    const html = buildTrackedHtml(options.text, trackingId);
     const result = await client.emails.send({
       from: fromEmail,
       replyTo: replyTo,
       to: [options.to],
       subject: options.subject,
       text: options.text,
+      html,
     });
     const resendId = result?.data?.id || null;
     // Log success (fire and forget - don't let logging failures break email sending)
@@ -45,6 +79,7 @@ async function sendAndLog(options: {
       templateKey: options.templateKey || null,
       status: 'sent',
       resendId,
+      trackingId,
     }).catch(err => console.error('Failed to log email:', err));
     return { success: true, id: resendId || undefined };
   } catch (error: any) {
@@ -56,6 +91,7 @@ async function sendAndLog(options: {
       templateKey: options.templateKey || null,
       status: 'failed',
       error: error?.message || String(error),
+      trackingId,
     }).catch(err => console.error('Failed to log email:', err));
     throw error;
   }
