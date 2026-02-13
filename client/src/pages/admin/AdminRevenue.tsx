@@ -554,6 +554,8 @@ export default function AdminRevenue() {
                                     customerName: tx.customerName !== "Unknown" ? tx.customerName : "",
                                     customerEmail: tx.customerEmail,
                                     customerAddress: "",
+                                    companyName: "",
+                                    vatNumber: "",
                                     product: tx.description || "21-Day AI SaaS Challenge",
                                     amount: (tx.amount / 100).toFixed(2),
                                     currency: tx.currency.toUpperCase() as "GBP" | "USD",
@@ -1189,8 +1191,10 @@ export default function AdminRevenue() {
 <div class="bill-to">
   <p class="label">Bill To</p>
   <p><strong>${invoice.customerName}</strong></p>
+  ${invoice.companyName ? `<p>${invoice.companyName}</p>` : ""}
   ${invoice.customerEmail ? `<p>${invoice.customerEmail}</p>` : ""}
   ${invoice.customerAddress ? `<p>${invoice.customerAddress}</p>` : ""}
+  ${invoice.vatNumber ? `<p style="margin-top:4px;font-size:13px;color:#64748b;">VAT: ${invoice.vatNumber}</p>` : ""}
 </div>
 <table>
   <thead><tr><th>Description</th><th>Amount</th></tr></thead>
@@ -1219,12 +1223,15 @@ ${invoice.notes ? `<div class="notes"><strong>Notes:</strong> ${invoice.notes}</
                     customerName: "",
                     customerEmail: "",
                     customerAddress: "",
+                    companyName: "",
+                    vatNumber: "",
                     product: "21-Day AI SaaS Challenge",
                     amount: "",
                     currency: "GBP",
                     date: new Date().toISOString().split("T")[0],
                     notes: "",
                   });
+                  setPasteText("");
                 }}
               >
                 Clear
