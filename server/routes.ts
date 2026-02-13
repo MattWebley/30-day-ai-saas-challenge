@@ -8493,21 +8493,18 @@ Example format:
 
       if (!email && !name) return res.status(400).json({ message: "Email or name required" });
 
+      let foundUser: { firstName: string; lastName: string; email: string } | null = null;
+
       // Try email first (exact match)
       if (email) {
         const user = await storage.getUserByEmail(email);
         if (user) {
-          return res.json({
-            found: true,
-            firstName: user.firstName || "",
-            lastName: user.lastName || "",
-            email: user.email || "",
-          });
+          foundUser = { firstName: user.firstName || "", lastName: user.lastName || "", email: user.email || "" };
         }
       }
 
       // Fall back to name search — only return if exactly 1 match
-      if (name) {
+      if (!foundUser && name) {
         const allUsers = await storage.getAllUsers();
         const matches = allUsers.filter(u => {
           const fullName = `${u.firstName || ""} ${u.lastName || ""}`.trim().toLowerCase();
@@ -8516,16 +8513,40 @@ Example format:
         });
         if (matches.length === 1) {
           const user = matches[0];
-          return res.json({
-            found: true,
-            firstName: user.firstName || "",
-            lastName: user.lastName || "",
-            email: user.email || "",
-          });
+          foundUser = { firstName: user.firstName || "", lastName: user.lastName || "", email: user.email || "" };
         }
       }
 
-      res.json({ found: false });
+      if (!foundUser) return res.json({ found: false });
+
+      // Look up their Stripe purchase to get amount, currency, date, product
+      let purchase: { amount: number; currency: string; date: number; product: string } | null = null;
+      if (foundUser.email) {
+        try {
+          const stripe = await getUncachableStripeClient();
+          const customers = await stripe.customers.list({ email: foundUser.email, limit: 1 });
+          if (customers.data.length > 0) {
+            const charges = await stripe.charges.list({ customer: customers.data[0].id, limit: 10 });
+            const successfulCharge = charges.data.find(c => c.status === 'succeeded' && !c.refunded);
+            if (successfulCharge) {
+              purchase = {
+                amount: successfulCharge.amount,
+                currency: successfulCharge.currency,
+                date: successfulCharge.created,
+                product: successfulCharge.description || "21-Day AI SaaS Challenge",
+              };
+            }
+          }
+        } catch (stripeErr) {
+          console.error("Stripe lookup for invoice failed:", stripeErr);
+        }
+      }
+
+      res.json({
+        found: true,
+        ...foundUser,
+        purchase,
+      });
     } catch (error) {
       console.error("Error looking up user:", error);
       res.status(500).json({ message: "Failed to look up user" });

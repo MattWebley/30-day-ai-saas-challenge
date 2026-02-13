@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,7 +87,7 @@ export default function AdminRevenue() {
   const [pasteText, setPasteText] = useState("");
   const [extracting, setExtracting] = useState(false);
 
-  // Auto-fill ALL missing invoice details from database + Stripe transactions
+  // Auto-fill ALL missing invoice details from database + Stripe
   const enrichFromDatabase = async (currentInvoice: typeof invoice) => {
     const email = currentInvoice.customerEmail?.trim();
     const name = currentInvoice.customerName?.trim();
@@ -100,30 +100,44 @@ export default function AdminRevenue() {
       const data = await res.json();
       if (!data.found) return;
       const fullName = `${data.firstName || ""} ${data.lastName || ""}`.trim();
-      const foundEmail = data.email || "";
-
-      // Match against loaded Stripe transactions to get purchase details
-      const txs = revenueData?.recentTransactions || [];
-      const matchEmail = foundEmail || email || "";
-      const customerTx = matchEmail
-        ? txs.filter(tx => tx.customerEmail?.toLowerCase() === matchEmail.toLowerCase() && tx.status === "succeeded" && !tx.refunded)
-        : [];
-      // Use the most recent successful transaction
-      const latestTx = customerTx.length > 0 ? customerTx[0] : null;
+      const p = data.purchase;
 
       setInvoice(prev => ({
         ...prev,
         customerName: prev.customerName || fullName,
-        customerEmail: prev.customerEmail || foundEmail,
-        amount: prev.amount || (latestTx ? (latestTx.amount / 100).toFixed(2) : ""),
-        currency: prev.currency || (latestTx ? latestTx.currency.toUpperCase() as "GBP" | "USD" : "GBP"),
-        product: prev.product === "21-Day AI SaaS Challenge" && latestTx?.description ? latestTx.description : prev.product,
-        date: prev.date === new Date().toISOString().split("T")[0] && latestTx
-          ? new Date(latestTx.created * 1000).toISOString().split("T")[0]
-          : prev.date,
+        customerEmail: prev.customerEmail || data.email || "",
+        amount: prev.amount || (p ? (p.amount / 100).toFixed(2) : ""),
+        currency: (p ? p.currency.toUpperCase() as "GBP" | "USD" : prev.currency),
+        product: p?.product || prev.product,
+        date: p ? new Date(p.date * 1000).toISOString().split("T")[0] : prev.date,
       }));
     } catch {}
   };
+
+  // Auto-open invoice creator from URL params (e.g. ?tab=revenue&invoiceEmail=x&invoiceName=y)
+  const invoiceAutoLoaded = useRef(false);
+  useEffect(() => {
+    if (invoiceAutoLoaded.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const invoiceEmail = params.get("invoiceEmail");
+    const invoiceName = params.get("invoiceName");
+    if (invoiceEmail || invoiceName) {
+      invoiceAutoLoaded.current = true;
+      const seed = {
+        ...invoice,
+        customerEmail: invoiceEmail || "",
+        customerName: invoiceName || "",
+      };
+      setInvoice(seed);
+      setShowInvoice(true);
+      enrichFromDatabase(seed);
+      // Clean the URL params
+      params.delete("invoiceEmail");
+      params.delete("invoiceName");
+      const clean = params.toString();
+      window.history.replaceState({}, "", `${window.location.pathname}${clean ? `?${clean}` : ""}`);
+    }
+  }, []);
 
   // Refund confirmation modal state
   const [refundConfirmation, setRefundConfirmation] = useState<{

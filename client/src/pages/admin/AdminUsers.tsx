@@ -27,7 +27,9 @@ import {
   Mail,
   Copy,
   HelpCircle,
+  FileText,
 } from "lucide-react";
+import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import type { AdminUser, LiveUser, ActivityLogResponse } from "./adminTypes";
@@ -51,6 +53,7 @@ function UserDetailPanel({
   allUsers: AdminUser[];
 }) {
   const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [linkSearch, setLinkSearch] = useState("");
   const [showLinkDropdown, setShowLinkDropdown] = useState(false);
 
@@ -412,6 +415,24 @@ Still stuck? Just let me know and I'll sort it out!`;
         >
           <Trash2 className="w-3 h-3 mr-1" /> Delete
         </Button>
+
+        {user.challengePurchased && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-1.5"
+            onClick={() => {
+              const params = new URLSearchParams({ tab: "revenue" });
+              if (user.email) params.set("invoiceEmail", user.email);
+              const fullName = `${user.firstName || ""} ${user.lastName || ""}`.trim();
+              if (fullName) params.set("invoiceName", fullName);
+              setLocation(`/admin?${params}`);
+              window.location.search = params.toString();
+            }}
+          >
+            <FileText className="w-3 h-3" /> Generate Invoice
+          </Button>
+        )}
       </div>
 
       {/* Login Help Actions */}
