@@ -4,6 +4,7 @@ import { Menu, X, Shield } from "lucide-react";
 import { ReportProblem } from "@/components/ReportProblem";
 import { FocusButton } from "@/components/FocusButton";
 import { ChatWidget } from "@/components/ChatWidget";
+import { AdminNotificationBell } from "@/components/AdminNotificationBell";
 import { useAuth } from "@/hooks/useAuth";
 import { Link } from "wouter";
 
@@ -37,9 +38,12 @@ export function Layout({ children, currentDay = 1 }: LayoutProps) {
           />
         </div>
         {isAdmin && (
-          <Link href="/admin" className="p-2 rounded-lg hover:bg-muted mr-1">
-            <Shield className="w-5 h-5 text-slate-600" />
-          </Link>
+          <>
+            <AdminNotificationBell />
+            <Link href="/admin" className="p-2 rounded-lg hover:bg-muted mr-1">
+              <Shield className="w-5 h-5 text-slate-600" />
+            </Link>
+          </>
         )}
         <FocusButton />
       </div>
@@ -67,7 +71,8 @@ export function Layout({ children, currentDay = 1 }: LayoutProps) {
         </div>
         <main className="flex-1 min-w-0">
           {isAdmin && (
-            <div className="flex justify-end px-6 pt-4">
+            <div className="flex justify-end items-center gap-2 px-6 pt-4">
+              <AdminNotificationBell />
               <Link href="/admin" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors">
                 <Shield className="w-4 h-4" />
                 Admin

@@ -161,7 +161,12 @@ function FunnelBar({
 
 export default function Admin() {
   const { testMode, setTestMode } = useTestMode();
-  const [activeTab, setActiveTab] = useState<TabKey>("overview");
+  const [activeTab, setActiveTab] = useState<TabKey>(() => {
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get("tab");
+    const validTabs: TabKey[] = ["overview", "users", "revenue", "content", "marketing", "settings", "coaches", "emails"];
+    return tab && validTabs.includes(tab as TabKey) ? (tab as TabKey) : "overview";
+  });
   const [chartRange, setChartRange] = useState<ChartRange>("30");
   const [showRestoreLinks, setShowRestoreLinks] = useState(false);
 

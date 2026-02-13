@@ -3971,6 +3971,43 @@ Just output the look & feel description, nothing else.`,
     }
   });
 
+  // Admin: Get notification counts (lightweight endpoint for the bell icon)
+  app.get("/api/admin/notifications", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const [pendingCommentsArr, pendingQuestionsArr, flaggedArr, pendingShowcaseArr, critiquesArr] = await Promise.all([
+        storage.getPendingComments(),
+        storage.getPendingQuestions(),
+        storage.getFlaggedMessages(),
+        storage.getPendingShowcase(),
+        db.select({ id: critiqueRequests.id, status: critiqueRequests.status }).from(critiqueRequests),
+      ]);
+
+      const pendingComments = pendingCommentsArr.length;
+      const pendingQuestions = pendingQuestionsArr.length;
+      const flaggedMessages = flaggedArr.length;
+      const pendingShowcase = pendingShowcaseArr.filter((s: any) => s.status === 'pending').length;
+      const pendingCritiques = critiquesArr.filter((c: any) => c.status === 'pending' || c.status === 'in_progress').length;
+      const total = pendingComments + pendingQuestions + flaggedMessages + pendingShowcase + pendingCritiques;
+
+      res.json({
+        total,
+        items: [
+          { key: 'comments', label: 'Pending comments', count: pendingComments, tab: 'content' },
+          { key: 'questions', label: 'Unanswered questions', count: pendingQuestions, tab: 'content' },
+          { key: 'showcase', label: 'Pending showcase apps', count: pendingShowcase, tab: 'content' },
+          { key: 'critiques', label: 'Pending critique requests', count: pendingCritiques, tab: 'content' },
+          { key: 'flagged', label: 'Flagged chat messages', count: flaggedMessages, tab: 'settings' },
+        ].filter(item => item.count > 0),
+      });
+    } catch (error) {
+      console.error("Error fetching notification counts:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
   // Admin: Get pending comments
   app.get("/api/admin/pending-comments", isAuthenticated, async (req: any, res) => {
     try {
