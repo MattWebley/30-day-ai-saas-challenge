@@ -87,7 +87,7 @@ export default function AdminRevenue() {
   const [pasteText, setPasteText] = useState("");
   const [extracting, setExtracting] = useState(false);
 
-  // Auto-fill missing invoice details from database by email or name
+  // Auto-fill ALL missing invoice details from database + Stripe transactions
   const enrichFromDatabase = async (currentInvoice: typeof invoice) => {
     const email = currentInvoice.customerEmail?.trim();
     const name = currentInvoice.customerName?.trim();
@@ -100,11 +100,27 @@ export default function AdminRevenue() {
       const data = await res.json();
       if (!data.found) return;
       const fullName = `${data.firstName || ""} ${data.lastName || ""}`.trim();
+      const foundEmail = data.email || "";
+
+      // Match against loaded Stripe transactions to get purchase details
+      const txs = revenueData?.recentTransactions || [];
+      const matchEmail = foundEmail || email || "";
+      const customerTx = matchEmail
+        ? txs.filter(tx => tx.customerEmail?.toLowerCase() === matchEmail.toLowerCase() && tx.status === "succeeded" && !tx.refunded)
+        : [];
+      // Use the most recent successful transaction
+      const latestTx = customerTx.length > 0 ? customerTx[0] : null;
+
       setInvoice(prev => ({
         ...prev,
-        // Only fill in fields that are still empty
         customerName: prev.customerName || fullName,
-        customerEmail: prev.customerEmail || data.email,
+        customerEmail: prev.customerEmail || foundEmail,
+        amount: prev.amount || (latestTx ? (latestTx.amount / 100).toFixed(2) : ""),
+        currency: prev.currency || (latestTx ? latestTx.currency.toUpperCase() as "GBP" | "USD" : "GBP"),
+        product: prev.product === "21-Day AI SaaS Challenge" && latestTx?.description ? latestTx.description : prev.product,
+        date: prev.date === new Date().toISOString().split("T")[0] && latestTx
+          ? new Date(latestTx.created * 1000).toISOString().split("T")[0]
+          : prev.date,
       }));
     } catch {}
   };
