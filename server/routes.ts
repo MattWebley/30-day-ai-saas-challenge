@@ -5095,9 +5095,9 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
           userId,
           endpoint: 'ai-suggested-answer',
           endpointType: 'general',
-          systemPrompt: `You are Matt Webley's assistant for the 21-Day AI SaaS Challenge. Generate a helpful, concise answer to this student question about Day ${day}: "${dayContent?.title || 'Unknown'}". Keep answers practical and actionable. Use Matt's punchy, direct style with short sentences and ALL CAPS for emphasis occasionally. NEVER use em dashes. Use hyphens or rewrite the sentence instead.`,
+          systemPrompt: `You are Matt Webley's assistant for the 21-Day AI SaaS Challenge. Generate a BRIEF 2-3 sentence answer to this student question about Day ${day}: "${dayContent?.title || 'Unknown'}". Be direct and practical. Use Matt's punchy style. NEVER use em dashes. Keep it short.`,
           userMessage: question,
-          maxTokens: 500,
+          maxTokens: 200,
         });
 
         if (aiResult.success && aiResult.response) {
@@ -5129,6 +5129,84 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     } catch (error: any) {
       console.error("Error creating question:", error);
       res.status(500).json({ message: "Failed to submit question" });
+    }
+  });
+
+  // Admin: Draft an answer from notes
+  app.post("/api/admin/questions/draft-answer", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const { question, notes, day } = req.body;
+      if (!question || !notes) return res.status(400).json({ message: "Question and notes required" });
+
+      const result = await callClaude({
+        userId: req.user.claims.sub,
+        endpoint: 'admin-draft-answer',
+        endpointType: 'general',
+        systemPrompt: `You are Matt Webley, running the 21-Day AI SaaS Challenge. A student asked a question${day ? ` on Day ${day}` : ''}. You have written rough notes on how to answer. Turn these notes into a clear, well-written response.
+
+Rules:
+- Write as Matt speaking directly to the student (use "you", be warm but direct)
+- NEVER use em dashes. Use commas, full stops, or rewrite the sentence
+- Keep the same meaning and advice from the notes, just make it read well
+- Use short paragraphs. No walls of text
+- Be practical and actionable
+- Don't add information that isn't in the notes
+- Don't use emojis unless the notes include them
+- Aim for 3-5 sentences unless the notes clearly need more`,
+        userMessage: `STUDENT QUESTION: ${question}\n\nMY NOTES: ${notes}`,
+        maxTokens: 500,
+      });
+
+      if (result.success && result.response) {
+        res.json({ draft: result.response });
+      } else {
+        res.status(500).json({ message: "Failed to generate draft" });
+      }
+    } catch (error) {
+      console.error("Error drafting answer:", error);
+      res.status(500).json({ message: "Failed to generate draft" });
+    }
+  });
+
+  // Admin: Refine a drafted answer
+  app.post("/api/admin/questions/refine-answer", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const { question, currentDraft, action } = req.body;
+      if (!currentDraft || !action) return res.status(400).json({ message: "Draft and action required" });
+
+      const instructions: Record<string, string> = {
+        shorten: "Make this response shorter and more concise. Cut unnecessary words. Keep the key advice.",
+        lengthen: "Expand this response with a bit more detail and explanation. Add an example if helpful. Don't pad it with fluff.",
+        simplify: "Simplify this response. Use shorter words and simpler sentences. Make it easy for a complete beginner to understand.",
+        detail: "Add more specific, actionable detail to this response. Include concrete steps or examples where helpful.",
+      };
+
+      const instruction = instructions[action];
+      if (!instruction) return res.status(400).json({ message: "Invalid action" });
+
+      const result = await callClaude({
+        userId: req.user.claims.sub,
+        endpoint: 'admin-refine-answer',
+        endpointType: 'general',
+        systemPrompt: `You are rewriting a response from Matt Webley to a student. ${instruction} NEVER use em dashes. Keep it natural and direct. Return ONLY the rewritten response, nothing else.`,
+        userMessage: `STUDENT QUESTION: ${question || '(not provided)'}\n\nCURRENT RESPONSE:\n${currentDraft}`,
+        maxTokens: 600,
+      });
+
+      if (result.success && result.response) {
+        res.json({ draft: result.response });
+      } else {
+        res.status(500).json({ message: "Failed to refine draft" });
+      }
+    } catch (error) {
+      console.error("Error refining answer:", error);
+      res.status(500).json({ message: "Failed to refine draft" });
     }
   });
 

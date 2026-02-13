@@ -23,6 +23,11 @@ import {
   Sparkles,
   Smile,
   ArrowUpRight,
+  Wand2,
+  Minus,
+  Plus,
+  BookOpen,
+  Zap,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -41,6 +46,9 @@ export default function AdminContent() {
   const [showAnswered, setShowAnswered] = useState(false);
   const [showAllComments, setShowAllComments] = useState(false);
   const [answerDrafts, setAnswerDrafts] = useState<Record<number, string>>({});
+  const [notesDrafts, setNotesDrafts] = useState<Record<number, string>>({});
+  const [generatingDraft, setGeneratingDraft] = useState<Record<number, boolean>>({});
+  const [refiningDraft, setRefiningDraft] = useState<Record<number, string | null>>({});
 
   // Data queries
   const { data: pendingComments = [] } = useQuery<PendingComment[]>({
@@ -263,89 +271,208 @@ export default function AdminContent() {
           <>
             {pendingQuestions.length > 0 && (
               <div className="space-y-3">
-                {pendingQuestions.map((q) => (
-                  <Card key={q.id} className="p-4 border border-slate-200 border-l-4 border-l-amber-400">
-                    <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-slate-900 text-sm">
-                            {q.user?.firstName || "Anonymous"} {q.user?.lastName || ""}
-                          </span>
-                          <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
-                            Day {q.day}
-                          </span>
-                          <span className="text-xs text-slate-400">
-                            {formatDistanceToNow(new Date(q.createdAt), { addSuffix: true })}
-                          </span>
-                        </div>
-                        {q.user?.email && (
-                          <p className="text-xs text-slate-400 mb-2">{q.user.email}</p>
-                        )}
-                        <p className="text-slate-700 whitespace-pre-wrap break-words">{q.question}</p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="text-slate-400 hover:text-slate-600 border-slate-200 flex-shrink-0"
-                        onClick={() => {
-                          if (confirm("Hide this question? It won't be visible to students.")) {
-                            hideQuestion.mutate(q.id);
-                          }
-                        }}
-                        disabled={hideQuestion.isPending}
-                      >
-                        <EyeOff className="w-4 h-4" />
-                      </Button>
-                    </div>
+                {pendingQuestions.map((q) => {
+                  const hasDraft = !!answerDrafts[q.id]?.trim();
+                  const isGenerating = generatingDraft[q.id] || false;
+                  const activeRefine = refiningDraft[q.id] || null;
 
-                    {/* AI suggestion hint */}
-                    {q.aiSuggestedAnswer && (
-                      <div className="mb-3 bg-slate-50 border border-slate-200 rounded-lg p-3">
-                        <div className="flex items-center gap-1.5 mb-1">
-                          <Sparkles className="w-3.5 h-3.5 text-slate-400" />
-                          <span className="text-xs font-medium text-slate-500">AI Suggested Answer</span>
+                  const generateFromNotes = async () => {
+                    const notes = notesDrafts[q.id]?.trim();
+                    if (!notes) {
+                      toast.error("Write some notes first");
+                      return;
+                    }
+                    setGeneratingDraft((prev) => ({ ...prev, [q.id]: true }));
+                    try {
+                      const res = await fetch("/api/admin/questions/draft-answer", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({ question: q.question, notes, day: q.day }),
+                      });
+                      const data = await res.json();
+                      if (data.draft) {
+                        setAnswerDrafts((prev) => ({ ...prev, [q.id]: data.draft }));
+                      } else {
+                        toast.error("Failed to generate draft");
+                      }
+                    } catch {
+                      toast.error("Failed to generate draft");
+                    }
+                    setGeneratingDraft((prev) => ({ ...prev, [q.id]: false }));
+                  };
+
+                  const refineDraft = async (action: string) => {
+                    const draft = answerDrafts[q.id]?.trim();
+                    if (!draft) return;
+                    setRefiningDraft((prev) => ({ ...prev, [q.id]: action }));
+                    try {
+                      const res = await fetch("/api/admin/questions/refine-answer", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({ question: q.question, currentDraft: draft, action }),
+                      });
+                      const data = await res.json();
+                      if (data.draft) {
+                        setAnswerDrafts((prev) => ({ ...prev, [q.id]: data.draft }));
+                      } else {
+                        toast.error("Failed to refine");
+                      }
+                    } catch {
+                      toast.error("Failed to refine");
+                    }
+                    setRefiningDraft((prev) => ({ ...prev, [q.id]: null }));
+                  };
+
+                  return (
+                    <Card key={q.id} className="p-4 border border-slate-200 border-l-4 border-l-amber-400">
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-slate-900 text-sm">
+                              {q.user?.firstName || "Anonymous"} {q.user?.lastName || ""}
+                            </span>
+                            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
+                              Day {q.day}
+                            </span>
+                            <span className="text-xs text-slate-400">
+                              {formatDistanceToNow(new Date(q.createdAt), { addSuffix: true })}
+                            </span>
+                          </div>
+                          {q.user?.email && (
+                            <p className="text-xs text-slate-400 mb-2">{q.user.email}</p>
+                          )}
+                          <p className="text-slate-700 whitespace-pre-wrap break-words">{q.question}</p>
                         </div>
-                        <p className="text-sm text-slate-600 whitespace-pre-wrap">{q.aiSuggestedAnswer}</p>
                         <Button
                           size="sm"
                           variant="outline"
-                          className="mt-2 text-xs border-slate-200 text-slate-600"
-                          onClick={() => setAnswerDrafts((prev) => ({ ...prev, [q.id]: q.aiSuggestedAnswer! }))}
-                        >
-                          Use as starting point
-                        </Button>
-                      </div>
-                    )}
-
-                    {/* Answer form */}
-                    <div className="space-y-2">
-                      <textarea
-                        className="w-full border border-slate-200 rounded-lg p-3 text-sm text-slate-700 resize-y min-h-[80px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                        placeholder="Type your answer..."
-                        value={answerDrafts[q.id] || ""}
-                        onChange={(e) => setAnswerDrafts((prev) => ({ ...prev, [q.id]: e.target.value }))}
-                      />
-                      <div className="flex justify-end">
-                        <Button
-                          size="sm"
-                          className="gap-1.5"
+                          className="text-slate-400 hover:text-slate-600 border-slate-200 flex-shrink-0"
                           onClick={() => {
-                            const answer = answerDrafts[q.id]?.trim();
-                            if (!answer) {
-                              toast.error("Please type an answer first");
-                              return;
+                            if (confirm("Hide this question? It won't be visible to students.")) {
+                              hideQuestion.mutate(q.id);
                             }
-                            answerQuestion.mutate({ id: q.id, answer });
                           }}
-                          disabled={answerQuestion.isPending || !answerDrafts[q.id]?.trim()}
+                          disabled={hideQuestion.isPending}
                         >
-                          <Send className="w-4 h-4" />
-                          Send Answer
+                          <EyeOff className="w-4 h-4" />
                         </Button>
                       </div>
-                    </div>
-                  </Card>
-                ))}
+
+                      {/* AI quick suggestion (collapsed) */}
+                      {q.aiSuggestedAnswer && !hasDraft && (
+                        <div className="mb-3 bg-slate-50 border border-slate-200 rounded-lg p-3">
+                          <div className="flex items-center gap-1.5 mb-1">
+                            <Sparkles className="w-3.5 h-3.5 text-slate-400" />
+                            <span className="text-xs font-medium text-slate-500">AI Quick Suggestion</span>
+                          </div>
+                          <p className="text-sm text-slate-600 whitespace-pre-wrap">{q.aiSuggestedAnswer}</p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mt-2 text-xs border-slate-200 text-slate-600"
+                            onClick={() => setAnswerDrafts((prev) => ({ ...prev, [q.id]: q.aiSuggestedAnswer! }))}
+                          >
+                            Use this
+                          </Button>
+                        </div>
+                      )}
+
+                      {/* Notes + Generate section */}
+                      {!hasDraft && (
+                        <div className="space-y-2 mb-3">
+                          <div className="flex items-center gap-1.5">
+                            <Wand2 className="w-3.5 h-3.5 text-primary" />
+                            <span className="text-xs font-medium text-slate-700">Your notes (AI will draft a proper response)</span>
+                          </div>
+                          <textarea
+                            className="w-full border border-slate-200 rounded-lg p-3 text-sm text-slate-700 resize-y min-h-[60px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                            placeholder="Jot quick notes on what to say... e.g. 'tell them to use the free tier of Stripe, link their account, test with test mode first'"
+                            value={notesDrafts[q.id] || ""}
+                            onChange={(e) => setNotesDrafts((prev) => ({ ...prev, [q.id]: e.target.value }))}
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              className="gap-1.5"
+                              onClick={generateFromNotes}
+                              disabled={isGenerating || !notesDrafts[q.id]?.trim()}
+                            >
+                              <Wand2 className="w-4 h-4" />
+                              {isGenerating ? "Generating..." : "Generate Response"}
+                            </Button>
+                            <span className="text-xs text-slate-400 self-center">or type your answer directly below</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Draft / manual answer area */}
+                      <div className="space-y-2">
+                        <textarea
+                          className="w-full border border-slate-200 rounded-lg p-3 text-sm text-slate-700 resize-y min-h-[80px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                          placeholder="Your answer (edit freely before sending)..."
+                          value={answerDrafts[q.id] || ""}
+                          onChange={(e) => setAnswerDrafts((prev) => ({ ...prev, [q.id]: e.target.value }))}
+                        />
+
+                        {/* Refine buttons - only show when there's a draft */}
+                        {hasDraft && (
+                          <div className="flex flex-wrap gap-1.5">
+                            <span className="text-xs text-slate-400 self-center mr-1">Adjust:</span>
+                            {[
+                              { action: "shorten", label: "Shorter", icon: Minus },
+                              { action: "lengthen", label: "Longer", icon: Plus },
+                              { action: "simplify", label: "Simpler", icon: Zap },
+                              { action: "detail", label: "More Detail", icon: BookOpen },
+                            ].map(({ action, label, icon: Icon }) => (
+                              <Button
+                                key={action}
+                                size="sm"
+                                variant="outline"
+                                className="text-xs gap-1 border-slate-200 text-slate-600 hover:text-slate-900 h-7 px-2"
+                                onClick={() => refineDraft(action)}
+                                disabled={!!activeRefine}
+                              >
+                                <Icon className="w-3 h-3" />
+                                {activeRefine === action ? "..." : label}
+                              </Button>
+                            ))}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-xs gap-1 border-slate-200 text-red-500 hover:text-red-700 h-7 px-2 ml-auto"
+                              onClick={() => {
+                                setAnswerDrafts((prev) => ({ ...prev, [q.id]: "" }));
+                              }}
+                            >
+                              Clear
+                            </Button>
+                          </div>
+                        )}
+
+                        <div className="flex justify-end">
+                          <Button
+                            size="sm"
+                            className="gap-1.5"
+                            onClick={() => {
+                              const answer = answerDrafts[q.id]?.trim();
+                              if (!answer) {
+                                toast.error("Please type an answer first");
+                                return;
+                              }
+                              answerQuestion.mutate({ id: q.id, answer });
+                            }}
+                            disabled={answerQuestion.isPending || !hasDraft}
+                          >
+                            <Send className="w-4 h-4" />
+                            Send Answer
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             )}
 
