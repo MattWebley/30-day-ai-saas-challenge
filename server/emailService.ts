@@ -1,8 +1,10 @@
 import { Resend } from 'resend';
 import crypto from 'crypto';
 import { storage } from './storage';
+import { db } from './db';
 import { addContactToSysteme } from './systemeService';
-import type { DripEmail } from '@shared/schema';
+import { emailLogs, type DripEmail } from '@shared/schema';
+import { and, eq, gte, sql } from 'drizzle-orm';
 
 const FROM_EMAIL = 'Matt Webley <matt@mattwebley.com>';
 const REPLY_TO = 'matt@mattwebley.com';
@@ -1015,6 +1017,19 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
 
     const now = new Date();
     const dayMs = 1000 * 60 * 60 * 24;
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const MAX_DRIP_EMAILS_PER_DAY = 2;
+
+    // Pre-fetch today's email counts per recipient to enforce daily cap
+    const todayLogs = await db
+      .select({ email: emailLogs.recipientEmail, count: sql<number>`count(*)::int` })
+      .from(emailLogs)
+      .where(and(
+        eq(emailLogs.status, 'sent'),
+        gte(emailLogs.sentAt, startOfToday)
+      ))
+      .groupBy(emailLogs.recipientEmail);
+    const emailsSentToday = new Map(todayLogs.map(r => [r.email, r.count]));
 
     for (const user of paidUsers) {
       const signupDate = user.createdAt ? new Date(user.createdAt) : null;
@@ -1024,153 +1039,65 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
       const completedDays = progressMap.get(user.id) || new Set<number>();
       const stats = statsMap.get(user.id);
 
+      // DAILY CAP: Skip user if they've already received 2+ emails today
+      const todayCount = emailsSentToday.get(user.email!) || 0;
+      if (todayCount >= MAX_DRIP_EMAILS_PER_DAY) continue;
+
       // Get which drip emails this user has already received
       const alreadySent = await storage.getDripEmailsSentForUser(user.id);
       const sentIds = new Set(alreadySent.map(s => s.dripEmailId));
       const unsubUrl = generateUnsubscribeUrl(user.id);
 
-      // SPAM GUARD: Only send 1 email per user per processor run.
-      // The next hourly run will pick up the next qualifying email.
-      let sentToThisUser = false;
+      // SMART PRIORITY: Pick the single best email for where this user is right now.
+      // Priority order:
+      //   1. Milestone (they just achieved something — celebrate it)
+      //   2. Regular drip (the core journey — keep them moving)
+      //   3. Welcome back (they returned after being inactive — acknowledge it)
+      //   4. Initial engagement (haven't started yet — nudge them)
+      //   5. Nag (lowest priority — they're already inactive)
 
-      // --- REGULAR DRIP EMAILS (progress-based for challenge days, calendar-based for post-completion) ---
-      for (const drip of regularDrips) {
-        if (sentToThisUser) break;
-        if (sentIds.has(drip.id)) continue; // Already sent
+      let bestEmail: typeof regularDrips[0] | null = null;
+      let bestCategory = '';
 
-        if (drip.dayTrigger === 0) {
-          // Day 0 welcome email: send on signup day only
-          if (daysSinceSignup !== 0) continue;
-          if (completedDays.has(0)) continue;
-        } else if (drip.dayTrigger <= 21) {
-          // Challenge emails (Days 1-21): send when user completed previous day but hasn't done this one yet
-          if (!completedDays.has(drip.dayTrigger - 1)) continue;
-          if (completedDays.has(drip.dayTrigger)) continue;
-        } else {
-          // Post-completion emails (Days 22+): send after finishing the challenge, calendar-spaced
-          if (!completedDays.has(21)) continue;
-          if (daysSinceSignup < drip.dayTrigger) continue;
-        }
-
-        console.log(`[Drip] SENDING email #${drip.emailNumber} "${drip.subject}" to ${user.email}`);
-        const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
-        if (success) {
-          await storage.markDripEmailSent(user.id, drip.id);
-          sent++;
-          sentToThisUser = true;
-        } else {
-          errors++;
-        }
-        await new Promise(resolve => setTimeout(resolve, 100));
-      }
-
-      // --- INITIAL ENGAGEMENT (paid but never started, never completed Day 0) ---
-      if (!sentToThisUser && initialDrips.length > 0 && !completedDays.has(0)) {
-        for (const drip of initialDrips) {
-          if (sentToThisUser) break;
-          if (sentIds.has(drip.id)) continue; // Already sent (one-time only)
-          if (daysSinceSignup < drip.dayTrigger) continue; // Not enough days since signup
-
-          console.log(`[Drip] SENDING initial email #${drip.emailNumber} "${drip.subject}" to ${user.email}`);
-          const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
-          if (success) {
-            await storage.markDripEmailSent(user.id, drip.id);
-            sent++;
-            sentToThisUser = true;
-          } else {
-            errors++;
-          }
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-      }
-
-      // --- NAG EMAILS (inactivity-based) ---
-      if (!sentToThisUser && nagDrips.length > 0 && stats) {
-        const lastCompletedDay = stats.lastCompletedDay;
-        // Only nag users who started (completed at least day 0) but haven't finished
-        if (lastCompletedDay !== null && lastCompletedDay !== undefined && lastCompletedDay >= 0 && lastCompletedDay < 21) {
-          const lastActivity = stats.lastActivityDate ? new Date(stats.lastActivityDate) : null;
-          if (lastActivity) {
-            const daysInactive = Math.floor((now.getTime() - lastActivity.getTime()) / dayMs);
-
-            if (daysInactive >= 1) {
-              const nagResetAt = stats.nagResetAt ? new Date(stats.nagResetAt) : null;
-
-              // Personal nags (levels 1-3) only play once ever. Generic nudges (4+) repeat each cycle.
-              const personalNags = nagDrips.filter(n => (n.nagLevel || 0) <= 3);
-              const gentleNudges = nagDrips.filter(n => (n.nagLevel || 0) > 3);
-
-              // Has the user ever received the final personal nag (level 3)?
-              const finalPersonalNag = personalNags.find(n => n.nagLevel === 3);
-              const completedPersonalCycle = finalPersonalNag && alreadySent.some(s => s.dripEmailId === finalPersonalNag.id);
-
-              const nagsToUse = completedPersonalCycle ? gentleNudges : personalNags;
-
-              for (const nag of nagsToUse) {
-                if (sentToThisUser) break;
-                // Skip if already sent after last nag reset
-                const wasSentAfterReset = alreadySent.some(s =>
-                  s.dripEmailId === nag.id &&
-                  s.sentAt &&
-                  (!nagResetAt || new Date(s.sentAt) > nagResetAt)
-                );
-                if (wasSentAfterReset) continue;
-
-                if (daysInactive < nag.dayTrigger) continue; // Not inactive long enough
-
-                console.log(`[Drip] SENDING nag email #${nag.emailNumber} (level ${nag.nagLevel}) "${nag.subject}" to ${user.email}`);
-                const success = await sendDripEmail(nag, user.email!, user.firstName || '', unsubUrl);
-                if (success) {
-                  await storage.markDripEmailSent(user.id, nag.id);
-                  sent++;
-                  sentToThisUser = true;
-                  // Tag as stalled in Systeme on first nag
-                  if (nag.nagLevel === 1) {
-                    addContactToSysteme({
-                      email: user.email!,
-                      firstName: user.firstName || undefined,
-                      lastName: user.lastName || undefined,
-                      tags: ['Challenge Stalled'],
-                    }).catch(err => console.error('[Systeme] Stalled tag error:', err));
-                  }
-                } else {
-                  errors++;
-                }
-                await new Promise(resolve => setTimeout(resolve, 100));
-              }
-            }
-          }
-        }
-      }
-
-      // --- MILESTONE EMAILS (one-time, fires when user completes the specified day) ---
-      if (!sentToThisUser && milestoneDrips.length > 0) {
+      // 1. MILESTONE — user completed a day, congratulate them
+      if (!bestEmail && milestoneDrips.length > 0) {
         for (const drip of milestoneDrips) {
-          if (sentToThisUser) break;
-          if (sentIds.has(drip.id)) continue; // Already sent (one-time only)
-          if (!completedDays.has(drip.dayTrigger)) continue; // Haven't completed this day yet
-
-          console.log(`[Drip] SENDING milestone email #${drip.emailNumber} "${drip.subject}" to ${user.email}`);
-          const success = await sendDripEmail(drip, user.email!, user.firstName || '', unsubUrl);
-          if (success) {
-            await storage.markDripEmailSent(user.id, drip.id);
-            sent++;
-            sentToThisUser = true;
-          } else {
-            errors++;
-          }
-          await new Promise(resolve => setTimeout(resolve, 100));
+          if (sentIds.has(drip.id)) continue;
+          if (!completedDays.has(drip.dayTrigger)) continue;
+          bestEmail = drip;
+          bestCategory = 'milestone';
+          break;
         }
       }
 
-      // --- WELCOME BACK EMAIL (fires when user returns after receiving nag emails) ---
-      if (!sentToThisUser && welcomeBackDrips.length > 0 && stats?.lastActivityDate) {
+      // 2. REGULAR DRIP — the core challenge journey
+      if (!bestEmail) {
+        for (const drip of regularDrips) {
+          if (sentIds.has(drip.id)) continue;
+
+          if (drip.dayTrigger === 0) {
+            if (daysSinceSignup !== 0) continue;
+            if (completedDays.has(0)) continue;
+          } else if (drip.dayTrigger <= 21) {
+            if (!completedDays.has(drip.dayTrigger - 1)) continue;
+            if (completedDays.has(drip.dayTrigger)) continue;
+          } else {
+            if (!completedDays.has(21)) continue;
+            if (daysSinceSignup < drip.dayTrigger) continue;
+          }
+
+          bestEmail = drip;
+          bestCategory = 'drip';
+          break;
+        }
+      }
+
+      // 3. WELCOME BACK — user returned after nag emails
+      if (!bestEmail && welcomeBackDrips.length > 0 && stats?.lastActivityDate) {
         const lastActivity = new Date(stats.lastActivityDate);
         const daysInactive = Math.floor((now.getTime() - lastActivity.getTime()) / dayMs);
 
-        // User is currently active (last activity within 2 days)
         if (daysInactive < 2) {
-          // Find the most recent nag sent to this user
           const nagEmailIds = new Set(nagDrips.map(n => n.id));
           const sentNags = alreadySent
             .filter(s => nagEmailIds.has(s.dripEmailId) && s.sentAt)
@@ -1178,33 +1105,90 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
 
           if (sentNags.length > 0) {
             const lastNagDate = new Date(sentNags[0].sentAt!);
-
-            // User's activity is more recent than the last nag (they came back)
             if (lastActivity > lastNagDate) {
               for (const wb of welcomeBackDrips) {
-                if (sentToThisUser) break;
-                // Only send if not already sent after the last nag
                 const alreadySentWb = alreadySent.some(s =>
                   s.dripEmailId === wb.id &&
                   s.sentAt &&
                   new Date(s.sentAt) > lastNagDate
                 );
                 if (!alreadySentWb) {
-                  console.log(`[Drip] SENDING welcome-back email #${wb.emailNumber} "${wb.subject}" to ${user.email}`);
-                  const success = await sendDripEmail(wb, user.email!, user.firstName || '', unsubUrl);
-                  if (success) {
-                    await storage.markDripEmailSent(user.id, wb.id);
-                    sent++;
-                    sentToThisUser = true;
-                  } else {
-                    errors++;
-                  }
-                  await new Promise(resolve => setTimeout(resolve, 100));
+                  bestEmail = wb;
+                  bestCategory = 'welcome-back';
+                  break;
                 }
               }
             }
           }
         }
+      }
+
+      // 4. INITIAL ENGAGEMENT — paid but never started
+      if (!bestEmail && initialDrips.length > 0 && !completedDays.has(0)) {
+        for (const drip of initialDrips) {
+          if (sentIds.has(drip.id)) continue;
+          if (daysSinceSignup < drip.dayTrigger) continue;
+          bestEmail = drip;
+          bestCategory = 'initial';
+          break;
+        }
+      }
+
+      // 5. NAG — inactive user, lowest priority
+      if (!bestEmail && nagDrips.length > 0 && stats) {
+        const lastCompletedDay = stats.lastCompletedDay;
+        if (lastCompletedDay !== null && lastCompletedDay !== undefined && lastCompletedDay >= 0 && lastCompletedDay < 21) {
+          const lastActivity = stats.lastActivityDate ? new Date(stats.lastActivityDate) : null;
+          if (lastActivity) {
+            const daysInactive = Math.floor((now.getTime() - lastActivity.getTime()) / dayMs);
+
+            if (daysInactive >= 1) {
+              const nagResetAt = stats.nagResetAt ? new Date(stats.nagResetAt) : null;
+              const personalNags = nagDrips.filter(n => (n.nagLevel || 0) <= 3);
+              const gentleNudges = nagDrips.filter(n => (n.nagLevel || 0) > 3);
+              const finalPersonalNag = personalNags.find(n => n.nagLevel === 3);
+              const completedPersonalCycle = finalPersonalNag && alreadySent.some(s => s.dripEmailId === finalPersonalNag.id);
+              const nagsToUse = completedPersonalCycle ? gentleNudges : personalNags;
+
+              for (const nag of nagsToUse) {
+                const wasSentAfterReset = alreadySent.some(s =>
+                  s.dripEmailId === nag.id &&
+                  s.sentAt &&
+                  (!nagResetAt || new Date(s.sentAt) > nagResetAt)
+                );
+                if (wasSentAfterReset) continue;
+                if (daysInactive < nag.dayTrigger) continue;
+
+                bestEmail = nag;
+                bestCategory = 'nag';
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      // Send the single best email (if any)
+      if (bestEmail) {
+        console.log(`[Drip] SENDING ${bestCategory} email #${bestEmail.emailNumber} "${bestEmail.subject}" to ${user.email} (${todayCount} already today)`);
+        const success = await sendDripEmail(bestEmail, user.email!, user.firstName || '', unsubUrl);
+        if (success) {
+          await storage.markDripEmailSent(user.id, bestEmail.id);
+          sent++;
+          emailsSentToday.set(user.email!, todayCount + 1);
+          // Tag as stalled in Systeme on first nag
+          if (bestCategory === 'nag' && (bestEmail as any).nagLevel === 1) {
+            addContactToSysteme({
+              email: user.email!,
+              firstName: user.firstName || undefined,
+              lastName: user.lastName || undefined,
+              tags: ['Challenge Stalled'],
+            }).catch(err => console.error('[Systeme] Stalled tag error:', err));
+          }
+        } else {
+          errors++;
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
       }
     }
 
