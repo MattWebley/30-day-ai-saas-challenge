@@ -5525,12 +5525,11 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
         }
       };
 
-      // Link to existing Stripe customer so webhook can find them
+      // Link to existing Stripe customer, or pre-fill email as fallback
+      // Stripe doesn't allow both customer and customer_email at the same time
       if (user.stripeCustomerId) {
         sessionConfig.customer = user.stripeCustomerId;
-      }
-      // Pre-fill email so webhook can match by email as fallback
-      if (user.email) {
+      } else if (user.email) {
         sessionConfig.customer_email = user.email;
       }
 

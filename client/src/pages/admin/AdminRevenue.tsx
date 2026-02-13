@@ -24,6 +24,28 @@ import { toast } from "sonner";
 import type { RevenueData, Coupon, CoachingPurchase } from "./adminTypes";
 import { formatCurrency } from "./adminTypes";
 
+function AedTotal({ currencies }: { currencies: { currency: string; amount: number }[] }) {
+  const USD_TO_AED = 3.6725; // pegged rate
+  const GBP_TO_AED = 4.65;   // approximate
+  const totalAedCents = currencies.reduce((sum, curr) => {
+    if (curr.currency.toLowerCase() === 'usd') return sum + curr.amount * USD_TO_AED;
+    if (curr.currency.toLowerCase() === 'gbp') return sum + curr.amount * GBP_TO_AED;
+    return sum;
+  }, 0);
+  const totalAed = (totalAedCents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return (
+    <div className="mt-4 p-4 bg-slate-50 rounded-lg border-2 border-slate-200">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-slate-500">Combined Total (AED)</p>
+          <p className="text-xs text-slate-400">USD pegged 3.6725 · GBP ~4.65</p>
+        </div>
+        <p className="text-3xl font-extrabold text-slate-900">AED {totalAed}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminRevenue() {
   const queryClient = useQueryClient();
 
@@ -330,6 +352,10 @@ export default function AdminRevenue() {
                     </div>
                   ))}
                 </div>
+              )}
+              {/* AED Combined Total */}
+              {revenueData.revenueByCurrency.length > 0 && (
+                <AedTotal currencies={revenueData.revenueByCurrency} />
               )}
             </Card>
 
