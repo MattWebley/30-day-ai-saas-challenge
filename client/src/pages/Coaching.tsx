@@ -9,7 +9,7 @@ import { toast } from "sonner";
 export default function Coaching() {
   const [isProcessing, setIsProcessing] = useState<string | null>(null);
   const [currency, setCurrency] = useState<"gbp" | "usd">("gbp");
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { testMode } = useTestMode();
   const [, setLocation] = useLocation();
   const isAdmin = (user as any)?.isAdmin;
@@ -82,8 +82,10 @@ export default function Coaching() {
     }
   };
 
-  return (
-    <Layout currentDay={0}>
+  // Show dashboard layout for logged-in paying users, standalone page for everyone else
+  const showLayout = isAuthenticated && (user as any)?.challengePurchased;
+
+  const content = (
       <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
 
         {/* Currency Toggle */}
@@ -519,6 +521,15 @@ export default function Coaching() {
         </p>
 
       </div>
-    </Layout>
+  );
+
+  if (showLayout) {
+    return <Layout currentDay={0}>{content}</Layout>;
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-100">
+      {content}
+    </div>
   );
 }

@@ -728,6 +728,9 @@ export const emailLogs = pgTable("email_logs", {
   status: varchar("status").notNull(), // 'sent' or 'failed'
   resendId: varchar("resend_id"), // Resend API message ID
   error: text("error"), // error message if failed
+  trackingId: varchar("tracking_id").unique(), // UUID for open/click tracking
+  openCount: integer("open_count").default(0).notNull(),
+  clickCount: integer("click_count").default(0).notNull(),
   sentAt: timestamp("sent_at").defaultNow(),
 }, (table) => [
   index("email_logs_recipient_idx").on(table.recipientEmail),

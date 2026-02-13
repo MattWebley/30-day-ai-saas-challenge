@@ -85,7 +85,7 @@ function Router() {
 
   // Redirect authenticated but non-paying users to order page
   const hasPurchased = (user as any)?.challengePurchased || (user as any)?.coachingPurchased || (user as any)?.isAdmin || (user as any)?.isCoach;
-  const protectedPaths = ['/dashboard', '/badges', '/referrals', '/build-log', '/claude-code', '/settings', '/coaching', '/my-coaching', '/critique', '/testimonial', '/congratulations'];
+  const protectedPaths = ['/dashboard', '/badges', '/referrals', '/build-log', '/claude-code', '/settings', '/my-coaching', '/critique', '/testimonial', '/congratulations'];
   const isProtectedRoute = protectedPaths.some(path => location.startsWith(path));
   if (isAuthenticated && !hasPurchased && isProtectedRoute) {
     setLocation('/order');
@@ -93,7 +93,7 @@ function Router() {
   }
 
   // Public routes that don't need auth check
-  const publicPaths = ['/order', '/unlock', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password', '/coach-login', '/coach', '/coach-setup'];
+  const publicPaths = ['/order', '/unlock', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password', '/coach-login', '/coach', '/coach-setup'];
   const isPublicRoute = publicPaths.some(path => location.startsWith(path)) || location === '/';
 
   // Only show loading spinner for protected routes
@@ -121,6 +121,7 @@ function Router() {
         <Route path="/sales-letter-pack" component={SalesLetterPack} />
         <Route path="/coaching/upsell" component={CoachingUpsell} />
         <Route path="/coaching/success" component={CoachingSuccess} />
+        <Route path="/coaching" component={Coaching} />
         <Route path="/critique/success" component={CritiqueSuccess} />
         <Route path="/welcome" component={Welcome} />
         <Route path="/terms" component={Terms} />
@@ -153,7 +154,6 @@ function Router() {
             <Route path="/claude-code" component={ClaudeCodeGuide} />
             <Route path="/settings" component={Settings} />
             <Route path="/design-preview" component={DesignPreview} />
-            <Route path="/coaching" component={Coaching} />
             <Route path="/my-coaching" component={MyCoaching} />
             <Route path="/critique" component={Critique} />
             <Route path="/testimonial" component={Testimonial} />

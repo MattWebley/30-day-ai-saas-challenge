@@ -1485,6 +1485,20 @@ export class DatabaseStorage implements IStorage {
       .offset(offset);
   }
 
+  async recordEmailOpen(trackingId: string): Promise<void> {
+    await db
+      .update(emailLogs)
+      .set({ openCount: sql`${emailLogs.openCount} + 1` })
+      .where(eq(emailLogs.trackingId, trackingId));
+  }
+
+  async recordEmailClick(trackingId: string): Promise<void> {
+    await db
+      .update(emailLogs)
+      .set({ clickCount: sql`${emailLogs.clickCount} + 1` })
+      .where(eq(emailLogs.trackingId, trackingId));
+  }
+
   // Drip email operations
   async getAllDripEmails(): Promise<DripEmail[]> {
     return await db.select().from(dripEmails).orderBy(dripEmails.emailNumber);
