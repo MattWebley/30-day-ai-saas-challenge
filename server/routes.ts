@@ -4882,6 +4882,23 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
     }
   });
 
+  // Get email stats (admin)
+  app.get("/api/admin/email-stats", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      if (!user?.isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const stats = await storage.getEmailStats();
+      res.json(stats);
+    } catch (error: any) {
+      console.error("Error fetching email stats:", error);
+      res.status(500).json({ message: "Failed to fetch email stats" });
+    }
+  });
+
   // ============================================
   // DRIP EMAIL ROUTES (Admin)
   // ============================================

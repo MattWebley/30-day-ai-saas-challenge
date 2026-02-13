@@ -1567,6 +1567,47 @@ export class DatabaseStorage implements IStorage {
       .groupBy(dripEmailsSent.dripEmailId);
     return results;
   }
+
+  async getEmailStats(): Promise<{
+    totalSent: number;
+    totalFailed: number;
+    sentToday: number;
+    sentThisWeek: number;
+    recentFailures: { error: string; count: number }[];
+  }> {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfWeek.getDate() - 7);
+
+    const [totals] = await db
+      .select({
+        totalSent: sql<number>`count(*) filter (where ${emailLogs.status} = 'sent')::int`,
+        totalFailed: sql<number>`count(*) filter (where ${emailLogs.status} = 'failed')::int`,
+        sentToday: sql<number>`count(*) filter (where ${emailLogs.status} = 'sent' and ${emailLogs.sentAt} >= ${startOfToday})::int`,
+        sentThisWeek: sql<number>`count(*) filter (where ${emailLogs.status} = 'sent' and ${emailLogs.sentAt} >= ${startOfWeek})::int`,
+      })
+      .from(emailLogs);
+
+    const recentFailures = await db
+      .select({
+        error: sql<string>`coalesce(${emailLogs.error}, 'Unknown error')`,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(emailLogs)
+      .where(eq(emailLogs.status, 'failed'))
+      .groupBy(sql`coalesce(${emailLogs.error}, 'Unknown error')`)
+      .orderBy(sql`count(*) desc`)
+      .limit(5);
+
+    return {
+      totalSent: totals?.totalSent || 0,
+      totalFailed: totals?.totalFailed || 0,
+      sentToday: totals?.sentToday || 0,
+      sentThisWeek: totals?.sentThisWeek || 0,
+      recentFailures,
+    };
+  }
 }
 
 export const storage = new DatabaseStorage();

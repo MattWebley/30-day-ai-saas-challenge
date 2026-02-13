@@ -40,6 +40,9 @@ import {
   Info,
   Trophy,
   RefreshCw,
+  BarChart3,
+  TrendingUp,
+  Clock,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { EmailTemplate, EmailLog, DripEmail } from "./adminTypes";
@@ -143,6 +146,18 @@ export default function AdminEmails() {
   // Drip email queries
   const { data: dripEmails = [] } = useQuery<DripEmail[]>({
     queryKey: ["/api/admin/drip-emails"],
+  });
+
+  // Email stats
+  const { data: emailStats } = useQuery<{
+    totalSent: number;
+    totalFailed: number;
+    sentToday: number;
+    sentThisWeek: number;
+    recentFailures: { error: string; count: number }[];
+  }>({
+    queryKey: ["/api/admin/email-stats"],
+    staleTime: 30_000,
   });
 
   const updateDripEmail = useMutation({
@@ -386,8 +401,94 @@ export default function AdminEmails() {
     { value: "all", label: "All Users", desc: "Everyone including non-paying" },
   ];
 
+  // Calculate per-campaign totals from drip data
+  const campaignTotals = {
+    initial: dripEmails.filter(d => d.emailType === 'initial').reduce((sum, d) => sum + (d.sentCount || 0), 0),
+    drip: dripEmails.filter(d => !d.emailType || d.emailType === 'drip').reduce((sum, d) => sum + (d.sentCount || 0), 0),
+    reengagement: dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) <= 3).reduce((sum, d) => sum + (d.sentCount || 0), 0),
+    nudges: dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) > 3).reduce((sum, d) => sum + (d.sentCount || 0), 0),
+    milestone: dripEmails.filter(d => d.emailType === 'milestone').reduce((sum, d) => sum + (d.sentCount || 0), 0),
+    welcomeBack: dripEmails.filter(d => d.emailType === 'welcome_back').reduce((sum, d) => sum + (d.sentCount || 0), 0),
+  };
+
+  const successRate = emailStats && emailStats.totalSent + emailStats.totalFailed > 0
+    ? Math.round((emailStats.totalSent / (emailStats.totalSent + emailStats.totalFailed)) * 100)
+    : 100;
+
   return (
     <div className="space-y-6">
+      {/* Email Stats Overview */}
+      {emailStats && (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="p-4 border-2 border-slate-200 shadow-none border-l-4 border-l-blue-500">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                <Mail className="w-5 h-5 text-blue-500" />
+              </div>
+              <div>
+                <p className="text-2xl font-extrabold text-slate-900">{emailStats.totalSent.toLocaleString()}</p>
+                <p className="text-slate-600">Total Sent</p>
+              </div>
+            </div>
+          </Card>
+          <Card className="p-4 border-2 border-slate-200 shadow-none border-l-4 border-l-green-500">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                <TrendingUp className="w-5 h-5 text-green-500" />
+              </div>
+              <div>
+                <p className="text-2xl font-extrabold text-slate-900">{successRate}%</p>
+                <p className="text-slate-600">Success Rate</p>
+              </div>
+            </div>
+          </Card>
+          <Card className="p-4 border-2 border-slate-200 shadow-none border-l-4 border-l-amber-500">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-amber-500" />
+              </div>
+              <div>
+                <p className="text-2xl font-extrabold text-slate-900">{emailStats.sentToday}</p>
+                <p className="text-slate-600">Sent Today</p>
+              </div>
+            </div>
+          </Card>
+          <Card className="p-4 border-2 border-slate-200 shadow-none border-l-4 border-l-purple-500">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-purple-500" />
+              </div>
+              <div>
+                <p className="text-2xl font-extrabold text-slate-900">{emailStats.sentThisWeek}</p>
+                <p className="text-slate-600">This Week</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Failed emails summary */}
+      {emailStats && emailStats.totalFailed > 0 && (
+        <Card className="p-4 border-2 border-red-200 shadow-none">
+          <div className="flex items-start gap-3">
+            <XCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-bold text-slate-900">{emailStats.totalFailed} Failed Email{emailStats.totalFailed !== 1 ? 's' : ''}</p>
+              {emailStats.recentFailures.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {emailStats.recentFailures.map((f, i) => (
+                    <p key={i} className="text-slate-700">
+                      <span className="font-medium text-red-600">{f.count}x</span>{' '}
+                      <span className="text-slate-600">{f.error}</span>
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -608,6 +709,11 @@ export default function AdminEmails() {
                   <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">
                     {dripEmails.filter(d => d.emailType === 'initial' && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'initial').length} active
                   </span>
+                  {campaignTotals.initial > 0 && (
+                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
+                      {campaignTotals.initial} total sent
+                    </span>
+                  )}
                 </div>
                 <div className="p-3 bg-blue-50 border-2 border-blue-200 rounded-lg mb-3">
                   <p className="text-blue-900">
@@ -632,6 +738,11 @@ export default function AdminEmails() {
                 <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-xs font-bold rounded-full">
                   {dripEmails.filter(d => !d.emailType || d.emailType === 'drip').filter(d => d.isActive).length}/{dripEmails.filter(d => !d.emailType || d.emailType === 'drip').length} active
                 </span>
+                {campaignTotals.drip > 0 && (
+                  <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
+                    {campaignTotals.drip} total sent
+                  </span>
+                )}
               </div>
               <div className="p-3 bg-amber-50 border-2 border-amber-200 rounded-lg mb-3">
                 <p className="text-amber-900">
@@ -656,6 +767,11 @@ export default function AdminEmails() {
                   <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs font-bold rounded-full">
                     {dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) <= 3 && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) <= 3).length} active
                   </span>
+                  {campaignTotals.reengagement > 0 && (
+                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
+                      {campaignTotals.reengagement} total sent
+                    </span>
+                  )}
                 </div>
                 <div className="p-3 bg-orange-50 border-2 border-orange-200 rounded-lg mb-3">
                   <p className="text-orange-900">
@@ -681,6 +797,11 @@ export default function AdminEmails() {
                   <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
                     {dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) > 3 && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'nag' && (d.nagLevel || 0) > 3).length} active
                   </span>
+                  {campaignTotals.nudges > 0 && (
+                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
+                      {campaignTotals.nudges} total sent
+                    </span>
+                  )}
                 </div>
                 <div className="p-3 bg-slate-50 border-2 border-slate-200 rounded-lg mb-3">
                   <p className="text-slate-700">
@@ -706,6 +827,11 @@ export default function AdminEmails() {
                   <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs font-bold rounded-full">
                     {dripEmails.filter(d => d.emailType === 'milestone' && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'milestone').length} active
                   </span>
+                  {campaignTotals.milestone > 0 && (
+                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
+                      {campaignTotals.milestone} total sent
+                    </span>
+                  )}
                 </div>
                 <div className="p-3 bg-emerald-50 border-2 border-emerald-200 rounded-lg mb-3">
                   <p className="text-emerald-900">
@@ -731,6 +857,11 @@ export default function AdminEmails() {
                   <span className="px-2 py-0.5 bg-teal-100 text-teal-700 text-xs font-bold rounded-full">
                     {dripEmails.filter(d => d.emailType === 'welcome_back' && d.isActive).length}/{dripEmails.filter(d => d.emailType === 'welcome_back').length} active
                   </span>
+                  {campaignTotals.welcomeBack > 0 && (
+                    <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
+                      {campaignTotals.welcomeBack} total sent
+                    </span>
+                  )}
                 </div>
                 <div className="p-3 bg-teal-50 border-2 border-teal-200 rounded-lg mb-3">
                   <p className="text-teal-900">
@@ -1036,6 +1167,11 @@ export default function AdminEmails() {
         <div className="flex items-center gap-3 mb-4">
           <ScrollText className="w-6 h-6 text-primary" />
           <h2 className="text-xl font-bold text-slate-900">Email Send Log</h2>
+          {emailStats && (
+            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded-full">
+              {(emailStats.totalSent + emailStats.totalFailed).toLocaleString()} total
+            </span>
+          )}
         </div>
 
         {logsLoading ? (
