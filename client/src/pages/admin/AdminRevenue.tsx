@@ -19,6 +19,9 @@ import {
   Calendar,
   AlertTriangle,
   UserX,
+  FileText,
+  Printer,
+  Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { RevenueData, Coupon, CoachingPurchase } from "./adminTypes";
@@ -66,6 +69,23 @@ export default function AdminRevenue() {
 
   // Expanded transaction details
   const [expandedTx, setExpandedTx] = useState<string | null>(null);
+
+  // Invoice creator state
+  const [showInvoice, setShowInvoice] = useState(false);
+  const [invoice, setInvoice] = useState({
+    customerName: "",
+    customerEmail: "",
+    customerAddress: "",
+    companyName: "",
+    vatNumber: "",
+    product: "21-Day AI SaaS Challenge",
+    amount: "",
+    currency: "GBP" as "GBP" | "USD",
+    date: new Date().toISOString().split("T")[0],
+    notes: "",
+  });
+  const [pasteText, setPasteText] = useState("");
+  const [extracting, setExtracting] = useState(false);
 
   // Refund confirmation modal state
   const [refundConfirmation, setRefundConfirmation] = useState<{
@@ -523,6 +543,29 @@ export default function AdminRevenue() {
                                 <p className="text-slate-900 font-mono text-xs">{tx.id}</p>
                               </div>
                             </div>
+                            <div className="mt-2 flex justify-end">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="gap-1.5"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setInvoice({
+                                    customerName: tx.customerName !== "Unknown" ? tx.customerName : "",
+                                    customerEmail: tx.customerEmail,
+                                    customerAddress: "",
+                                    product: tx.description || "21-Day AI SaaS Challenge",
+                                    amount: (tx.amount / 100).toFixed(2),
+                                    currency: tx.currency.toUpperCase() as "GBP" | "USD",
+                                    date: new Date(tx.created * 1000).toISOString().split("T")[0],
+                                    notes: "",
+                                  });
+                                  setShowInvoice(true);
+                                }}
+                              >
+                                <FileText className="w-3.5 h-3.5" /> Create Invoice
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       )}
@@ -936,6 +979,260 @@ export default function AdminRevenue() {
           </Card>
         </div>
       )}
+
+      {/* Invoice Creator */}
+      <Card className="p-6 border border-slate-200 shadow-sm">
+        <div
+          className="flex items-center justify-between cursor-pointer"
+          onClick={() => setShowInvoice(!showInvoice)}
+        >
+          <div className="flex items-center gap-3">
+            <FileText className="w-6 h-6 text-primary" />
+            <h3 className="text-lg font-bold text-slate-900">Invoice Creator</h3>
+          </div>
+          <Button variant="outline" size="sm">
+            {showInvoice ? "Hide" : "Create Invoice"}
+          </Button>
+        </div>
+
+        {showInvoice && (
+          <div className="mt-4 space-y-4">
+            <p className="text-slate-600">Paste customer details below to auto-extract, or fill in manually. You can also click "Create Invoice" on any transaction above to pre-fill.</p>
+
+            {/* Paste & Extract */}
+            <div className="bg-slate-50 rounded-lg border border-slate-200 p-4 space-y-3">
+              <Label className="font-medium">Paste customer message or details</Label>
+              <textarea
+                className="w-full h-24 rounded-md border border-input bg-white px-3 py-2 text-sm resize-none"
+                value={pasteText}
+                onChange={(e) => setPasteText(e.target.value)}
+                placeholder="Paste any message, email, or details from the customer here — name, address, company, VAT number, etc. AI will extract what it finds."
+              />
+              <Button
+                size="sm"
+                className="gap-2"
+                disabled={!pasteText.trim() || extracting}
+                onClick={async () => {
+                  setExtracting(true);
+                  try {
+                    const res = await apiRequest("POST", "/api/ai-prompt", {
+                      prompt: `Extract invoice details from the following customer message. Return ONLY valid JSON with these fields (use empty string if not found): {"customerName": "", "customerEmail": "", "customerAddress": "", "companyName": "", "vatNumber": ""}. Do NOT include any other text or explanation, just the JSON object.\n\nCustomer message:\n${pasteText}`
+                    });
+                    const data = await res.json();
+                    const text = data.response || "";
+                    // Extract JSON from response (handle markdown code blocks)
+                    const jsonMatch = text.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                      const extracted = JSON.parse(jsonMatch[0]);
+                      setInvoice(prev => ({
+                        ...prev,
+                        customerName: extracted.customerName || prev.customerName,
+                        customerEmail: extracted.customerEmail || prev.customerEmail,
+                        customerAddress: extracted.customerAddress || prev.customerAddress,
+                        companyName: extracted.companyName || prev.companyName,
+                        vatNumber: extracted.vatNumber || prev.vatNumber,
+                      }));
+                      toast.success("Details extracted and filled in");
+                    } else {
+                      toast.error("Couldn't extract details — try filling in manually");
+                    }
+                  } catch (err) {
+                    toast.error("Failed to extract details");
+                  }
+                  setExtracting(false);
+                }}
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                {extracting ? "Extracting..." : "Extract Details"}
+              </Button>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <Label>Customer Name *</Label>
+                <Input
+                  value={invoice.customerName}
+                  onChange={(e) => setInvoice(prev => ({ ...prev, customerName: e.target.value }))}
+                  placeholder="John Smith"
+                />
+              </div>
+              <div>
+                <Label>Customer Email</Label>
+                <Input
+                  value={invoice.customerEmail}
+                  onChange={(e) => setInvoice(prev => ({ ...prev, customerEmail: e.target.value }))}
+                  placeholder="john@example.com"
+                />
+              </div>
+              <div>
+                <Label>Company Name</Label>
+                <Input
+                  value={invoice.companyName}
+                  onChange={(e) => setInvoice(prev => ({ ...prev, companyName: e.target.value }))}
+                  placeholder="Acme Ltd"
+                />
+              </div>
+              <div>
+                <Label>VAT / Tax Number</Label>
+                <Input
+                  value={invoice.vatNumber}
+                  onChange={(e) => setInvoice(prev => ({ ...prev, vatNumber: e.target.value }))}
+                  placeholder="GB123456789"
+                />
+              </div>
+              <div className="sm:col-span-2">
+                <Label>Customer Address</Label>
+                <Input
+                  value={invoice.customerAddress}
+                  onChange={(e) => setInvoice(prev => ({ ...prev, customerAddress: e.target.value }))}
+                  placeholder="123 Main St, London, UK"
+                />
+              </div>
+              <div>
+                <Label>Product / Description *</Label>
+                <Input
+                  value={invoice.product}
+                  onChange={(e) => setInvoice(prev => ({ ...prev, product: e.target.value }))}
+                  placeholder="21-Day AI SaaS Challenge"
+                />
+              </div>
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <Label>Amount *</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={invoice.amount}
+                    onChange={(e) => setInvoice(prev => ({ ...prev, amount: e.target.value }))}
+                    placeholder="99.00"
+                  />
+                </div>
+                <div className="w-24">
+                  <Label>Currency</Label>
+                  <select
+                    className="w-full h-9 rounded-md border border-input bg-background px-3 text-sm"
+                    value={invoice.currency}
+                    onChange={(e) => setInvoice(prev => ({ ...prev, currency: e.target.value as "GBP" | "USD" }))}
+                  >
+                    <option value="GBP">GBP (£)</option>
+                    <option value="USD">USD ($)</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <Label>Invoice Date</Label>
+                <Input
+                  type="date"
+                  value={invoice.date}
+                  onChange={(e) => setInvoice(prev => ({ ...prev, date: e.target.value }))}
+                />
+              </div>
+              <div>
+                <Label>Notes (optional)</Label>
+                <Input
+                  value={invoice.notes}
+                  onChange={(e) => setInvoice(prev => ({ ...prev, notes: e.target.value }))}
+                  placeholder="Payment received via Stripe"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <Button
+                className="gap-2"
+                disabled={!invoice.customerName || !invoice.product || !invoice.amount}
+                onClick={() => {
+                  const invNumber = `INV-${invoice.date.replace(/-/g, "")}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+                  const symbol = invoice.currency === "GBP" ? "£" : "$";
+                  const formattedDate = new Date(invoice.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+
+                  const html = `<!DOCTYPE html>
+<html><head>
+<title>Invoice ${invNumber}</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1e293b; padding: 48px; max-width: 800px; margin: 0 auto; }
+  .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 48px; }
+  .company { font-size: 14px; color: #64748b; line-height: 1.6; }
+  .company strong { font-size: 20px; color: #1e293b; display: block; margin-bottom: 4px; }
+  .invoice-title { text-align: right; }
+  .invoice-title h1 { font-size: 32px; font-weight: 800; color: #1e293b; letter-spacing: -0.5px; }
+  .invoice-title p { font-size: 14px; color: #64748b; margin-top: 4px; }
+  .bill-to { margin-bottom: 40px; }
+  .bill-to .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; font-weight: 600; margin-bottom: 8px; }
+  .bill-to p { font-size: 14px; color: #334155; line-height: 1.6; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+  th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; font-weight: 600; padding: 12px 0; border-bottom: 2px solid #e2e8f0; }
+  th:last-child { text-align: right; }
+  td { padding: 16px 0; font-size: 15px; border-bottom: 1px solid #f1f5f9; }
+  td:last-child { text-align: right; font-weight: 600; }
+  .total-row { border-top: 2px solid #1e293b; }
+  .total-row td { padding-top: 16px; font-size: 18px; font-weight: 700; border-bottom: none; }
+  .notes { margin-top: 48px; padding-top: 24px; border-top: 1px solid #f1f5f9; font-size: 13px; color: #94a3b8; }
+  .footer { margin-top: 64px; text-align: center; font-size: 12px; color: #cbd5e1; }
+  @media print { body { padding: 24px; } }
+</style>
+</head><body>
+<div class="header">
+  <div class="company">
+    <strong>Matt Webley</strong>
+    Webley Global FZCO<br>
+    Dubai Silicon Oasis, UAE<br>
+    matt@mattwebley.com
+  </div>
+  <div class="invoice-title">
+    <h1>INVOICE</h1>
+    <p>${invNumber}</p>
+    <p>${formattedDate}</p>
+  </div>
+</div>
+<div class="bill-to">
+  <p class="label">Bill To</p>
+  <p><strong>${invoice.customerName}</strong></p>
+  ${invoice.customerEmail ? `<p>${invoice.customerEmail}</p>` : ""}
+  ${invoice.customerAddress ? `<p>${invoice.customerAddress}</p>` : ""}
+</div>
+<table>
+  <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+  <tbody>
+    <tr><td>${invoice.product}</td><td>${symbol}${parseFloat(invoice.amount).toFixed(2)}</td></tr>
+    <tr class="total-row"><td>Total</td><td>${symbol}${parseFloat(invoice.amount).toFixed(2)} ${invoice.currency}</td></tr>
+  </tbody>
+</table>
+${invoice.notes ? `<div class="notes"><strong>Notes:</strong> ${invoice.notes}</div>` : ""}
+<div class="footer">Matt Webley · Webley Global FZCO · Dubai Silicon Oasis, UAE</div>
+</body></html>`;
+
+                  const w = window.open("", "_blank");
+                  if (w) {
+                    w.document.write(html);
+                    w.document.close();
+                  }
+                }}
+              >
+                <Printer className="w-4 h-4" /> Generate Invoice
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setInvoice({
+                    customerName: "",
+                    customerEmail: "",
+                    customerAddress: "",
+                    product: "21-Day AI SaaS Challenge",
+                    amount: "",
+                    currency: "GBP",
+                    date: new Date().toISOString().split("T")[0],
+                    notes: "",
+                  });
+                }}
+              >
+                Clear
+              </Button>
+            </div>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

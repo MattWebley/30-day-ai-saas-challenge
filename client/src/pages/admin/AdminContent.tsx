@@ -1149,6 +1149,49 @@ export default function AdminContent() {
           )}
         </div>
 
+        {/* Positive Highlights — quick testimonial bank */}
+        {(() => {
+          const positiveMoods = ["Excited", "On Fire", "Good"];
+          const highlights = moodCheckins.filter((m: any) => positiveMoods.includes(m.emojiLabel) && m.text && m.text.trim().length > 10);
+          if (highlights.length === 0) return null;
+          return (
+            <Card className="p-5 border-2 border-green-200 bg-green-50/30">
+              <div className="flex items-center gap-2 mb-3">
+                <Star className="w-5 h-5 text-green-600" />
+                <h3 className="font-bold text-slate-900">Positive Highlights</h3>
+                <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
+                  {highlights.length}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {highlights.map((h: any) => (
+                  <div key={h.id} className="flex items-start gap-3 bg-white rounded-lg p-3 border border-green-100">
+                    <span className="text-xl flex-shrink-0">{h.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-slate-700">{h.text}</p>
+                      <p className="text-xs text-slate-400 mt-1">
+                        {h.firstName || h.lastName ? `${h.firstName || ""} ${h.lastName || ""}`.trim() : "Unknown"} · Day {h.day}
+                        {h.consentToShare && <span className="ml-1 text-green-600 font-medium">· Can share</span>}
+                      </p>
+                    </div>
+                    {h.consentToShare && h.text && !h.promotedToTestimonial && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="text-green-600 border-green-200 hover:bg-green-50 shrink-0"
+                        onClick={() => promoteMoodCheckin.mutate(h.id)}
+                        disabled={promoteMoodCheckin.isPending}
+                      >
+                        <ArrowUpRight className="w-3 h-3 mr-1" /> Promote
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </Card>
+          );
+        })()}
+
         {moodCheckins.length === 0 ? (
           <Card className="p-8 border border-slate-200 text-center">
             <Smile className="w-12 h-12 text-slate-300 mx-auto mb-3" />
