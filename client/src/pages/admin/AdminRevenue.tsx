@@ -87,6 +87,23 @@ export default function AdminRevenue() {
   const [pasteText, setPasteText] = useState("");
   const [extracting, setExtracting] = useState(false);
 
+  // Auto-fill missing invoice details from database by email
+  const enrichFromDatabase = async (currentInvoice: typeof invoice) => {
+    const email = currentInvoice.customerEmail?.trim();
+    if (!email) return;
+    try {
+      const res = await fetch(`/api/admin/user-lookup?email=${encodeURIComponent(email)}`, { credentials: "include" });
+      const data = await res.json();
+      if (!data.found) return;
+      const fullName = `${data.firstName || ""} ${data.lastName || ""}`.trim();
+      setInvoice(prev => ({
+        ...prev,
+        // Only fill in fields that are still empty
+        customerName: prev.customerName || fullName,
+      }));
+    } catch {}
+  };
+
   // Refund confirmation modal state
   const [refundConfirmation, setRefundConfirmation] = useState<{
     isOpen: boolean;
@@ -550,7 +567,7 @@ export default function AdminRevenue() {
                                 className="gap-1.5"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setInvoice({
+                                  const newInvoice = {
                                     customerName: tx.customerName !== "Unknown" ? tx.customerName : "",
                                     customerEmail: tx.customerEmail,
                                     customerAddress: "",
@@ -561,7 +578,9 @@ export default function AdminRevenue() {
                                     currency: tx.currency.toUpperCase() as "GBP" | "USD",
                                     date: new Date(tx.created * 1000).toISOString().split("T")[0],
                                     notes: "",
-                                  });
+                                  };
+                                  setInvoice(newInvoice);
+                                  enrichFromDatabase(newInvoice);
                                   setShowInvoice(true);
                                 }}
                               >
@@ -1026,14 +1045,19 @@ export default function AdminRevenue() {
                     const jsonMatch = text.match(/\{[\s\S]*\}/);
                     if (jsonMatch) {
                       const extracted = JSON.parse(jsonMatch[0]);
-                      setInvoice(prev => ({
-                        ...prev,
-                        customerName: extracted.customerName || prev.customerName,
-                        customerEmail: extracted.customerEmail || prev.customerEmail,
-                        customerAddress: extracted.customerAddress || prev.customerAddress,
-                        companyName: extracted.companyName || prev.companyName,
-                        vatNumber: extracted.vatNumber || prev.vatNumber,
-                      }));
+                      setInvoice(prev => {
+                        const updated = {
+                          ...prev,
+                          customerName: extracted.customerName || prev.customerName,
+                          customerEmail: extracted.customerEmail || prev.customerEmail,
+                          customerAddress: extracted.customerAddress || prev.customerAddress,
+                          companyName: extracted.companyName || prev.companyName,
+                          vatNumber: extracted.vatNumber || prev.vatNumber,
+                        };
+                        // Also look up any missing details from the database
+                        if (updated.customerEmail) enrichFromDatabase(updated);
+                        return updated;
+                      });
                       toast.success("Details extracted and filled in");
                     } else {
                       toast.error("Couldn't extract details — try filling in manually");

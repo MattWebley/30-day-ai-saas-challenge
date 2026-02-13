@@ -8482,6 +8482,30 @@ Example format:
     }
   });
 
+  // Admin user lookup by email (for invoice pre-fill)
+  app.get("/api/admin/user-lookup", isAuthenticated, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.claims.sub);
+      if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
+
+      const email = (req.query.email as string || "").trim().toLowerCase();
+      if (!email) return res.status(400).json({ message: "Email required" });
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) return res.json({ found: false });
+
+      res.json({
+        found: true,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+      });
+    } catch (error) {
+      console.error("Error looking up user:", error);
+      res.status(500).json({ message: "Failed to look up user" });
+    }
+  });
+
   // ===== PAGE VIEW TRACKING =====
 
   // In-memory rate limiter for page views: sessionId:path -> last tracked timestamp
