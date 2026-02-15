@@ -38,6 +38,8 @@ export default function CampaignEditor({ campaignId, presentations }: Props) {
         name: mergedSettings.name,
         slug: mergedSettings.slug,
         presentationId: mergedSettings.presentationId,
+        watchHeadline: mergedSettings.watchHeadline,
+        watchSubheadline: mergedSettings.watchSubheadline,
         ctaText: mergedSettings.ctaText,
         ctaUrl: mergedSettings.ctaUrl,
         ctaAppearTime: mergedSettings.ctaAppearTime,
@@ -180,6 +182,23 @@ export default function CampaignEditor({ campaignId, presentations }: Props) {
               ))}
             </select>
           </div>
+          <div className="sm:col-span-2">
+            <Label className="text-slate-700">Watch Page Headline</Label>
+            <Input
+              value={mergedSettings.watchHeadline || ""}
+              onChange={(e) => setSettings({ ...settings, watchHeadline: e.target.value })}
+              placeholder="Discover How To 10x Your Business With AI"
+            />
+            <p className="text-xs text-slate-400 mt-1">Big headline shown above the video on the watch page</p>
+          </div>
+          <div className="sm:col-span-2">
+            <Label className="text-slate-700">Watch Page Subheadline</Label>
+            <Input
+              value={mergedSettings.watchSubheadline || ""}
+              onChange={(e) => setSettings({ ...settings, watchSubheadline: e.target.value })}
+              placeholder="Watch this free training to learn the exact system..."
+            />
+          </div>
           <div>
             <Label className="text-slate-700">CTA Button Text</Label>
             <Input
@@ -198,11 +217,34 @@ export default function CampaignEditor({ campaignId, presentations }: Props) {
           </div>
           <div>
             <Label className="text-slate-700">CTA Appear Time (seconds)</Label>
-            <Input
-              type="number"
-              value={mergedSettings.ctaAppearTime ?? 0}
-              onChange={(e) => setSettings({ ...settings, ctaAppearTime: parseInt(e.target.value) || 0 })}
-            />
+            <div className="flex gap-2">
+              <Input
+                type="number"
+                value={mergedSettings.ctaAppearTime ?? 0}
+                onChange={(e) => setSettings({ ...settings, ctaAppearTime: parseInt(e.target.value) || 0 })}
+                className="flex-1"
+              />
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    const res = await apiRequest("POST", `/api/admin/funnels/campaigns/${campaignId}/detect-cta-time`);
+                    const data = await res.json();
+                    if (data.suggestedTime) {
+                      setSettings({ ...settings, ctaAppearTime: data.suggestedTime });
+                      toast.success(`AI suggests showing CTA at ${Math.floor(data.suggestedTime / 60)}:${String(data.suggestedTime % 60).padStart(2, '0')} - ${data.reason}`);
+                    }
+                  } catch {
+                    toast.error("Could not detect - make sure slides have script notes");
+                  }
+                }}
+                className="whitespace-nowrap"
+              >
+                AI Detect
+              </Button>
+            </div>
+            <p className="text-xs text-slate-400 mt-1">Seconds into the presentation before the CTA button appears. Use AI Detect to auto-suggest.</p>
           </div>
         </div>
         {hasChanges && (

@@ -54,9 +54,9 @@ export function registerFunnelRoutes(app: Express) {
   app.put("/api/admin/funnels/campaigns/:id", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { name, slug, isActive, presentationId, ctaText, ctaUrl, ctaAppearTime } = req.body;
+      const { name, slug, isActive, presentationId, watchHeadline, watchSubheadline, ctaText, ctaUrl, ctaAppearTime } = req.body;
       const [campaign] = await db.update(funnelCampaigns)
-        .set({ name, slug, isActive, presentationId, ctaText, ctaUrl, ctaAppearTime, updatedAt: new Date() })
+        .set({ name, slug, isActive, presentationId, watchHeadline, watchSubheadline, ctaText, ctaUrl, ctaAppearTime, updatedAt: new Date() })
         .where(eq(funnelCampaigns.id, id))
         .returning();
       res.json(campaign);
@@ -355,19 +355,14 @@ Example: [{"headline":"Your Big Idea","body":"Every great product starts with...
 
       if (allSlides.length === 0) return res.status(400).json({ message: "No slides to format" });
 
-      // Build the current content for Claude
-      const currentContent = allSlides.map((s, i) => {
-        let text = `Slide ${i + 1}:\nHeadline: ${s.headline || "(empty)"}\nBody: ${s.body || "(empty)"}`;
-        if (s.scriptNotes) text += `\nScript Notes: ${s.scriptNotes}`;
-        return text;
-      }).join("\n\n");
+      // Optional limit - only process first N slides to save API costs during testing
+      const limit = req.body?.limit;
+      const slidesToProcess = limit && limit > 0 ? allSlides.slice(0, limit) : allSlides;
+      console.log(`[format-for-impact] Processing ${slidesToProcess.length} of ${allSlides.length} total slides${limit ? ` (limited to ${limit})` : ""}`);
 
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-      const response = await anthropic.messages.create({
-        model: "claude-sonnet-4-5-20250929",
-        max_tokens: 4000,
-        system: `You are a direct-response copywriter and presentation designer. Your job is to rewrite presentation slides for MAXIMUM viewer engagement and conversions.
+      const IMPACT_SYSTEM = `You are a direct-response copywriter and presentation designer. Your job is to rewrite presentation slides for MAXIMUM viewer engagement and conversions.
 
 Rules for rewriting:
 1. MIX UP THE LAYOUTS for visual variety:
@@ -387,49 +382,145 @@ Rules for rewriting:
 8. If a slide has Script Notes, use them as CONTEXT for what the presenter is saying - let that inform how you write the headline/body. Do NOT include the script notes in the output.
 
 Return ONLY a valid JSON array with one object per slide: [{"headline":"...","body":"..."}]
-Use empty string "" (not null) for blank headline or body fields.`,
-        messages: [{
-          role: "user",
-          content: `Rewrite these ${allSlides.length} slides for maximum impact and conversions. Return exactly ${allSlides.length} slides as a JSON array:\n\n${currentContent}`,
-        }],
-      });
+Use empty string "" (not null) for blank headline or body fields.`;
 
-      const raw = response.content[0].type === "text" ? response.content[0].text : "";
-
-      // Parse AI response
-      let formatted: { headline: string; body: string }[] = [];
-      try {
-        formatted = JSON.parse(raw);
-      } catch {
+      // Helper to parse AI JSON response
+      const parseFormatResponse = (raw: string): { headline: string; body: string }[] => {
+        let result: { headline: string; body: string }[] = [];
+        try { result = JSON.parse(raw); } catch {}
+        if (Array.isArray(result) && result.length > 0) return result;
         const codeBlockMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
-        if (codeBlockMatch) {
-          try { formatted = JSON.parse(codeBlockMatch[1].trim()); } catch {}
-        }
-        if (formatted.length === 0) {
-          const arrayMatch = raw.match(/\[[\s\S]*\]/);
-          if (arrayMatch) {
-            try { formatted = JSON.parse(arrayMatch[0]); } catch {}
+        if (codeBlockMatch) { try { result = JSON.parse(codeBlockMatch[1].trim()); } catch {} }
+        if (Array.isArray(result) && result.length > 0) return result;
+        const arrayMatch = raw.match(/\[[\s\S]*\]/);
+        if (arrayMatch) { try { result = JSON.parse(arrayMatch[0]); } catch {} }
+        return Array.isArray(result) ? result : [];
+      };
+
+      // Process in chunks of 15 slides at a time
+      const BATCH_SIZE = 15;
+      let totalUpdated = 0;
+
+      for (let batchStart = 0; batchStart < slidesToProcess.length; batchStart += BATCH_SIZE) {
+        const batch = slidesToProcess.slice(batchStart, batchStart + BATCH_SIZE);
+        const batchLabel = slidesToProcess.length > BATCH_SIZE ? ` (slides ${batchStart + 1}-${batchStart + batch.length} of ${slidesToProcess.length})` : "";
+
+        const batchContent = batch.map((s, i) => {
+          let text = `Slide ${batchStart + i + 1}:\nHeadline: ${s.headline || "(empty)"}\nBody: ${s.body || "(empty)"}`;
+          if (s.scriptNotes) text += `\nScript Notes: ${s.scriptNotes}`;
+          return text;
+        }).join("\n\n");
+
+        console.log(`[format-for-impact] Processing batch${batchLabel}, ${batch.length} slides`);
+
+        try {
+          const response = await anthropic.messages.create({
+            model: "claude-sonnet-4-5-20250929",
+            max_tokens: 8000,
+            system: IMPACT_SYSTEM,
+            messages: [{
+              role: "user",
+              content: `Rewrite these ${batch.length} slides${batchLabel} for maximum impact and conversions. Return exactly ${batch.length} slides as a JSON array:\n\n${batchContent}`,
+            }],
+          });
+
+          const raw = response.content[0].type === "text" ? response.content[0].text : "";
+          const formatted = parseFormatResponse(raw);
+
+          if (formatted.length > 0) {
+            const updateCount = Math.min(formatted.length, batch.length);
+            for (let i = 0; i < updateCount; i++) {
+              const f = formatted[i];
+              await db.update(funnelSlides).set({
+                headline: f.headline || null,
+                body: f.body || null,
+              }).where(eq(funnelSlides.id, batch[i].id));
+            }
+            totalUpdated += updateCount;
+          } else {
+            console.error(`[format-for-impact] Batch starting at ${batchStart} returned no parseable slides`);
+          }
+        } catch (batchError: any) {
+          console.error(`[format-for-impact] Batch error:`, batchError.message);
+          if (slidesToProcess.length <= BATCH_SIZE) {
+            return res.status(500).json({ message: `AI error: ${batchError.message}` });
           }
         }
       }
 
-      if (!Array.isArray(formatted) || formatted.length === 0) {
-        return res.status(500).json({ message: "AI returned invalid format" });
+      if (totalUpdated === 0) {
+        return res.status(500).json({ message: "AI returned invalid format. Please try again." });
       }
 
-      // Update each slide (match by position)
-      const updateCount = Math.min(formatted.length, allSlides.length);
-      for (let i = 0; i < updateCount; i++) {
-        const f = formatted[i];
-        await db.update(funnelSlides).set({
-          headline: f.headline || null,
-          body: f.body || null,
-        }).where(eq(funnelSlides.id, allSlides[i].id));
-      }
-
-      res.json({ success: true, slidesUpdated: updateCount });
+      console.log(`[format-for-impact] Done, updated ${totalUpdated} slides`);
+      res.json({ success: true, slidesUpdated: totalUpdated });
     } catch (e: any) {
       console.error("[format-for-impact] Error:", e.message);
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // ==========================================
+  // ADMIN - AI auto-detect best CTA time from script
+  // ==========================================
+
+  app.post("/api/admin/funnels/campaigns/:id/detect-cta-time", isAuthenticated, requireAdmin, async (req: any, res) => {
+    try {
+      const campaignId = parseInt(req.params.id);
+      const [campaign] = await db.select().from(funnelCampaigns).where(eq(funnelCampaigns.id, campaignId));
+      if (!campaign || !campaign.presentationId) return res.status(400).json({ message: "Campaign has no linked presentation" });
+
+      // Get all slides with script notes and timestamps
+      const modules = await db.select().from(funnelModules)
+        .where(eq(funnelModules.presentationId, campaign.presentationId))
+        .orderBy(funnelModules.sortOrder);
+
+      const allSlides: { sortOrder: number; headline: string | null; body: string | null; scriptNotes: string | null; startTimeMs: number }[] = [];
+
+      for (const mod of modules) {
+        const variants = await db.select().from(funnelModuleVariants).where(eq(funnelModuleVariants.moduleId, mod.id));
+        for (const variant of variants) {
+          const slides = await db.select().from(funnelSlides)
+            .where(eq(funnelSlides.variantId, variant.id))
+            .orderBy(funnelSlides.sortOrder);
+          allSlides.push(...slides.map(s => ({
+            sortOrder: s.sortOrder, headline: s.headline, body: s.body, scriptNotes: s.scriptNotes, startTimeMs: s.startTimeMs,
+          })));
+        }
+      }
+
+      if (allSlides.length === 0) return res.status(400).json({ message: "No slides found" });
+
+      // Build context for AI
+      const slideContext = allSlides.map((s, i) => {
+        const time = s.startTimeMs > 0 ? ` [${Math.floor(s.startTimeMs / 1000)}s]` : "";
+        return `Slide ${i + 1}${time}: ${s.headline || ""} | ${s.body || ""} | Script: ${s.scriptNotes || "(none)"}`;
+      }).join("\n");
+
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-5-20250929",
+        max_tokens: 500,
+        system: `You analyze webinar/VSL scripts to find the optimal moment to show a Call-To-Action button. The CTA should appear AFTER the viewer has received enough value and social proof to be compelled to act, but BEFORE they lose interest. Typically this is after the main pitch/offer reveal, around 60-80% through the presentation. Return ONLY valid JSON: {"slideNumber": N, "seconds": N, "reason": "brief reason"}`,
+        messages: [{
+          role: "user",
+          content: `This presentation has ${allSlides.length} slides. Analyze the content and tell me the optimal slide number to show the CTA button. If slides have timestamps, use the timestamp of that slide as the "seconds" value. If no timestamps, estimate based on roughly 15 seconds per slide.\n\n${slideContext}`,
+        }],
+      });
+
+      const raw = response.content[0].type === "text" ? response.content[0].text : "";
+      let result: { slideNumber: number; seconds: number; reason: string };
+      try {
+        result = JSON.parse(raw);
+      } catch {
+        const match = raw.match(/\{[\s\S]*\}/);
+        if (match) result = JSON.parse(match[0]);
+        else return res.status(500).json({ message: "AI returned unexpected format" });
+      }
+
+      res.json({ suggestedTime: result.seconds, slideNumber: result.slideNumber, reason: result.reason });
+    } catch (e: any) {
+      console.error("[detect-cta-time] Error:", e.message);
       res.status(500).json({ message: e.message });
     }
   });
@@ -1364,6 +1455,8 @@ Return ONLY valid JSON array, no markdown.`;
           id: campaign.id,
           name: campaign.name,
           slug: campaign.slug,
+          watchHeadline: campaign.watchHeadline,
+          watchSubheadline: campaign.watchSubheadline,
           ctaText: campaign.ctaText,
           ctaUrl: campaign.ctaUrl,
           ctaAppearTime: campaign.ctaAppearTime,

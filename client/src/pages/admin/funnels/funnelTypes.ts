@@ -6,6 +6,8 @@ export interface FunnelCampaign {
   slug: string;
   isActive: boolean | null;
   presentationId: number | null;
+  watchHeadline: string | null;
+  watchSubheadline: string | null;
   ctaText: string | null;
   ctaUrl: string | null;
   ctaAppearTime: number | null;

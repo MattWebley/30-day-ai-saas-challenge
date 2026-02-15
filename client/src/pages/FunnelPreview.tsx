@@ -556,16 +556,20 @@ export default function FunnelPreview() {
   }, [fonts, presentationId]);
 
   const [presenterMode, setPresenterMode] = useState(false);
+  const [impactLimit, setImpactLimit] = useState(10);
 
   const fontsDirty = JSON.stringify(fonts) !== JSON.stringify(savedFonts);
 
   const formatForImpact = useCallback(async () => {
-    if (!confirm("This will rewrite all your slides using AI for maximum impact. Your current text will be replaced. Continue?")) return;
+    const label = impactLimit === 0 ? "ALL slides" : `the first ${impactLimit} slides`;
+    if (!confirm(`This will rewrite ${label} using AI for maximum impact. Your current text will be replaced. Continue?`)) return;
     setFormatting(true);
     try {
       const res = await fetch(`/api/admin/funnels/presentations/${presentationId}/format-for-impact`, {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
+        body: JSON.stringify({ limit: impactLimit || undefined }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
@@ -583,7 +587,7 @@ export default function FunnelPreview() {
     } finally {
       setFormatting(false);
     }
-  }, [presentationId]);
+  }, [presentationId, impactLimit]);
 
   if (loading) {
     return (
@@ -635,14 +639,26 @@ export default function FunnelPreview() {
         <span className="px-2 py-0.5 text-xs bg-amber-600 text-white rounded font-medium">Preview</span>
       </div>
       <div className="flex items-center gap-4">
-        <button
-          onClick={formatForImpact}
-          disabled={formatting}
-          className="flex items-center gap-1.5 text-amber-400 hover:text-amber-300 text-sm transition-colors disabled:opacity-50"
-        >
-          {formatting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-          <span className="hidden sm:inline">{formatting ? "Formatting..." : "Impact"}</span>
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={formatForImpact}
+            disabled={formatting}
+            className="flex items-center gap-1.5 text-amber-400 hover:text-amber-300 text-sm transition-colors disabled:opacity-50"
+          >
+            {formatting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+            <span className="hidden sm:inline">{formatting ? "Formatting..." : "Impact"}</span>
+          </button>
+          <select
+            value={impactLimit}
+            onChange={(e) => setImpactLimit(parseInt(e.target.value))}
+            className="bg-slate-700 text-slate-300 text-xs rounded px-1.5 py-1 border border-slate-600 cursor-pointer"
+          >
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={0}>All</option>
+          </select>
+        </div>
         {hasScriptNotes && (
           <button
             onClick={() => setPresenterMode(!presenterMode)}
@@ -684,43 +700,32 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
 }) {
   const [activeSlideIdx, setActiveSlideIdx] = useState(0);
   const scriptRefs = useRef<Map<number, HTMLDivElement>>(new Map());
-  const observerRef = useRef<IntersectionObserver | null>(null);
 
-  // Filter to only slides that have script notes
-  const scriptSlides = allSlides.filter(s => !!s.scriptNotes);
+  // Keyboard nav: up/down arrows to move slides
+  const goNext = useCallback(() => {
+    setActiveSlideIdx(prev => Math.min(prev + 1, allSlides.length - 1));
+  }, [allSlides.length]);
 
-  // Set up IntersectionObserver to track which script section is in the reading zone
+  const goPrev = useCallback(() => {
+    setActiveSlideIdx(prev => Math.max(prev - 1, 0));
+  }, []);
+
   useEffect(() => {
-    if (observerRef.current) observerRef.current.disconnect();
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "ArrowDown" || e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); goNext(); }
+      else if (e.key === "ArrowUp" || e.key === "ArrowLeft") { e.preventDefault(); goPrev(); }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [goNext, goPrev]);
 
-    // Observe each script block - the one closest to the top reading zone wins
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        // Find the most visible entry in the top half of the viewport
-        let bestIdx = activeSlideIdx;
-        let bestRatio = 0;
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
-            const idx = parseInt(entry.target.getAttribute("data-slide-idx") || "0");
-            bestRatio = entry.intersectionRatio;
-            bestIdx = idx;
-          }
-        });
-        if (bestRatio > 0) setActiveSlideIdx(bestIdx);
-      },
-      {
-        // Reading zone: top 40% of viewport
-        rootMargin: "0px 0px -60% 0px",
-        threshold: [0, 0.25, 0.5, 0.75, 1],
-      }
-    );
-
-    scriptRefs.current.forEach((el) => {
-      if (el) observerRef.current!.observe(el);
-    });
-
-    return () => observerRef.current?.disconnect();
-  }, [scriptSlides.length]);
+  // Auto-scroll the script panel to keep active section visible
+  useEffect(() => {
+    const el = scriptRefs.current.get(activeSlideIdx);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [activeSlideIdx]);
 
   const activeSlide = allSlides[activeSlideIdx] || allSlides[0];
 
@@ -734,7 +739,7 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
       `}</style>
       {adminBar(
         <span className="text-sm text-emerald-400 flex items-center gap-1.5">
-          <Mic className="w-3.5 h-3.5" /> Presenter Mode
+          <Mic className="w-3.5 h-3.5" /> Presenter Mode - {activeSlideIdx + 1}/{allSlides.length}
         </span>
       )}
 
@@ -742,12 +747,9 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
         {/* Left: Teleprompter script */}
         <div className="w-1/2 border-r border-slate-800 flex flex-col min-h-0">
           <div className="px-6 py-3 border-b border-slate-800 bg-slate-900/50 flex-shrink-0">
-            <span className="text-xs text-slate-500 uppercase tracking-wider font-medium">Script - scroll to advance slides</span>
+            <span className="text-xs text-slate-500 uppercase tracking-wider font-medium">Use arrow keys or click to navigate</span>
           </div>
           <div className="flex-1 overflow-y-auto teleprompter-scroll min-h-0">
-            {/* Top spacer so first section starts in reading zone */}
-            <div className="h-[30vh]" />
-
             {allSlides.map((slide, idx) => {
               const hasNotes = !!slide.scriptNotes;
               const isActive = idx === activeSlideIdx;
@@ -759,11 +761,10 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
                     if (el) scriptRefs.current.set(idx, el);
                     else scriptRefs.current.delete(idx);
                   }}
-                  data-slide-idx={idx}
-                  className={`px-8 py-6 transition-all duration-300 cursor-pointer ${
+                  className={`px-8 py-6 transition-all duration-300 cursor-pointer border-l-4 ${
                     isActive
-                      ? "bg-slate-800/50"
-                      : "hover:bg-slate-900/50"
+                      ? "bg-slate-800/50 border-l-emerald-500"
+                      : "border-l-transparent hover:bg-slate-900/50"
                   }`}
                   onClick={() => setActiveSlideIdx(idx)}
                 >
@@ -798,9 +799,6 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
                 </div>
               );
             })}
-
-            {/* Bottom spacer so last section can reach reading zone */}
-            <div className="h-[60vh]" />
           </div>
         </div>
 

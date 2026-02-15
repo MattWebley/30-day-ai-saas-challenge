@@ -34,6 +34,7 @@ interface TimelineEntry {
 interface WatchData {
   campaign: {
     id: number; name: string; slug: string;
+    watchHeadline: string | null; watchSubheadline: string | null;
     ctaText: string | null; ctaUrl: string | null; ctaAppearTime: number | null;
   };
   theme?: string | null;
@@ -68,10 +69,7 @@ function renderStyledText(text: string, accentColor?: string) {
   return parts.length > 0 ? parts : text;
 }
 
-// Shared slide renderer - adapts layout based on content:
-//   Headline only  → "statement" - massive, fills the screen
-//   Body only       → "narrative" - larger body, centered storytelling
-//   Both            → "standard" - headline + supporting body
+// Slide renderer inside the "video player" - adapted for contained layout
 function SlideDisplay({ slide, theme, fonts, animKey }: {
   slide: SlideData; theme: PresentationTheme; fonts: FontSettings; animKey: string | number;
 }) {
@@ -88,17 +86,17 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
       : {};
 
   return (
-    <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative">
+    <div key={animKey} className="w-full h-full flex flex-col items-center justify-center text-center px-6 sm:px-10 relative">
       <div className="absolute inset-0 pointer-events-none" style={{ background: theme.ambientGlow }} />
 
-      <div className="relative z-10">
+      <div className="relative z-10 max-w-3xl mx-auto">
         {slide.imageUrl && (
-          <img src={slide.imageUrl} alt="" className="max-w-full max-h-[40vh] object-contain mb-8 rounded-lg animate-slide-fade" />
+          <img src={slide.imageUrl} alt="" className="max-w-full max-h-[35vh] object-contain mb-6 rounded-lg mx-auto animate-slide-fade" />
         )}
 
         {hasHeadline && (
           <h2
-            className={`${hasCustomColor ? "" : theme.headlineColor} leading-[1.1] tracking-tight animate-slide-headline ${isStatement ? "mb-0" : "mb-6"}`}
+            className={`${hasCustomColor ? "" : theme.headlineColor} leading-[1.1] tracking-tight animate-slide-headline ${isStatement ? "mb-0" : "mb-4"}`}
             style={{
               fontFamily: `'${fonts.font}', sans-serif`,
               fontSize: isStatement
@@ -136,7 +134,7 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
   );
 }
 
-// CSS animations - cinematic staggered entrance
+// CSS animations
 const slideAnimation = `
 @keyframes slideHeadline {
   from { opacity: 0; transform: translateY(30px) scale(0.97); filter: blur(8px); }
@@ -154,6 +152,14 @@ const slideAnimation = `
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
 }
+@keyframes ctaPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+@keyframes ctaSlideIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 .animate-slide-headline {
   animation: slideHeadline 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -167,6 +173,9 @@ const slideAnimation = `
 .animate-slide-up {
   animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+.animate-cta-in {
+  animation: ctaSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards, ctaPulse 3s ease-in-out 1s infinite;
+}
 `;
 
 export default function FunnelWatch() {
@@ -179,8 +188,8 @@ export default function FunnelWatch() {
   const [currentSlide, setCurrentSlide] = useState<SlideData | null>(null);
   const [showCta, setShowCta] = useState(false);
   const [totalElapsedMs, setTotalElapsedMs] = useState(0);
+  const [progressPercent, setProgressPercent] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
-  const trackingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     fetch(`/api/funnel/c/${params.slug}/watch`, { credentials: "include" })
@@ -191,7 +200,6 @@ export default function FunnelWatch() {
       .then((d: WatchData) => {
         setData(d);
         setLoading(false);
-        // Load saved Google Font
         const f = getFontSettings(d.fontSettings as FontSettings | null);
         loadGoogleFont(f.font);
         if (f.bodyFont) loadGoogleFont(f.bodyFont);
@@ -214,7 +222,7 @@ export default function FunnelWatch() {
     }).catch(() => {});
   }, [data]);
 
-  // Slide sync
+  // Slide sync + progress
   useEffect(() => {
     if (!started || !data) return;
     const audio = audioRef.current;
@@ -232,6 +240,11 @@ export default function FunnelWatch() {
         else break;
       }
       setCurrentSlide(active);
+
+      // Update progress bar
+      if (audio.duration > 0) {
+        setProgressPercent((audio.currentTime / audio.duration) * 100);
+      }
     };
 
     const interval = setInterval(updateSlide, 100);
@@ -263,7 +276,6 @@ export default function FunnelWatch() {
     const interval = setInterval(() => {
       trackEvent('play_progress', { watchTimeMs: totalElapsedMs });
     }, 30000);
-    trackingRef.current = interval;
     return () => clearInterval(interval);
   }, [started, totalElapsedMs, trackEvent]);
 
@@ -314,18 +326,18 @@ export default function FunnelWatch() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-slate-500" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-slate-300" />
       </div>
     );
   }
 
   if (error || !data || data.timeline.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-white mb-2">Presentation Not Available</h1>
-          <p className="text-slate-400">{error || "No content available."}</p>
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">Not Available</h1>
+          <p className="text-slate-500">{error || "This content is not available."}</p>
         </div>
       </div>
     );
@@ -335,96 +347,97 @@ export default function FunnelWatch() {
   const fonts = getFontSettings(data.fontSettings as FontSettings | null);
   const currentEntry = data.timeline[currentModuleIdx];
   const isVideo = currentEntry?.variant.mediaType === 'video';
+  const headline = data.campaign.watchHeadline || data.campaign.name;
+  const subheadline = data.campaign.watchSubheadline;
 
-  // Tap-to-start overlay
-  if (!started) {
-    return (
-      <div className={`min-h-screen ${theme.overlayBg} flex items-center justify-center`}>
-        <style>{slideAnimation}</style>
-        <div className="text-center space-y-8 px-4 animate-slide-up">
-          <h1
-            className={`text-3xl sm:text-4xl font-bold ${theme.overlayText} tracking-tight`}
-            style={{ fontFamily: `'${fonts.font}', sans-serif` }}
-          >
-            {data.campaign.name}
-          </h1>
-          <button
-            onClick={handleStart}
-            className={`w-20 h-20 rounded-full ${theme.playBtnBg} border-2 ${theme.playBtnBorder} flex items-center justify-center mx-auto hover:scale-110 transition-transform duration-300`}
-          >
-            <Play className={`w-10 h-10 ${theme.playBtnIcon} ml-1`} />
-          </button>
-          <p className={`text-sm ${theme.overlaySubtext}`}>Tap to start</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Video mode - Vimeo embed
-  if (isVideo && currentEntry?.variant.videoUrl) {
-    const vimeoId = currentEntry.variant.videoUrl.replace(/.*\//, '').replace(/\?.*/, '');
-    return (
-      <div className={`min-h-screen ${theme.pageBg} flex flex-col`}>
-        <style>{slideAnimation}</style>
-        <div className="flex-1 flex items-center justify-center p-4">
-          <div className="w-full max-w-4xl aspect-video">
-            <iframe
-              src={`https://player.vimeo.com/video/${vimeoId}?autoplay=1`}
-              className="w-full h-full rounded-lg"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-            />
-          </div>
-        </div>
-        {showCta && <CTABar text={data.campaign.ctaText} onClick={handleCtaClick} theme={theme} fontName={fonts.font} />}
-      </div>
-    );
-  }
-
-  // Audio + Slides mode
+  // Landing page layout
   return (
-    <div className={`min-h-screen ${theme.pageBg} flex flex-col`}>
+    <div className="min-h-screen bg-white">
       <style>{slideAnimation}</style>
       <audio ref={audioRef} onEnded={handleModuleEnd} preload="auto" />
 
-      {/* Slide */}
-      <div className="flex-1 flex items-center justify-center py-12">
-        {currentSlide ? (
-          <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={currentSlide.id} />
-        ) : (
-          <p className={`text-lg ${theme.progressText}`} style={{ fontFamily: `'${fonts.font}', sans-serif` }}>Playing...</p>
-        )}
-      </div>
+      {/* Page content - centered */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-16">
 
-      {/* Progress */}
-      <div className="px-4 pb-2">
-        <div className="max-w-3xl mx-auto">
-          <div className={`flex items-center gap-2 text-xs ${theme.progressText}`}>
-            <span>Module {currentModuleIdx + 1} / {data.timeline.length}</span>
-            <span>·</span>
-            <span>{currentEntry?.module.name}</span>
-          </div>
+        {/* Headline section */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight tracking-tight mb-3">
+            {headline}
+          </h1>
+          {subheadline && (
+            <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
+              {subheadline}
+            </p>
+          )}
         </div>
-      </div>
 
-      {/* CTA Bar */}
-      {showCta && <CTABar text={data.campaign.ctaText} onClick={handleCtaClick} theme={theme} fontName={fonts.font} />}
-    </div>
-  );
-}
+        {/* Video player container */}
+        <div className="relative rounded-xl overflow-hidden shadow-2xl border border-slate-200 bg-black">
+          {/* 16:9 aspect ratio wrapper */}
+          <div className="relative" style={{ paddingTop: "56.25%" }}>
+            <div className={`absolute inset-0 ${theme.pageBg}`}>
+              {!started ? (
+                /* Pre-play overlay */
+                <div className="absolute inset-0 flex items-center justify-center cursor-pointer group" onClick={handleStart}>
+                  {/* Dark overlay */}
+                  <div className="absolute inset-0 bg-black/40" />
 
-function CTABar({ text, onClick, theme, fontName }: { text: string | null; onClick: () => void; theme: PresentationTheme; fontName: string }) {
-  return (
-    <div className="sticky bottom-0 pt-8 pb-6 px-4 animate-slide-up" style={{ background: `linear-gradient(to top, rgba(0,0,0,0.9), transparent)` }}>
-      <div className="max-w-md mx-auto">
-        <Button
-          onClick={onClick}
-          size="lg"
-          className={`w-full h-14 text-lg font-bold ${theme.ctaBg} ${theme.ctaText} shadow-lg`}
-          style={{ fontFamily: `'${fontName}', sans-serif` }}
-        >
-          {text || "Book Your Free Call"} <ExternalLink className="w-5 h-5 ml-2" />
-        </Button>
+                  {/* Play button */}
+                  <div className="relative z-10 text-center">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center mx-auto group-hover:scale-110 group-hover:bg-white/30 transition-all duration-300">
+                      <Play className="w-10 h-10 sm:w-12 sm:h-12 text-white ml-1" />
+                    </div>
+                    <p className="text-white/70 text-sm mt-4">Click to play</p>
+                  </div>
+                </div>
+              ) : isVideo && currentEntry?.variant.videoUrl ? (
+                /* Vimeo embed */
+                <iframe
+                  src={`https://player.vimeo.com/video/${currentEntry.variant.videoUrl.replace(/.*\//, '').replace(/\?.*/, '')}?autoplay=1`}
+                  className="absolute inset-0 w-full h-full"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                />
+              ) : (
+                /* Audio + Slides player */
+                <div className="absolute inset-0 flex items-center justify-center">
+                  {currentSlide ? (
+                    <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={currentSlide.id} />
+                  ) : (
+                    <p className={`text-lg ${theme.progressText}`} style={{ fontFamily: `'${fonts.font}', sans-serif` }}>Playing...</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Progress bar - sits at bottom of player */}
+          {started && !isVideo && (
+            <div className="h-1 bg-slate-800">
+              <div
+                className="h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-300 ease-linear"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* CTA button - appears below the player */}
+        {showCta && data.campaign.ctaText && (
+          <div className="mt-8 text-center animate-cta-in">
+            <Button
+              onClick={handleCtaClick}
+              size="lg"
+              className="h-14 sm:h-16 px-8 sm:px-12 text-lg sm:text-xl font-bold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/25 rounded-xl"
+              style={{ fontFamily: `'${fonts.font}', sans-serif` }}
+            >
+              {data.campaign.ctaText} <ExternalLink className="w-5 h-5 ml-2" />
+            </Button>
+            {data.campaign.ctaUrl && (
+              <p className="text-xs text-slate-400 mt-3">Opens in a new tab</p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
