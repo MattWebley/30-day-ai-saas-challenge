@@ -236,11 +236,18 @@ Interactive components MUST match lesson text styling:
 - [ ] Run `npm run db:push` on production for email tracking columns (trackingId, openCount, clickCount on emailLogs)
 - [ ] NEEDS REDEPLOY for all session 7 changes to take effect
 - [ ] NEEDS REDEPLOY for all session 8 (funnel engine) changes to take effect
+- [ ] NEEDS REDEPLOY for session 9 changes to take effect
 - [ ] Run `npm run db:push` on production for 11 new funnel tables (or run the SQL migration script)
-- [ ] Test full funnel flow: create campaign → add opt-in pages → add presentation with modules/variants/slides → create variation sets → visit `/c/{slug}` → register → watch
+- [ ] Run SQL on production: `ALTER TABLE funnel_slides ADD COLUMN IF NOT EXISTS script_notes text;`
+- [ ] Run SQL on production: `ALTER TABLE funnel_campaigns ADD COLUMN IF NOT EXISTS watch_headline text; ALTER TABLE funnel_campaigns ADD COLUMN IF NOT EXISTS watch_subheadline text;`
+- [ ] Test full funnel flow: create campaign -> add presentation -> generate slides -> preview -> watch page
 - [ ] Test SyncTool: add slides to a variant, open sync tool, paste audio URL, play and tap to mark timestamps
 - [ ] Test AI ad copy generation from Funnels tab
-- [ ] Test Cal.com → funnel visitor matching (book a call after going through a funnel)
+- [ ] Test Cal.com -> funnel visitor matching (book a call after going through a funnel)
+- [ ] Test presenter mode: add script notes to slides, click Present, use arrow keys to navigate
+- [ ] Test AI Detect CTA timing on a campaign with script notes
+- [ ] Test watch page landing page layout (headline + video player + CTA popup)
+- [ ] Consider building image upload + AI matching for slides (user wants drag & drop media into presentations)
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
@@ -251,6 +258,75 @@ Interactive components MUST match lesson text styling:
 ---
 
 ## Session Log
+
+### 2026-02-15 (Session 9) - Presentation Polish, Script Notes, Teleprompter, VSL Landing Page
+- **Tasks Completed:**
+  - **Script Notes per Slide**:
+    - Added `scriptNotes` text column to `funnelSlides` table (SQL migration applied to dev)
+    - Updated funnelTypes.ts FunnelSlide interface with `scriptNotes`
+    - Backend CRUD (POST/PUT slides) now saves scriptNotes
+    - AI generate-slides endpoint returns scriptNotes (what the presenter reads aloud per slide)
+    - Format-for-Impact uses scriptNotes as context for better AI rewriting
+    - Every slide editor (inline, advanced, add-new) has amber-tinted "Script Notes" textarea
+    - Slide list shows amber "Script:" preview when notes exist
+  - **Teleprompter / Presenter Mode**:
+    - "Present" button in preview admin bar (only appears when slides have script notes)
+    - Split-screen layout: left = scrollable script, right = live slide preview
+    - Keyboard navigation: up/down/left/right arrows + spacebar to move between slides
+    - Click any script section to jump to that slide
+    - Auto-scroll keeps active section centered
+    - Active section highlighted with emerald left border + slide counter in admin bar
+  - **Large Script Handling (Generate Slides)**:
+    - Fixed truncation: removed `script.substring(0, 8000)` hard limit
+    - Scripts now chunked by paragraphs (~6000 chars each), processed sequentially
+    - `max_tokens` bumped from 4000 to 16000 per chunk
+    - Works with hour-long webinar scripts of any size
+  - **Large Presentation Handling (Format for Impact)**:
+    - Fixed "AI returned invalid format" error on large decks
+    - Now processes 15 slides per batch instead of all at once
+    - `max_tokens` bumped from 4000 to 8000 per batch
+    - Continues through batches even if one fails
+  - **Impact Limit Selector (Cost Saving)**:
+    - Dropdown next to Impact button: 5 / 10 / 20 / All slides
+    - Defaults to 10 - only processes first N slides to save API costs during testing
+    - Backend accepts optional `limit` parameter
+  - **VSL Landing Page (Watch Page Redesign)**:
+    - Complete redesign of FunnelWatch.tsx as a proper landing page
+    - White page with centered content (max-width 4xl)
+    - Big headline + subheadline at top (configurable per campaign)
+    - Video player container: 16:9 aspect ratio, rounded corners, shadow, dark border
+    - Frosted glass play button overlay, click anywhere to start
+    - Slides render inside the player container with chosen theme
+    - Blue gradient progress bar along bottom of player
+    - CTA button slides up below player at configured time with pulse animation
+  - **Watch Page Headline Fields**:
+    - Added `watchHeadline` and `watchSubheadline` columns to `funnelCampaigns`
+    - CampaignEditor has new Watch Page Headline + Subheadline fields
+    - Watch API returns the new fields, falls back to campaign name
+  - **AI Auto-Detect CTA Timing**:
+    - New endpoint `POST /api/admin/funnels/campaigns/:id/detect-cta-time`
+    - Analyzes slide content + script notes via Claude to find optimal CTA moment
+    - Returns suggested time in seconds + reason
+    - "AI Detect" button next to CTA Appear Time field in CampaignEditor
+- **Fixes Applied:**
+  - Presenter mode layout fix: changed `min-h-screen` to `h-screen` + `overflow-hidden` + `min-h-0` on flex children to prevent layout overflow
+  - Removed buggy IntersectionObserver scroll-tracking in teleprompter, replaced with clean keyboard nav
+  - Fixed `function` declaration inside block (strict mode) - converted to arrow function
+- **Files Modified:**
+  - `shared/schema.ts` - added `scriptNotes` to funnelSlides, `watchHeadline`/`watchSubheadline` to funnelCampaigns
+  - `server/funnelRoutes.ts` - updated slide CRUD, generate-slides (chunking), format-for-impact (batching + limit), campaign PUT, watch API, new detect-cta-time endpoint
+  - `client/src/pages/FunnelPreview.tsx` - scriptNotes on SlideData, presenter mode, impact limit selector
+  - `client/src/pages/FunnelWatch.tsx` - complete rewrite as VSL landing page
+  - `client/src/pages/admin/funnels/PresentationEditor.tsx` - scriptNotes in all slide editors
+  - `client/src/pages/admin/funnels/CampaignEditor.tsx` - watchHeadline/watchSubheadline fields, AI Detect button
+  - `client/src/pages/admin/funnels/funnelTypes.ts` - scriptNotes on FunnelSlide, watchHeadline/watchSubheadline on FunnelCampaign
+- **Notes for Next Session:**
+  - NEEDS REDEPLOY for session 9 changes to take effect
+  - Run SQL on production for `script_notes` column on funnelSlides
+  - Run SQL on production for `watch_headline` + `watch_subheadline` columns on funnelCampaigns
+  - User wants image/media upload for slides (drag & drop images, AI assigns to slides) - not built yet
+  - Local file upload is simplest approach for images; Vimeo for videos (already supported)
+  - Impact limit defaults to 10 slides - switch to "All" when ready to go live
 
 ### 2026-02-15 (Session 8) - Split-Test Webinar/VSL Funnel Engine
 - **Tasks Completed:**
