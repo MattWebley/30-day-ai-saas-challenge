@@ -725,7 +725,7 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
   const activeSlide = allSlides[activeSlideIdx] || allSlides[0];
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col">
+    <div className="h-screen bg-slate-950 flex flex-col overflow-hidden">
       <style>{slideAnimation}</style>
       <style>{`
         .teleprompter-scroll::-webkit-scrollbar { width: 4px; }
@@ -738,13 +738,13 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
         </span>
       )}
 
-      <div className="flex-1 flex">
+      <div className="flex-1 flex min-h-0">
         {/* Left: Teleprompter script */}
-        <div className="w-1/2 border-r border-slate-800 flex flex-col">
-          <div className="px-6 py-3 border-b border-slate-800 bg-slate-900/50">
+        <div className="w-1/2 border-r border-slate-800 flex flex-col min-h-0">
+          <div className="px-6 py-3 border-b border-slate-800 bg-slate-900/50 flex-shrink-0">
             <span className="text-xs text-slate-500 uppercase tracking-wider font-medium">Script - scroll to advance slides</span>
           </div>
-          <div className="flex-1 overflow-y-auto teleprompter-scroll">
+          <div className="flex-1 overflow-y-auto teleprompter-scroll min-h-0">
             {/* Top spacer so first section starts in reading zone */}
             <div className="h-[30vh]" />
 
@@ -804,8 +804,8 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
           </div>
         </div>
 
-        {/* Right: Slide preview */}
-        <div className={`w-1/2 ${theme.pageBg} flex items-center justify-center transition-colors duration-300`}>
+        {/* Right: Slide preview - locked in place */}
+        <div className={`w-1/2 ${theme.pageBg} flex items-center justify-center transition-colors duration-300 overflow-hidden`}>
           {activeSlide && (
             <SlideDisplay
               slide={activeSlide}
