@@ -350,6 +350,7 @@ export default function CampaignEditor({ campaignId, presentations }: Props) {
                   </Button>
                   <Button
                     size="sm" variant="ghost" className="text-red-500"
+                    title="Delete variation set"
                     onClick={() => { if (confirm("Delete?")) deleteVariation.mutate(vs.id); }}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -381,7 +382,7 @@ function OptinPageCard({ page, isEditing, onEdit, onSave, onDelete }: {
         <span className="font-medium text-slate-900">{page.name}</span>
         <div className="flex items-center gap-1">
           <Button size="sm" variant="ghost" onClick={onEdit}>{isEditing ? "Close" : "Edit"}</Button>
-          <Button size="sm" variant="ghost" className="text-red-500" onClick={onDelete}>
+          <Button size="sm" variant="ghost" className="text-red-500" title="Delete opt-in page" onClick={onDelete}>
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>

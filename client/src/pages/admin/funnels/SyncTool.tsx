@@ -169,6 +169,7 @@ export default function SyncTool({ variantId, onDone }: Props) {
           variant={isPlaying ? "outline" : "default"}
           onClick={togglePlay}
           disabled={!manualAudioUrl}
+          title={isPlaying ? "Pause audio" : "Play audio"}
         >
           {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
         </Button>
@@ -182,11 +183,12 @@ export default function SyncTool({ variantId, onDone }: Props) {
           onClick={markSlide}
           disabled={nextSlideIdx >= slides.length}
           className="bg-green-600 hover:bg-green-700 text-white px-8"
+          title="Mark current time as start of next slide"
         >
           Mark Slide {nextSlideIdx + 1}
         </Button>
 
-        <Button size="sm" variant="ghost" onClick={resetSync}>
+        <Button size="sm" variant="ghost" onClick={resetSync} title="Reset all timestamps">
           <RotateCcw className="w-4 h-4 mr-1" /> Reset
         </Button>
       </div>
@@ -265,6 +267,7 @@ export default function SyncTool({ variantId, onDone }: Props) {
         onClick={() => saveSync.mutate()}
         disabled={timestamps.size === 0 || saveSync.isPending}
         className="w-full"
+        title="Save all slide timestamps"
       >
         <Check className="w-4 h-4 mr-1" /> Save All Timestamps ({timestamps.size} slides)
       </Button>

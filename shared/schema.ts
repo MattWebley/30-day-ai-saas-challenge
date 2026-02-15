@@ -942,6 +942,8 @@ export const funnelPresentations = pgTable("funnel_presentations", {
   id: serial("id").primaryKey(),
   name: varchar("name").notNull(),
   description: text("description"),
+  theme: varchar("theme").default("dark"),
+  fontSettings: jsonb("font_settings"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

@@ -56,6 +56,7 @@ import CoachSetup from "@/pages/CoachSetup";
 import MyCoaching from "@/pages/MyCoaching";
 import FunnelOptin from "@/pages/FunnelOptin";
 import FunnelWatch from "@/pages/FunnelWatch";
+import FunnelPreview from "@/pages/FunnelPreview";
 import { CookieConsent } from "@/components/CookieConsent";
 import { FacebookPixel } from "@/components/FacebookPixel";
 
@@ -142,7 +143,8 @@ function Router() {
         <Route path="/coach-setup/:token" component={CoachSetup} />
         <Route path="/coach-login" component={CoachLogin} />
         {isAuthenticated && <Route path="/coach" component={CoachDashboard} />}
-        {/* Admin route - available to any authenticated user (component checks isAdmin) */}
+        {/* Admin routes */}
+        {isAuthenticated && <Route path="/preview/:presentationId" component={FunnelPreview} />}
         {isAuthenticated && <Route path="/admin" component={Admin} />}
         {!isAuthenticated ? (
           <Route path="/" component={Landing} />

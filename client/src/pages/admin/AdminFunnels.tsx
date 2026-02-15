@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
   Plus, Trash2, Settings, ExternalLink, BarChart3,
-  Presentation, ChevronLeft, Eye, EyeOff, Pencil,
+  Presentation, ChevronLeft, Eye, EyeOff, Pencil, HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { FunnelCampaign, FunnelPresentation } from "./funnels/funnelTypes";
@@ -141,6 +141,51 @@ export default function AdminFunnels() {
 
   return (
     <div className="space-y-6">
+      {/* How It Works Guide */}
+      <details className="group">
+        <summary className="flex items-center gap-2 cursor-pointer text-slate-500 hover:text-slate-700 select-none">
+          <HelpCircle className="w-4 h-4" />
+          <span className="text-sm font-medium">How Funnels Work — Step-by-Step Guide</span>
+        </summary>
+        <Card className="mt-3 p-6 border-2 border-slate-200 bg-slate-50">
+          <div className="space-y-5 text-slate-700">
+            <div>
+              <h4 className="font-bold text-slate-900 mb-1">Step 1: Create a Presentation</h4>
+              <p>A presentation is the webinar or VSL that people watch. Scroll down to the <strong>Presentations</strong> section and click <strong>"New Presentation"</strong>.</p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-slate-900 mb-1">Step 2: Paste Your Script</h4>
+              <p>Open your presentation with the <strong>gear icon</strong>. Paste your full script into the text box and click <strong>"Generate Slides"</strong>. AI will break it into slides with headlines and body text. You can edit, delete, or add slides after.</p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-slate-900 mb-1">Step 3: Preview</h4>
+              <p>Click the <strong>"Preview"</strong> button to see your slides as a click-through slideshow. Use arrow keys or click to navigate. This is how your audience will see each slide.</p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-slate-900 mb-1">Step 4: Add Audio & Sync</h4>
+              <p>Paste your audio URL (e.g. from Cloudflare R2 or any CDN), then click <strong>"Sync Slides to Audio"</strong>. Play the audio and tap to mark when each slide should appear. Preview again to see slides sync with audio.</p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-slate-900 mb-1">Step 5: Connect to a Campaign</h4>
+              <p>Create a <strong>Campaign</strong> above — this gives your funnel a public URL (<code className="bg-white px-1 py-0.5 rounded text-sm border border-slate-200">/c/your-slug</code>). Link your presentation, set a CTA button, add opt-in page variations, then toggle it live.</p>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-slate-900 mb-1">Step 6: Track & Optimise</h4>
+              <p>Click the <strong>chart icon</strong> for analytics (visitors, registrations, play starts, CTA clicks, sales). Use the <strong>pencil icon</strong> for AI ad copy generation. For split testing, use the <strong>Advanced: Modules & Variants</strong> section inside your presentation editor.</p>
+            </div>
+
+            <div className="pt-2 border-t border-slate-200">
+              <p className="text-sm text-slate-500"><strong>Quick icon reference:</strong> <span className="inline-flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> Active/Inactive</span> · <span className="inline-flex items-center gap-1"><Settings className="w-3.5 h-3.5" /> Settings</span> · <span className="inline-flex items-center gap-1"><BarChart3 className="w-3.5 h-3.5" /> Analytics</span> · <span className="inline-flex items-center gap-1"><Pencil className="w-3.5 h-3.5" /> Ad Copy</span> · <span className="inline-flex items-center gap-1"><ExternalLink className="w-3.5 h-3.5" /> Open Page</span> · <span className="inline-flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Delete</span></p>
+            </div>
+          </div>
+        </Card>
+      </details>
+
       {/* Campaigns Section */}
       <Card className="p-6 border-2 border-slate-200">
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-200">
@@ -202,21 +247,22 @@ export default function AdminFunnels() {
                   </div>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button size="sm" variant="ghost" onClick={() => { setSelectedCampaignId(c.id); setView("campaign"); }}>
+                  <Button size="sm" variant="ghost" title="Campaign settings" onClick={() => { setSelectedCampaignId(c.id); setView("campaign"); }}>
                     <Settings className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => { setSelectedCampaignId(c.id); setView("analytics"); }}>
+                  <Button size="sm" variant="ghost" title="Analytics" onClick={() => { setSelectedCampaignId(c.id); setView("analytics"); }}>
                     <BarChart3 className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" variant="ghost" onClick={() => { setSelectedCampaignId(c.id); setView("adcopy"); }}>
+                  <Button size="sm" variant="ghost" title="Ad copy generator" onClick={() => { setSelectedCampaignId(c.id); setView("adcopy"); }}>
                     <Pencil className="w-4 h-4" />
                   </Button>
-                  <a href={`/c/${c.slug}`} target="_blank" rel="noopener noreferrer">
+                  <a href={`/c/${c.slug}`} target="_blank" rel="noopener noreferrer" title="Open campaign page">
                     <Button size="sm" variant="ghost"><ExternalLink className="w-4 h-4" /></Button>
                   </a>
                   <Button
                     size="sm" variant="ghost"
                     className="text-red-500 hover:text-red-700"
+                    title="Delete campaign"
                     onClick={() => { if (confirm("Delete this campaign and all its data?")) deleteCampaign.mutate(c.id); }}
                   >
                     <Trash2 className="w-4 h-4" />
@@ -270,12 +316,13 @@ export default function AdminFunnels() {
                   <span className="font-medium text-slate-900">{p.name}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button size="sm" variant="ghost" onClick={() => { setSelectedPresentationId(p.id); setView("presentation"); }}>
+                  <Button size="sm" variant="ghost" title="Edit presentation" onClick={() => { setSelectedPresentationId(p.id); setView("presentation"); }}>
                     <Settings className="w-4 h-4" />
                   </Button>
                   <Button
                     size="sm" variant="ghost"
                     className="text-red-500 hover:text-red-700"
+                    title="Delete presentation"
                     onClick={() => { if (confirm("Delete this presentation and all its modules?")) deletePresentation.mutate(p.id); }}
                   >
                     <Trash2 className="w-4 h-4" />

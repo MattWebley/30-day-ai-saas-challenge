@@ -126,7 +126,7 @@ export default function AdCopyGenerator({ campaignId }: Props) {
         <Card className="p-6 border-2 border-slate-200">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-bold text-slate-900">Approved Copy ({approvedCopies.length})</h4>
-            <a href={`/api/admin/funnels/campaigns/${campaignId}/ad-copy/export-csv`} download>
+            <a href={`/api/admin/funnels/campaigns/${campaignId}/ad-copy/export-csv`} download title="Export approved ad copy as CSV">
               <Button size="sm" variant="outline">
                 <Download className="w-4 h-4 mr-1" /> Export CSV
               </Button>
@@ -184,12 +184,12 @@ function CopyCard({ copy, onApprove, onReject }: {
         </div>
         <div className="flex items-center gap-1 flex-shrink-0">
           {onApprove && (
-            <Button size="sm" variant="ghost" className="text-green-600 hover:text-green-700" onClick={onApprove}>
+            <Button size="sm" variant="ghost" className="text-green-600 hover:text-green-700" title="Approve ad copy" onClick={onApprove}>
               <Check className="w-4 h-4" />
             </Button>
           )}
           {onReject && (
-            <Button size="sm" variant="ghost" className="text-red-500 hover:text-red-700" onClick={onReject}>
+            <Button size="sm" variant="ghost" className="text-red-500 hover:text-red-700" title="Reject ad copy" onClick={onReject}>
               <X className="w-4 h-4" />
             </Button>
           )}

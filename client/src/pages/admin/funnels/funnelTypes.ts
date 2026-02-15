@@ -17,10 +17,23 @@ export interface FunnelCampaign {
   presentation?: FunnelPresentation | null;
 }
 
+export interface FontSettings {
+  font: string;
+  headlineSize: string;
+  bodySize: string;
+  headlineWeight: number;
+  bodyWeight: number;
+  headlineColor?: string;
+  bodyColor?: string;
+  headlineUppercase?: boolean;
+}
+
 export interface FunnelPresentation {
   id: number;
   name: string;
   description: string | null;
+  theme?: string | null;
+  fontSettings?: FontSettings | null;
   createdAt: string;
   updatedAt: string;
   modules?: FunnelModule[];

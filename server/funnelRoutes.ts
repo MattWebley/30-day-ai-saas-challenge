@@ -9,6 +9,7 @@ import { eq, desc, and, sql, count, gte } from "drizzle-orm";
 import crypto from "crypto";
 import { addContactToSysteme } from "./systemeService";
 import { isAuthenticated } from "./replitAuth";
+import Anthropic from "@anthropic-ai/sdk";
 
 // Middleware: check admin (looks up DB user like existing routes.ts pattern)
 async function requireAdmin(req: any, res: any, next: any) {
@@ -99,9 +100,9 @@ export function registerFunnelRoutes(app: Express) {
 
   app.put("/api/admin/funnels/presentations/:id", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const { name, description } = req.body;
+      const { name, description, theme, fontSettings } = req.body;
       const [presentation] = await db.update(funnelPresentations)
-        .set({ name, description, updatedAt: new Date() })
+        .set({ name, description, theme, fontSettings, updatedAt: new Date() })
         .where(eq(funnelPresentations.id, parseInt(req.params.id)))
         .returning();
       res.json(presentation);
@@ -145,6 +146,279 @@ export function registerFunnelRoutes(app: Express) {
       }));
 
       res.json({ ...presentation, modules: modulesWithVariants });
+    } catch (e: any) {
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // ==========================================
+  // ADMIN — Generate slides from script (AI)
+  // ==========================================
+
+  app.post("/api/admin/funnels/presentations/:id/generate-slides", isAuthenticated, requireAdmin, async (req: any, res) => {
+    try {
+      const presentationId = parseInt(req.params.id);
+      const { script } = req.body;
+      if (!script || script.trim().length < 20) {
+        return res.status(400).json({ message: "Script must be at least 20 characters" });
+      }
+
+      // Check presentation exists
+      const [presentation] = await db.select().from(funnelPresentations).where(eq(funnelPresentations.id, presentationId));
+      if (!presentation) return res.status(404).json({ message: "Presentation not found" });
+
+      // Auto-create module + variant if none exist
+      let modules = await db.select().from(funnelModules).where(eq(funnelModules.presentationId, presentationId));
+      let moduleId: number;
+      let variantId: number;
+
+      if (modules.length === 0) {
+        const [mod] = await db.insert(funnelModules).values({
+          presentationId, name: "Main", sortOrder: 0, isSwappable: false,
+        }).returning();
+        moduleId = mod.id;
+
+        const [variant] = await db.insert(funnelModuleVariants).values({
+          moduleId: mod.id, name: "Default", mediaType: "audio_slides", scriptText: script,
+        }).returning();
+        variantId = variant.id;
+      } else {
+        moduleId = modules[0].id;
+        // Get or create first variant
+        const variants = await db.select().from(funnelModuleVariants).where(eq(funnelModuleVariants.moduleId, moduleId));
+        if (variants.length === 0) {
+          const [variant] = await db.insert(funnelModuleVariants).values({
+            moduleId, name: "Default", mediaType: "audio_slides", scriptText: script,
+          }).returning();
+          variantId = variant.id;
+        } else {
+          variantId = variants[0].id;
+          // Update script on existing variant
+          await db.update(funnelModuleVariants).set({ scriptText: script }).where(eq(funnelModuleVariants.id, variantId));
+        }
+      }
+
+      // Call Anthropic API directly (bypass abuse detection — this is admin-only)
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      console.log("[generate-slides] Calling Claude API...");
+
+      let raw: string;
+      try {
+        const response = await anthropic.messages.create({
+          model: "claude-sonnet-4-5-20250929",
+          max_tokens: 4000,
+          system: `You are a presentation slide designer. Break the user's script into presentation slides. Each slide should have a short punchy headline (max 8 words) and a body (1-3 sentences from the script). Aim for one slide per key point or paragraph. Return ONLY a valid JSON array, no other text. Example: [{"headline":"Your Big Idea","body":"Every great product starts with..."}]`,
+          messages: [{
+            role: "user",
+            content: `Break this script into presentation slides. Return ONLY a JSON array of objects with "headline" and "body" fields:\n\n${script.substring(0, 8000)}`,
+          }],
+        });
+        raw = response.content[0].type === "text" ? response.content[0].text : "";
+        console.log("[generate-slides] Got AI response, length:", raw.length);
+      } catch (aiError: any) {
+        console.error("[generate-slides] Claude API error:", aiError.message);
+        return res.status(500).json({ message: `AI error: ${aiError.message}` });
+      }
+
+      // Parse the AI response — try multiple extraction strategies
+      let slides: { headline: string; body: string }[] = [];
+      try {
+        slides = JSON.parse(raw);
+      } catch {
+        // Try extracting JSON array from markdown code block
+        const codeBlockMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch) {
+          try { slides = JSON.parse(codeBlockMatch[1].trim()); } catch {}
+        }
+        // Try extracting any JSON array from the response
+        if (slides.length === 0) {
+          const arrayMatch = raw.match(/\[[\s\S]*\]/);
+          if (arrayMatch) {
+            try { slides = JSON.parse(arrayMatch[0]); } catch {}
+          }
+        }
+        // Try extracting { slides: [...] } wrapper
+        if (slides.length === 0) {
+          const objMatch = raw.match(/\{[\s\S]*"slides"\s*:\s*\[[\s\S]*\][\s\S]*\}/);
+          if (objMatch) {
+            try {
+              const parsed = JSON.parse(objMatch[0]);
+              if (Array.isArray(parsed.slides)) slides = parsed.slides;
+            } catch {}
+          }
+        }
+      }
+
+      if (!Array.isArray(slides) || slides.length === 0) {
+        console.error("[generate-slides] Failed to parse AI response:", raw.substring(0, 500));
+        return res.status(500).json({ message: "AI returned an unexpected format. Please try again." });
+      }
+
+      // Delete existing slides on this variant
+      await db.delete(funnelSlides).where(eq(funnelSlides.variantId, variantId));
+
+      // Insert new slides
+      const createdSlides = [];
+      for (let i = 0; i < slides.length; i++) {
+        const s = slides[i];
+        const [slide] = await db.insert(funnelSlides).values({
+          variantId,
+          sortOrder: i,
+          headline: s.headline,
+          body: s.body,
+          startTimeMs: 0,
+        }).returning();
+        createdSlides.push(slide);
+      }
+
+      res.json({ slides: createdSlides, variantId, moduleId });
+    } catch (e: any) {
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // ==========================================
+  // ADMIN — AI "Format for Impact" — rewrites slides for engagement
+  // ==========================================
+
+  app.post("/api/admin/funnels/presentations/:id/format-for-impact", isAuthenticated, requireAdmin, async (req: any, res) => {
+    try {
+      const presentationId = parseInt(req.params.id);
+      const [presentation] = await db.select().from(funnelPresentations).where(eq(funnelPresentations.id, presentationId));
+      if (!presentation) return res.status(404).json({ message: "Presentation not found" });
+
+      // Get all modules → variants → slides
+      const modules = await db.select().from(funnelModules)
+        .where(eq(funnelModules.presentationId, presentationId))
+        .orderBy(funnelModules.sortOrder);
+
+      const allSlides: { id: number; sortOrder: number; headline: string | null; body: string | null }[] = [];
+
+      for (const mod of modules) {
+        const variants = await db.select().from(funnelModuleVariants)
+          .where(eq(funnelModuleVariants.moduleId, mod.id));
+        for (const variant of variants) {
+          const slides = await db.select().from(funnelSlides)
+            .where(eq(funnelSlides.variantId, variant.id))
+            .orderBy(funnelSlides.sortOrder);
+          allSlides.push(...slides.map(s => ({ id: s.id, sortOrder: s.sortOrder, headline: s.headline, body: s.body })));
+        }
+      }
+
+      if (allSlides.length === 0) return res.status(400).json({ message: "No slides to format" });
+
+      // Build the current content for Claude
+      const currentContent = allSlides.map((s, i) =>
+        `Slide ${i + 1}:\nHeadline: ${s.headline || "(empty)"}\nBody: ${s.body || "(empty)"}`
+      ).join("\n\n");
+
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-5-20250929",
+        max_tokens: 4000,
+        system: `You are a direct-response copywriter and presentation designer. Your job is to rewrite presentation slides for MAXIMUM viewer engagement and conversions.
+
+Rules for rewriting:
+1. MIX UP THE LAYOUTS for visual variety:
+   - Some slides: headline ONLY (leave body empty string "") — for bold punchy statements
+   - Some slides: body ONLY (leave headline empty string "") — for storytelling/narrative moments
+   - Some slides: headline + body — for key points that need explanation
+   - Aim for roughly: 40% headline-only, 30% headline+body, 30% body-only
+2. Headlines should be SHORT and punchy (2-8 words max). Conversational. Direct.
+3. Body text should feel like someone talking, not reading. Short sentences. Fragments are fine.
+4. Use copywriter markup SPARINGLY for emphasis (max 1-2 per slide):
+   - *word* for underline
+   - **word** for accent color (use on the most important word/phrase)
+   - ==word== for yellow highlighter (use rarely, only for the BIG claim)
+5. Keep the same NUMBER of slides — don't add or remove any.
+6. Keep the core MESSAGE of each slide — just make the delivery more impactful.
+7. Think like a webinar host who keeps people watching. Create curiosity gaps, open loops, and pattern interrupts.
+
+Return ONLY a valid JSON array with one object per slide: [{"headline":"...","body":"..."}]
+Use empty string "" (not null) for blank headline or body fields.`,
+        messages: [{
+          role: "user",
+          content: `Rewrite these ${allSlides.length} slides for maximum impact and conversions. Return exactly ${allSlides.length} slides as a JSON array:\n\n${currentContent}`,
+        }],
+      });
+
+      const raw = response.content[0].type === "text" ? response.content[0].text : "";
+
+      // Parse AI response
+      let formatted: { headline: string; body: string }[] = [];
+      try {
+        formatted = JSON.parse(raw);
+      } catch {
+        const codeBlockMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch) {
+          try { formatted = JSON.parse(codeBlockMatch[1].trim()); } catch {}
+        }
+        if (formatted.length === 0) {
+          const arrayMatch = raw.match(/\[[\s\S]*\]/);
+          if (arrayMatch) {
+            try { formatted = JSON.parse(arrayMatch[0]); } catch {}
+          }
+        }
+      }
+
+      if (!Array.isArray(formatted) || formatted.length === 0) {
+        return res.status(500).json({ message: "AI returned invalid format" });
+      }
+
+      // Update each slide (match by position)
+      const updateCount = Math.min(formatted.length, allSlides.length);
+      for (let i = 0; i < updateCount; i++) {
+        const f = formatted[i];
+        await db.update(funnelSlides).set({
+          headline: f.headline || null,
+          body: f.body || null,
+        }).where(eq(funnelSlides.id, allSlides[i].id));
+      }
+
+      res.json({ success: true, slidesUpdated: updateCount });
+    } catch (e: any) {
+      console.error("[format-for-impact] Error:", e.message);
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // ==========================================
+  // ADMIN — Presentation preview (no campaign/visitor needed)
+  // ==========================================
+
+  app.get("/api/admin/funnels/presentations/:id/preview", isAuthenticated, requireAdmin, async (req: any, res) => {
+    try {
+      const presentationId = parseInt(req.params.id);
+      const [presentation] = await db.select().from(funnelPresentations).where(eq(funnelPresentations.id, presentationId));
+      if (!presentation) return res.status(404).json({ message: "Presentation not found" });
+
+      const modules = await db.select().from(funnelModules)
+        .where(eq(funnelModules.presentationId, presentationId))
+        .orderBy(funnelModules.sortOrder);
+
+      const timeline = await Promise.all(modules.map(async (mod) => {
+        const variants = await db.select().from(funnelModuleVariants)
+          .where(eq(funnelModuleVariants.moduleId, mod.id));
+
+        if (variants.length === 0) return null;
+        const variant = variants[0]; // Use first variant for preview
+
+        const slides = await db.select().from(funnelSlides)
+          .where(eq(funnelSlides.variantId, variant.id))
+          .orderBy(funnelSlides.sortOrder);
+
+        return {
+          module: { id: mod.id, name: mod.name, sortOrder: mod.sortOrder },
+          variant,
+          slides,
+        };
+      }));
+
+      res.json({
+        presentation,
+        timeline: timeline.filter(Boolean),
+      });
     } catch (e: any) {
       res.status(500).json({ message: e.message });
     }
@@ -994,6 +1268,10 @@ Return ONLY valid JSON array, no markdown.`;
 
       if (!campaign.presentationId) return res.status(404).json({ message: "No presentation linked" });
 
+      // Get presentation (for theme)
+      const [presentation] = await db.select().from(funnelPresentations)
+        .where(eq(funnelPresentations.id, campaign.presentationId));
+
       // Get modules in order
       const modules = await db.select().from(funnelModules)
         .where(eq(funnelModules.presentationId, campaign.presentationId))
@@ -1039,6 +1317,8 @@ Return ONLY valid JSON array, no markdown.`;
           ctaUrl: campaign.ctaUrl,
           ctaAppearTime: campaign.ctaAppearTime,
         },
+        theme: presentation?.theme || "dark",
+        fontSettings: presentation?.fontSettings || null,
         timeline: timeline.filter(Boolean),
         visitorId: visitor?.id || null,
         variationSetId: visitor?.variationSetId || null,

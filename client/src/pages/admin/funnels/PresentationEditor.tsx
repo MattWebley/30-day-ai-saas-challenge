@@ -5,13 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, getServerErrorMessage } from "@/lib/queryClient";
 import {
   Plus, Trash2, Save, ChevronDown, ChevronUp,
   GripVertical, Music, Video, Image, Timer,
+  Wand2, Eye, Pencil, Loader2, ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { FunnelPresentation, FunnelModule, FunnelModuleVariant, FunnelSlide } from "./funnelTypes";
+import { PRESENTATION_THEMES, getTheme } from "@/lib/presentationThemes";
 import SyncTool from "./SyncTool";
 
 interface Props {
@@ -20,19 +22,510 @@ interface Props {
 
 export default function PresentationEditor({ presentationId }: Props) {
   const queryClient = useQueryClient();
-  const [showNewModule, setShowNewModule] = useState(false);
-  const [expandedModules, setExpandedModules] = useState<Set<number>>(new Set());
-  const [expandedVariants, setExpandedVariants] = useState<Set<number>>(new Set());
   const [syncVariantId, setSyncVariantId] = useState<number | null>(null);
+  const [script, setScript] = useState("");
+  const [showRegenerate, setShowRegenerate] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [editingSlideId, setEditingSlideId] = useState<number | null>(null);
+  const [showAddSlide, setShowAddSlide] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioUrlDirty, setAudioUrlDirty] = useState(false);
+
+  // Name editing
+  const [editingName, setEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState("");
 
   const { data: presentation } = useQuery<FunnelPresentation>({
     queryKey: [`/api/admin/funnels/presentations/${presentationId}/full`],
+    select: (data) => {
+      // Sync audioUrl from first variant when data loads
+      const firstVariant = data?.modules?.[0]?.variants?.[0];
+      if (firstVariant && audioUrl === null) {
+        setAudioUrl(firstVariant.audioUrl || "");
+      }
+      return data;
+    },
   });
 
   const modules = presentation?.modules || [];
+  const allSlides = modules.flatMap(m => (m.variants || []).flatMap(v => v.slides || []));
+  const firstVariant = modules[0]?.variants?.[0];
+  const firstVariantId = firstVariant?.id;
+  const hasSlides = allSlides.length > 0;
 
-  // New module
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/presentations/${presentationId}/full`] });
+
+  // Generate slides from script
+  const generateSlides = useMutation({
+    mutationFn: async (scriptText: string) => {
+      const res = await apiRequest("POST", `/api/admin/funnels/presentations/${presentationId}/generate-slides`, { script: scriptText });
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidate();
+      setScript("");
+      setShowRegenerate(false);
+      toast.success("Slides generated from script");
+    },
+    onError: (e: any) => toast.error(getServerErrorMessage(e, "Failed to generate slides. Please try again.")),
+  });
+
+  // Update presentation name
+  const updateName = useMutation({
+    mutationFn: async (name: string) => {
+      const res = await apiRequest("PUT", `/api/admin/funnels/presentations/${presentationId}`, { name });
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidate();
+      setEditingName(false);
+      toast.success("Name updated");
+    },
+  });
+
+  // Update presentation theme
+  const updateTheme = useMutation({
+    mutationFn: async (theme: string) => {
+      const res = await apiRequest("PUT", `/api/admin/funnels/presentations/${presentationId}`, { theme });
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidate();
+      toast.success("Theme updated");
+    },
+  });
+
+  // Update variant audio URL
+  const updateVariantAudio = useMutation({
+    mutationFn: async (url: string) => {
+      if (!firstVariantId) throw new Error("No variant exists yet");
+      const res = await apiRequest("PUT", `/api/admin/funnels/variants/${firstVariantId}`, { audioUrl: url });
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidate();
+      setAudioUrlDirty(false);
+      toast.success("Audio URL saved");
+    },
+  });
+
+  // Update a slide inline
+  const updateSlide = useMutation({
+    mutationFn: async (data: { id: number } & Partial<FunnelSlide>) => {
+      const res = await apiRequest("PUT", `/api/admin/funnels/slides/${data.id}`, data);
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidate();
+      setEditingSlideId(null);
+      toast.success("Slide updated");
+    },
+  });
+
+  // Delete a slide
+  const deleteSlide = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/admin/funnels/slides/${id}`);
+    },
+    onSuccess: () => {
+      invalidate();
+      toast.success("Slide deleted");
+    },
+  });
+
+  // Add a slide manually
+  const [newSlide, setNewSlide] = useState({ headline: "", body: "" });
+  const addSlide = useMutation({
+    mutationFn: async () => {
+      if (!firstVariantId) throw new Error("No variant exists");
+      const sortOrder = allSlides.length;
+      const res = await apiRequest("POST", "/api/admin/funnels/slides", {
+        variantId: firstVariantId, sortOrder, headline: newSlide.headline, body: newSlide.body, startTimeMs: 0,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidate();
+      setShowAddSlide(false);
+      setNewSlide({ headline: "", body: "" });
+      toast.success("Slide added");
+    },
+  });
+
+  if (!presentation) return <div className="py-8 text-center text-slate-400">Loading...</div>;
+
+  // Show sync tool if selected
+  if (syncVariantId) {
+    return (
+      <div className="space-y-4">
+        <button onClick={() => setSyncVariantId(null)} className="text-sm text-slate-500 hover:text-slate-700">
+          ← Back to Presentation Editor
+        </button>
+        <SyncTool variantId={syncVariantId} onDone={() => {
+          setSyncVariantId(null);
+          invalidate();
+        }} />
+      </div>
+    );
+  }
+
+  // =============================================
+  // STATE 1: No slides yet — show script paste UI
+  // =============================================
+  if (!hasSlides) {
+    return (
+      <div className="space-y-6">
+        <Card className="p-6 border-2 border-slate-200">
+          {/* Name */}
+          <div className="mb-6">
+            <Label className="text-slate-700 font-medium">Presentation Name</Label>
+            <div className="flex gap-2 mt-1">
+              <Input
+                value={editingName ? nameValue : presentation.name}
+                onChange={(e) => { setNameValue(e.target.value); setEditingName(true); }}
+                onFocus={() => { if (!editingName) { setNameValue(presentation.name); setEditingName(true); } }}
+              />
+              {editingName && (
+                <Button size="sm" onClick={() => updateName.mutate(nameValue)} disabled={!nameValue.trim()}>
+                  <Save className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Theme picker */}
+          <ThemePicker currentTheme={presentation.theme} onSelect={(t) => updateTheme.mutate(t)} />
+
+          {/* Script paste */}
+          <div className="space-y-3">
+            <Label className="text-slate-700 font-medium">Paste Your Script</Label>
+            <p className="text-slate-600">
+              Paste the full script for your presentation. AI will break it into slides with headlines and body text.
+            </p>
+            <Textarea
+              value={script}
+              onChange={(e) => setScript(e.target.value)}
+              rows={12}
+              placeholder={"Paste your webinar or VSL script here...\n\nEach key point will become a slide with a headline and body text."}
+              className="text-slate-700"
+            />
+            <Button
+              onClick={() => generateSlides.mutate(script)}
+              disabled={script.trim().length < 20 || generateSlides.isPending}
+              className="w-full sm:w-auto"
+            >
+              {generateSlides.isPending ? (
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Generating Slides...</>
+              ) : (
+                <><Wand2 className="w-4 h-4 mr-2" /> Generate Slides</>
+              )}
+            </Button>
+            {script.trim().length > 0 && script.trim().length < 20 && (
+              <p className="text-sm text-slate-500">Script needs at least 20 characters.</p>
+            )}
+          </div>
+
+          {/* Manual add option */}
+          <div className="mt-6 pt-4 border-t border-slate-200">
+            <button
+              onClick={() => setShowAddSlide(!showAddSlide)}
+              className="text-sm text-slate-500 hover:text-slate-700"
+            >
+              <Plus className="w-3 h-3 inline mr-1" /> Or add slides manually
+            </button>
+            {showAddSlide && (
+              <ManualSlideAdd
+                presentationId={presentationId}
+                onDone={() => { setShowAddSlide(false); invalidate(); }}
+              />
+            )}
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // =============================================
+  // STATE 2: Slides exist — show slide list + tools
+  // =============================================
+  return (
+    <div className="space-y-6">
+      <Card className="p-6 border-2 border-slate-200">
+        {/* Header with name + preview */}
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-200">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            {editingName ? (
+              <div className="flex gap-2 flex-1">
+                <Input value={nameValue} onChange={(e) => setNameValue(e.target.value)} className="flex-1" />
+                <Button size="sm" onClick={() => updateName.mutate(nameValue)} disabled={!nameValue.trim()}>
+                  <Save className="w-4 h-4" />
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setEditingName(false)}>Cancel</Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 min-w-0">
+                <h3 className="text-lg font-bold text-slate-900 truncate">{presentation.name}</h3>
+                <button onClick={() => { setNameValue(presentation.name); setEditingName(true); }} className="text-slate-400 hover:text-slate-600">
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
+          <a href={`/preview/${presentationId}`} target="_blank" rel="noopener noreferrer">
+            <Button size="sm" variant="outline">
+              <Eye className="w-4 h-4 mr-1" /> Preview
+            </Button>
+          </a>
+        </div>
+
+        {/* Theme picker */}
+        <div className="mb-4">
+          <ThemePicker currentTheme={presentation.theme} onSelect={(t) => updateTheme.mutate(t)} />
+        </div>
+
+        {/* Audio URL */}
+        <div className="mb-4">
+          <Label className="text-slate-700 font-medium">Audio URL</Label>
+          <div className="flex gap-2 mt-1">
+            <Input
+              value={audioUrl || ""}
+              onChange={(e) => { setAudioUrl(e.target.value); setAudioUrlDirty(true); }}
+              placeholder="https://cdn.example.com/audio.mp3"
+              className="flex-1"
+            />
+            {audioUrlDirty && (
+              <Button size="sm" onClick={() => updateVariantAudio.mutate(audioUrl || "")}>
+                <Save className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+          {firstVariantId && audioUrl && (
+            <button
+              onClick={() => setSyncVariantId(firstVariantId)}
+              className="mt-2 text-sm text-primary hover:underline flex items-center gap-1"
+            >
+              <Timer className="w-3.5 h-3.5" /> Sync Slides to Audio
+            </button>
+          )}
+        </div>
+
+        {/* Slide List */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-bold text-slate-900">{allSlides.length} Slide{allSlides.length !== 1 ? "s" : ""}</h4>
+          </div>
+          <div className="space-y-2">
+            {allSlides.map((slide, idx) => (
+              <div key={slide.id} className="p-3 rounded-lg border border-slate-200 bg-white">
+                {editingSlideId === slide.id ? (
+                  <InlineSlideEditor
+                    slide={slide}
+                    onSave={(data) => updateSlide.mutate({ id: slide.id, ...data })}
+                    onCancel={() => setEditingSlideId(null)}
+                  />
+                ) : (
+                  <div className="flex items-start gap-3">
+                    <span className="text-sm font-bold text-slate-400 w-6 pt-0.5 text-center flex-shrink-0">{idx + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      {slide.headline && (
+                        <p className="font-bold text-slate-900">{slide.headline}</p>
+                      )}
+                      {slide.body && (
+                        <p className="text-slate-700 mt-0.5 line-clamp-2">{slide.body}</p>
+                      )}
+                      {!slide.headline && !slide.body && (
+                        <p className="text-slate-400">(empty slide)</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <button onClick={() => setEditingSlideId(slide.id)} className="p-1 text-slate-400 hover:text-slate-600" title="Edit">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => { if (confirm("Delete this slide?")) deleteSlide.mutate(slide.id); }} className="p-1 text-red-400 hover:text-red-600" title="Delete">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Add slide */}
+          {showAddSlide ? (
+            <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+              <div>
+                <Label className="text-slate-700">Headline</Label>
+                <Input value={newSlide.headline} onChange={(e) => setNewSlide({ ...newSlide, headline: e.target.value })} placeholder="Slide headline" />
+              </div>
+              <div>
+                <Label className="text-slate-700">Body</Label>
+                <Textarea value={newSlide.body} onChange={(e) => setNewSlide({ ...newSlide, body: e.target.value })} rows={2} placeholder="Slide body text" />
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" onClick={() => addSlide.mutate()}>Add Slide</Button>
+                <Button size="sm" variant="ghost" onClick={() => setShowAddSlide(false)}>Cancel</Button>
+              </div>
+            </div>
+          ) : (
+            <Button size="sm" variant="outline" className="mt-3" onClick={() => setShowAddSlide(true)}>
+              <Plus className="w-4 h-4 mr-1" /> Add Slide
+            </Button>
+          )}
+        </div>
+
+        {/* Regenerate from Script (collapsible) */}
+        <details className="mb-4" open={showRegenerate} onToggle={(e) => setShowRegenerate((e.target as HTMLDetailsElement).open)}>
+          <summary className="cursor-pointer text-sm text-slate-500 hover:text-slate-700 select-none">
+            <Wand2 className="w-3.5 h-3.5 inline mr-1" /> Regenerate from Script
+          </summary>
+          <div className="mt-3 p-4 bg-amber-50 border border-amber-200 rounded-lg space-y-3">
+            <p className="text-sm text-amber-800">
+              This will replace all existing slides with new AI-generated ones.
+            </p>
+            <Textarea
+              value={script}
+              onChange={(e) => setScript(e.target.value)}
+              rows={6}
+              placeholder="Paste your updated script..."
+              className="text-slate-700"
+            />
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                if (confirm("This will delete all current slides and regenerate them. Continue?")) {
+                  generateSlides.mutate(script);
+                }
+              }}
+              disabled={script.trim().length < 20 || generateSlides.isPending}
+            >
+              {generateSlides.isPending ? (
+                <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> Generating...</>
+              ) : (
+                <><Wand2 className="w-4 h-4 mr-1" /> Regenerate Slides</>
+              )}
+            </Button>
+          </div>
+        </details>
+
+        {/* Advanced: Modules & Variants (collapsible) */}
+        <details>
+          <summary className="cursor-pointer text-sm text-slate-500 hover:text-slate-700 select-none">
+            Advanced: Modules & Variants
+          </summary>
+          <div className="mt-3">
+            <AdvancedModuleView
+              presentationId={presentationId}
+              modules={modules}
+              onSyncVariant={setSyncVariantId}
+            />
+          </div>
+        </details>
+      </Card>
+    </div>
+  );
+}
+
+// Inline slide editor
+function InlineSlideEditor({ slide, onSave, onCancel }: {
+  slide: FunnelSlide;
+  onSave: (data: Partial<FunnelSlide>) => void;
+  onCancel: () => void;
+}) {
+  const [headline, setHeadline] = useState(slide.headline || "");
+  const [body, setBody] = useState(slide.body || "");
+
+  return (
+    <div className="space-y-2">
+      <div>
+        <Label className="text-slate-700">Headline</Label>
+        <Input value={headline} onChange={(e) => setHeadline(e.target.value)} />
+      </div>
+      <div>
+        <Label className="text-slate-700">Body</Label>
+        <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={2} />
+      </div>
+      <div className="flex gap-2">
+        <Button size="sm" onClick={() => onSave({ headline, body })}>
+          <Save className="w-3 h-3 mr-0.5" /> Save
+        </Button>
+        <Button size="sm" variant="ghost" onClick={onCancel}>Cancel</Button>
+      </div>
+    </div>
+  );
+}
+
+// Manual slide add (for empty state)
+function ManualSlideAdd({ presentationId, onDone }: { presentationId: number; onDone: () => void }) {
+  const queryClient = useQueryClient();
+  const [headline, setHeadline] = useState("");
+  const [body, setBody] = useState("");
+
+  const addSlide = useMutation({
+    mutationFn: async () => {
+      // Need to ensure module + variant exist first
+      const fullRes = await fetch(`/api/admin/funnels/presentations/${presentationId}/full`, { credentials: "include" });
+      const full = await fullRes.json();
+      let variantId: number;
+
+      if (full.modules?.length > 0 && full.modules[0].variants?.length > 0) {
+        variantId = full.modules[0].variants[0].id;
+      } else {
+        // Create module + variant
+        const modRes = await apiRequest("POST", "/api/admin/funnels/modules", {
+          presentationId, name: "Main", sortOrder: 0, isSwappable: false,
+        });
+        const mod = await modRes.json();
+        const varRes = await apiRequest("POST", "/api/admin/funnels/variants", {
+          moduleId: mod.id, name: "Default", mediaType: "audio_slides",
+        });
+        const variant = await varRes.json();
+        variantId = variant.id;
+      }
+
+      const res = await apiRequest("POST", "/api/admin/funnels/slides", {
+        variantId, sortOrder: 0, headline, body, startTimeMs: 0,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/presentations/${presentationId}/full`] });
+      onDone();
+      toast.success("Slide added");
+    },
+  });
+
+  return (
+    <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
+      <div>
+        <Label className="text-slate-700">Headline</Label>
+        <Input value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder="Slide headline" />
+      </div>
+      <div>
+        <Label className="text-slate-700">Body</Label>
+        <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={2} placeholder="Slide body text" />
+      </div>
+      <div className="flex gap-2">
+        <Button size="sm" onClick={() => addSlide.mutate()} disabled={!headline.trim()}>Add Slide</Button>
+      </div>
+    </div>
+  );
+}
+
+// Advanced module/variant view (preserves original power-user UI)
+function AdvancedModuleView({ presentationId, modules, onSyncVariant }: {
+  presentationId: number;
+  modules: FunnelModule[];
+  onSyncVariant: (id: number) => void;
+}) {
+  const queryClient = useQueryClient();
+  const [showNewModule, setShowNewModule] = useState(false);
+  const [expandedModules, setExpandedModules] = useState<Set<number>>(new Set());
+  const [expandedVariants, setExpandedVariants] = useState<Set<number>>(new Set());
   const [newModule, setNewModule] = useState({ name: "", isSwappable: false });
+
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/presentations/${presentationId}/full`] });
 
   const createModule = useMutation({
     mutationFn: async () => {
@@ -43,7 +536,7 @@ export default function PresentationEditor({ presentationId }: Props) {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/presentations/${presentationId}/full`] });
+      invalidate();
       setShowNewModule(false);
       setNewModule({ name: "", isSwappable: false });
       toast.success("Module added");
@@ -51,22 +544,12 @@ export default function PresentationEditor({ presentationId }: Props) {
     onError: (e: any) => toast.error(e.message),
   });
 
-  const updateModule = useMutation({
-    mutationFn: async (data: { id: number } & Partial<FunnelModule>) => {
-      const res = await apiRequest("PUT", `/api/admin/funnels/modules/${data.id}`, data);
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/presentations/${presentationId}/full`] });
-    },
-  });
-
   const deleteModule = useMutation({
     mutationFn: async (id: number) => {
       await apiRequest("DELETE", `/api/admin/funnels/modules/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/presentations/${presentationId}/full`] });
+      invalidate();
       toast.success("Module deleted");
     },
   });
@@ -78,7 +561,7 @@ export default function PresentationEditor({ presentationId }: Props) {
     [newModules[index], newModules[swapIdx]] = [newModules[swapIdx], newModules[index]];
     const orders = newModules.map((m, i) => ({ id: m.id, sortOrder: i }));
     await apiRequest("PUT", "/api/admin/funnels/modules/reorder", { orders });
-    queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/presentations/${presentationId}/full`] });
+    invalidate();
   };
 
   const toggleModule = (id: number) => {
@@ -97,111 +580,88 @@ export default function PresentationEditor({ presentationId }: Props) {
     });
   };
 
-  if (!presentation) return <div className="py-8 text-center text-slate-400">Loading...</div>;
-
-  // Show sync tool if selected
-  if (syncVariantId) {
-    return (
-      <div className="space-y-4">
-        <button onClick={() => setSyncVariantId(null)} className="text-sm text-slate-500 hover:text-slate-700">
-          ← Back to Presentation Editor
-        </button>
-        <SyncTool variantId={syncVariantId} onDone={() => {
-          setSyncVariantId(null);
-          queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/presentations/${presentationId}/full`] });
-        }} />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <Card className="p-6 border-2 border-slate-200">
-        <h3 className="text-lg font-bold text-slate-900 mb-1">{presentation.name}</h3>
-        <p className="text-sm text-slate-500 mb-4">
-          {modules.length} module{modules.length !== 1 ? "s" : ""}
-          {" · "}Build your presentation by adding modules, then add variants and slides to each.
-        </p>
+    <div className="space-y-3">
+      <p className="text-sm text-slate-500">
+        {modules.length} module{modules.length !== 1 ? "s" : ""}. Use this for split testing with multiple variants per module.
+      </p>
 
-        {/* Add Module */}
-        <div className="mb-4">
-          {showNewModule ? (
-            <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3">
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div>
-                  <Label className="text-slate-700">Module Name</Label>
-                  <Input value={newModule.name} onChange={(e) => setNewModule({ ...newModule, name: e.target.value })} placeholder="e.g. Intro, Core Story, Close" />
-                </div>
-                <div className="flex items-center gap-3 pt-6">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={newModule.isSwappable}
-                      onChange={(e) => setNewModule({ ...newModule, isSwappable: e.target.checked })}
-                      className="w-4 h-4"
-                    />
-                    <span className="text-slate-700">Swappable (has test variants)</span>
-                  </label>
-                </div>
+      {/* Add Module */}
+      <div>
+        {showNewModule ? (
+          <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3">
+            <div className="grid sm:grid-cols-2 gap-3">
+              <div>
+                <Label className="text-slate-700">Module Name</Label>
+                <Input value={newModule.name} onChange={(e) => setNewModule({ ...newModule, name: e.target.value })} placeholder="e.g. Intro, Core Story, Close" />
               </div>
-              <div className="flex gap-2">
-                <Button size="sm" onClick={() => createModule.mutate()} disabled={!newModule.name}>Add Module</Button>
-                <Button size="sm" variant="ghost" onClick={() => setShowNewModule(false)}>Cancel</Button>
-              </div>
-            </div>
-          ) : (
-            <Button size="sm" variant="outline" onClick={() => setShowNewModule(true)}>
-              <Plus className="w-4 h-4 mr-1" /> Add Module
-            </Button>
-          )}
-        </div>
-
-        {/* Module List */}
-        <div className="space-y-3">
-          {modules.map((mod, idx) => (
-            <div key={mod.id} className="border border-slate-200 rounded-lg overflow-hidden">
-              {/* Module Header */}
-              <div
-                className="flex items-center gap-2 p-3 bg-white hover:bg-slate-50 cursor-pointer"
-                onClick={() => toggleModule(mod.id)}
-              >
-                <GripVertical className="w-4 h-4 text-slate-300 flex-shrink-0" />
-                <span className="text-xs font-bold text-slate-400 w-6">{idx + 1}</span>
-                <span className="font-medium text-slate-900 flex-1">{mod.name}</span>
-                {mod.isSwappable && (
-                  <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full">Swappable</span>
-                )}
-                <span className="text-xs text-slate-400">{mod.variants?.length || 0} variant{(mod.variants?.length || 0) !== 1 ? 's' : ''}</span>
-                <div className="flex items-center gap-1 ml-2" onClick={(e) => e.stopPropagation()}>
-                  <button onClick={() => moveModule(idx, -1)} disabled={idx === 0} className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-30">
-                    <ChevronUp className="w-4 h-4" />
-                  </button>
-                  <button onClick={() => moveModule(idx, 1)} disabled={idx === modules.length - 1} className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-30">
-                    <ChevronDown className="w-4 h-4" />
-                  </button>
-                  <button onClick={() => { if (confirm("Delete module?")) deleteModule.mutate(mod.id); }} className="p-1 text-red-400 hover:text-red-600">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Module Body — Variants */}
-              {expandedModules.has(mod.id) && (
-                <div className="p-3 bg-slate-50 border-t border-slate-200 space-y-3">
-                  <VariantManager
-                    moduleId={mod.id}
-                    variants={mod.variants || []}
-                    presentationId={presentationId}
-                    expandedVariants={expandedVariants}
-                    toggleVariant={toggleVariant}
-                    onSyncVariant={setSyncVariantId}
+              <div className="flex items-center gap-3 pt-6">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newModule.isSwappable}
+                    onChange={(e) => setNewModule({ ...newModule, isSwappable: e.target.checked })}
+                    className="w-4 h-4"
                   />
-                </div>
-              )}
+                  <span className="text-slate-700">Swappable (has test variants)</span>
+                </label>
+              </div>
             </div>
-          ))}
-        </div>
-      </Card>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={() => createModule.mutate()} disabled={!newModule.name}>Add Module</Button>
+              <Button size="sm" variant="ghost" onClick={() => setShowNewModule(false)}>Cancel</Button>
+            </div>
+          </div>
+        ) : (
+          <Button size="sm" variant="outline" onClick={() => setShowNewModule(true)}>
+            <Plus className="w-4 h-4 mr-1" /> Add Module
+          </Button>
+        )}
+      </div>
+
+      {/* Module List */}
+      <div className="space-y-3">
+        {modules.map((mod, idx) => (
+          <div key={mod.id} className="border border-slate-200 rounded-lg overflow-hidden">
+            <div
+              className="flex items-center gap-2 p-3 bg-white hover:bg-slate-50 cursor-pointer"
+              onClick={() => toggleModule(mod.id)}
+            >
+              <GripVertical className="w-4 h-4 text-slate-300 flex-shrink-0" />
+              <span className="text-xs font-bold text-slate-400 w-6">{idx + 1}</span>
+              <span className="font-medium text-slate-900 flex-1">{mod.name}</span>
+              {mod.isSwappable && (
+                <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full">Swappable</span>
+              )}
+              <span className="text-xs text-slate-400">{mod.variants?.length || 0} variant{(mod.variants?.length || 0) !== 1 ? 's' : ''}</span>
+              <div className="flex items-center gap-1 ml-2" onClick={(e) => e.stopPropagation()}>
+                <button onClick={() => moveModule(idx, -1)} disabled={idx === 0} className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-30" title="Move module up">
+                  <ChevronUp className="w-4 h-4" />
+                </button>
+                <button onClick={() => moveModule(idx, 1)} disabled={idx === modules.length - 1} className="p-1 text-slate-400 hover:text-slate-600 disabled:opacity-30" title="Move module down">
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+                <button onClick={() => { if (confirm("Delete module?")) deleteModule.mutate(mod.id); }} className="p-1 text-red-400 hover:text-red-600" title="Delete module">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {expandedModules.has(mod.id) && (
+              <div className="p-3 bg-slate-50 border-t border-slate-200 space-y-3">
+                <VariantManager
+                  moduleId={mod.id}
+                  variants={mod.variants || []}
+                  presentationId={presentationId}
+                  expandedVariants={expandedVariants}
+                  toggleVariant={toggleVariant}
+                  onSyncVariant={onSyncVariant}
+                />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -268,11 +728,12 @@ function VariantManager({ moduleId, variants, presentationId, expandedVariants, 
               <button
                 onClick={(e) => { e.stopPropagation(); onSyncVariant(v.id); }}
                 className="text-xs text-primary hover:underline"
+                title="Sync slides to audio timestamps"
               >
                 <Timer className="w-3 h-3 inline mr-0.5" />Sync
               </button>
             )}
-            <button onClick={(e) => { e.stopPropagation(); if (confirm("Delete variant?")) deleteVariant.mutate(v.id); }} className="p-1 text-red-400 hover:text-red-600">
+            <button onClick={(e) => { e.stopPropagation(); if (confirm("Delete variant?")) deleteVariant.mutate(v.id); }} className="p-1 text-red-400 hover:text-red-600" title="Delete variant">
               <Trash2 className="w-3 h-3" />
             </button>
           </div>
@@ -439,10 +900,10 @@ function SlideManager({ variantId, slides, presentationId }: {
                 <span className="text-sm text-slate-700 truncate max-w-[200px]">{slide.headline || slide.body || "(empty slide)"}</span>
               </div>
               <div className="flex gap-1">
-                <button onClick={() => setEditingSlide(editingSlide === slide.id ? null : slide.id)} className="text-xs text-primary hover:underline">
+                <button onClick={() => setEditingSlide(editingSlide === slide.id ? null : slide.id)} className="text-xs text-primary hover:underline" title="Edit slide">
                   Edit
                 </button>
-                <button onClick={() => { if (confirm("Delete?")) deleteSlide.mutate(slide.id); }} className="text-xs text-red-500 hover:underline">
+                <button onClick={() => { if (confirm("Delete?")) deleteSlide.mutate(slide.id); }} className="text-xs text-red-500 hover:underline" title="Delete slide">
                   Del
                 </button>
               </div>
@@ -512,6 +973,33 @@ function SlideEditor({ slide, onSave }: { slide: FunnelSlide; onSave: (data: Par
       <Button size="sm" onClick={() => { onSave(edits); setEdits({}); }}>
         <Save className="w-3 h-3 mr-0.5" /> Save
       </Button>
+    </div>
+  );
+}
+
+// Theme picker — row of mini-preview swatches
+function ThemePicker({ currentTheme, onSelect }: { currentTheme?: string | null; onSelect: (key: string) => void }) {
+  const active = currentTheme || "dark";
+  return (
+    <div className="mb-4">
+      <Label className="text-slate-700 font-medium">Visual Theme</Label>
+      <div className="flex gap-3 mt-2">
+        {Object.values(PRESENTATION_THEMES).map((t) => (
+          <button
+            key={t.key}
+            onClick={() => onSelect(t.key)}
+            className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-colors ${
+              active === t.key ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300"
+            }`}
+          >
+            <div className={`w-16 h-10 rounded ${t.previewBg} flex flex-col items-center justify-center gap-1 border border-slate-200`}>
+              <div className={`w-8 h-1.5 rounded-full ${t.previewAccent}`} />
+              <div className={`w-5 h-0.5 rounded-full ${t.previewText}`} />
+            </div>
+            <span className="text-xs text-slate-600">{t.label}</span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

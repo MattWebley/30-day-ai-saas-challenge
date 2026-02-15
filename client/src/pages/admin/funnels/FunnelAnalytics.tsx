@@ -226,7 +226,7 @@ export default function FunnelAnalytics({ campaignId }: Props) {
                 <span className="text-slate-600">{new Date(entry.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-slate-900">£{(entry.amount / 100).toFixed(2)}</span>
-                  <button onClick={() => deleteSpend.mutate(entry.id)} className="text-red-400 hover:text-red-600">
+                  <button onClick={() => deleteSpend.mutate(entry.id)} className="text-red-400 hover:text-red-600" title="Delete spend entry">
                     <Trash2 className="w-3 h-3" />
                   </button>
                 </div>
@@ -263,7 +263,7 @@ export default function FunnelAnalytics({ campaignId }: Props) {
 
       {/* Export */}
       <div className="flex gap-2">
-        <a href={`/api/admin/funnels/campaigns/${campaignId}/export-csv`} download>
+        <a href={`/api/admin/funnels/campaigns/${campaignId}/export-csv`} download title="Export analytics data as CSV">
           <Button variant="outline" size="sm">
             <Download className="w-4 h-4 mr-1" /> Export CSV
           </Button>
