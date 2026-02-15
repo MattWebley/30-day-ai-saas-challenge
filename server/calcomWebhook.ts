@@ -1,6 +1,6 @@
 import { db } from './db';
-import { coachingSessions, coachingPurchases, coaches } from '../shared/schema';
-import { eq, and, sql } from 'drizzle-orm';
+import { coachingSessions, coachingPurchases, coaches, funnelVisitors, funnelEvents } from '../shared/schema';
+import { eq, and, sql, desc } from 'drizzle-orm';
 
 interface CalcomBookingPayload {
   triggerEvent: string;
@@ -101,6 +101,27 @@ async function handleBookingCreated(payload: CalcomBookingPayload['payload']) {
     .where(eq(coachingSessions.id, session.id));
 
   console.log(`[Cal.com] Session #${session.sessionNumber} scheduled for ${clientEmail} at ${scheduledAt.toISOString()}`);
+
+  // Match funnel visitor — record call_booked event if this person came through a funnel
+  try {
+    const [funnelVisitor] = await db.select().from(funnelVisitors)
+      .where(eq(funnelVisitors.email, clientEmail))
+      .orderBy(desc(funnelVisitors.createdAt))
+      .limit(1);
+
+    if (funnelVisitor) {
+      await db.insert(funnelEvents).values({
+        visitorId: funnelVisitor.id,
+        campaignId: funnelVisitor.campaignId,
+        variationSetId: funnelVisitor.variationSetId,
+        eventType: 'call_booked',
+        eventData: { calcomUid: payload.uid, scheduledAt: scheduledAt.toISOString() },
+      });
+      console.log(`[Cal.com] Funnel call_booked event recorded for visitor ${funnelVisitor.id} (campaign ${funnelVisitor.campaignId})`);
+    }
+  } catch (e: any) {
+    console.log('[Cal.com] Funnel visitor matching failed (non-fatal):', e.message);
+  }
 }
 
 async function handleBookingRescheduled(payload: CalcomBookingPayload['payload']) {

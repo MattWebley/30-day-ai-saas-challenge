@@ -51,8 +51,9 @@ import AdminMarketing from "./admin/AdminMarketing";
 import AdminSettings from "./admin/AdminSettings";
 import AdminEmails from "./admin/AdminEmails";
 import AdminCoaches from "./admin/AdminCoaches";
+import AdminFunnels from "./admin/AdminFunnels";
 
-type TabKey = "overview" | "users" | "revenue" | "content" | "marketing" | "emails" | "coaches" | "settings";
+type TabKey = "overview" | "users" | "revenue" | "content" | "marketing" | "emails" | "coaches" | "funnels" | "settings";
 type ChartRange = "1" | "3" | "7" | "30" | "90" | "365" | "thisYear" | "lastYear";
 const CHART_RANGES: { value: ChartRange; label: string }[] = [
   { value: "1", label: "24h" },
@@ -73,6 +74,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "marketing", label: "Marketing" },
   { key: "emails", label: "Emails" },
   { key: "coaches", label: "Coaches" },
+  { key: "funnels", label: "Funnels" },
   { key: "settings", label: "Settings" },
 ];
 
@@ -152,7 +154,7 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState<TabKey>(() => {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get("tab");
-    const validTabs: TabKey[] = ["overview", "users", "revenue", "content", "marketing", "settings", "coaches", "emails"];
+    const validTabs: TabKey[] = ["overview", "users", "revenue", "content", "marketing", "settings", "coaches", "emails", "funnels"];
     return tab && validTabs.includes(tab as TabKey) ? (tab as TabKey) : "overview";
   });
   const [chartRange, setChartRange] = useState<ChartRange>("30");
@@ -1239,6 +1241,7 @@ export default function Admin() {
         {activeTab === "marketing" && <AdminMarketing />}
         {activeTab === "emails" && <AdminEmails />}
         {activeTab === "coaches" && <AdminCoaches />}
+        {activeTab === "funnels" && <AdminFunnels />}
         {activeTab === "settings" && <AdminSettings />}
       </div>
     </Layout>

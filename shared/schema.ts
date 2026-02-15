@@ -915,3 +915,194 @@ export const coachAgreements = pgTable("coach_agreements", {
 
 export type CoachAgreement = typeof coachAgreements.$inferSelect;
 export type InsertCoachAgreement = typeof coachAgreements.$inferInsert;
+
+// ==============================
+// FUNNEL / SPLIT-TEST ENGINE
+// ==============================
+
+// Funnel campaigns — top-level container for a split-test funnel
+export const funnelCampaigns = pgTable("funnel_campaigns", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  slug: varchar("slug").notNull().unique(),
+  isActive: boolean("is_active").default(false),
+  presentationId: integer("presentation_id"),
+  ctaText: varchar("cta_text").default("Book Your Free Call"),
+  ctaUrl: text("cta_url"),
+  ctaAppearTime: integer("cta_appear_time").default(0), // seconds into presentation
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type FunnelCampaign = typeof funnelCampaigns.$inferSelect;
+export type InsertFunnelCampaign = typeof funnelCampaigns.$inferInsert;
+
+// Funnel presentations — a webinar/VSL
+export const funnelPresentations = pgTable("funnel_presentations", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type FunnelPresentation = typeof funnelPresentations.$inferSelect;
+export type InsertFunnelPresentation = typeof funnelPresentations.$inferInsert;
+
+// Funnel modules — ordered segments of a presentation
+export const funnelModules = pgTable("funnel_modules", {
+  id: serial("id").primaryKey(),
+  presentationId: integer("presentation_id").notNull().references(() => funnelPresentations.id, { onDelete: "cascade" }),
+  name: varchar("name").notNull(),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isSwappable: boolean("is_swappable").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("funnel_modules_presentation_idx").on(table.presentationId),
+]);
+
+export type FunnelModule = typeof funnelModules.$inferSelect;
+export type InsertFunnelModule = typeof funnelModules.$inferInsert;
+
+// Funnel module variants — each recording variant of a module
+export const funnelModuleVariants = pgTable("funnel_module_variants", {
+  id: serial("id").primaryKey(),
+  moduleId: integer("module_id").notNull().references(() => funnelModules.id, { onDelete: "cascade" }),
+  name: varchar("name").notNull(),
+  mediaType: varchar("media_type").notNull().default("audio_slides"), // 'audio_slides' or 'video'
+  audioUrl: text("audio_url"),
+  videoUrl: text("video_url"),
+  durationMs: integer("duration_ms"),
+  scriptText: text("script_text"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("funnel_module_variants_module_idx").on(table.moduleId),
+]);
+
+export type FunnelModuleVariant = typeof funnelModuleVariants.$inferSelect;
+export type InsertFunnelModuleVariant = typeof funnelModuleVariants.$inferInsert;
+
+// Funnel slides — slides synced to audio timestamps
+export const funnelSlides = pgTable("funnel_slides", {
+  id: serial("id").primaryKey(),
+  variantId: integer("variant_id").notNull().references(() => funnelModuleVariants.id, { onDelete: "cascade" }),
+  sortOrder: integer("sort_order").notNull().default(0),
+  headline: text("headline"),
+  body: text("body"),
+  imageUrl: text("image_url"),
+  startTimeMs: integer("start_time_ms").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("funnel_slides_variant_idx").on(table.variantId),
+]);
+
+export type FunnelSlide = typeof funnelSlides.$inferSelect;
+export type InsertFunnelSlide = typeof funnelSlides.$inferInsert;
+
+// Funnel opt-in pages — variations of the opt-in page
+export const funnelOptinPages = pgTable("funnel_optin_pages", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),
+  name: varchar("name").notNull(),
+  headline: text("headline").notNull(),
+  subheadline: text("subheadline"),
+  ctaButtonText: varchar("cta_button_text").default("Watch Now"),
+  heroImageUrl: text("hero_image_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("funnel_optin_pages_campaign_idx").on(table.campaignId),
+]);
+
+export type FunnelOptinPage = typeof funnelOptinPages.$inferSelect;
+export type InsertFunnelOptinPage = typeof funnelOptinPages.$inferInsert;
+
+// Funnel variation sets — specific test combinations
+export const funnelVariationSets = pgTable("funnel_variation_sets", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),
+  name: varchar("name").notNull(),
+  optinPageId: integer("optin_page_id").notNull().references(() => funnelOptinPages.id),
+  moduleVariantIds: jsonb("module_variant_ids").$type<Record<string, number>>(), // { moduleId: variantId }
+  weight: integer("weight").default(1),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("funnel_variation_sets_campaign_idx").on(table.campaignId),
+]);
+
+export type FunnelVariationSet = typeof funnelVariationSets.$inferSelect;
+export type InsertFunnelVariationSet = typeof funnelVariationSets.$inferInsert;
+
+// Funnel visitors — every unique visitor
+export const funnelVisitors = pgTable("funnel_visitors", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),
+  variationSetId: integer("variation_set_id").notNull().references(() => funnelVariationSets.id),
+  visitorToken: varchar("visitor_token").notNull(),
+  email: varchar("email"),
+  firstName: varchar("first_name"),
+  utmSource: varchar("utm_source"),
+  utmMedium: varchar("utm_medium"),
+  utmCampaign: varchar("utm_campaign"),
+  utmContent: varchar("utm_content"),
+  utmTerm: varchar("utm_term"),
+  referrer: text("referrer"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("funnel_visitors_token_idx").on(table.visitorToken),
+  index("funnel_visitors_campaign_idx").on(table.campaignId),
+  index("funnel_visitors_variation_idx").on(table.variationSetId),
+  index("funnel_visitors_email_idx").on(table.email),
+]);
+
+export type FunnelVisitor = typeof funnelVisitors.$inferSelect;
+export type InsertFunnelVisitor = typeof funnelVisitors.$inferInsert;
+
+// Funnel events — all tracking events
+export const funnelEvents = pgTable("funnel_events", {
+  id: serial("id").primaryKey(),
+  visitorId: integer("visitor_id").notNull().references(() => funnelVisitors.id, { onDelete: "cascade" }),
+  campaignId: integer("campaign_id").notNull(),
+  variationSetId: integer("variation_set_id").notNull(),
+  eventType: varchar("event_type").notNull(), // page_view, registration, play_start, play_progress, cta_click, call_booked, sale
+  eventData: jsonb("event_data"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("funnel_events_visitor_idx").on(table.visitorId),
+  index("funnel_events_campaign_idx").on(table.campaignId),
+  index("funnel_events_type_idx").on(table.eventType),
+  index("funnel_events_variation_idx").on(table.variationSetId),
+  index("funnel_events_created_idx").on(table.createdAt),
+]);
+
+export type FunnelEvent = typeof funnelEvents.$inferSelect;
+export type InsertFunnelEvent = typeof funnelEvents.$inferInsert;
+
+// Funnel ad spend — manual ad spend entries
+export const funnelAdSpend = pgTable("funnel_ad_spend", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),
+  date: timestamp("date").notNull(),
+  amount: integer("amount").notNull(), // in cents
+  currency: varchar("currency").default("gbp"),
+  platform: varchar("platform").default("meta"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type FunnelAdSpend = typeof funnelAdSpend.$inferSelect;
+export type InsertFunnelAdSpend = typeof funnelAdSpend.$inferInsert;
+
+// Funnel ad copy — AI-generated ad copy
+export const funnelAdCopy = pgTable("funnel_ad_copy", {
+  id: serial("id").primaryKey(),
+  campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),
+  headline: text("headline").notNull(),
+  primaryText: text("primary_text").notNull(),
+  persuasionLevel: integer("persuasion_level").default(5),
+  status: varchar("status").default("pending"), // pending, approved, rejected
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type FunnelAdCopy = typeof funnelAdCopy.$inferSelect;
+export type InsertFunnelAdCopy = typeof funnelAdCopy.$inferInsert;

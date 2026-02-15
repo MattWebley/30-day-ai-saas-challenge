@@ -235,15 +235,88 @@ Interactive components MUST match lesson text styling:
 - [ ] Run `npm run db:push` on production for the `dismissed` column on coachingPurchases
 - [ ] Run `npm run db:push` on production for email tracking columns (trackingId, openCount, clickCount on emailLogs)
 - [ ] NEEDS REDEPLOY for all session 7 changes to take effect
+- [ ] NEEDS REDEPLOY for all session 8 (funnel engine) changes to take effect
+- [ ] Run `npm run db:push` on production for 11 new funnel tables (or run the SQL migration script)
+- [ ] Test full funnel flow: create campaign → add opt-in pages → add presentation with modules/variants/slides → create variation sets → visit `/c/{slug}` → register → watch
+- [ ] Test SyncTool: add slides to a variant, open sync tool, paste audio URL, play and tap to mark timestamps
+- [ ] Test AI ad copy generation from Funnels tab
+- [ ] Test Cal.com → funnel visitor matching (book a call after going through a funnel)
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added
 - Dev environment database is SEPARATE from production database (challenge.mattwebley.com) - can't query production DB from dev
 - 5 paying customers in `pendingPurchases` table have never used their magic links to create accounts
+- `drizzle-kit push` gets stuck on interactive prompt for `email_logs_tracking_id_unique` constraint — use direct SQL or `--force` flag; funnel tables were created via direct SQL in dev
 
 ---
 
 ## Session Log
+
+### 2026-02-15 (Session 8) - Split-Test Webinar/VSL Funnel Engine
+- **Tasks Completed:**
+  - **Full Split-Test Funnel Engine** — complete implementation across all 7 planned phases:
+  - **Database Schema (11 new tables)**:
+    - `funnel_campaigns` — top-level container with slug, CTA settings, linked presentation
+    - `funnel_presentations` — webinar/VSL content containers
+    - `funnel_modules` — ordered segments within presentations (swappable or fixed)
+    - `funnel_module_variants` — different recordings per module (audio+slides or video)
+    - `funnel_slides` — slides synced to audio timestamps
+    - `funnel_optin_pages` — opt-in page headline/subheadline variations per campaign
+    - `funnel_variation_sets` — specific test combinations (opt-in page + module variant choices)
+    - `funnel_visitors` — unique visitors with cookie-based tracking + UTM params
+    - `funnel_events` — all tracking events (page_view, registration, play_start, play_progress, cta_click, call_booked, sale)
+    - `funnel_ad_spend` — manual ad spend entries
+    - `funnel_ad_copy` — AI-generated ad copy with approval workflow
+  - **Backend (server/funnelRoutes.ts — new file, ~650 lines)**:
+    - Full CRUD for campaigns, presentations, modules, variants, slides, opt-in pages, variation sets
+    - Public endpoints: GET `/api/funnel/c/:slug` (cookie-based variation assignment), POST register, GET watch (timeline stitching), POST track
+    - Analytics: per-variation stats with two-proportion Z-test confidence calculation
+    - Drop-off chart data (30-second buckets)
+    - Ad spend CRUD, manual sale recording, CSV export
+    - AI ad copy generation via Claude API (3 variations per request)
+    - All admin routes use `isAuthenticated` + `requireAdmin` middleware (DB user lookup)
+  - **Admin UI (Funnels tab — 6 new component files)**:
+    - `AdminFunnels.tsx` — main tab with campaign list + presentation list
+    - `CampaignEditor.tsx` — campaign settings, opt-in page variation builder, variation set builder
+    - `PresentationEditor.tsx` — module/variant/slide builder with drag-to-reorder
+    - `SyncTool.tsx` — play audio and tap to mark slide timestamps, manual edit, bulk save
+    - `FunnelAnalytics.tsx` — KPI cards, per-variation table with confidence badges, drop-off chart, ad spend, manual sale
+    - `AdCopyGenerator.tsx` — persuasion slider (1-10), AI generation, approve/reject queue, CSV export
+  - **Public Pages (2 new files)**:
+    - `FunnelOptin.tsx` — standalone opt-in page at `/c/{slug}` (mobile-first, email/name form, auto-redirect to watch)
+    - `FunnelWatch.tsx` — webinar player at `/c/{slug}/watch` (audio+slides sync, Vimeo fallback, CTA button at configured time, tap-to-start overlay, 30s progress tracking)
+  - **Cal.com Integration**:
+    - Extended `handleBookingCreated()` in `calcomWebhook.ts` to match funnel visitors by email
+    - Records `call_booked` event on the visitor's funnel campaign
+  - **Systeme.io Integration**:
+    - Fires on funnel registration (non-blocking) with tags `Funnel: {slug}` and `Funnel Registration`
+- **Fixes Applied:**
+  - Fixed admin auth on funnel routes — initial implementation checked `req.user?.isAdmin` directly, but the app uses session-based auth where `req.user` has `claims.sub`. Fixed to use `isAuthenticated` middleware + DB user lookup via `requireAdmin` middleware (matching existing routes.ts pattern)
+- **Files Created:**
+  - `server/funnelRoutes.ts` — all funnel API routes (admin CRUD + public + analytics)
+  - `client/src/pages/admin/AdminFunnels.tsx` — Funnels tab component
+  - `client/src/pages/admin/funnels/funnelTypes.ts` — TypeScript interfaces
+  - `client/src/pages/admin/funnels/CampaignEditor.tsx` — campaign detail editor
+  - `client/src/pages/admin/funnels/PresentationEditor.tsx` — module/variant/slide builder
+  - `client/src/pages/admin/funnels/SyncTool.tsx` — audio-slide sync tool
+  - `client/src/pages/admin/funnels/FunnelAnalytics.tsx` — analytics dashboard
+  - `client/src/pages/admin/funnels/AdCopyGenerator.tsx` — AI ad copy generator
+  - `client/src/pages/FunnelOptin.tsx` — public opt-in page
+  - `client/src/pages/FunnelWatch.tsx` — public webinar player
+- **Files Modified:**
+  - `shared/schema.ts` — added 11 funnel tables with indexes (~190 lines)
+  - `server/index.ts` — imported and registered funnelRoutes
+  - `server/calcomWebhook.ts` — funnel visitor matching on booking created
+  - `client/src/App.tsx` — added `/c/:slug` and `/c/:slug/watch` routes + publicPaths
+  - `client/src/pages/Admin.tsx` — added "Funnels" tab to TabKey, TABS array, render
+- **Notes for Next Session:**
+  - NEEDS REDEPLOY for funnel engine to work on production
+  - Run `npm run db:push` on production (or SQL migration) for 11 new funnel tables
+  - Cookie-based visitor tracking uses `fv_{campaignId}` cookies (90-day expiry)
+  - SyncTool requires manual audio URL paste (variant audio URL not auto-loaded into sync view)
+  - AI ad copy generation uses `/api/admin/funnels/campaigns/:id/generate-ad-copy` and calls Claude directly
+  - No file upload in V1 — all media via external URL paste (recommend Cloudflare R2 for hosting)
+  - OpenAI Whisper API integration for auto-sync is planned for V2
 
 ### 2026-02-13 (Session 7) - Email Stats, Tracking, Drip Spam Fix, Invoice Creator, Admin Improvements
 - **Tasks Completed:**

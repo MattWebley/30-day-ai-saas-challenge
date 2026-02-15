@@ -54,6 +54,8 @@ import CoachLogin from "@/pages/CoachLogin";
 import CoachDashboard from "@/pages/CoachDashboard";
 import CoachSetup from "@/pages/CoachSetup";
 import MyCoaching from "@/pages/MyCoaching";
+import FunnelOptin from "@/pages/FunnelOptin";
+import FunnelWatch from "@/pages/FunnelWatch";
 import { CookieConsent } from "@/components/CookieConsent";
 import { FacebookPixel } from "@/components/FacebookPixel";
 
@@ -93,7 +95,7 @@ function Router() {
   }
 
   // Public routes that don't need auth check
-  const publicPaths = ['/order', '/unlock', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password', '/coach-login', '/coach', '/coach-setup'];
+  const publicPaths = ['/order', '/unlock', '/showcase', '/checkout/success', '/admin/answer', '/admin', '/sales-letter-pack', '/coaching', '/coaching/upsell', '/coaching/success', '/critique/success', '/welcome', '/terms', '/privacy', '/auth-error', '/auth/error', '/auth/magic', '/login', '/register', '/forgot-password', '/reset-password', '/coach-login', '/coach', '/coach-setup', '/c'];
   const isPublicRoute = publicPaths.some(path => location.startsWith(path)) || location === '/';
 
   // Only show loading spinner for protected routes
@@ -133,6 +135,9 @@ function Router() {
         <Route path="/auth-error" component={AuthError} />
         <Route path="/auth/error" component={AuthError} />
         <Route path="/auth/magic" component={MagicVerify} />
+        {/* Funnel routes (public, no auth) */}
+        <Route path="/c/:slug/watch" component={FunnelWatch} />
+        <Route path="/c/:slug" component={FunnelOptin} />
         {/* Coach routes */}
         <Route path="/coach-setup/:token" component={CoachSetup} />
         <Route path="/coach-login" component={CoachLogin} />

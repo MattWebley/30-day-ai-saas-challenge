@@ -8,6 +8,7 @@ import { runMigrations } from 'stripe-replit-sync';
 import { getStripeSync, getStripePublishableKey } from './stripeClient';
 import { WebhookHandlers } from './webhookHandlers';
 import { handleCalcomWebhook } from './calcomWebhook';
+import { registerFunnelRoutes } from './funnelRoutes';
 import { seedIfNeeded } from './seed';
 import { seedDripEmails } from './dripEmailSeed';
 import { startDripEmailProcessor } from './emailService';
@@ -183,6 +184,7 @@ app.use((req, res, next) => {
 
   startDripEmailProcessor();
   await registerRoutes(httpServer, app);
+  registerFunnelRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
