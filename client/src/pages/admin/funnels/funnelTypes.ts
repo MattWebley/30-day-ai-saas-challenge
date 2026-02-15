@@ -19,12 +19,14 @@ export interface FunnelCampaign {
 
 export interface FontSettings {
   font: string;
+  bodyFont?: string;
   headlineSize: string;
   bodySize: string;
   headlineWeight: number;
   bodyWeight: number;
   headlineColor?: string;
   bodyColor?: string;
+  accentColor?: string;
   headlineUppercase?: boolean;
 }
 

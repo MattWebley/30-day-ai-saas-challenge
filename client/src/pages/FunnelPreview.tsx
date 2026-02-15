@@ -6,8 +6,9 @@ import {
 } from "lucide-react";
 import {
   getTheme, PRESENTATION_THEMES, type PresentationTheme,
-  type FontSettings, DEFAULT_FONT_SETTINGS, getFontSettings,
-  GOOGLE_FONTS, HEADLINE_SIZES, BODY_SIZES, STATEMENT_SIZES, NARRATIVE_SIZES,
+  type FontSettings, DEFAULT_FONT_SETTINGS, getFontSettings, getBodyFont,
+  GOOGLE_FONTS, FONT_PAIRINGS,
+  HEADLINE_SIZES, BODY_SIZES, STATEMENT_SIZES, NARRATIVE_SIZES,
   WEIGHT_OPTIONS, SIZE_OPTIONS,
   HEADLINE_COLOR_PRESETS, loadAllFonts, loadGoogleFont,
 } from "@/lib/presentationThemes";
@@ -136,7 +137,7 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
               ...headlineStyle,
             }}
           >
-            {renderStyledText(slide.headline!, fonts.headlineColor || undefined)}
+            {renderStyledText(slide.headline!, fonts.accentColor)}
           </h2>
         )}
 
@@ -144,17 +145,16 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
           <p
             className={`${fonts.bodyColor ? "" : (isNarrative ? theme.headlineColor : theme.bodyColor)} max-w-2xl mx-auto leading-relaxed animate-slide-body`}
             style={{
-              fontFamily: `'${fonts.font}', sans-serif`,
+              fontFamily: `'${getBodyFont(fonts)}', sans-serif`,
               fontSize: isNarrative
                 ? (NARRATIVE_SIZES[fonts.bodySize] || NARRATIVE_SIZES.lg)
                 : (BODY_SIZES[fonts.bodySize] || BODY_SIZES.lg),
               fontWeight: isNarrative ? Math.max(fonts.bodyWeight, 400) : fonts.bodyWeight,
               ...(fonts.bodyColor ? { color: fonts.bodyColor } : {}),
-              // Narrative slides get no delay since they're the only element
               ...(isNarrative ? { animationDelay: "0s" } : {}),
             }}
           >
-            {renderStyledText(slide.body!, fonts.headlineColor || undefined)}
+            {renderStyledText(slide.body!, fonts.accentColor)}
           </p>
         )}
       </div>
@@ -193,7 +193,53 @@ function ThemeSwitcher({ currentKey, onSwitch }: { currentKey: string; onSwitch:
   );
 }
 
-// Typography panel — font picker, size, weight
+// Font picker grid — reusable for headline and body
+function FontPickerGrid({ selected, onSelect, label }: { selected: string; onSelect: (f: string) => void; label: string }) {
+  const categories = [
+    { label: "Modern Sans", start: 0, end: 16 },
+    { label: "Bold / Display", start: 16, end: 26 },
+    { label: "Elegant Serif", start: 26, end: 36 },
+    { label: "Script", start: 36, end: 42 },
+    { label: "Monospace", start: 42, end: 46 },
+  ];
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div>
+      <button
+        onClick={() => setExpanded(!expanded)}
+        className="w-full flex items-center justify-between text-xs font-medium text-slate-400 uppercase tracking-wider hover:text-slate-200 transition-colors"
+      >
+        <span>{label}: <span className="normal-case text-slate-200" style={{ fontFamily: `'${selected}', sans-serif` }}>{selected}</span></span>
+        <ChevronRight className={`w-3 h-3 transition-transform ${expanded ? "rotate-90" : ""}`} />
+      </button>
+      {expanded && (
+        <div className="mt-2 max-h-[180px] overflow-y-auto pr-1 space-y-2">
+          {categories.map((cat) => (
+            <div key={cat.label}>
+              <div className="text-[9px] font-medium text-slate-500 uppercase tracking-widest mb-1 px-1">{cat.label}</div>
+              <div className="grid grid-cols-2 gap-1">
+                {GOOGLE_FONTS.slice(cat.start, cat.end).map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => { loadGoogleFont(f); onSelect(f); }}
+                    className={`px-3 py-1.5 rounded-lg text-left text-sm truncate transition-colors ${
+                      selected === f ? "bg-white/15 text-white" : "text-slate-300 hover:bg-white/5"
+                    }`}
+                    style={{ fontFamily: `'${f}', sans-serif` }}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Typography panel — pairings, font pickers, size, weight, colors
 function TypographyPanel({ fonts, onChange, onSave, hasChanges }: {
   fonts: FontSettings;
   onChange: (update: Partial<FontSettings>) => void;
@@ -216,39 +262,40 @@ function TypographyPanel({ fonts, onChange, onSave, hasChanges }: {
       {open && (
         <div className="absolute top-full right-0 mt-2 bg-slate-800 border border-slate-600 rounded-xl shadow-2xl z-50 w-[340px] max-h-[80vh] overflow-y-auto">
           <div className="p-4 space-y-4">
-            {/* Font picker — categorized */}
+            {/* Font pairings */}
             <div>
-              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Font</label>
-              <div className="mt-2 max-h-[260px] overflow-y-auto pr-1 space-y-3">
-                {[
-                  { label: "Modern Sans", start: 0, end: 16 },
-                  { label: "Bold / Display", start: 16, end: 26 },
-                  { label: "Elegant Serif", start: 26, end: 36 },
-                  { label: "Script", start: 36, end: 42 },
-                  { label: "Monospace", start: 42, end: 46 },
-                ].map((cat) => (
-                  <div key={cat.label}>
-                    <div className="text-[9px] font-medium text-slate-500 uppercase tracking-widest mb-1 px-1">{cat.label}</div>
-                    <div className="grid grid-cols-2 gap-1">
-                      {GOOGLE_FONTS.slice(cat.start, cat.end).map((f) => (
-                        <button
-                          key={f}
-                          onClick={() => { loadGoogleFont(f); onChange({ font: f }); }}
-                          className={`px-3 py-1.5 rounded-lg text-left text-sm truncate transition-colors ${
-                            fonts.font === f
-                              ? "bg-white/15 text-white"
-                              : "text-slate-300 hover:bg-white/5"
-                          }`}
-                          style={{ fontFamily: `'${f}', sans-serif` }}
-                        >
-                          {f}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Font Pairings</label>
+              <div className="mt-2 grid grid-cols-2 gap-1.5 max-h-[160px] overflow-y-auto pr-1">
+                {FONT_PAIRINGS.map((p) => {
+                  const isActive = fonts.font === p.headline && getBodyFont(fonts) === p.body;
+                  return (
+                    <button
+                      key={p.label}
+                      onClick={() => {
+                        loadGoogleFont(p.headline);
+                        loadGoogleFont(p.body);
+                        onChange({ font: p.headline, bodyFont: p.body });
+                      }}
+                      className={`p-2 rounded-lg text-left transition-colors ${
+                        isActive ? "bg-white/15 ring-1 ring-white/30" : "hover:bg-white/5"
+                      }`}
+                    >
+                      <div className="text-sm text-white truncate" style={{ fontFamily: `'${p.headline}', sans-serif`, fontWeight: 700 }}>
+                        {p.headline}
+                      </div>
+                      <div className="text-xs text-slate-400 truncate" style={{ fontFamily: `'${p.body}', sans-serif` }}>
+                        {p.body}
+                      </div>
+                      <div className="text-[9px] text-slate-500 mt-0.5">{p.label}</div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
+
+            {/* Individual font pickers */}
+            <FontPickerGrid selected={fonts.font} onSelect={(f) => onChange({ font: f })} label="Headline Font" />
+            <FontPickerGrid selected={getBodyFont(fonts)} onSelect={(f) => onChange({ bodyFont: f })} label="Body Font" />
 
             {/* Headline color */}
             <div>
@@ -270,6 +317,37 @@ function TypographyPanel({ fonts, onChange, onSave, hasChanges }: {
                       <span className="text-[8px] text-slate-400 font-bold">A</span>
                     )}
                   </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Accent color — for **word** markup */}
+            <div>
+              <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Accent Color <span className="normal-case text-slate-500">(**word**)</span></label>
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {[
+                  { value: "#f59e0b", label: "Amber", color: "#f59e0b" },
+                  { value: "#ef4444", label: "Red", color: "#ef4444" },
+                  { value: "#10b981", label: "Green", color: "#10b981" },
+                  { value: "#3b82f6", label: "Blue", color: "#3b82f6" },
+                  { value: "#8b5cf6", label: "Purple", color: "#8b5cf6" },
+                  { value: "#ec4899", label: "Pink", color: "#ec4899" },
+                  { value: "#f97316", label: "Orange", color: "#f97316" },
+                  { value: "#06b6d4", label: "Cyan", color: "#06b6d4" },
+                  { value: "#ffffff", label: "White", color: "#ffffff" },
+                  { value: "#000000", label: "Black", color: "#000000" },
+                ].map((c) => (
+                  <button
+                    key={c.value}
+                    onClick={() => onChange({ accentColor: c.value })}
+                    className={`w-7 h-7 rounded-full border-2 transition-all ${
+                      (fonts.accentColor || "#f59e0b") === c.value
+                        ? "border-white scale-110"
+                        : "border-slate-600 hover:border-slate-400"
+                    }`}
+                    style={{ backgroundColor: c.color }}
+                    title={c.label}
+                  />
                 ))}
               </div>
             </div>
@@ -444,6 +522,7 @@ export default function FunnelPreview() {
         setFonts(fs);
         setSavedFonts(fs);
         loadGoogleFont(fs.font);
+        if (fs.bodyFont) loadGoogleFont(fs.bodyFont);
         setLoading(false);
       })
       .catch((e) => { setError(e.message); setLoading(false); });
@@ -462,6 +541,7 @@ export default function FunnelPreview() {
   const updateFonts = useCallback((update: Partial<FontSettings>) => {
     setFonts(prev => ({ ...prev, ...update }));
     if (update.font) loadGoogleFont(update.font);
+    if (update.bodyFont) loadGoogleFont(update.bodyFont);
   }, []);
 
   const saveFonts = useCallback(() => {

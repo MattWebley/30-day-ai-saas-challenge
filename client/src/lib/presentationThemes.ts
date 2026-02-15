@@ -141,26 +141,51 @@ export function getTheme(name?: string | null): PresentationTheme {
 // ==========================================
 
 export interface FontSettings {
-  font: string;
+  font: string;            // headline font (kept as "font" for backward compat)
+  bodyFont?: string;       // body font (falls back to font if not set)
   headlineSize: string;   // "sm" | "md" | "lg" | "xl"
   bodySize: string;        // "sm" | "md" | "lg" | "xl"
   headlineWeight: number;  // 300-900
   bodyWeight: number;      // 300-700
   headlineColor?: string;  // hex override for headline color (null = use theme default)
   bodyColor?: string;      // hex override for body text color (null = use theme default)
+  accentColor?: string;    // hex color for **accent** copywriter markup (default = amber)
   headlineUppercase?: boolean;
 }
 
 export const DEFAULT_FONT_SETTINGS: FontSettings = {
   font: "Space Grotesk",
+  bodyFont: "Inter",
   headlineSize: "lg",
   bodySize: "lg",
   headlineWeight: 700,
   bodyWeight: 300,
   headlineColor: undefined,
   bodyColor: undefined,
+  accentColor: "#f59e0b",
   headlineUppercase: false,
 };
+
+// Helper to get the resolved body font (falls back to headline font)
+export function getBodyFont(fonts: FontSettings): string {
+  return fonts.bodyFont || fonts.font;
+}
+
+// Curated font pairings — headline + body that work well together
+export const FONT_PAIRINGS = [
+  { headline: "Space Grotesk", body: "Inter", label: "Modern Tech" },
+  { headline: "Playfair Display", body: "DM Sans", label: "Elegant" },
+  { headline: "Bebas Neue", body: "Inter", label: "Bold Impact" },
+  { headline: "DM Serif Display", body: "Manrope", label: "Editorial" },
+  { headline: "Oswald", body: "Lora", label: "Strong + Refined" },
+  { headline: "Montserrat", body: "Merriweather", label: "Classic" },
+  { headline: "Anton", body: "Outfit", label: "Punchy" },
+  { headline: "Cormorant Garamond", body: "Raleway", label: "Luxury" },
+  { headline: "Sora", body: "Plus Jakarta Sans", label: "Startup" },
+  { headline: "Raleway", body: "Crimson Text", label: "Sleek + Literary" },
+  { headline: "Barlow Condensed", body: "DM Sans", label: "Tight + Clean" },
+  { headline: "Outfit", body: "Lora", label: "Friendly + Warm" },
+];
 
 // Headline color presets — theme default + black variations + accents
 export const HEADLINE_COLOR_PRESETS = [

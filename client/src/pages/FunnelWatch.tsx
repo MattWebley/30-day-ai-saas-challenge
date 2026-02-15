@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Play, Loader2, ExternalLink } from "lucide-react";
 import {
   getTheme, type PresentationTheme,
-  type FontSettings, getFontSettings, loadGoogleFont,
+  type FontSettings, getFontSettings, getBodyFont, loadGoogleFont,
   HEADLINE_SIZES, BODY_SIZES, STATEMENT_SIZES, NARRATIVE_SIZES,
 } from "@/lib/presentationThemes";
 
@@ -111,7 +111,7 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
               ...headlineStyle,
             }}
           >
-            {renderStyledText(slide.headline!, fonts.headlineColor || undefined)}
+            {renderStyledText(slide.headline!, fonts.accentColor)}
           </h2>
         )}
 
@@ -119,7 +119,7 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
           <p
             className={`${fonts.bodyColor ? "" : (isNarrative ? theme.headlineColor : theme.bodyColor)} max-w-2xl mx-auto leading-relaxed animate-slide-body`}
             style={{
-              fontFamily: `'${fonts.font}', sans-serif`,
+              fontFamily: `'${getBodyFont(fonts)}', sans-serif`,
               fontSize: isNarrative
                 ? (NARRATIVE_SIZES[fonts.bodySize] || NARRATIVE_SIZES.lg)
                 : (BODY_SIZES[fonts.bodySize] || BODY_SIZES.lg),
@@ -128,7 +128,7 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
               ...(isNarrative ? { animationDelay: "0s" } : {}),
             }}
           >
-            {renderStyledText(slide.body!, fonts.headlineColor || undefined)}
+            {renderStyledText(slide.body!, fonts.accentColor)}
           </p>
         )}
       </div>
@@ -194,6 +194,7 @@ export default function FunnelWatch() {
         // Load saved Google Font
         const f = getFontSettings(d.fontSettings as FontSettings | null);
         loadGoogleFont(f.font);
+        if (f.bodyFont) loadGoogleFont(f.bodyFont);
       })
       .catch((e) => { setError(e.message); setLoading(false); });
   }, [params.slug]);
