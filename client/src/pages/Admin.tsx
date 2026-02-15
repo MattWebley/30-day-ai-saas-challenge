@@ -128,7 +128,7 @@ function FunnelRow({
       {showTooltip && count > 0 && (
         <div className="absolute z-50 left-32 top-full mt-1 bg-slate-900 text-white rounded-lg shadow-xl p-3 min-w-[220px] max-w-[320px]">
           <p className="text-xs font-bold text-slate-300 mb-1">
-            {stage} — {count} user{count !== 1 ? "s" : ""} ({overallRate}% of total)
+            {stage} - {count} user{count !== 1 ? "s" : ""} ({overallRate}% of total)
           </p>
           <div className="space-y-1 max-h-[200px] overflow-y-auto">
             {users.slice(0, 20).map((u) => (
@@ -879,7 +879,7 @@ export default function Admin() {
               </Card>
             )}
 
-            {/* Traffic Sources — where purchases came from */}
+            {/* Traffic Sources - where purchases came from */}
             {analyticsData && analyticsData.trafficSources.length > 0 && (
               <Card className="p-5 border border-slate-200 shadow-sm">
                 <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-200">

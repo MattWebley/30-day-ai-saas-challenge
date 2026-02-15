@@ -147,7 +147,7 @@ export default function CampaignEditor({ campaignId, presentations }: Props) {
       {/* Campaign Settings */}
       <Card className="p-6 border-2 border-slate-200">
         <h3 className="text-lg font-bold text-slate-900 mb-4 pb-3 border-b border-slate-200">
-          Campaign Settings — {campaign.name}
+          Campaign Settings - {campaign.name}
         </h3>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
@@ -174,7 +174,7 @@ export default function CampaignEditor({ campaignId, presentations }: Props) {
               onChange={(e) => setSettings({ ...settings, presentationId: e.target.value ? parseInt(e.target.value) : null })}
               className="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-700"
             >
-              <option value="">— None —</option>
+              <option value="">- None -</option>
               {presentations.map((p) => (
                 <option key={p.id} value={p.id}>{p.name}</option>
               ))}

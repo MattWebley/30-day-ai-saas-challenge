@@ -83,7 +83,7 @@ app.post(
   }
 );
 
-// Cal.com webhook — receives booking events (JSON body, no raw parsing needed)
+// Cal.com webhook - receives booking events (JSON body, no raw parsing needed)
 app.post('/api/webhooks/calcom', express.json(), async (req, res) => {
   try {
     // Verify webhook signature if secret is configured

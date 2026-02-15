@@ -124,7 +124,7 @@ export default function AdminCoaches() {
     });
   };
 
-  // Form state — invitation only needs email + rate
+  // Form state - invitation only needs email + rate
   const [newCoach, setNewCoach] = useState({ email: '', ratePerSession: '', rateCurrency: 'gbp' });
   const [editData, setEditData] = useState<Partial<Coach>>({});
   const [showAddClient, setShowAddClient] = useState(false);
@@ -240,7 +240,7 @@ export default function AdminCoaches() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/coaches'] });
-      toast.success('Default coach updated — new purchases will be auto-assigned');
+      toast.success('Default coach updated - new purchases will be auto-assigned');
     },
     onError: (err: any) => toast.error(err.message || 'Failed to set default coach'),
   });
@@ -401,7 +401,7 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
 
         {openSections.has('coaches') && (
           <>
-            {/* Add Coach Form — invitation-based */}
+            {/* Add Coach Form - invitation-based */}
             {showAddForm && (
               <div className="px-5 pb-5 border-t border-slate-200 pt-4">
                 <div className="bg-slate-50 rounded-lg p-4 border border-slate-200 space-y-3">
@@ -547,7 +547,7 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                 ) : (
                   <>
                     <div className="p-4">
-                      {/* Compact header — always visible */}
+                      {/* Compact header - always visible */}
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 flex-1 min-w-0">
                           <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-sm font-bold text-slate-600 shrink-0">
@@ -589,7 +589,7 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                         </div>
                       </div>
 
-                      {/* Collapsible details — hidden by default */}
+                      {/* Collapsible details - hidden by default */}
                       {openSections.has(`coach-details-${coach.id}`) && (
                         <div className="mt-3 pt-3 border-t border-slate-100 space-y-2">
                           <div className="grid sm:grid-cols-2 gap-x-6 gap-y-1 text-sm">
@@ -626,7 +626,7 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                                     const data = await res.json();
                                     setPreviewText(
                                       `${data.fullText}\n\n` +
-                                      `———————————————————————\n` +
+                                      `-----------------------\n` +
                                       `Signed by: ${data.signatureName}\n` +
                                       `Date: ${new Date(data.signedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}\n` +
                                       `Version: ${data.agreementVersion}`
@@ -865,7 +865,7 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
               <p className="text-sm text-slate-500">
                 {allClients.length} total
                 {allClients.some(c => !c.assignedCoachId) && (
-                  <> — <span className="text-amber-600 font-medium">{allClients.filter(c => !c.assignedCoachId).length} need assignment</span></>
+                  <> - <span className="text-amber-600 font-medium">{allClients.filter(c => !c.assignedCoachId).length} need assignment</span></>
                 )}
               </p>
             </div>
@@ -982,7 +982,7 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
                                 }
                               }}
                               className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded"
-                              title="Dismiss — not a real coaching client"
+                              title="Dismiss - not a real coaching client"
                             >
                               <XCircle className="w-4 h-4" />
                             </button>
@@ -1118,7 +1118,7 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
         )}
       </Card>
 
-      {/* Setup & Settings — collapsed by default */}
+      {/* Setup & Settings - collapsed by default */}
       <Card className="border border-slate-200 shadow-sm overflow-hidden">
         <button onClick={() => toggleSection('setup')} className="w-full p-5 flex items-center gap-3 text-left">
           <div className="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center">
@@ -1129,7 +1129,7 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
             <p className="text-sm text-slate-500">
               Coach invitations, Cal.com integration
               {pendingInvitations.length > 0 && (
-                <> — <span className="text-amber-600 font-medium">{pendingInvitations.length} pending invitation{pendingInvitations.length !== 1 ? 's' : ''}</span></>
+                <> - <span className="text-amber-600 font-medium">{pendingInvitations.length} pending invitation{pendingInvitations.length !== 1 ? 's' : ''}</span></>
               )}
             </p>
           </div>
@@ -1179,7 +1179,7 @@ Dubai Silicon Oasis, Dubai, United Arab Emirates`);
             {invitations.length > 0 && (
               <div>
                 <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-                  Coach Invitations — {pendingInvitations.length} pending, {invitations.filter(i => i.status === 'accepted').length} accepted
+                  Coach Invitations - {pendingInvitations.length} pending, {invitations.filter(i => i.status === 'accepted').length} accepted
                 </p>
                 <div className="space-y-2">
                   {invitations.map((inv) => (

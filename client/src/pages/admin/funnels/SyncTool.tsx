@@ -215,7 +215,7 @@ export default function SyncTool({ variantId, onDone }: Props) {
                   {formatTime(ts!)}
                 </span>
               ) : (
-                <span className="text-xs text-slate-400 w-16 text-center">—</span>
+                <span className="text-xs text-slate-400 w-16 text-center">-</span>
               )}
               <span className="text-sm text-slate-700 flex-1 truncate">
                 {slide.headline || slide.body || "(empty)"}

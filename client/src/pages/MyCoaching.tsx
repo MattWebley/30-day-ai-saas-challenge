@@ -67,7 +67,7 @@ export default function MyCoaching() {
     );
   }
 
-  // No coaching purchased — show upsell link
+  // No coaching purchased - show upsell link
   if (purchases.length === 0) {
     return (
       <Layout currentDay={0}>
@@ -117,7 +117,7 @@ export default function MyCoaching() {
                       <div>
                         <p className="font-bold text-slate-900">Your Coach: {purchase.coach.displayName}</p>
                         <p className="text-sm text-slate-500">
-                          {purchase.coachType === 'matt' ? 'Sessions with Matt' : 'Expert Coaching'} —{' '}
+                          {purchase.coachType === 'matt' ? 'Sessions with Matt' : 'Expert Coaching'} -{' '}
                           {purchase.packageType === 'pack' ? '4 Session Pack' : 'Single Session'}
                         </p>
                       </div>
@@ -128,7 +128,7 @@ export default function MyCoaching() {
                     <Clock className="w-5 h-5 text-amber-600" />
                     <div>
                       <p className="font-medium text-slate-900">Coach being assigned</p>
-                      <p className="text-sm text-slate-600">You'll be notified when your coach is ready — usually within 24 hours.</p>
+                      <p className="text-sm text-slate-600">You'll be notified when your coach is ready - usually within 24 hours.</p>
                     </div>
                   </div>
                 )}

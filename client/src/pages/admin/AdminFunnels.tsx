@@ -145,7 +145,7 @@ export default function AdminFunnels() {
       <details className="group">
         <summary className="flex items-center gap-2 cursor-pointer text-slate-500 hover:text-slate-700 select-none">
           <HelpCircle className="w-4 h-4" />
-          <span className="text-sm font-medium">How Funnels Work — Step-by-Step Guide</span>
+          <span className="text-sm font-medium">How Funnels Work - Step-by-Step Guide</span>
         </summary>
         <Card className="mt-3 p-6 border-2 border-slate-200 bg-slate-50">
           <div className="space-y-5 text-slate-700">
@@ -171,7 +171,7 @@ export default function AdminFunnels() {
 
             <div>
               <h4 className="font-bold text-slate-900 mb-1">Step 5: Connect to a Campaign</h4>
-              <p>Create a <strong>Campaign</strong> above — this gives your funnel a public URL (<code className="bg-white px-1 py-0.5 rounded text-sm border border-slate-200">/c/your-slug</code>). Link your presentation, set a CTA button, add opt-in page variations, then toggle it live.</p>
+              <p>Create a <strong>Campaign</strong> above - this gives your funnel a public URL (<code className="bg-white px-1 py-0.5 rounded text-sm border border-slate-200">/c/your-slug</code>). Link your presentation, set a CTA button, add opt-in page variations, then toggle it live.</p>
             </div>
 
             <div>
@@ -237,7 +237,7 @@ export default function AdminFunnels() {
                   <button
                     onClick={() => toggleCampaign.mutate({ id: c.id, isActive: !c.isActive })}
                     className={`p-1.5 rounded-lg ${c.isActive ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'}`}
-                    title={c.isActive ? "Active — click to deactivate" : "Inactive — click to activate"}
+                    title={c.isActive ? "Active - click to deactivate" : "Inactive - click to activate"}
                   >
                     {c.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                   </button>

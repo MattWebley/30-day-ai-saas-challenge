@@ -920,7 +920,7 @@ export type InsertCoachAgreement = typeof coachAgreements.$inferInsert;
 // FUNNEL / SPLIT-TEST ENGINE
 // ==============================
 
-// Funnel campaigns — top-level container for a split-test funnel
+// Funnel campaigns - top-level container for a split-test funnel
 export const funnelCampaigns = pgTable("funnel_campaigns", {
   id: serial("id").primaryKey(),
   name: varchar("name").notNull(),
@@ -937,7 +937,7 @@ export const funnelCampaigns = pgTable("funnel_campaigns", {
 export type FunnelCampaign = typeof funnelCampaigns.$inferSelect;
 export type InsertFunnelCampaign = typeof funnelCampaigns.$inferInsert;
 
-// Funnel presentations — a webinar/VSL
+// Funnel presentations - a webinar/VSL
 export const funnelPresentations = pgTable("funnel_presentations", {
   id: serial("id").primaryKey(),
   name: varchar("name").notNull(),
@@ -951,7 +951,7 @@ export const funnelPresentations = pgTable("funnel_presentations", {
 export type FunnelPresentation = typeof funnelPresentations.$inferSelect;
 export type InsertFunnelPresentation = typeof funnelPresentations.$inferInsert;
 
-// Funnel modules — ordered segments of a presentation
+// Funnel modules - ordered segments of a presentation
 export const funnelModules = pgTable("funnel_modules", {
   id: serial("id").primaryKey(),
   presentationId: integer("presentation_id").notNull().references(() => funnelPresentations.id, { onDelete: "cascade" }),
@@ -966,7 +966,7 @@ export const funnelModules = pgTable("funnel_modules", {
 export type FunnelModule = typeof funnelModules.$inferSelect;
 export type InsertFunnelModule = typeof funnelModules.$inferInsert;
 
-// Funnel module variants — each recording variant of a module
+// Funnel module variants - each recording variant of a module
 export const funnelModuleVariants = pgTable("funnel_module_variants", {
   id: serial("id").primaryKey(),
   moduleId: integer("module_id").notNull().references(() => funnelModules.id, { onDelete: "cascade" }),
@@ -984,13 +984,14 @@ export const funnelModuleVariants = pgTable("funnel_module_variants", {
 export type FunnelModuleVariant = typeof funnelModuleVariants.$inferSelect;
 export type InsertFunnelModuleVariant = typeof funnelModuleVariants.$inferInsert;
 
-// Funnel slides — slides synced to audio timestamps
+// Funnel slides - slides synced to audio timestamps
 export const funnelSlides = pgTable("funnel_slides", {
   id: serial("id").primaryKey(),
   variantId: integer("variant_id").notNull().references(() => funnelModuleVariants.id, { onDelete: "cascade" }),
   sortOrder: integer("sort_order").notNull().default(0),
   headline: text("headline"),
   body: text("body"),
+  scriptNotes: text("script_notes"),
   imageUrl: text("image_url"),
   startTimeMs: integer("start_time_ms").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
@@ -1001,7 +1002,7 @@ export const funnelSlides = pgTable("funnel_slides", {
 export type FunnelSlide = typeof funnelSlides.$inferSelect;
 export type InsertFunnelSlide = typeof funnelSlides.$inferInsert;
 
-// Funnel opt-in pages — variations of the opt-in page
+// Funnel opt-in pages - variations of the opt-in page
 export const funnelOptinPages = pgTable("funnel_optin_pages", {
   id: serial("id").primaryKey(),
   campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),
@@ -1018,7 +1019,7 @@ export const funnelOptinPages = pgTable("funnel_optin_pages", {
 export type FunnelOptinPage = typeof funnelOptinPages.$inferSelect;
 export type InsertFunnelOptinPage = typeof funnelOptinPages.$inferInsert;
 
-// Funnel variation sets — specific test combinations
+// Funnel variation sets - specific test combinations
 export const funnelVariationSets = pgTable("funnel_variation_sets", {
   id: serial("id").primaryKey(),
   campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),
@@ -1035,7 +1036,7 @@ export const funnelVariationSets = pgTable("funnel_variation_sets", {
 export type FunnelVariationSet = typeof funnelVariationSets.$inferSelect;
 export type InsertFunnelVariationSet = typeof funnelVariationSets.$inferInsert;
 
-// Funnel visitors — every unique visitor
+// Funnel visitors - every unique visitor
 export const funnelVisitors = pgTable("funnel_visitors", {
   id: serial("id").primaryKey(),
   campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),
@@ -1060,7 +1061,7 @@ export const funnelVisitors = pgTable("funnel_visitors", {
 export type FunnelVisitor = typeof funnelVisitors.$inferSelect;
 export type InsertFunnelVisitor = typeof funnelVisitors.$inferInsert;
 
-// Funnel events — all tracking events
+// Funnel events - all tracking events
 export const funnelEvents = pgTable("funnel_events", {
   id: serial("id").primaryKey(),
   visitorId: integer("visitor_id").notNull().references(() => funnelVisitors.id, { onDelete: "cascade" }),
@@ -1080,7 +1081,7 @@ export const funnelEvents = pgTable("funnel_events", {
 export type FunnelEvent = typeof funnelEvents.$inferSelect;
 export type InsertFunnelEvent = typeof funnelEvents.$inferInsert;
 
-// Funnel ad spend — manual ad spend entries
+// Funnel ad spend - manual ad spend entries
 export const funnelAdSpend = pgTable("funnel_ad_spend", {
   id: serial("id").primaryKey(),
   campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),
@@ -1095,7 +1096,7 @@ export const funnelAdSpend = pgTable("funnel_ad_spend", {
 export type FunnelAdSpend = typeof funnelAdSpend.$inferSelect;
 export type InsertFunnelAdSpend = typeof funnelAdSpend.$inferInsert;
 
-// Funnel ad copy — AI-generated ad copy
+// Funnel ad copy - AI-generated ad copy
 export const funnelAdCopy = pgTable("funnel_ad_copy", {
   id: serial("id").primaryKey(),
   campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),

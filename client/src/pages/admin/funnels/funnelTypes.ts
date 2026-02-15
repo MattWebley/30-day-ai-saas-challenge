@@ -70,6 +70,7 @@ export interface FunnelSlide {
   sortOrder: number;
   headline: string | null;
   body: string | null;
+  scriptNotes: string | null;
   imageUrl: string | null;
   startTimeMs: number;
   createdAt: string;

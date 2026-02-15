@@ -68,10 +68,10 @@ function renderStyledText(text: string, accentColor?: string) {
   return parts.length > 0 ? parts : text;
 }
 
-// Shared slide renderer — adapts layout based on content:
-//   Headline only  → "statement" — massive, fills the screen
-//   Body only       → "narrative" — larger body, centered storytelling
-//   Both            → "standard" — headline + supporting body
+// Shared slide renderer - adapts layout based on content:
+//   Headline only  → "statement" - massive, fills the screen
+//   Body only       → "narrative" - larger body, centered storytelling
+//   Both            → "standard" - headline + supporting body
 function SlideDisplay({ slide, theme, fonts, animKey }: {
   slide: SlideData; theme: PresentationTheme; fonts: FontSettings; animKey: string | number;
 }) {
@@ -136,7 +136,7 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
   );
 }
 
-// CSS animations — cinematic staggered entrance
+// CSS animations - cinematic staggered entrance
 const slideAnimation = `
 @keyframes slideHeadline {
   from { opacity: 0; transform: translateY(30px) scale(0.97); filter: blur(8px); }
@@ -360,7 +360,7 @@ export default function FunnelWatch() {
     );
   }
 
-  // Video mode — Vimeo embed
+  // Video mode - Vimeo embed
   if (isVideo && currentEntry?.variant.videoUrl) {
     const vimeoId = currentEntry.variant.videoUrl.replace(/.*\//, '').replace(/\?.*/, '');
     return (

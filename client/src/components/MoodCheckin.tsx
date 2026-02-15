@@ -171,7 +171,7 @@ export function MoodCheckin({ isOpen, day, onClose }: MoodCheckinProps) {
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  placeholder="Totally optional — but we'd love to hear..."
+                  placeholder="Totally optional - but we'd love to hear..."
                   className="w-full p-3 border-2 border-slate-200 rounded-xl text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-primary resize-none"
                   rows={3}
                   maxLength={500}
@@ -231,7 +231,7 @@ export function MoodCheckin({ isOpen, day, onClose }: MoodCheckinProps) {
                   {selectedMood !== null ? MOOD_OPTIONS[selectedMood].emoji : "✅"}
                 </motion.span>
                 <p className="text-lg font-bold text-slate-900">Thanks!</p>
-                <p className="text-slate-600">Keep going — you're doing great.</p>
+                <p className="text-slate-600">Keep going - you're doing great.</p>
               </motion.div>
             )}
           </Card>

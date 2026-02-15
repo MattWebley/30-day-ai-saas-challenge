@@ -134,20 +134,20 @@ export default function PresentationEditor({ presentationId }: Props) {
   });
 
   // Add a slide manually
-  const [newSlide, setNewSlide] = useState({ headline: "", body: "" });
+  const [newSlide, setNewSlide] = useState({ headline: "", body: "", scriptNotes: "" });
   const addSlide = useMutation({
     mutationFn: async () => {
       if (!firstVariantId) throw new Error("No variant exists");
       const sortOrder = allSlides.length;
       const res = await apiRequest("POST", "/api/admin/funnels/slides", {
-        variantId: firstVariantId, sortOrder, headline: newSlide.headline, body: newSlide.body, startTimeMs: 0,
+        variantId: firstVariantId, sortOrder, headline: newSlide.headline, body: newSlide.body, scriptNotes: newSlide.scriptNotes, startTimeMs: 0,
       });
       return res.json();
     },
     onSuccess: () => {
       invalidate();
       setShowAddSlide(false);
-      setNewSlide({ headline: "", body: "" });
+      setNewSlide({ headline: "", body: "", scriptNotes: "" });
       toast.success("Slide added");
     },
   });
@@ -170,7 +170,7 @@ export default function PresentationEditor({ presentationId }: Props) {
   }
 
   // =============================================
-  // STATE 1: No slides yet — show script paste UI
+  // STATE 1: No slides yet - show script paste UI
   // =============================================
   if (!hasSlides) {
     return (
@@ -246,7 +246,7 @@ export default function PresentationEditor({ presentationId }: Props) {
   }
 
   // =============================================
-  // STATE 2: Slides exist — show slide list + tools
+  // STATE 2: Slides exist - show slide list + tools
   // =============================================
   return (
     <div className="space-y-6">
@@ -336,6 +336,9 @@ export default function PresentationEditor({ presentationId }: Props) {
                       {!slide.headline && !slide.body && (
                         <p className="text-slate-400">(empty slide)</p>
                       )}
+                      {slide.scriptNotes && (
+                        <p className="text-xs text-amber-600 mt-1 line-clamp-1">Script: {slide.scriptNotes}</p>
+                      )}
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0">
                       <button onClick={() => setEditingSlideId(slide.id)} className="p-1 text-slate-400 hover:text-slate-600" title="Edit">
@@ -361,6 +364,10 @@ export default function PresentationEditor({ presentationId }: Props) {
               <div>
                 <Label className="text-slate-700">Body</Label>
                 <Textarea value={newSlide.body} onChange={(e) => setNewSlide({ ...newSlide, body: e.target.value })} rows={2} placeholder="Slide body text" />
+              </div>
+              <div>
+                <Label className="text-slate-700">Script Notes <span className="font-normal text-slate-400">(what you say)</span></Label>
+                <Textarea value={newSlide.scriptNotes} onChange={(e) => setNewSlide({ ...newSlide, scriptNotes: e.target.value })} rows={2} placeholder="What you'll say during this slide..." className="bg-amber-50/50 border-amber-200" />
               </div>
               <div className="flex gap-2">
                 <Button size="sm" onClick={() => addSlide.mutate()}>Add Slide</Button>
@@ -435,6 +442,7 @@ function InlineSlideEditor({ slide, onSave, onCancel }: {
 }) {
   const [headline, setHeadline] = useState(slide.headline || "");
   const [body, setBody] = useState(slide.body || "");
+  const [scriptNotes, setScriptNotes] = useState(slide.scriptNotes || "");
 
   return (
     <div className="space-y-2">
@@ -446,8 +454,18 @@ function InlineSlideEditor({ slide, onSave, onCancel }: {
         <Label className="text-slate-700">Body</Label>
         <Textarea value={body} onChange={(e) => setBody(e.target.value)} rows={2} />
       </div>
+      <div>
+        <Label className="text-slate-700">Script Notes <span className="font-normal text-slate-400">(what you say - not shown to viewers)</span></Label>
+        <Textarea
+          value={scriptNotes}
+          onChange={(e) => setScriptNotes(e.target.value)}
+          rows={3}
+          placeholder="What you'll say during this slide..."
+          className="text-slate-600 bg-amber-50/50 border-amber-200"
+        />
+      </div>
       <div className="flex gap-2">
-        <Button size="sm" onClick={() => onSave({ headline, body })}>
+        <Button size="sm" onClick={() => onSave({ headline, body, scriptNotes })}>
           <Save className="w-3 h-3 mr-0.5" /> Save
         </Button>
         <Button size="sm" variant="ghost" onClick={onCancel}>Cancel</Button>
@@ -752,7 +770,7 @@ function VariantManager({ moduleId, variants, presentationId, expandedVariants, 
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <Label className="text-slate-700">Variant Name</Label>
-              <Input value={newVariant.name} onChange={(e) => setNewVariant({ ...newVariant, name: e.target.value })} placeholder="e.g. Intro A — Struggle Story" />
+              <Input value={newVariant.name} onChange={(e) => setNewVariant({ ...newVariant, name: e.target.value })} placeholder="e.g. Intro A - Struggle Story" />
             </div>
             <div>
               <Label className="text-slate-700">Media Type</Label>
@@ -960,6 +978,10 @@ function SlideEditor({ slide, onSave }: { slide: FunnelSlide; onSave: (data: Par
         <Label className="text-slate-700 text-xs">Body</Label>
         <Textarea value={merged.body || ""} onChange={(e) => setEdits({ ...edits, body: e.target.value })} rows={2} />
       </div>
+      <div>
+        <Label className="text-slate-700 text-xs">Script Notes <span className="font-normal text-slate-400">(what you say)</span></Label>
+        <Textarea value={merged.scriptNotes || ""} onChange={(e) => setEdits({ ...edits, scriptNotes: e.target.value })} rows={2} placeholder="What you'll say during this slide..." className="bg-amber-50/50 border-amber-200" />
+      </div>
       <div className="grid grid-cols-2 gap-2">
         <div>
           <Label className="text-slate-700 text-xs">Image URL</Label>
@@ -977,7 +999,7 @@ function SlideEditor({ slide, onSave }: { slide: FunnelSlide; onSave: (data: Par
   );
 }
 
-// Theme picker — row of mini-preview swatches
+// Theme picker - row of mini-preview swatches
 function ThemePicker({ currentTheme, onSelect }: { currentTheme?: string | null; onSelect: (key: string) => void }) {
   const active = currentTheme || "dark";
   return (

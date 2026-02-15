@@ -92,14 +92,14 @@ function UserDetailPanel({
     const email = user.email || "[your email]";
     const text = `Hi ${name}! Here's how to log in to the 21-Day AI SaaS Challenge:
 
-EASIEST WAY — Magic Link:
+EASIEST WAY - Magic Link:
 1. Go to: https://challenge.mattwebley.com/auth/error
 2. Scroll down to where it says "Send Me a Login Link"
 3. Enter your email: ${email}
 4. Check your inbox (and spam/junk folder!) for an email from me
-5. Click the link in that email — you'll be logged straight in, no password needed
+5. Click the link in that email - you'll be logged straight in, no password needed
 
-ALTERNATIVE — Email & Password:
+ALTERNATIVE - Email & Password:
 If you've set up a password before, you can use that instead:
 1. Go to: https://challenge.mattwebley.com/auth/error
 2. Enter your email: ${email}

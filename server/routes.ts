@@ -3682,7 +3682,7 @@ ${brandVibe ? `Brand vibe: ${brandVibe}` : ''}
 
 Write the PRD in this exact format:
 
-# ${appName || idea} — Product Requirements Document
+# ${appName || idea} - Product Requirements Document
 
 ## What It Is
 [2-3 sentences. What does this product do, who is it for, and why does it exist? Write this so someone with zero context immediately understands the product.]
@@ -3694,42 +3694,42 @@ Write the PRD in this exact format:
 [The #1 pain point this solves. One clear sentence.]
 
 ## Unique Value Proposition
-[What makes this different from alternatives? Why would someone switch to THIS product? Be specific — not "better UX" but exactly what's better.]
+[What makes this different from alternatives? Why would someone switch to THIS product? Be specific - not "better UX" but exactly what's better.]
 
 ## MVP Features (Build These First)
 
 [For EACH MVP feature, write:]
 
 ### [Feature Name]
-**What the user does:** [The exact action — e.g. "Clicks 'New Project', fills in name and deadline, hits Save"]
-**What the system does:** [The exact response — e.g. "Creates project record, shows it on dashboard with countdown timer"]
-**It works when:** [Testable success criteria — e.g. "User can see their new project on the dashboard within 1 second of saving"]
+**What the user does:** [The exact action - e.g. "Clicks 'New Project', fills in name and deadline, hits Save"]
+**What the system does:** [The exact response - e.g. "Creates project record, shows it on dashboard with countdown timer"]
+**It works when:** [Testable success criteria - e.g. "User can see their new project on the dashboard within 1 second of saving"]
 
 ## Pages & Navigation
 [List every page/screen in the MVP. For each one: page name, what it shows, and key actions available. E.g.:]
-[- **Dashboard** — Shows all projects as cards with status. User can create new, click to open, or archive.]
-[- **Project Detail** — Shows tasks, deadline, progress bar. User can add/complete tasks.]
+[- **Dashboard** - Shows all projects as cards with status. User can create new, click to open, or archive.]
+[- **Project Detail** - Shows tasks, deadline, progress bar. User can add/complete tasks.]
 
 ## Data Model
 [List the database tables needed for MVP. For each table: name and key fields with types. E.g.:]
-[- **users** — id, email, name, password_hash, created_at]
-[- **projects** — id, user_id, name, deadline, status, created_at]
+[- **users** - id, email, name, password_hash, created_at]
+[- **projects** - id, user_id, name, deadline, status, created_at]
 
 ## API Endpoints
-[List the essential API routes. Format: METHOD /path — what it does. Group by resource. E.g.:]
-[- POST /api/auth/register — Create new account]
-[- GET /api/projects — List user's projects]
+[List the essential API routes. Format: METHOD /path - what it does. Group by resource. E.g.:]
+[- POST /api/auth/register - Create new account]
+[- GET /api/projects - List user's projects]
 
 ## Third-Party Services
 [Only list services actually needed. For each: what it is, what it's for, and whether it's required for MVP or can wait. E.g.:]
-[- **Stripe** — Payments. Required for MVP if charging at launch.]
-[- **Resend** — Transactional email. Can wait until post-MVP.]
+[- **Stripe** - Payments. Required for MVP if charging at launch.]
+[- **Resend** - Transactional email. Can wait until post-MVP.]
 
 ## UI/UX Direction
 [Based on "${lookAndFeel || 'modern and clean'}". Reference 1-2 real apps as visual inspiration. Describe the vibe in 2-3 sentences so a designer or AI tool knows exactly what to aim for.]
 
 ## Launch Checklist
-[5-7 specific things that MUST work before real users touch this. Not generic best practices — specific to THIS product. E.g.:]
+[5-7 specific things that MUST work before real users touch this. Not generic best practices - specific to THIS product. E.g.:]
 [- User can complete full signup → create first project → add tasks flow without errors]
 [- Stripe checkout works with test card and creates paid account]
 
@@ -5052,7 +5052,7 @@ ${customRules ? `ADDITIONAL RULES:\n${customRules}` : ''}`;
 
       // Replace variables with sample data (including legal footer like real sends)
       const sampleUnsubscribeUrl = 'https://challenge.mattwebley.com/api/drip/unsubscribe?uid=test&token=test';
-      const legalFooter = `\n\n—\nMatt Webley · Webley Global FZCO · Dubai Silicon Oasis, UAE\nUnsubscribe: ${sampleUnsubscribeUrl}`;
+      const legalFooter = `\n\n-\nMatt Webley · Webley Global FZCO · Dubai Silicon Oasis, UAE\nUnsubscribe: ${sampleUnsubscribeUrl}`;
 
       const variables: Record<string, string> = {
         firstName: 'Sarah',
@@ -8503,7 +8503,7 @@ Example format:
         }
       }
 
-      // Fall back to name search — only return if exactly 1 match
+      // Fall back to name search - only return if exactly 1 match
       if (!foundUser && name) {
         const allUsers = await storage.getAllUsers();
         const matches = allUsers.filter(u => {
@@ -8593,7 +8593,7 @@ Example format:
       }
       pageViewRateLimit.set(rateKey, Date.now());
 
-      // Get userId if authenticated — skip tracking for admins
+      // Get userId if authenticated - skip tracking for admins
       const userId = req.user?.claims?.sub || null;
       if (userId) {
         const viewUser = await storage.getUser(userId);
@@ -8803,7 +8803,7 @@ Example format:
     const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
     return `INDEPENDENT CONTRACTOR AGREEMENT
-Version 1.0 — ${today}
+Version 1.0 - ${today}
 
 BETWEEN:
 (1) Webley Global - FZCO, Dubai Silicon Oasis, Dubai, United Arab Emirates ("the Company")
@@ -9503,7 +9503,7 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
       let purchase;
 
       if (purchaseId === 0 && email) {
-        // This is a synthetic record (from users table or pendingPurchases) — create a real coachingPurchases record
+        // This is a synthetic record (from users table or pendingPurchases) - create a real coachingPurchases record
         const sessionsCount = reqSessions || 4;
         const userRecord = await db.select().from(users).where(sql`lower(${users.email}) = ${email.toLowerCase()}`);
         const userId = userRecord[0]?.id || null;
@@ -9532,7 +9532,7 @@ BY SIGNING BELOW, THE CONTRACTOR CONFIRMS THEY HAVE READ, UNDERSTOOD, AND AGREE 
           });
         }
       } else {
-        // Normal flow — lookup existing purchase
+        // Normal flow - lookup existing purchase
         [purchase] = await db.select().from(coachingPurchases).where(eq(coachingPurchases.id, purchaseId));
         if (!purchase) {
           return res.status(404).json({ message: "Coaching purchase not found" });

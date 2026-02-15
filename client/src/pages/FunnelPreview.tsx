@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
-  Play, ChevronLeft, ChevronRight, ArrowLeft, Loader2, Palette, Type, Check, Sparkles,
+  Play, ChevronLeft, ChevronRight, ArrowLeft, Loader2, Palette, Type, Check, Sparkles, Mic,
 } from "lucide-react";
 import {
   getTheme, PRESENTATION_THEMES, type PresentationTheme,
@@ -17,6 +17,7 @@ interface SlideData {
   id: number;
   headline: string | null;
   body: string | null;
+  scriptNotes: string | null;
   imageUrl: string | null;
   startTimeMs: number;
 }
@@ -57,7 +58,7 @@ function renderStyledText(text: string, accentColor?: string) {
     }
 
     if (match[2]) {
-      // **accent** — bold + accent color
+      // **accent** - bold + accent color
       parts.push(
         <span key={key++} style={{ color: accentColor || "#f59e0b", fontWeight: 700 }}>
           {match[2]}
@@ -71,7 +72,7 @@ function renderStyledText(text: string, accentColor?: string) {
         </span>
       );
     } else if (match[4]) {
-      // ==highlight== — yellow marker pen
+      // ==highlight== - yellow marker pen
       parts.push(
         <mark key={key++} style={{
           background: "linear-gradient(180deg, transparent 55%, #fde047 55%, #fde047 90%, transparent 90%)",
@@ -93,10 +94,10 @@ function renderStyledText(text: string, accentColor?: string) {
   return parts.length > 0 ? parts : text;
 }
 
-// Shared slide renderer — adapts layout based on content:
-//   Headline only  → "statement" — massive, fills the screen
-//   Body only       → "narrative" — larger body, centered storytelling
-//   Both            → "standard" — headline + supporting body
+// Shared slide renderer - adapts layout based on content:
+//   Headline only  → "statement" - massive, fills the screen
+//   Body only       → "narrative" - larger body, centered storytelling
+//   Both            → "standard" - headline + supporting body
 function SlideDisplay({ slide, theme, fonts, animKey }: {
   slide: SlideData; theme: PresentationTheme; fonts: FontSettings; animKey: string | number;
 }) {
@@ -193,7 +194,7 @@ function ThemeSwitcher({ currentKey, onSwitch }: { currentKey: string; onSwitch:
   );
 }
 
-// Font picker grid — reusable for headline and body
+// Font picker grid - reusable for headline and body
 function FontPickerGrid({ selected, onSelect, label }: { selected: string; onSelect: (f: string) => void; label: string }) {
   const categories = [
     { label: "Modern Sans", start: 0, end: 16 },
@@ -239,7 +240,7 @@ function FontPickerGrid({ selected, onSelect, label }: { selected: string; onSel
   );
 }
 
-// Typography panel — pairings, font pickers, size, weight, colors
+// Typography panel - pairings, font pickers, size, weight, colors
 function TypographyPanel({ fonts, onChange, onSave, hasChanges }: {
   fonts: FontSettings;
   onChange: (update: Partial<FontSettings>) => void;
@@ -321,7 +322,7 @@ function TypographyPanel({ fonts, onChange, onSave, hasChanges }: {
               </div>
             </div>
 
-            {/* Accent color — for **word** markup */}
+            {/* Accent color - for **word** markup */}
             <div>
               <label className="text-xs font-medium text-slate-400 uppercase tracking-wider">Accent Color <span className="normal-case text-slate-500">(**word**)</span></label>
               <div className="mt-2 flex flex-wrap gap-1.5">
@@ -554,6 +555,8 @@ export default function FunnelPreview() {
     }).catch(() => {});
   }, [fonts, presentationId]);
 
+  const [presenterMode, setPresenterMode] = useState(false);
+
   const fontsDirty = JSON.stringify(fonts) !== JSON.stringify(savedFonts);
 
   const formatForImpact = useCallback(async () => {
@@ -603,6 +606,7 @@ export default function FunnelPreview() {
   }
 
   const allSlides = data.timeline.flatMap(entry => entry.slides);
+  const hasScriptNotes = allSlides.some(s => !!s.scriptNotes);
 
   if (allSlides.length === 0) {
     return (
@@ -621,7 +625,7 @@ export default function FunnelPreview() {
   const hasSyncedTimestamps = allSlides.some(s => s.startTimeMs > 0);
   const theme = getTheme(themeKey);
 
-  // Admin bar — shared across all modes
+  // Admin bar - shared across all modes
   const adminBar = (rightExtra?: React.ReactNode) => (
     <div className="bg-slate-800/90 backdrop-blur-sm border-b border-slate-700/50 px-4 py-2 flex items-center justify-between z-10">
       <div className="flex items-center gap-3">
@@ -639,6 +643,17 @@ export default function FunnelPreview() {
           {formatting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
           <span className="hidden sm:inline">{formatting ? "Formatting..." : "Impact"}</span>
         </button>
+        {hasScriptNotes && (
+          <button
+            onClick={() => setPresenterMode(!presenterMode)}
+            className={`flex items-center gap-1.5 text-sm transition-colors ${
+              presenterMode ? "text-emerald-400 hover:text-emerald-300" : "text-slate-400 hover:text-white"
+            }`}
+          >
+            <Mic className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Present</span>
+          </button>
+        )}
         <ThemeSwitcher currentKey={themeKey} onSwitch={switchTheme} />
         <TypographyPanel fonts={fonts} onChange={updateFonts} onSave={saveFonts} hasChanges={fontsDirty} />
         {rightExtra}
@@ -646,11 +661,163 @@ export default function FunnelPreview() {
     </div>
   );
 
+  if (presenterMode && hasScriptNotes) {
+    return <TeleprompterMode data={data} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} />;
+  }
+
   if (hasAudio && hasSyncedTimestamps) {
     return <AudioPreview data={data} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} />;
   }
 
   return <ClickThroughPreview data={data} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} />;
+}
+
+// Teleprompter / Presenter mode
+// Left: scrollable script. Right: slide preview that auto-syncs to scroll position.
+function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }: {
+  data: PreviewData;
+  allSlides: SlideData[];
+  theme: PresentationTheme;
+  themeKey: string;
+  fonts: FontSettings;
+  adminBar: (rightExtra?: React.ReactNode) => React.ReactNode;
+}) {
+  const [activeSlideIdx, setActiveSlideIdx] = useState(0);
+  const scriptRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  // Filter to only slides that have script notes
+  const scriptSlides = allSlides.filter(s => !!s.scriptNotes);
+
+  // Set up IntersectionObserver to track which script section is in the reading zone
+  useEffect(() => {
+    if (observerRef.current) observerRef.current.disconnect();
+
+    // Observe each script block - the one closest to the top reading zone wins
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        // Find the most visible entry in the top half of the viewport
+        let bestIdx = activeSlideIdx;
+        let bestRatio = 0;
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && entry.intersectionRatio > bestRatio) {
+            const idx = parseInt(entry.target.getAttribute("data-slide-idx") || "0");
+            bestRatio = entry.intersectionRatio;
+            bestIdx = idx;
+          }
+        });
+        if (bestRatio > 0) setActiveSlideIdx(bestIdx);
+      },
+      {
+        // Reading zone: top 40% of viewport
+        rootMargin: "0px 0px -60% 0px",
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      }
+    );
+
+    scriptRefs.current.forEach((el) => {
+      if (el) observerRef.current!.observe(el);
+    });
+
+    return () => observerRef.current?.disconnect();
+  }, [scriptSlides.length]);
+
+  const activeSlide = allSlides[activeSlideIdx] || allSlides[0];
+
+  return (
+    <div className="min-h-screen bg-slate-950 flex flex-col">
+      <style>{slideAnimation}</style>
+      <style>{`
+        .teleprompter-scroll::-webkit-scrollbar { width: 4px; }
+        .teleprompter-scroll::-webkit-scrollbar-track { background: transparent; }
+        .teleprompter-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+      `}</style>
+      {adminBar(
+        <span className="text-sm text-emerald-400 flex items-center gap-1.5">
+          <Mic className="w-3.5 h-3.5" /> Presenter Mode
+        </span>
+      )}
+
+      <div className="flex-1 flex">
+        {/* Left: Teleprompter script */}
+        <div className="w-1/2 border-r border-slate-800 flex flex-col">
+          <div className="px-6 py-3 border-b border-slate-800 bg-slate-900/50">
+            <span className="text-xs text-slate-500 uppercase tracking-wider font-medium">Script - scroll to advance slides</span>
+          </div>
+          <div className="flex-1 overflow-y-auto teleprompter-scroll">
+            {/* Top spacer so first section starts in reading zone */}
+            <div className="h-[30vh]" />
+
+            {allSlides.map((slide, idx) => {
+              const hasNotes = !!slide.scriptNotes;
+              const isActive = idx === activeSlideIdx;
+
+              return (
+                <div
+                  key={slide.id}
+                  ref={(el) => {
+                    if (el) scriptRefs.current.set(idx, el);
+                    else scriptRefs.current.delete(idx);
+                  }}
+                  data-slide-idx={idx}
+                  className={`px-8 py-6 transition-all duration-300 cursor-pointer ${
+                    isActive
+                      ? "bg-slate-800/50"
+                      : "hover:bg-slate-900/50"
+                  }`}
+                  onClick={() => setActiveSlideIdx(idx)}
+                >
+                  {/* Slide number + headline indicator */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                      isActive ? "bg-emerald-600 text-white" : "bg-slate-800 text-slate-500"
+                    }`}>
+                      {idx + 1}
+                    </span>
+                    {slide.headline && (
+                      <span className={`text-sm font-medium ${isActive ? "text-slate-300" : "text-slate-600"}`}>
+                        {slide.headline}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Script notes - the main reading content */}
+                  {hasNotes ? (
+                    <p className={`text-2xl leading-[1.8] transition-colors duration-300 ${
+                      isActive ? "text-white" : "text-slate-600"
+                    }`} style={{ fontFamily: "'Inter', sans-serif" }}>
+                      {slide.scriptNotes}
+                    </p>
+                  ) : (
+                    <p className={`text-lg italic transition-colors duration-300 ${
+                      isActive ? "text-slate-500" : "text-slate-700"
+                    }`}>
+                      (no script notes for this slide)
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+
+            {/* Bottom spacer so last section can reach reading zone */}
+            <div className="h-[60vh]" />
+          </div>
+        </div>
+
+        {/* Right: Slide preview */}
+        <div className={`w-1/2 ${theme.pageBg} flex items-center justify-center transition-colors duration-300`}>
+          {activeSlide && (
+            <SlideDisplay
+              slide={activeSlide}
+              theme={theme}
+              fonts={fonts}
+              animKey={`present-${themeKey}-${activeSlide.id}`}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // Click-through slideshow

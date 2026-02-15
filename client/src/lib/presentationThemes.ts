@@ -1,5 +1,5 @@
 // Presentation visual theme presets
-// Designed for modern keynote-style presentations — no boxes, dynamic text
+// Designed for modern keynote-style presentations - no boxes, dynamic text
 
 export interface PresentationTheme {
   key: string;
@@ -7,9 +7,9 @@ export interface PresentationTheme {
   pageBg: string;
   headlineColor: string;
   bodyColor: string;
-  // Headline can have a gradient — if set, overrides headlineColor via inline style
+  // Headline can have a gradient - if set, overrides headlineColor via inline style
   headlineGradient?: string;
-  // Ambient glow — radial gradient behind text for depth/atmosphere
+  // Ambient glow - radial gradient behind text for depth/atmosphere
   ambientGlow: string;
   // Text shadow for headlines (depth on dark backgrounds)
   headlineShadow: string;
@@ -171,7 +171,7 @@ export function getBodyFont(fonts: FontSettings): string {
   return fonts.bodyFont || fonts.font;
 }
 
-// Curated font pairings — headline + body that work well together
+// Curated font pairings - headline + body that work well together
 export const FONT_PAIRINGS = [
   { headline: "Space Grotesk", body: "Inter", label: "Modern Tech" },
   { headline: "Playfair Display", body: "DM Sans", label: "Elegant" },
@@ -187,7 +187,7 @@ export const FONT_PAIRINGS = [
   { headline: "Outfit", body: "Lora", label: "Friendly + Warm" },
 ];
 
-// Headline color presets — theme default + black variations + accents
+// Headline color presets - theme default + black variations + accents
 export const HEADLINE_COLOR_PRESETS = [
   { value: "", label: "Theme", color: "" },  // empty = use theme default
   { value: "#000000", label: "Black", color: "#000000" },
@@ -203,7 +203,7 @@ export const HEADLINE_COLOR_PRESETS = [
   { value: "#8b5cf6", label: "Purple", color: "#8b5cf6" },
 ];
 
-// Google Fonts — organized by style category
+// Google Fonts - organized by style category
 export const GOOGLE_FONTS = [
   // Modern Sans-Serif
   "Space Grotesk",
@@ -266,7 +266,7 @@ export const HEADLINE_SIZES: Record<string, string> = {
   xl: "clamp(3rem, 7.5vw, 5rem)",
 };
 
-// Statement size — used automatically when a slide has headline only (no body)
+// Statement size - used automatically when a slide has headline only (no body)
 // Bumps one size up from the user's chosen headline size
 export const STATEMENT_SIZES: Record<string, string> = {
   sm: HEADLINE_SIZES.md,
@@ -275,7 +275,7 @@ export const STATEMENT_SIZES: Record<string, string> = {
   xl: "clamp(3.5rem, 9vw, 6rem)",
 };
 
-// Narrative size — used automatically when a slide has body only (no headline)
+// Narrative size - used automatically when a slide has body only (no headline)
 // Bumps up from the user's chosen body size for a more impactful read
 export const NARRATIVE_SIZES: Record<string, string> = {
   sm: "clamp(1.125rem, 2.5vw, 1.5rem)",

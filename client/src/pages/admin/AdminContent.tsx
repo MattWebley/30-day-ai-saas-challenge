@@ -1149,7 +1149,7 @@ export default function AdminContent() {
           )}
         </div>
 
-        {/* Positive Highlights — quick testimonial bank */}
+        {/* Positive Highlights - quick testimonial bank */}
         {(() => {
           const positiveMoods = ["Excited", "On Fire", "Good"];
           const highlights = moodCheckins.filter((m: any) => positiveMoods.includes(m.emojiLabel) && m.text && m.text.trim().length > 10);

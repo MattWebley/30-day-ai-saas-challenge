@@ -74,7 +74,7 @@ export function AdminNotificationBell() {
           </div>
           {total === 0 ? (
             <div className="px-4 py-6 text-center text-slate-500 text-sm">
-              All clear — nothing needs attention
+              All clear - nothing needs attention
             </div>
           ) : (
             <div className="max-h-80 overflow-y-auto">

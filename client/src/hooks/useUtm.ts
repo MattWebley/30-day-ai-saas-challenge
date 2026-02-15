@@ -2,7 +2,7 @@
  * Traffic Source Tracking
  *
  * Captures where visitors came from so you can see which ads/campaigns
- * drive purchases. Works automatically — just put any params on your ad URL:
+ * drive purchases. Works automatically - just put any params on your ad URL:
  *
  *   https://challenge.mattwebley.com/?campaign=cold_uk
  *   https://challenge.mattwebley.com/?utm_source=facebook&utm_campaign=test1
@@ -31,7 +31,7 @@ export interface TrafficSource {
 export function captureUtmParams() {
   if (typeof window === "undefined") return;
 
-  // Only capture on first visit — don't overwrite if already stored
+  // Only capture on first visit - don't overwrite if already stored
   if (localStorage.getItem(TRAFFIC_STORAGE_KEY)) return;
 
   const url = window.location.href;

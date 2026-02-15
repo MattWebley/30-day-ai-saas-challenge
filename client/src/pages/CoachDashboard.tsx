@@ -598,7 +598,7 @@ export default function CoachDashboard() {
                               <p className="text-sm text-slate-500">
                                 Session #{session.sessionNumber}
                                 {session.scheduledAt && (
-                                  <> — {new Date(session.scheduledAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</>
+                                  <> - {new Date(session.scheduledAt).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</>
                                 )}
                               </p>
                             </div>
@@ -897,7 +897,7 @@ export default function CoachDashboard() {
                   onChange={(e) => setSettingsForm({ ...settingsForm, bankDetails: e.target.value })}
                   rows={3}
                   className="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:border-primary resize-none"
-                  placeholder="Bank name, sort code, account number — or PayPal email, Wise details, etc."
+                  placeholder="Bank name, sort code, account number - or PayPal email, Wise details, etc."
                 />
                 <p className="text-sm text-slate-500 mt-1">This is where we'll send your payouts. Only you and the admin can see this.</p>
               </div>

@@ -1062,7 +1062,7 @@ export default function AdminRevenue() {
                 className="w-full h-24 rounded-md border border-input bg-white px-3 py-2 text-sm resize-none"
                 value={pasteText}
                 onChange={(e) => setPasteText(e.target.value)}
-                placeholder="Paste any message, email, or details from the customer here — name, address, company, VAT number, etc. AI will extract what it finds."
+                placeholder="Paste any message, email, or details from the customer here - name, address, company, VAT number, etc. AI will extract what it finds."
               />
               <Button
                 size="sm"
@@ -1095,7 +1095,7 @@ export default function AdminRevenue() {
                       });
                       toast.success("Details extracted and filled in");
                     } else {
-                      toast.error("Couldn't extract details — try filling in manually");
+                      toast.error("Couldn't extract details - try filling in manually");
                     }
                   } catch (err) {
                     toast.error("Failed to extract details");

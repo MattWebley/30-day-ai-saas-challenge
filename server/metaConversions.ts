@@ -1,11 +1,11 @@
 /**
- * Meta Conversions API (CAPI) — Server-Side Event Tracking
+ * Meta Conversions API (CAPI) - Server-Side Event Tracking
  *
  * Sends conversion events directly from the server to Meta,
  * so ad blockers and browser privacy features can't block them.
  *
  * Required env vars:
- *   META_CONVERSIONS_API_TOKEN — Generate in Meta Events Manager → Settings → Conversions API
+ *   META_CONVERSIONS_API_TOKEN - Generate in Meta Events Manager → Settings → Conversions API
  *
  * The pixel ID is hardcoded to match the one in client/index.html.
  */
@@ -46,7 +46,7 @@ export async function sendPurchaseEvent(data: PurchaseEventData): Promise<void> 
   const token = process.env.META_CONVERSIONS_API_TOKEN;
 
   if (!token) {
-    console.log('[Meta CAPI] No META_CONVERSIONS_API_TOKEN set — skipping server-side event');
+    console.log('[Meta CAPI] No META_CONVERSIONS_API_TOKEN set - skipping server-side event');
     return;
   }
 

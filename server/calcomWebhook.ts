@@ -24,7 +24,7 @@ export async function handleCalcomWebhook(body: CalcomBookingPayload) {
     return;
   }
 
-  console.log(`[Cal.com] ${triggerEvent} — UID: ${payload.uid}`);
+  console.log(`[Cal.com] ${triggerEvent} - UID: ${payload.uid}`);
 
   switch (triggerEvent) {
     case 'BOOKING_CREATED': {
@@ -65,7 +65,7 @@ async function handleBookingCreated(payload: CalcomBookingPayload['payload']) {
   let session;
 
   if (purchaseId) {
-    // Exact match by purchaseId — find the first pending session
+    // Exact match by purchaseId - find the first pending session
     [session] = await db.select().from(coachingSessions)
       .where(and(
         eq(coachingSessions.coachingPurchaseId, purchaseId),
@@ -76,7 +76,7 @@ async function handleBookingCreated(payload: CalcomBookingPayload['payload']) {
   }
 
   if (!session) {
-    // Fallback: match by client email — find the first pending session
+    // Fallback: match by client email - find the first pending session
     [session] = await db.select().from(coachingSessions)
       .where(and(
         sql`lower(${coachingSessions.clientEmail}) = ${clientEmail}`,
@@ -102,7 +102,7 @@ async function handleBookingCreated(payload: CalcomBookingPayload['payload']) {
 
   console.log(`[Cal.com] Session #${session.sessionNumber} scheduled for ${clientEmail} at ${scheduledAt.toISOString()}`);
 
-  // Match funnel visitor — record call_booked event if this person came through a funnel
+  // Match funnel visitor - record call_booked event if this person came through a funnel
   try {
     const [funnelVisitor] = await db.select().from(funnelVisitors)
       .where(eq(funnelVisitors.email, clientEmail))
@@ -167,5 +167,5 @@ async function handleBookingCancelled(payload: CalcomBookingPayload['payload']) 
     })
     .where(eq(coachingSessions.id, session.id));
 
-  console.log(`[Cal.com] Session #${session.sessionNumber} cancelled — reset to pending`);
+  console.log(`[Cal.com] Session #${session.sessionNumber} cancelled - reset to pending`);
 }

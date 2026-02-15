@@ -97,7 +97,7 @@ export default function FunnelAnalytics({ campaignId }: Props) {
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-bold text-slate-900">
-        Analytics — {analytics.campaign.name}
+        Analytics - {analytics.campaign.name}
       </h3>
 
       {/* KPI Cards */}
@@ -121,13 +121,13 @@ export default function FunnelAnalytics({ campaignId }: Props) {
           <Card className="p-4 border border-slate-200">
             <p className="text-xs text-slate-500">Cost per Registration</p>
             <p className="text-xl font-bold text-slate-900">
-              {analytics.costPerRegistration ? formatCurrency(analytics.costPerRegistration) : "—"}
+              {analytics.costPerRegistration ? formatCurrency(analytics.costPerRegistration) : "-"}
             </p>
           </Card>
           <Card className="p-4 border border-slate-200">
             <p className="text-xs text-slate-500">Cost per Sale</p>
             <p className="text-xl font-bold text-slate-900">
-              {analytics.costPerSale ? formatCurrency(analytics.costPerSale) : "—"}
+              {analytics.costPerSale ? formatCurrency(analytics.costPerSale) : "-"}
             </p>
           </Card>
         </div>

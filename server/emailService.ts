@@ -723,14 +723,14 @@ export async function sendLoginHelpEmail(email: string, firstName: string, magic
     const subject = 'How to Log In - 21-Day AI SaaS Challenge';
     const body = `Hi ${name},
 
-Matt here from the 21-Day AI SaaS Challenge. I understand you're having trouble logging in — let me help!
+Matt here from the 21-Day AI SaaS Challenge. I understand you're having trouble logging in - let me help!
 
 You have two ways to get in:
 
 
 OPTION 1: MAGIC LINK (EASIEST)
 
-I've generated a fresh login link just for you. Click the link below and you'll be logged straight in — no password needed:
+I've generated a fresh login link just for you. Click the link below and you'll be logged straight in - no password needed:
 
 ${magicLink}
 
@@ -913,13 +913,13 @@ function generateUnsubscribeUrl(userId: string): string {
 
 const LEGAL_FOOTER = `
 
-—
+-
 Matt Webley · Webley Global FZCO · Dubai Silicon Oasis, UAE
 Unsubscribe: {{UNSUBSCRIBE_URL}}`;
 
 const TRANSACTIONAL_FOOTER = `
 
-—
+-
 Matt Webley · Webley Global FZCO · Dubai Silicon Oasis, UAE`;
 
 async function sendDripEmail(dripEmail: DripEmail, userEmail: string, firstName: string, unsubscribeUrl: string): Promise<boolean> {
@@ -1044,16 +1044,16 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
 
       // SMART PRIORITY: Pick the single best email for where this user is right now.
       // Priority order:
-      //   1. Milestone (they just achieved something — celebrate it)
-      //   2. Regular drip (the core journey — keep them moving)
-      //   3. Welcome back (they returned after being inactive — acknowledge it)
-      //   4. Initial engagement (haven't started yet — nudge them)
-      //   5. Nag (lowest priority — they're already inactive)
+      //   1. Milestone (they just achieved something - celebrate it)
+      //   2. Regular drip (the core journey - keep them moving)
+      //   3. Welcome back (they returned after being inactive - acknowledge it)
+      //   4. Initial engagement (haven't started yet - nudge them)
+      //   5. Nag (lowest priority - they're already inactive)
 
       let bestEmail: typeof regularDrips[0] | null = null;
       let bestCategory = '';
 
-      // 1. MILESTONE — user completed a day, congratulate them
+      // 1. MILESTONE - user completed a day, congratulate them
       if (!bestEmail && milestoneDrips.length > 0) {
         for (const drip of milestoneDrips) {
           if (sentIds.has(drip.id)) continue;
@@ -1064,7 +1064,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
         }
       }
 
-      // 2. REGULAR DRIP — the core challenge journey
+      // 2. REGULAR DRIP - the core challenge journey
       if (!bestEmail) {
         for (const drip of regularDrips) {
           if (sentIds.has(drip.id)) continue;
@@ -1086,7 +1086,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
         }
       }
 
-      // 3. WELCOME BACK — user returned after nag emails
+      // 3. WELCOME BACK - user returned after nag emails
       if (!bestEmail && welcomeBackDrips.length > 0 && stats?.lastActivityDate) {
         const lastActivity = new Date(stats.lastActivityDate);
         const daysInactive = Math.floor((now.getTime() - lastActivity.getTime()) / dayMs);
@@ -1117,7 +1117,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
         }
       }
 
-      // 4. INITIAL ENGAGEMENT — paid but never started
+      // 4. INITIAL ENGAGEMENT - paid but never started
       if (!bestEmail && initialDrips.length > 0 && !completedDays.has(0)) {
         for (const drip of initialDrips) {
           if (sentIds.has(drip.id)) continue;
@@ -1128,7 +1128,7 @@ export async function processDripEmails(): Promise<{ sent: number; errors: numbe
         }
       }
 
-      // 5. NAG — inactive user, lowest priority
+      // 5. NAG - inactive user, lowest priority
       if (!bestEmail && nagDrips.length > 0 && stats) {
         const lastCompletedDay = stats.lastCompletedDay;
         if (lastCompletedDay !== null && lastCompletedDay !== undefined && lastCompletedDay >= 0 && lastCompletedDay < 21) {
@@ -1248,7 +1248,7 @@ export async function sendCoachAssignmentEmail(params: CoachAssignmentEmailParam
     subject: `Your coaching sessions are ready! Meet ${coachName}`,
     text: `Hi ${firstName},
 
-Great news — your coaching sessions have been set up!
+Great news - your coaching sessions have been set up!
 
 You've been paired with ${coachName}, who will be guiding you through ${sessionsTotal} 1:1 coaching session${sessionsTotal > 1 ? 's' : ''}.
 
@@ -1264,7 +1264,7 @@ During your sessions, your coach will:
 
 BEFORE YOUR FIRST CALL
 -----------------------
-Make sure you're as far along in the challenge as possible — the more progress you've made, the more valuable your coaching session will be.
+Make sure you're as far along in the challenge as possible - the more progress you've made, the more valuable your coaching session will be.
 
 Looking forward to hearing how it goes!
 
@@ -1295,7 +1295,7 @@ export async function sendBookNextSessionEmail(params: BookNextSessionEmailParam
     subject: `Great session! You have ${sessionsRemaining} coaching session${sessionsRemaining > 1 ? 's' : ''} remaining`,
     text: `Hi ${firstName},
 
-Your coaching session with ${coachName} has been completed — nice work!
+Your coaching session with ${coachName} has been completed - nice work!
 
 You have ${sessionsRemaining} session${sessionsRemaining > 1 ? 's' : ''} remaining.
 
@@ -1313,7 +1313,7 @@ Matt` + TRANSACTIONAL_FOOTER,
   });
 }
 
-// Coach nudge email — sent by coach to get an inactive client to book
+// Coach nudge email - sent by coach to get an inactive client to book
 export async function sendCoachNudgeEmail(params: {
   to: string;
   firstName: string;
@@ -1333,11 +1333,11 @@ export async function sendCoachNudgeEmail(params: {
     subject: `${coachName} is ready for your next coaching session`,
     text: `Hi ${firstName},
 
-Just a quick note from your coach ${coachName} — you still have ${sessionsRemaining} coaching session${sessionsRemaining > 1 ? 's' : ''} available and they'd love to help you make progress.
+Just a quick note from your coach ${coachName} - you still have ${sessionsRemaining} coaching session${sessionsRemaining > 1 ? 's' : ''} available and they'd love to help you make progress.
 
 ${bookingLine}
 
-These sessions are yours — make the most of them!
+These sessions are yours - make the most of them!
 
 Best,
 The 21-Day AI SaaS Challenge Team` + TRANSACTIONAL_FOOTER,
@@ -1363,7 +1363,7 @@ export async function sendCoachingRebookEmail(params: {
     subject: `Book another ${sessionsCount} coaching sessions with ${coachName}`,
     text: `Hi ${firstName},
 
-Great news — your coach ${coachName} has sent you a link to book another ${sessionsCount} coaching sessions at the same price you paid before (${price}).
+Great news - your coach ${coachName} has sent you a link to book another ${sessionsCount} coaching sessions at the same price you paid before (${price}).
 
 Book your next ${sessionsCount} sessions here:
 ${paymentUrl}

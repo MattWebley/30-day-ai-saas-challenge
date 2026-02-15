@@ -183,7 +183,7 @@ export class WebhookHandlers {
           .where(eq(users.id, user.id));
       }
       await this.grantAccessToUser(user.id, productType, customerId, currency, email, amountPaid, unlockAllDays);
-      // Save traffic source data (only if not already set — keep the original source)
+      // Save traffic source data (only if not already set - keep the original source)
       if (!user.utmSource && !user.landingUrl) {
         await db.update(users).set({
           landingUrl: trafficSource.landingUrl,

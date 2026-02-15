@@ -24,7 +24,7 @@ async function requireAdmin(req: any, res: any, next: any) {
 export function registerFunnelRoutes(app: Express) {
 
   // ==========================================
-  // ADMIN CRUD — Campaigns
+  // ADMIN CRUD - Campaigns
   // ==========================================
 
   app.get("/api/admin/funnels/campaigns", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -75,7 +75,7 @@ export function registerFunnelRoutes(app: Express) {
   });
 
   // ==========================================
-  // ADMIN CRUD — Presentations
+  // ADMIN CRUD - Presentations
   // ==========================================
 
   app.get("/api/admin/funnels/presentations", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -152,7 +152,7 @@ export function registerFunnelRoutes(app: Express) {
   });
 
   // ==========================================
-  // ADMIN — Generate slides from script (AI)
+  // ADMIN - Generate slides from script (AI)
   // ==========================================
 
   app.post("/api/admin/funnels/presentations/:id/generate-slides", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -198,61 +198,108 @@ export function registerFunnelRoutes(app: Express) {
         }
       }
 
-      // Call Anthropic API directly (bypass abuse detection — this is admin-only)
+      // Call Anthropic API directly (bypass abuse detection - this is admin-only)
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-      console.log("[generate-slides] Calling Claude API...");
 
-      let raw: string;
-      try {
-        const response = await anthropic.messages.create({
-          model: "claude-sonnet-4-5-20250929",
-          max_tokens: 4000,
-          system: `You are a presentation slide designer. Break the user's script into presentation slides. Each slide should have a short punchy headline (max 8 words) and a body (1-3 sentences from the script). Aim for one slide per key point or paragraph. Return ONLY a valid JSON array, no other text. Example: [{"headline":"Your Big Idea","body":"Every great product starts with..."}]`,
-          messages: [{
-            role: "user",
-            content: `Break this script into presentation slides. Return ONLY a JSON array of objects with "headline" and "body" fields:\n\n${script.substring(0, 8000)}`,
-          }],
-        });
-        raw = response.content[0].type === "text" ? response.content[0].text : "";
-        console.log("[generate-slides] Got AI response, length:", raw.length);
-      } catch (aiError: any) {
-        console.error("[generate-slides] Claude API error:", aiError.message);
-        return res.status(500).json({ message: `AI error: ${aiError.message}` });
-      }
+      const SYSTEM_PROMPT = `You are a presentation slide designer. Break the user's script into presentation slides. Each slide should have:
+- "headline": short punchy headline (max 8 words)
+- "body": 1-3 key sentences for the audience to see
+- "scriptNotes": the FULL original script text for this section (everything the presenter reads aloud while this slide is showing)
 
-      // Parse the AI response — try multiple extraction strategies
-      let slides: { headline: string; body: string }[] = [];
-      try {
-        slides = JSON.parse(raw);
-      } catch {
-        // Try extracting JSON array from markdown code block
+Aim for one slide per key point or paragraph. Return ONLY a valid JSON array, no other text.
+Example: [{"headline":"Your Big Idea","body":"Every great product starts with...","scriptNotes":"Every great product starts with a problem. Think about the last time you were frustrated by something..."}]`;
+
+      // Helper to parse AI JSON response with fallback strategies
+      const parseSlideResponse = (raw: string): { headline: string; body: string; scriptNotes?: string }[] => {
+        let result: { headline: string; body: string; scriptNotes?: string }[] = [];
+        try { result = JSON.parse(raw); } catch {}
+        if (Array.isArray(result) && result.length > 0) return result;
         const codeBlockMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
-        if (codeBlockMatch) {
-          try { slides = JSON.parse(codeBlockMatch[1].trim()); } catch {}
+        if (codeBlockMatch) { try { result = JSON.parse(codeBlockMatch[1].trim()); } catch {} }
+        if (Array.isArray(result) && result.length > 0) return result;
+        const arrayMatch = raw.match(/\[[\s\S]*\]/);
+        if (arrayMatch) { try { result = JSON.parse(arrayMatch[0]); } catch {} }
+        if (Array.isArray(result) && result.length > 0) return result;
+        const objMatch = raw.match(/\{[\s\S]*"slides"\s*:\s*\[[\s\S]*\][\s\S]*\}/);
+        if (objMatch) { try { const p = JSON.parse(objMatch[0]); if (Array.isArray(p.slides)) return p.slides; } catch {} }
+        return [];
+      }
+
+      // Split script into chunks by paragraphs - each chunk ~6000 chars max
+      // This ensures even hour-long webinar scripts get fully processed
+      const CHUNK_SIZE = 6000;
+      const paragraphs = script.split(/\n\s*\n/);
+      const chunks: string[] = [];
+      let currentChunk = "";
+
+      for (const para of paragraphs) {
+        if (currentChunk.length + para.length + 2 > CHUNK_SIZE && currentChunk.length > 0) {
+          chunks.push(currentChunk.trim());
+          currentChunk = "";
         }
-        // Try extracting any JSON array from the response
-        if (slides.length === 0) {
-          const arrayMatch = raw.match(/\[[\s\S]*\]/);
-          if (arrayMatch) {
-            try { slides = JSON.parse(arrayMatch[0]); } catch {}
+        currentChunk += para + "\n\n";
+      }
+      if (currentChunk.trim()) chunks.push(currentChunk.trim());
+
+      // If no paragraph breaks, split by sentences instead
+      if (chunks.length === 1 && chunks[0].length > CHUNK_SIZE) {
+        const longText = chunks[0];
+        chunks.length = 0;
+        let pos = 0;
+        while (pos < longText.length) {
+          let end = Math.min(pos + CHUNK_SIZE, longText.length);
+          // Try to break at a sentence boundary
+          if (end < longText.length) {
+            const lastPeriod = longText.lastIndexOf('. ', end);
+            if (lastPeriod > pos + CHUNK_SIZE / 2) end = lastPeriod + 2;
           }
+          chunks.push(longText.substring(pos, end).trim());
+          pos = end;
         }
-        // Try extracting { slides: [...] } wrapper
-        if (slides.length === 0) {
-          const objMatch = raw.match(/\{[\s\S]*"slides"\s*:\s*\[[\s\S]*\][\s\S]*\}/);
-          if (objMatch) {
-            try {
-              const parsed = JSON.parse(objMatch[0]);
-              if (Array.isArray(parsed.slides)) slides = parsed.slides;
-            } catch {}
+      }
+
+      console.log(`[generate-slides] Processing ${chunks.length} chunk(s), total script length: ${script.length} chars`);
+
+      // Process each chunk through the AI
+      let slides: { headline: string; body: string; scriptNotes?: string }[] = [];
+
+      for (let c = 0; c < chunks.length; c++) {
+        const chunkLabel = chunks.length > 1 ? ` (part ${c + 1} of ${chunks.length})` : "";
+        console.log(`[generate-slides] Processing chunk ${c + 1}/${chunks.length}, ${chunks[c].length} chars`);
+
+        try {
+          const response = await anthropic.messages.create({
+            model: "claude-sonnet-4-5-20250929",
+            max_tokens: 16000,
+            system: SYSTEM_PROMPT,
+            messages: [{
+              role: "user",
+              content: `Break this script${chunkLabel} into presentation slides. Return ONLY a JSON array of objects with "headline", "body", and "scriptNotes" fields:\n\n${chunks[c]}`,
+            }],
+          });
+          const raw = response.content[0].type === "text" ? response.content[0].text : "";
+          console.log(`[generate-slides] Chunk ${c + 1} response length: ${raw.length}`);
+
+          const chunkSlides = parseSlideResponse(raw);
+          if (chunkSlides.length > 0) {
+            slides.push(...chunkSlides);
+          } else {
+            console.error(`[generate-slides] Chunk ${c + 1} returned no parseable slides`);
+          }
+        } catch (aiError: any) {
+          console.error(`[generate-slides] Claude API error on chunk ${c + 1}:`, aiError.message);
+          // Continue with other chunks even if one fails
+          if (chunks.length === 1) {
+            return res.status(500).json({ message: `AI error: ${aiError.message}` });
           }
         }
       }
 
-      if (!Array.isArray(slides) || slides.length === 0) {
-        console.error("[generate-slides] Failed to parse AI response:", raw.substring(0, 500));
+      if (slides.length === 0) {
         return res.status(500).json({ message: "AI returned an unexpected format. Please try again." });
       }
+
+      console.log(`[generate-slides] Total slides generated: ${slides.length}`);
 
       // Delete existing slides on this variant
       await db.delete(funnelSlides).where(eq(funnelSlides.variantId, variantId));
@@ -266,6 +313,7 @@ export function registerFunnelRoutes(app: Express) {
           sortOrder: i,
           headline: s.headline,
           body: s.body,
+          scriptNotes: s.scriptNotes || null,
           startTimeMs: 0,
         }).returning();
         createdSlides.push(slide);
@@ -278,7 +326,7 @@ export function registerFunnelRoutes(app: Express) {
   });
 
   // ==========================================
-  // ADMIN — AI "Format for Impact" — rewrites slides for engagement
+  // ADMIN - AI "Format for Impact" - rewrites slides for engagement
   // ==========================================
 
   app.post("/api/admin/funnels/presentations/:id/format-for-impact", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -292,7 +340,7 @@ export function registerFunnelRoutes(app: Express) {
         .where(eq(funnelModules.presentationId, presentationId))
         .orderBy(funnelModules.sortOrder);
 
-      const allSlides: { id: number; sortOrder: number; headline: string | null; body: string | null }[] = [];
+      const allSlides: { id: number; sortOrder: number; headline: string | null; body: string | null; scriptNotes: string | null }[] = [];
 
       for (const mod of modules) {
         const variants = await db.select().from(funnelModuleVariants)
@@ -301,16 +349,18 @@ export function registerFunnelRoutes(app: Express) {
           const slides = await db.select().from(funnelSlides)
             .where(eq(funnelSlides.variantId, variant.id))
             .orderBy(funnelSlides.sortOrder);
-          allSlides.push(...slides.map(s => ({ id: s.id, sortOrder: s.sortOrder, headline: s.headline, body: s.body })));
+          allSlides.push(...slides.map(s => ({ id: s.id, sortOrder: s.sortOrder, headline: s.headline, body: s.body, scriptNotes: s.scriptNotes })));
         }
       }
 
       if (allSlides.length === 0) return res.status(400).json({ message: "No slides to format" });
 
       // Build the current content for Claude
-      const currentContent = allSlides.map((s, i) =>
-        `Slide ${i + 1}:\nHeadline: ${s.headline || "(empty)"}\nBody: ${s.body || "(empty)"}`
-      ).join("\n\n");
+      const currentContent = allSlides.map((s, i) => {
+        let text = `Slide ${i + 1}:\nHeadline: ${s.headline || "(empty)"}\nBody: ${s.body || "(empty)"}`;
+        if (s.scriptNotes) text += `\nScript Notes: ${s.scriptNotes}`;
+        return text;
+      }).join("\n\n");
 
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -321,9 +371,9 @@ export function registerFunnelRoutes(app: Express) {
 
 Rules for rewriting:
 1. MIX UP THE LAYOUTS for visual variety:
-   - Some slides: headline ONLY (leave body empty string "") — for bold punchy statements
-   - Some slides: body ONLY (leave headline empty string "") — for storytelling/narrative moments
-   - Some slides: headline + body — for key points that need explanation
+   - Some slides: headline ONLY (leave body empty string "") - for bold punchy statements
+   - Some slides: body ONLY (leave headline empty string "") - for storytelling/narrative moments
+   - Some slides: headline + body - for key points that need explanation
    - Aim for roughly: 40% headline-only, 30% headline+body, 30% body-only
 2. Headlines should be SHORT and punchy (2-8 words max). Conversational. Direct.
 3. Body text should feel like someone talking, not reading. Short sentences. Fragments are fine.
@@ -331,9 +381,10 @@ Rules for rewriting:
    - *word* for underline
    - **word** for accent color (use on the most important word/phrase)
    - ==word== for yellow highlighter (use rarely, only for the BIG claim)
-5. Keep the same NUMBER of slides — don't add or remove any.
-6. Keep the core MESSAGE of each slide — just make the delivery more impactful.
+5. Keep the same NUMBER of slides - don't add or remove any.
+6. Keep the core MESSAGE of each slide - just make the delivery more impactful.
 7. Think like a webinar host who keeps people watching. Create curiosity gaps, open loops, and pattern interrupts.
+8. If a slide has Script Notes, use them as CONTEXT for what the presenter is saying - let that inform how you write the headline/body. Do NOT include the script notes in the output.
 
 Return ONLY a valid JSON array with one object per slide: [{"headline":"...","body":"..."}]
 Use empty string "" (not null) for blank headline or body fields.`,
@@ -384,7 +435,7 @@ Use empty string "" (not null) for blank headline or body fields.`,
   });
 
   // ==========================================
-  // ADMIN — Presentation preview (no campaign/visitor needed)
+  // ADMIN - Presentation preview (no campaign/visitor needed)
   // ==========================================
 
   app.get("/api/admin/funnels/presentations/:id/preview", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -425,7 +476,7 @@ Use empty string "" (not null) for blank headline or body fields.`,
   });
 
   // ==========================================
-  // ADMIN CRUD — Modules
+  // ADMIN CRUD - Modules
   // ==========================================
 
   app.post("/api/admin/funnels/modules", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -477,7 +528,7 @@ Use empty string "" (not null) for blank headline or body fields.`,
   });
 
   // ==========================================
-  // ADMIN CRUD — Module Variants
+  // ADMIN CRUD - Module Variants
   // ==========================================
 
   app.post("/api/admin/funnels/variants", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -531,15 +582,15 @@ Use empty string "" (not null) for blank headline or body fields.`,
   });
 
   // ==========================================
-  // ADMIN CRUD — Slides
+  // ADMIN CRUD - Slides
   // ==========================================
 
   app.post("/api/admin/funnels/slides", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const { variantId, sortOrder, headline, body, imageUrl, startTimeMs } = req.body;
+      const { variantId, sortOrder, headline, body, scriptNotes, imageUrl, startTimeMs } = req.body;
       if (!variantId) return res.status(400).json({ message: "variantId required" });
       const [slide] = await db.insert(funnelSlides).values({
-        variantId, sortOrder: sortOrder ?? 0, headline, body, imageUrl, startTimeMs: startTimeMs ?? 0,
+        variantId, sortOrder: sortOrder ?? 0, headline, body, scriptNotes, imageUrl, startTimeMs: startTimeMs ?? 0,
       }).returning();
       res.json(slide);
     } catch (e: any) {
@@ -549,9 +600,9 @@ Use empty string "" (not null) for blank headline or body fields.`,
 
   app.put("/api/admin/funnels/slides/:id", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const { sortOrder, headline, body, imageUrl, startTimeMs } = req.body;
+      const { sortOrder, headline, body, scriptNotes, imageUrl, startTimeMs } = req.body;
       const [slide] = await db.update(funnelSlides)
-        .set({ sortOrder, headline, body, imageUrl, startTimeMs })
+        .set({ sortOrder, headline, body, scriptNotes, imageUrl, startTimeMs })
         .where(eq(funnelSlides.id, parseInt(req.params.id)))
         .returning();
       res.json(slide);
@@ -583,7 +634,7 @@ Use empty string "" (not null) for blank headline or body fields.`,
   });
 
   // ==========================================
-  // ADMIN CRUD — Opt-in Pages
+  // ADMIN CRUD - Opt-in Pages
   // ==========================================
 
   app.get("/api/admin/funnels/campaigns/:id/optin-pages", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -632,7 +683,7 @@ Use empty string "" (not null) for blank headline or body fields.`,
   });
 
   // ==========================================
-  // ADMIN CRUD — Variation Sets
+  // ADMIN CRUD - Variation Sets
   // ==========================================
 
   app.get("/api/admin/funnels/campaigns/:id/variation-sets", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -681,7 +732,7 @@ Use empty string "" (not null) for blank headline or body fields.`,
   });
 
   // ==========================================
-  // ADMIN — Campaign full detail (with optin pages + variation sets)
+  // ADMIN - Campaign full detail (with optin pages + variation sets)
   // ==========================================
 
   app.get("/api/admin/funnels/campaigns/:id/full", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -706,7 +757,7 @@ Use empty string "" (not null) for blank headline or body fields.`,
   });
 
   // ==========================================
-  // ADMIN — Analytics
+  // ADMIN - Analytics
   // ==========================================
 
   app.get("/api/admin/funnels/campaigns/:id/analytics", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -826,7 +877,7 @@ Use empty string "" (not null) for blank headline or body fields.`,
     }
   });
 
-  // Drop-off data — watch time distribution
+  // Drop-off data - watch time distribution
   app.get("/api/admin/funnels/campaigns/:id/drop-off", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
       const campaignId = parseInt(req.params.id);
@@ -950,7 +1001,7 @@ Use empty string "" (not null) for blank headline or body fields.`,
   });
 
   // ==========================================
-  // ADMIN — Ad Spend
+  // ADMIN - Ad Spend
   // ==========================================
 
   app.get("/api/admin/funnels/campaigns/:id/ad-spend", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -987,7 +1038,7 @@ Use empty string "" (not null) for blank headline or body fields.`,
   });
 
   // ==========================================
-  // ADMIN — Ad Copy
+  // ADMIN - Ad Copy
   // ==========================================
 
   app.get("/api/admin/funnels/campaigns/:id/ad-copy", isAuthenticated, requireAdmin, async (req: any, res) => {
@@ -1087,7 +1138,7 @@ Return ONLY valid JSON array, no markdown.`;
   });
 
   // ==========================================
-  // PUBLIC — Opt-in page (cookie-based variation assignment)
+  // PUBLIC - Opt-in page (cookie-based variation assignment)
   // ==========================================
 
   app.get("/api/funnel/c/:slug", async (req: any, res) => {
@@ -1112,7 +1163,7 @@ Return ONLY valid JSON array, no markdown.`;
       const existingToken = req.cookies?.[cookieKey];
 
       if (existingToken) {
-        // Existing visitor — find their assignment
+        // Existing visitor - find their assignment
         const [visitor] = await db.select().from(funnelVisitors)
           .where(and(
             eq(funnelVisitors.campaignId, campaign.id),
@@ -1141,7 +1192,7 @@ Return ONLY valid JSON array, no markdown.`;
         }
       }
 
-      // New visitor — weighted random assignment
+      // New visitor - weighted random assignment
       const totalWeight = variationSets.reduce((sum, v) => sum + (v.weight || 1), 0);
       let rand = Math.random() * totalWeight;
       let selectedSet = variationSets[0];
@@ -1194,7 +1245,7 @@ Return ONLY valid JSON array, no markdown.`;
   });
 
   // ==========================================
-  // PUBLIC — Register (email capture)
+  // PUBLIC - Register (email capture)
   // ==========================================
 
   app.post("/api/funnel/c/:slug/register", async (req: any, res) => {
@@ -1239,7 +1290,7 @@ Return ONLY valid JSON array, no markdown.`;
   });
 
   // ==========================================
-  // PUBLIC — Watch page (stitched timeline)
+  // PUBLIC - Watch page (stitched timeline)
   // ==========================================
 
   app.get("/api/funnel/c/:slug/watch", async (req: any, res) => {
@@ -1329,7 +1380,7 @@ Return ONLY valid JSON array, no markdown.`;
   });
 
   // ==========================================
-  // PUBLIC — Event tracking
+  // PUBLIC - Event tracking
   // ==========================================
 
   app.post("/api/funnel/track", async (req: any, res) => {
