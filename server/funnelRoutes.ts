@@ -614,6 +614,161 @@ Use empty string "" (not null) for blank headline or body fields.`;
   });
 
   // ==========================================
+  // ADMIN - AI "Matt's Style" - webinar slide formatting with dramatic whitespace and emphasis
+  // ==========================================
+
+  app.post("/api/admin/funnels/presentations/:id/matts-style", isAuthenticated, requireAdmin, async (req: any, res) => {
+    try {
+      const presentationId = parseInt(req.params.id);
+      const [presentation] = await db.select().from(funnelPresentations).where(eq(funnelPresentations.id, presentationId));
+      if (!presentation) return res.status(404).json({ message: "Presentation not found" });
+
+      const modules = await db.select().from(funnelModules)
+        .where(eq(funnelModules.presentationId, presentationId))
+        .orderBy(funnelModules.sortOrder);
+
+      const allSlides: { id: number; sortOrder: number; headline: string | null; body: string | null; scriptNotes: string | null }[] = [];
+
+      for (const mod of modules) {
+        const variants = await db.select().from(funnelModuleVariants)
+          .where(eq(funnelModuleVariants.moduleId, mod.id));
+        for (const variant of variants) {
+          const slides = await db.select().from(funnelSlides)
+            .where(eq(funnelSlides.variantId, variant.id))
+            .orderBy(funnelSlides.sortOrder);
+          allSlides.push(...slides.map(s => ({ id: s.id, sortOrder: s.sortOrder, headline: s.headline, body: s.body, scriptNotes: s.scriptNotes })));
+        }
+      }
+
+      if (allSlides.length === 0) return res.status(400).json({ message: "No slides to format" });
+
+      const limit = req.body?.limit;
+      const slidesToProcess = limit && limit > 0 ? allSlides.slice(0, limit) : allSlides;
+      console.log(`[matts-style] Processing ${slidesToProcess.length} of ${allSlides.length} total slides${limit ? ` (limited to ${limit})` : ""}`);
+
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+      const MATTS_STYLE_SYSTEM = `You are a webinar slide designer matching a very specific visual style. The slides use a headline field (big dominant text) and a body field (smaller supporting text). Your job is to reformat existing slide content to match this signature style.
+
+THE STYLE:
+The whitespace IS the design. Slides use massive empty space between beats. Most people cram 10 lines onto one slide. This style puts 1-3 lines with huge gaps. That's what makes it theatrical.
+
+TEXT HIERARCHY (mapped to headline vs body):
+- headline = HUGE IMPACT TEXT: The single most important phrase. 1-5 words. Usually UPPERCASE. Bold. Burned into the brain.
+- headline = LARGE STATEMENT: Key claims, transitions, emotional beats. 5-15 words. Mix UPPERCASE and regular case. Bold KEY words.
+- body = MEDIUM NARRATIVE: Storytelling, conversational parts. Regular weight. Natural sentence case. The "talking" voice.
+- body = SMALL CONTEXT: Supplementary details, dates, asides. Lighter feel. Supporting info.
+
+EMPHASIS TECHNIQUES (use throughout):
+- UPPERCASE for power words within sentences: "I was OBSESSED with making money"
+- **bold** for key phrases (renders as accent colour)
+- *underline* for specific emphasis words
+- Bold + Uppercase combo for maximum impact: "MAKE MILLIONS OF DOLLARS"
+- ==highlight== used VERY rarely for the single biggest claim
+- Ellipsis (...) used HEAVILY for pacing and dramatic pauses
+- Exclamation marks on BIG moments only
+
+SLIDE COMPOSITION PATTERNS - mix these throughout:
+
+PATTERN A "The Build Up": body = small setup line → headline = HUGE impact payoff
+PATTERN B "The Story Beat": body = 1-3 narrative lines (conversational) → no headline (or short bold headline)
+PATTERN C "The Stack": headline = statement → body = stacked short lines, each on its own row (NO bullet points, just line breaks)
+PATTERN D "The Reveal": body = setup line → headline = Single word or short phrase (MASSIVE reveal)
+PATTERN E "The Emotional Moment": body = story context → headline = quote or dramatic moment
+PATTERN F "Single Line": headline only OR body only. One line. That's it. The emptiness makes it loud.
+
+CRITICAL RULES:
+- Some slides headline ONLY (leave body as "") — for bold punchy statements, reveals
+- Some slides body ONLY (leave headline as "") — for storytelling, narrative, intimate moments
+- Some slides headline + body — for build-ups and stacks
+- VARY the pattern constantly. Never let it become predictable.
+- Never use bullet points or dashes. Stack as separate lines.
+- One idea per slide maximum.
+- Break lines aggressively in body text — short stacked lines, not paragraphs.
+- The pace should VARY: some sections rapid-fire, others slow and deliberate.
+- Do NOT rewrite content. Only restructure and add emphasis.
+
+If a slide has Script Notes, use them as CONTEXT only — do NOT include script notes in output.
+
+Keep the same NUMBER of slides. Return ONLY a valid JSON array: [{"headline":"...","body":"..."}]
+Use empty string "" (not null) for blank headline or body fields.
+Use \\n for line breaks within body text.`;
+
+      const parseFormatResponse = (raw: string): { headline: string; body: string }[] => {
+        let result: { headline: string; body: string }[] = [];
+        try { result = JSON.parse(raw); } catch {}
+        if (Array.isArray(result) && result.length > 0) return result;
+        const codeBlockMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch) { try { result = JSON.parse(codeBlockMatch[1].trim()); } catch {} }
+        if (Array.isArray(result) && result.length > 0) return result;
+        const arrayMatch = raw.match(/\[[\s\S]*\]/);
+        if (arrayMatch) { try { result = JSON.parse(arrayMatch[0]); } catch {} }
+        return Array.isArray(result) ? result : [];
+      };
+
+      const BATCH_SIZE = 15;
+      let totalUpdated = 0;
+
+      for (let batchStart = 0; batchStart < slidesToProcess.length; batchStart += BATCH_SIZE) {
+        const batch = slidesToProcess.slice(batchStart, batchStart + BATCH_SIZE);
+        const batchLabel = slidesToProcess.length > BATCH_SIZE ? ` (slides ${batchStart + 1}-${batchStart + batch.length} of ${slidesToProcess.length})` : "";
+
+        const batchContent = batch.map((s, i) => {
+          let text = `Slide ${batchStart + i + 1}:\nHeadline: ${s.headline || "(empty)"}\nBody: ${s.body || "(empty)"}`;
+          if (s.scriptNotes) text += `\nScript Notes: ${s.scriptNotes}`;
+          return text;
+        }).join("\n\n");
+
+        console.log(`[matts-style] Processing batch${batchLabel}, ${batch.length} slides`);
+
+        try {
+          const response = await anthropic.messages.create({
+            model: "claude-sonnet-4-5-20250929",
+            max_tokens: 8000,
+            system: MATTS_STYLE_SYSTEM,
+            messages: [{
+              role: "user",
+              content: `Reformat these ${batch.length} slides${batchLabel} in Matt's signature webinar style — dramatic whitespace pacing, emphasis stacking, theatrical text hierarchy. Return exactly ${batch.length} slides as a JSON array:\n\n${batchContent}`,
+            }],
+          });
+
+          const raw = response.content[0].type === "text" ? response.content[0].text : "";
+          const formatted = parseFormatResponse(raw);
+
+          if (formatted.length > 0) {
+            const updateCount = Math.min(formatted.length, batch.length);
+            for (let i = 0; i < updateCount; i++) {
+              const f = formatted[i];
+              await db.update(funnelSlides).set({
+                headline: f.headline || null,
+                body: f.body || null,
+              }).where(eq(funnelSlides.id, batch[i].id));
+            }
+            totalUpdated += updateCount;
+          } else {
+            console.error(`[matts-style] Batch starting at ${batchStart} returned no parseable slides`);
+          }
+        } catch (batchError: any) {
+          console.error(`[matts-style] Batch error:`, batchError.message);
+          if (slidesToProcess.length <= BATCH_SIZE) {
+            return res.status(500).json({ message: `AI error: ${batchError.message}` });
+          }
+        }
+      }
+
+      if (totalUpdated === 0) {
+        return res.status(500).json({ message: "AI returned invalid format. Please try again." });
+      }
+
+      console.log(`[matts-style] Done, updated ${totalUpdated} slides`);
+      res.json({ success: true, slidesUpdated: totalUpdated });
+    } catch (e: any) {
+      console.error("[matts-style] Error:", e.message);
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // ==========================================
   // ADMIN - AI auto-detect best CTA time from script
   // ==========================================
 

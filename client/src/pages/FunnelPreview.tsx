@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
-  Play, ChevronLeft, ChevronRight, ArrowLeft, Loader2, Palette, Type, Check, Sparkles, Mic, Pencil,
+  Play, ChevronLeft, ChevronRight, ArrowLeft, Loader2, Palette, Type, Check, Sparkles, Mic, Pencil, Zap,
 } from "lucide-react";
 import {
   getTheme, PRESENTATION_THEMES, type PresentationTheme,
@@ -592,6 +592,8 @@ export default function FunnelPreview() {
   const [savedFonts, setSavedFonts] = useState<FontSettings>(DEFAULT_FONT_SETTINGS);
   const [formatting, setFormatting] = useState(false);
   const [masterLayout, setMasterLayout] = useState(false);
+  const [mattsStyle, setMattsStyle] = useState(false);
+  const aiRunning = formatting || masterLayout || mattsStyle;
 
   useEffect(() => {
     fetch(`/api/admin/funnels/presentations/${presentationId}/preview`, { credentials: "include" })
@@ -703,6 +705,34 @@ export default function FunnelPreview() {
     }
   }, [presentationId, impactLimit]);
 
+  const mattsStyleFormat = useCallback(async () => {
+    const label = impactLimit === 0 ? "ALL slides" : `the first ${impactLimit} slides`;
+    if (!confirm(`This will reformat ${label} in Matt's signature webinar style — dramatic whitespace, emphasis stacking, theatrical pacing. Your current text will be replaced. Continue?`)) return;
+    setMattsStyle(true);
+    try {
+      const res = await fetch(`/api/admin/funnels/presentations/${presentationId}/matts-style`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ limit: impactLimit || undefined }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        alert(body.message || "Matt's Style formatting failed");
+        return;
+      }
+      const previewRes = await fetch(`/api/admin/funnels/presentations/${presentationId}/preview`, { credentials: "include" });
+      if (previewRes.ok) {
+        const d = await previewRes.json();
+        setData(d);
+      }
+    } catch {
+      alert("Something went wrong");
+    } finally {
+      setMattsStyle(false);
+    }
+  }, [presentationId, impactLimit]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -756,7 +786,7 @@ export default function FunnelPreview() {
         <div className="flex items-center gap-1">
           <button
             onClick={formatForImpact}
-            disabled={formatting || masterLayout}
+            disabled={aiRunning}
             className="flex items-center gap-1.5 text-amber-400 hover:text-amber-300 text-sm transition-colors disabled:opacity-50"
           >
             {formatting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
@@ -765,11 +795,20 @@ export default function FunnelPreview() {
           <span className="text-slate-600">|</span>
           <button
             onClick={masterLayoutEnergy}
-            disabled={formatting || masterLayout}
+            disabled={aiRunning}
             className="flex items-center gap-1.5 text-fuchsia-400 hover:text-fuchsia-300 text-sm transition-colors disabled:opacity-50"
           >
             {masterLayout ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Type className="w-3.5 h-3.5" />}
             {masterLayout ? "Formatting..." : "Master"}
+          </button>
+          <span className="text-slate-600">|</span>
+          <button
+            onClick={mattsStyleFormat}
+            disabled={aiRunning}
+            className="flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 text-sm transition-colors disabled:opacity-50"
+          >
+            {mattsStyle ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+            {mattsStyle ? "Formatting..." : "Matt's"}
           </button>
           <select
             value={impactLimit}
