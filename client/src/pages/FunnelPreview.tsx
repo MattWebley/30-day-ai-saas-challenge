@@ -591,6 +591,7 @@ export default function FunnelPreview() {
   const [fonts, setFonts] = useState<FontSettings>(DEFAULT_FONT_SETTINGS);
   const [savedFonts, setSavedFonts] = useState<FontSettings>(DEFAULT_FONT_SETTINGS);
   const [formatting, setFormatting] = useState(false);
+  const [masterLayout, setMasterLayout] = useState(false);
 
   useEffect(() => {
     fetch(`/api/admin/funnels/presentations/${presentationId}/preview`, { credentials: "include" })
@@ -674,6 +675,34 @@ export default function FunnelPreview() {
     }
   }, [presentationId, impactLimit]);
 
+  const masterLayoutEnergy = useCallback(async () => {
+    const label = impactLimit === 0 ? "ALL slides" : `the first ${impactLimit} slides`;
+    if (!confirm(`This will reformat ${label} with dramatic cinematic energy (ALL CAPS statements, conversational drops, pattern interrupts). Your current text will be replaced. Continue?`)) return;
+    setMasterLayout(true);
+    try {
+      const res = await fetch(`/api/admin/funnels/presentations/${presentationId}/master-layout-energy`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ limit: impactLimit || undefined }),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        alert(body.message || "Master layout formatting failed");
+        return;
+      }
+      const previewRes = await fetch(`/api/admin/funnels/presentations/${presentationId}/preview`, { credentials: "include" });
+      if (previewRes.ok) {
+        const d = await previewRes.json();
+        setData(d);
+      }
+    } catch {
+      alert("Something went wrong");
+    } finally {
+      setMasterLayout(false);
+    }
+  }, [presentationId, impactLimit]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -727,11 +756,20 @@ export default function FunnelPreview() {
         <div className="flex items-center gap-1">
           <button
             onClick={formatForImpact}
-            disabled={formatting}
+            disabled={formatting || masterLayout}
             className="flex items-center gap-1.5 text-amber-400 hover:text-amber-300 text-sm transition-colors disabled:opacity-50"
           >
             {formatting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
             <span className="hidden sm:inline">{formatting ? "Formatting..." : "Impact"}</span>
+          </button>
+          <span className="text-slate-600">|</span>
+          <button
+            onClick={masterLayoutEnergy}
+            disabled={formatting || masterLayout}
+            className="flex items-center gap-1.5 text-fuchsia-400 hover:text-fuchsia-300 text-sm transition-colors disabled:opacity-50"
+          >
+            {masterLayout ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Type className="w-3.5 h-3.5" />}
+            {masterLayout ? "Formatting..." : "Master"}
           </button>
           <select
             value={impactLimit}

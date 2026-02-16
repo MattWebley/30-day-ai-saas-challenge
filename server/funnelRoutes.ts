@@ -461,6 +461,159 @@ Use empty string "" (not null) for blank headline or body fields.`;
   });
 
   // ==========================================
+  // ADMIN - AI "Master Layout Energy" - dramatic typography reformatting
+  // ==========================================
+
+  app.post("/api/admin/funnels/presentations/:id/master-layout-energy", isAuthenticated, requireAdmin, async (req: any, res) => {
+    try {
+      const presentationId = parseInt(req.params.id);
+      const [presentation] = await db.select().from(funnelPresentations).where(eq(funnelPresentations.id, presentationId));
+      if (!presentation) return res.status(404).json({ message: "Presentation not found" });
+
+      const modules = await db.select().from(funnelModules)
+        .where(eq(funnelModules.presentationId, presentationId))
+        .orderBy(funnelModules.sortOrder);
+
+      const allSlides: { id: number; sortOrder: number; headline: string | null; body: string | null; scriptNotes: string | null }[] = [];
+
+      for (const mod of modules) {
+        const variants = await db.select().from(funnelModuleVariants)
+          .where(eq(funnelModuleVariants.moduleId, mod.id));
+        for (const variant of variants) {
+          const slides = await db.select().from(funnelSlides)
+            .where(eq(funnelSlides.variantId, variant.id))
+            .orderBy(funnelSlides.sortOrder);
+          allSlides.push(...slides.map(s => ({ id: s.id, sortOrder: s.sortOrder, headline: s.headline, body: s.body, scriptNotes: s.scriptNotes })));
+        }
+      }
+
+      if (allSlides.length === 0) return res.status(400).json({ message: "No slides to format" });
+
+      const limit = req.body?.limit;
+      const slidesToProcess = limit && limit > 0 ? allSlides.slice(0, limit) : allSlides;
+      console.log(`[master-layout] Processing ${slidesToProcess.length} of ${allSlides.length} total slides${limit ? ` (limited to ${limit})` : ""}`);
+
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+      const MASTER_LAYOUT_SYSTEM = `Act as a high-level presentation designer who understands psychological typography and visual tension.
+
+Format the slide text I give you using dramatic size contrast and rhythm - NOT obvious headline + subheadline formatting.
+
+The goal is:
+- Large dominant statements in ALL CAPS
+- Sudden drops into smaller conversational lines
+- Occasional one-word punch lines
+- Strategic line breaks that create anticipation
+- Ellipses used sparingly to create suspense
+- Short stacked lines instead of long paragraphs
+- Selective words emphasised in ALL CAPS within normal sentences
+- Moments where a medium-size line interrupts a large statement
+- Single-line slides
+- Hard pattern interrupts
+- Visual pacing that feels cinematic and exciting
+
+The hierarchy should feel instinctive, not structured or corporate.
+Avoid symmetrical or predictable formatting.
+Make the sizing interplay feel organic and emotionally driven.
+
+Rules:
+- Never format in traditional paragraph blocks
+- Break lines aggressively
+- Use white space intentionally
+- Create rhythm through contrast
+- Build tension, then release it
+- Make it feel like a story unfolding on stage
+- Do NOT rewrite the content unless absolutely necessary — only adjust structure and emphasis
+
+How to use headline vs body for this dramatic effect:
+- headline = the BIG dominant text (ALL CAPS punchy statements, single powerful words)
+- body = the smaller conversational lines, stacked short lines, the drops in energy
+- Some slides should be headline ONLY (bold statement, leave body as "")
+- Some slides should be body ONLY (intimate moment, leave headline as "")
+- Some slides headline + body (dominant line with a quiet follow-up beneath)
+- Vary the pattern — never let it become predictable
+- Use **word** markup sparingly in body for emphasis on key words
+
+If a slide has Script Notes, use them as CONTEXT only — do NOT include script notes in output.
+
+Keep the same NUMBER of slides. Return ONLY a valid JSON array: [{"headline":"...","body":"..."}]
+Use empty string "" (not null) for blank headline or body fields.`;
+
+      const parseFormatResponse = (raw: string): { headline: string; body: string }[] => {
+        let result: { headline: string; body: string }[] = [];
+        try { result = JSON.parse(raw); } catch {}
+        if (Array.isArray(result) && result.length > 0) return result;
+        const codeBlockMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/);
+        if (codeBlockMatch) { try { result = JSON.parse(codeBlockMatch[1].trim()); } catch {} }
+        if (Array.isArray(result) && result.length > 0) return result;
+        const arrayMatch = raw.match(/\[[\s\S]*\]/);
+        if (arrayMatch) { try { result = JSON.parse(arrayMatch[0]); } catch {} }
+        return Array.isArray(result) ? result : [];
+      };
+
+      const BATCH_SIZE = 15;
+      let totalUpdated = 0;
+
+      for (let batchStart = 0; batchStart < slidesToProcess.length; batchStart += BATCH_SIZE) {
+        const batch = slidesToProcess.slice(batchStart, batchStart + BATCH_SIZE);
+        const batchLabel = slidesToProcess.length > BATCH_SIZE ? ` (slides ${batchStart + 1}-${batchStart + batch.length} of ${slidesToProcess.length})` : "";
+
+        const batchContent = batch.map((s, i) => {
+          let text = `Slide ${batchStart + i + 1}:\nHeadline: ${s.headline || "(empty)"}\nBody: ${s.body || "(empty)"}`;
+          if (s.scriptNotes) text += `\nScript Notes: ${s.scriptNotes}`;
+          return text;
+        }).join("\n\n");
+
+        console.log(`[master-layout] Processing batch${batchLabel}, ${batch.length} slides`);
+
+        try {
+          const response = await anthropic.messages.create({
+            model: "claude-sonnet-4-5-20250929",
+            max_tokens: 8000,
+            system: MASTER_LAYOUT_SYSTEM,
+            messages: [{
+              role: "user",
+              content: `Reformat these ${batch.length} slides${batchLabel} with dramatic cinematic energy. Return exactly ${batch.length} slides as a JSON array:\n\n${batchContent}`,
+            }],
+          });
+
+          const raw = response.content[0].type === "text" ? response.content[0].text : "";
+          const formatted = parseFormatResponse(raw);
+
+          if (formatted.length > 0) {
+            const updateCount = Math.min(formatted.length, batch.length);
+            for (let i = 0; i < updateCount; i++) {
+              const f = formatted[i];
+              await db.update(funnelSlides).set({
+                headline: f.headline || null,
+                body: f.body || null,
+              }).where(eq(funnelSlides.id, batch[i].id));
+            }
+            totalUpdated += updateCount;
+          } else {
+            console.error(`[master-layout] Batch starting at ${batchStart} returned no parseable slides`);
+          }
+        } catch (batchError: any) {
+          console.error(`[master-layout] Batch error:`, batchError.message);
+          if (slidesToProcess.length <= BATCH_SIZE) {
+            return res.status(500).json({ message: `AI error: ${batchError.message}` });
+          }
+        }
+      }
+
+      if (totalUpdated === 0) {
+        return res.status(500).json({ message: "AI returned invalid format. Please try again." });
+      }
+
+      console.log(`[master-layout] Done, updated ${totalUpdated} slides`);
+      res.json({ success: true, slidesUpdated: totalUpdated });
+    } catch (e: any) {
+      console.error("[master-layout] Error:", e.message);
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // ==========================================
   // ADMIN - AI auto-detect best CTA time from script
   // ==========================================
 
