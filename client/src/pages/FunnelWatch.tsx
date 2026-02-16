@@ -35,6 +35,7 @@ interface WatchData {
   campaign: {
     id: number; name: string; slug: string;
     watchHeadline: string | null; watchSubheadline: string | null;
+    speakerVideoUrl: string | null;
     ctaText: string | null; ctaUrl: string | null; ctaAppearTime: number | null;
   };
   theme?: string | null;
@@ -190,6 +191,7 @@ export default function FunnelWatch() {
   const [totalElapsedMs, setTotalElapsedMs] = useState(0);
   const [progressPercent, setProgressPercent] = useState(0);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const speakerVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     fetch(`/api/funnel/c/${params.slug}/watch`, { credentials: "include" })
@@ -245,6 +247,15 @@ export default function FunnelWatch() {
       if (audio.duration > 0) {
         setProgressPercent((audio.currentTime / audio.duration) * 100);
       }
+
+      // Keep speaker video in sync with audio (correct drift > 0.3s)
+      const sv = speakerVideoRef.current;
+      if (sv && sv.src) {
+        const drift = Math.abs(sv.currentTime - audio.currentTime);
+        if (drift > 0.3) {
+          sv.currentTime = audio.currentTime;
+        }
+      }
     };
 
     const interval = setInterval(updateSlide, 100);
@@ -292,6 +303,12 @@ export default function FunnelWatch() {
         audio.src = entry.variant.audioUrl;
         audio.play().catch(() => {});
       }
+    }
+
+    // Start speaker video in sync (muted — audio comes from main track)
+    if (speakerVideoRef.current) {
+      speakerVideoRef.current.currentTime = 0;
+      speakerVideoRef.current.play().catch(() => {});
     }
 
     if (entry.slides.length > 0) {
@@ -410,6 +427,20 @@ export default function FunnelWatch() {
               )}
             </div>
           </div>
+
+          {/* Speaker face bubble — video of presenter, plays muted in sync with audio */}
+          {!isVideo && data.campaign.speakerVideoUrl && (
+            <div className={`absolute bottom-4 right-4 z-20 transition-opacity duration-500 ${started ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+              <video
+                ref={speakerVideoRef}
+                src={data.campaign.speakerVideoUrl}
+                muted
+                playsInline
+                preload="auto"
+                className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-2 border-white/30 shadow-lg"
+              />
+            </div>
+          )}
 
           {/* Progress bar - sits at bottom of player */}
           {started && !isVideo && (

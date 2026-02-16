@@ -929,6 +929,7 @@ export const funnelCampaigns = pgTable("funnel_campaigns", {
   presentationId: integer("presentation_id"),
   watchHeadline: text("watch_headline"),
   watchSubheadline: text("watch_subheadline"),
+  speakerVideoUrl: text("speaker_video_url"),
   ctaText: varchar("cta_text").default("Book Your Free Call"),
   ctaUrl: text("cta_url"),
   ctaAppearTime: integer("cta_appear_time").default(0), // seconds into presentation

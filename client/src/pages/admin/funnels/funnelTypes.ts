@@ -8,6 +8,7 @@ export interface FunnelCampaign {
   presentationId: number | null;
   watchHeadline: string | null;
   watchSubheadline: string | null;
+  speakerVideoUrl: string | null;
   ctaText: string | null;
   ctaUrl: string | null;
   ctaAppearTime: number | null;

@@ -40,6 +40,7 @@ export default function CampaignEditor({ campaignId, presentations }: Props) {
         presentationId: mergedSettings.presentationId,
         watchHeadline: mergedSettings.watchHeadline,
         watchSubheadline: mergedSettings.watchSubheadline,
+        speakerVideoUrl: mergedSettings.speakerVideoUrl,
         ctaText: mergedSettings.ctaText,
         ctaUrl: mergedSettings.ctaUrl,
         ctaAppearTime: mergedSettings.ctaAppearTime,
@@ -198,6 +199,15 @@ export default function CampaignEditor({ campaignId, presentations }: Props) {
               onChange={(e) => setSettings({ ...settings, watchSubheadline: e.target.value })}
               placeholder="Watch this free training to learn the exact system..."
             />
+          </div>
+          <div className="sm:col-span-2">
+            <Label className="text-slate-700">Speaker Video URL</Label>
+            <Input
+              value={mergedSettings.speakerVideoUrl || ""}
+              onChange={(e) => setSettings({ ...settings, speakerVideoUrl: e.target.value })}
+              placeholder="https://yourcdn.com/speaker-recording.mp4"
+            />
+            <p className="text-xs text-slate-400 mt-1">Video of you presenting — plays as a face bubble in the bottom-right corner while slides play. Use a direct .mp4 link.</p>
           </div>
           <div>
             <Label className="text-slate-700">CTA Button Text</Label>
