@@ -46,35 +46,74 @@ interface WatchData {
 }
 
 // Parse copywriter markup: *underline*, **accent**, ==highlight==
+function renderInlineMarkup(text: string, accentColor?: string) {
+  const parts: React.ReactNode[] = [];
+  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|==(.+?)==)/g;
+  let lastIndex = 0;
+  let match;
+  let key = 0;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
+    if (match[2]) {
+      parts.push(<span key={key++} style={{ color: accentColor || "#f59e0b", fontWeight: 700 }}>{match[2]}</span>);
+    } else if (match[3]) {
+      parts.push(<span key={key++} style={{ textDecoration: "underline", textDecorationThickness: "3px", textUnderlineOffset: "4px" }}>{match[3]}</span>);
+    } else if (match[4]) {
+      parts.push(<mark key={key++} style={{ background: "linear-gradient(180deg, transparent 55%, #fde047 55%, #fde047 90%, transparent 90%)", color: "inherit", padding: "0 2px" }}>{match[4]}</mark>);
+    }
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  return parts.length > 0 ? parts : [text];
+}
+
 function renderStyledText(text: string, accentColor?: string) {
   const lines = text.split('\n');
   const allParts: React.ReactNode[] = [];
   let key = 0;
-
   lines.forEach((line, lineIdx) => {
     if (lineIdx > 0) allParts.push(<br key={`br-${key++}`} />);
-
-    const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|==(.+?)==)/g;
-    let lastIndex = 0;
-    let match;
-
-    while ((match = regex.exec(line)) !== null) {
-      if (match.index > lastIndex) allParts.push(line.slice(lastIndex, match.index));
-
-      if (match[2]) {
-        allParts.push(<span key={key++} style={{ color: accentColor || "#f59e0b", fontWeight: 700 }}>{match[2]}</span>);
-      } else if (match[3]) {
-        allParts.push(<span key={key++} style={{ textDecoration: "underline", textDecorationThickness: "3px", textUnderlineOffset: "4px" }}>{match[3]}</span>);
-      } else if (match[4]) {
-        allParts.push(<mark key={key++} style={{ background: "linear-gradient(180deg, transparent 55%, #fde047 55%, #fde047 90%, transparent 90%)", color: "inherit", padding: "0 2px" }}>{match[4]}</mark>);
-      }
-      lastIndex = match.index + match[0].length;
-    }
-
-    if (lastIndex < line.length) allParts.push(line.slice(lastIndex));
+    allParts.push(...renderInlineMarkup(line, accentColor));
   });
-
   return allParts.length > 0 ? allParts : text;
+}
+
+function renderSizedBody(text: string, fonts: FontSettings, theme: PresentationTheme, accentColor?: string) {
+  const lines = text.split('\n');
+  const elements: React.ReactNode[] = [];
+  let key = 0;
+  const hasSizePrefixes = lines.some(l => /^###\s|^##\s|^>\s/.test(l));
+  if (!hasSizePrefixes) return null;
+
+  const headlineFont = fonts.font;
+  const bodyFont = getBodyFont(fonts);
+
+  for (const line of lines) {
+    if (line.trim() === '') { elements.push(<div key={key++} className="h-4 sm:h-6" />); continue; }
+    let content: string;
+    let style: React.CSSProperties;
+    let className: string;
+
+    if (line.startsWith('### ')) {
+      content = line.slice(4);
+      style = { fontFamily: `'${headlineFont}', sans-serif`, fontSize: STATEMENT_SIZES[fonts.headlineSize] || STATEMENT_SIZES.lg, fontWeight: 800, lineHeight: 1.1, letterSpacing: "0.02em" };
+      className = `${theme.headlineColor} tracking-tight mb-2`;
+    } else if (line.startsWith('## ')) {
+      content = line.slice(3);
+      style = { fontFamily: `'${headlineFont}', sans-serif`, fontSize: HEADLINE_SIZES[fonts.headlineSize] || HEADLINE_SIZES.lg, fontWeight: 700, lineHeight: 1.15 };
+      className = `${theme.headlineColor} mb-2`;
+    } else if (line.startsWith('> ')) {
+      content = line.slice(2);
+      style = { fontFamily: `'${bodyFont}', sans-serif`, fontSize: "clamp(0.8rem, 1.5vw, 0.95rem)", fontWeight: 400, lineHeight: 1.5 };
+      className = `${theme.bodyColor} opacity-70 mb-1`;
+    } else {
+      content = line;
+      style = { fontFamily: `'${bodyFont}', sans-serif`, fontSize: BODY_SIZES[fonts.bodySize] || BODY_SIZES.lg, fontWeight: fonts.bodyWeight || 400, lineHeight: 1.5 };
+      className = `${theme.bodyColor} mb-1`;
+    }
+    elements.push(<div key={key++} className={`text-center ${className}`} style={style}>{renderInlineMarkup(content, accentColor)}</div>);
+  }
+  return elements;
 }
 
 // Slide renderer inside the "video player" - adapted for contained layout
@@ -121,22 +160,28 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
           </h2>
         )}
 
-        {hasBody && (
-          <p
-            className={`${fonts.bodyColor ? "" : (isNarrative ? theme.headlineColor : theme.bodyColor)} max-w-2xl mx-auto leading-relaxed animate-slide-body`}
-            style={{
-              fontFamily: `'${getBodyFont(fonts)}', sans-serif`,
-              fontSize: isNarrative
-                ? (NARRATIVE_SIZES[fonts.bodySize] || NARRATIVE_SIZES.lg)
-                : (BODY_SIZES[fonts.bodySize] || BODY_SIZES.lg),
-              fontWeight: isNarrative ? Math.max(fonts.bodyWeight, 400) : fonts.bodyWeight,
-              ...(fonts.bodyColor ? { color: fonts.bodyColor } : {}),
-              ...(isNarrative ? { animationDelay: "0s" } : {}),
-            }}
-          >
-            {renderStyledText(slide.body!, fonts.accentColor)}
-          </p>
-        )}
+        {hasBody && (() => {
+          const sizedContent = renderSizedBody(slide.body!, fonts, theme, fonts.accentColor);
+          if (sizedContent) {
+            return <div className="max-w-3xl mx-auto animate-slide-body">{sizedContent}</div>;
+          }
+          return (
+            <p
+              className={`${fonts.bodyColor ? "" : (isNarrative ? theme.headlineColor : theme.bodyColor)} max-w-2xl mx-auto leading-relaxed animate-slide-body`}
+              style={{
+                fontFamily: `'${getBodyFont(fonts)}', sans-serif`,
+                fontSize: isNarrative
+                  ? (NARRATIVE_SIZES[fonts.bodySize] || NARRATIVE_SIZES.lg)
+                  : (BODY_SIZES[fonts.bodySize] || BODY_SIZES.lg),
+                fontWeight: isNarrative ? Math.max(fonts.bodyWeight, 400) : fonts.bodyWeight,
+                ...(fonts.bodyColor ? { color: fonts.bodyColor } : {}),
+                ...(isNarrative ? { animationDelay: "0s" } : {}),
+              }}
+            >
+              {renderStyledText(slide.body!, fonts.accentColor)}
+            </p>
+          );
+        })()}
       </div>
     </div>
   );
