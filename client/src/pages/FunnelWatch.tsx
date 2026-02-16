@@ -133,7 +133,7 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
       : {};
 
   return (
-    <div key={animKey} className="w-full h-full flex flex-col items-center justify-center text-center px-6 sm:px-10 relative">
+    <div key={animKey} className="w-full h-full flex flex-col items-center justify-center text-center px-6 sm:px-10 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" style={{ background: theme.ambientGlow }} />
 
       <div className="relative z-10 max-w-3xl mx-auto">

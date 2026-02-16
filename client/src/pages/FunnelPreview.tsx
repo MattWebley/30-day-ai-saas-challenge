@@ -249,7 +249,7 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
   };
 
   return (
-    <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative">
+    <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative max-h-full overflow-hidden">
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: theme.ambientGlow }} />
 
@@ -1118,15 +1118,15 @@ function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar
   }, [setData]);
 
   return (
-    <div className={`min-h-screen ${theme.pageBg} flex flex-col transition-colors duration-300`}>
+    <div className={`h-screen ${theme.pageBg} flex flex-col overflow-hidden transition-colors duration-300`}>
       <style>{slideAnimation}</style>
       {adminBar(<span className="text-sm text-slate-400">{currentIdx + 1} / {allSlides.length}</span>)}
 
-      <div className="flex-1 flex items-center justify-center py-12 group">
+      <div className="flex-1 flex items-center justify-center py-4 group min-h-0 overflow-hidden">
         {slide && <SlideDisplay slide={slide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${slide.id}`} editable onSave={handleSlideTextSave} />}
       </div>
 
-      <div className="px-4 pb-8">
+      <div className="px-4 pb-4 shrink-0">
         <div className="max-w-3xl mx-auto flex items-center justify-center gap-6">
           <Button variant="ghost" size="sm" onClick={goPrev} disabled={currentIdx === 0} className={theme.navText}>
             <ChevronLeft className="w-5 h-5 mr-1" /> Prev
@@ -1202,7 +1202,7 @@ function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar }: {
 
   if (!started) {
     return (
-      <div className={`min-h-screen ${theme.overlayBg} flex flex-col transition-colors duration-300`}>
+      <div className={`h-screen ${theme.overlayBg} flex flex-col overflow-hidden transition-colors duration-300`}>
         <style>{slideAnimation}</style>
         {adminBar(<span className="text-sm text-slate-400">{allSlides.length} slides</span>)}
         <div className="flex-1 flex items-center justify-center">
@@ -1229,7 +1229,7 @@ function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar }: {
   const currentEntry = data.timeline[currentModuleIdx];
 
   return (
-    <div className={`min-h-screen ${theme.pageBg} flex flex-col transition-colors duration-300`}>
+    <div className={`h-screen ${theme.pageBg} flex flex-col overflow-hidden transition-colors duration-300`}>
       <style>{slideAnimation}</style>
       <audio ref={audioRef} onEnded={handleModuleEnd} preload="auto" />
       {adminBar(
@@ -1238,7 +1238,7 @@ function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar }: {
         </span>
       )}
 
-      <div className="flex-1 flex items-center justify-center py-12">
+      <div className="flex-1 flex items-center justify-center py-4 min-h-0 overflow-hidden">
         {currentSlide ? (
           <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${currentSlide.id}`} />
         ) : (
