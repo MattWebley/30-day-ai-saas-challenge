@@ -44,54 +44,62 @@ interface PreviewData {
 
 // Parse copywriter markup: *underline*, **accent**, ==highlight==
 function renderStyledText(text: string, accentColor?: string) {
-  // Split on markup patterns, preserving delimiters
-  const parts: React.ReactNode[] = [];
-  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|==(.+?)==)/g;
-  let lastIndex = 0;
-  let match;
+  // First split on newlines to handle line breaks, then process markup within each line
+  const lines = text.split('\n');
+  const allParts: React.ReactNode[] = [];
   let key = 0;
 
-  while ((match = regex.exec(text)) !== null) {
-    // Text before match
-    if (match.index > lastIndex) {
-      parts.push(text.slice(lastIndex, match.index));
+  lines.forEach((line, lineIdx) => {
+    // Add line break between lines (not before first)
+    if (lineIdx > 0) {
+      allParts.push(<br key={`br-${key++}`} />);
     }
 
-    if (match[2]) {
-      // **accent** - bold + accent color
-      parts.push(
-        <span key={key++} style={{ color: accentColor || "#f59e0b", fontWeight: 700 }}>
-          {match[2]}
-        </span>
-      );
-    } else if (match[3]) {
-      // *underline*
-      parts.push(
-        <span key={key++} style={{ textDecoration: "underline", textDecorationThickness: "3px", textUnderlineOffset: "4px" }}>
-          {match[3]}
-        </span>
-      );
-    } else if (match[4]) {
-      // ==highlight== - yellow marker pen
-      parts.push(
-        <mark key={key++} style={{
-          background: "linear-gradient(180deg, transparent 55%, #fde047 55%, #fde047 90%, transparent 90%)",
-          color: "inherit", padding: "0 2px",
-        }}>
-          {match[4]}
-        </mark>
-      );
+    // Process markup within this line
+    const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|==(.+?)==)/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(line)) !== null) {
+      if (match.index > lastIndex) {
+        allParts.push(line.slice(lastIndex, match.index));
+      }
+
+      if (match[2]) {
+        // **accent** - bold + accent color
+        allParts.push(
+          <span key={key++} style={{ color: accentColor || "#f59e0b", fontWeight: 700 }}>
+            {match[2]}
+          </span>
+        );
+      } else if (match[3]) {
+        // *underline*
+        allParts.push(
+          <span key={key++} style={{ textDecoration: "underline", textDecorationThickness: "3px", textUnderlineOffset: "4px" }}>
+            {match[3]}
+          </span>
+        );
+      } else if (match[4]) {
+        // ==highlight== - yellow marker pen
+        allParts.push(
+          <mark key={key++} style={{
+            background: "linear-gradient(180deg, transparent 55%, #fde047 55%, #fde047 90%, transparent 90%)",
+            color: "inherit", padding: "0 2px",
+          }}>
+            {match[4]}
+          </mark>
+        );
+      }
+
+      lastIndex = match.index + match[0].length;
     }
 
-    lastIndex = match.index + match[0].length;
-  }
+    if (lastIndex < line.length) {
+      allParts.push(line.slice(lastIndex));
+    }
+  });
 
-  // Remaining text
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
-  }
-
-  return parts.length > 0 ? parts : text;
+  return allParts.length > 0 ? allParts : text;
 }
 
 // Shared slide renderer - adapts layout based on content:

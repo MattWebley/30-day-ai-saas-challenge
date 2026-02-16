@@ -47,27 +47,34 @@ interface WatchData {
 
 // Parse copywriter markup: *underline*, **accent**, ==highlight==
 function renderStyledText(text: string, accentColor?: string) {
-  const parts: React.ReactNode[] = [];
-  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|==(.+?)==)/g;
-  let lastIndex = 0;
-  let match;
+  const lines = text.split('\n');
+  const allParts: React.ReactNode[] = [];
   let key = 0;
 
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
+  lines.forEach((line, lineIdx) => {
+    if (lineIdx > 0) allParts.push(<br key={`br-${key++}`} />);
 
-    if (match[2]) {
-      parts.push(<span key={key++} style={{ color: accentColor || "#f59e0b", fontWeight: 700 }}>{match[2]}</span>);
-    } else if (match[3]) {
-      parts.push(<span key={key++} style={{ textDecoration: "underline", textDecorationThickness: "3px", textUnderlineOffset: "4px" }}>{match[3]}</span>);
-    } else if (match[4]) {
-      parts.push(<mark key={key++} style={{ background: "linear-gradient(180deg, transparent 55%, #fde047 55%, #fde047 90%, transparent 90%)", color: "inherit", padding: "0 2px" }}>{match[4]}</mark>);
+    const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|==(.+?)==)/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(line)) !== null) {
+      if (match.index > lastIndex) allParts.push(line.slice(lastIndex, match.index));
+
+      if (match[2]) {
+        allParts.push(<span key={key++} style={{ color: accentColor || "#f59e0b", fontWeight: 700 }}>{match[2]}</span>);
+      } else if (match[3]) {
+        allParts.push(<span key={key++} style={{ textDecoration: "underline", textDecorationThickness: "3px", textUnderlineOffset: "4px" }}>{match[3]}</span>);
+      } else if (match[4]) {
+        allParts.push(<mark key={key++} style={{ background: "linear-gradient(180deg, transparent 55%, #fde047 55%, #fde047 90%, transparent 90%)", color: "inherit", padding: "0 2px" }}>{match[4]}</mark>);
+      }
+      lastIndex = match.index + match[0].length;
     }
-    lastIndex = match.index + match[0].length;
-  }
 
-  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
-  return parts.length > 0 ? parts : text;
+    if (lastIndex < line.length) allParts.push(line.slice(lastIndex));
+  });
+
+  return allParts.length > 0 ? allParts : text;
 }
 
 // Slide renderer inside the "video player" - adapted for contained layout
