@@ -19,11 +19,11 @@ const usageCache: Map<string, { hourly: Map<string, number>, daily: Map<string, 
 const ABUSE_PATTERNS = [
   { pattern: /ignore (previous|all|your) (instructions|rules|prompt)/i, reason: "Prompt injection attempt" },
   { pattern: /pretend you('re| are) (not|a different)/i, reason: "Role manipulation attempt" },
-  { pattern: /jailbreak|bypass|hack|exploit/i, reason: "Abuse keywords detected" },
+  { pattern: /jailbreak|bypass (security|filter|restriction)|hack (this|the|your|into)/i, reason: "Abuse keywords detected" },
   { pattern: /repeat after me|say exactly/i, reason: "Output manipulation attempt" },
   { pattern: /what('s| is) (your|the) (system|initial) (prompt|message)/i, reason: "Prompt extraction attempt" },
   { pattern: /act as|roleplay|pretend to be/i, reason: "Role hijacking attempt" },
-  { pattern: /DAN|developer mode|unrestricted/i, reason: "Known jailbreak attempt" },
+  { pattern: /\bDAN\b|developer mode|unrestricted mode/i, reason: "Known jailbreak attempt" },
 ];
 
 interface AIUsageLog {

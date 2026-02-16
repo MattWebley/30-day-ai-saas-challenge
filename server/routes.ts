@@ -3858,7 +3858,7 @@ Just output the look & feel description, nothing else.`,
     const promptInjectionPatterns = [
       { pattern: /ignore (previous|all|your|above|prior) (instructions|rules|prompt|context)/i, reason: "Prompt injection attempt" },
       { pattern: /pretend you('re| are) (not|a different|an? )/i, reason: "Role manipulation attempt" },
-      { pattern: /\b(jailbreak|bypass security|hack this|exploit)\b/i, reason: "Abuse keywords detected" },
+      { pattern: /\b(jailbreak|bypass (security|filter|restriction)|hack (this|the|your|into)|exploit (this|the|a vulnerability))\b/i, reason: "Abuse keywords detected" },
       { pattern: /repeat after me|say exactly|output the following/i, reason: "Output manipulation attempt" },
       { pattern: /what('s| is) (your|the) (system|initial|original) (prompt|message|instructions)/i, reason: "Prompt extraction attempt" },
       { pattern: /act as (if you|a |an )|roleplay as|pretend to be/i, reason: "Role hijacking attempt" },
