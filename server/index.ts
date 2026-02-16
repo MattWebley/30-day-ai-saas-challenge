@@ -1,6 +1,9 @@
 import express, { type Request, Response, NextFunction } from "express";
 import cookieParser from "cookie-parser";
 import crypto from "crypto";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -116,15 +119,70 @@ app.get('/api/stripe/publishable-key', async (req, res) => {
   }
 });
 
+// Security headers (clickjacking, MIME sniffing, HSTS, etc.)
+app.use(helmet({
+  contentSecurityPolicy: false, // let Vite/React handle CSP in dev
+  crossOriginEmbedderPolicy: false, // needed for external images/videos
+}));
+
+// CORS - only allow your domain + dev
+const allowedOrigins = [
+  "https://challenge.mattwebley.com",
+  "http://localhost:5000",
+  "http://0.0.0.0:5000",
+];
+app.use(cors({
+  origin: (origin, callback) => {
+    // allow same-origin requests (no origin header) and allowed origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  credentials: true,
+}));
+
+// Global rate limit - 200 requests per minute per IP (generous, just stops abuse)
+app.use(rateLimit({
+  windowMs: 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later." },
+}));
+
+// Stricter rate limit on auth endpoints - 10 per minute per IP
+const authLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many login attempts, please try again later." },
+});
+app.use("/api/auth", authLimiter);
+app.use("/api/login", authLimiter);
+
+// Stricter rate limit on public funnel endpoints - 30 per minute per IP
+const funnelPublicLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later." },
+});
+app.use("/api/funnel", funnelPublicLimiter);
+
 app.use(
   express.json({
+    limit: "5mb", // cap JSON body size (needs headroom for large presentations)
     verify: (req, _res, buf) => {
       req.rawBody = buf;
     },
   }),
 );
 
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: false, limit: "5mb" }));
 app.use(cookieParser());
 
 export function log(message: string, source = "express") {
