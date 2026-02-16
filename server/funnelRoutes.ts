@@ -362,27 +362,27 @@ Example: [{"headline":"Your Big Idea","body":"Every great product starts with...
 
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-      const IMPACT_SYSTEM = `You are a direct-response copywriter and presentation designer. Your job is to rewrite presentation slides for MAXIMUM viewer engagement and conversions.
+      const IMPACT_SYSTEM = `You are a direct-response copywriter. You reformat presentation slides for MAXIMUM engagement.
 
-Rules for rewriting:
-1. MIX UP THE LAYOUTS for visual variety:
-   - Some slides: headline ONLY (leave body empty string "") - for bold punchy statements
-   - Some slides: body ONLY (leave headline empty string "") - for storytelling/narrative moments
-   - Some slides: headline + body - for key points that need explanation
-   - Aim for roughly: 40% headline-only, 30% headline+body, 30% body-only
-2. Headlines should be SHORT and punchy (2-8 words max). Conversational. Direct.
-3. Body text should feel like someone talking, not reading. Short sentences. Fragments are fine.
-4. Use copywriter markup SPARINGLY for emphasis (max 1-2 per slide):
-   - *word* for underline
-   - **word** for accent color (use on the most important word/phrase)
-   - ==word== for yellow highlighter (use rarely, only for the BIG claim)
-5. Keep the same NUMBER of slides - don't add or remove any.
-6. Keep the core MESSAGE of each slide - just make the delivery more impactful.
-7. Think like a webinar host who keeps people watching. Create curiosity gaps, open loops, and pattern interrupts.
-8. If a slide has Script Notes, use them as CONTEXT for what the presenter is saying - let that inform how you write the headline/body. Do NOT include the script notes in the output.
+Each slide has two fields: "headline" (renders HUGE and dominant) and "body" (renders smaller beneath). The size difference IS the design.
 
-Return ONLY a valid JSON array with one object per slide: [{"headline":"...","body":"..."}]
-Use empty string "" (not null) for blank headline or body fields.`;
+CRITICAL: At least 70% of slides MUST have a non-empty headline. If a slide has text, pick the most powerful line for headline. NEVER dump all text into body with an empty headline — that makes everything the same size and kills the impact.
+
+Rules:
+1. LAYOUTS - mix these up:
+   - 40% headline ONLY (body="") — bold punchy statements, one line fills the screen
+   - 30% headline + body — headline is the hook, body is the explanation
+   - 30% body ONLY (headline="") — storytelling, quiet narrative moments. USE SPARINGLY.
+2. Headlines: SHORT and punchy. 2-8 words. The STRONGEST line from the slide content.
+3. Body: conversational, short sentences, fragments fine. Use \\n for line breaks between stacked lines.
+4. Markup (max 1-2 per slide): *word* = underline, **word** = accent color, ==word== = highlight (rare)
+5. Keep the same NUMBER of slides.
+6. Keep the core MESSAGE — just restructure for impact.
+7. Think like a webinar host. Curiosity gaps, open loops, pattern interrupts.
+8. Script Notes = CONTEXT only, do NOT include in output.
+
+Return ONLY a valid JSON array: [{"headline":"...","body":"..."}]
+Use "" (not null) for empty fields.`;
 
       // Helper to parse AI JSON response
       const parseFormatResponse = (raw: string): { headline: string; body: string }[] => {
@@ -495,49 +495,42 @@ Use empty string "" (not null) for blank headline or body fields.`;
 
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-      const MASTER_LAYOUT_SYSTEM = `Act as a high-level presentation designer who understands psychological typography and visual tension.
+      const MASTER_LAYOUT_SYSTEM = `You reformat presentation slides for dramatic cinematic energy using psychological typography.
 
-Format the slide text I give you using dramatic size contrast and rhythm - NOT obvious headline + subheadline formatting.
+Each slide has two fields: "headline" (renders HUGE, dominant, fills the screen) and "body" (renders smaller beneath). The SIZE CONTRAST between them IS the design.
 
-The goal is:
-- Large dominant statements in ALL CAPS
-- Sudden drops into smaller conversational lines
-- Occasional one-word punch lines
-- Strategic line breaks that create anticipation
-- Ellipses used sparingly to create suspense
-- Short stacked lines instead of long paragraphs
-- Selective words emphasised in ALL CAPS within normal sentences
-- Moments where a medium-size line interrupts a large statement
-- Single-line slides
-- Hard pattern interrupts
-- Visual pacing that feels cinematic and exciting
+CRITICAL RULE: At least 80% of slides MUST have a non-empty headline. The headline is where the drama lives. If a slide has text, the most powerful phrase MUST go in headline. NEVER leave headline empty when there's impactful text — that makes everything the same size and kills the energy.
 
-The hierarchy should feel instinctive, not structured or corporate.
-Avoid symmetrical or predictable formatting.
-Make the sizing interplay feel organic and emotionally driven.
+headline = the BIG text:
+- ALL CAPS dominant statements: "EVERYTHING CHANGED."
+- Single powerful words: "OBSESSED."
+- Key emotional beats: "He GHOSTED me..."
+- Short. 1-8 words. Punchy. Often UPPERCASE.
 
-Rules:
-- Never format in traditional paragraph blocks
-- Break lines aggressively
-- Use white space intentionally
-- Create rhythm through contrast
-- Build tension, then release it
-- Make it feel like a story unfolding on stage
-- Do NOT rewrite the content unless absolutely necessary — only adjust structure and emphasis
+body = the smaller text beneath:
+- Conversational setup lines before the big moment
+- Stacked short lines (use \\n between each line)
+- Context, storytelling, the quiet voice
+- NEVER long paragraphs. Break lines aggressively.
 
-How to use headline vs body for this dramatic effect:
-- headline = the BIG dominant text (ALL CAPS punchy statements, single powerful words)
-- body = the smaller conversational lines, stacked short lines, the drops in energy
-- Some slides should be headline ONLY (bold statement, leave body as "")
-- Some slides should be body ONLY (intimate moment, leave headline as "")
-- Some slides headline + body (dominant line with a quiet follow-up beneath)
-- Vary the pattern — never let it become predictable
-- Use **word** markup sparingly in body for emphasis on key words
+The goal: dramatic size contrast and rhythm. NOT symmetrical formatting.
+- Large dominant statements in ALL CAPS (headline)
+- Sudden drops into smaller conversational lines (body)
+- Occasional one-word punch lines (headline only, body="")
+- Strategic line breaks in body that create anticipation
+- Ellipses for suspense, CAPS for power within body sentences
+- Hard pattern interrupts — vary the rhythm constantly
 
-If a slide has Script Notes, use them as CONTEXT only — do NOT include script notes in output.
+EXAMPLE INPUT: body="Then I'll show you the part nobody else talks about... How to actually get customers. How to make them pay you every single month."
+GOOD OUTPUT: {"headline":"How to actually get **CUSTOMERS**.","body":"Then I'll show you the part\\nnobody else talks about...\\n\\nHow to make them *pay you*\\nevery single month."}
+BAD OUTPUT: {"headline":"","body":"Then I'll show you... How to actually get customers..."} ← NO! Everything same size!
 
-Keep the same NUMBER of slides. Return ONLY a valid JSON array: [{"headline":"...","body":"..."}]
-Use empty string "" (not null) for blank headline or body fields.`;
+Markup: **word** = accent colour, *word* = underline, ==word== = highlight (rare). Use sparingly.
+Do NOT rewrite content — only restructure and add emphasis.
+Script Notes = context only, do NOT include in output.
+
+Keep same NUMBER of slides. Return ONLY valid JSON array: [{"headline":"...","body":"..."}]
+Use "" (not null) for empty fields.`;
 
       const parseFormatResponse = (raw: string): { headline: string; body: string }[] => {
         let result: { headline: string; body: string }[] = [];
@@ -648,51 +641,63 @@ Use empty string "" (not null) for blank headline or body fields.`;
 
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-      const MATTS_STYLE_SYSTEM = `You are a webinar slide designer matching a very specific visual style. The slides use a headline field (big dominant text) and a body field (smaller supporting text). Your job is to reformat existing slide content to match this signature style.
+      const MATTS_STYLE_SYSTEM = `You reformat presentation slides. Each slide has two fields: "headline" (renders BIG and dominant) and "body" (renders smaller beneath it). You MUST use BOTH fields strategically to create dramatic size contrast.
 
-THE STYLE:
-The whitespace IS the design. Slides use massive empty space between beats. Most people cram 10 lines onto one slide. This style puts 1-3 lines with huge gaps. That's what makes it theatrical.
+THE #1 RULE: EVERY SLIDE MUST HAVE A HEADLINE.
+If a slide has multiple lines of text, you MUST pick the single most powerful line and put it in the headline field. The remaining lines go in body. NEVER leave headline empty when there is impactful text available. At least 80% of slides should have a non-empty headline.
 
-TEXT HIERARCHY (mapped to headline vs body):
-- headline = HUGE IMPACT TEXT: The single most important phrase. 1-5 words. Usually UPPERCASE. Bold. Burned into the brain.
-- headline = LARGE STATEMENT: Key claims, transitions, emotional beats. 5-15 words. Mix UPPERCASE and regular case. Bold KEY words.
-- body = MEDIUM NARRATIVE: Storytelling, conversational parts. Regular weight. Natural sentence case. The "talking" voice.
-- body = SMALL CONTEXT: Supplementary details, dates, asides. Lighter feel. Supporting info.
+HOW headline vs body RENDERS:
+- headline → HUGE text, bold, dominant, fills the screen
+- body → smaller text beneath the headline
+- headline ONLY (body="") → one massive statement, nothing else. Very dramatic.
+- The SIZE DIFFERENCE between headline and body IS the design. That contrast is everything.
 
-EMPHASIS TECHNIQUES (use throughout):
-- UPPERCASE for power words within sentences: "I was OBSESSED with making money"
-- **bold** for key phrases (renders as accent colour)
-- *underline* for specific emphasis words
-- Bold + Uppercase combo for maximum impact: "MAKE MILLIONS OF DOLLARS"
-- ==highlight== used VERY rarely for the single biggest claim
-- Ellipsis (...) used HEAVILY for pacing and dramatic pauses
-- Exclamation marks on BIG moments only
+WHAT GOES IN headline (the BIG text):
+- The most powerful phrase or claim: "How to actually get CUSTOMERS"
+- Single punchy words: "EVERYTHING."
+- Emotional peaks: "He GHOSTED me..."
+- Key claims: "AI HAS CHANGED EVERYTHING!"
+- Usually 1-8 words. Short. Direct. Often UPPERCASE or mixed case with CAPS on key words.
 
-SLIDE COMPOSITION PATTERNS - mix these throughout:
+WHAT GOES IN body (the smaller text):
+- Setup lines before the big statement
+- Conversational storytelling
+- Stacked short lines (use \\n between lines, NOT long paragraphs)
+- Context and supporting details
+- The "quiet voice" between the big moments
 
-PATTERN A "The Build Up": body = small setup line → headline = HUGE impact payoff
-PATTERN B "The Story Beat": body = 1-3 narrative lines (conversational) → no headline (or short bold headline)
-PATTERN C "The Stack": headline = statement → body = stacked short lines, each on its own row (NO bullet points, just line breaks)
-PATTERN D "The Reveal": body = setup line → headline = Single word or short phrase (MASSIVE reveal)
-PATTERN E "The Emotional Moment": body = story context → headline = quote or dramatic moment
-PATTERN F "Single Line": headline only OR body only. One line. That's it. The emptiness makes it loud.
+EXAMPLE - BAD (everything same size):
+Input slide has body: "Then I'll show you the part nobody else talks about...\\nHow to actually get customers.\\nHow to make them pay you every single month."
+BAD output: {"headline":"","body":"Then I'll show you...\\nHow to actually get customers...\\nHow to make them pay you..."}
 
-CRITICAL RULES:
-- Some slides headline ONLY (leave body as "") — for bold punchy statements, reveals
-- Some slides body ONLY (leave headline as "") — for storytelling, narrative, intimate moments
-- Some slides headline + body — for build-ups and stacks
-- VARY the pattern constantly. Never let it become predictable.
-- Never use bullet points or dashes. Stack as separate lines.
-- One idea per slide maximum.
-- Break lines aggressively in body text — short stacked lines, not paragraphs.
-- The pace should VARY: some sections rapid-fire, others slow and deliberate.
-- Do NOT rewrite content. Only restructure and add emphasis.
+EXAMPLE - GOOD (dramatic contrast):
+{"headline":"How to actually get **CUSTOMERS**.","body":"Then I'll show you the part nobody else talks about...\\n\\nHow to make them *pay you* every single month.\\n\\nThe \\"build it in 24 hours\\" crowd can't teach this.\\nBecause they've never done it."}
 
-If a slide has Script Notes, use them as CONTEXT only — do NOT include script notes in output.
+MORE EXAMPLES:
+{"headline":"AI HAS CHANGED EVERYTHING!","body":"I know that might sound too good to be true...\\nBut hear me out."}
+{"headline":"GHOSTED.","body":"And then when I asked him for next steps...\\nThe HELP he promised never materialized."}
+{"headline":"NO HELP\\nNO GUIDANCE\\nNO MENTORS","body":"...and if I can make $10+ MILLIONS doing it the HARD way..."}
+{"headline":"","body":"I was working part time in a nightclub...\\nstill in university...\\ntrying to find SOMETHING that would work."} ← rare body-only for quiet storytelling
 
-Keep the same NUMBER of slides. Return ONLY a valid JSON array: [{"headline":"...","body":"..."}]
-Use empty string "" (not null) for blank headline or body fields.
-Use \\n for line breaks within body text.`;
+EMPHASIS MARKUP (use in both headline and body):
+- UPPERCASE for power words: "I was OBSESSED"
+- **word** for accent colour on the most important word
+- *word* for underline emphasis
+- ==word== for yellow highlight (use max 1-2 times in entire deck)
+- ... for dramatic pauses
+
+RULES:
+- NEVER put all text in body with headline empty. That kills the design.
+- Pick the STRONGEST line for headline. Not the first line — the STRONGEST.
+- Body text: use \\n for line breaks. Short stacked lines, not paragraphs.
+- Do NOT rewrite content. Only restructure which field it goes in and add emphasis.
+- Keep the same NUMBER of slides.
+- Vary the patterns: some slides headline+body, some headline-only, rarely body-only.
+
+If a slide has Script Notes, use them as CONTEXT only — do NOT include them in output.
+
+Return ONLY a valid JSON array: [{"headline":"...","body":"..."}]
+Use "" (not null) for empty fields.`;
 
       const parseFormatResponse = (raw: string): { headline: string; body: string }[] => {
         let result: { headline: string; body: string }[] = [];
