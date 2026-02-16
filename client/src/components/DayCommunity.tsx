@@ -50,6 +50,7 @@ interface Comment {
     firstName: string | null;
     lastName: string | null;
     profileImageUrl: string | null;
+    isAdmin?: boolean;
   };
 }
 
@@ -410,6 +411,11 @@ function DiscussionSection({ day, isAdmin }: { day: number; isAdmin: boolean }) 
                       {comment.user?.firstName || "Anonymous"}
                       {comment.user?.lastName ? ` ${comment.user.lastName[0]}.` : ""}
                     </span>
+                    {comment.user?.isAdmin && (
+                      <span className="px-1.5 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded">
+                        Coach
+                      </span>
+                    )}
                     <span className="text-xs text-slate-500">
                       {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
                     </span>

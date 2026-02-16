@@ -18,6 +18,7 @@ interface NotificationData {
 const ICONS: Record<string, typeof Bell> = {
   comments: MessageSquare,
   questions: HelpCircle,
+  discussion: MessageSquare,
   showcase: Image,
   critiques: Video,
   flagged: Flag,

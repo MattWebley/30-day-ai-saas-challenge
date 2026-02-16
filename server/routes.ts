@@ -4018,12 +4018,22 @@ Just output the look & feel description, nothing else.`,
       const adminUser = await storage.getUser(req.user.claims.sub);
       if (!adminUser?.isAdmin) return res.status(403).json({ message: "Admin access required" });
 
-      const [pendingCommentsArr, pendingQuestionsArr, flaggedArr, pendingShowcaseArr, critiquesArr] = await Promise.all([
+      // Count approved non-admin comments from last 24 hours
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const [pendingCommentsArr, pendingQuestionsArr, flaggedArr, pendingShowcaseArr, critiquesArr, recentCommentsArr] = await Promise.all([
         storage.getPendingComments(),
         storage.getPendingQuestions(),
         storage.getFlaggedMessages(),
         storage.getPendingShowcase(),
         db.select({ id: critiqueRequests.id, status: critiqueRequests.status }).from(critiqueRequests),
+        db.select({ id: dayComments.id })
+          .from(dayComments)
+          .innerJoin(users, eq(dayComments.userId, users.id))
+          .where(and(
+            eq(dayComments.status, "approved"),
+            gte(dayComments.createdAt, oneDayAgo),
+            eq(users.isAdmin, false),
+          )),
       ]);
 
       const pendingComments = pendingCommentsArr.length;
@@ -4031,13 +4041,15 @@ Just output the look & feel description, nothing else.`,
       const flaggedMessages = flaggedArr.length;
       const pendingShowcase = pendingShowcaseArr.filter((s: any) => s.status === 'pending').length;
       const pendingCritiques = critiquesArr.filter((c: any) => c.status === 'pending' || c.status === 'in_progress').length;
-      const total = pendingComments + pendingQuestions + flaggedMessages + pendingShowcase + pendingCritiques;
+      const recentDiscussion = recentCommentsArr.length;
+      const total = pendingComments + pendingQuestions + flaggedMessages + pendingShowcase + pendingCritiques + recentDiscussion;
 
       res.json({
         total,
         items: [
           { key: 'comments', label: 'Pending comments', count: pendingComments, tab: 'content', section: 'admin-comments' },
           { key: 'questions', label: 'Unanswered questions', count: pendingQuestions, tab: 'content', section: 'admin-questions' },
+          { key: 'discussion', label: 'New discussion comments (24h)', count: recentDiscussion, tab: 'content', section: 'admin-comments' },
           { key: 'showcase', label: 'Pending showcase apps', count: pendingShowcase, tab: 'content', section: 'admin-showcase' },
           { key: 'critiques', label: 'Pending critique requests', count: pendingCritiques, tab: 'content', section: 'admin-critiques' },
           { key: 'flagged', label: 'Flagged chat messages', count: flaggedMessages, tab: 'settings', section: 'admin-flagged' },

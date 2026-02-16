@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useParams } from "wouter";
 import { Button } from "@/components/ui/button";
 import {
-  Play, ChevronLeft, ChevronRight, ArrowLeft, Loader2, Palette, Type, Check, Sparkles, Mic,
+  Play, ChevronLeft, ChevronRight, ArrowLeft, Loader2, Palette, Type, Check, Sparkles, Mic, Pencil,
 } from "lucide-react";
 import {
   getTheme, PRESENTATION_THEMES, type PresentationTheme,
@@ -98,9 +98,58 @@ function renderStyledText(text: string, accentColor?: string) {
 //   Headline only  → "statement" - massive, fills the screen
 //   Body only       → "narrative" - larger body, centered storytelling
 //   Both            → "standard" - headline + supporting body
-function SlideDisplay({ slide, theme, fonts, animKey }: {
+function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
   slide: SlideData; theme: PresentationTheme; fonts: FontSettings; animKey: string | number;
+  editable?: boolean;
+  onSave?: (slideId: number, field: 'headline' | 'body', value: string) => void;
 }) {
+  const [editingField, setEditingField] = useState<'headline' | 'body' | null>(null);
+  const [editValue, setEditValue] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Reset editing when slide changes
+  useEffect(() => { setEditingField(null); }, [slide.id]);
+
+  // Auto-focus and auto-resize textarea on edit start
+  useEffect(() => {
+    if (editingField && textareaRef.current) {
+      textareaRef.current.focus();
+      textareaRef.current.select();
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + 'px';
+    }
+  }, [editingField]);
+
+  const startEditing = (field: 'headline' | 'body') => {
+    if (!editable) return;
+    setEditingField(field);
+    setEditValue(field === 'headline' ? (slide.headline || '') : (slide.body || ''));
+  };
+
+  const cancelEditing = () => { setEditingField(null); setEditValue(''); };
+
+  const saveEditing = () => {
+    if (!editingField || !onSave) { setEditingField(null); return; }
+    const original = editingField === 'headline' ? (slide.headline || '') : (slide.body || '');
+    const trimmed = editValue.trim();
+    if (trimmed !== original) {
+      onSave(slide.id, editingField, trimmed);
+    }
+    setEditingField(null);
+    setEditValue('');
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') { e.stopPropagation(); cancelEditing(); }
+    else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); e.stopPropagation(); saveEditing(); }
+  };
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setEditValue(e.target.value);
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
+  };
+
   const hasHeadline = !!slide.headline;
   const hasBody = !!slide.body;
   const isStatement = hasHeadline && !hasBody;
@@ -113,6 +162,26 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
       ? { backgroundImage: theme.headlineGradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }
       : {};
 
+  const editableHoverClass = editable ? 'cursor-pointer rounded-lg px-3 -mx-3 hover:bg-white/[0.07] transition-colors' : '';
+
+  const headlineFontStyle: React.CSSProperties = {
+    fontFamily: `'${fonts.font}', sans-serif`,
+    fontSize: isStatement
+      ? (STATEMENT_SIZES[fonts.headlineSize] || STATEMENT_SIZES.lg)
+      : (HEADLINE_SIZES[fonts.headlineSize] || HEADLINE_SIZES.lg),
+    fontWeight: fonts.headlineWeight,
+    textTransform: fonts.headlineUppercase ? "uppercase" : undefined,
+    letterSpacing: fonts.headlineUppercase ? "0.05em" : undefined,
+  };
+
+  const bodyFontStyle: React.CSSProperties = {
+    fontFamily: `'${getBodyFont(fonts)}', sans-serif`,
+    fontSize: isNarrative
+      ? (NARRATIVE_SIZES[fonts.bodySize] || NARRATIVE_SIZES.lg)
+      : (BODY_SIZES[fonts.bodySize] || BODY_SIZES.lg),
+    fontWeight: isNarrative ? Math.max(fonts.bodyWeight, 400) : fonts.bodyWeight,
+  };
+
   return (
     <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative">
       {/* Ambient glow */}
@@ -124,39 +193,55 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
         )}
 
         {hasHeadline && (
-          <h2
-            className={`${hasCustomColor ? "" : theme.headlineColor} leading-[1.1] tracking-tight animate-slide-headline ${isStatement ? "mb-0" : "mb-6"}`}
-            style={{
-              fontFamily: `'${fonts.font}', sans-serif`,
-              fontSize: isStatement
-                ? (STATEMENT_SIZES[fonts.headlineSize] || STATEMENT_SIZES.lg)
-                : (HEADLINE_SIZES[fonts.headlineSize] || HEADLINE_SIZES.lg),
-              fontWeight: fonts.headlineWeight,
-              textTransform: fonts.headlineUppercase ? "uppercase" : undefined,
-              letterSpacing: fonts.headlineUppercase ? "0.05em" : undefined,
-              textShadow: theme.headlineShadow,
-              ...headlineStyle,
-            }}
-          >
-            {renderStyledText(slide.headline!, fonts.accentColor)}
-          </h2>
+          editingField === 'headline' ? (
+            <textarea
+              ref={textareaRef}
+              value={editValue}
+              onChange={handleTextareaChange}
+              onBlur={saveEditing}
+              onKeyDown={handleKeyDown}
+              className={`w-full bg-transparent border-2 border-dashed border-white/30 rounded-lg text-center resize-none outline-none leading-[1.1] tracking-tight p-2 ${isStatement ? 'mb-0' : 'mb-6'}`}
+              style={{ ...headlineFontStyle, color: fonts.headlineColor || '#ffffff' }}
+              rows={1}
+            />
+          ) : (
+            <h2
+              className={`${hasCustomColor ? "" : theme.headlineColor} leading-[1.1] tracking-tight animate-slide-headline ${isStatement ? "mb-0" : "mb-6"} ${editableHoverClass}`}
+              style={{ ...headlineFontStyle, textShadow: theme.headlineShadow, ...headlineStyle }}
+              onClick={() => startEditing('headline')}
+            >
+              {renderStyledText(slide.headline!, fonts.accentColor)}
+              {editable && <Pencil className="w-4 h-4 inline-block ml-3 opacity-0 group-hover:opacity-30 transition-opacity align-middle" />}
+            </h2>
+          )
         )}
 
         {hasBody && (
-          <p
-            className={`${fonts.bodyColor ? "" : (isNarrative ? theme.headlineColor : theme.bodyColor)} max-w-2xl mx-auto leading-relaxed animate-slide-body`}
-            style={{
-              fontFamily: `'${getBodyFont(fonts)}', sans-serif`,
-              fontSize: isNarrative
-                ? (NARRATIVE_SIZES[fonts.bodySize] || NARRATIVE_SIZES.lg)
-                : (BODY_SIZES[fonts.bodySize] || BODY_SIZES.lg),
-              fontWeight: isNarrative ? Math.max(fonts.bodyWeight, 400) : fonts.bodyWeight,
-              ...(fonts.bodyColor ? { color: fonts.bodyColor } : {}),
-              ...(isNarrative ? { animationDelay: "0s" } : {}),
-            }}
-          >
-            {renderStyledText(slide.body!, fonts.accentColor)}
-          </p>
+          editingField === 'body' ? (
+            <textarea
+              ref={textareaRef}
+              value={editValue}
+              onChange={handleTextareaChange}
+              onBlur={saveEditing}
+              onKeyDown={handleKeyDown}
+              className="w-full bg-transparent border-2 border-dashed border-white/30 rounded-lg text-center resize-none outline-none leading-relaxed p-2 max-w-2xl mx-auto"
+              style={{ ...bodyFontStyle, color: fonts.bodyColor || 'rgba(255,255,255,0.7)' }}
+              rows={2}
+            />
+          ) : (
+            <p
+              className={`${fonts.bodyColor ? "" : (isNarrative ? theme.headlineColor : theme.bodyColor)} max-w-2xl mx-auto leading-relaxed animate-slide-body ${editableHoverClass}`}
+              style={{
+                ...bodyFontStyle,
+                ...(fonts.bodyColor ? { color: fonts.bodyColor } : {}),
+                ...(isNarrative ? { animationDelay: "0s" } : {}),
+              }}
+              onClick={() => startEditing('body')}
+            >
+              {renderStyledText(slide.body!, fonts.accentColor)}
+              {editable && <Pencil className="w-3.5 h-3.5 inline-block ml-2 opacity-0 group-hover:opacity-30 transition-opacity align-middle" />}
+            </p>
+          )
         )}
       </div>
     </div>
@@ -685,7 +770,7 @@ export default function FunnelPreview() {
     return <AudioPreview data={data} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} />;
   }
 
-  return <ClickThroughPreview data={data} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} />;
+  return <ClickThroughPreview data={data} setData={setData} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} />;
 }
 
 // Teleprompter / Presenter mode
@@ -819,13 +904,14 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
 }
 
 // Click-through slideshow
-function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar }: {
+function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar, setData }: {
   data: PreviewData;
   allSlides: SlideData[];
   theme: PresentationTheme;
   themeKey: string;
   fonts: FontSettings;
   adminBar: (rightExtra?: React.ReactNode) => React.ReactNode;
+  setData: React.Dispatch<React.SetStateAction<PreviewData | null>>;
 }) {
   const [currentIdx, setCurrentIdx] = useState(0);
 
@@ -839,6 +925,7 @@ function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLInputElement) return;
       if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); goNext(); }
       else if (e.key === "ArrowLeft") { e.preventDefault(); goPrev(); }
     };
@@ -848,13 +935,36 @@ function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar
 
   const slide = allSlides[currentIdx];
 
+  const handleSlideTextSave = useCallback((slideId: number, field: 'headline' | 'body', value: string) => {
+    // Optimistic update
+    setData(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        timeline: prev.timeline.map(entry => ({
+          ...entry,
+          slides: entry.slides.map(s =>
+            s.id === slideId ? { ...s, [field]: value || null } : s
+          ),
+        })),
+      };
+    });
+    // Persist to API
+    fetch(`/api/admin/funnels/slides/${slideId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ [field]: value || null }),
+    }).catch(() => console.error('Failed to save slide text'));
+  }, [setData]);
+
   return (
     <div className={`min-h-screen ${theme.pageBg} flex flex-col transition-colors duration-300`}>
       <style>{slideAnimation}</style>
       {adminBar(<span className="text-sm text-slate-400">{currentIdx + 1} / {allSlides.length}</span>)}
 
-      <div className="flex-1 flex items-center justify-center py-12">
-        {slide && <SlideDisplay slide={slide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${slide.id}`} />}
+      <div className="flex-1 flex items-center justify-center py-12 group">
+        {slide && <SlideDisplay slide={slide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${slide.id}`} editable onSave={handleSlideTextSave} />}
       </div>
 
       <div className="px-4 pb-8">

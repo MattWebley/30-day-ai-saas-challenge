@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
 import {
   MessageSquare,
   Video,
@@ -28,6 +29,7 @@ import {
   Plus,
   BookOpen,
   Zap,
+  Reply,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -42,6 +44,7 @@ import type {
 
 export default function AdminContent() {
   const queryClient = useQueryClient();
+  const { user: authUser } = useAuth();
   const [critiqueTab, setCritiqueTab] = useState<"pending" | "completed">("pending");
   const [showAnswered, setShowAnswered] = useState(false);
   const [showAllComments, setShowAllComments] = useState(false);
@@ -51,6 +54,8 @@ export default function AdminContent() {
   const [refiningDraft, setRefiningDraft] = useState<Record<number, string | null>>({});
   const [editingAnswerId, setEditingAnswerId] = useState<number | null>(null);
   const [editingAnswerText, setEditingAnswerText] = useState("");
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [replyText, setReplyText] = useState("");
 
   // Data queries
   const { data: pendingComments = [] } = useQuery<PendingComment[]>({
@@ -267,6 +272,22 @@ export default function AdminContent() {
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to toggle featured");
+    },
+  });
+
+  const replyToComment = useMutation({
+    mutationFn: async ({ day, content }: { day: number; content: string }) => {
+      const res = await apiRequest("POST", "/api/comments", { day, content });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/comments"] });
+      setReplyingTo(null);
+      setReplyText("");
+      toast.success("Reply posted!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to post reply");
     },
   });
 
@@ -690,41 +711,96 @@ export default function AdminContent() {
             {showAllComments && (
               <div className="mt-3 max-h-[600px] overflow-y-auto">
                 <Card className="border border-slate-200 divide-y divide-slate-100">
-                  {approvedComments.map((comment) => (
-                    <div key={comment.id} className="p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-semibold text-slate-900 text-sm">
-                              {comment.user?.firstName || "Anonymous"} {comment.user?.lastName || ""}
-                            </span>
-                            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
-                              Day {comment.day}
-                            </span>
-                            <span className="text-xs text-slate-400">
-                              {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
-                            </span>
+                  {approvedComments.map((comment) => {
+                    const isAdminComment = comment.user?.id === (authUser as any)?.id;
+                    return (
+                      <div key={comment.id} className={`p-4 ${isAdminComment ? "bg-blue-50/40" : ""}`}>
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-slate-900 text-sm">
+                                {comment.user?.firstName || "Anonymous"} {comment.user?.lastName || ""}
+                              </span>
+                              {isAdminComment && (
+                                <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-xs font-semibold rounded">
+                                  You
+                                </span>
+                              )}
+                              <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-medium rounded-full">
+                                Day {comment.day}
+                              </span>
+                              <span className="text-xs text-slate-400">
+                                {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+                              </span>
+                            </div>
+                            <p className="text-slate-600 text-sm whitespace-pre-wrap break-words">
+                              {comment.content}
+                            </p>
                           </div>
-                          <p className="text-slate-600 text-sm whitespace-pre-wrap break-words">
-                            {comment.content}
-                          </p>
+                          <div className="flex gap-1 flex-shrink-0">
+                            {!isAdminComment && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="text-slate-500 hover:text-primary border-slate-200 gap-1"
+                                onClick={() => {
+                                  setReplyingTo(replyingTo === comment.id ? null : comment.id);
+                                  setReplyText("");
+                                }}
+                              >
+                                <Reply className="w-4 h-4" /> Reply
+                              </Button>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-slate-400 hover:text-red-600 border-slate-200"
+                              onClick={() => {
+                                if (confirm("Delete this comment permanently?")) {
+                                  deleteComment.mutate(comment.id);
+                                }
+                              }}
+                              disabled={deleteComment.isPending}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-slate-400 hover:text-red-600 border-slate-200 flex-shrink-0"
-                          onClick={() => {
-                            if (confirm("Delete this comment permanently?")) {
-                              deleteComment.mutate(comment.id);
-                            }
-                          }}
-                          disabled={deleteComment.isPending}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
+                        {replyingTo === comment.id && (
+                          <div className="mt-3 ml-4 pl-3 border-l-2 border-primary/30 space-y-2">
+                            <textarea
+                              className="w-full border border-slate-200 rounded-lg p-3 text-sm text-slate-700 resize-y min-h-[60px] focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                              placeholder={`Reply to ${comment.user?.firstName || "this comment"}...`}
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              autoFocus
+                            />
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => { setReplyingTo(null); setReplyText(""); }}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="gap-1.5"
+                                onClick={() => {
+                                  if (!replyText.trim()) { toast.error("Type a reply first"); return; }
+                                  replyToComment.mutate({ day: comment.day, content: replyText.trim() });
+                                }}
+                                disabled={replyToComment.isPending || !replyText.trim()}
+                              >
+                                <Send className="w-4 h-4" />
+                                {replyToComment.isPending ? "Posting..." : "Post Reply"}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </Card>
               </div>
             )}
