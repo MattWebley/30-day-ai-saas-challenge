@@ -14,11 +14,15 @@ import { addContactToSysteme } from "./systemeService";
 import { isAuthenticated } from "./replitAuth";
 import Anthropic from "@anthropic-ai/sdk";
 
-// Set up multer for slide image uploads
+// Set up multer for slide media uploads (images + videos)
 const uploadsDir = path.resolve("uploads/slides");
 fs.mkdirSync(uploadsDir, { recursive: true });
 
-const slideUpload = multer({
+const imageExts = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+const videoExts = [".mp4", ".webm"];
+const allMediaExts = [...imageExts, ...videoExts];
+
+const mediaUpload = multer({
   storage: multer.diskStorage({
     destination: (_req, _file, cb) => cb(null, uploadsDir),
     filename: (_req, file, cb) => {
@@ -26,14 +30,13 @@ const slideUpload = multer({
       cb(null, `slide_${Date.now()}_${crypto.randomBytes(4).toString("hex")}${ext}`);
     },
   }),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB (videos can be larger)
   fileFilter: (_req, file, cb) => {
-    const allowed = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
     const ext = path.extname(file.originalname).toLowerCase();
-    if (allowed.includes(ext)) {
+    if (allMediaExts.includes(ext)) {
       cb(null, true);
     } else {
-      cb(new Error("Only jpg, png, gif, and webp images are allowed"));
+      cb(new Error("Only jpg, png, gif, webp, mp4, and webm files are allowed"));
     }
   },
 });
@@ -51,14 +54,31 @@ async function requireAdmin(req: any, res: any, next: any) {
 export function registerFunnelRoutes(app: Express) {
 
   // ==========================================
-  // Image Upload
+  // Media Upload (images + videos)
   // ==========================================
 
-  app.post("/api/admin/funnels/upload-image", isAuthenticated, requireAdmin, (req: any, res: any) => {
-    slideUpload.single("image")(req, res, (err: any) => {
+  app.post("/api/admin/funnels/upload-media", isAuthenticated, requireAdmin, (req: any, res: any) => {
+    mediaUpload.single("file")(req, res, (err: any) => {
       if (err) {
         const msg = err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE"
-          ? "File too large (max 5MB)"
+          ? "File too large (max 50MB)"
+          : err.message || "Upload failed";
+        return res.status(400).json({ message: msg });
+      }
+      if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+      const ext = path.extname(req.file.filename).toLowerCase();
+      const type = videoExts.includes(ext) ? "video" : "image";
+      const url = `/uploads/slides/${req.file.filename}`;
+      res.json({ url, type });
+    });
+  });
+
+  // Keep old endpoint for backwards compatibility
+  app.post("/api/admin/funnels/upload-image", isAuthenticated, requireAdmin, (req: any, res: any) => {
+    mediaUpload.single("image")(req, res, (err: any) => {
+      if (err) {
+        const msg = err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE"
+          ? "File too large (max 50MB)"
           : err.message || "Upload failed";
         return res.status(400).json({ message: msg });
       }
@@ -1113,10 +1133,10 @@ Use "" (not null) for empty fields.`;
 
   app.post("/api/admin/funnels/slides", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const { variantId, sortOrder, headline, body, scriptNotes, imageUrl, startTimeMs } = req.body;
+      const { variantId, sortOrder, headline, body, scriptNotes, imageUrl, videoUrl, overlayStyle, startTimeMs } = req.body;
       if (!variantId) return res.status(400).json({ message: "variantId required" });
       const [slide] = await db.insert(funnelSlides).values({
-        variantId, sortOrder: sortOrder ?? 0, headline, body, scriptNotes, imageUrl, startTimeMs: startTimeMs ?? 0,
+        variantId, sortOrder: sortOrder ?? 0, headline, body, scriptNotes, imageUrl, videoUrl, overlayStyle, startTimeMs: startTimeMs ?? 0,
       }).returning();
       res.json(slide);
     } catch (e: any) {
@@ -1126,9 +1146,9 @@ Use "" (not null) for empty fields.`;
 
   app.put("/api/admin/funnels/slides/:id", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const { sortOrder, headline, body, scriptNotes, imageUrl, startTimeMs } = req.body;
+      const { sortOrder, headline, body, scriptNotes, imageUrl, videoUrl, overlayStyle, startTimeMs } = req.body;
       const [slide] = await db.update(funnelSlides)
-        .set({ sortOrder, headline, body, scriptNotes, imageUrl, startTimeMs })
+        .set({ sortOrder, headline, body, scriptNotes, imageUrl, videoUrl, overlayStyle, startTimeMs })
         .where(eq(funnelSlides.id, parseInt(req.params.id)))
         .returning();
       res.json(slide);

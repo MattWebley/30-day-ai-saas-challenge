@@ -997,6 +997,8 @@ export const funnelSlides = pgTable("funnel_slides", {
   body: text("body"),
   scriptNotes: text("script_notes"),
   imageUrl: text("image_url"),
+  videoUrl: text("video_url"),
+  overlayStyle: varchar("overlay_style").default("none"),
   startTimeMs: integer("start_time_ms").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => [

@@ -19,6 +19,8 @@ interface SlideData {
   body: string | null;
   scriptNotes: string | null;
   imageUrl: string | null;
+  videoUrl?: string | null;
+  overlayStyle?: string | null;
   startTimeMs: number;
 }
 
@@ -248,83 +250,138 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
     fontWeight: isNarrative ? Math.max(fonts.bodyWeight, 400) : fonts.bodyWeight,
   };
 
+  const hasMedia = !!(slide.imageUrl || slide.videoUrl);
+  const overlay = slide.overlayStyle || "none";
+  const useOverlay = hasMedia && overlay !== "none";
+
+  // Text content block (reused in both stacked and overlay modes)
+  const headlineEl = hasHeadline && (
+    editingField === 'headline' ? (
+      <textarea
+        ref={textareaRef}
+        value={editValue}
+        onChange={handleTextareaChange}
+        onBlur={saveEditing}
+        onKeyDown={handleKeyDown}
+        className={`w-full bg-transparent border-2 border-dashed border-white/30 rounded-lg text-center resize-none outline-none leading-[1.1] tracking-tight p-2 ${isStatement ? 'mb-0' : 'mb-6'}`}
+        style={{ ...headlineFontStyle, color: fonts.headlineColor || '#ffffff' }}
+        rows={1}
+      />
+    ) : (
+      <h2
+        className={`${hasCustomColor ? "" : theme.headlineColor} leading-[1.1] tracking-tight animate-slide-headline ${isStatement ? "mb-0" : "mb-6"} ${editableHoverClass}`}
+        style={{ ...headlineFontStyle, textShadow: useOverlay ? "0 2px 8px rgba(0,0,0,0.5)" : theme.headlineShadow, ...headlineStyle }}
+        onClick={() => startEditing('headline')}
+      >
+        {renderStyledText(slide.headline!, fonts.accentColor)}
+        {editable && <Pencil className="w-4 h-4 inline-block ml-3 opacity-0 group-hover:opacity-30 transition-opacity align-middle" />}
+      </h2>
+    )
+  );
+
+  const bodyEl = hasBody && (
+    editingField === 'body' ? (
+      <textarea
+        ref={textareaRef}
+        value={editValue}
+        onChange={handleTextareaChange}
+        onBlur={saveEditing}
+        onKeyDown={handleKeyDown}
+        className="w-full bg-transparent border-2 border-dashed border-white/30 rounded-lg text-center resize-none outline-none leading-relaxed p-2 max-w-2xl mx-auto"
+        style={{ ...bodyFontStyle, color: fonts.bodyColor || 'rgba(255,255,255,0.7)' }}
+        rows={2}
+      />
+    ) : (() => {
+      const sizedContent = renderSizedBody(slide.body!, fonts, theme, fonts.accentColor);
+      if (sizedContent) {
+        return (
+          <div className={`max-w-3xl mx-auto animate-slide-body ${editableHoverClass}`} onClick={() => startEditing('body')}>
+            {sizedContent}
+            {editable && <Pencil className="w-3.5 h-3.5 inline-block ml-2 opacity-0 group-hover:opacity-30 transition-opacity align-middle" />}
+          </div>
+        );
+      }
+      return (
+        <p
+          className={`${fonts.bodyColor ? "" : (isNarrative ? theme.headlineColor : theme.bodyColor)} max-w-2xl mx-auto leading-relaxed animate-slide-body ${editableHoverClass}`}
+          style={{ ...bodyFontStyle, ...(fonts.bodyColor ? { color: fonts.bodyColor } : {}), ...(isNarrative ? { animationDelay: "0s" } : {}) }}
+          onClick={() => startEditing('body')}
+        >
+          {renderStyledText(slide.body!, fonts.accentColor)}
+          {editable && <Pencil className="w-3.5 h-3.5 inline-block ml-2 opacity-0 group-hover:opacity-30 transition-opacity align-middle" />}
+        </p>
+      );
+    })()
+  );
+
+  // Media background element (used in overlay mode)
+  const mediaBg = hasMedia && (
+    <>
+      {slide.videoUrl ? (
+        <video src={slide.videoUrl} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline />
+      ) : (
+        <img src={slide.imageUrl!} alt="" className="absolute inset-0 w-full h-full object-cover" />
+      )}
+    </>
+  );
+
+  // OVERLAY MODE — media fills background, text floats on top
+  if (useOverlay) {
+    const overlayClasses: Record<string, string> = {
+      banner: "absolute inset-x-0 bottom-0 pt-24 pb-8 px-8 text-left",
+      center: "absolute inset-0 flex items-center justify-center p-8",
+      "lower-third": "absolute inset-x-0 bottom-0 pb-0",
+      full: "absolute inset-0 flex items-center justify-center p-8",
+    };
+
+    const overlayBgStyles: Record<string, React.CSSProperties> = {
+      banner: { background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)" },
+      center: {},
+      "lower-third": {},
+      full: { background: "rgba(0,0,0,0.5)" },
+    };
+
+    return (
+      <div key={animKey} className="w-full h-full relative overflow-hidden">
+        {mediaBg}
+        {/* Overlay layer */}
+        <div className={overlayClasses[overlay] || overlayClasses.full} style={overlayBgStyles[overlay] || {}}>
+          {overlay === "center" ? (
+            <div className="bg-black/60 rounded-2xl px-10 py-8 max-w-2xl text-center backdrop-blur-sm">
+              {headlineEl}
+              {bodyEl}
+            </div>
+          ) : overlay === "lower-third" ? (
+            <div className="bg-black/75 px-8 py-5 text-left">
+              {headlineEl}
+              {bodyEl}
+            </div>
+          ) : (
+            <div className="max-w-3xl">
+              {headlineEl}
+              {bodyEl}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // STACKED MODE (default) — media above text, no overlay
   return (
     <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative">
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: theme.ambientGlow }} />
 
       <div className="relative z-10">
-        {slide.imageUrl && (
+        {slide.imageUrl && !slide.videoUrl && (
           <img src={slide.imageUrl} alt="" className="max-w-full max-h-[40vh] object-contain mb-8 rounded-lg animate-slide-fade" />
         )}
-
-        {hasHeadline && (
-          editingField === 'headline' ? (
-            <textarea
-              ref={textareaRef}
-              value={editValue}
-              onChange={handleTextareaChange}
-              onBlur={saveEditing}
-              onKeyDown={handleKeyDown}
-              className={`w-full bg-transparent border-2 border-dashed border-white/30 rounded-lg text-center resize-none outline-none leading-[1.1] tracking-tight p-2 ${isStatement ? 'mb-0' : 'mb-6'}`}
-              style={{ ...headlineFontStyle, color: fonts.headlineColor || '#ffffff' }}
-              rows={1}
-            />
-          ) : (
-            <h2
-              className={`${hasCustomColor ? "" : theme.headlineColor} leading-[1.1] tracking-tight animate-slide-headline ${isStatement ? "mb-0" : "mb-6"} ${editableHoverClass}`}
-              style={{ ...headlineFontStyle, textShadow: theme.headlineShadow, ...headlineStyle }}
-              onClick={() => startEditing('headline')}
-            >
-              {renderStyledText(slide.headline!, fonts.accentColor)}
-              {editable && <Pencil className="w-4 h-4 inline-block ml-3 opacity-0 group-hover:opacity-30 transition-opacity align-middle" />}
-            </h2>
-          )
+        {slide.videoUrl && (
+          <video src={slide.videoUrl} className="max-w-full max-h-[40vh] object-contain mb-8 rounded-lg animate-slide-fade" autoPlay muted loop playsInline />
         )}
-
-        {hasBody && (
-          editingField === 'body' ? (
-            <textarea
-              ref={textareaRef}
-              value={editValue}
-              onChange={handleTextareaChange}
-              onBlur={saveEditing}
-              onKeyDown={handleKeyDown}
-              className="w-full bg-transparent border-2 border-dashed border-white/30 rounded-lg text-center resize-none outline-none leading-relaxed p-2 max-w-2xl mx-auto"
-              style={{ ...bodyFontStyle, color: fonts.bodyColor || 'rgba(255,255,255,0.7)' }}
-              rows={2}
-            />
-          ) : (() => {
-            const sizedContent = renderSizedBody(slide.body!, fonts, theme, fonts.accentColor);
-            if (sizedContent) {
-              // Multi-size rendering (has ### / ## / > prefixes)
-              return (
-                <div
-                  className={`max-w-3xl mx-auto animate-slide-body ${editableHoverClass}`}
-                  onClick={() => startEditing('body')}
-                >
-                  {sizedContent}
-                  {editable && <Pencil className="w-3.5 h-3.5 inline-block ml-2 opacity-0 group-hover:opacity-30 transition-opacity align-middle" />}
-                </div>
-              );
-            }
-            // Default single-size rendering
-            return (
-              <p
-                className={`${fonts.bodyColor ? "" : (isNarrative ? theme.headlineColor : theme.bodyColor)} max-w-2xl mx-auto leading-relaxed animate-slide-body ${editableHoverClass}`}
-                style={{
-                  ...bodyFontStyle,
-                  ...(fonts.bodyColor ? { color: fonts.bodyColor } : {}),
-                  ...(isNarrative ? { animationDelay: "0s" } : {}),
-                }}
-                onClick={() => startEditing('body')}
-              >
-                {renderStyledText(slide.body!, fonts.accentColor)}
-                {editable && <Pencil className="w-3.5 h-3.5 inline-block ml-2 opacity-0 group-hover:opacity-30 transition-opacity align-middle" />}
-              </p>
-            );
-          })()
-        )}
+        {headlineEl}
+        {bodyEl}
       </div>
     </div>
   );

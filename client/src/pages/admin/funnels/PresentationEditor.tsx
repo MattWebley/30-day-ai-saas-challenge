@@ -10,18 +10,18 @@ import {
   Plus, Trash2, Save, ChevronDown, ChevronUp,
   GripVertical, Music, Video, Image, Timer,
   Wand2, Eye, Pencil, Loader2, ExternalLink, Presentation, AlignLeft,
-  Mic, Sparkles, Upload, X,
+  Mic, Sparkles, Upload, X, Film, Layers,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { FunnelPresentation, FunnelModule, FunnelModuleVariant, FunnelSlide } from "./funnelTypes";
 import { PRESENTATION_THEMES, getTheme } from "@/lib/presentationThemes";
 import SyncTool from "./SyncTool";
 
-// Upload an image file and return the URL
-async function uploadSlideImage(file: File): Promise<string> {
+// Upload a media file (image or video) and return the URL + type
+async function uploadSlideMedia(file: File): Promise<{ url: string; type: "image" | "video" }> {
   const formData = new FormData();
-  formData.append("image", file);
-  const res = await fetch("/api/admin/funnels/upload-image", {
+  formData.append("file", file);
+  const res = await fetch("/api/admin/funnels/upload-media", {
     method: "POST",
     body: formData,
     credentials: "include",
@@ -30,32 +30,49 @@ async function uploadSlideImage(file: File): Promise<string> {
     const err = await res.json().catch(() => ({ message: "Upload failed" }));
     throw new Error(err.message || "Upload failed");
   }
-  const data = await res.json();
-  return data.url;
+  return res.json();
 }
 
-// Reusable drop zone for slide images
-function SlideImageDropZone({ imageUrl, onUploaded, onRemove }: {
+// Overlay style options
+const OVERLAY_STYLES = [
+  { value: "none", label: "No Overlay", desc: "Stacked layout (default)" },
+  { value: "banner", label: "Banner", desc: "Dark gradient at bottom" },
+  { value: "center", label: "Center", desc: "Dark box behind centered text" },
+  { value: "lower-third", label: "Lower Third", desc: "TV news-style bar" },
+  { value: "full", label: "Full", desc: "Full dark overlay" },
+] as const;
+
+// Reusable drop zone for slide media (images + videos)
+function SlideMediaDropZone({ imageUrl, videoUrl, overlayStyle, onUploaded, onRemove, onOverlayChange }: {
   imageUrl: string | null;
-  onUploaded: (url: string) => void;
+  videoUrl: string | null;
+  overlayStyle: string | null;
+  onUploaded: (url: string, type: "image" | "video") => void;
   onRemove: () => void;
+  onOverlayChange: (style: string) => void;
 }) {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   const handleFile = useCallback(async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      toast.error("Only image files are allowed");
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+    if (!isImage && !isVideo) {
+      toast.error("Only image and video files are allowed");
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
+    if (isImage && file.size > 5 * 1024 * 1024) {
       toast.error("Image must be under 5MB");
+      return;
+    }
+    if (isVideo && file.size > 50 * 1024 * 1024) {
+      toast.error("Video must be under 50MB");
       return;
     }
     setUploading(true);
     try {
-      const url = await uploadSlideImage(file);
-      onUploaded(url);
+      const result = await uploadSlideMedia(file);
+      onUploaded(result.url, result.type);
     } catch (e: any) {
       toast.error(e.message || "Upload failed");
     } finally {
@@ -63,49 +80,80 @@ function SlideImageDropZone({ imageUrl, onUploaded, onRemove }: {
     }
   }, [onUploaded]);
 
-  if (imageUrl) {
-    return (
-      <div className="relative group mt-1.5">
-        <img src={imageUrl} alt="" className="w-full max-h-32 object-contain rounded border border-slate-200 bg-slate-50" />
-        <button
-          onClick={(e) => { e.stopPropagation(); onRemove(); }}
-          className="absolute top-1 right-1 p-0.5 bg-white/90 rounded-full shadow text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-          title="Remove image"
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
-      </div>
-    );
-  }
+  const hasMedia = !!(imageUrl || videoUrl);
 
   return (
-    <div
-      className={`mt-1.5 border-2 border-dashed rounded-lg p-2 text-center cursor-pointer transition-colors ${
-        dragging ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300"
-      }`}
-      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-      onDragLeave={() => setDragging(false)}
-      onDrop={(e) => {
-        e.preventDefault();
-        setDragging(false);
-        const file = e.dataTransfer.files[0];
-        if (file) handleFile(file);
-      }}
-      onClick={() => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "image/*";
-        input.onchange = () => { if (input.files?.[0]) handleFile(input.files[0]); };
-        input.click();
-      }}
-    >
-      {uploading ? (
-        <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 py-1">
-          <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...
+    <div className="mt-1.5">
+      {hasMedia ? (
+        <div className="space-y-1.5">
+          <div className="relative group">
+            {videoUrl ? (
+              <div className="relative w-full h-24 rounded border border-slate-200 bg-slate-900 flex items-center justify-center overflow-hidden">
+                <video src={videoUrl} className="w-full h-full object-cover opacity-60" muted />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Film className="w-6 h-6 text-white/80" />
+                </div>
+              </div>
+            ) : (
+              <img src={imageUrl!} alt="" className="w-full max-h-32 object-contain rounded border border-slate-200 bg-slate-50" />
+            )}
+            <button
+              onClick={(e) => { e.stopPropagation(); onRemove(); }}
+              className="absolute top-1 right-1 p-0.5 bg-white/90 rounded-full shadow text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+              title="Remove media"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          {/* Overlay style selector — only shown when media is present */}
+          <div className="flex items-center gap-1 flex-wrap">
+            <Layers className="w-3 h-3 text-slate-400 flex-shrink-0" />
+            {OVERLAY_STYLES.map((s) => (
+              <button
+                key={s.value}
+                onClick={() => onOverlayChange(s.value)}
+                className={`text-xs px-1.5 py-0.5 rounded border transition-colors ${
+                  (overlayStyle || "none") === s.value
+                    ? "border-primary bg-primary/10 text-primary font-medium"
+                    : "border-slate-200 text-slate-500 hover:border-slate-300"
+                }`}
+                title={s.desc}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
         </div>
       ) : (
-        <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 py-1">
-          <Upload className="w-3.5 h-3.5" /> Drop image or click
+        <div
+          className={`border-2 border-dashed rounded-lg p-2 text-center cursor-pointer transition-colors ${
+            dragging ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300"
+          }`}
+          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            setDragging(false);
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+          }}
+          onClick={() => {
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = "image/*,video/mp4,video/webm";
+            input.onchange = () => { if (input.files?.[0]) handleFile(input.files[0]); };
+            input.click();
+          }}
+        >
+          {uploading ? (
+            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 py-1">
+              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...
+            </div>
+          ) : (
+            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 py-1">
+              <Upload className="w-3.5 h-3.5" /> Drop image/video or click
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -549,10 +597,19 @@ export default function PresentationEditor({ presentationId }: Props) {
                             {slide.scriptNotes && (
                               <p className="text-xs text-amber-600 mt-1 line-clamp-1">Script: {slide.scriptNotes}</p>
                             )}
-                            <SlideImageDropZone
+                            <SlideMediaDropZone
                               imageUrl={slide.imageUrl}
-                              onUploaded={(url) => updateSlide.mutate({ id: slide.id, imageUrl: url })}
-                              onRemove={() => updateSlide.mutate({ id: slide.id, imageUrl: "" })}
+                              videoUrl={slide.videoUrl}
+                              overlayStyle={slide.overlayStyle}
+                              onUploaded={(url, type) => {
+                                if (type === "video") {
+                                  updateSlide.mutate({ id: slide.id, videoUrl: url, imageUrl: "" });
+                                } else {
+                                  updateSlide.mutate({ id: slide.id, imageUrl: url, videoUrl: "" });
+                                }
+                              }}
+                              onRemove={() => updateSlide.mutate({ id: slide.id, imageUrl: "", videoUrl: "" })}
+                              onOverlayChange={(style) => updateSlide.mutate({ id: slide.id, overlayStyle: style })}
                             />
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">
@@ -694,6 +751,8 @@ function InlineSlideEditor({ slide, onSave, onCancel }: {
   const [body, setBody] = useState(slide.body || "");
   const [scriptNotes, setScriptNotes] = useState(slide.scriptNotes || "");
   const [imageUrl, setImageUrl] = useState(slide.imageUrl || "");
+  const [videoUrl, setVideoUrl] = useState(slide.videoUrl || "");
+  const [overlayStyle, setOverlayStyle] = useState(slide.overlayStyle || "none");
 
   return (
     <div className="space-y-2">
@@ -716,15 +775,21 @@ function InlineSlideEditor({ slide, onSave, onCancel }: {
         />
       </div>
       <div>
-        <Label className="text-slate-700">Image</Label>
-        <SlideImageDropZone
+        <Label className="text-slate-700">Media</Label>
+        <SlideMediaDropZone
           imageUrl={imageUrl || null}
-          onUploaded={(url) => setImageUrl(url)}
-          onRemove={() => setImageUrl("")}
+          videoUrl={videoUrl || null}
+          overlayStyle={overlayStyle}
+          onUploaded={(url, type) => {
+            if (type === "video") { setVideoUrl(url); setImageUrl(""); }
+            else { setImageUrl(url); setVideoUrl(""); }
+          }}
+          onRemove={() => { setImageUrl(""); setVideoUrl(""); }}
+          onOverlayChange={setOverlayStyle}
         />
       </div>
       <div className="flex gap-2">
-        <Button size="sm" onClick={() => onSave({ headline, body, scriptNotes, imageUrl: imageUrl || null })}>
+        <Button size="sm" onClick={() => onSave({ headline, body, scriptNotes, imageUrl: imageUrl || null, videoUrl: videoUrl || null, overlayStyle })}>
           <Save className="w-3 h-3 mr-0.5" /> Save
         </Button>
         <Button size="sm" variant="ghost" onClick={onCancel}>Cancel</Button>
@@ -1104,7 +1169,7 @@ function SlideManager({ variantId, slides, presentationId }: {
 }) {
   const queryClient = useQueryClient();
   const [showNew, setShowNew] = useState(false);
-  const [newSlide, setNewSlide] = useState({ headline: "", body: "", imageUrl: "", startTimeMs: 0 });
+  const [newSlide, setNewSlide] = useState({ headline: "", body: "", imageUrl: "", videoUrl: "", overlayStyle: "none", startTimeMs: 0 });
   const [editingSlide, setEditingSlide] = useState<number | null>(null);
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/presentations/${presentationId}/full`] });
@@ -1120,7 +1185,7 @@ function SlideManager({ variantId, slides, presentationId }: {
     onSuccess: () => {
       invalidate();
       setShowNew(false);
-      setNewSlide({ headline: "", body: "", imageUrl: "", startTimeMs: 0 });
+      setNewSlide({ headline: "", body: "", imageUrl: "", videoUrl: "", overlayStyle: "none", startTimeMs: 0 });
       toast.success("Slide added");
     },
   });
@@ -1242,11 +1307,17 @@ function SlideEditor({ slide, onSave }: { slide: FunnelSlide; onSave: (data: Par
         <Textarea value={merged.scriptNotes || ""} onChange={(e) => setEdits({ ...edits, scriptNotes: e.target.value })} rows={2} placeholder="What you'll say during this slide..." className="bg-amber-50/50 border-amber-200" />
       </div>
       <div>
-        <Label className="text-slate-700 text-xs">Image</Label>
-        <SlideImageDropZone
+        <Label className="text-slate-700 text-xs">Media</Label>
+        <SlideMediaDropZone
           imageUrl={merged.imageUrl || null}
-          onUploaded={(url) => setEdits({ ...edits, imageUrl: url })}
-          onRemove={() => setEdits({ ...edits, imageUrl: "" })}
+          videoUrl={merged.videoUrl || null}
+          overlayStyle={merged.overlayStyle || "none"}
+          onUploaded={(url, type) => {
+            if (type === "video") setEdits({ ...edits, videoUrl: url, imageUrl: "" });
+            else setEdits({ ...edits, imageUrl: url, videoUrl: "" });
+          }}
+          onRemove={() => setEdits({ ...edits, imageUrl: "", videoUrl: "" })}
+          onOverlayChange={(style) => setEdits({ ...edits, overlayStyle: style })}
         />
       </div>
       <div>

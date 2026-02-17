@@ -76,6 +76,8 @@ export interface FunnelSlide {
   body: string | null;
   scriptNotes: string | null;
   imageUrl: string | null;
+  videoUrl: string | null;
+  overlayStyle: string | null;
   startTimeMs: number;
   createdAt: string;
 }

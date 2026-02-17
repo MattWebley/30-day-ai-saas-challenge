@@ -13,6 +13,8 @@ interface SlideData {
   headline: string | null;
   body: string | null;
   imageUrl: string | null;
+  videoUrl?: string | null;
+  overlayStyle?: string | null;
   startTimeMs: number;
 }
 
@@ -133,56 +135,117 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
       ? { backgroundImage: theme.headlineGradient, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }
       : {};
 
+  const hasMedia = !!(slide.imageUrl || slide.videoUrl);
+  const overlay = slide.overlayStyle || "none";
+  const useOverlay = hasMedia && overlay !== "none";
+
+  const headlineEl = hasHeadline && (
+    <h2
+      className={`${hasCustomColor ? "" : theme.headlineColor} leading-[1.1] tracking-tight animate-slide-headline ${isStatement ? "mb-0" : "mb-4"}`}
+      style={{
+        fontFamily: `'${fonts.font}', sans-serif`,
+        fontSize: isStatement
+          ? (STATEMENT_SIZES[fonts.headlineSize] || STATEMENT_SIZES.lg)
+          : (HEADLINE_SIZES[fonts.headlineSize] || HEADLINE_SIZES.lg),
+        fontWeight: fonts.headlineWeight,
+        textTransform: fonts.headlineUppercase ? "uppercase" : undefined,
+        letterSpacing: fonts.headlineUppercase ? "0.05em" : undefined,
+        textShadow: useOverlay ? "0 2px 8px rgba(0,0,0,0.5)" : theme.headlineShadow,
+        ...headlineStyle,
+      }}
+    >
+      {renderStyledText(slide.headline!, fonts.accentColor)}
+    </h2>
+  );
+
+  const bodyEl = hasBody && (() => {
+    const sizedContent = renderSizedBody(slide.body!, fonts, theme, fonts.accentColor);
+    if (sizedContent) {
+      return <div className="max-w-3xl mx-auto animate-slide-body">{sizedContent}</div>;
+    }
+    return (
+      <p
+        className={`${fonts.bodyColor ? "" : (isNarrative ? theme.headlineColor : theme.bodyColor)} max-w-2xl mx-auto leading-relaxed animate-slide-body`}
+        style={{
+          fontFamily: `'${getBodyFont(fonts)}', sans-serif`,
+          fontSize: isNarrative
+            ? (NARRATIVE_SIZES[fonts.bodySize] || NARRATIVE_SIZES.lg)
+            : (BODY_SIZES[fonts.bodySize] || BODY_SIZES.lg),
+          fontWeight: isNarrative ? Math.max(fonts.bodyWeight, 400) : fonts.bodyWeight,
+          ...(fonts.bodyColor ? { color: fonts.bodyColor } : {}),
+          ...(isNarrative ? { animationDelay: "0s" } : {}),
+        }}
+      >
+        {renderStyledText(slide.body!, fonts.accentColor)}
+      </p>
+    );
+  })();
+
+  const mediaBg = hasMedia && (
+    <>
+      {slide.videoUrl ? (
+        <video src={slide.videoUrl} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline />
+      ) : (
+        <img src={slide.imageUrl!} alt="" className="absolute inset-0 w-full h-full object-cover" />
+      )}
+    </>
+  );
+
+  // OVERLAY MODE — media fills background, text floats on top
+  if (useOverlay) {
+    const overlayClasses: Record<string, string> = {
+      banner: "absolute inset-x-0 bottom-0 pt-24 pb-8 px-8 text-left",
+      center: "absolute inset-0 flex items-center justify-center p-6",
+      "lower-third": "absolute inset-x-0 bottom-0 pb-0",
+      full: "absolute inset-0 flex items-center justify-center p-6",
+    };
+
+    const overlayBgStyles: Record<string, React.CSSProperties> = {
+      banner: { background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)" },
+      center: {},
+      "lower-third": {},
+      full: { background: "rgba(0,0,0,0.5)" },
+    };
+
+    return (
+      <div key={animKey} className="w-full h-full relative overflow-hidden">
+        {mediaBg}
+        <div className={overlayClasses[overlay] || overlayClasses.full} style={overlayBgStyles[overlay] || {}}>
+          {overlay === "center" ? (
+            <div className="bg-black/60 rounded-2xl px-8 py-6 max-w-2xl text-center backdrop-blur-sm">
+              {headlineEl}
+              {bodyEl}
+            </div>
+          ) : overlay === "lower-third" ? (
+            <div className="bg-black/75 px-8 py-4 text-left">
+              {headlineEl}
+              {bodyEl}
+            </div>
+          ) : (
+            <div className="max-w-3xl">
+              {headlineEl}
+              {bodyEl}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // STACKED MODE (default) — media above text, no overlay
   return (
     <div key={animKey} className="w-full h-full flex flex-col items-center justify-center text-center px-6 sm:px-10 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" style={{ background: theme.ambientGlow }} />
 
       <div className="relative z-10 max-w-3xl mx-auto">
-        {slide.imageUrl && (
+        {slide.imageUrl && !slide.videoUrl && (
           <img src={slide.imageUrl} alt="" className="max-w-full max-h-[35vh] object-contain mb-6 rounded-lg mx-auto animate-slide-fade" />
         )}
-
-        {hasHeadline && (
-          <h2
-            className={`${hasCustomColor ? "" : theme.headlineColor} leading-[1.1] tracking-tight animate-slide-headline ${isStatement ? "mb-0" : "mb-4"}`}
-            style={{
-              fontFamily: `'${fonts.font}', sans-serif`,
-              fontSize: isStatement
-                ? (STATEMENT_SIZES[fonts.headlineSize] || STATEMENT_SIZES.lg)
-                : (HEADLINE_SIZES[fonts.headlineSize] || HEADLINE_SIZES.lg),
-              fontWeight: fonts.headlineWeight,
-              textTransform: fonts.headlineUppercase ? "uppercase" : undefined,
-              letterSpacing: fonts.headlineUppercase ? "0.05em" : undefined,
-              textShadow: theme.headlineShadow,
-              ...headlineStyle,
-            }}
-          >
-            {renderStyledText(slide.headline!, fonts.accentColor)}
-          </h2>
+        {slide.videoUrl && (
+          <video src={slide.videoUrl} className="max-w-full max-h-[35vh] object-contain mb-6 rounded-lg mx-auto animate-slide-fade" autoPlay muted loop playsInline />
         )}
-
-        {hasBody && (() => {
-          const sizedContent = renderSizedBody(slide.body!, fonts, theme, fonts.accentColor);
-          if (sizedContent) {
-            return <div className="max-w-3xl mx-auto animate-slide-body">{sizedContent}</div>;
-          }
-          return (
-            <p
-              className={`${fonts.bodyColor ? "" : (isNarrative ? theme.headlineColor : theme.bodyColor)} max-w-2xl mx-auto leading-relaxed animate-slide-body`}
-              style={{
-                fontFamily: `'${getBodyFont(fonts)}', sans-serif`,
-                fontSize: isNarrative
-                  ? (NARRATIVE_SIZES[fonts.bodySize] || NARRATIVE_SIZES.lg)
-                  : (BODY_SIZES[fonts.bodySize] || BODY_SIZES.lg),
-                fontWeight: isNarrative ? Math.max(fonts.bodyWeight, 400) : fonts.bodyWeight,
-                ...(fonts.bodyColor ? { color: fonts.bodyColor } : {}),
-                ...(isNarrative ? { animationDelay: "0s" } : {}),
-              }}
-            >
-              {renderStyledText(slide.body!, fonts.accentColor)}
-            </p>
-          );
-        })()}
+        {headlineEl}
+        {bodyEl}
       </div>
     </div>
   );
