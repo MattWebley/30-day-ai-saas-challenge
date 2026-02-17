@@ -150,7 +150,32 @@ export default function PresentationEditor({ presentationId }: Props) {
     },
   });
 
-  // Add a slide manually
+  // Quick-add slide at a specific position
+  const [quickAddAfter, setQuickAddAfter] = useState<number | null>(null); // index to insert after (-1 = beginning)
+  const [quickAddText, setQuickAddText] = useState("");
+
+  const quickAddSlide = useMutation({
+    mutationFn: async ({ body, afterIndex }: { body: string; afterIndex: number }) => {
+      if (!firstVariantId) throw new Error("No variant exists");
+      const insertAt = afterIndex + 1;
+      // Bump sort orders of slides after the insert point
+      for (let i = allSlides.length - 1; i >= insertAt; i--) {
+        await apiRequest("PUT", `/api/admin/funnels/slides/${allSlides[i].id}`, { sortOrder: i + 1 });
+      }
+      const res = await apiRequest("POST", "/api/admin/funnels/slides", {
+        variantId: firstVariantId, sortOrder: insertAt, headline: "", body, scriptNotes: "", startTimeMs: 0,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidate();
+      setQuickAddAfter(null);
+      setQuickAddText("");
+      toast.success("Slide added");
+    },
+  });
+
+  // Add a slide manually (at end)
   const [newSlide, setNewSlide] = useState({ headline: "", body: "", scriptNotes: "" });
   const addSlide = useMutation({
     mutationFn: async () => {
@@ -344,52 +369,125 @@ export default function PresentationEditor({ presentationId }: Props) {
           )}
         </div>
 
-        {/* Slide List */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-3">
-            <h4 className="font-bold text-slate-900">{allSlides.length} Slide{allSlides.length !== 1 ? "s" : ""}</h4>
-          </div>
-          <div className="space-y-2">
-            {allSlides.map((slide, idx) => (
-              <div key={slide.id} className="p-3 rounded-lg border border-slate-200 bg-white">
-                {editingSlideId === slide.id ? (
-                  <InlineSlideEditor
-                    slide={slide}
-                    onSave={(data) => updateSlide.mutate({ id: slide.id, ...data })}
-                    onCancel={() => setEditingSlideId(null)}
-                  />
-                ) : (
-                  <div className="flex items-start gap-3">
-                    <span className="text-sm font-bold text-slate-400 w-6 pt-0.5 text-center flex-shrink-0">{idx + 1}</span>
-                    <div className="flex-1 min-w-0">
-                      {slide.headline && (
-                        <p className="font-bold text-slate-900">{slide.headline}</p>
-                      )}
-                      {slide.body && (
-                        <p className="text-slate-700 mt-0.5 line-clamp-2">{slide.body}</p>
-                      )}
-                      {!slide.headline && !slide.body && (
-                        <p className="text-slate-400">(empty slide)</p>
-                      )}
-                      {slide.scriptNotes && (
-                        <p className="text-xs text-amber-600 mt-1 line-clamp-1">Script: {slide.scriptNotes}</p>
+        {/* Slide List with time estimates */}
+        {(() => {
+          // Calculate cumulative read times (~150 words per minute speaking pace)
+          const WPM = 150;
+          const slideTimes = allSlides.map(s => {
+            const text = s.scriptNotes || s.body || s.headline || "";
+            const words = text.split(/\s+/).filter(Boolean).length;
+            return (words / WPM) * 60; // seconds
+          });
+          const cumulativeStart = slideTimes.map((_, i) =>
+            slideTimes.slice(0, i).reduce((a, b) => a + b, 0)
+          );
+          const totalSeconds = slideTimes.reduce((a, b) => a + b, 0);
+          const fmtTime = (secs: number) => {
+            const m = Math.floor(secs / 60);
+            const s = Math.floor(secs % 60);
+            return `${m}:${s.toString().padStart(2, '0')}`;
+          };
+
+          return (
+            <div className="mb-4">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-bold text-slate-900">{allSlides.length} Slide{allSlides.length !== 1 ? "s" : ""}</h4>
+                <span className="text-sm text-slate-500">~{fmtTime(totalSeconds)} total read time</span>
+              </div>
+              <div className="space-y-0">
+                {allSlides.map((slide, idx) => (
+                  <div key={slide.id}>
+                    {/* Quick add button between slides */}
+                    {idx === 0 && (
+                      <div className="flex justify-center py-1">
+                        {quickAddAfter === -1 ? (
+                          <div className="w-full p-2 bg-blue-50 border border-blue-200 rounded-lg space-y-2">
+                            <Input
+                              value={quickAddText}
+                              onChange={(e) => setQuickAddText(e.target.value)}
+                              placeholder="Type sentence text..."
+                              autoFocus
+                              onKeyDown={(e) => { if (e.key === 'Enter' && quickAddText.trim()) quickAddSlide.mutate({ body: quickAddText.trim(), afterIndex: -1 }); if (e.key === 'Escape') { setQuickAddAfter(null); setQuickAddText(""); } }}
+                            />
+                            <div className="flex gap-2">
+                              <Button size="sm" onClick={() => quickAddSlide.mutate({ body: quickAddText.trim(), afterIndex: -1 })} disabled={!quickAddText.trim() || quickAddSlide.isPending}>Add</Button>
+                              <Button size="sm" variant="ghost" onClick={() => { setQuickAddAfter(null); setQuickAddText(""); }}>Cancel</Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <button onClick={() => { setQuickAddAfter(-1); setQuickAddText(""); }} className="text-slate-300 hover:text-primary transition-colors" title="Add slide here">
+                            <Plus className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="p-3 rounded-lg border border-slate-200 bg-white">
+                      {editingSlideId === slide.id ? (
+                        <InlineSlideEditor
+                          slide={slide}
+                          onSave={(data) => updateSlide.mutate({ id: slide.id, ...data })}
+                          onCancel={() => setEditingSlideId(null)}
+                        />
+                      ) : (
+                        <div className="flex items-start gap-3">
+                          <div className="flex flex-col items-center flex-shrink-0 w-14 pt-0.5">
+                            <span className="text-sm font-bold text-slate-400">{idx + 1}</span>
+                            <span className="text-xs text-slate-400">{fmtTime(cumulativeStart[idx])}</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            {slide.headline && (
+                              <p className="font-bold text-slate-900">{slide.headline}</p>
+                            )}
+                            {slide.body && (
+                              <p className="text-slate-700 mt-0.5 line-clamp-2">{slide.body}</p>
+                            )}
+                            {!slide.headline && !slide.body && (
+                              <p className="text-slate-400">(empty slide)</p>
+                            )}
+                            {slide.scriptNotes && (
+                              <p className="text-xs text-amber-600 mt-1 line-clamp-1">Script: {slide.scriptNotes}</p>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1 flex-shrink-0">
+                            <button onClick={() => setEditingSlideId(slide.id)} className="p-1 text-slate-400 hover:text-slate-600" title="Edit">
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button onClick={() => { if (confirm("Delete this slide?")) deleteSlide.mutate(slide.id); }} className="p-1 text-red-400 hover:text-red-600" title="Delete">
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <button onClick={() => setEditingSlideId(slide.id)} className="p-1 text-slate-400 hover:text-slate-600" title="Edit">
-                        <Pencil className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => { if (confirm("Delete this slide?")) deleteSlide.mutate(slide.id); }} className="p-1 text-red-400 hover:text-red-600" title="Delete">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+
+                    {/* Quick add button after each slide */}
+                    <div className="flex justify-center py-1">
+                      {quickAddAfter === idx ? (
+                        <div className="w-full p-2 bg-blue-50 border border-blue-200 rounded-lg space-y-2">
+                          <Input
+                            value={quickAddText}
+                            onChange={(e) => setQuickAddText(e.target.value)}
+                            placeholder="Type sentence text..."
+                            autoFocus
+                            onKeyDown={(e) => { if (e.key === 'Enter' && quickAddText.trim()) quickAddSlide.mutate({ body: quickAddText.trim(), afterIndex: idx }); if (e.key === 'Escape') { setQuickAddAfter(null); setQuickAddText(""); } }}
+                          />
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={() => quickAddSlide.mutate({ body: quickAddText.trim(), afterIndex: idx })} disabled={!quickAddText.trim() || quickAddSlide.isPending}>Add</Button>
+                            <Button size="sm" variant="ghost" onClick={() => { setQuickAddAfter(null); setQuickAddText(""); }}>Cancel</Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button onClick={() => { setQuickAddAfter(idx); setQuickAddText(""); }} className="text-slate-300 hover:text-primary transition-colors" title="Add slide here">
+                          <Plus className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </div>
-                )}
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Add slide */}
+          {/* Add slide (full form, at end) */}
           {showAddSlide ? (
             <div className="mt-3 p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
               <div>
@@ -414,7 +512,9 @@ export default function PresentationEditor({ presentationId }: Props) {
               <Plus className="w-4 h-4 mr-1" /> Add Slide
             </Button>
           )}
-        </div>
+            </div>
+          );
+        })()}
 
         {/* Replace from Script (collapsible) */}
         <details className="mb-4" open={showRegenerate} onToggle={(e) => setShowRegenerate((e.target as HTMLDetailsElement).open)}>

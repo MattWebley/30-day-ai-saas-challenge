@@ -8911,6 +8911,10 @@ Agreed Rate: ${rateFormatted} per session (${currency.toUpperCase()})
 
 8.4. The Contractor retains ownership of their pre-existing intellectual property and general coaching methodologies.
 
+8.5. The Contractor acknowledges and agrees that any video calls, meetings, coaching sessions, interviews, or interactions — whether with the Company, its directors, team members, representatives, or with clients and customers of the Challenge — may be recorded at any time without prior notice. Such recordings, including video, audio, screenshots, transcripts, and excerpts, may be used by the Company for any purpose including but not limited to case studies, testimonials, marketing, promotional, advertising, educational, and social media purposes, without additional compensation to the Contractor.
+
+8.6. The Contractor grants the Company a perpetual, irrevocable, royalty-free, worldwide licence to use their name, likeness, image, voice, statements, results, and any content from calls, sessions, or interactions in any media, format, or platform, for any commercial purpose including but not limited to case studies, interviews, testimonials, advertising, and the promotion of the Challenge and the Company's services.
+
 9. INDEMNIFICATION
 
 9.1. The Contractor shall indemnify, defend, and hold harmless the Company, its directors, officers, and employees from and against ALL claims, damages, losses, costs, and expenses (including reasonable legal fees) arising from:

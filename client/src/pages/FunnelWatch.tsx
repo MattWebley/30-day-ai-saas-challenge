@@ -233,17 +233,25 @@ const slideAnimation = `
 `;
 
 // Text Sync display — one sentence, large black text on white background
-function TextSegmentDisplay({ slide, animKey }: { slide: SlideData; animKey: string | number }) {
+const TEXT_SYNC_SIZES: Record<string, string> = {
+  sm: "clamp(1.25rem, 3vw, 2rem)",
+  md: "clamp(1.5rem, 3.5vw, 2.4rem)",
+  lg: "clamp(1.5rem, 4vw, 2.8rem)",
+  xl: "clamp(2rem, 5vw, 3.5rem)",
+};
+
+function TextSegmentDisplay({ slide, animKey, fonts }: { slide: SlideData; animKey: string | number; fonts?: FontSettings }) {
   const text = slide.body || slide.headline || "";
+  const fontFamily = fonts?.font ? `'${fonts.font}', sans-serif` : "'Inter', sans-serif";
+  const fontWeight = fonts?.bodyWeight ?? 600;
+  const fontSize = fonts?.bodySize ? (TEXT_SYNC_SIZES[fonts.bodySize] || TEXT_SYNC_SIZES.lg) : TEXT_SYNC_SIZES.lg;
+  const color = fonts?.bodyColor || undefined;
+
   return (
     <div key={animKey} className="w-full h-full flex flex-col items-center justify-center text-center px-6 sm:px-10">
       <p
-        className="text-slate-900 leading-[1.3] animate-slide-headline max-w-3xl"
-        style={{
-          fontFamily: "'Inter', sans-serif",
-          fontSize: "clamp(1.5rem, 4vw, 2.8rem)",
-          fontWeight: 600,
-        }}
+        className={`leading-[1.3] animate-slide-headline max-w-3xl ${color ? "" : "text-slate-900"}`}
+        style={{ fontFamily, fontSize, fontWeight, color }}
       >
         {text}
       </p>
@@ -493,7 +501,7 @@ export default function FunnelWatch() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   {currentSlide ? (
                     isTextMode
-                      ? <TextSegmentDisplay slide={currentSlide} animKey={currentSlide.id} />
+                      ? <TextSegmentDisplay slide={currentSlide} animKey={currentSlide.id} fonts={fonts} />
                       : <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={currentSlide.id} />
                   ) : (
                     <p className={`text-lg ${isTextMode ? "text-slate-400" : theme.progressText}`} style={{ fontFamily: "'Inter', sans-serif" }}>Playing...</p>

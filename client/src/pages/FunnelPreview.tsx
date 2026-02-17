@@ -331,17 +331,25 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
 }
 
 // Text Sync display — one sentence, large black text on white background
-function TextSegmentDisplay({ slide, animKey }: { slide: SlideData; animKey: string | number }) {
+const TEXT_SYNC_SIZES: Record<string, string> = {
+  sm: "clamp(1.25rem, 3vw, 2rem)",
+  md: "clamp(1.5rem, 3.5vw, 2.4rem)",
+  lg: "clamp(1.5rem, 4vw, 2.8rem)",
+  xl: "clamp(2rem, 5vw, 3.5rem)",
+};
+
+function TextSegmentDisplay({ slide, animKey, fonts }: { slide: SlideData; animKey: string | number; fonts?: FontSettings }) {
   const text = slide.body || slide.headline || "";
+  const fontFamily = fonts?.font ? `'${fonts.font}', sans-serif` : "'Inter', sans-serif";
+  const fontWeight = fonts?.bodyWeight ?? 600;
+  const fontSize = fonts?.bodySize ? (TEXT_SYNC_SIZES[fonts.bodySize] || TEXT_SYNC_SIZES.lg) : TEXT_SYNC_SIZES.lg;
+  const color = fonts?.bodyColor || undefined;
+
   return (
     <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative">
       <p
-        className="text-slate-900 leading-[1.3] animate-slide-headline"
-        style={{
-          fontFamily: "'Inter', sans-serif",
-          fontSize: "clamp(1.5rem, 4vw, 2.8rem)",
-          fontWeight: 600,
-        }}
+        className={`leading-[1.3] animate-slide-headline ${color ? "" : "text-slate-900"}`}
+        style={{ fontFamily, fontSize, fontWeight, color }}
       >
         {text}
       </p>
@@ -956,12 +964,9 @@ export default function FunnelPreview() {
           </button>
         )}
         {!isTextMode && (
-          <>
-            <ThemeSwitcher currentKey={themeKey} onSwitch={switchTheme} />
-            <TypographyPanel fonts={fonts} onChange={updateFonts} onSave={saveFonts} hasChanges={fontsDirty} />
-          </>
+          <ThemeSwitcher currentKey={themeKey} onSwitch={switchTheme} />
         )}
-        {isTextMode && <span className="text-xs text-slate-500">Text Sync</span>}
+        <TypographyPanel fonts={fonts} onChange={updateFonts} onSave={saveFonts} hasChanges={fontsDirty} />
         {rightExtra}
       </div>
     </div>
@@ -1097,7 +1102,7 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar, i
         <div className={`w-1/2 ${isTextMode ? "bg-white" : theme.pageBg} flex items-center justify-center transition-colors duration-300 overflow-hidden`}>
           {activeSlide && (
             isTextMode
-              ? <TextSegmentDisplay slide={activeSlide} animKey={`present-text-${activeSlide.id}`} />
+              ? <TextSegmentDisplay slide={activeSlide} animKey={`present-text-${activeSlide.id}`} fonts={fonts} />
               : <SlideDisplay slide={activeSlide} theme={theme} fonts={fonts} animKey={`present-${themeKey}-${activeSlide.id}`} />
           )}
         </div>
@@ -1172,7 +1177,7 @@ function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar
           <div className="max-h-full w-full overflow-hidden">
             {slide && (
               isTextMode
-                ? <TextSegmentDisplay slide={slide} animKey={`text-${slide.id}`} />
+                ? <TextSegmentDisplay slide={slide} animKey={`text-${slide.id}`} fonts={fonts} />
                 : <SlideDisplay slide={slide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${slide.id}`} editable onSave={handleSlideTextSave} />
             )}
           </div>
@@ -1297,7 +1302,7 @@ function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar, isTex
           <div className="max-h-full w-full overflow-hidden">
             {currentSlide ? (
               isTextMode
-                ? <TextSegmentDisplay slide={currentSlide} animKey={`text-${currentSlide.id}`} />
+                ? <TextSegmentDisplay slide={currentSlide} animKey={`text-${currentSlide.id}`} fonts={fonts} />
                 : <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${currentSlide.id}`} />
             ) : (
               <p className={`text-lg ${isTextMode ? "text-slate-400" : theme.progressText}`} style={{ fontFamily: "'Inter', sans-serif" }}>Playing...</p>

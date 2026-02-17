@@ -183,7 +183,24 @@ export default function Terms() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">9. INTELLECTUAL PROPERTY</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">9. RECORDING, TESTIMONIALS, AND MARKETING USE</h2>
+              <p className="text-slate-700 font-bold">
+                BY USING THE SERVICES, YOU ACKNOWLEDGE AND AGREE THAT:
+              </p>
+              <ul className="list-disc pl-6 text-slate-700 space-y-2">
+                <li>Any video calls, phone calls, coaching sessions, interviews, meetings, or interactions between you and the Company, its directors, team members, coaches, or representatives may be recorded at any time without prior notice</li>
+                <li>Such recordings — including video, audio, photographs, screenshots, transcripts, quotes, and excerpts — may be used by the Company for any purpose, including but not limited to: case studies, testimonials, marketing, advertising, promotional materials, social media, educational content, website content, sales materials, and any other commercial purpose</li>
+                <li>Your name, likeness, image, voice, statements, results, progress, and any content from your interactions with the Company or its team may be used in any media, format, or platform worldwide, in perpetuity, without additional compensation, approval, or notice</li>
+                <li>You waive any right to inspect, approve, or be compensated for any use of such recordings or content</li>
+                <li>This consent is irrevocable and survives termination of your use of the Services</li>
+              </ul>
+              <p className="text-slate-700">
+                If you do not wish to be recorded, you must notify the Company in writing before any call or interaction. The Company reserves the right to decline to proceed with any call or interaction where recording is not permitted.
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">10. INTELLECTUAL PROPERTY</h2>
               <p className="text-slate-700">
                 All content, materials, software, graphics, designs, text, images, audio, video, trademarks, service marks, trade names, and other intellectual property in the Services are owned by or licensed to the Company and are protected by copyright, trademark, and other intellectual property laws.
               </p>
@@ -204,7 +221,7 @@ export default function Terms() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">10. USER CONDUCT AND RESPONSIBILITIES</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">11. USER CONDUCT AND RESPONSIBILITIES</h2>
               <p className="text-slate-700">
                 You agree that you will NOT:
               </p>
@@ -225,7 +242,7 @@ export default function Terms() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">11. THIRD-PARTY SERVICES AND LINKS</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">12. THIRD-PARTY SERVICES AND LINKS</h2>
               <p className="text-slate-700">
                 The Services may contain links to third-party websites, services, or integrations (including but not limited to payment processors, AI services, hosting providers, and software tools). The Company:
               </p>
@@ -238,7 +255,7 @@ export default function Terms() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">12. PRIVACY AND DATA</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">13. PRIVACY AND DATA</h2>
               <p className="text-slate-700">
                 Your use of the Services is also governed by our Privacy Policy. By using the Services, you consent to the collection, use, and sharing of your information as described in the Privacy Policy. You acknowledge that:
               </p>
@@ -251,7 +268,7 @@ export default function Terms() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">13. GOVERNING LAW AND JURISDICTION</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">14. GOVERNING LAW AND JURISDICTION</h2>
               <p className="text-slate-700">
                 This Agreement shall be governed by and construed in accordance with the laws of the United Arab Emirates, specifically the laws applicable in the Emirate of Dubai, without regard to conflict of law principles.
               </p>
@@ -270,7 +287,7 @@ export default function Terms() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">14. DISPUTE RESOLUTION AND ARBITRATION</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">15. DISPUTE RESOLUTION AND ARBITRATION</h2>
               <p className="text-slate-700 font-bold">
                 MANDATORY ARBITRATION:
               </p>
@@ -293,14 +310,14 @@ export default function Terms() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">15. FORCE MAJEURE</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">16. FORCE MAJEURE</h2>
               <p className="text-slate-700">
                 The Company shall not be liable for any failure or delay in performance due to circumstances beyond its reasonable control, including but not limited to: acts of God, natural disasters, pandemic, epidemic, war, terrorism, riots, civil unrest, government actions, labor disputes, power failures, internet or telecommunications failures, cyberattacks, or any other cause beyond reasonable control.
               </p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">16. TERMINATION</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">17. TERMINATION</h2>
               <p className="text-slate-700">
                 The Company reserves the right to terminate or suspend your access to the Services at any time, for any reason or no reason, with or without notice, and without liability. Upon termination:
               </p>
@@ -313,14 +330,14 @@ export default function Terms() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">17. SEVERABILITY</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">18. SEVERABILITY</h2>
               <p className="text-slate-700">
                 If any provision of this Agreement is found to be invalid, illegal, or unenforceable by a court of competent jurisdiction, such finding shall not affect the validity of the remaining provisions, which shall continue in full force and effect. The invalid provision shall be modified to the minimum extent necessary to make it valid and enforceable while preserving the parties' original intent.
               </p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">18. ENTIRE AGREEMENT</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">19. ENTIRE AGREEMENT</h2>
               <p className="text-slate-700">
                 This Agreement, together with the Privacy Policy and any other legal notices or policies published on the Services, constitutes the entire agreement between you and the Company regarding the Services. This Agreement supersedes all prior agreements, representations, warranties, and understandings, whether written or oral, regarding the subject matter hereof.
               </p>
@@ -330,14 +347,14 @@ export default function Terms() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">19. ASSIGNMENT</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">20. ASSIGNMENT</h2>
               <p className="text-slate-700">
                 You may not assign or transfer this Agreement or any rights hereunder without the prior written consent of the Company. The Company may freely assign this Agreement without restriction. Any attempted assignment in violation of this section shall be void.
               </p>
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">20. CONTACT INFORMATION</h2>
+              <h2 className="text-xl font-bold text-slate-900 border-b pb-2">21. CONTACT INFORMATION</h2>
               <p className="text-slate-700">
                 For questions regarding this Agreement, please contact:
               </p>
