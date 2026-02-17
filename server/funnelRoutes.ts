@@ -167,12 +167,12 @@ export function registerFunnelRoutes(app: Express) {
       const [presentation] = await db.select().from(funnelPresentations).where(eq(funnelPresentations.id, presentationId));
       if (!presentation) return res.status(404).json({ message: "Presentation not found" });
 
-      let isTextMode = presentation.displayMode === "text";
+      // simple flag from client = plain sentence split, no AI
+      const isTextMode = simple || presentation.displayMode === "text";
 
-      // If client explicitly requests simple mode, switch presentation to text mode
-      if (simple && !isTextMode) {
-        await db.update(funnelPresentations).set({ displayMode: "text" }).where(eq(funnelPresentations.id, presentationId));
-        isTextMode = true;
+      // Ensure displayMode is saved as "text" when doing simple split
+      if (isTextMode && presentation.displayMode !== "text") {
+        await db.update(funnelPresentations).set({ displayMode: "text" }).where(eq(funnelPresentations.id, presentationId)).catch(() => {});
       }
 
       // Auto-create module + variant if none exist
