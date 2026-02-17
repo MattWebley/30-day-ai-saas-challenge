@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,12 +10,107 @@ import {
   Plus, Trash2, Save, ChevronDown, ChevronUp,
   GripVertical, Music, Video, Image, Timer,
   Wand2, Eye, Pencil, Loader2, ExternalLink, Presentation, AlignLeft,
-  Mic, Sparkles,
+  Mic, Sparkles, Upload, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { FunnelPresentation, FunnelModule, FunnelModuleVariant, FunnelSlide } from "./funnelTypes";
 import { PRESENTATION_THEMES, getTheme } from "@/lib/presentationThemes";
 import SyncTool from "./SyncTool";
+
+// Upload an image file and return the URL
+async function uploadSlideImage(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append("image", file);
+  const res = await fetch("/api/admin/funnels/upload-image", {
+    method: "POST",
+    body: formData,
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: "Upload failed" }));
+    throw new Error(err.message || "Upload failed");
+  }
+  const data = await res.json();
+  return data.url;
+}
+
+// Reusable drop zone for slide images
+function SlideImageDropZone({ imageUrl, onUploaded, onRemove }: {
+  imageUrl: string | null;
+  onUploaded: (url: string) => void;
+  onRemove: () => void;
+}) {
+  const [dragging, setDragging] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const handleFile = useCallback(async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Only image files are allowed");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be under 5MB");
+      return;
+    }
+    setUploading(true);
+    try {
+      const url = await uploadSlideImage(file);
+      onUploaded(url);
+    } catch (e: any) {
+      toast.error(e.message || "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }, [onUploaded]);
+
+  if (imageUrl) {
+    return (
+      <div className="relative group mt-1.5">
+        <img src={imageUrl} alt="" className="w-full max-h-32 object-contain rounded border border-slate-200 bg-slate-50" />
+        <button
+          onClick={(e) => { e.stopPropagation(); onRemove(); }}
+          className="absolute top-1 right-1 p-0.5 bg-white/90 rounded-full shadow text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+          title="Remove image"
+        >
+          <X className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className={`mt-1.5 border-2 border-dashed rounded-lg p-2 text-center cursor-pointer transition-colors ${
+        dragging ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300"
+      }`}
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setDragging(false);
+        const file = e.dataTransfer.files[0];
+        if (file) handleFile(file);
+      }}
+      onClick={() => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.onchange = () => { if (input.files?.[0]) handleFile(input.files[0]); };
+        input.click();
+      }}
+    >
+      {uploading ? (
+        <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 py-1">
+          <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...
+        </div>
+      ) : (
+        <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 py-1">
+          <Upload className="w-3.5 h-3.5" /> Drop image or click
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface Props {
   presentationId: number;
@@ -454,6 +549,11 @@ export default function PresentationEditor({ presentationId }: Props) {
                             {slide.scriptNotes && (
                               <p className="text-xs text-amber-600 mt-1 line-clamp-1">Script: {slide.scriptNotes}</p>
                             )}
+                            <SlideImageDropZone
+                              imageUrl={slide.imageUrl}
+                              onUploaded={(url) => updateSlide.mutate({ id: slide.id, imageUrl: url })}
+                              onRemove={() => updateSlide.mutate({ id: slide.id, imageUrl: "" })}
+                            />
                           </div>
                           <div className="flex items-center gap-1 flex-shrink-0">
                             <button onClick={() => setEditingSlideId(slide.id)} className="p-1 text-slate-400 hover:text-slate-600" title="Edit">
@@ -593,6 +693,7 @@ function InlineSlideEditor({ slide, onSave, onCancel }: {
   const [headline, setHeadline] = useState(slide.headline || "");
   const [body, setBody] = useState(slide.body || "");
   const [scriptNotes, setScriptNotes] = useState(slide.scriptNotes || "");
+  const [imageUrl, setImageUrl] = useState(slide.imageUrl || "");
 
   return (
     <div className="space-y-2">
@@ -614,8 +715,16 @@ function InlineSlideEditor({ slide, onSave, onCancel }: {
           className="text-slate-600 bg-amber-50/50 border-amber-200"
         />
       </div>
+      <div>
+        <Label className="text-slate-700">Image</Label>
+        <SlideImageDropZone
+          imageUrl={imageUrl || null}
+          onUploaded={(url) => setImageUrl(url)}
+          onRemove={() => setImageUrl("")}
+        />
+      </div>
       <div className="flex gap-2">
-        <Button size="sm" onClick={() => onSave({ headline, body, scriptNotes })}>
+        <Button size="sm" onClick={() => onSave({ headline, body, scriptNotes, imageUrl: imageUrl || null })}>
           <Save className="w-3 h-3 mr-0.5" /> Save
         </Button>
         <Button size="sm" variant="ghost" onClick={onCancel}>Cancel</Button>
@@ -1132,15 +1241,17 @@ function SlideEditor({ slide, onSave }: { slide: FunnelSlide; onSave: (data: Par
         <Label className="text-slate-700 text-xs">Script Notes <span className="font-normal text-slate-400">(what you say)</span></Label>
         <Textarea value={merged.scriptNotes || ""} onChange={(e) => setEdits({ ...edits, scriptNotes: e.target.value })} rows={2} placeholder="What you'll say during this slide..." className="bg-amber-50/50 border-amber-200" />
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <div>
-          <Label className="text-slate-700 text-xs">Image URL</Label>
-          <Input value={merged.imageUrl || ""} onChange={(e) => setEdits({ ...edits, imageUrl: e.target.value })} />
-        </div>
-        <div>
-          <Label className="text-slate-700 text-xs">Start Time (ms)</Label>
-          <Input type="number" value={merged.startTimeMs} onChange={(e) => setEdits({ ...edits, startTimeMs: parseInt(e.target.value) || 0 })} />
-        </div>
+      <div>
+        <Label className="text-slate-700 text-xs">Image</Label>
+        <SlideImageDropZone
+          imageUrl={merged.imageUrl || null}
+          onUploaded={(url) => setEdits({ ...edits, imageUrl: url })}
+          onRemove={() => setEdits({ ...edits, imageUrl: "" })}
+        />
+      </div>
+      <div>
+        <Label className="text-slate-700 text-xs">Start Time (ms)</Label>
+        <Input type="number" value={merged.startTimeMs} onChange={(e) => setEdits({ ...edits, startTimeMs: parseInt(e.target.value) || 0 })} />
       </div>
       <Button size="sm" onClick={() => { onSave(edits); setEdits({}); }}>
         <Save className="w-3 h-3 mr-0.5" /> Save

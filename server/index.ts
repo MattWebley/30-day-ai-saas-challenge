@@ -173,6 +173,10 @@ const funnelPublicLimiter = rateLimit({
 });
 app.use("/api/funnel", funnelPublicLimiter);
 
+// Serve uploaded slide images
+import path from "path";
+app.use("/uploads", express.static(path.resolve("uploads")));
+
 app.use(
   express.json({
     limit: "5mb", // cap JSON body size (needs headroom for large presentations)

@@ -7,9 +7,36 @@ import {
 } from "@shared/schema";
 import { eq, desc, and, sql, count, gte } from "drizzle-orm";
 import crypto from "crypto";
+import path from "path";
+import fs from "fs";
+import multer from "multer";
 import { addContactToSysteme } from "./systemeService";
 import { isAuthenticated } from "./replitAuth";
 import Anthropic from "@anthropic-ai/sdk";
+
+// Set up multer for slide image uploads
+const uploadsDir = path.resolve("uploads/slides");
+fs.mkdirSync(uploadsDir, { recursive: true });
+
+const slideUpload = multer({
+  storage: multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, uploadsDir),
+    filename: (_req, file, cb) => {
+      const ext = path.extname(file.originalname).toLowerCase();
+      cb(null, `slide_${Date.now()}_${crypto.randomBytes(4).toString("hex")}${ext}`);
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  fileFilter: (_req, file, cb) => {
+    const allowed = [".jpg", ".jpeg", ".png", ".gif", ".webp"];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only jpg, png, gif, and webp images are allowed"));
+    }
+  },
+});
 
 // Middleware: check admin (looks up DB user like existing routes.ts pattern)
 async function requireAdmin(req: any, res: any, next: any) {
@@ -22,6 +49,24 @@ async function requireAdmin(req: any, res: any, next: any) {
 }
 
 export function registerFunnelRoutes(app: Express) {
+
+  // ==========================================
+  // Image Upload
+  // ==========================================
+
+  app.post("/api/admin/funnels/upload-image", isAuthenticated, requireAdmin, (req: any, res: any) => {
+    slideUpload.single("image")(req, res, (err: any) => {
+      if (err) {
+        const msg = err instanceof multer.MulterError && err.code === "LIMIT_FILE_SIZE"
+          ? "File too large (max 5MB)"
+          : err.message || "Upload failed";
+        return res.status(400).json({ message: msg });
+      }
+      if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+      const url = `/uploads/slides/${req.file.filename}`;
+      res.json({ url });
+    });
+  });
 
   // ==========================================
   // ADMIN CRUD - Campaigns
