@@ -13,6 +13,12 @@ import {
   HEADLINE_COLOR_PRESETS, loadAllFonts, loadGoogleFont,
 } from "@/lib/presentationThemes";
 
+// Check if URL is a Vimeo embed
+function isVimeoUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  return url.includes("vimeo.com");
+}
+
 interface SlideData {
   id: number;
   headline: string | null;
@@ -315,10 +321,20 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
   );
 
   // Media background element (used in overlay mode)
+  const isVimeo = isVimeoUrl(slide.videoUrl);
   const mediaBg = hasMedia && (
     <>
       {slide.videoUrl ? (
-        <video src={slide.videoUrl} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline />
+        isVimeo ? (
+          <iframe
+            src={`${slide.videoUrl}?background=1&autoplay=1&loop=1&muted=1`}
+            className="absolute inset-0 w-full h-full"
+            style={{ border: 0 }}
+            allow="autoplay; fullscreen"
+          />
+        ) : (
+          <video src={slide.videoUrl} className="absolute inset-0 w-full h-full object-cover" autoPlay muted loop playsInline />
+        )
       ) : (
         <img src={slide.imageUrl!} alt="" className="absolute inset-0 w-full h-full object-cover" />
       )}
@@ -378,7 +394,13 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
           <img src={slide.imageUrl} alt="" className="max-w-full max-h-[40vh] object-contain mb-8 rounded-lg animate-slide-fade" />
         )}
         {slide.videoUrl && (
-          <video src={slide.videoUrl} className="max-w-full max-h-[40vh] object-contain mb-8 rounded-lg animate-slide-fade" autoPlay muted loop playsInline />
+          isVimeo ? (
+            <div className="w-full max-h-[40vh] aspect-video mb-8 rounded-lg animate-slide-fade overflow-hidden">
+              <iframe src={`${slide.videoUrl}?background=1&autoplay=1&loop=1&muted=1`} className="w-full h-full" style={{ border: 0 }} allow="autoplay; fullscreen" />
+            </div>
+          ) : (
+            <video src={slide.videoUrl} className="max-w-full max-h-[40vh] object-contain mb-8 rounded-lg animate-slide-fade" autoPlay muted loop playsInline />
+          )
         )}
         {headlineEl}
         {bodyEl}

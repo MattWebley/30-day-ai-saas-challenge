@@ -42,7 +42,21 @@ const OVERLAY_STYLES = [
   { value: "full", label: "Full", desc: "Full dark overlay" },
 ] as const;
 
-// Reusable drop zone for slide media (images + videos)
+// Check if a URL is a Vimeo link and extract the embed URL
+function getVimeoEmbedUrl(url: string): string | null {
+  const match = url.match(/(?:vimeo\.com\/)(\d+)/);
+  if (match) return `https://player.vimeo.com/video/${match[1]}`;
+  if (url.includes("player.vimeo.com/video/")) return url;
+  return null;
+}
+
+// Check if URL is a Vimeo embed
+function isVimeoUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  return url.includes("vimeo.com");
+}
+
+// Reusable drop zone for slide media (images + videos + Vimeo URLs)
 function SlideMediaDropZone({ imageUrl, videoUrl, overlayStyle, onUploaded, onRemove, onOverlayChange }: {
   imageUrl: string | null;
   videoUrl: string | null;
@@ -53,6 +67,8 @@ function SlideMediaDropZone({ imageUrl, videoUrl, overlayStyle, onUploaded, onRe
 }) {
   const [dragging, setDragging] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [showUrlInput, setShowUrlInput] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
 
   const handleFile = useCallback(async (file: File) => {
     const isImage = file.type.startsWith("image/");
@@ -80,7 +96,26 @@ function SlideMediaDropZone({ imageUrl, videoUrl, overlayStyle, onUploaded, onRe
     }
   }, [onUploaded]);
 
+  const handleUrlSubmit = () => {
+    const url = urlInput.trim();
+    if (!url) return;
+    const vimeoEmbed = getVimeoEmbedUrl(url);
+    if (vimeoEmbed) {
+      onUploaded(vimeoEmbed, "video");
+    } else if (url.match(/\.(mp4|webm)(\?|$)/i)) {
+      onUploaded(url, "video");
+    } else if (url.match(/\.(jpg|jpeg|png|gif|webp)(\?|$)/i)) {
+      onUploaded(url, "image");
+    } else {
+      // Assume video for other URLs (could be a CDN link)
+      onUploaded(url, "video");
+    }
+    setUrlInput("");
+    setShowUrlInput(false);
+  };
+
   const hasMedia = !!(imageUrl || videoUrl);
+  const isVimeo = isVimeoUrl(videoUrl);
 
   return (
     <div className="mt-1.5">
@@ -88,12 +123,21 @@ function SlideMediaDropZone({ imageUrl, videoUrl, overlayStyle, onUploaded, onRe
         <div className="space-y-1.5">
           <div className="relative group">
             {videoUrl ? (
-              <div className="relative w-full h-24 rounded border border-slate-200 bg-slate-900 flex items-center justify-center overflow-hidden">
-                <video src={videoUrl} className="w-full h-full object-cover opacity-60" muted />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Film className="w-6 h-6 text-white/80" />
+              isVimeo ? (
+                <div className="relative w-full h-24 rounded border border-slate-200 bg-slate-900 flex items-center justify-center overflow-hidden">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                    <Video className="w-5 h-5 text-blue-400" />
+                    <span className="text-xs text-blue-300">Vimeo</span>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="relative w-full h-24 rounded border border-slate-200 bg-slate-900 flex items-center justify-center overflow-hidden">
+                  <video src={videoUrl} className="w-full h-full object-cover opacity-60" muted />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Film className="w-6 h-6 text-white/80" />
+                  </div>
+                </div>
+              )
             ) : (
               <img src={imageUrl!} alt="" className="w-full max-h-32 object-contain rounded border border-slate-200 bg-slate-50" />
             )}
@@ -125,34 +169,56 @@ function SlideMediaDropZone({ imageUrl, videoUrl, overlayStyle, onUploaded, onRe
           </div>
         </div>
       ) : (
-        <div
-          className={`border-2 border-dashed rounded-lg p-2 text-center cursor-pointer transition-colors ${
-            dragging ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300"
-          }`}
-          onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            setDragging(false);
-            const file = e.dataTransfer.files[0];
-            if (file) handleFile(file);
-          }}
-          onClick={() => {
-            const input = document.createElement("input");
-            input.type = "file";
-            input.accept = "image/*,video/mp4,video/webm";
-            input.onchange = () => { if (input.files?.[0]) handleFile(input.files[0]); };
-            input.click();
-          }}
-        >
-          {uploading ? (
-            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 py-1">
-              <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...
+        <div className="space-y-1.5">
+          <div
+            className={`border-2 border-dashed rounded-lg p-2 text-center cursor-pointer transition-colors ${
+              dragging ? "border-primary bg-primary/5" : "border-slate-200 hover:border-slate-300"
+            }`}
+            onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setDragging(false);
+              const file = e.dataTransfer.files[0];
+              if (file) handleFile(file);
+            }}
+            onClick={() => {
+              const input = document.createElement("input");
+              input.type = "file";
+              input.accept = "image/*,video/mp4,video/webm";
+              input.onchange = () => { if (input.files?.[0]) handleFile(input.files[0]); };
+              input.click();
+            }}
+          >
+            {uploading ? (
+              <div className="flex items-center justify-center gap-1.5 text-xs text-slate-500 py-1">
+                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...
+              </div>
+            ) : (
+              <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 py-1">
+                <Upload className="w-3.5 h-3.5" /> Drop image/video or click
+              </div>
+            )}
+          </div>
+          {showUrlInput ? (
+            <div className="flex gap-1">
+              <Input
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                placeholder="Paste Vimeo or video URL..."
+                className="h-7 text-xs"
+                autoFocus
+                onKeyDown={(e) => { if (e.key === 'Enter') handleUrlSubmit(); if (e.key === 'Escape') setShowUrlInput(false); }}
+              />
+              <Button size="sm" className="h-7 px-2 text-xs" onClick={handleUrlSubmit} disabled={!urlInput.trim()}>Add</Button>
             </div>
           ) : (
-            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400 py-1">
-              <Upload className="w-3.5 h-3.5" /> Drop image/video or click
-            </div>
+            <button
+              onClick={() => setShowUrlInput(true)}
+              className="text-xs text-slate-400 hover:text-primary transition-colors flex items-center gap-1"
+            >
+              <ExternalLink className="w-3 h-3" /> Or paste Vimeo/video URL
+            </button>
           )}
         </div>
       )}
