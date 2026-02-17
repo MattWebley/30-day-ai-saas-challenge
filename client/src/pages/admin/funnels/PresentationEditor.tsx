@@ -1156,6 +1156,9 @@ const VSL_FORMULAS = [
   { value: 3, label: "The Confrontation", desc: "Lead with enemy frame. Call out fake gurus, pivot to the real truth." },
   { value: 4, label: "The Underdog Story", desc: "Lead with Matt's origin. Council estate to $23M. Rags to riches." },
   { value: 5, label: "The Wealth Divide", desc: "Lead with assets vs income. Bigger picture, wealth gap, opportunity." },
+  { value: 6, label: "Jon Benson's 5-Step VSL", desc: "From the inventor of the VSL. Snap suggestion, reluctant hero, mechanism reveal." },
+  { value: 7, label: "Stefan Georgi's RMBC", desc: "Research-driven. Mirror their pain, reveal the mechanism, proof in bite-sized chunks." },
+  { value: 8, label: "Hormozi Proof-Promise-Plan", desc: "Lead with proof wall, value equation, make the offer so good they feel stupid saying no." },
 ];
 
 const VSL_ANGLES = [
@@ -1172,6 +1175,8 @@ function VslGenerator({ onGenerated }: { onGenerated: (script: string) => void }
   const [formula, setFormula] = useState(1);
   const [angle, setAngle] = useState("A");
   const [hook, setHook] = useState("");
+  const [hookOptions, setHookOptions] = useState<string[]>([]);
+  const [generatingHooks, setGeneratingHooks] = useState(false);
   const [context, setContext] = useState("");
   const [generating, setGenerating] = useState(false);
 
@@ -1249,15 +1254,55 @@ function VslGenerator({ onGenerated }: { onGenerated: (script: string) => void }
             </div>
           </div>
 
-          {/* Hook (optional) */}
+          {/* Hook */}
           <div>
-            <Label className="text-slate-700 font-medium">Opening Hook <span className="font-normal text-slate-400">(optional)</span></Label>
+            <div className="flex items-center justify-between">
+              <Label className="text-slate-700 font-medium">Opening Hook <span className="font-normal text-slate-400">(optional)</span></Label>
+              <button
+                onClick={async () => {
+                  setGeneratingHooks(true);
+                  try {
+                    const res = await apiRequest("POST", "/api/admin/funnels/generate-hooks", { formula, angle, context });
+                    const data = await res.json();
+                    if (data.hooks?.length) {
+                      setHookOptions(data.hooks);
+                    } else {
+                      toast.error("No hooks returned. Try again.");
+                    }
+                  } catch (e: any) {
+                    toast.error(getServerErrorMessage(e, "Failed to generate hooks."));
+                  } finally {
+                    setGeneratingHooks(false);
+                  }
+                }}
+                disabled={generatingHooks}
+                className="text-sm text-amber-600 hover:text-amber-700 font-medium flex items-center gap-1 disabled:opacity-50"
+              >
+                {generatingHooks ? <><Loader2 className="w-3 h-3 animate-spin" /> Generating...</> : <><Sparkles className="w-3 h-3" /> Generate Hooks</>}
+              </button>
+            </div>
             <Input
               value={hook}
               onChange={(e) => setHook(e.target.value)}
-              placeholder="e.g. What if I told you that you could build a software business without writing a single line of code..."
+              placeholder="Type your own or generate options above..."
               className="mt-1"
             />
+            {hookOptions.length > 0 && (
+              <div className="mt-2 space-y-1.5">
+                <p className="text-xs text-slate-500 font-medium">Click to use:</p>
+                {hookOptions.map((h, i) => (
+                  <button
+                    key={i}
+                    onClick={() => { setHook(h); setHookOptions([]); }}
+                    className={`w-full text-left p-2.5 rounded-lg border-2 transition-colors text-sm text-slate-700 ${
+                      hook === h ? "border-primary bg-primary/5" : "border-slate-200 bg-white hover:border-slate-300"
+                    }`}
+                  >
+                    {h}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Context (optional) */}

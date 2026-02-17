@@ -2100,6 +2100,54 @@ Structure:
 10. THE SOLUTION
 11. THE CLOSE
 
+FORMULA 6: "JON BENSON'S 5-STEP VSL" (inspired by the inventor of the VSL)
+Structure:
+1. THE SNAP SUGGESTION - Pattern interrupt opening. A bold, unexpected statement that creates a "wait, what?" moment. NOT a question. A provocative claim or visual that forces them to keep watching.
+2. THE USP HOOK - Within the first 10 slides, clearly state the unique selling proposition. What makes this different from everything else they've seen? Why should they care RIGHT NOW?
+3. THE RELUCTANT HERO - Tell a dramatic, visual origin story using the reluctant hero formula. Matt didn't want to teach this. He was making money quietly. But something happened that changed his mind. Build empathy through shared struggle, not bragging.
+4. THE MECHANISM REVEAL - Explain the specific mechanism (AI + SaaS model) that makes the result possible. This is the "how" that bridges the gap between their current situation and the promise. Use the revenue math here.
+5. THE IRRESISTIBLE CLOSE - Stack the value. Use urgency. Risk reversal. Make saying "no" feel harder than saying "yes". Direct CTA to book a call.
+
+Key Jon Benson principles to follow:
+- Every slide should be one idea, one sentence
+- Use NLP-style language patterns and embedded commands
+- The story should read like a movie trailer, not a lecture
+- Heavy use of curiosity gaps between sections
+- "Show don't tell" — paint vivid pictures with words
+
+FORMULA 7: "STEFAN GEORGI'S RMBC VSL" (inspired by the highest-paid VSL copywriter alive)
+Structure:
+1. RESEARCH-DRIVEN HOOK - Open by speaking the prospect's exact internal dialogue. What are they thinking at 2am? What have they tried that failed? Mirror their pain so precisely they think you're reading their mind.
+2. THE MECHANISM - This is the core. Explain WHY everything else failed (it wasn't their fault — they were using the wrong mechanism). Then introduce the NEW mechanism (AI building software) that changes everything. This must be specific and believable.
+3. THE BRIEF - Walk through the key proof points in bite-sized chunks. Each proof point is a mini-story: situation → old mechanism failed → new mechanism worked. Use Matt's real facts, real student milestones, real numbers.
+4. THE COPY BRIDGE - Connect the mechanism to the offer. "So the question isn't whether AI can build software... the question is whether YOU want to be one of the people who uses it before everyone else catches on."
+5. THE OFFER STACK - Present what they get. Stack each element. Future-pace each component (don't just say what it is, say what it DOES for them).
+6. THE CLOSE - Urgency, scarcity, risk reversal. CTA to book a call.
+
+Key Stefan Georgi principles to follow:
+- The MECHANISM is everything — spend 40% of the VSL on it
+- Research-level specificity: use exact phrases, exact pain points, exact scenarios
+- Every claim needs a "reason why" backing it up
+- The prospect should feel understood before they feel sold to
+- Transitions between sections should feel invisible, like a conversation
+
+FORMULA 8: "ALEX HORMOZI'S PROOF-PROMISE-PLAN" (inspired by the $100M Offers framework)
+Structure:
+1. THE PROOF WALL - Open with undeniable proof. Matt's $23M+, 25+ years, real businesses, real students building real software. Stack proof so thick that credibility is established before any selling begins. Let the results do the talking.
+2. THE GRAND PROMISE - One clear, specific, believable promise. Not hype. State exactly what's possible and frame it honestly: "I'm not saying you'll do $23 million. But what if you built ONE piece of software that brought in $5,000 a month?"
+3. THE VALUE EQUATION - Break down Hormozi's value equation: Dream Outcome × Perceived Likelihood of Achievement ÷ Time Delay × Effort & Sacrifice. Show how AI SaaS scores HIGH on dream outcome, HIGH on likelihood (because AI builds it), LOW on time (weeks not years), LOW on effort (no code needed).
+4. THE PLAN - Lay out the exact steps. Make it feel achievable. Step 1: Find a problem. Step 2: AI builds the solution. Step 3: Get customers. Step 4: Recurring revenue. The simpler the plan, the higher the conversion.
+5. THE IRRESISTIBLE OFFER - Stack everything they get. For each component, quantify the value. Show the total value vs the investment. Make it feel like a no-brainer.
+6. THE GUARANTEE / RISK REVERSAL - Remove all risk. What happens if it doesn't work? What do they have to lose vs what do they have to gain?
+7. THE CLOSE - Urgency (limited spots). Scarcity (real, not fake). Direct CTA to book a call.
+
+Key Alex Hormozi principles to follow:
+- Lead with PROOF not promises
+- The value equation should be explicit, not implied
+- Make the offer so good people feel stupid saying no
+- Use "what if" framing instead of guarantees for compliance
+- Stack elements one by one, never dump them all at once
+
 =================================================================
 ANGLE VARIATIONS
 =================================================================
@@ -2135,7 +2183,7 @@ OUTPUT RULES
     try {
       const { formula = 1, angle = "A", hook, context } = req.body;
 
-      const formulaNum = Math.min(Math.max(parseInt(formula) || 1, 1), 5);
+      const formulaNum = Math.min(Math.max(parseInt(formula) || 1, 1), 8);
       const angleChar = String(angle).toUpperCase().charAt(0);
       const validAngles = ["A", "B", "C", "D", "E", "F"];
       const finalAngle = validAngles.includes(angleChar) ? angleChar : "A";
@@ -2171,6 +2219,54 @@ OUTPUT RULES
       res.json({ script });
     } catch (e: any) {
       console.error("[generate-vsl] Error:", e.message);
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // ==========================================
+  // VSL HOOK GENERATOR
+  // ==========================================
+
+  app.post("/api/admin/funnels/generate-hooks", isAuthenticated, requireAdmin, async (req: any, res) => {
+    try {
+      const { formula = 1, angle = "A", context } = req.body;
+
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-5-20250929",
+        max_tokens: 2000,
+        system: `You are a world-class VSL hook writer working for Matt Webley. You write opening hooks for Video Sales Letters.
+
+Matt's style: British, casual, uses ellipses (...) for pacing, ALL-CAPS for emphasis words, short punchy sentences, anti-guru tone, raw and authentic. Phrases he uses: "Here's the thing...", "Look...", "The TRUTH is...", "See, the thing is..."
+
+Matt's facts: 25+ years online, $23+ million revenue, $12+ million from software, never written a line of code, grew up on a council estate, first girlfriend told him he was a nobody. Teaches non-technical people to build AI SaaS businesses. Runs Webley Global FZCO from Dubai.
+
+Generate exactly 6 different opening hooks. Each should be 1-3 sentences, punchy, attention-grabbing, written in Matt's voice. Make them varied in approach — some emotional, some confrontational, some curiosity-driven, some stat-led.
+
+Return ONLY a JSON array of 6 strings. No explanation, no numbering, just the JSON array.
+Example: ["Hook one...", "Hook two...", "Hook three...", "Hook four...", "Hook five...", "Hook six..."]`,
+        messages: [{
+          role: "user",
+          content: `Generate 6 VSL opening hooks for:\nFormula: ${formula}\nAngle: ${angle}${context ? `\nContext: ${context}` : ""}\n\nReturn ONLY a JSON array of 6 hook strings.`,
+        }],
+      });
+
+      const raw = response.content[0].type === "text" ? response.content[0].text : "";
+      let hooks: string[] = [];
+      try { hooks = JSON.parse(raw); } catch {}
+      if (!Array.isArray(hooks) || hooks.length === 0) {
+        const match = raw.match(/\[[\s\S]*\]/);
+        if (match) { try { hooks = JSON.parse(match[0]); } catch {} }
+      }
+
+      if (!Array.isArray(hooks) || hooks.length === 0) {
+        return res.status(500).json({ message: "Failed to generate hooks. Try again." });
+      }
+
+      res.json({ hooks });
+    } catch (e: any) {
+      console.error("[generate-hooks] Error:", e.message);
       res.status(500).json({ message: e.message });
     }
   });
