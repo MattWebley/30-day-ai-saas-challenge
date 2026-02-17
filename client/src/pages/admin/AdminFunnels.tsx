@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
-  Plus, Trash2, Settings, ExternalLink, BarChart3, Play,
+  Plus, Trash2, Settings, ExternalLink, BarChart3, Play, Sparkles,
   Presentation, ChevronLeft, Eye, EyeOff, Pencil, HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -180,7 +180,7 @@ export default function AdminFunnels() {
             </div>
 
             <div className="pt-2 border-t border-slate-200">
-              <p className="text-sm text-slate-500"><strong>Quick icon reference:</strong> <span className="inline-flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> Active/Inactive</span> · <span className="inline-flex items-center gap-1"><Settings className="w-3.5 h-3.5" /> Settings</span> · <span className="inline-flex items-center gap-1"><BarChart3 className="w-3.5 h-3.5" /> Analytics</span> · <span className="inline-flex items-center gap-1"><Pencil className="w-3.5 h-3.5" /> Ad Copy</span> · <span className="inline-flex items-center gap-1"><ExternalLink className="w-3.5 h-3.5" /> Open Page</span> · <span className="inline-flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Delete</span></p>
+              <p className="text-sm text-slate-500"><strong>Quick icon reference:</strong> <span className="inline-flex items-center gap-1"><Eye className="w-3.5 h-3.5" /> Active/Inactive</span> · <span className="inline-flex items-center gap-1"><Settings className="w-3.5 h-3.5" /> Settings</span> · <span className="inline-flex items-center gap-1"><BarChart3 className="w-3.5 h-3.5" /> Analytics</span> · <span className="inline-flex items-center gap-1"><ExternalLink className="w-3.5 h-3.5" /> Open Page</span> · <span className="inline-flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Delete</span></p>
             </div>
           </div>
         </Card>
@@ -232,40 +232,49 @@ export default function AdminFunnels() {
         ) : (
           <div className="space-y-2">
             {campaigns.map((c) => (
-              <div key={c.id} className="flex items-center justify-between p-3 rounded-lg border border-slate-200 hover:bg-slate-50">
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => toggleCampaign.mutate({ id: c.id, isActive: !c.isActive })}
-                    className={`p-1.5 rounded-lg ${c.isActive ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'}`}
-                    title={c.isActive ? "Active - click to deactivate" : "Inactive - click to activate"}
-                  >
-                    {c.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                  </button>
-                  <div>
-                    <span className="font-medium text-slate-900">{c.name}</span>
-                    <span className="text-sm text-slate-400 ml-2">/c/{c.slug}</span>
+              <div key={c.id} className="p-3 rounded-lg border border-slate-200 hover:bg-slate-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => toggleCampaign.mutate({ id: c.id, isActive: !c.isActive })}
+                      className={`p-1.5 rounded-lg ${c.isActive ? 'bg-green-100 text-green-600' : 'bg-slate-100 text-slate-400'}`}
+                      title={c.isActive ? "Active - click to deactivate" : "Inactive - click to activate"}
+                    >
+                      {c.isActive ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                    </button>
+                    <div>
+                      <span className="font-medium text-slate-900">{c.name}</span>
+                      <span className="text-sm text-slate-400 ml-2">/c/{c.slug}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button size="sm" variant="ghost" title="Campaign settings" onClick={() => { setSelectedCampaignId(c.id); setView("campaign"); }}>
+                      <Settings className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" variant="ghost" title="Analytics" onClick={() => { setSelectedCampaignId(c.id); setView("analytics"); }}>
+                      <BarChart3 className="w-4 h-4" />
+                    </Button>
+                    <a href={`/c/${c.slug}`} target="_blank" rel="noopener noreferrer" title="Open campaign page">
+                      <Button size="sm" variant="ghost"><ExternalLink className="w-4 h-4" /></Button>
+                    </a>
+                    <Button
+                      size="sm" variant="ghost"
+                      className="text-red-500 hover:text-red-700"
+                      title="Delete campaign"
+                      onClick={() => { if (confirm("Delete this campaign and all its data?")) deleteCampaign.mutate(c.id); }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Button size="sm" variant="ghost" title="Campaign settings" onClick={() => { setSelectedCampaignId(c.id); setView("campaign"); }}>
-                    <Settings className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="ghost" title="Analytics" onClick={() => { setSelectedCampaignId(c.id); setView("analytics"); }}>
-                    <BarChart3 className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="ghost" title="Ad copy generator" onClick={() => { setSelectedCampaignId(c.id); setView("adcopy"); }}>
-                    <Pencil className="w-4 h-4" />
-                  </Button>
-                  <a href={`/c/${c.slug}`} target="_blank" rel="noopener noreferrer" title="Open campaign page">
-                    <Button size="sm" variant="ghost"><ExternalLink className="w-4 h-4" /></Button>
-                  </a>
+                <div className="mt-2 pl-10">
                   <Button
-                    size="sm" variant="ghost"
-                    className="text-red-500 hover:text-red-700"
-                    title="Delete campaign"
-                    onClick={() => { if (confirm("Delete this campaign and all its data?")) deleteCampaign.mutate(c.id); }}
+                    size="sm"
+                    variant="outline"
+                    className="border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
+                    onClick={() => { setSelectedCampaignId(c.id); setView("adcopy"); }}
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Sparkles className="w-4 h-4 mr-1" /> Generate Facebook Ads
                   </Button>
                 </div>
               </div>
