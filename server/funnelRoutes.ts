@@ -1693,45 +1693,96 @@ Use "" (not null) for empty fields.`;
     }
   });
 
+  // Helper: fetch all slide content from a campaign's linked presentation
+  async function fetchPresentationContext(presentationId: number): Promise<string> {
+    const modules = await db.select().from(funnelModules)
+      .where(eq(funnelModules.presentationId, presentationId))
+      .orderBy(funnelModules.sortOrder);
+
+    const parts: string[] = [];
+    for (const mod of modules) {
+      const variants = await db.select().from(funnelModuleVariants).where(eq(funnelModuleVariants.moduleId, mod.id));
+      for (const variant of variants) {
+        const slides = await db.select().from(funnelSlides)
+          .where(eq(funnelSlides.variantId, variant.id))
+          .orderBy(funnelSlides.sortOrder);
+        for (const s of slides) {
+          const line = [s.headline, s.body, s.scriptNotes].filter(Boolean).join(" | ");
+          if (line) parts.push(line);
+        }
+      }
+    }
+    return parts.join("\n").substring(0, 6000);
+  }
+
   app.post("/api/admin/funnels/campaigns/:id/generate-ad-copy", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
       const campaignId = parseInt(req.params.id);
-      const { persuasionLevel, scriptContext } = req.body;
+      const { persuasionLevel } = req.body;
 
-      // Get campaign info
       const [campaign] = await db.select().from(funnelCampaigns).where(eq(funnelCampaigns.id, campaignId));
       if (!campaign) return res.status(404).json({ message: "Campaign not found" });
 
-      const { callClaude } = require("./aiService");
-      const prompt = `Generate 3 Meta ad copy variations for this campaign.
+      // Auto-pull VSL content if presentation is linked
+      let vslContext = "";
+      if (campaign.presentationId) {
+        vslContext = await fetchPresentationContext(campaign.presentationId);
+      }
+
+      const level = persuasionLevel || 5;
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-5-20250929",
+        max_tokens: 8000,
+        system: `You are an expert Facebook Ads copywriter who creates complete ad packages for Meta Ads Manager. You write copy that converts. Persuasion level: ${level}/10 (1=soft educational, 10=aggressive direct response).`,
+        messages: [{
+          role: "user",
+          content: `Create 3 complete Facebook Ad packages for this campaign. Each package uses a different angle.
 
 Campaign: ${campaign.name}
-Persuasion Level: ${persuasionLevel || 5}/10 (1=soft educational, 10=aggressive direct response)
-${scriptContext ? `\nPresentation script context:\n${scriptContext.substring(0, 2000)}` : ''}
+${vslContext ? `\nVSL/Webinar content (use this as source material):\n${vslContext}` : '\n(No presentation linked — use the campaign name to infer the topic)'}
 
-For each variation, output JSON array with objects containing:
-- headline (max 40 chars, punchy)
-- primaryText (main ad copy body, 2-4 sentences, compelling)
+For each of the 3 angles (pain, result, curiosity), generate:
+1. headline — max 40 chars, punchy Facebook ad headline
+2. description — max 30 chars, appears below headline in FB ad
+3. primaryText — short version, 2-3 sentences (the default ad text)
+4. primaryTextMedium — 4-6 lines, more detail
+5. primaryTextLong — 8-12 lines, story-based version that hooks with a personal anecdote
+6. videoScript — 30-60 second video ad script with sections labeled [HOOK], [PROBLEM], [TEASE], [CTA]
+7. hooks — array of exactly 5 alternative opening hook lines (first line alternatives for testing)
+8. adAngle — exactly "pain", "result", or "curiosity"
 
-Return ONLY valid JSON array, no markdown.`;
+Return ONLY a valid JSON array of 3 objects. No markdown, no backticks. Example structure:
+[{"headline":"...","description":"...","primaryText":"...","primaryTextMedium":"...","primaryTextLong":"...","videoScript":"...","hooks":["...","...","...","...","..."],"adAngle":"pain"},...]`
+        }],
+      });
 
-      const result = await callClaude(prompt);
-      let copies: { headline: string; primaryText: string }[] = [];
+      const text = response.content[0].type === 'text' ? response.content[0].text : '';
+      let packages: any[] = [];
       try {
-        copies = JSON.parse(result);
+        packages = JSON.parse(text);
       } catch {
-        // Try extracting JSON from response
-        const match = result.match(/\[[\s\S]*\]/);
-        if (match) copies = JSON.parse(match[0]);
+        const match = text.match(/\[[\s\S]*\]/);
+        if (match) packages = JSON.parse(match[0]);
+      }
+
+      if (!Array.isArray(packages) || packages.length === 0) {
+        return res.status(500).json({ message: "AI returned invalid format. Please try again." });
       }
 
       const inserted = [];
-      for (const copy of copies) {
+      for (const pkg of packages) {
         const [row] = await db.insert(funnelAdCopy).values({
           campaignId,
-          headline: copy.headline,
-          primaryText: copy.primaryText,
-          persuasionLevel: persuasionLevel || 5,
+          headline: pkg.headline || "Untitled",
+          primaryText: pkg.primaryText || "",
+          description: pkg.description || null,
+          primaryTextMedium: pkg.primaryTextMedium || null,
+          primaryTextLong: pkg.primaryTextLong || null,
+          videoScript: pkg.videoScript || null,
+          hooks: pkg.hooks ? JSON.stringify(pkg.hooks) : null,
+          adAngle: pkg.adAngle || null,
+          persuasionLevel: level,
           status: 'pending',
         }).returning();
         inserted.push(row);
@@ -1739,6 +1790,82 @@ Return ONLY valid JSON array, no markdown.`;
 
       res.json(inserted);
     } catch (e: any) {
+      console.error("[generate-ad-copy] Error:", e.message);
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // Regenerate a single ad copy card (one angle)
+  app.post("/api/admin/funnels/ad-copy/:id/regenerate", isAuthenticated, requireAdmin, async (req: any, res) => {
+    try {
+      const copyId = parseInt(req.params.id);
+      const [existing] = await db.select().from(funnelAdCopy).where(eq(funnelAdCopy.id, copyId));
+      if (!existing) return res.status(404).json({ message: "Ad copy not found" });
+
+      const [campaign] = await db.select().from(funnelCampaigns).where(eq(funnelCampaigns.id, existing.campaignId));
+      if (!campaign) return res.status(404).json({ message: "Campaign not found" });
+
+      let vslContext = "";
+      if (campaign.presentationId) {
+        vslContext = await fetchPresentationContext(campaign.presentationId);
+      }
+
+      const angle = existing.adAngle || "pain";
+      const level = existing.persuasionLevel || 5;
+      const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-5-20250929",
+        max_tokens: 3000,
+        system: `You are an expert Facebook Ads copywriter. Persuasion level: ${level}/10.`,
+        messages: [{
+          role: "user",
+          content: `Regenerate a complete Facebook Ad package using the "${angle}" angle.
+
+Campaign: ${campaign.name}
+${vslContext ? `\nVSL content:\n${vslContext}` : ''}
+
+Generate:
+1. headline — max 40 chars
+2. description — max 30 chars
+3. primaryText — 2-3 sentences
+4. primaryTextMedium — 4-6 lines
+5. primaryTextLong — 8-12 lines, story-based
+6. videoScript — 30-60 sec with [HOOK], [PROBLEM], [TEASE], [CTA]
+7. hooks — array of exactly 5 opening hook lines
+8. adAngle — "${angle}"
+
+Return ONLY a valid JSON object (not array). No markdown.`
+        }],
+      });
+
+      const text = response.content[0].type === 'text' ? response.content[0].text : '';
+      let pkg: any;
+      try {
+        pkg = JSON.parse(text);
+      } catch {
+        const match = text.match(/\{[\s\S]*\}/);
+        if (match) pkg = JSON.parse(match[0]);
+      }
+
+      if (!pkg) return res.status(500).json({ message: "AI returned invalid format. Try again." });
+
+      const [updated] = await db.update(funnelAdCopy)
+        .set({
+          headline: pkg.headline || existing.headline,
+          primaryText: pkg.primaryText || existing.primaryText,
+          description: pkg.description || null,
+          primaryTextMedium: pkg.primaryTextMedium || null,
+          primaryTextLong: pkg.primaryTextLong || null,
+          videoScript: pkg.videoScript || null,
+          hooks: pkg.hooks ? JSON.stringify(pkg.hooks) : null,
+          status: 'pending',
+        })
+        .where(eq(funnelAdCopy.id, copyId))
+        .returning();
+
+      res.json(updated);
+    } catch (e: any) {
+      console.error("[regenerate-ad-copy] Error:", e.message);
       res.status(500).json({ message: e.message });
     }
   });
@@ -1752,10 +1879,16 @@ Return ONLY valid JSON array, no markdown.`;
           eq(funnelAdCopy.status, 'approved'),
         ));
 
-      const header = "headline,primary_text,persuasion_level\n";
-      const rows = copies.map(c =>
-        `"${c.headline.replace(/"/g, '""')}","${c.primaryText.replace(/"/g, '""')}",${c.persuasionLevel}`
-      ).join('\n');
+      const esc = (s: string | null) => `"${(s || '').replace(/"/g, '""')}"`;
+      const header = "angle,headline,description,primary_text_short,primary_text_medium,primary_text_long,video_script,hooks,persuasion_level\n";
+      const rows = copies.map(c => {
+        const hooksParsed = c.hooks ? (() => { try { return JSON.parse(c.hooks).join(" | "); } catch { return c.hooks; } })() : '';
+        return [
+          esc(c.adAngle), esc(c.headline), esc(c.description), esc(c.primaryText),
+          esc(c.primaryTextMedium), esc(c.primaryTextLong), esc(c.videoScript),
+          esc(hooksParsed), c.persuasionLevel,
+        ].join(',');
+      }).join('\n');
 
       res.setHeader('Content-Type', 'text/csv');
       res.setHeader('Content-Disposition', 'attachment; filename=ad-copy-export.csv');

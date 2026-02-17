@@ -1108,6 +1108,12 @@ export const funnelAdCopy = pgTable("funnel_ad_copy", {
   campaignId: integer("campaign_id").notNull().references(() => funnelCampaigns.id, { onDelete: "cascade" }),
   headline: text("headline").notNull(),
   primaryText: text("primary_text").notNull(),
+  description: text("description"), // FB description below headline, max ~30 chars
+  primaryTextMedium: text("primary_text_medium"), // 4-6 line version
+  primaryTextLong: text("primary_text_long"), // 8-12 line story version
+  videoScript: text("video_script"), // 30-60 sec video ad script
+  hooks: text("hooks"), // JSON string array of 5 opening hook lines
+  adAngle: varchar("ad_angle"), // "pain", "result", or "curiosity"
   persuasionLevel: integer("persuasion_level").default(5),
   status: varchar("status").default("pending"), // pending, approved, rejected
   createdAt: timestamp("created_at").defaultNow(),

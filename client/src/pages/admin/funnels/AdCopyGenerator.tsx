@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
-  Sparkles, Check, X, Download, Loader2,
+  Sparkles, Check, X, Download, Loader2, Copy, ChevronDown, ChevronRight, RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { FunnelAdCopy } from "./funnelTypes";
@@ -15,10 +14,15 @@ interface Props {
   campaignId: number;
 }
 
+const ANGLE_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
+  pain: { label: "Pain", color: "text-red-700", bg: "bg-red-50", border: "border-red-200" },
+  result: { label: "Result", color: "text-green-700", bg: "bg-green-50", border: "border-green-200" },
+  curiosity: { label: "Curiosity", color: "text-amber-700", bg: "bg-amber-50", border: "border-amber-200" },
+};
+
 export default function AdCopyGenerator({ campaignId }: Props) {
   const queryClient = useQueryClient();
   const [persuasionLevel, setPersuasionLevel] = useState(5);
-  const [scriptContext, setScriptContext] = useState("");
 
   const { data: copies = [] } = useQuery<FunnelAdCopy[]>({
     queryKey: [`/api/admin/funnels/campaigns/${campaignId}/ad-copy`],
@@ -28,13 +32,12 @@ export default function AdCopyGenerator({ campaignId }: Props) {
     mutationFn: async () => {
       const res = await apiRequest("POST", `/api/admin/funnels/campaigns/${campaignId}/generate-ad-copy`, {
         persuasionLevel,
-        scriptContext,
       });
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/campaigns/${campaignId}/ad-copy`] });
-      toast.success("Ad copy generated!");
+      toast.success("3 ad packages generated!");
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -49,20 +52,35 @@ export default function AdCopyGenerator({ campaignId }: Props) {
     },
   });
 
+  const regenerate = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("POST", `/api/admin/funnels/ad-copy/${id}/regenerate`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/campaigns/${campaignId}/ad-copy`] });
+      toast.success("Ad package regenerated!");
+    },
+    onError: (e: any) => toast.error(e.message),
+  });
+
   const pendingCopies = copies.filter(c => c.status === 'pending');
   const approvedCopies = copies.filter(c => c.status === 'approved');
   const rejectedCopies = copies.filter(c => c.status === 'rejected');
 
   return (
     <div className="space-y-6">
-      <h3 className="text-lg font-bold text-slate-900">AI Ad Copy Generator</h3>
+      <h3 className="text-lg font-bold text-slate-900">Facebook Ad Generator</h3>
 
       {/* Generator */}
       <Card className="p-6 border-2 border-slate-200">
         <div className="flex items-center gap-2 mb-4">
           <Sparkles className="w-5 h-5 text-amber-500" />
-          <h4 className="font-bold text-slate-900">Generate New Copy</h4>
+          <h4 className="font-bold text-slate-900">Generate Ad Packages</h4>
         </div>
+        <p className="text-slate-700 mb-4">
+          Automatically pulls content from your linked VSL/webinar presentation and generates 3 complete ad packages (Pain, Result, Curiosity angles) ready for Meta Ads Manager.
+        </p>
 
         <div className="space-y-4">
           <div>
@@ -83,22 +101,11 @@ export default function AdCopyGenerator({ campaignId }: Props) {
             </div>
           </div>
 
-          <div>
-            <Label className="text-slate-700">Script Context (optional)</Label>
-            <p className="text-xs text-slate-500 mb-1">Paste key points from your presentation for more relevant copy</p>
-            <Textarea
-              value={scriptContext}
-              onChange={(e) => setScriptContext(e.target.value)}
-              rows={4}
-              placeholder="Key pain points, transformation story, offer details..."
-            />
-          </div>
-
           <Button onClick={() => generate.mutate()} disabled={generate.isPending}>
             {generate.isPending ? (
-              <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> Generating...</>
+              <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> Generating 3 Packages...</>
             ) : (
-              <><Sparkles className="w-4 h-4 mr-1" /> Generate 3 Variations</>
+              <><Sparkles className="w-4 h-4 mr-1" /> Generate 3 Ad Packages</>
             )}
           </Button>
         </div>
@@ -106,27 +113,29 @@ export default function AdCopyGenerator({ campaignId }: Props) {
 
       {/* Review Queue */}
       {pendingCopies.length > 0 && (
-        <Card className="p-6 border-2 border-slate-200">
-          <h4 className="font-bold text-slate-900 mb-4">Review Queue ({pendingCopies.length})</h4>
+        <div>
+          <h4 className="font-bold text-slate-900 mb-3">Review Queue ({pendingCopies.length})</h4>
           <div className="space-y-4">
             {pendingCopies.map((copy) => (
-              <CopyCard
+              <AdPackageCard
                 key={copy.id}
                 copy={copy}
                 onApprove={() => updateStatus.mutate({ id: copy.id, status: 'approved' })}
                 onReject={() => updateStatus.mutate({ id: copy.id, status: 'rejected' })}
+                onRegenerate={() => regenerate.mutate(copy.id)}
+                isRegenerating={regenerate.isPending}
               />
             ))}
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Approved */}
       {approvedCopies.length > 0 && (
-        <Card className="p-6 border-2 border-slate-200">
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="font-bold text-slate-900">Approved Copy ({approvedCopies.length})</h4>
-            <a href={`/api/admin/funnels/campaigns/${campaignId}/ad-copy/export-csv`} download title="Export approved ad copy as CSV">
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-bold text-slate-900">Approved ({approvedCopies.length})</h4>
+            <a href={`/api/admin/funnels/campaigns/${campaignId}/ad-copy/export-csv`} download>
               <Button size="sm" variant="outline">
                 <Download className="w-4 h-4 mr-1" /> Export CSV
               </Button>
@@ -134,14 +143,14 @@ export default function AdCopyGenerator({ campaignId }: Props) {
           </div>
           <div className="space-y-4">
             {approvedCopies.map((copy) => (
-              <CopyCard
+              <AdPackageCard
                 key={copy.id}
                 copy={copy}
                 onReject={() => updateStatus.mutate({ id: copy.id, status: 'rejected' })}
               />
             ))}
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Rejected */}
@@ -150,9 +159,9 @@ export default function AdCopyGenerator({ campaignId }: Props) {
           <summary className="text-slate-500 cursor-pointer hover:text-slate-700 font-medium">
             Rejected ({rejectedCopies.length})
           </summary>
-          <div className="mt-2 space-y-3">
+          <div className="mt-2 space-y-4">
             {rejectedCopies.map((copy) => (
-              <CopyCard
+              <AdPackageCard
                 key={copy.id}
                 copy={copy}
                 onApprove={() => updateStatus.mutate({ id: copy.id, status: 'approved' })}
@@ -165,36 +174,164 @@ export default function AdCopyGenerator({ campaignId }: Props) {
   );
 }
 
-function CopyCard({ copy, onApprove, onReject }: {
+// Copy text to clipboard with toast feedback
+function copyToClipboard(text: string, label: string) {
+  navigator.clipboard.writeText(text).then(() => {
+    toast.success(`${label} copied!`);
+  });
+}
+
+// Collapsible section component
+function CollapsibleSection({ title, children, defaultOpen = false }: {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border-t border-slate-100 pt-3">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1 text-slate-600 font-medium text-sm hover:text-slate-900 w-full text-left"
+      >
+        {open ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        {title}
+      </button>
+      {open && <div className="mt-2">{children}</div>}
+    </div>
+  );
+}
+
+// Copyable text block
+function CopyBlock({ label, text }: { label: string; text: string }) {
+  return (
+    <div className="relative group">
+      <p className="text-slate-700 whitespace-pre-wrap pr-8">{text}</p>
+      <button
+        onClick={() => copyToClipboard(text, label)}
+        className="absolute top-0 right-0 p-1 opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-slate-700"
+        title={`Copy ${label}`}
+      >
+        <Copy className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
+function AdPackageCard({ copy, onApprove, onReject, onRegenerate, isRegenerating }: {
   copy: FunnelAdCopy;
   onApprove?: () => void;
   onReject?: () => void;
+  onRegenerate?: () => void;
+  isRegenerating?: boolean;
 }) {
+  const angle = copy.adAngle || "pain";
+  const config = ANGLE_CONFIG[angle] || ANGLE_CONFIG.pain;
+  const isNewFormat = !!(copy.description || copy.primaryTextMedium || copy.adAngle);
+
+  // Parse hooks from JSON string
+  let hooks: string[] = [];
+  if (copy.hooks) {
+    try { hooks = JSON.parse(copy.hooks); } catch { /* old format */ }
+  }
+
   return (
-    <div className="p-4 rounded-lg border border-slate-200 bg-white">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <p className="font-bold text-slate-900 text-lg">{copy.headline}</p>
-          <p className="text-slate-700 mt-2 whitespace-pre-wrap">{copy.primaryText}</p>
-          <div className="flex items-center gap-2 mt-3">
-            <span className="text-xs text-slate-400">Persuasion: {copy.persuasionLevel}/10</span>
-            <span className="text-xs text-slate-400">·</span>
-            <span className="text-xs text-slate-400">{new Date(copy.createdAt).toLocaleDateString('en-GB')}</span>
-          </div>
+    <Card className={`p-5 border-2 ${config.border}`}>
+      {/* Header with angle badge + actions */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <span className={`px-2 py-0.5 rounded text-xs font-bold uppercase ${config.bg} ${config.color}`}>
+            {config.label}
+          </span>
+          <span className="text-xs text-slate-400">Persuasion: {copy.persuasionLevel}/10</span>
+          <span className="text-xs text-slate-400">·</span>
+          <span className="text-xs text-slate-400">{new Date(copy.createdAt).toLocaleDateString('en-GB')}</span>
         </div>
-        <div className="flex items-center gap-1 flex-shrink-0">
+        <div className="flex items-center gap-1">
+          {onRegenerate && (
+            <Button size="sm" variant="ghost" className="text-slate-500 hover:text-slate-700" title="Regenerate this package" onClick={onRegenerate} disabled={isRegenerating}>
+              {isRegenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            </Button>
+          )}
           {onApprove && (
-            <Button size="sm" variant="ghost" className="text-green-600 hover:text-green-700" title="Approve ad copy" onClick={onApprove}>
+            <Button size="sm" variant="ghost" className="text-green-600 hover:text-green-700" title="Approve" onClick={onApprove}>
               <Check className="w-4 h-4" />
             </Button>
           )}
           {onReject && (
-            <Button size="sm" variant="ghost" className="text-red-500 hover:text-red-700" title="Reject ad copy" onClick={onReject}>
+            <Button size="sm" variant="ghost" className="text-red-500 hover:text-red-700" title="Reject" onClick={onReject}>
               <X className="w-4 h-4" />
             </Button>
           )}
         </div>
       </div>
-    </div>
+
+      {/* Headline + Description */}
+      <div className="mb-3">
+        <div className="flex items-center justify-between">
+          <p className="font-bold text-slate-900 text-lg">{copy.headline}</p>
+          <button onClick={() => copyToClipboard(copy.headline, "Headline")} className="text-slate-400 hover:text-slate-700 p-1" title="Copy headline">
+            <Copy className="w-4 h-4" />
+          </button>
+        </div>
+        {copy.description && (
+          <div className="flex items-center justify-between mt-1">
+            <p className="text-slate-600">{copy.description}</p>
+            <button onClick={() => copyToClipboard(copy.description!, "Description")} className="text-slate-400 hover:text-slate-700 p-1" title="Copy description">
+              <Copy className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Primary Text (Short) — always visible */}
+      <div className="mb-1">
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Primary Text (Short)</p>
+        <CopyBlock label="Primary Text (Short)" text={copy.primaryText} />
+      </div>
+
+      {/* New format fields — collapsible */}
+      {isNewFormat && (
+        <div className="space-y-1 mt-3">
+          {copy.primaryTextMedium && (
+            <CollapsibleSection title="Primary Text (Medium)">
+              <CopyBlock label="Primary Text (Medium)" text={copy.primaryTextMedium} />
+            </CollapsibleSection>
+          )}
+
+          {copy.primaryTextLong && (
+            <CollapsibleSection title="Primary Text (Long)">
+              <CopyBlock label="Primary Text (Long)" text={copy.primaryTextLong} />
+            </CollapsibleSection>
+          )}
+
+          {copy.videoScript && (
+            <CollapsibleSection title="Video Ad Script">
+              <CopyBlock label="Video Script" text={copy.videoScript} />
+            </CollapsibleSection>
+          )}
+
+          {hooks.length > 0 && (
+            <CollapsibleSection title={`Hook Variations (${hooks.length})`}>
+              <div className="space-y-2">
+                {hooks.map((hook, i) => (
+                  <div key={i} className="flex items-start gap-2 group">
+                    <span className="text-xs text-slate-400 font-mono mt-0.5 w-4 flex-shrink-0">{i + 1}.</span>
+                    <p className="text-slate-700 flex-1">{hook}</p>
+                    <button
+                      onClick={() => copyToClipboard(hook, `Hook ${i + 1}`)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-slate-700 p-1 flex-shrink-0"
+                      title={`Copy hook ${i + 1}`}
+                    >
+                      <Copy className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </CollapsibleSection>
+          )}
+        </div>
+      )}
+    </Card>
   );
 }

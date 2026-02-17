@@ -146,6 +146,12 @@ export interface FunnelAdCopy {
   campaignId: number;
   headline: string;
   primaryText: string;
+  description: string | null;
+  primaryTextMedium: string | null;
+  primaryTextLong: string | null;
+  videoScript: string | null;
+  hooks: string | null; // JSON string array of 5 hook lines
+  adAngle: string | null; // "pain", "result", or "curiosity"
   persuasionLevel: number | null;
   status: string | null;
   createdAt: string;
