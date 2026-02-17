@@ -167,7 +167,13 @@ export function registerFunnelRoutes(app: Express) {
       const [presentation] = await db.select().from(funnelPresentations).where(eq(funnelPresentations.id, presentationId));
       if (!presentation) return res.status(404).json({ message: "Presentation not found" });
 
-      const isTextMode = presentation.displayMode === "text";
+      let isTextMode = presentation.displayMode === "text";
+
+      // If client explicitly requests simple mode, switch presentation to text mode
+      if (simple && !isTextMode) {
+        await db.update(funnelPresentations).set({ displayMode: "text" }).where(eq(funnelPresentations.id, presentationId));
+        isTextMode = true;
+      }
 
       // Auto-create module + variant if none exist
       let modules = await db.select().from(funnelModules).where(eq(funnelModules.presentationId, presentationId));
@@ -200,8 +206,8 @@ export function registerFunnelRoutes(app: Express) {
         }
       }
 
-      // Simple sentence splitting (no AI) — for Text Sync mode
-      if (simple && isTextMode) {
+      // Simple sentence splitting (no AI) — always used for Text Sync mode
+      if (isTextMode) {
         // Split script into sentences, group 1-2 per segment
         const rawSentences = script
           .replace(/\n{2,}/g, ' ¶ ') // preserve paragraph breaks as markers
