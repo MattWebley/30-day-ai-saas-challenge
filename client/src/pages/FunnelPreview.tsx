@@ -378,7 +378,7 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
       banner: { background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 60%, transparent 100%)" },
       center: {},
       "lower-third": {},
-      full: { background: "rgba(0,0,0,0.5)" },
+      full: {},
     };
 
     return (
