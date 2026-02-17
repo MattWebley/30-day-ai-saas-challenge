@@ -14,8 +14,23 @@ function isVimeoUrl(url: string | null | undefined): boolean {
   return url.includes("vimeo.com");
 }
 
-// Append params to a Vimeo embed URL without creating double ?
-function vimeoSrc(base: string, params: string): string {
+// Convert any Vimeo URL to a proper player embed URL
+function toVimeoEmbed(url: string): string {
+  if (url.includes("player.vimeo.com/video/")) return url;
+  const match = url.match(/vimeo\.com\/(\d+)(?:\/([a-zA-Z0-9]+))?/);
+  if (match) {
+    const id = match[1];
+    const hash = match[2];
+    return hash
+      ? `https://player.vimeo.com/video/${id}?h=${hash}`
+      : `https://player.vimeo.com/video/${id}`;
+  }
+  return url;
+}
+
+// Build Vimeo iframe src: converts to embed URL + appends params safely
+function vimeoSrc(rawUrl: string, params: string): string {
+  const base = toVimeoEmbed(rawUrl);
   return base + (base.includes('?') ? '&' : '?') + params;
 }
 

@@ -19,8 +19,25 @@ function isVimeoUrl(url: string | null | undefined): boolean {
   return url.includes("vimeo.com");
 }
 
-// Append query params to a URL that may already have params
-function vimeoSrc(base: string, params: string): string {
+// Convert any Vimeo URL to a proper player embed URL
+function toVimeoEmbed(url: string): string {
+  // Already an embed URL — leave it alone
+  if (url.includes("player.vimeo.com/video/")) return url;
+  // Convert vimeo.com/ID or vimeo.com/ID/HASH to embed format
+  const match = url.match(/vimeo\.com\/(\d+)(?:\/([a-zA-Z0-9]+))?/);
+  if (match) {
+    const id = match[1];
+    const hash = match[2];
+    return hash
+      ? `https://player.vimeo.com/video/${id}?h=${hash}`
+      : `https://player.vimeo.com/video/${id}`;
+  }
+  return url;
+}
+
+// Build Vimeo iframe src: converts to embed URL + appends params safely
+function vimeoSrc(rawUrl: string, params: string): string {
+  const base = toVimeoEmbed(rawUrl);
   return base + (base.includes('?') ? '&' : '?') + params;
 }
 
@@ -1260,7 +1277,7 @@ function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar
 
       <div className="flex-1 min-h-0 overflow-hidden py-4 group">
         <div className="h-full flex items-center justify-center">
-          <div className="max-h-full w-full overflow-hidden">
+          <div className="h-full w-full overflow-hidden">
             {slide && (
               isTextMode && !slide.videoUrl && !slide.imageUrl
                 ? <TextSegmentDisplay slide={slide} animKey={`text-${slide.id}`} fonts={fonts} />
@@ -1385,7 +1402,7 @@ function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar, isTex
 
       <div className="flex-1 min-h-0 overflow-hidden py-4">
         <div className="h-full flex items-center justify-center">
-          <div className="max-h-full w-full overflow-hidden">
+          <div className="h-full w-full overflow-hidden">
             {currentSlide ? (
               isTextMode && !currentSlide.videoUrl && !currentSlide.imageUrl
                 ? <TextSegmentDisplay slide={currentSlide} animKey={`text-${currentSlide.id}`} fonts={fonts} />
