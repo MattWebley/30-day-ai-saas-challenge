@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import {
-  Plus, Trash2, Settings, ExternalLink, BarChart3,
+  Plus, Trash2, Settings, ExternalLink, BarChart3, Play,
   Presentation, ChevronLeft, Eye, EyeOff, Pencil, HelpCircle,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -156,7 +156,7 @@ export default function AdminFunnels() {
 
             <div>
               <h4 className="font-bold text-slate-900 mb-1">Step 2: Paste Your Script</h4>
-              <p>Open your presentation with the <strong>gear icon</strong>. Paste your full script into the text box and click <strong>"Generate Slides"</strong>. AI will break it into slides with headlines and body text. You can edit, delete, or add slides after.</p>
+              <p>Click <strong>"Edit"</strong> on your presentation. Paste your full script into the text box and click <strong>"Generate Slides"</strong>. AI will break it into slides with headlines and body text. You can edit, delete, or add slides after.</p>
             </div>
 
             <div>
@@ -317,8 +317,13 @@ export default function AdminFunnels() {
                 </div>
                 <div className="flex items-center gap-1">
                   <Button size="sm" variant="ghost" title="Edit presentation" onClick={() => { setSelectedPresentationId(p.id); setView("presentation"); }}>
-                    <Settings className="w-4 h-4" />
+                    <Pencil className="w-4 h-4 mr-1" /> Edit
                   </Button>
+                  <a href={`/preview/${p.id}`} target="_blank" rel="noopener noreferrer">
+                    <Button size="sm" variant="ghost" title="Preview presentation">
+                      <Play className="w-4 h-4 mr-1" /> Preview
+                    </Button>
+                  </a>
                   <Button
                     size="sm" variant="ghost"
                     className="text-red-500 hover:text-red-700"

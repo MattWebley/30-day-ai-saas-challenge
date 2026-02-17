@@ -396,7 +396,7 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
         {slide.videoUrl && (
           isVimeo ? (
             <div className="w-full max-h-[40vh] aspect-video mb-8 rounded-lg animate-slide-fade overflow-hidden">
-              <iframe src={`${slide.videoUrl}?background=1&autoplay=1&loop=1&muted=1`} className="w-full h-full" style={{ border: 0 }} allow="autoplay; fullscreen" />
+              <iframe src={`${slide.videoUrl}?title=0&byline=0&portrait=0`} className="w-full h-full" style={{ border: 0 }} allow="autoplay; fullscreen" allowFullScreen />
             </div>
           ) : (
             <video src={slide.videoUrl} className="max-w-full max-h-[40vh] object-contain mb-8 rounded-lg animate-slide-fade" autoPlay muted loop playsInline />

@@ -260,7 +260,7 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
         {slide.videoUrl && (
           isVimeo ? (
             <div className="w-full max-h-[35vh] aspect-video mb-6 rounded-lg mx-auto animate-slide-fade overflow-hidden">
-              <iframe src={`${slide.videoUrl}?background=1&autoplay=1&loop=1&muted=1`} className="w-full h-full" style={{ border: 0 }} allow="autoplay; fullscreen" />
+              <iframe src={`${slide.videoUrl}?title=0&byline=0&portrait=0`} className="w-full h-full" style={{ border: 0 }} allow="autoplay; fullscreen" allowFullScreen />
             </div>
           ) : (
             <video src={slide.videoUrl} className="max-w-full max-h-[35vh] object-contain mb-6 rounded-lg mx-auto animate-slide-fade" autoPlay muted loop playsInline />
@@ -388,6 +388,46 @@ export default function FunnelWatch() {
       }),
     }).catch(() => {});
   }, [data]);
+
+  // Track page_view when watch page loads
+  const pageViewTracked = useRef(false);
+  useEffect(() => {
+    if (data && !pageViewTracked.current) {
+      pageViewTracked.current = true;
+      trackEvent('page_view', { page: 'watch' });
+    }
+  }, [data, trackEvent]);
+
+  // Track page_leave when user leaves or hides the tab
+  useEffect(() => {
+    if (!data) return;
+    const handleLeave = () => {
+      trackEvent('page_leave', {
+        watchTimeMs: totalElapsedMs,
+        progressPercent: Math.round(progressPercent),
+      });
+    };
+    window.addEventListener('beforeunload', handleLeave);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') handleLeave();
+    });
+    return () => {
+      window.removeEventListener('beforeunload', handleLeave);
+    };
+  }, [data, totalElapsedMs, progressPercent, trackEvent]);
+
+  // Track play milestones (25%, 50%, 75%, 100%)
+  const milestonesTracked = useRef<Set<number>>(new Set());
+  useEffect(() => {
+    if (!started || progressPercent === 0) return;
+    const milestones = [25, 50, 75, 100];
+    for (const m of milestones) {
+      if (progressPercent >= m && !milestonesTracked.current.has(m)) {
+        milestonesTracked.current.add(m);
+        trackEvent(`play_${m}`, { progressPercent: m, watchTimeMs: totalElapsedMs });
+      }
+    }
+  }, [started, progressPercent, totalElapsedMs, trackEvent]);
 
   // Slide sync + progress
   useEffect(() => {

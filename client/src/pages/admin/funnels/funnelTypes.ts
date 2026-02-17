@@ -160,7 +160,9 @@ export interface FunnelAnalytics {
   totalCtaClicks: number;
   totalCallsBooked: number;
   totalSales: number;
+  totalRevenue: number;
   totalAdSpend: number;
+  roi: number | null;
   costPerRegistration: number | null;
   costPerSale: number | null;
   variations: VariationAnalytics[];
@@ -174,6 +176,7 @@ export interface VariationAnalytics {
   ctaClicks: number;
   callsBooked: number;
   sales: number;
+  revenue: number;
   registrationRate: number;
   ctaClickRate: number;
   confidence: 'winner' | 'trending' | 'need_data';
@@ -184,4 +187,20 @@ export interface DropOffData {
   timeSeconds: number;
   viewerCount: number;
   percentage: number;
+}
+
+export interface VisitorJourney {
+  id: number;
+  email: string | null;
+  firstName: string | null;
+  utmSource: string | null;
+  utmMedium: string | null;
+  variationSetId: number;
+  variationName: string | null;
+  createdAt: string;
+  events: {
+    eventType: string;
+    eventData: Record<string, unknown> | null;
+    createdAt: string;
+  }[];
 }

@@ -2,8 +2,8 @@ import Stripe from 'stripe';
 import crypto from 'crypto';
 import { getStripeSync, getUncachableStripeClient } from './stripeClient';
 import { db } from './db';
-import { users, pendingPurchases, coachingPurchases, coaches, coachingSessions, magicTokens } from '../shared/schema';
-import { eq, sql } from 'drizzle-orm';
+import { users, pendingPurchases, coachingPurchases, coaches, coachingSessions, magicTokens, funnelVisitors, funnelEvents } from '../shared/schema';
+import { eq, sql, desc, and } from 'drizzle-orm';
 import { sendPurchaseConfirmationEmail, sendCoachingConfirmationEmail, sendCoachingPurchaseNotificationEmail, sendCritiqueNotificationEmail, sendWelcomeAccessEmail } from './emailService';
 import { addContactToSysteme } from './systemeService';
 import { sendPurchaseEvent } from './metaConversions';
@@ -195,6 +195,26 @@ export class WebhookHandlers {
           utmTerm: trafficSource.utmTerm,
         }).where(eq(users.id, user.id));
       }
+
+      // Auto-attribute this sale to funnel visitor (if they came through a funnel)
+      try {
+        const funnelVisitor = await db.select().from(funnelVisitors)
+          .where(eq(funnelVisitors.email, email))
+          .orderBy(desc(funnelVisitors.createdAt))
+          .limit(1);
+        if (funnelVisitor.length > 0) {
+          await db.insert(funnelEvents).values({
+            visitorId: funnelVisitor[0].id,
+            campaignId: funnelVisitor[0].campaignId,
+            variationSetId: funnelVisitor[0].variationSetId,
+            eventType: 'sale',
+            eventData: { amount: amountPaid, currency, stripeSessionId: session.id, productType },
+          });
+          console.log('[Webhook] Funnel sale attributed to visitor:', funnelVisitor[0].id, 'campaign:', funnelVisitor[0].campaignId);
+        }
+      } catch (funnelErr: any) {
+        console.error('[Webhook] Funnel attribution error (non-fatal):', funnelErr.message);
+      }
     } else {
       // No user found - save as pending purchase
       console.log('[Webhook] No user found, saving pending purchase for:', email);
@@ -268,6 +288,26 @@ export class WebhookHandlers {
         .catch((err: any) => console.error('[Webhook] Welcome email error:', err));
 
       console.log('[Webhook] Sent welcome email with magic link to:', email);
+
+      // Auto-attribute this sale to funnel visitor (if they came through a funnel)
+      try {
+        const funnelVisitor = await db.select().from(funnelVisitors)
+          .where(eq(funnelVisitors.email, email))
+          .orderBy(desc(funnelVisitors.createdAt))
+          .limit(1);
+        if (funnelVisitor.length > 0) {
+          await db.insert(funnelEvents).values({
+            visitorId: funnelVisitor[0].id,
+            campaignId: funnelVisitor[0].campaignId,
+            variationSetId: funnelVisitor[0].variationSetId,
+            eventType: 'sale',
+            eventData: { amount: amountPaid, currency, stripeSessionId: session.id, productType },
+          });
+          console.log('[Webhook] Funnel sale attributed to visitor:', funnelVisitor[0].id, 'campaign:', funnelVisitor[0].campaignId);
+        }
+      } catch (funnelErr: any) {
+        console.error('[Webhook] Funnel attribution error (non-fatal):', funnelErr.message);
+      }
 
       // Add guest purchaser to Systeme.io immediately (don't wait for account creation)
       const firstName = session.customer_details?.name?.split(' ')[0] || undefined;

@@ -1340,6 +1340,26 @@ Use "" (not null) for empty fields.`;
         .where(eq(funnelAdSpend.campaignId, campaignId));
       const totalAdSpend = Number(spendResult?.total || 0);
 
+      // Sum revenue from sale events (eventData.amount is in cents)
+      const saleEvents = await db.select({
+        variationSetId: funnelEvents.variationSetId,
+        eventData: funnelEvents.eventData,
+      }).from(funnelEvents)
+        .where(and(
+          eq(funnelEvents.campaignId, campaignId),
+          eq(funnelEvents.eventType, 'sale'),
+        ));
+
+      // Build per-variation revenue map
+      const variationRevenue = new Map<number, number>();
+      let totalRevenue = 0;
+      for (const evt of saleEvents) {
+        const amount = Number((evt.eventData as any)?.amount || 0);
+        totalRevenue += amount;
+        const vsId = evt.variationSetId;
+        variationRevenue.set(vsId, (variationRevenue.get(vsId) || 0) + amount);
+      }
+
       // Build per-variation analytics
       let totalVisitors = 0, totalRegistrations = 0, totalPlayStarts = 0;
       let totalCtaClicks = 0, totalCallsBooked = 0, totalSales = 0;
@@ -1361,6 +1381,8 @@ Use "" (not null) for empty fields.`;
         totalCallsBooked += callsBooked;
         totalSales += sales;
 
+        const revenue = variationRevenue.get(vs.id) || 0;
+
         return {
           variationSet: vs,
           visitors,
@@ -1369,6 +1391,7 @@ Use "" (not null) for empty fields.`;
           ctaClicks,
           callsBooked,
           sales,
+          revenue,
           registrationRate: visitors > 0 ? (registrations / visitors) * 100 : 0,
           ctaClickRate: playStarts > 0 ? (ctaClicks / playStarts) * 100 : 0,
           confidence: 'need_data' as string,
@@ -1413,11 +1436,70 @@ Use "" (not null) for empty fields.`;
         totalCtaClicks,
         totalCallsBooked,
         totalSales,
+        totalRevenue,
         totalAdSpend,
+        roi: totalAdSpend > 0 ? totalRevenue - totalAdSpend : null,
         costPerRegistration: totalRegistrations > 0 ? totalAdSpend / totalRegistrations : null,
         costPerSale: totalSales > 0 ? totalAdSpend / totalSales : null,
         variations,
       });
+    } catch (e: any) {
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // Recent visitors with full event journey
+  app.get("/api/admin/funnels/campaigns/:id/visitors", isAuthenticated, requireAdmin, async (req: any, res) => {
+    try {
+      const campaignId = parseInt(req.params.id);
+
+      // Get recent visitors (last 50)
+      const visitors = await db.select().from(funnelVisitors)
+        .where(eq(funnelVisitors.campaignId, campaignId))
+        .orderBy(desc(funnelVisitors.createdAt))
+        .limit(50);
+
+      if (visitors.length === 0) return res.json([]);
+
+      // Get variation sets for names
+      const variationSets = await db.select().from(funnelVariationSets)
+        .where(eq(funnelVariationSets.campaignId, campaignId));
+      const vsMap = new Map(variationSets.map(vs => [vs.id, vs.name]));
+
+      // Get all events for these visitors
+      const visitorIds = visitors.map(v => v.id);
+      const events = await db.select().from(funnelEvents)
+        .where(and(
+          eq(funnelEvents.campaignId, campaignId),
+          sql`${funnelEvents.visitorId} IN (${sql.join(visitorIds.map(id => sql`${id}`), sql`, `)})`
+        ))
+        .orderBy(funnelEvents.createdAt);
+
+      // Group events by visitor
+      const eventsByVisitor = new Map<number, typeof events>();
+      for (const evt of events) {
+        const list = eventsByVisitor.get(evt.visitorId) || [];
+        list.push(evt);
+        eventsByVisitor.set(evt.visitorId, list);
+      }
+
+      const result = visitors.map(v => ({
+        id: v.id,
+        email: v.email,
+        firstName: v.firstName,
+        utmSource: v.utmSource,
+        utmMedium: v.utmMedium,
+        variationSetId: v.variationSetId,
+        variationName: vsMap.get(v.variationSetId) || null,
+        createdAt: v.createdAt,
+        events: (eventsByVisitor.get(v.id) || []).map(e => ({
+          eventType: e.eventType,
+          eventData: e.eventData,
+          createdAt: e.createdAt,
+        })),
+      }));
+
+      res.json(result);
     } catch (e: any) {
       res.status(500).json({ message: e.message });
     }
