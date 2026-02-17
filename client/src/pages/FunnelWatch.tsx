@@ -148,7 +148,9 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
 
   const hasMedia = !!(slide.imageUrl || slide.videoUrl);
   const overlay = slide.overlayStyle || "none";
-  const useOverlay = hasMedia && overlay !== "none";
+  // Videos always fill the background (overlay mode) — even if no overlay style is set, default to "full"
+  const useOverlay = hasMedia && (overlay !== "none" || !!slide.videoUrl);
+  const effectiveOverlay = overlay !== "none" ? overlay : "full";
 
   const headlineEl = hasHeadline && (
     <h2
@@ -198,9 +200,9 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
       {slide.videoUrl ? (
         isVimeo ? (
           <iframe
-            src={vimeoSrc(slide.videoUrl!, "background=1&autoplay=1&loop=1&muted=1")}
+            src={vimeoSrc(slide.videoUrl!, "autoplay=1&muted=1&loop=1&title=0&byline=0&portrait=0")}
             className="absolute inset-0 w-full h-full"
-            style={{ border: 0 }}
+            style={{ border: 0, transform: "scale(1.2)", transformOrigin: "center center" }}
             allow="autoplay; fullscreen"
           />
         ) : (
@@ -231,13 +233,13 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
     return (
       <div key={animKey} className="w-full h-full relative overflow-hidden">
         {mediaBg}
-        <div className={overlayClasses[overlay] || overlayClasses.full} style={overlayBgStyles[overlay] || {}}>
-          {overlay === "center" ? (
+        <div className={overlayClasses[effectiveOverlay] || overlayClasses.full} style={overlayBgStyles[effectiveOverlay] || {}}>
+          {effectiveOverlay === "center" ? (
             <div className="bg-black/60 rounded-2xl px-8 py-6 max-w-2xl text-center backdrop-blur-sm">
               {headlineEl}
               {bodyEl}
             </div>
-          ) : overlay === "lower-third" ? (
+          ) : effectiveOverlay === "lower-third" ? (
             <div className="bg-black/75 px-8 py-4 text-left">
               {headlineEl}
               {bodyEl}
