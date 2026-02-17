@@ -57,15 +57,15 @@ export default function PresentationEditor({ presentationId }: Props) {
 
   // Generate slides from script
   const generateSlides = useMutation({
-    mutationFn: async (scriptText: string) => {
-      const res = await apiRequest("POST", `/api/admin/funnels/presentations/${presentationId}/generate-slides`, { script: scriptText });
+    mutationFn: async ({ scriptText, simple }: { scriptText: string; simple?: boolean }) => {
+      const res = await apiRequest("POST", `/api/admin/funnels/presentations/${presentationId}/generate-slides`, { script: scriptText, simple });
       return res.json();
     },
     onSuccess: () => {
       invalidate();
       setScript("");
       setShowRegenerate(false);
-      toast.success("Slides generated from script");
+      toast.success(isTextMode ? "Script split into sentences" : "Slides generated from script");
     },
     onError: (e: any) => toast.error(getServerErrorMessage(e, "Failed to generate slides. Please try again.")),
   });
@@ -208,6 +208,7 @@ export default function PresentationEditor({ presentationId }: Props) {
           </div>
 
           {/* Display mode toggle */}
+          {/* Display mode toggle */}
           <div className="mb-4">
             <Label className="text-slate-700 font-medium">Display Mode</Label>
             <div className="flex gap-2 mt-2">
@@ -229,7 +230,7 @@ export default function PresentationEditor({ presentationId }: Props) {
               </button>
             </div>
             {isTextMode && (
-              <p className="text-sm text-slate-500 mt-2">Text Sync mode shows one sentence at a time as large text on a white background, synced to audio.</p>
+              <p className="text-sm text-slate-500 mt-2">White background, black text. Your script is split into sentences — one or two at a time. No AI formatting.</p>
             )}
           </div>
 
@@ -243,7 +244,7 @@ export default function PresentationEditor({ presentationId }: Props) {
             <Label className="text-slate-700 font-medium">Paste Your Script</Label>
             <p className="text-slate-600">
               {isTextMode
-                ? "Paste your script. AI will break it into individual sentences that display one at a time synced to audio."
+                ? "Paste your script below. It will be split into sentences instantly — no AI, no formatting. Just your words, one or two sentences at a time."
                 : "Paste the full script for your presentation. AI will break it into slides with headlines and body text."}
             </p>
             <Textarea
@@ -251,19 +252,21 @@ export default function PresentationEditor({ presentationId }: Props) {
               onChange={(e) => setScript(e.target.value)}
               rows={12}
               placeholder={isTextMode
-                ? "Paste your script here...\n\nEach sentence will become a text segment shown one at a time."
+                ? "Paste your script here...\n\nEach sentence will appear as plain text on a white background."
                 : "Paste your webinar or VSL script here...\n\nEach key point will become a slide with a headline and body text."}
               className="text-slate-700"
             />
             <Button
-              onClick={() => generateSlides.mutate(script)}
+              onClick={() => generateSlides.mutate({ scriptText: script, simple: isTextMode })}
               disabled={script.trim().length < 20 || generateSlides.isPending}
               className="w-full sm:w-auto"
             >
               {generateSlides.isPending ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {isTextMode ? "Generating Segments..." : "Generating Slides..."}</>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {isTextMode ? "Splitting..." : "Generating Slides..."}</>
               ) : (
-                <><Wand2 className="w-4 h-4 mr-2" /> {isTextMode ? "Generate Segments" : "Generate Slides"}</>
+                isTextMode
+                  ? <><AlignLeft className="w-4 h-4 mr-2" /> Split into Sentences</>
+                  : <><Wand2 className="w-4 h-4 mr-2" /> Generate Slides</>
               )}
             </Button>
             {script.trim().length > 0 && script.trim().length < 20 && (
@@ -455,11 +458,13 @@ export default function PresentationEditor({ presentationId }: Props) {
         {/* Regenerate from Script (collapsible) */}
         <details className="mb-4" open={showRegenerate} onToggle={(e) => setShowRegenerate((e.target as HTMLDetailsElement).open)}>
           <summary className="cursor-pointer text-sm text-slate-500 hover:text-slate-700 select-none">
-            <Wand2 className="w-3.5 h-3.5 inline mr-1" /> Regenerate from Script
+            {isTextMode ? <><AlignLeft className="w-3.5 h-3.5 inline mr-1" /> Re-split from Script</> : <><Wand2 className="w-3.5 h-3.5 inline mr-1" /> Regenerate from Script</>}
           </summary>
           <div className="mt-3 p-4 bg-amber-50 border border-amber-200 rounded-lg space-y-3">
             <p className="text-sm text-amber-800">
-              This will replace all existing slides with new AI-generated ones.
+              {isTextMode
+                ? "This will replace all existing segments with a fresh sentence split."
+                : "This will replace all existing slides with new AI-generated ones."}
             </p>
             <Textarea
               value={script}
@@ -472,16 +477,18 @@ export default function PresentationEditor({ presentationId }: Props) {
               size="sm"
               variant="outline"
               onClick={() => {
-                if (confirm("This will delete all current slides and regenerate them. Continue?")) {
-                  generateSlides.mutate(script);
+                if (confirm(isTextMode ? "This will delete all current segments and re-split. Continue?" : "This will delete all current slides and regenerate them. Continue?")) {
+                  generateSlides.mutate({ scriptText: script, simple: isTextMode });
                 }
               }}
               disabled={script.trim().length < 20 || generateSlides.isPending}
             >
               {generateSlides.isPending ? (
-                <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> Generating...</>
+                <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {isTextMode ? "Splitting..." : "Generating..."}</>
               ) : (
-                <><Wand2 className="w-4 h-4 mr-1" /> Regenerate Slides</>
+                isTextMode
+                  ? <><AlignLeft className="w-4 h-4 mr-1" /> Re-split Sentences</>
+                  : <><Wand2 className="w-4 h-4 mr-1" /> Regenerate Slides</>
               )}
             </Button>
           </div>

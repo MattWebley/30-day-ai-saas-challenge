@@ -158,7 +158,7 @@ export function registerFunnelRoutes(app: Express) {
   app.post("/api/admin/funnels/presentations/:id/generate-slides", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
       const presentationId = parseInt(req.params.id);
-      const { script } = req.body;
+      const { script, simple } = req.body;
       if (!script || script.trim().length < 20) {
         return res.status(400).json({ message: "Script must be at least 20 characters" });
       }
@@ -198,6 +198,53 @@ export function registerFunnelRoutes(app: Express) {
           // Update script on existing variant
           await db.update(funnelModuleVariants).set({ scriptText: script }).where(eq(funnelModuleVariants.id, variantId));
         }
+      }
+
+      // Simple sentence splitting (no AI) — for Text Sync mode
+      if (simple && isTextMode) {
+        // Split script into sentences, group 1-2 per segment
+        const rawSentences = script
+          .replace(/\n{2,}/g, ' ¶ ') // preserve paragraph breaks as markers
+          .replace(/\n/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .split(/(?<=[.!?])\s+/)
+          .map((s: string) => s.replace(/¶/g, '').trim())
+          .filter((s: string) => s.length > 0);
+
+        // Group: if a sentence is short (< 60 chars), pair it with the next one
+        const segments: string[] = [];
+        let i = 0;
+        while (i < rawSentences.length) {
+          const current = rawSentences[i];
+          if (current.length < 60 && i + 1 < rawSentences.length) {
+            segments.push(current + ' ' + rawSentences[i + 1]);
+            i += 2;
+          } else {
+            segments.push(current);
+            i += 1;
+          }
+        }
+
+        // Delete existing slides
+        await db.delete(funnelSlides).where(eq(funnelSlides.variantId, variantId));
+
+        // Insert segments as slides
+        const createdSlides = [];
+        for (let s = 0; s < segments.length; s++) {
+          const [slide] = await db.insert(funnelSlides).values({
+            variantId,
+            sortOrder: s,
+            headline: "",
+            body: segments[s],
+            scriptNotes: null,
+            startTimeMs: 0,
+          }).returning();
+          createdSlides.push(slide);
+        }
+
+        console.log(`[generate-slides] Simple split: ${segments.length} segments from ${script.length} chars`);
+        return res.json({ slides: createdSlides, variantId, moduleId });
       }
 
       // Call Anthropic API directly (bypass abuse detection - this is admin-only)
