@@ -14,6 +14,11 @@ function isVimeoUrl(url: string | null | undefined): boolean {
   return url.includes("vimeo.com");
 }
 
+// Append params to a Vimeo embed URL without creating double ?
+function vimeoSrc(base: string, params: string): string {
+  return base + (base.includes('?') ? '&' : '?') + params;
+}
+
 interface SlideData {
   id: number;
   headline: string | null;
@@ -193,7 +198,7 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
       {slide.videoUrl ? (
         isVimeo ? (
           <iframe
-            src={`${slide.videoUrl}?background=1&autoplay=1&loop=1&muted=1`}
+            src={vimeoSrc(slide.videoUrl!, "background=1&autoplay=1&loop=1&muted=1")}
             className="absolute inset-0 w-full h-full"
             style={{ border: 0 }}
             allow="autoplay; fullscreen"
@@ -260,7 +265,7 @@ function SlideDisplay({ slide, theme, fonts, animKey }: {
         {slide.videoUrl && (
           isVimeo ? (
             <div className="w-full max-h-[35vh] aspect-video mb-6 rounded-lg mx-auto animate-slide-fade overflow-hidden">
-              <iframe src={`${slide.videoUrl}?title=0&byline=0&portrait=0`} className="w-full h-full" style={{ border: 0 }} allow="autoplay; fullscreen" allowFullScreen />
+              <iframe src={vimeoSrc(slide.videoUrl!, "title=0&byline=0&portrait=0")} className="w-full h-full" style={{ border: 0 }} allow="autoplay; fullscreen" allowFullScreen />
             </div>
           ) : (
             <video src={slide.videoUrl} className="max-w-full max-h-[35vh] object-contain mb-6 rounded-lg mx-auto animate-slide-fade" autoPlay muted loop playsInline />
@@ -625,7 +630,7 @@ export default function FunnelWatch() {
                 /* Audio + Slides/Text player */
                 <div className="absolute inset-0 flex items-center justify-center">
                   {currentSlide ? (
-                    isTextMode
+                    isTextMode && !currentSlide.videoUrl && !currentSlide.imageUrl
                       ? <TextSegmentDisplay slide={currentSlide} animKey={currentSlide.id} fonts={fonts} />
                       : <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={currentSlide.id} />
                   ) : (

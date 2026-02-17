@@ -19,6 +19,11 @@ function isVimeoUrl(url: string | null | undefined): boolean {
   return url.includes("vimeo.com");
 }
 
+// Append query params to a URL that may already have params
+function vimeoSrc(base: string, params: string): string {
+  return base + (base.includes('?') ? '&' : '?') + params;
+}
+
 interface SlideData {
   id: number;
   headline: string | null;
@@ -327,7 +332,7 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
       {slide.videoUrl ? (
         isVimeo ? (
           <iframe
-            src={`${slide.videoUrl}?background=1&autoplay=1&loop=1&muted=1`}
+            src={vimeoSrc(slide.videoUrl!, "background=1&autoplay=1&loop=1&muted=1")}
             className="absolute inset-0 w-full h-full"
             style={{ border: 0 }}
             allow="autoplay; fullscreen"
@@ -396,7 +401,7 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
         {slide.videoUrl && (
           isVimeo ? (
             <div className="w-full max-h-[40vh] aspect-video mb-8 rounded-lg animate-slide-fade overflow-hidden">
-              <iframe src={`${slide.videoUrl}?title=0&byline=0&portrait=0`} className="w-full h-full" style={{ border: 0 }} allow="autoplay; fullscreen" allowFullScreen />
+              <iframe src={vimeoSrc(slide.videoUrl!, "title=0&byline=0&portrait=0")} className="w-full h-full" style={{ border: 0 }} allow="autoplay; fullscreen" allowFullScreen />
             </div>
           ) : (
             <video src={slide.videoUrl} className="max-w-full max-h-[40vh] object-contain mb-8 rounded-lg animate-slide-fade" autoPlay muted loop playsInline />
@@ -1180,7 +1185,7 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar, i
         {/* Right: Slide/text preview - locked in place */}
         <div className={`w-1/2 ${isTextMode ? "bg-white" : theme.pageBg} flex items-center justify-center transition-colors duration-300 overflow-hidden`}>
           {activeSlide && (
-            isTextMode
+            isTextMode && !activeSlide.videoUrl && !activeSlide.imageUrl
               ? <TextSegmentDisplay slide={activeSlide} animKey={`present-text-${activeSlide.id}`} fonts={fonts} />
               : <SlideDisplay slide={activeSlide} theme={theme} fonts={fonts} animKey={`present-${themeKey}-${activeSlide.id}`} />
           )}
@@ -1255,7 +1260,7 @@ function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar
         <div className="h-full flex items-center justify-center">
           <div className="max-h-full w-full overflow-hidden">
             {slide && (
-              isTextMode
+              isTextMode && !slide.videoUrl && !slide.imageUrl
                 ? <TextSegmentDisplay slide={slide} animKey={`text-${slide.id}`} fonts={fonts} />
                 : <SlideDisplay slide={slide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${slide.id}`} editable onSave={handleSlideTextSave} />
             )}
@@ -1380,7 +1385,7 @@ function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar, isTex
         <div className="h-full flex items-center justify-center">
           <div className="max-h-full w-full overflow-hidden">
             {currentSlide ? (
-              isTextMode
+              isTextMode && !currentSlide.videoUrl && !currentSlide.imageUrl
                 ? <TextSegmentDisplay slide={currentSlide} animKey={`text-${currentSlide.id}`} fonts={fonts} />
                 : <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${currentSlide.id}`} />
             ) : (

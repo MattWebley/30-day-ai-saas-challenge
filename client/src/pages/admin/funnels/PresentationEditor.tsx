@@ -43,9 +43,17 @@ const OVERLAY_STYLES = [
 ] as const;
 
 // Check if a URL is a Vimeo link and extract the embed URL
+// Handles: vimeo.com/ID, vimeo.com/ID/HASH (unlisted), player.vimeo.com/video/ID
 function getVimeoEmbedUrl(url: string): string | null {
-  const match = url.match(/(?:vimeo\.com\/)(\d+)/);
-  if (match) return `https://player.vimeo.com/video/${match[1]}`;
+  // Match vimeo.com/ID or vimeo.com/ID/HASH (unlisted videos need the hash to embed)
+  const match = url.match(/(?:vimeo\.com\/)(\d+)(?:\/([a-zA-Z0-9]+))?/);
+  if (match) {
+    const videoId = match[1];
+    const hash = match[2];
+    return hash
+      ? `https://player.vimeo.com/video/${videoId}?h=${hash}`
+      : `https://player.vimeo.com/video/${videoId}`;
+  }
   if (url.includes("player.vimeo.com/video/")) return url;
   return null;
 }
