@@ -10,6 +10,7 @@ import {
   Plus, Trash2, Save, ChevronDown, ChevronUp,
   GripVertical, Music, Video, Image, Timer,
   Wand2, Eye, Pencil, Loader2, ExternalLink, Presentation, AlignLeft,
+  Mic, Sparkles,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { FunnelPresentation, FunnelModule, FunnelModuleVariant, FunnelSlide } from "./funnelTypes";
@@ -235,12 +236,17 @@ export default function PresentationEditor({ presentationId }: Props) {
             </div>
           </div>
 
+          {/* VSL Script Generator */}
+          <VslGenerator onGenerated={(s) => setScript(s)} />
+
           {/* Script paste */}
           <div className="space-y-3">
-            <Label className="text-slate-700 font-medium">Paste Your Script</Label>
-            <p className="text-slate-600">
-              Paste your script below, then choose how to use it.
-            </p>
+            <Label className="text-slate-700 font-medium">{script ? "Your Script" : "Paste Your Script"}</Label>
+            {!script && (
+              <p className="text-slate-600">
+                Generate a script above, or paste your own below.
+              </p>
+            )}
             <Textarea
               value={script}
               onChange={(e) => setScript(e.target.value)}
@@ -1139,6 +1145,150 @@ function SlideEditor({ slide, onSave }: { slide: FunnelSlide; onSave: (data: Par
       <Button size="sm" onClick={() => { onSave(edits); setEdits({}); }}>
         <Save className="w-3 h-3 mr-0.5" /> Save
       </Button>
+    </div>
+  );
+}
+
+// VSL Script Generator
+const VSL_FORMULAS = [
+  { value: 1, label: "Nathan's High-Converting", desc: "Full 24-step framework. Call out viewer, authority, proof, future pace, close." },
+  { value: 2, label: "Perfect Webinar", desc: "3 secrets structure. Big promise, origin story, stack, close." },
+  { value: 3, label: "The Confrontation", desc: "Lead with enemy frame. Call out fake gurus, pivot to the real truth." },
+  { value: 4, label: "The Underdog Story", desc: "Lead with Matt's origin. Council estate to $23M. Rags to riches." },
+  { value: 5, label: "The Wealth Divide", desc: "Lead with assets vs income. Bigger picture, wealth gap, opportunity." },
+];
+
+const VSL_ANGLES = [
+  { value: "A", label: "Escape", desc: "Pain of 9-5, freedom of the alternative" },
+  { value: "B", label: "Prove Them Wrong", desc: "Girlfriend story, emotional revenge" },
+  { value: "C", label: "Early Mover", desc: "Window of opportunity, urgency, FOMO" },
+  { value: "D", label: "Anti-Guru", desc: "Scepticism, vulnerability, honesty" },
+  { value: "E", label: "Asset Builder", desc: "Wealth divide, assets vs income, legacy" },
+  { value: "F", label: "Second Chance", desc: "For people who've tried and failed" },
+];
+
+function VslGenerator({ onGenerated }: { onGenerated: (script: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [formula, setFormula] = useState(1);
+  const [angle, setAngle] = useState("A");
+  const [hook, setHook] = useState("");
+  const [context, setContext] = useState("");
+  const [generating, setGenerating] = useState(false);
+
+  const generate = async () => {
+    setGenerating(true);
+    try {
+      const res = await apiRequest("POST", "/api/admin/funnels/generate-vsl", { formula, angle, hook, context });
+      const data = await res.json();
+      if (data.script) {
+        onGenerated(data.script);
+        toast.success(`VSL script generated (~${data.script.split(/\s+/).length} words)`);
+        setOpen(false);
+      } else {
+        toast.error("No script returned. Try again.");
+      }
+    } catch (e: any) {
+      toast.error(getServerErrorMessage(e, "Failed to generate VSL script."));
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  return (
+    <div className="mb-6">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-2 text-slate-700 font-medium hover:text-slate-900 transition-colors"
+      >
+        <Sparkles className="w-4 h-4 text-amber-500" />
+        Generate VSL Script with AI
+        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {open && (
+        <div className="mt-3 p-4 bg-slate-50 border-2 border-slate-200 rounded-lg space-y-4">
+          {/* Formula */}
+          <div>
+            <Label className="text-slate-700 font-medium">Formula</Label>
+            <div className="mt-2 space-y-1.5">
+              {VSL_FORMULAS.map((f) => (
+                <button
+                  key={f.value}
+                  onClick={() => setFormula(f.value)}
+                  className={`w-full text-left p-2.5 rounded-lg border-2 transition-colors ${
+                    formula === f.value
+                      ? "border-primary bg-primary/5"
+                      : "border-slate-200 bg-white hover:border-slate-300"
+                  }`}
+                >
+                  <span className="font-medium text-slate-900">{f.value}. {f.label}</span>
+                  <span className="block text-sm text-slate-500 mt-0.5">{f.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Angle */}
+          <div>
+            <Label className="text-slate-700 font-medium">Angle</Label>
+            <div className="mt-2 grid grid-cols-2 gap-1.5">
+              {VSL_ANGLES.map((a) => (
+                <button
+                  key={a.value}
+                  onClick={() => setAngle(a.value)}
+                  className={`text-left p-2.5 rounded-lg border-2 transition-colors ${
+                    angle === a.value
+                      ? "border-primary bg-primary/5"
+                      : "border-slate-200 bg-white hover:border-slate-300"
+                  }`}
+                >
+                  <span className="font-medium text-slate-900">{a.value}. {a.label}</span>
+                  <span className="block text-sm text-slate-500 mt-0.5">{a.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Hook (optional) */}
+          <div>
+            <Label className="text-slate-700 font-medium">Opening Hook <span className="font-normal text-slate-400">(optional)</span></Label>
+            <Input
+              value={hook}
+              onChange={(e) => setHook(e.target.value)}
+              placeholder="e.g. What if I told you that you could build a software business without writing a single line of code..."
+              className="mt-1"
+            />
+          </div>
+
+          {/* Context (optional) */}
+          <div>
+            <Label className="text-slate-700 font-medium">Extra Context <span className="font-normal text-slate-400">(optional)</span></Label>
+            <Textarea
+              value={context}
+              onChange={(e) => setContext(e.target.value)}
+              rows={3}
+              placeholder="Any extra facts, new testimonials, specific audience, or things you want included..."
+              className="mt-1 text-slate-700"
+            />
+          </div>
+
+          {/* Generate */}
+          <Button
+            onClick={generate}
+            disabled={generating}
+            className="w-full"
+          >
+            {generating ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Generating VSL Script...</>
+            ) : (
+              <><Sparkles className="w-4 h-4 mr-2" /> Generate VSL Script</>
+            )}
+          </Button>
+          {generating && (
+            <p className="text-sm text-slate-500 text-center">This takes 30-60 seconds. Writing ~2,500 words in Matt's voice...</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
