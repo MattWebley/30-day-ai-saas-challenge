@@ -248,6 +248,8 @@ Interactive components MUST match lesson text styling:
 - [ ] Test AI Detect CTA timing on a campaign with script notes
 - [ ] Test watch page landing page layout (headline + video player + CTA popup)
 - [ ] Consider building image upload + AI matching for slides (user wants drag & drop media into presentations)
+- [ ] Run SQL on production: `ALTER TABLE funnel_presentations ADD COLUMN IF NOT EXISTS display_mode varchar DEFAULT 'slides';`
+- [ ] Test Text Sync mode: create presentation -> toggle to Text Sync -> paste script -> generate segments -> preview -> watch page
 
 ## Known Issues
 - Day 1 completion may not work - debug logging added

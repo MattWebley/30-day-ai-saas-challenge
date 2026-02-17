@@ -9,7 +9,7 @@ import { apiRequest, getServerErrorMessage } from "@/lib/queryClient";
 import {
   Plus, Trash2, Save, ChevronDown, ChevronUp,
   GripVertical, Music, Video, Image, Timer,
-  Wand2, Eye, Pencil, Loader2, ExternalLink,
+  Wand2, Eye, Pencil, Loader2, ExternalLink, Presentation, AlignLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { FunnelPresentation, FunnelModule, FunnelModuleVariant, FunnelSlide } from "./funnelTypes";
@@ -94,6 +94,20 @@ export default function PresentationEditor({ presentationId }: Props) {
       toast.success("Theme updated");
     },
   });
+
+  // Update display mode
+  const updateDisplayMode = useMutation({
+    mutationFn: async (mode: string) => {
+      const res = await apiRequest("PUT", `/api/admin/funnels/presentations/${presentationId}`, { displayMode: mode });
+      return res.json();
+    },
+    onSuccess: () => {
+      invalidate();
+      toast.success("Display mode updated");
+    },
+  });
+
+  const isTextMode = presentation?.displayMode === "text";
 
   // Update variant audio URL
   const updateVariantAudio = useMutation({
@@ -193,20 +207,52 @@ export default function PresentationEditor({ presentationId }: Props) {
             </div>
           </div>
 
-          {/* Theme picker */}
-          <ThemePicker currentTheme={presentation.theme} onSelect={(t) => updateTheme.mutate(t)} />
+          {/* Display mode toggle */}
+          <div className="mb-4">
+            <Label className="text-slate-700 font-medium">Display Mode</Label>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={() => updateDisplayMode.mutate("slides")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                  !isTextMode ? "border-primary bg-primary/5 text-primary" : "border-slate-200 text-slate-500 hover:border-slate-300"
+                }`}
+              >
+                <Presentation className="w-4 h-4" /> Slides
+              </button>
+              <button
+                onClick={() => updateDisplayMode.mutate("text")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 text-sm font-medium transition-colors ${
+                  isTextMode ? "border-primary bg-primary/5 text-primary" : "border-slate-200 text-slate-500 hover:border-slate-300"
+                }`}
+              >
+                <AlignLeft className="w-4 h-4" /> Text Sync
+              </button>
+            </div>
+            {isTextMode && (
+              <p className="text-sm text-slate-500 mt-2">Text Sync mode shows one sentence at a time as large text on a white background, synced to audio.</p>
+            )}
+          </div>
+
+          {/* Theme picker — only in slides mode */}
+          {!isTextMode && (
+            <ThemePicker currentTheme={presentation.theme} onSelect={(t) => updateTheme.mutate(t)} />
+          )}
 
           {/* Script paste */}
           <div className="space-y-3">
             <Label className="text-slate-700 font-medium">Paste Your Script</Label>
             <p className="text-slate-600">
-              Paste the full script for your presentation. AI will break it into slides with headlines and body text.
+              {isTextMode
+                ? "Paste your script. AI will break it into individual sentences that display one at a time synced to audio."
+                : "Paste the full script for your presentation. AI will break it into slides with headlines and body text."}
             </p>
             <Textarea
               value={script}
               onChange={(e) => setScript(e.target.value)}
               rows={12}
-              placeholder={"Paste your webinar or VSL script here...\n\nEach key point will become a slide with a headline and body text."}
+              placeholder={isTextMode
+                ? "Paste your script here...\n\nEach sentence will become a text segment shown one at a time."
+                : "Paste your webinar or VSL script here...\n\nEach key point will become a slide with a headline and body text."}
               className="text-slate-700"
             />
             <Button
@@ -215,9 +261,9 @@ export default function PresentationEditor({ presentationId }: Props) {
               className="w-full sm:w-auto"
             >
               {generateSlides.isPending ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Generating Slides...</>
+                <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {isTextMode ? "Generating Segments..." : "Generating Slides..."}</>
               ) : (
-                <><Wand2 className="w-4 h-4 mr-2" /> Generate Slides</>
+                <><Wand2 className="w-4 h-4 mr-2" /> {isTextMode ? "Generate Segments" : "Generate Slides"}</>
               )}
             </Button>
             {script.trim().length > 0 && script.trim().length < 20 && (
@@ -278,10 +324,35 @@ export default function PresentationEditor({ presentationId }: Props) {
           </a>
         </div>
 
-        {/* Theme picker */}
+        {/* Display mode toggle */}
         <div className="mb-4">
-          <ThemePicker currentTheme={presentation.theme} onSelect={(t) => updateTheme.mutate(t)} />
+          <Label className="text-slate-700 font-medium">Display Mode</Label>
+          <div className="flex gap-2 mt-2">
+            <button
+              onClick={() => updateDisplayMode.mutate("slides")}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border-2 text-sm font-medium transition-colors ${
+                !isTextMode ? "border-primary bg-primary/5 text-primary" : "border-slate-200 text-slate-500 hover:border-slate-300"
+              }`}
+            >
+              <Presentation className="w-3.5 h-3.5" /> Slides
+            </button>
+            <button
+              onClick={() => updateDisplayMode.mutate("text")}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border-2 text-sm font-medium transition-colors ${
+                isTextMode ? "border-primary bg-primary/5 text-primary" : "border-slate-200 text-slate-500 hover:border-slate-300"
+              }`}
+            >
+              <AlignLeft className="w-3.5 h-3.5" /> Text Sync
+            </button>
+          </div>
         </div>
+
+        {/* Theme picker — only in slides mode */}
+        {!isTextMode && (
+          <div className="mb-4">
+            <ThemePicker currentTheme={presentation.theme} onSelect={(t) => updateTheme.mutate(t)} />
+          </div>
+        )}
 
         {/* Audio URL */}
         <div className="mb-4">

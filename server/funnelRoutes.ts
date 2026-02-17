@@ -100,9 +100,9 @@ export function registerFunnelRoutes(app: Express) {
 
   app.put("/api/admin/funnels/presentations/:id", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
-      const { name, description, theme, fontSettings } = req.body;
+      const { name, description, theme, fontSettings, displayMode } = req.body;
       const [presentation] = await db.update(funnelPresentations)
-        .set({ name, description, theme, fontSettings, updatedAt: new Date() })
+        .set({ name, description, theme, fontSettings, displayMode, updatedAt: new Date() })
         .where(eq(funnelPresentations.id, parseInt(req.params.id)))
         .returning();
       res.json(presentation);
@@ -167,6 +167,8 @@ export function registerFunnelRoutes(app: Express) {
       const [presentation] = await db.select().from(funnelPresentations).where(eq(funnelPresentations.id, presentationId));
       if (!presentation) return res.status(404).json({ message: "Presentation not found" });
 
+      const isTextMode = presentation.displayMode === "text";
+
       // Auto-create module + variant if none exist
       let modules = await db.select().from(funnelModules).where(eq(funnelModules.presentationId, presentationId));
       let moduleId: number;
@@ -201,7 +203,19 @@ export function registerFunnelRoutes(app: Express) {
       // Call Anthropic API directly (bypass abuse detection - this is admin-only)
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-      const SYSTEM_PROMPT = `You are a presentation slide designer. Break the user's script into presentation slides. Each slide should have:
+      const SYSTEM_PROMPT = isTextMode
+        ? `You are a presentation text-sync designer. Break the user's script into individual text segments that will be displayed ONE AT A TIME as large text on a white background, synced to audio.
+
+Each segment should have:
+- "headline": ALWAYS empty string ""
+- "body": ONE sentence or short phrase (what the viewer reads on screen while listening). Keep it punchy — max ~15 words. This is NOT a slide, it's a text overlay.
+- "scriptNotes": the FULL original script text for this section (everything spoken aloud while this text is showing)
+
+Create more segments than you would slides — aim for one segment per sentence or key phrase. The viewer should see text change frequently (every 5-15 seconds of speech).
+
+Return ONLY a valid JSON array, no other text.
+Example: [{"headline":"","body":"Every great product starts with a problem.","scriptNotes":"Every great product starts with a problem. Think about the last time you were frustrated by something..."}]`
+        : `You are a presentation slide designer. Break the user's script into presentation slides. Each slide should have:
 - "headline": short punchy headline (max 8 words)
 - "body": 1-3 key sentences for the audience to see
 - "scriptNotes": the FULL original script text for this section (everything the presenter reads aloud while this slide is showing)
@@ -335,6 +349,8 @@ Example: [{"headline":"Your Big Idea","body":"Every great product starts with...
       const [presentation] = await db.select().from(funnelPresentations).where(eq(funnelPresentations.id, presentationId));
       if (!presentation) return res.status(404).json({ message: "Presentation not found" });
 
+      const isTextMode = presentation.displayMode === "text";
+
       // Get all modules → variants → slides
       const modules = await db.select().from(funnelModules)
         .where(eq(funnelModules.presentationId, presentationId))
@@ -362,7 +378,21 @@ Example: [{"headline":"Your Big Idea","body":"Every great product starts with...
 
       const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-      const IMPACT_SYSTEM = `You are a direct-response copywriter. You reformat presentation slides for MAXIMUM engagement.
+      const IMPACT_SYSTEM = isTextMode
+        ? `You are a direct-response copywriter. You reformat text segments for MAXIMUM spoken impact.
+
+These segments display ONE AT A TIME as large black text on a white screen, synced to audio. Think teleprompter for the VIEWER — they read along as the speaker talks.
+
+Rules:
+1. Each segment has "headline" (ALWAYS empty "") and "body" (the single sentence/phrase the viewer sees).
+2. Body text: ONE punchy sentence or fragment, max ~15 words. Short hits hard.
+3. Keep the same NUMBER of segments.
+4. Keep the core MESSAGE — just rewrite for spoken impact and clarity.
+5. Markup (max 1 per segment): *word* = underline, **word** = bold accent. Use sparingly.
+6. Script Notes = CONTEXT only, do NOT include in output.
+
+Return ONLY a valid JSON array: [{"headline":"","body":"..."}]`
+        : `You are a direct-response copywriter. You reformat presentation slides for MAXIMUM engagement.
 
 Each slide has two fields: "headline" (renders HUGE and dominant) and "body" (renders smaller beneath). The size difference IS the design.
 
@@ -1771,6 +1801,7 @@ Return ONLY valid JSON array, no markdown.`;
         },
         theme: presentation?.theme || "dark",
         fontSettings: presentation?.fontSettings || null,
+        displayMode: presentation?.displayMode || "slides",
         timeline: timeline.filter(Boolean),
         visitorId: visitor?.id || null,
         variationSetId: visitor?.variationSetId || null,

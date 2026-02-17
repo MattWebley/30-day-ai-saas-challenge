@@ -947,6 +947,7 @@ export const funnelPresentations = pgTable("funnel_presentations", {
   description: text("description"),
   theme: varchar("theme").default("dark"),
   fontSettings: jsonb("font_settings"),
+  displayMode: varchar("display_mode").default("slides"), // "slides" (themed) or "text" (one sentence, white bg)
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

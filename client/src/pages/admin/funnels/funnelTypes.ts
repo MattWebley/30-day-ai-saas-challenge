@@ -39,6 +39,7 @@ export interface FunnelPresentation {
   description: string | null;
   theme?: string | null;
   fontSettings?: FontSettings | null;
+  displayMode?: string | null; // "slides" or "text"
   createdAt: string;
   updatedAt: string;
   modules?: FunnelModule[];

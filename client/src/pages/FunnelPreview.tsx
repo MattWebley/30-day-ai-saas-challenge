@@ -38,7 +38,7 @@ interface TimelineEntry {
 }
 
 interface PreviewData {
-  presentation: { id: number; name: string; theme?: string | null; fontSettings?: FontSettings | null };
+  presentation: { id: number; name: string; theme?: string | null; fontSettings?: FontSettings | null; displayMode?: string | null };
   timeline: TimelineEntry[];
 }
 
@@ -249,7 +249,7 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
   };
 
   return (
-    <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative max-h-full overflow-hidden">
+    <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative">
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: theme.ambientGlow }} />
 
@@ -330,11 +330,41 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
   );
 }
 
+// Text Sync display — one sentence, large black text on white background
+function TextSegmentDisplay({ slide, animKey }: { slide: SlideData; animKey: string | number }) {
+  const text = slide.body || slide.headline || "";
+  return (
+    <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative">
+      <p
+        className="text-slate-900 leading-[1.3] animate-slide-headline"
+        style={{
+          fontFamily: "'Inter', sans-serif",
+          fontSize: "clamp(1.5rem, 4vw, 2.8rem)",
+          fontWeight: 600,
+        }}
+      >
+        {text}
+      </p>
+    </div>
+  );
+}
+
 // Theme switcher dropdown
 function ThemeSwitcher({ currentKey, onSwitch }: { currentKey: string; onSwitch: (key: string) => void }) {
   const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
   return (
-    <div className="relative flex items-center">
+    <div ref={ref} className="relative flex items-center">
       <button onClick={() => setOpen(!open)} className="flex items-center gap-1.5 text-slate-400 hover:text-white text-sm transition-colors">
         <Palette className="w-3.5 h-3.5" />
         <span className="hidden sm:inline">Theme</span>
@@ -415,13 +445,23 @@ function TypographyPanel({ fonts, onChange, onSave, hasChanges }: {
   hasChanges: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (open) loadAllFonts();
   }, [open]);
 
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
   return (
-    <div className="relative flex items-center">
+    <div ref={ref} className="relative flex items-center">
       <button onClick={() => setOpen(!open)} className="flex items-center gap-1.5 text-slate-400 hover:text-white text-sm transition-colors">
         <Type className="w-3.5 h-3.5" />
         <span className="hidden sm:inline">Fonts</span>
@@ -854,6 +894,7 @@ export default function FunnelPreview() {
   const hasAudio = firstVariant?.mediaType === "audio_slides" && !!firstVariant.audioUrl;
   const hasSyncedTimestamps = allSlides.some(s => s.startTimeMs > 0);
   const theme = getTheme(themeKey);
+  const isTextMode = data.presentation.displayMode === "text";
 
   // Admin bar - shared across all modes
   const adminBar = (rightExtra?: React.ReactNode) => (
@@ -914,33 +955,39 @@ export default function FunnelPreview() {
             <span className="hidden sm:inline">Present</span>
           </button>
         )}
-        <ThemeSwitcher currentKey={themeKey} onSwitch={switchTheme} />
-        <TypographyPanel fonts={fonts} onChange={updateFonts} onSave={saveFonts} hasChanges={fontsDirty} />
+        {!isTextMode && (
+          <>
+            <ThemeSwitcher currentKey={themeKey} onSwitch={switchTheme} />
+            <TypographyPanel fonts={fonts} onChange={updateFonts} onSave={saveFonts} hasChanges={fontsDirty} />
+          </>
+        )}
+        {isTextMode && <span className="text-xs text-slate-500">Text Sync</span>}
         {rightExtra}
       </div>
     </div>
   );
 
   if (presenterMode && hasScriptNotes) {
-    return <TeleprompterMode data={data} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} />;
+    return <TeleprompterMode data={data} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} isTextMode={isTextMode} />;
   }
 
   if (hasAudio && hasSyncedTimestamps) {
-    return <AudioPreview data={data} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} />;
+    return <AudioPreview data={data} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} isTextMode={isTextMode} />;
   }
 
-  return <ClickThroughPreview data={data} setData={setData} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} />;
+  return <ClickThroughPreview data={data} setData={setData} allSlides={allSlides} theme={theme} themeKey={themeKey} fonts={fonts} adminBar={adminBar} isTextMode={isTextMode} />;
 }
 
 // Teleprompter / Presenter mode
 // Left: scrollable script. Right: slide preview that auto-syncs to scroll position.
-function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }: {
+function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar, isTextMode }: {
   data: PreviewData;
   allSlides: SlideData[];
   theme: PresentationTheme;
   themeKey: string;
   fonts: FontSettings;
   adminBar: (rightExtra?: React.ReactNode) => React.ReactNode;
+  isTextMode: boolean;
 }) {
   const [activeSlideIdx, setActiveSlideIdx] = useState(0);
   const scriptRefs = useRef<Map<number, HTMLDivElement>>(new Map());
@@ -1046,15 +1093,12 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
           </div>
         </div>
 
-        {/* Right: Slide preview - locked in place */}
-        <div className={`w-1/2 ${theme.pageBg} flex items-center justify-center transition-colors duration-300 overflow-hidden`}>
+        {/* Right: Slide/text preview - locked in place */}
+        <div className={`w-1/2 ${isTextMode ? "bg-white" : theme.pageBg} flex items-center justify-center transition-colors duration-300 overflow-hidden`}>
           {activeSlide && (
-            <SlideDisplay
-              slide={activeSlide}
-              theme={theme}
-              fonts={fonts}
-              animKey={`present-${themeKey}-${activeSlide.id}`}
-            />
+            isTextMode
+              ? <TextSegmentDisplay slide={activeSlide} animKey={`present-text-${activeSlide.id}`} />
+              : <SlideDisplay slide={activeSlide} theme={theme} fonts={fonts} animKey={`present-${themeKey}-${activeSlide.id}`} />
           )}
         </div>
       </div>
@@ -1063,7 +1107,7 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar }:
 }
 
 // Click-through slideshow
-function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar, setData }: {
+function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar, setData, isTextMode }: {
   data: PreviewData;
   allSlides: SlideData[];
   theme: PresentationTheme;
@@ -1071,6 +1115,7 @@ function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar
   fonts: FontSettings;
   adminBar: (rightExtra?: React.ReactNode) => React.ReactNode;
   setData: React.Dispatch<React.SetStateAction<PreviewData | null>>;
+  isTextMode: boolean;
 }) {
   const [currentIdx, setCurrentIdx] = useState(0);
 
@@ -1118,12 +1163,20 @@ function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar
   }, [setData]);
 
   return (
-    <div className={`h-screen ${theme.pageBg} flex flex-col overflow-hidden transition-colors duration-300`}>
+    <div className={`h-screen ${isTextMode ? "bg-white" : theme.pageBg} flex flex-col overflow-hidden transition-colors duration-300`}>
       <style>{slideAnimation}</style>
       {adminBar(<span className="text-sm text-slate-400">{currentIdx + 1} / {allSlides.length}</span>)}
 
-      <div className="flex-1 flex items-center justify-center py-4 group min-h-0 overflow-hidden">
-        {slide && <SlideDisplay slide={slide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${slide.id}`} editable onSave={handleSlideTextSave} />}
+      <div className="flex-1 min-h-0 overflow-hidden py-4 group">
+        <div className="h-full flex items-center justify-center">
+          <div className="max-h-full w-full overflow-hidden">
+            {slide && (
+              isTextMode
+                ? <TextSegmentDisplay slide={slide} animKey={`text-${slide.id}`} />
+                : <SlideDisplay slide={slide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${slide.id}`} editable onSave={handleSlideTextSave} />
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="px-4 pb-4 shrink-0">
@@ -1141,13 +1194,14 @@ function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar
 }
 
 // Audio-synced preview
-function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar }: {
+function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar, isTextMode }: {
   data: PreviewData;
   allSlides: SlideData[];
   theme: PresentationTheme;
   themeKey: string;
   fonts: FontSettings;
   adminBar: (rightExtra?: React.ReactNode) => React.ReactNode;
+  isTextMode: boolean;
 }) {
   const [started, setStarted] = useState(false);
   const [currentModuleIdx, setCurrentModuleIdx] = useState(0);
@@ -1202,24 +1256,24 @@ function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar }: {
 
   if (!started) {
     return (
-      <div className={`h-screen ${theme.overlayBg} flex flex-col overflow-hidden transition-colors duration-300`}>
+      <div className={`h-screen ${isTextMode ? "bg-white" : theme.overlayBg} flex flex-col overflow-hidden transition-colors duration-300`}>
         <style>{slideAnimation}</style>
-        {adminBar(<span className="text-sm text-slate-400">{allSlides.length} slides</span>)}
+        {adminBar(<span className="text-sm text-slate-400">{allSlides.length} {isTextMode ? "segments" : "slides"}</span>)}
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center space-y-8 px-4 animate-slide-up">
             <h1
-              className={`text-3xl sm:text-4xl font-bold ${theme.overlayText} tracking-tight`}
-              style={{ fontFamily: `'${fonts.font}', sans-serif` }}
+              className={`text-3xl sm:text-4xl font-bold ${isTextMode ? "text-slate-900" : theme.overlayText} tracking-tight`}
+              style={{ fontFamily: isTextMode ? "'Inter', sans-serif" : `'${fonts.font}', sans-serif` }}
             >
               {data.presentation.name}
             </h1>
             <button
               onClick={handleStart}
-              className={`w-20 h-20 rounded-full ${theme.playBtnBg} border-2 ${theme.playBtnBorder} flex items-center justify-center mx-auto hover:scale-110 transition-transform duration-300`}
+              className={`w-20 h-20 rounded-full ${isTextMode ? "bg-slate-100 border-slate-300" : `${theme.playBtnBg} ${theme.playBtnBorder}`} border-2 flex items-center justify-center mx-auto hover:scale-110 transition-transform duration-300`}
             >
-              <Play className={`w-10 h-10 ${theme.playBtnIcon} ml-1`} />
+              <Play className={`w-10 h-10 ${isTextMode ? "text-slate-700" : theme.playBtnIcon} ml-1`} />
             </button>
-            <p className={`text-sm ${theme.overlaySubtext}`}>Tap to start</p>
+            <p className={`text-sm ${isTextMode ? "text-slate-400" : theme.overlaySubtext}`}>Tap to start</p>
           </div>
         </div>
       </div>
@@ -1229,7 +1283,7 @@ function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar }: {
   const currentEntry = data.timeline[currentModuleIdx];
 
   return (
-    <div className={`h-screen ${theme.pageBg} flex flex-col overflow-hidden transition-colors duration-300`}>
+    <div className={`h-screen ${isTextMode ? "bg-white" : theme.pageBg} flex flex-col overflow-hidden transition-colors duration-300`}>
       <style>{slideAnimation}</style>
       <audio ref={audioRef} onEnded={handleModuleEnd} preload="auto" />
       {adminBar(
@@ -1238,12 +1292,18 @@ function AudioPreview({ data, allSlides, theme, themeKey, fonts, adminBar }: {
         </span>
       )}
 
-      <div className="flex-1 flex items-center justify-center py-4 min-h-0 overflow-hidden">
-        {currentSlide ? (
-          <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${currentSlide.id}`} />
-        ) : (
-          <p className={`text-lg ${theme.progressText}`} style={{ fontFamily: `'${fonts.font}', sans-serif` }}>Playing...</p>
-        )}
+      <div className="flex-1 min-h-0 overflow-hidden py-4">
+        <div className="h-full flex items-center justify-center">
+          <div className="max-h-full w-full overflow-hidden">
+            {currentSlide ? (
+              isTextMode
+                ? <TextSegmentDisplay slide={currentSlide} animKey={`text-${currentSlide.id}`} />
+                : <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${currentSlide.id}`} />
+            ) : (
+              <p className={`text-lg ${isTextMode ? "text-slate-400" : theme.progressText}`} style={{ fontFamily: "'Inter', sans-serif" }}>Playing...</p>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="px-4 pb-4">

@@ -40,6 +40,7 @@ interface WatchData {
   };
   theme?: string | null;
   fontSettings?: FontSettings | null;
+  displayMode?: string | null;
   timeline: TimelineEntry[];
   visitorId: number | null;
   variationSetId: number | null;
@@ -231,6 +232,25 @@ const slideAnimation = `
 }
 `;
 
+// Text Sync display — one sentence, large black text on white background
+function TextSegmentDisplay({ slide, animKey }: { slide: SlideData; animKey: string | number }) {
+  const text = slide.body || slide.headline || "";
+  return (
+    <div key={animKey} className="w-full h-full flex flex-col items-center justify-center text-center px-6 sm:px-10">
+      <p
+        className="text-slate-900 leading-[1.3] animate-slide-headline max-w-3xl"
+        style={{
+          fontFamily: "'Inter', sans-serif",
+          fontSize: "clamp(1.5rem, 4vw, 2.8rem)",
+          fontWeight: 600,
+        }}
+      >
+        {text}
+      </p>
+    </div>
+  );
+}
+
 export default function FunnelWatch() {
   const params = useParams<{ slug: string }>();
   const [data, setData] = useState<WatchData | null>(null);
@@ -416,6 +436,7 @@ export default function FunnelWatch() {
   const fonts = getFontSettings(data.fontSettings as FontSettings | null);
   const currentEntry = data.timeline[currentModuleIdx];
   const isVideo = currentEntry?.variant.mediaType === 'video';
+  const isTextMode = data.displayMode === "text";
   const headline = data.campaign.watchHeadline || data.campaign.name;
   const subheadline = data.campaign.watchSubheadline;
 
@@ -441,22 +462,22 @@ export default function FunnelWatch() {
         </div>
 
         {/* Video player container */}
-        <div className="relative rounded-xl overflow-hidden shadow-2xl border border-slate-200 bg-black">
+        <div className={`relative rounded-xl overflow-hidden shadow-2xl border ${isTextMode ? "border-slate-300 bg-white" : "border-slate-200 bg-black"}`}>
           {/* 16:9 aspect ratio wrapper */}
           <div className="relative" style={{ paddingTop: "56.25%" }}>
-            <div className={`absolute inset-0 ${theme.pageBg}`}>
+            <div className={`absolute inset-0 ${isTextMode ? "bg-white" : theme.pageBg}`}>
               {!started ? (
                 /* Pre-play overlay */
                 <div className="absolute inset-0 flex items-center justify-center cursor-pointer group" onClick={handleStart}>
-                  {/* Dark overlay */}
-                  <div className="absolute inset-0 bg-black/40" />
+                  {/* Overlay */}
+                  <div className={`absolute inset-0 ${isTextMode ? "bg-slate-100/80" : "bg-black/40"}`} />
 
                   {/* Play button */}
                   <div className="relative z-10 text-center">
-                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center mx-auto group-hover:scale-110 group-hover:bg-white/30 transition-all duration-300">
-                      <Play className="w-10 h-10 sm:w-12 sm:h-12 text-white ml-1" />
+                    <div className={`w-20 h-20 sm:w-24 sm:h-24 rounded-full ${isTextMode ? "bg-slate-200 border-slate-300" : "bg-white/20 backdrop-blur-sm border-white/40"} border-2 flex items-center justify-center mx-auto group-hover:scale-110 transition-all duration-300`}>
+                      <Play className={`w-10 h-10 sm:w-12 sm:h-12 ${isTextMode ? "text-slate-700" : "text-white"} ml-1`} />
                     </div>
-                    <p className="text-white/70 text-sm mt-4">Click to play</p>
+                    <p className={`text-sm mt-4 ${isTextMode ? "text-slate-400" : "text-white/70"}`}>Click to play</p>
                   </div>
                 </div>
               ) : isVideo && currentEntry?.variant.videoUrl ? (
@@ -468,12 +489,14 @@ export default function FunnelWatch() {
                   allowFullScreen
                 />
               ) : (
-                /* Audio + Slides player */
+                /* Audio + Slides/Text player */
                 <div className="absolute inset-0 flex items-center justify-center">
                   {currentSlide ? (
-                    <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={currentSlide.id} />
+                    isTextMode
+                      ? <TextSegmentDisplay slide={currentSlide} animKey={currentSlide.id} />
+                      : <SlideDisplay slide={currentSlide} theme={theme} fonts={fonts} animKey={currentSlide.id} />
                   ) : (
-                    <p className={`text-lg ${theme.progressText}`} style={{ fontFamily: `'${fonts.font}', sans-serif` }}>Playing...</p>
+                    <p className={`text-lg ${isTextMode ? "text-slate-400" : theme.progressText}`} style={{ fontFamily: "'Inter', sans-serif" }}>Playing...</p>
                   )}
                 </div>
               )}
@@ -496,7 +519,7 @@ export default function FunnelWatch() {
 
           {/* Progress bar - sits at bottom of player */}
           {started && !isVideo && (
-            <div className="h-1 bg-slate-800">
+            <div className={`h-1 ${isTextMode ? "bg-slate-200" : "bg-slate-800"}`}>
               <div
                 className="h-full bg-gradient-to-r from-blue-500 to-blue-400 transition-all duration-300 ease-linear"
                 style={{ width: `${progressPercent}%` }}
