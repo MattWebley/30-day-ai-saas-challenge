@@ -21,40 +21,59 @@ export function captureReferralCode() {
   }
 }
 
-// Track the referral after user authenticates
+// Fire the referral tracking API call directly (used by CheckoutSuccess after account creation)
+export async function trackReferralNow(): Promise<boolean> {
+  const storedCode = localStorage.getItem(REFERRAL_STORAGE_KEY);
+  if (!storedCode) return false;
+
+  try {
+    const response = await fetch("/api/referral/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ referralCode: storedCode }),
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      localStorage.removeItem(REFERRAL_STORAGE_KEY);
+      console.log("Referral tracked successfully");
+      return true;
+    } else {
+      const data = await response.json();
+      if (data.message === "Already referred by someone" || data.message === "Invalid referral code") {
+        localStorage.removeItem(REFERRAL_STORAGE_KEY);
+      }
+      return false;
+    }
+  } catch (error) {
+    console.error("Error tracking referral:", error);
+    return false;
+  }
+}
+
+// Track the referral after user authenticates (with retry)
 export function useReferralTracking() {
   const { isAuthenticated, user } = useAuth();
 
   useEffect(() => {
-    const trackReferral = async () => {
-      const storedCode = localStorage.getItem(REFERRAL_STORAGE_KEY);
+    if (!isAuthenticated || !user) return;
 
-      if (!storedCode || !isAuthenticated || !user) return;
+    const storedCode = localStorage.getItem(REFERRAL_STORAGE_KEY);
+    if (!storedCode) return;
 
-      try {
-        const response = await fetch("/api/referral/track", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ referralCode: storedCode }),
-          credentials: "include",
-        });
+    // Try up to 3 times with increasing delays (1s, 3s, 6s)
+    let attempt = 0;
+    const maxAttempts = 3;
 
-        if (response.ok) {
-          // Successfully tracked, remove from storage
-          localStorage.removeItem(REFERRAL_STORAGE_KEY);
-          console.log("Referral tracked successfully");
-        } else {
-          const data = await response.json();
-          // If already referred or invalid code, also remove from storage
-          if (data.message === "Already referred by someone" || data.message === "Invalid referral code") {
-            localStorage.removeItem(REFERRAL_STORAGE_KEY);
-          }
-        }
-      } catch (error) {
-        console.error("Error tracking referral:", error);
+    const tryTrack = async () => {
+      attempt++;
+      const success = await trackReferralNow();
+      if (!success && attempt < maxAttempts) {
+        setTimeout(tryTrack, attempt * 2000);
       }
     };
 
-    trackReferral();
+    // Small initial delay to let session fully establish
+    setTimeout(tryTrack, 1000);
   }, [isAuthenticated, user]);
 }

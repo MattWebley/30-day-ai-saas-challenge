@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Copy, Check, Users, Phone, CheckSquare, Video, Sparkles } from "lucide-react";
+import { LaunchChecklist } from "./LaunchChecklist";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ReferralData {
   referralCode: string;
@@ -22,6 +24,9 @@ interface ReferralData {
 
 export function ReferralSection() {
   const [copied, setCopied] = useState(false);
+  const [checklistOpen, setChecklistOpen] = useState(false);
+  const { user } = useAuth();
+  const isAdmin = (user as any)?.isAdmin;
 
   const { data: referralData, isLoading } = useQuery<ReferralData>({
     queryKey: ["/api/referral"],
@@ -242,6 +247,14 @@ export function ReferralSection() {
                     <p className={`text-sm ${reward.unlocked ? "text-green-600" : "text-slate-600"}`}>
                       {reward.description}
                     </p>
+                    {(reward.unlocked || isAdmin) && reward.name === "Launch Checklist" && (
+                      <button
+                        onClick={() => setChecklistOpen(true)}
+                        className="mt-2 text-sm font-bold text-green-700 hover:text-green-800 underline underline-offset-2"
+                      >
+                        Open Checklist
+                      </button>
+                    )}
                     {reward.value && (
                       <p className={`text-xs font-bold mt-1 ${reward.unlocked ? "text-green-700" : "text-slate-500"}`}>
                         Worth {reward.value}
@@ -254,6 +267,8 @@ export function ReferralSection() {
           })}
         </div>
       </Card>
+
+      <LaunchChecklist open={checklistOpen} onOpenChange={setChecklistOpen} />
     </div>
   );
 }

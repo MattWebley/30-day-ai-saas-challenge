@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { Check, ArrowRight } from "lucide-react";
 import { trackFacebookEvent } from "@/components/FacebookPixel";
+import { trackReferralNow } from "@/hooks/useReferral";
 
 export default function CheckoutSuccess() {
   const [, setLocation] = useLocation();
@@ -74,6 +75,8 @@ export default function CheckoutSuccess() {
 
             if (setupData.success) {
               setStatus("Account created! Redirecting...");
+              // Track referral now while session is fresh, before redirecting
+              await trackReferralNow();
               await new Promise(resolve => setTimeout(resolve, 500));
             }
           } catch (error) {
