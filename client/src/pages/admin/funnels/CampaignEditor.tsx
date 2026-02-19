@@ -44,6 +44,7 @@ export default function CampaignEditor({ campaignId, presentations }: Props) {
         ctaText: mergedSettings.ctaText,
         ctaUrl: mergedSettings.ctaUrl,
         ctaAppearTime: mergedSettings.ctaAppearTime,
+        notes: mergedSettings.notes,
       });
       return res.json();
     },
@@ -255,6 +256,16 @@ export default function CampaignEditor({ campaignId, presentations }: Props) {
               </Button>
             </div>
             <p className="text-xs text-slate-400 mt-1">Seconds into the presentation before the CTA button appears. Use AI Detect to auto-suggest.</p>
+          </div>
+          <div className="sm:col-span-2">
+            <Label className="text-slate-700">Notes</Label>
+            <Textarea
+              value={mergedSettings.notes || ""}
+              onChange={(e) => setSettings({ ...settings, notes: e.target.value })}
+              placeholder="Internal notes about this campaign — strategy, ideas, things to test..."
+              rows={4}
+            />
+            <p className="text-xs text-slate-400 mt-1">Private notes — only visible here in admin, not shown publicly</p>
           </div>
         </div>
         {hasChanges && (

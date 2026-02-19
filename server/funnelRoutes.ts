@@ -119,9 +119,9 @@ export function registerFunnelRoutes(app: Express) {
   app.put("/api/admin/funnels/campaigns/:id", isAuthenticated, requireAdmin, async (req: any, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { name, slug, isActive, presentationId, watchHeadline, watchSubheadline, speakerVideoUrl, ctaText, ctaUrl, ctaAppearTime } = req.body;
+      const { name, slug, isActive, presentationId, watchHeadline, watchSubheadline, speakerVideoUrl, ctaText, ctaUrl, ctaAppearTime, notes } = req.body;
       const [campaign] = await db.update(funnelCampaigns)
-        .set({ name, slug, isActive, presentationId, watchHeadline, watchSubheadline, speakerVideoUrl, ctaText, ctaUrl, ctaAppearTime, updatedAt: new Date() })
+        .set({ name, slug, isActive, presentationId, watchHeadline, watchSubheadline, speakerVideoUrl, ctaText, ctaUrl, ctaAppearTime, notes, updatedAt: new Date() })
         .where(eq(funnelCampaigns.id, id))
         .returning();
       res.json(campaign);

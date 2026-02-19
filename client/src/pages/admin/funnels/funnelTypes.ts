@@ -12,6 +12,7 @@ export interface FunnelCampaign {
   ctaText: string | null;
   ctaUrl: string | null;
   ctaAppearTime: number | null;
+  notes: string | null;
   createdAt: string;
   updatedAt: string;
   // Joined data

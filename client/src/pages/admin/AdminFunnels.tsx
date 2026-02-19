@@ -267,15 +267,20 @@ export default function AdminFunnels() {
                     </Button>
                   </div>
                 </div>
-                <div className="mt-2 pl-10">
+                <div className="mt-2 pl-10 flex items-center gap-3">
                   <Button
                     size="sm"
                     variant="outline"
                     className="border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100"
                     onClick={() => { setSelectedCampaignId(c.id); setView("adcopy"); }}
                   >
-                    <Sparkles className="w-4 h-4 mr-1" /> Generate Facebook Ads
+                    <Sparkles className="w-4 h-4 mr-1" /> Facebook Ads
                   </Button>
+                  {c.notes && (
+                    <span className="text-xs text-slate-400 truncate max-w-xs" title={c.notes}>
+                      {c.notes.length > 60 ? c.notes.substring(0, 60) + "..." : c.notes}
+                    </span>
+                  )}
                 </div>
               </div>
             ))}

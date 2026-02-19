@@ -117,7 +117,8 @@
       "WebFetch(domain:challenge.mattwebley.com)",
       "Bash(stripe:*)",
       "Bash(yes:*)",
-      "Bash(git -C /home/runner/workspace push)"
+      "Bash(git -C /home/runner/workspace push)",
+      "Bash(find:*)"
     ]
   }
 }

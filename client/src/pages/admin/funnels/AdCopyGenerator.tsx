@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -23,6 +23,7 @@ const ANGLE_CONFIG: Record<string, { label: string; color: string; bg: string; b
 export default function AdCopyGenerator({ campaignId }: Props) {
   const queryClient = useQueryClient();
   const [persuasionLevel, setPersuasionLevel] = useState(5);
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const { data: copies = [] } = useQuery<FunnelAdCopy[]>({
     queryKey: [`/api/admin/funnels/campaigns/${campaignId}/ad-copy`],
@@ -38,6 +39,10 @@ export default function AdCopyGenerator({ campaignId }: Props) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/admin/funnels/campaigns/${campaignId}/ad-copy`] });
       toast.success("3 ad packages generated!");
+      // Scroll to results after a short delay so the new cards render first
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
     },
     onError: (e: any) => toast.error(e.message),
   });
@@ -111,9 +116,22 @@ export default function AdCopyGenerator({ campaignId }: Props) {
         </div>
       </Card>
 
+      {/* Results section */}
+      <div ref={resultsRef}>
+
+      {/* Summary bar when ads exist */}
+      {copies.length > 0 && (
+        <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200 text-sm text-slate-700">
+          <span className="font-medium">Your Ad Packages:</span>
+          {pendingCopies.length > 0 && <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-medium">{pendingCopies.length} to review</span>}
+          {approvedCopies.length > 0 && <span className="px-2 py-0.5 rounded bg-green-100 text-green-700 font-medium">{approvedCopies.length} approved</span>}
+          {rejectedCopies.length > 0 && <span className="px-2 py-0.5 rounded bg-red-100 text-red-700 font-medium">{rejectedCopies.length} rejected</span>}
+        </div>
+      )}
+
       {/* Review Queue */}
       {pendingCopies.length > 0 && (
-        <div>
+        <div className="mt-4">
           <h4 className="font-bold text-slate-900 mb-3">Review Queue ({pendingCopies.length})</h4>
           <div className="space-y-4">
             {pendingCopies.map((copy) => (
@@ -155,7 +173,7 @@ export default function AdCopyGenerator({ campaignId }: Props) {
 
       {/* Rejected */}
       {rejectedCopies.length > 0 && (
-        <details className="text-sm">
+        <details className="text-sm mt-4">
           <summary className="text-slate-500 cursor-pointer hover:text-slate-700 font-medium">
             Rejected ({rejectedCopies.length})
           </summary>
@@ -170,6 +188,8 @@ export default function AdCopyGenerator({ campaignId }: Props) {
           </div>
         </details>
       )}
+
+      </div>{/* end resultsRef */}
     </div>
   );
 }

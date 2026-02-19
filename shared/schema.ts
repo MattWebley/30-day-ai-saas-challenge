@@ -933,6 +933,7 @@ export const funnelCampaigns = pgTable("funnel_campaigns", {
   ctaText: varchar("cta_text").default("Book Your Free Call"),
   ctaUrl: text("cta_url"),
   ctaAppearTime: integer("cta_appear_time").default(0), // seconds into presentation
+  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

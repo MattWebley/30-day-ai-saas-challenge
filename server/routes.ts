@@ -3754,7 +3754,22 @@ IMPORTANT: This PRD will be handed to an AI coding assistant to build. Make ever
     try {
       const day = parseInt(req.params.day);
       const comments = await storage.getDayComments(day);
-      res.json(comments);
+      // Strip sensitive user data - only return what the frontend needs
+      const safeComments = comments.map(c => ({
+        id: c.id,
+        day: c.day,
+        content: c.content,
+        status: c.status,
+        createdAt: c.createdAt,
+        user: {
+          id: c.user.id,
+          firstName: c.user.firstName,
+          lastName: c.user.lastName ? c.user.lastName[0] + "." : null,
+          profileImageUrl: c.user.profileImageUrl,
+          isAdmin: c.user.isAdmin,
+        }
+      }));
+      res.json(safeComments);
     } catch (error) {
       console.error("Error fetching comments:", error);
       res.status(500).json({ message: "Failed to fetch comments" });
@@ -5285,7 +5300,21 @@ Rules:
     try {
       const day = parseInt(req.params.day);
       const questions = await storage.getAnsweredQuestionsByDay(day);
-      res.json(questions);
+      // Strip sensitive user data - only return what the frontend needs
+      const safeQuestions = questions.map(q => ({
+        id: q.id,
+        day: q.day,
+        question: q.question,
+        answer: q.answer,
+        helpful: q.helpful,
+        createdAt: q.createdAt,
+        answeredAt: q.answeredAt,
+        user: {
+          firstName: q.user.firstName,
+          lastName: q.user.lastName ? q.user.lastName[0] + "." : null,
+        }
+      }));
+      res.json(safeQuestions);
     } catch (error: any) {
       console.error("Error fetching questions:", error);
       res.status(500).json({ message: "Failed to fetch questions" });
@@ -5309,7 +5338,7 @@ Rules:
     }
   });
 
-  // Get question by answer token (for email link)
+  // Get question by answer token (for email link - admin answer page)
   app.get("/api/questions/token/:token", async (req, res) => {
     try {
       const { token } = req.params;
@@ -5317,7 +5346,17 @@ Rules:
       if (!question) {
         return res.status(404).json({ message: "Question not found" });
       }
-      res.json(question);
+      // Only return fields needed for the admin answer page
+      res.json({
+        id: question.id,
+        day: question.day,
+        question: question.question,
+        answer: question.answer,
+        aiSuggestedAnswer: question.aiSuggestedAnswer,
+        status: question.status,
+        createdAt: question.createdAt,
+        answeredAt: question.answeredAt,
+      });
     } catch (error: any) {
       console.error("Error fetching question by token:", error);
       res.status(500).json({ message: "Failed to fetch question" });
@@ -5378,7 +5417,8 @@ Rules:
     try {
       const id = parseInt(req.params.id);
       const updated = await storage.markQuestionHelpful(id);
-      res.json(updated);
+      // Only return the updated helpful count
+      res.json({ id: updated?.id, helpful: updated?.helpful });
     } catch (error: any) {
       console.error("Error marking helpful:", error);
       res.status(500).json({ message: "Failed to mark helpful" });
