@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft, FastForward, Copy, Clock } from "lucide-react";
+import { ArrowRight, Check, Shield, Lock, CreditCard, ArrowLeft, FastForward, Clock } from "lucide-react";
 import { useTestMode } from "@/contexts/TestModeContext";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,6 @@ export default function Order() {
   const [unlockAllDays, setUnlockAllDays] = useState(false);
   const { testMode } = useTestMode();
   const [selectedCurrency, setSelectedCurrency] = useState<'usd' | 'gbp'>('usd');
-  const [copiedCode, setCopiedCode] = useState(false);
-
   // Track ViewContent when the order page loads
   useEffect(() => {
     trackFacebookEvent('ViewContent', {
@@ -26,12 +24,6 @@ export default function Order() {
       currency: 'USD'
     }, generateEventId());
   }, []);
-
-  const copyPromoCode = async () => {
-    await navigator.clipboard.writeText('LAUNCHOFFER');
-    setCopiedCode(true);
-    setTimeout(() => setCopiedCode(false), 2000);
-  };
 
   const pricing = {
     usd: { symbol: '$', amount: 399, code: 'USD' },
@@ -117,13 +109,6 @@ export default function Order() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Announcement Bar */}
-      <div className="bg-amber-400 py-3 px-4 text-center">
-        <p className="text-slate-900 font-bold text-sm sm:text-base">
-          🚀 Use code <button onClick={copyPromoCode} className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1 hover:bg-slate-800 transition-colors cursor-pointer inline-flex items-center gap-1">{copiedCode ? <><Check className="w-3 h-3" /> Copied!</> : 'LAUNCHOFFER'}</button> at checkout for 75% off
-        </p>
-      </div>
-
       {/* Header */}
       <header className="border-b border-slate-100 bg-white">
         <div className="max-w-2xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -256,16 +241,6 @@ export default function Order() {
               </div>
               <p className="text-sm text-slate-500 text-center">
                 One-time payment. 6 months access. No subscriptions.
-              </p>
-            </div>
-
-            {/* Coupon Code */}
-            <div className="bg-amber-400 rounded-lg p-4 text-center space-y-1">
-              <p className="text-slate-900 font-bold">
-                🚀 Use code <button onClick={copyPromoCode} className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1 hover:bg-slate-800 transition-colors cursor-pointer inline-flex items-center gap-1">{copiedCode ? <><Check className="w-3 h-3" /> Copied!</> : 'LAUNCHOFFER'}</button> for 75% off
-              </p>
-              <p className="text-slate-800 text-sm">
-                Enter the code on the next screen
               </p>
             </div>
 

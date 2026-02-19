@@ -58,15 +58,7 @@ export default function Critique() {
 
   return (
     <>
-      {/* Announcement Bar - fixed at very top, above everything */}
-      <div className="fixed top-0 left-0 right-0 bg-amber-400 py-3 px-4 text-center z-50">
-        <p className="text-slate-900 font-bold">
-          🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
-        </p>
-      </div>
-
       <Layout currentDay={0}>
-        <div className="pt-10" /> {/* Spacer for fixed announcement bar */}
         <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
 
         {hasReachedLaunchPhase ? (

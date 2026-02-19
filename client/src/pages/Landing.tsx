@@ -41,15 +41,6 @@ export default function Landing() {
     <div className="min-h-screen bg-white font-sans text-slate-900">
       {/* Header Block */}
       <div>
-        {/* Announcement Bar */}
-        {!SALES_PAUSED && (
-          <div className="bg-amber-400 py-3 px-4 text-center">
-            <p className="text-slate-900 font-bold text-sm sm:text-base">
-              🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
-            </p>
-          </div>
-        )}
-
         {/* Header */}
         <header className="border-b border-slate-100 bg-white">
         <div className="max-w-4xl mx-auto px-6 py-3 flex items-center justify-center relative">
@@ -1107,15 +1098,6 @@ export default function Landing() {
                   One payment. 6 months access. No subscriptions.
                 </p>
               </div>
-
-              {/* Coupon Code */}
-              {!SALES_PAUSED && (
-                <div className="bg-amber-400 rounded-lg p-4 text-center">
-                  <p className="text-slate-900 font-bold">
-                    🚀 Use code <span className="bg-slate-900 text-amber-400 px-2 py-0.5 rounded font-mono mx-1">LAUNCHOFFER</span> at checkout for 75% off
-                  </p>
-                </div>
-              )}
 
               {!SALES_PAUSED && (
                 <a href="/order" className="block w-full h-16 text-xl font-bold text-center rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-all inline-flex items-center justify-center gap-3">
