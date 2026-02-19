@@ -1321,9 +1321,13 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
       
-      const activeUsers = allStats.filter((s: any) => 
-        s.lastActivityDate && new Date(s.lastActivityDate) > sevenDaysAgo
-      ).length;
+      const activeUsers = allUsers.filter((u: any) => {
+        const stats = allStats.find((s: any) => s.userId === u.id);
+        const actDate = stats?.lastActivityDate ? new Date(stats.lastActivityDate) : null;
+        const loginDate = u.lastLoginAt ? new Date(u.lastLoginAt) : null;
+        const latest = actDate && loginDate ? (actDate > loginDate ? actDate : loginDate) : (actDate || loginDate);
+        return latest ? latest > sevenDaysAgo : false;
+      }).length;
       
       const completedChallenges = allStats.filter((s: any) => 
         s.lastCompletedDay && s.lastCompletedDay >= 30
@@ -1359,8 +1363,18 @@ ${success ? '<p style="margin-top:16px"><a href="https://challenge.mattwebley.co
           lastName: user.lastName,
           currentDay: (stats?.lastCompletedDay || 0) + 1,
           totalXp: stats?.totalXp || 0,
-          lastActive: stats?.lastActivityDate,
-          isActive: stats?.lastActivityDate && new Date(stats.lastActivityDate) > sevenDaysAgo,
+          lastActive: (() => {
+            const actDate = stats?.lastActivityDate ? new Date(stats.lastActivityDate) : null;
+            const loginDate = user.lastLoginAt ? new Date(user.lastLoginAt) : null;
+            if (actDate && loginDate) return actDate > loginDate ? actDate : loginDate;
+            return actDate || loginDate || null;
+          })(),
+          isActive: (() => {
+            const actDate = stats?.lastActivityDate ? new Date(stats.lastActivityDate) : null;
+            const loginDate = user.lastLoginAt ? new Date(user.lastLoginAt) : null;
+            const latest = actDate && loginDate ? (actDate > loginDate ? actDate : loginDate) : (actDate || loginDate);
+            return latest ? latest > sevenDaysAgo : false;
+          })(),
           customDomain,
           referralCount,
           referralCode: user.referralCode,
