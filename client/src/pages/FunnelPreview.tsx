@@ -409,7 +409,7 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
 
   // STACKED MODE (default) — media above text, no overlay
   return (
-    <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative" style={{ minHeight: "100%" }}>
+    <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center text-center relative">
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: theme.ambientGlow }} />
 
@@ -1299,16 +1299,12 @@ function ClickThroughPreview({ data, allSlides, theme, themeKey, fonts, adminBar
       <style>{slideAnimation}</style>
       {adminBar(<span className="text-sm text-slate-400">{currentIdx + 1} / {allSlides.length}</span>)}
 
-      <div className="flex-1 min-h-0 overflow-hidden py-4 group">
-        <div className="h-full flex items-center justify-center">
-          <div className="h-full w-full overflow-hidden">
-            {slide && (
-              isTextMode && !slide.videoUrl && !slide.imageUrl
-                ? <TextSegmentDisplay slide={slide} animKey={`text-${slide.id}`} fonts={fonts} />
-                : <SlideDisplay slide={slide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${slide.id}`} editable onSave={handleSlideTextSave} />
-            )}
-          </div>
-        </div>
+      <div className="flex-1 min-h-0 overflow-hidden group flex items-center justify-center">
+        {slide && (
+          isTextMode && !slide.videoUrl && !slide.imageUrl
+            ? <TextSegmentDisplay slide={slide} animKey={`text-${slide.id}`} fonts={fonts} />
+            : <SlideDisplay slide={slide} theme={theme} fonts={fonts} animKey={`${themeKey}-${fonts.font}-${slide.id}`} editable onSave={handleSlideTextSave} />
+        )}
       </div>
 
       <div className="px-4 pb-4 shrink-0">
