@@ -409,7 +409,7 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
 
   // STACKED MODE (default) — media above text, no overlay
   return (
-    <div key={animKey} className="w-full h-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative">
+    <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative" style={{ minHeight: "100%" }}>
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: theme.ambientGlow }} />
 
