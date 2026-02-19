@@ -881,6 +881,18 @@ export default function FunnelPreview() {
   const [barVisible, setBarVisible] = useState(false);
   const barTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Show admin bar when mouse moves near top of screen
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (e.clientY < 12) {
+        if (barTimeout.current) clearTimeout(barTimeout.current);
+        setBarVisible(true);
+      }
+    };
+    document.addEventListener("mousemove", handleMouseMove);
+    return () => document.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
   const fontsDirty = JSON.stringify(fonts) !== JSON.stringify(savedFonts);
 
   const formatForImpact = useCallback(async () => {
@@ -1008,18 +1020,6 @@ export default function FunnelPreview() {
   const hasSyncedTimestamps = allSlides.some(s => s.startTimeMs > 0);
   const theme = getTheme(themeKey);
   const isTextMode = data.presentation.displayMode === "text";
-
-  // Show admin bar when mouse moves near top of screen
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (e.clientY < 12) {
-        if (barTimeout.current) clearTimeout(barTimeout.current);
-        setBarVisible(true);
-      }
-    };
-    document.addEventListener("mousemove", handleMouseMove);
-    return () => document.removeEventListener("mousemove", handleMouseMove);
-  }, []);
 
   // Admin bar - hidden by default, slides down on hover at top edge
   const adminBar = (rightExtra?: React.ReactNode) => (
