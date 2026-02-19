@@ -237,6 +237,7 @@ Interactive components MUST match lesson text styling:
 - [ ] NEEDS REDEPLOY for all session 7 changes to take effect
 - [ ] NEEDS REDEPLOY for all session 8 (funnel engine) changes to take effect
 - [ ] NEEDS REDEPLOY for session 9 changes to take effect
+- [ ] NEEDS REDEPLOY for session 10 changes to take effect (404 fix + discount banner removal)
 - [ ] Run `npm run db:push` on production for 11 new funnel tables (or run the SQL migration script)
 - [ ] Run SQL on production: `ALTER TABLE funnel_slides ADD COLUMN IF NOT EXISTS script_notes text;`
 - [ ] Run SQL on production: `ALTER TABLE funnel_campaigns ADD COLUMN IF NOT EXISTS watch_headline text; ALTER TABLE funnel_campaigns ADD COLUMN IF NOT EXISTS watch_subheadline text;`
@@ -256,10 +257,33 @@ Interactive components MUST match lesson text styling:
 - Dev environment database is SEPARATE from production database (challenge.mattwebley.com) - can't query production DB from dev
 - 5 paying customers in `pendingPurchases` table have never used their magic links to create accounts
 - `drizzle-kit push` gets stuck on interactive prompt for `email_logs_tracking_id_unique` constraint — use direct SQL or `--force` flag; funnel tables were created via direct SQL in dev
+- LAUNCHOFFER Stripe coupon code still exists in Stripe — it still works if someone has the code, just no longer advertised on the site
 
 ---
 
 ## Session Log
+
+### 2026-02-19 (Session 10) - Session Expiry 404 Fix, Discount Banner Removal
+- **Tasks Completed:**
+  - **Fixed 404 error for customers with expired sessions**:
+    - When a customer's login session expires and they visit `/dashboard` or any protected route, they were seeing a "404 Page Not Found" error instead of being redirected to login
+    - Added redirect logic in `App.tsx`: unauthenticated users on protected routes now get sent to `/login`
+    - Cleaned up the `not-found.tsx` page — replaced developer message ("Did you forget to add the page to the router?") with a friendly customer-facing message + homepage link
+  - **Removed 75% off LAUNCHOFFER discount banners**:
+    - Removed amber announcement bar from **Landing page** (top banner + coupon box near pricing)
+    - Removed amber announcement bar from **Order page** (top banner + coupon box above checkout) + cleaned up unused `copyPromoCode` function and `Copy` import
+    - Removed fixed amber announcement bar from **Critique page** (+ its spacer div)
+    - Verified zero remaining references to "LAUNCHOFFER" or "75% off" in client code
+- **Files Modified:**
+  - `client/src/App.tsx` — added unauthenticated redirect to `/login` for protected routes
+  - `client/src/pages/not-found.tsx` — customer-friendly 404 message with homepage link
+  - `client/src/pages/Landing.tsx` — removed 2 discount banner sections
+  - `client/src/pages/Order.tsx` — removed 2 discount banner sections + unused promo code state/function/import
+  - `client/src/pages/Critique.tsx` — removed fixed discount banner + spacer
+- **Notes for Next Session:**
+  - NEEDS REDEPLOY for session 10 changes to take effect
+  - LAUNCHOFFER coupon still exists in Stripe — works if someone has the code, just not advertised
+  - If you want to fully retire the coupon, deactivate it in the Stripe dashboard
 
 ### 2026-02-15 (Session 9) - Presentation Polish, Script Notes, Teleprompter, VSL Landing Page
 - **Tasks Completed:**
