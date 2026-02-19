@@ -111,6 +111,12 @@ function Router() {
     );
   }
 
+  // Redirect unauthenticated users on protected routes to login
+  if (!isLoading && !isAuthenticated && !isPublicRoute && location !== '/') {
+    setLocation('/login');
+    return null;
+  }
+
   return (
     <>
       <ScrollToTop />
