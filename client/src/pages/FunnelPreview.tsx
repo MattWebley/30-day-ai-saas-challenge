@@ -878,6 +878,8 @@ export default function FunnelPreview() {
 
   const [presenterMode, setPresenterMode] = useState(false);
   const [impactLimit, setImpactLimit] = useState(10);
+  const [barVisible, setBarVisible] = useState(false);
+  const barTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fontsDirty = JSON.stringify(fonts) !== JSON.stringify(savedFonts);
 
@@ -1008,9 +1010,6 @@ export default function FunnelPreview() {
   const isTextMode = data.presentation.displayMode === "text";
 
   // Admin bar - hidden by default, slides down on hover at top edge
-  const [barVisible, setBarVisible] = useState(false);
-  const barTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   const adminBar = (rightExtra?: React.ReactNode) => (
     <>
       {/* Invisible hover zone at the top of the screen */}
