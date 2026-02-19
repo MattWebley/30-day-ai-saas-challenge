@@ -409,7 +409,7 @@ function SlideDisplay({ slide, theme, fonts, animKey, editable, onSave }: {
 
   // STACKED MODE (default) — media above text, no overlay
   return (
-    <div key={animKey} className="w-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative">
+    <div key={animKey} className="w-full h-full max-w-4xl mx-auto px-6 sm:px-12 flex flex-col items-center justify-center text-center relative">
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none" style={{ background: theme.ambientGlow }} />
 
@@ -1007,72 +1007,95 @@ export default function FunnelPreview() {
   const theme = getTheme(themeKey);
   const isTextMode = data.presentation.displayMode === "text";
 
-  // Admin bar - shared across all modes
+  // Admin bar - hidden by default, slides down on hover at top edge
+  const [barVisible, setBarVisible] = useState(false);
+  const barTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const adminBar = (rightExtra?: React.ReactNode) => (
-    <div className="bg-slate-800/90 backdrop-blur-sm border-b border-slate-700/50 px-4 py-2 flex items-center justify-between z-10">
-      <div className="flex items-center gap-3">
-        <a href="/admin" className="text-slate-400 hover:text-white flex items-center gap-1 text-sm">
-          <ArrowLeft className="w-3.5 h-3.5" /> Back
-        </a>
-        <span className="px-2 py-0.5 text-xs bg-amber-600 text-white rounded font-medium">Preview</span>
-      </div>
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-1">
-          <button
-            onClick={formatForImpact}
-            disabled={aiRunning}
-            className="flex items-center gap-1.5 text-amber-400 hover:text-amber-300 text-sm transition-colors disabled:opacity-50"
-          >
-            {formatting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{formatting ? "Formatting..." : "Impact"}</span>
-          </button>
-          <span className="text-slate-600">|</span>
-          <button
-            onClick={masterLayoutEnergy}
-            disabled={aiRunning}
-            className="flex items-center gap-1.5 text-fuchsia-400 hover:text-fuchsia-300 text-sm transition-colors disabled:opacity-50"
-          >
-            {masterLayout ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Type className="w-3.5 h-3.5" />}
-            {masterLayout ? "Formatting..." : "Master"}
-          </button>
-          <span className="text-slate-600">|</span>
-          <button
-            onClick={mattsStyleFormat}
-            disabled={aiRunning}
-            className="flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 text-sm transition-colors disabled:opacity-50"
-          >
-            {mattsStyle ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
-            {mattsStyle ? "Formatting..." : "Matt's"}
-          </button>
-          <select
-            value={impactLimit}
-            onChange={(e) => setImpactLimit(parseInt(e.target.value))}
-            className="bg-slate-700 text-slate-300 text-xs rounded px-1.5 py-1 border border-slate-600 cursor-pointer"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={0}>All</option>
-          </select>
+    <>
+      {/* Invisible hover zone at the top of the screen */}
+      <div
+        className="fixed top-0 left-0 right-0 h-3 z-50"
+        onMouseEnter={() => {
+          if (barTimeout.current) clearTimeout(barTimeout.current);
+          setBarVisible(true);
+        }}
+      />
+      <div
+        className={`fixed top-0 left-0 right-0 z-40 transition-transform duration-300 ${barVisible ? "translate-y-0" : "-translate-y-full"}`}
+        onMouseEnter={() => {
+          if (barTimeout.current) clearTimeout(barTimeout.current);
+        }}
+        onMouseLeave={() => {
+          barTimeout.current = setTimeout(() => setBarVisible(false), 600);
+        }}
+      >
+        <div className="bg-slate-800/95 backdrop-blur-sm border-b border-slate-700/50 px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <a href="/admin" className="text-slate-400 hover:text-white flex items-center gap-1 text-sm">
+              <ArrowLeft className="w-3.5 h-3.5" /> Back
+            </a>
+            <span className="px-2 py-0.5 text-xs bg-amber-600 text-white rounded font-medium">Preview</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={formatForImpact}
+                disabled={aiRunning}
+                className="flex items-center gap-1.5 text-amber-400 hover:text-amber-300 text-sm transition-colors disabled:opacity-50"
+              >
+                {formatting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                <span className="hidden sm:inline">{formatting ? "Formatting..." : "Impact"}</span>
+              </button>
+              <span className="text-slate-600">|</span>
+              <button
+                onClick={masterLayoutEnergy}
+                disabled={aiRunning}
+                className="flex items-center gap-1.5 text-fuchsia-400 hover:text-fuchsia-300 text-sm transition-colors disabled:opacity-50"
+              >
+                {masterLayout ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Type className="w-3.5 h-3.5" />}
+                {masterLayout ? "Formatting..." : "Master"}
+              </button>
+              <span className="text-slate-600">|</span>
+              <button
+                onClick={mattsStyleFormat}
+                disabled={aiRunning}
+                className="flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 text-sm transition-colors disabled:opacity-50"
+              >
+                {mattsStyle ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Zap className="w-3.5 h-3.5" />}
+                {mattsStyle ? "Formatting..." : "Matt's"}
+              </button>
+              <select
+                value={impactLimit}
+                onChange={(e) => setImpactLimit(parseInt(e.target.value))}
+                className="bg-slate-700 text-slate-300 text-xs rounded px-1.5 py-1 border border-slate-600 cursor-pointer"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={0}>All</option>
+              </select>
+            </div>
+            {hasScriptNotes && (
+              <button
+                onClick={() => setPresenterMode(!presenterMode)}
+                className={`flex items-center gap-1.5 text-sm transition-colors ${
+                  presenterMode ? "text-emerald-400 hover:text-emerald-300" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <Mic className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Present</span>
+              </button>
+            )}
+            {!isTextMode && (
+              <ThemeSwitcher currentKey={themeKey} onSwitch={switchTheme} />
+            )}
+            <TypographyPanel fonts={fonts} onChange={updateFonts} onSave={saveFonts} hasChanges={fontsDirty} />
+            {rightExtra}
+          </div>
         </div>
-        {hasScriptNotes && (
-          <button
-            onClick={() => setPresenterMode(!presenterMode)}
-            className={`flex items-center gap-1.5 text-sm transition-colors ${
-              presenterMode ? "text-emerald-400 hover:text-emerald-300" : "text-slate-400 hover:text-white"
-            }`}
-          >
-            <Mic className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Present</span>
-          </button>
-        )}
-        {!isTextMode && (
-          <ThemeSwitcher currentKey={themeKey} onSwitch={switchTheme} />
-        )}
-        <TypographyPanel fonts={fonts} onChange={updateFonts} onSave={saveFonts} hasChanges={fontsDirty} />
-        {rightExtra}
       </div>
-    </div>
+    </>
   );
 
   if (presenterMode && hasScriptNotes) {
