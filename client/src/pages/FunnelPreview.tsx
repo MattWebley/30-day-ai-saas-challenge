@@ -1186,7 +1186,7 @@ function TeleprompterMode({ data, allSlides, theme, themeKey, fonts, adminBar, i
                     <p className={`text-2xl leading-[1.8] transition-colors duration-300 ${
                       isActive ? "text-white" : "text-slate-600"
                     }`} style={{ fontFamily: "'Inter', sans-serif" }}>
-                      {slide.scriptNotes}
+                      {slide.scriptNotes!.replace(/^#{1,6}\s*/gm, '').replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1')}
                     </p>
                   ) : (
                     <p className={`text-lg italic transition-colors duration-300 ${
