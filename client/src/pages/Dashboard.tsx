@@ -1801,13 +1801,20 @@ export default function Dashboard() {
           if (open) setVideoLoading(true);
         }}
       >
-        <DialogContent className="sm:max-w-4xl p-0 overflow-hidden">
-          <DialogHeader className="p-4 pb-0">
+        <DialogContent className="sm:max-w-4xl p-0 overflow-hidden max-h-[90vh] mx-4 [&>button:last-child]:hidden">
+          {/* Custom close button — large and visible against dark video */}
+          <button
+            onClick={() => setShowVideoModal(false)}
+            className="absolute right-3 top-3 z-10 rounded-full bg-black/60 hover:bg-black/80 text-white p-2 transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+          <DialogHeader className="p-4 pb-0 pr-12">
             <DialogTitle className="text-xl font-bold text-slate-900">
               Day {currentDay}: {dayData.title}
             </DialogTitle>
           </DialogHeader>
-          <div className="relative w-full bg-slate-900" style={{ paddingBottom: '56.25%' }}>
+          <div className="relative w-full bg-slate-900" style={{ aspectRatio: '16/9' }}>
             {videoLoading && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-64 space-y-2">
