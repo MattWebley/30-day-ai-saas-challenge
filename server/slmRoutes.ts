@@ -487,7 +487,7 @@ export function registerSlmRoutes(app: Express) {
       const ics = [
         "BEGIN:VCALENDAR",
         "VERSION:2.0",
-        "PRODID:-//SaaS Launch Machine//EN",
+        "PRODID:-//AI SaaS Launch Machine//EN",
         "BEGIN:VEVENT",
         `DTSTART:${formatDate(start)}`,
         `DTEND:${formatDate(end)}`,

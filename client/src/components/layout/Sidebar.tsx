@@ -574,7 +574,7 @@ function SaasLaunchMachineLink({ user, handleNavClick, location }: { user: any; 
               : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
           )}>
             <Rocket className="w-4 h-4" />
-            SaaS Launch Machine
+            AI SaaS Launch Machine
           </span>
         </Link>
       </div>
@@ -596,7 +596,7 @@ function SaasLaunchMachineLink({ user, handleNavClick, location }: { user: any; 
               : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
           )}>
             <Rocket className="w-4 h-4" />
-            SaaS Launch Machine
+            AI SaaS Launch Machine
           </span>
         </Link>
       </div>
@@ -611,7 +611,7 @@ function SaasLaunchMachineLink({ user, handleNavClick, location }: { user: any; 
       </h3>
       <span className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground opacity-50 cursor-not-allowed">
         <Rocket className="w-4 h-4" />
-        SaaS Launch Machine
+        AI SaaS Launch Machine
         <span className="ml-auto text-[10px] font-bold uppercase tracking-wider bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">
           Soon
         </span>

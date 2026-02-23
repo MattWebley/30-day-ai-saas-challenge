@@ -283,7 +283,7 @@ export default function AdminLaunchMachine() {
       <Card className="p-5 border-2 border-slate-200">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-bold text-slate-900">SaaS Launch Machine</h2>
+            <h2 className="text-lg font-bold text-slate-900">AI SaaS Launch Machine</h2>
             <p className="text-slate-600">
               {settings?.isLive ? "Live — members can access content" : "Coming Soon — only you can see this"}
             </p>

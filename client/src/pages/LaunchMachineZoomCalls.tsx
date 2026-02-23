@@ -22,7 +22,7 @@ export default function LaunchMachineZoomCalls() {
       <LaunchMachineLayout>
         <div className="text-center py-20">
           <h1 className="text-2xl font-extrabold text-slate-900 mb-2">Access Required</h1>
-          <p className="text-slate-600">You need SaaS Launch Machine access to view this page.</p>
+          <p className="text-slate-600">You need AI SaaS Launch Machine access to view this page.</p>
         </div>
       </LaunchMachineLayout>
     );
