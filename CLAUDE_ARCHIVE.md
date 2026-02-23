@@ -635,3 +635,35 @@ This file contains archived session logs from CLAUDE.md to keep the main file un
 - Drip Email greeting updates (~28 emails changed to "Hi {{firstName}},")
 - Drip Email #2 story fix (removed fictional backstory)
 - Legal footer address update
+
+---
+
+## Archived Sessions (Feb 10 - Feb 13, 2026)
+
+### 2026-02-10 (Session 6) - Coaching Admin Major Build-out, Session Editing, Rebooking Links
+- **Tasks Completed (across 2 continued conversations):**
+  - Coaching data fix — missing clients (null email bug, 3-source query)
+  - Dismiss coaching clients (dismissed boolean, atomic cleanup across 3 data sources)
+  - Add Client manually (POST endpoint + admin form)
+  - Per-coach client overview (expandable clients, progress bars, financial info)
+  - Compact coach cards (gear icon for details, "View as Coach" link)
+  - Setup & Settings collapsed section
+  - Expandable transaction details in AdminRevenue
+  - Coach financial info (admin + coach dashboard)
+  - Coach nudge email ("Nudge to Book" button)
+  - Admin session editing (PATCH endpoint, status dropdowns)
+  - Coach rebooking link (Stripe checkout for 4 more sessions at original price)
+- **Files Modified:** shared/schema.ts, server/routes.ts, server/emailService.ts, server/webhookHandlers.ts, AdminCoaches.tsx, AdminRevenue.tsx, CoachDashboard.tsx
+
+### 2026-02-13 (Session 7) - Email Stats, Tracking, Drip Spam Fix, Invoice Creator, Admin Improvements
+- **Tasks Completed:**
+  - Admin Email Stats & KPI Cards (6 cards: Total Sent, Opened, Clicked, Delivery Rate, Today, This Week)
+  - Self-hosted Email Open/Click Tracking (tracking pixel + click redirect endpoints)
+  - Coaching Page Public Access (conditional Layout wrapper)
+  - Mood Check-ins on Admin Overview (stacked bar chart)
+  - Positive Highlights in Admin Content (filter good moods, Promote button)
+  - User Funnel Redesign (horizontal bar chart)
+  - Drip Email Spam Fix (1 per run, 2/day cap, smart priority)
+  - Email Footer Cleanup (condensed to 2 lines)
+  - Invoice Creator in Admin Revenue (AI extract, DB enrichment, Stripe lookup, printable invoice)
+- **Files Modified:** shared/schema.ts, server/emailService.ts, server/storage.ts, server/routes.ts, App.tsx, Coaching.tsx, Admin.tsx, AdminEmails.tsx, AdminRevenue.tsx, AdminUsers.tsx, AdminContent.tsx, adminTypes.ts

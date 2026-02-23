@@ -295,7 +295,7 @@ export async function registerRoutes(
 
       // Generate a secure token
       const token = crypto.randomBytes(32).toString('hex');
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
       // Store the token
       await db.insert(magicTokens).values({
@@ -7524,7 +7524,7 @@ Example format:
 
       // Generate a fresh magic link for them
       const token = crypto.randomBytes(32).toString('hex');
-      const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
       await db.insert(magicTokens).values({
         email: targetUser.email.toLowerCase().trim(),
         token,

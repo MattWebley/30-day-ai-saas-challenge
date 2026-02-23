@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, ArrowRight, CheckCircle, Loader2, LogIn, KeyRound } from "lucide-react";
+import { Mail, ArrowRight, CheckCircle, Loader2, LogIn, KeyRound, AlertCircle, Clock, LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLocation } from "wouter";
@@ -12,21 +12,58 @@ export default function AuthError() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-  const [showMagicLink, setShowMagicLink] = useState(false);
+  const [showPasswordLogin, setShowPasswordLogin] = useState(false);
 
   const params = new URLSearchParams(window.location.search);
   const reason = params.get("reason");
 
-  const getMessage = () => {
+  const getErrorInfo = () => {
     switch (reason) {
       case "token_used":
-        return "This link has already been used.";
+        return {
+          icon: <LinkIcon className="w-8 h-8 text-amber-500" />,
+          iconBg: "bg-amber-50",
+          title: "Link Already Used",
+          message: "This login link has already been used. Each link only works once.",
+          suggestion: "Enter your email below and we'll send you a fresh one.",
+        };
       case "token_expired":
-        return "This link has expired.";
+        return {
+          icon: <Clock className="w-8 h-8 text-amber-500" />,
+          iconBg: "bg-amber-50",
+          title: "Link Expired",
+          message: "This login link has expired.",
+          suggestion: "Enter your email below and we'll send you a fresh one.",
+        };
+      case "server_error":
+        return {
+          icon: <AlertCircle className="w-8 h-8 text-red-500" />,
+          iconBg: "bg-red-50",
+          title: "Something Went Wrong",
+          message: "We hit a technical issue while logging you in.",
+          suggestion: "Try requesting a new login link, or log in with your password.",
+        };
+      case "invalid_token":
+        return {
+          icon: <AlertCircle className="w-8 h-8 text-amber-500" />,
+          iconBg: "bg-amber-50",
+          title: "Invalid Link",
+          message: "This login link isn't valid. It may have been copied incorrectly.",
+          suggestion: "Enter your email below and we'll send you a fresh one.",
+        };
       default:
-        return "Let's get you logged in.";
+        return {
+          icon: <LogIn className="w-8 h-8 text-primary" />,
+          iconBg: "bg-primary/10",
+          title: "Log In",
+          message: "Welcome back to the 21-Day AI SaaS Challenge.",
+          suggestion: "",
+        };
     }
   };
+
+  const errorInfo = getErrorInfo();
+  const hasError = !!reason;
 
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +85,6 @@ export default function AuthError() {
       if (response.ok) {
         setLocation("/dashboard");
       } else {
-        // If password login fails, suggest magic link
         setError(data.message || "Invalid email or password");
       }
     } catch (err) {
@@ -99,7 +135,7 @@ export default function AuthError() {
               Check Your Email!
             </h1>
             <p className="text-slate-700">
-              We've sent a login link to <strong>{email}</strong>
+              We've sent a new login link to <strong>{email}</strong>
             </p>
           </div>
 
@@ -113,7 +149,7 @@ export default function AuthError() {
           </div>
 
           <p className="text-slate-500 text-sm">
-            The link is valid for 30 days.
+            The link is valid for 24 hours.
           </p>
         </div>
       </div>
@@ -123,20 +159,79 @@ export default function AuthError() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border-2 border-slate-200 p-8 text-center space-y-6">
-        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-          <LogIn className="w-8 h-8 text-primary" />
+        <div className={`w-16 h-16 ${errorInfo.iconBg} rounded-full flex items-center justify-center mx-auto`}>
+          {errorInfo.icon}
         </div>
 
         <div className="space-y-2">
           <h1 className="text-2xl font-bold text-slate-900">
-            Log In
+            {errorInfo.title}
           </h1>
           <p className="text-slate-600">
-            {getMessage()}
+            {errorInfo.message}
           </p>
+          {errorInfo.suggestion && (
+            <p className="text-slate-700 font-medium">
+              {errorInfo.suggestion}
+            </p>
+          )}
         </div>
 
-        {!showMagicLink ? (
+        {!showPasswordLogin ? (
+          <div className="text-left space-y-4">
+            <form onSubmit={handleMagicLink} className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
+                <Input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="text-base"
+                />
+              </div>
+
+              {error && (
+                <p className="text-red-600 text-sm">{error}</p>
+              )}
+
+              <Button
+                type="submit"
+                className="w-full gap-2 py-5 text-base"
+                disabled={isLoading || !email.trim()}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Mail className="w-4 h-4" />
+                    Send Me a New Login Link
+                  </>
+                )}
+              </Button>
+            </form>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-200" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white px-2 text-slate-500">or</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowPasswordLogin(true)}
+              className="w-full text-center text-sm text-primary hover:text-primary/80 font-medium"
+            >
+              Log in with password instead
+            </button>
+          </div>
+        ) : (
           <div className="text-left space-y-4">
             <form onSubmit={handlePasswordLogin} className="space-y-3">
               <div>
@@ -195,68 +290,10 @@ export default function AuthError() {
             </div>
 
             <button
-              onClick={() => setShowMagicLink(true)}
+              onClick={() => setShowPasswordLogin(false)}
               className="w-full text-center text-sm text-primary hover:text-primary/80 font-medium"
             >
               Send me a login link instead
-            </button>
-          </div>
-        ) : (
-          <div className="text-left space-y-4">
-            <form onSubmit={handleMagicLink} className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
-                <Input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="text-base"
-                />
-              </div>
-
-              {error && (
-                <p className="text-red-600 text-sm">{error}</p>
-              )}
-
-              <Button
-                type="submit"
-                className="w-full gap-2 py-5 text-base"
-                disabled={isLoading || !email.trim()}
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    <Mail className="w-4 h-4" />
-                    Send Me a Login Link
-                  </>
-                )}
-              </Button>
-            </form>
-
-            <p className="text-slate-500 text-sm text-center">
-              We'll email you a link that logs you in instantly.
-            </p>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-200" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-slate-500">or</span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowMagicLink(false)}
-              className="w-full text-center text-sm text-primary hover:text-primary/80 font-medium"
-            >
-              Log in with password instead
             </button>
           </div>
         )}

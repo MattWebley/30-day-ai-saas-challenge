@@ -697,7 +697,7 @@ You requested a login link for the 21-Day AI SaaS Challenge.
 Click here to log in:
 ${magicLink}
 
-This link expires in 15 minutes and can only be used once.
+This link expires in 24 hours and can only be used once.
 
 If you didn't request this, you can safely ignore this email.
 
@@ -734,7 +734,7 @@ I've generated a fresh login link just for you. Click the link below and you'll 
 
 ${magicLink}
 
-This link expires in 15 minutes, so click it soon. If it expires, just use Option 2 below.
+This link expires in 24 hours, so click it soon. If it expires, just use Option 2 below.
 
 
 OPTION 2: EMAIL & PASSWORD

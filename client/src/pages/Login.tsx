@@ -98,7 +98,7 @@ export default function Login() {
           </div>
 
           <p className="text-slate-500 text-sm">
-            The link is valid for 30 days.
+            The link is valid for 24 hours.
           </p>
         </div>
       </div>
