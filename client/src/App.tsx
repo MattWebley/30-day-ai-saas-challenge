@@ -57,6 +57,8 @@ import MyCoaching from "@/pages/MyCoaching";
 import FunnelOptin from "@/pages/FunnelOptin";
 import FunnelWatch from "@/pages/FunnelWatch";
 import FunnelPreview from "@/pages/FunnelPreview";
+import LaunchMachine from "@/pages/LaunchMachine";
+import LaunchMachineZoomCalls from "@/pages/LaunchMachineZoomCalls";
 import { CookieConsent } from "@/components/CookieConsent";
 import { FacebookPixel } from "@/components/FacebookPixel";
 
@@ -88,7 +90,7 @@ function Router() {
 
   // Redirect authenticated but non-paying users to order page
   const hasPurchased = (user as any)?.challengePurchased || (user as any)?.coachingPurchased || (user as any)?.isAdmin || (user as any)?.isCoach;
-  const protectedPaths = ['/dashboard', '/badges', '/referrals', '/build-log', '/claude-code', '/settings', '/my-coaching', '/critique', '/testimonial', '/congratulations'];
+  const protectedPaths = ['/dashboard', '/badges', '/referrals', '/build-log', '/claude-code', '/settings', '/my-coaching', '/critique', '/testimonial', '/congratulations', '/launch-machine'];
   const isProtectedRoute = protectedPaths.some(path => location.startsWith(path));
   if (isAuthenticated && !hasPurchased && isProtectedRoute) {
     setLocation('/order');
@@ -171,6 +173,9 @@ function Router() {
             <Route path="/critique" component={Critique} />
             <Route path="/testimonial" component={Testimonial} />
             <Route path="/congratulations" component={Congratulations} />
+            <Route path="/launch-machine/lesson/:lessonId" component={LaunchMachine} />
+            <Route path="/launch-machine/calls" component={LaunchMachineZoomCalls} />
+            <Route path="/launch-machine" component={LaunchMachine} />
           </>
         )}
         <Route component={NotFound} />

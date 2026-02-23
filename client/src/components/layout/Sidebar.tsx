@@ -523,6 +523,9 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
             );
           })}
 
+          {/* SaaS Launch Machine */}
+          <SaasLaunchMachineLink user={user} handleNavClick={handleNavClick} location={location} />
+
           {/* Settings & Logout - scrolls with content */}
           <div className="space-y-1 pt-4 border-t border-sidebar-border">
             <Link href="/settings" onClick={handleNavClick}>
@@ -547,6 +550,72 @@ export function Sidebar({ currentDay, onClose }: SidebarProps) {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Separate component for the SaaS Launch Machine link (avoids re-rendering the whole sidebar)
+function SaasLaunchMachineLink({ user, handleNavClick, location }: { user: any; handleNavClick: () => void; location: string }) {
+  const isAdmin = (user as any)?.isAdmin;
+  const slmPurchased = (user as any)?.saasLaunchMachinePurchased;
+
+  // Admin always sees clickable link
+  if (isAdmin) {
+    return (
+      <div className="space-y-1 pt-4 border-t border-sidebar-border">
+        <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          Products
+        </h3>
+        <Link href="/launch-machine" onClick={handleNavClick}>
+          <span className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+            location.startsWith("/launch-machine")
+              ? "bg-sidebar-accent text-sidebar-accent-foreground"
+              : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+          )}>
+            <Rocket className="w-4 h-4" />
+            SaaS Launch Machine
+          </span>
+        </Link>
+      </div>
+    );
+  }
+
+  // Purchased users see clickable link (when live, the page itself handles access)
+  if (slmPurchased) {
+    return (
+      <div className="space-y-1 pt-4 border-t border-sidebar-border">
+        <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          Products
+        </h3>
+        <Link href="/launch-machine" onClick={handleNavClick}>
+          <span className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer",
+            location.startsWith("/launch-machine")
+              ? "bg-sidebar-accent text-sidebar-accent-foreground"
+              : "text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+          )}>
+            <Rocket className="w-4 h-4" />
+            SaaS Launch Machine
+          </span>
+        </Link>
+      </div>
+    );
+  }
+
+  // Everyone else: greyed-out "Coming Soon"
+  return (
+    <div className="space-y-1 pt-4 border-t border-sidebar-border">
+      <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        Products
+      </h3>
+      <span className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground opacity-50 cursor-not-allowed">
+        <Rocket className="w-4 h-4" />
+        SaaS Launch Machine
+        <span className="ml-auto text-[10px] font-bold uppercase tracking-wider bg-slate-200 text-slate-500 px-1.5 py-0.5 rounded">
+          Soon
+        </span>
+      </span>
     </div>
   );
 }

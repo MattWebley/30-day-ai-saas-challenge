@@ -38,6 +38,7 @@ export const users = pgTable("users", {
   promptPackPurchased: boolean("prompt_pack_purchased").default(false),
   launchPackPurchased: boolean("launch_pack_purchased").default(false),
   coachingPurchased: boolean("coaching_purchased").default(false),
+  saasLaunchMachinePurchased: boolean("saas_launch_machine_purchased").default(false),
   allDaysUnlocked: boolean("all_days_unlocked").default(false),
   stripeCustomerId: varchar("stripe_customer_id"),
   purchaseCurrency: varchar("purchase_currency"), // 'usd' or 'gbp' - set on first purchase
@@ -1122,3 +1123,113 @@ export const funnelAdCopy = pgTable("funnel_ad_copy", {
 
 export type FunnelAdCopy = typeof funnelAdCopy.$inferSelect;
 export type InsertFunnelAdCopy = typeof funnelAdCopy.$inferInsert;
+
+// ==============================
+// SAAS LAUNCH MACHINE
+// ==============================
+
+// SLM Settings - global config (1 row)
+export const slmSettings = pgTable("slm_settings", {
+  id: serial("id").primaryKey(),
+  isLive: boolean("is_live").default(false),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type SlmSettings = typeof slmSettings.$inferSelect;
+
+// SLM Sections - themed groups of content
+export const slmSections = pgTable("slm_sections", {
+  id: serial("id").primaryKey(),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isPublished: boolean("is_published").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type SlmSection = typeof slmSections.$inferSelect;
+
+// SLM Weeks - weekly content units within sections
+export const slmWeeks = pgTable("slm_weeks", {
+  id: serial("id").primaryKey(),
+  sectionId: integer("section_id").notNull().references(() => slmSections.id, { onDelete: "cascade" }),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  sortOrder: integer("sort_order").notNull().default(0),
+  isPublished: boolean("is_published").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("slm_weeks_section_id_idx").on(table.sectionId),
+]);
+
+export type SlmWeek = typeof slmWeeks.$inferSelect;
+
+// SLM Lessons - individual lesson parts within weeks
+export const slmLessons = pgTable("slm_lessons", {
+  id: serial("id").primaryKey(),
+  weekId: integer("week_id").notNull().references(() => slmWeeks.id, { onDelete: "cascade" }),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  videoUrl: text("video_url"),
+  lessonText: text("lesson_text"),
+  interactiveComponent: varchar("interactive_component"), // optional key for lazy-loaded component
+  sortOrder: integer("sort_order").notNull().default(0),
+  isPublished: boolean("is_published").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("slm_lessons_week_id_idx").on(table.weekId),
+]);
+
+export type SlmLesson = typeof slmLessons.$inferSelect;
+
+// SLM Lesson Progress - per-user completion tracking
+export const slmLessonProgress = pgTable("slm_lesson_progress", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  lessonId: integer("lesson_id").notNull().references(() => slmLessons.id, { onDelete: "cascade" }),
+  completed: boolean("completed").default(false),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("slm_lesson_progress_user_id_idx").on(table.userId),
+  index("slm_lesson_progress_lesson_id_idx").on(table.lessonId),
+  uniqueIndex("slm_lesson_progress_user_lesson_uniq").on(table.userId, table.lessonId),
+]);
+
+export type SlmLessonProgress = typeof slmLessonProgress.$inferSelect;
+
+// SLM Zoom Calls - schedule + recordings
+export const slmZoomCalls = pgTable("slm_zoom_calls", {
+  id: serial("id").primaryKey(),
+  title: varchar("title").notNull(),
+  scheduledAt: timestamp("scheduled_at").notNull(),
+  joinUrl: text("join_url"),
+  recordingUrl: text("recording_url"),
+  isPast: boolean("is_past").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type SlmZoomCall = typeof slmZoomCalls.$inferSelect;
+
+// SLM Comments - per-section discussion
+export const slmComments = pgTable("slm_comments", {
+  id: serial("id").primaryKey(),
+  sectionId: integer("section_id").notNull().references(() => slmSections.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  content: text("content").notNull(),
+  status: varchar("status").default("approved"), // 'approved' | 'pending' | 'rejected'
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => [
+  index("slm_comments_section_id_idx").on(table.sectionId),
+  index("slm_comments_user_id_idx").on(table.userId),
+  index("slm_comments_status_idx").on(table.status),
+]);
+
+export const slmCommentsRelations = relations(slmComments, ({ one }) => ({
+  user: one(users, {
+    fields: [slmComments.userId],
+    references: [users.id],
+  }),
+}));
+
+export type SlmComment = typeof slmComments.$inferSelect;
