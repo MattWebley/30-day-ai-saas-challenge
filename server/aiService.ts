@@ -154,27 +154,23 @@ interface AICallOptions {
 async function preCallChecks(options: AICallOptions): Promise<{ allowed: boolean; error?: string; blocked?: boolean }> {
   const { userId, endpoint, endpointType, userMessage } = options;
 
-  // 1. Check for abuse patterns
+  // 1. Check for abuse patterns — log and alert only, never block.
+  // Claude has built-in safety, and regex patterns cause too many false positives
+  // on legitimate user input (e.g. "act as a tutor" in a product description).
   const abuse = detectAbuse(userMessage);
   if (abuse.flagged) {
     await logAIUsage({
       userId,
       endpoint,
       tokensUsed: 0,
-      blocked: true,
-      blockReason: abuse.reason!,
+      blocked: false,
       flagged: true,
       flagReason: abuse.reason!,
       timestamp: new Date(),
     });
 
+    // Still send alert so admin can review, but don't block the user
     await sendAbuseAlert(userId, abuse.reason!, userMessage);
-
-    return {
-      allowed: false,
-      error: "I can only help with questions about the 21-Day Challenge. Let's get back on track - what are you working on today?",
-      blocked: true,
-    };
   }
 
   // 2. Check rate limits
