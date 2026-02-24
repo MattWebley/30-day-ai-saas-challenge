@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -184,6 +184,28 @@ function Router() {
   );
 }
 
+function AnnouncementBar() {
+  const [dismissed, setDismissed] = useState(() => localStorage.getItem("announcement-slm-dismissed") === "true");
+
+  if (dismissed) return null;
+
+  return (
+    <div className="bg-primary text-white text-center py-2.5 px-4 text-sm font-medium relative">
+      <span>The AI SaaS Launch Machine is coming soon! Stay tuned.</span>
+      <button
+        onClick={() => {
+          setDismissed(true);
+          localStorage.setItem("announcement-slm-dismissed", "true");
+        }}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/80 hover:text-white text-lg leading-none"
+        aria-label="Dismiss"
+      >
+        &times;
+      </button>
+    </div>
+  );
+}
+
 function App() {
   useEffect(() => {
     if (!import.meta.env.VITE_GA_MEASUREMENT_ID) {
@@ -198,6 +220,7 @@ function App() {
       <BrandProvider>
         <TestModeProvider>
           <TooltipProvider>
+            <AnnouncementBar />
             <Toaster />
             <SonnerToaster position="top-right" richColors />
             <Router />

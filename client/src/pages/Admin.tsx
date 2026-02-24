@@ -160,6 +160,7 @@ export default function Admin() {
     return tab && validTabs.includes(tab as TabKey) ? (tab as TabKey) : "overview";
   });
   const [chartRange, setChartRange] = useState<ChartRange>("30");
+  const [moodPage, setMoodPage] = useState(0);
   const [showRestoreLinks, setShowRestoreLinks] = useState(false);
 
   // Scroll to section from URL hash (e.g. #admin-questions)
@@ -986,44 +987,74 @@ export default function Admin() {
                     })}
                   </div>
 
-                  {/* Day rows */}
-                  <div className="space-y-2">
-                    {sortedDays.map(day => {
-                      const moods = byDay.get(day)!;
-                      const dayTotal = moods.reduce((s, m) => s + m.count, 0);
-                      // Sort moods in consistent order
-                      const sorted = moodOrder
-                        .map(label => moods.find(m => m.label === label))
-                        .filter(Boolean) as { emoji: string; label: string; count: number }[];
+                  {/* Day rows — paginated, 10 per page */}
+                  {(() => {
+                    const perPage = 10;
+                    const totalPages = Math.ceil(sortedDays.length / perPage);
+                    const pageDays = sortedDays.slice(moodPage * perPage, (moodPage + 1) * perPage);
 
-                      return (
-                        <div key={day} className="flex items-center gap-3">
-                          <div className="w-14 flex-shrink-0">
-                            <span className="text-sm font-bold text-slate-900">Day {day}</span>
-                          </div>
-                          {/* Stacked bar */}
-                          <div className="flex-1 flex h-7 rounded-lg overflow-hidden bg-slate-100">
-                            {sorted.map(m => {
-                              const pct = (m.count / dayTotal) * 100;
-                              return (
-                                <div
-                                  key={m.label}
-                                  className={`${moodColors[m.label]} flex items-center justify-center transition-all`}
-                                  style={{ width: `${pct}%` }}
-                                  title={`${m.emoji} ${m.label}: ${m.count} (${Math.round(pct)}%)`}
-                                >
-                                  {pct >= 12 && <span className="text-xs">{m.emoji}</span>}
+                    return (
+                      <>
+                        <div className="space-y-2">
+                          {pageDays.map(day => {
+                            const moods = byDay.get(day)!;
+                            const dayTotal = moods.reduce((s, m) => s + m.count, 0);
+                            const sorted = moodOrder
+                              .map(label => moods.find(m => m.label === label))
+                              .filter(Boolean) as { emoji: string; label: string; count: number }[];
+
+                            return (
+                              <div key={day} className="flex items-center gap-3">
+                                <div className="w-14 flex-shrink-0">
+                                  <span className="text-sm font-bold text-slate-900">Day {day}</span>
                                 </div>
-                              );
-                            })}
-                          </div>
-                          <div className="w-8 flex-shrink-0 text-right">
-                            <span className="text-xs font-medium text-slate-500">{dayTotal}</span>
-                          </div>
+                                <div className="flex-1 flex h-7 rounded-lg overflow-hidden bg-slate-100">
+                                  {sorted.map(m => {
+                                    const pct = (m.count / dayTotal) * 100;
+                                    return (
+                                      <div
+                                        key={m.label}
+                                        className={`${moodColors[m.label]} flex items-center justify-center transition-all`}
+                                        style={{ width: `${pct}%` }}
+                                        title={`${m.emoji} ${m.label}: ${m.count} (${Math.round(pct)}%)`}
+                                      >
+                                        {pct >= 12 && <span className="text-xs">{m.emoji}</span>}
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                                <div className="w-8 flex-shrink-0 text-right">
+                                  <span className="text-xs font-medium text-slate-500">{dayTotal}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
-                      );
-                    })}
-                  </div>
+
+                        {totalPages > 1 && (
+                          <div className="flex items-center justify-center gap-2 mt-4 pt-3 border-t border-slate-200">
+                            <button
+                              onClick={() => setMoodPage(p => Math.max(0, p - 1))}
+                              disabled={moodPage === 0}
+                              className="px-3 py-1 text-sm font-medium rounded-md border border-slate-200 disabled:opacity-40 hover:bg-slate-50"
+                            >
+                              Prev
+                            </button>
+                            <span className="text-sm text-slate-600">
+                              Page {moodPage + 1} of {totalPages}
+                            </span>
+                            <button
+                              onClick={() => setMoodPage(p => Math.min(totalPages - 1, p + 1))}
+                              disabled={moodPage >= totalPages - 1}
+                              className="px-3 py-1 text-sm font-medium rounded-md border border-slate-200 disabled:opacity-40 hover:bg-slate-50"
+                            >
+                              Next
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
                 </Card>
               );
             })()}
