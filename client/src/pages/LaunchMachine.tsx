@@ -380,51 +380,76 @@ export default function LaunchMachine() {
           </div>
 
           {sections.map((section: any) => {
+            const sectionWeeks = section.weeks || [];
             const sectionLessons: any[] = [];
-            (section.weeks || []).forEach((w: any) => {
+            sectionWeeks.forEach((w: any) => {
               (w.lessons || []).forEach((l: any) => sectionLessons.push(l));
             });
             const sectionCompleted = sectionLessons.filter(l => completedSet.has(l.id)).length;
             const sectionTotal = sectionLessons.length;
             const pct = sectionTotal > 0 ? Math.round((sectionCompleted / sectionTotal) * 100) : 0;
 
-            // Find first incomplete lesson
-            const firstIncomplete = sectionLessons.find(l => !completedSet.has(l.id));
-
             return (
-              <Card key={section.id} className="p-6 border-2 border-slate-100 shadow-none bg-white">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <BookOpen className="w-6 h-6 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold text-slate-900">{section.title}</h3>
-                    {section.description && (
-                      <p className="text-slate-700 mt-1">{section.description}</p>
-                    )}
-                    <div className="flex items-center gap-3 mt-3">
-                      <div className="flex-1 h-2 bg-slate-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-primary rounded-full transition-all"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                      <span className="text-sm font-bold text-slate-500 flex-shrink-0">{sectionCompleted}/{sectionTotal}</span>
+              <div key={section.id} className="space-y-4">
+                {/* Month header */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-5 h-5 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-extrabold text-slate-900">{section.title}</h3>
+                      {section.description && (
+                        <p className="text-slate-600 mt-0.5">{section.description}</p>
+                      )}
                     </div>
                   </div>
-                  {firstIncomplete && (
-                    <button
-                      onClick={() => setLocation(`/launch-machine/lesson/${firstIncomplete.id}`)}
-                      className="flex items-center gap-1 text-primary text-sm font-bold hover:underline flex-shrink-0 mt-1"
-                    >
-                      {sectionCompleted > 0 ? "Continue" : "Start"} <ChevronRight className="w-4 h-4" />
-                    </button>
-                  )}
-                  {!firstIncomplete && sectionTotal > 0 && (
-                    <CheckCircle2 className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
-                  )}
+                  <span className="text-sm font-bold text-slate-500">{sectionCompleted}/{sectionTotal} lessons</span>
                 </div>
-              </Card>
+
+                {/* Month progress bar */}
+                <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary rounded-full transition-all"
+                    style={{ width: `${pct}%` }}
+                  />
+                </div>
+
+                {/* Weeks inside this month */}
+                <div className="space-y-3 pl-2">
+                  {sectionWeeks.map((week: any) => {
+                    const weekLessons = week.lessons || [];
+                    const weekCompleted = weekLessons.filter((l: any) => completedSet.has(l.id)).length;
+                    const weekTotal = weekLessons.length;
+                    const firstIncomplete = weekLessons.find((l: any) => !completedSet.has(l.id));
+                    const allDone = weekTotal > 0 && weekCompleted === weekTotal;
+
+                    return (
+                      <Card key={week.id} className="p-4 border-2 border-slate-100 shadow-none bg-white">
+                        <div className="flex items-center gap-3">
+                          {allDone ? (
+                            <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                          ) : (
+                            <div className="w-5 h-5 rounded-full border-2 border-slate-300 flex-shrink-0" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-bold text-slate-900">{week.title}</p>
+                            <p className="text-slate-600 text-sm mt-0.5">{weekCompleted}/{weekTotal} lessons complete</p>
+                          </div>
+                          {firstIncomplete && (
+                            <button
+                              onClick={() => setLocation(`/launch-machine/lesson/${firstIncomplete.id}`)}
+                              className="flex items-center gap-1 text-primary text-sm font-bold hover:underline flex-shrink-0"
+                            >
+                              {weekCompleted > 0 ? "Continue" : "Start"} <ChevronRight className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </div>
             );
           })}
 

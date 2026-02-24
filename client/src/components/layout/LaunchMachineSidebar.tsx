@@ -128,56 +128,66 @@ export function LaunchMachineSidebar({ activeLessonId, onClose }: LaunchMachineS
             </Link>
           </div>
 
-          {/* Lessons grouped by section → week */}
+          {/* Lessons grouped by section (month) → week */}
           {sections.map((section: any) => {
             const sectionWeeks = section.weeks || [];
+            if (sectionWeeks.length === 0) return null;
 
-            return sectionWeeks.map((week: any) => {
-              const weekLessons = week.lessons || [];
-              if (weekLessons.length === 0) return null;
+            return (
+              <div key={section.id} className="space-y-4">
+                {/* Month / Section header */}
+                <h2 className="px-3 text-[11px] font-extrabold text-sidebar-foreground uppercase tracking-widest border-b border-sidebar-border pb-2">
+                  {section.title}
+                </h2>
 
-              return (
-                <div key={week.id} className="space-y-2">
-                  <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    {week.title}
-                  </h3>
-                  <div className="space-y-0.5">
-                    {weekLessons.map((lesson: any) => {
-                      const isCompleted = completedSet.has(lesson.id);
-                      const isActive = activeLessonId === lesson.id;
-                      const num = lessonNumbers.get(lesson.id) || 0;
+                {sectionWeeks.map((week: any) => {
+                  const weekLessons = week.lessons || [];
+                  if (weekLessons.length === 0) return null;
 
-                      return (
-                        <Link key={lesson.id} href={`/launch-machine/lesson/${lesson.id}`} onClick={handleNavClick}>
-                          <span
-                            title={lesson.title}
-                            className={cn(
-                              "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-none cursor-pointer mb-0.5",
-                              isActive
-                                ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                                : "hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                            )}
-                          >
-                            <div
-                              className={cn(
-                                "w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-colors",
-                                isCompleted
-                                  ? "bg-primary border-primary text-primary-foreground"
-                                  : isActive
-                                    ? "border-primary text-primary font-bold"
-                                    : "border-muted-foreground/30 text-muted-foreground"
-                              )}>
-                              {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5" /> : num}
-                            </div>
-                            <span className="truncate">{lesson.title}</span>
-                          </span>
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            });
+                  return (
+                    <div key={week.id} className="space-y-2">
+                      <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        {week.title}
+                      </h3>
+                      <div className="space-y-0.5">
+                        {weekLessons.map((lesson: any) => {
+                          const isCompleted = completedSet.has(lesson.id);
+                          const isActive = activeLessonId === lesson.id;
+                          const num = lessonNumbers.get(lesson.id) || 0;
+
+                          return (
+                            <Link key={lesson.id} href={`/launch-machine/lesson/${lesson.id}`} onClick={handleNavClick}>
+                              <span
+                                title={lesson.title}
+                                className={cn(
+                                  "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-none cursor-pointer mb-0.5",
+                                  isActive
+                                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
+                                    : "hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                                )}
+                              >
+                                <div
+                                  className={cn(
+                                    "w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-colors",
+                                    isCompleted
+                                      ? "bg-primary border-primary text-primary-foreground"
+                                      : isActive
+                                        ? "border-primary text-primary font-bold"
+                                        : "border-muted-foreground/30 text-muted-foreground"
+                                  )}>
+                                  {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5" /> : num}
+                                </div>
+                                <span className="truncate">{lesson.title}</span>
+                              </span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
           })}
 
           {/* Settings & Logout */}

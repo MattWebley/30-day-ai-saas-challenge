@@ -1,4 +1,4 @@
-# CLAUDE.md — 21-Day AI SaaS Challenge
+# CLAUDE.md - FOR NON-TECHNICAL BUILDERS
 
 ---
 
@@ -10,6 +10,20 @@ You are the builder AND the advisor. The human has the vision. You turn that vis
 
 ---
 
+## SESSION START
+
+When the user starts a new session, do the following automatically:
+
+1. Check CLAUDE.md file size - if over 30k chars, trim by moving old session logs to CLAUDE_ARCHIVE.md
+2. Read CLAUDE.md for project context, rules, and pending tasks
+3. Review the SESSION LOGS section at the bottom for lessons learned on this project
+4. Run `git pull` to make sure we are up to date
+5. Run `git status` and `git log --oneline -5` to see recent activity
+6. Summarise where we left off and what is pending
+7. Suggest the best next step
+
+---
+
 ## GOLDEN RULES
 
 ### 1. KEEP IT STUPIDLY SIMPLE
@@ -18,9 +32,11 @@ This is the most important rule. Your natural instinct is to over-engineer every
 
 - Use the simplest approach that works
 - If 50 lines of code can do the job, do NOT write 200
-- No unnecessary abstractions, no premature optimization, no "just in case" architecture
+- No unnecessary abstractions, no premature optimisation, no "just in case" architecture
 - Before finishing anything, ask yourself: "Is there a simpler way to do this?"
 - If a junior developer would struggle to read your code, it is too complex
+- For simple, obvious fixes, just do the simple thing. Do not over-engineer it.
+- For non-trivial changes, pause and ask yourself "is there a more elegant way?" If a fix feels hacky, implement the cleaner solution instead.
 
 ### 2. ONLY TOUCH WHAT YOU ARE ASKED TO TOUCH
 
@@ -31,6 +47,7 @@ This rule exists because breaking it causes the most frustration for non-technic
 - Do NOT remove comments, variables, or functions that seem unused unless explicitly asked
 - Do NOT rename things for "consistency" as a side effect
 - If you notice something that should be fixed elsewhere, MENTION it but do NOT change it
+- Changes should only touch what is necessary. Avoid introducing bugs.
 
 ### 3. BE DECISIVE, NOT INTERROGATIVE
 
@@ -55,6 +72,19 @@ The person you are working with cannot answer deep technical questions. They nee
 - Fix it before moving on
 - Do NOT silently hope the user will not notice
 
+### 6. WHEN THINGS GO SIDEWAYS, STOP AND RE-PLAN
+
+- If something is not working as expected, do NOT keep pushing in the same direction
+- Stop immediately, explain what went wrong, and propose a new approach
+- Do not stack fix on top of fix on top of fix. Step back, rethink, and start fresh if needed.
+
+### 7. FIX BUGS WITHOUT HAND-HOLDING
+
+- When given a bug report, just fix it. Do not ask the user to explain the code to you.
+- Look at logs, errors, and failing tests, then resolve them
+- Zero context switching required from the user
+- Find root causes. No temporary fixes. No band-aids.
+
 ---
 
 ## HOW TO WORK
@@ -65,9 +95,9 @@ For anything beyond a tiny change, share a quick plan:
 
 ```
 HERE IS WHAT I WILL DO:
-1. [step] — [why, in plain english]
-2. [step] — [why, in plain english]
-→ Starting now unless you want me to adjust.
+1. [step] - [why, in plain english]
+2. [step] - [why, in plain english]
+-> Starting now unless you want me to adjust.
 ```
 
 Keep this short. 3-5 lines max. This is not a proposal, it is a heads-up.
@@ -106,6 +136,24 @@ If the human asks for something that will cause problems:
 
 ---
 
+## LEARNING FROM MISTAKES
+
+### Self-Improvement Loop
+
+- After ANY correction from the user, log the lesson at the bottom of this file under SESSION LOGS
+- Write it as a short rule that prevents the same mistake happening again
+- Review these lessons at the start of every session
+- The goal is to make fewer mistakes over time on THIS specific project
+
+### Verification Before Done
+
+- Never say something is finished without proving it works
+- Run tests, check logs, demonstrate correctness
+- Ask yourself: "Would a senior developer approve this?"
+- Challenge your own work before presenting it
+
+---
+
 ## THINGS TO NEVER DO
 
 1. Over-engineer a solution when a simple one exists
@@ -118,6 +166,8 @@ If the human asks for something that will cause problems:
 8. Use jargon without a plain-english explanation alongside it
 9. Build "flexible" or "extensible" architecture nobody asked for
 10. Go silent when stuck instead of saying "I am stuck on X, here is what I have tried"
+11. Keep pushing when something is clearly not working instead of stopping to re-plan
+12. Apply temporary fixes instead of finding the root cause
 
 ---
 
@@ -130,294 +180,7 @@ Simple code that works beats clever code that impresses. Every time.
 Your job is to be the developer they would hire if they could afford a great one. Decisive. Clear. Protective of simplicity. Shipping working software.
 
 ---
----
 
-# PROJECT-SPECIFIC CONTEXT
+## SESSION LOGS
 
-Everything below is specific to this project. Update as needed.
-
----
-
-## Project Overview
-
-A gamified 21-Day AI SaaS Challenge guiding users from idea to launch-ready product through daily micro-tasks.
-
-### Challenge Structure
-- **Days 0-4**: Idea & Planning (Start, Idea, Validate, Features, Name)
-- **Day 5**: Logo
-- **Days 6-9**: Prepare (Tech Stack, PRD, Claude Code setup, Master Claude Code)
-- **Days 10-18**: Build (AI Brain, Brand, APIs, Auth, Email, Mobile, Admin, MVP)
-- **Days 19-21**: Launch (Sales Machine, SEO & AI Search, $100K Roadmap)
-
-### Tech Stack
-- **Frontend**: React 19, Vite, TypeScript, Tailwind CSS, Radix UI, Wouter, TanStack Query
-- **Backend**: Node.js, Express, Passport.js, Express Session
-- **Database**: PostgreSQL, Drizzle ORM
-- **AI**: Claude Opus 4.5 (all AI features - single API key)
-- **Real-time**: WebSockets
-
-### Project Structure
-```
-/client          - Frontend React app (/src for components, pages, hooks)
-/server          - Express backend (/routes for API handlers)
-/shared          - Shared TypeScript types
-drizzle.config.ts, vite.config.ts, components.json
-```
-
----
-
-## Project Rules
-
-### Dev Server (CRITICAL)
-- **NEVER run `npm run dev` in background mode** - causes stale processes blocking port 5000
-- If port 5000 blocked: `fuser -k 5000/tcp`
-- Let user start dev server via Replit's Run button when possible
-
-### Design System (CRITICAL)
-Uses **Minimal Clean** design system in `/client/src/lib/design-system.ts`.
-
-- **Cards**: `bg-white`, `border-2 border-slate-200`, use `<Card>` component
-- **Info boxes**: `bg-slate-50` with `border-2 border-slate-200` - NO colored backgrounds
-- **Interactive options**: White bg, slate border default, primary border when selected
-- **Success states**: Green text (`text-green-600`) only, not green backgrounds
-
-### Typography (CRITICAL)
-Interactive components MUST match lesson text styling:
-
-- **Body text**: `text-slate-700` (NOT text-sm, NOT text-slate-600)
-- **Card headers**: `text-lg font-bold text-slate-900`
-- **Labels/emphasis**: `text-slate-700 font-medium`
-- **Hint/secondary**: `text-slate-600`
-- **Page titles**: `text-2xl font-extrabold text-slate-900`
-
-**NEVER use `text-sm` for body text. NEVER use `text-slate-500` for readable content.**
-
-### Code Style
-- TypeScript strict mode
-- React 19 best practices (hooks, functional components)
-- Tailwind CSS for styling
-- Radix UI for primitives
-
-### Database
-- Drizzle ORM for all operations
-- `npm run db:push` after schema changes
-
-### API
-- Proper error handling on all routes
-- Zod for validation
-- REST conventions
-- Session auth via Passport.js
-
-### Commands
-- `npm run dev` - Full development
-- `npm run dev:client` - Frontend only
-- `npm run check` - TypeScript verification
-
----
-
-## Current Status
-- **Status**: In Progress
-- **Branch**: main
-- **Repo**: MattWebley/30-day-ai-saas-challenge
-
-## Pending Tasks
-- [ ] Test AI Mentor chat bot (now on Claude API)
-- [ ] Test Showcase feature end-to-end
-- [ ] Test Day 0 -> Day 1 -> Day 2 flow (server-side enforcement now added)
-- [ ] Add Namecheap affiliate ID to Day4Naming.tsx
-- [ ] Add coaching call booking links (Days 1-7, 19-21)
-- [ ] Investigate production admin panel user count (dev DB is separate from production DB)
-- [ ] Consider adding "Pending Customers" section to admin panel (5 customers in pendingPurchases table never created accounts)
-- [ ] Remove one-time startup migration from `server/index.ts` after first deploy (greeting fix + email #2 story fix)
-- [ ] After deploy: use "Add Client" to manually add the 2 missing coaching clients by email
-- [ ] After deploy: dismiss Matt from coaching queue
-- [ ] After deploy: assign clients to James (coach)
-- [ ] Run `npm run db:push` on production for the `dismissed` column on coachingPurchases
-- [ ] Run `npm run db:push` on production for email tracking columns (trackingId, openCount, clickCount on emailLogs)
-- [ ] NEEDS REDEPLOY for all session 7 changes to take effect
-- [ ] NEEDS REDEPLOY for all session 8 (funnel engine) changes to take effect
-- [ ] NEEDS REDEPLOY for session 9 changes to take effect
-- [ ] NEEDS REDEPLOY for session 10 changes to take effect (404 fix + discount banner removal)
-- [ ] Run `npm run db:push` on production for 11 new funnel tables (or run the SQL migration script)
-- [ ] Run SQL on production: `ALTER TABLE funnel_slides ADD COLUMN IF NOT EXISTS script_notes text;`
-- [ ] Run SQL on production: `ALTER TABLE funnel_campaigns ADD COLUMN IF NOT EXISTS watch_headline text; ALTER TABLE funnel_campaigns ADD COLUMN IF NOT EXISTS watch_subheadline text;`
-- [ ] Test full funnel flow: create campaign -> add presentation -> generate slides -> preview -> watch page
-- [ ] Test SyncTool: add slides to a variant, open sync tool, paste audio URL, play and tap to mark timestamps
-- [ ] Test AI ad copy generation from Funnels tab
-- [ ] Test Cal.com -> funnel visitor matching (book a call after going through a funnel)
-- [ ] Test presenter mode: add script notes to slides, click Present, use arrow keys to navigate
-- [ ] Test AI Detect CTA timing on a campaign with script notes
-- [ ] Test watch page landing page layout (headline + video player + CTA popup)
-- [ ] Consider building image upload + AI matching for slides (user wants drag & drop media into presentations)
-- [ ] Run SQL on production: `ALTER TABLE funnel_presentations ADD COLUMN IF NOT EXISTS display_mode varchar DEFAULT 'slides';`
-- [ ] Test Text Sync mode: create presentation -> toggle to Text Sync -> paste script -> generate segments -> preview -> watch page
-
-## Known Issues
-- Day 1 completion may not work - debug logging added
-- Dev environment database is SEPARATE from production database (challenge.mattwebley.com) - can't query production DB from dev
-- 5 paying customers in `pendingPurchases` table have never used their magic links to create accounts
-- `drizzle-kit push` gets stuck on interactive prompt for `email_logs_tracking_id_unique` constraint — use direct SQL or `--force` flag; funnel tables were created via direct SQL in dev
-- LAUNCHOFFER Stripe coupon code still exists in Stripe — it still works if someone has the code, just no longer advertised on the site
-
----
-
-## Session Log
-
-### 2026-02-19 (Session 10) - Session Expiry 404 Fix, Discount Banner Removal
-- **Tasks Completed:**
-  - **Fixed 404 error for customers with expired sessions**:
-    - When a customer's login session expires and they visit `/dashboard` or any protected route, they were seeing a "404 Page Not Found" error instead of being redirected to login
-    - Added redirect logic in `App.tsx`: unauthenticated users on protected routes now get sent to `/login`
-    - Cleaned up the `not-found.tsx` page — replaced developer message ("Did you forget to add the page to the router?") with a friendly customer-facing message + homepage link
-  - **Removed 75% off LAUNCHOFFER discount banners**:
-    - Removed amber announcement bar from **Landing page** (top banner + coupon box near pricing)
-    - Removed amber announcement bar from **Order page** (top banner + coupon box above checkout) + cleaned up unused `copyPromoCode` function and `Copy` import
-    - Removed fixed amber announcement bar from **Critique page** (+ its spacer div)
-    - Verified zero remaining references to "LAUNCHOFFER" or "75% off" in client code
-- **Files Modified:**
-  - `client/src/App.tsx` — added unauthenticated redirect to `/login` for protected routes
-  - `client/src/pages/not-found.tsx` — customer-friendly 404 message with homepage link
-  - `client/src/pages/Landing.tsx` — removed 2 discount banner sections
-  - `client/src/pages/Order.tsx` — removed 2 discount banner sections + unused promo code state/function/import
-  - `client/src/pages/Critique.tsx` — removed fixed discount banner + spacer
-- **Notes for Next Session:**
-  - NEEDS REDEPLOY for session 10 changes to take effect
-  - LAUNCHOFFER coupon still exists in Stripe — works if someone has the code, just not advertised
-  - If you want to fully retire the coupon, deactivate it in the Stripe dashboard
-
-### 2026-02-15 (Session 9) - Presentation Polish, Script Notes, Teleprompter, VSL Landing Page
-- **Tasks Completed:**
-  - **Script Notes per Slide**:
-    - Added `scriptNotes` text column to `funnelSlides` table (SQL migration applied to dev)
-    - Updated funnelTypes.ts FunnelSlide interface with `scriptNotes`
-    - Backend CRUD (POST/PUT slides) now saves scriptNotes
-    - AI generate-slides endpoint returns scriptNotes (what the presenter reads aloud per slide)
-    - Format-for-Impact uses scriptNotes as context for better AI rewriting
-    - Every slide editor (inline, advanced, add-new) has amber-tinted "Script Notes" textarea
-    - Slide list shows amber "Script:" preview when notes exist
-  - **Teleprompter / Presenter Mode**:
-    - "Present" button in preview admin bar (only appears when slides have script notes)
-    - Split-screen layout: left = scrollable script, right = live slide preview
-    - Keyboard navigation: up/down/left/right arrows + spacebar to move between slides
-    - Click any script section to jump to that slide
-    - Auto-scroll keeps active section centered
-    - Active section highlighted with emerald left border + slide counter in admin bar
-  - **Large Script Handling (Generate Slides)**:
-    - Fixed truncation: removed `script.substring(0, 8000)` hard limit
-    - Scripts now chunked by paragraphs (~6000 chars each), processed sequentially
-    - `max_tokens` bumped from 4000 to 16000 per chunk
-    - Works with hour-long webinar scripts of any size
-  - **Large Presentation Handling (Format for Impact)**:
-    - Fixed "AI returned invalid format" error on large decks
-    - Now processes 15 slides per batch instead of all at once
-    - `max_tokens` bumped from 4000 to 8000 per batch
-    - Continues through batches even if one fails
-  - **Impact Limit Selector (Cost Saving)**:
-    - Dropdown next to Impact button: 5 / 10 / 20 / All slides
-    - Defaults to 10 - only processes first N slides to save API costs during testing
-    - Backend accepts optional `limit` parameter
-  - **VSL Landing Page (Watch Page Redesign)**:
-    - Complete redesign of FunnelWatch.tsx as a proper landing page
-    - White page with centered content (max-width 4xl)
-    - Big headline + subheadline at top (configurable per campaign)
-    - Video player container: 16:9 aspect ratio, rounded corners, shadow, dark border
-    - Frosted glass play button overlay, click anywhere to start
-    - Slides render inside the player container with chosen theme
-    - Blue gradient progress bar along bottom of player
-    - CTA button slides up below player at configured time with pulse animation
-  - **Watch Page Headline Fields**:
-    - Added `watchHeadline` and `watchSubheadline` columns to `funnelCampaigns`
-    - CampaignEditor has new Watch Page Headline + Subheadline fields
-    - Watch API returns the new fields, falls back to campaign name
-  - **AI Auto-Detect CTA Timing**:
-    - New endpoint `POST /api/admin/funnels/campaigns/:id/detect-cta-time`
-    - Analyzes slide content + script notes via Claude to find optimal CTA moment
-    - Returns suggested time in seconds + reason
-    - "AI Detect" button next to CTA Appear Time field in CampaignEditor
-- **Fixes Applied:**
-  - Presenter mode layout fix: changed `min-h-screen` to `h-screen` + `overflow-hidden` + `min-h-0` on flex children to prevent layout overflow
-  - Removed buggy IntersectionObserver scroll-tracking in teleprompter, replaced with clean keyboard nav
-  - Fixed `function` declaration inside block (strict mode) - converted to arrow function
-- **Files Modified:**
-  - `shared/schema.ts` - added `scriptNotes` to funnelSlides, `watchHeadline`/`watchSubheadline` to funnelCampaigns
-  - `server/funnelRoutes.ts` - updated slide CRUD, generate-slides (chunking), format-for-impact (batching + limit), campaign PUT, watch API, new detect-cta-time endpoint
-  - `client/src/pages/FunnelPreview.tsx` - scriptNotes on SlideData, presenter mode, impact limit selector
-  - `client/src/pages/FunnelWatch.tsx` - complete rewrite as VSL landing page
-  - `client/src/pages/admin/funnels/PresentationEditor.tsx` - scriptNotes in all slide editors
-  - `client/src/pages/admin/funnels/CampaignEditor.tsx` - watchHeadline/watchSubheadline fields, AI Detect button
-  - `client/src/pages/admin/funnels/funnelTypes.ts` - scriptNotes on FunnelSlide, watchHeadline/watchSubheadline on FunnelCampaign
-- **Notes for Next Session:**
-  - NEEDS REDEPLOY for session 9 changes to take effect
-  - Run SQL on production for `script_notes` column on funnelSlides
-  - Run SQL on production for `watch_headline` + `watch_subheadline` columns on funnelCampaigns
-  - User wants image/media upload for slides (drag & drop images, AI assigns to slides) - not built yet
-  - Local file upload is simplest approach for images; Vimeo for videos (already supported)
-  - Impact limit defaults to 10 slides - switch to "All" when ready to go live
-
-### 2026-02-15 (Session 8) - Split-Test Webinar/VSL Funnel Engine
-- **Tasks Completed:**
-  - **Full Split-Test Funnel Engine** — complete implementation across all 7 planned phases:
-  - **Database Schema (11 new tables)**:
-    - `funnel_campaigns` — top-level container with slug, CTA settings, linked presentation
-    - `funnel_presentations` — webinar/VSL content containers
-    - `funnel_modules` — ordered segments within presentations (swappable or fixed)
-    - `funnel_module_variants` — different recordings per module (audio+slides or video)
-    - `funnel_slides` — slides synced to audio timestamps
-    - `funnel_optin_pages` — opt-in page headline/subheadline variations per campaign
-    - `funnel_variation_sets` — specific test combinations (opt-in page + module variant choices)
-    - `funnel_visitors` — unique visitors with cookie-based tracking + UTM params
-    - `funnel_events` — all tracking events (page_view, registration, play_start, play_progress, cta_click, call_booked, sale)
-    - `funnel_ad_spend` — manual ad spend entries
-    - `funnel_ad_copy` — AI-generated ad copy with approval workflow
-  - **Backend (server/funnelRoutes.ts — new file, ~650 lines)**:
-    - Full CRUD for campaigns, presentations, modules, variants, slides, opt-in pages, variation sets
-    - Public endpoints: GET `/api/funnel/c/:slug` (cookie-based variation assignment), POST register, GET watch (timeline stitching), POST track
-    - Analytics: per-variation stats with two-proportion Z-test confidence calculation
-    - Drop-off chart data (30-second buckets)
-    - Ad spend CRUD, manual sale recording, CSV export
-    - AI ad copy generation via Claude API (3 variations per request)
-    - All admin routes use `isAuthenticated` + `requireAdmin` middleware (DB user lookup)
-  - **Admin UI (Funnels tab — 6 new component files)**:
-    - `AdminFunnels.tsx` — main tab with campaign list + presentation list
-    - `CampaignEditor.tsx` — campaign settings, opt-in page variation builder, variation set builder
-    - `PresentationEditor.tsx` — module/variant/slide builder with drag-to-reorder
-    - `SyncTool.tsx` — play audio and tap to mark slide timestamps, manual edit, bulk save
-    - `FunnelAnalytics.tsx` — KPI cards, per-variation table with confidence badges, drop-off chart, ad spend, manual sale
-    - `AdCopyGenerator.tsx` — persuasion slider (1-10), AI generation, approve/reject queue, CSV export
-  - **Public Pages (2 new files)**:
-    - `FunnelOptin.tsx` — standalone opt-in page at `/c/{slug}` (mobile-first, email/name form, auto-redirect to watch)
-    - `FunnelWatch.tsx` — webinar player at `/c/{slug}/watch` (audio+slides sync, Vimeo fallback, CTA button at configured time, tap-to-start overlay, 30s progress tracking)
-  - **Cal.com Integration**:
-    - Extended `handleBookingCreated()` in `calcomWebhook.ts` to match funnel visitors by email
-    - Records `call_booked` event on the visitor's funnel campaign
-  - **Systeme.io Integration**:
-    - Fires on funnel registration (non-blocking) with tags `Funnel: {slug}` and `Funnel Registration`
-- **Fixes Applied:**
-  - Fixed admin auth on funnel routes — initial implementation checked `req.user?.isAdmin` directly, but the app uses session-based auth where `req.user` has `claims.sub`. Fixed to use `isAuthenticated` middleware + DB user lookup via `requireAdmin` middleware (matching existing routes.ts pattern)
-- **Files Created:**
-  - `server/funnelRoutes.ts` — all funnel API routes (admin CRUD + public + analytics)
-  - `client/src/pages/admin/AdminFunnels.tsx` — Funnels tab component
-  - `client/src/pages/admin/funnels/funnelTypes.ts` — TypeScript interfaces
-  - `client/src/pages/admin/funnels/CampaignEditor.tsx` — campaign detail editor
-  - `client/src/pages/admin/funnels/PresentationEditor.tsx` — module/variant/slide builder
-  - `client/src/pages/admin/funnels/SyncTool.tsx` — audio-slide sync tool
-  - `client/src/pages/admin/funnels/FunnelAnalytics.tsx` — analytics dashboard
-  - `client/src/pages/admin/funnels/AdCopyGenerator.tsx` — AI ad copy generator
-  - `client/src/pages/FunnelOptin.tsx` — public opt-in page
-  - `client/src/pages/FunnelWatch.tsx` — public webinar player
-- **Files Modified:**
-  - `shared/schema.ts` — added 11 funnel tables with indexes (~190 lines)
-  - `server/index.ts` — imported and registered funnelRoutes
-  - `server/calcomWebhook.ts` — funnel visitor matching on booking created
-  - `client/src/App.tsx` — added `/c/:slug` and `/c/:slug/watch` routes + publicPaths
-  - `client/src/pages/Admin.tsx` — added "Funnels" tab to TabKey, TABS array, render
-- **Notes for Next Session:**
-  - NEEDS REDEPLOY for funnel engine to work on production
-  - Run `npm run db:push` on production (or SQL migration) for 11 new funnel tables
-  - Cookie-based visitor tracking uses `fv_{campaignId}` cookies (90-day expiry)
-  - SyncTool requires manual audio URL paste (variant audio URL not auto-loaded into sync view)
-  - AI ad copy generation uses `/api/admin/funnels/campaigns/:id/generate-ad-copy` and calls Claude directly
-  - No file upload in V1 — all media via external URL paste (recommend Cloudflare R2 for hosting)
-  - OpenAI Whisper API integration for auto-sync is planned for V2
-
-*See CLAUDE_ARCHIVE.md for older session logs (Sessions 1-7, Jan 14 - Feb 13).*
+(Lessons learned from corrections will be logged here automatically)

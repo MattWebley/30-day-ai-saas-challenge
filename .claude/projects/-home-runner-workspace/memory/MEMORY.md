@@ -1,5 +1,8 @@
 # Memory
 
+## User Preferences
+- NEVER use em dashes (—) in any output. Use commas, periods, colons, or restructure the sentence instead.
+
 ## Post-Deploy Cleanup
 - [ ] Remove one-time duplicate comments cleanup migration from `server/index.ts` (lines ~144-153) after first deploy
 - The old drip email greeting migration was already removed in Session 5
